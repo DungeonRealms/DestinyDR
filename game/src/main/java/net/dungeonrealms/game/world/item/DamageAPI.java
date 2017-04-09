@@ -8,31 +8,39 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
+import net.dungeonrealms.game.item.items.core.ItemWeaponPolearm;
+import net.dungeonrealms.game.listener.combat.AttackResult;
+import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
+import net.dungeonrealms.game.listener.combat.DamageResultType;
+import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.EntityArrow;
-import net.minecraft.server.v1_9_R2.EntityLargeFireball;
-import net.minecraft.server.v1_9_R2.MathHelper;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -40,638 +48,299 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/21/2015.
  */
+//TODO: Maybe move some of this into AttackResult.
 public class DamageAPI {
 
-    public static Set<Entity> polearmAOEProcessing = new HashSet<>();
     private static HashMap<Player, HashMap<Hologram, Integer>> DAMAGE_HOLOGRAMS = new HashMap<Player, HashMap<Hologram, Integer>>();
 
     /**
-     * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
+     * Calculates the weapon damage based on the nbt tag of an item, the attacker and defender
+     * Formerly calculateWeaponDamage
      *
      * @param attacker
-     * @param receiver
+     * @param defender
      * @since 1.0
      */
-    public static double calculateWeaponDamage(LivingEntity attacker, LivingEntity receiver, boolean removeDurability) {
-        boolean isAttackerPlayer = attacker instanceof Player;
-        boolean isDefenderPlayer = receiver instanceof Player;
-        try {
-            ItemStack weapon = attacker.getEquipment().getItemInMainHand();
-            if (!GameAPI.isWeapon(weapon)) return 1; // air or something else not a weapon should do 1 dmg
-
-            // get the attacker's attributes
-            Map<String, Integer[]> attackerAttributes;
-            if (isAttackerPlayer) {
-                if (removeDurability) {
-                    if (receiver.hasMetadata("tier")) {
-                        //Player attacking monster, check if its a lower tier.
-                        int mobTier = receiver.getMetadata("tier").get(0).asInt();
-                        int wepTier = RepairAPI.getArmorOrWeaponTier(weapon);
-                        if (wepTier > mobTier) {
-                            int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
-
-                            if (tierDif == 2) {
-                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 2);
-                            } else if (tierDif == 3) {
-                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
-                            } else if (tierDif == 4) {
-                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
-                            } else {
-                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
-                            }
-                        } else {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
-                        }
-                    } else {
-                        RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
-                    }
+    public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
+        CombatEntity attacker = res.getAttacker();
+        CombatEntity defender = res.getDefender();
+        
+        ItemStack item = attacker.getEntity().getEquipment().getItemInMainHand();
+        if (!ItemWeapon.isWeapon(item))
+        	return;
+        
+        int weaponTier = 0;
+        
+        //  BASE DAMAGE  //
+        double damage = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getValueInRange();
+        int critHit = 0;
+        
+        if (!res.hasProjectile()) {
+        	//  MELEE WEAPON  //
+        	ItemWeapon weapon = (ItemWeapon)PersistentItem.constructItem(item);
+        	weaponTier = weapon.getTier().getId();
+        
+        	if (attacker.isPlayer()) {
+        	
+        		//  DAMAGE WEAPON  //
+        		if (removeDurability) {
+        			int durabilityLoss = 1;
+        			
+        			//  EXTRA DAMAGE FOR TIER GAPS  //
+        			if (defender.getEntity().hasMetadata("tier")) {
+        				int mobTier = defender.getEntity().getMetadata("tier").get(0).asInt();
+        				int tierDif = weaponTier - mobTier;
+        				
+        				if (tierDif > 1)
+        					durabilityLoss = 2 * (tierDif - 1);
+        			}
+        			weapon.damageItem(attacker.getPlayer(), durabilityLoss);
+        		}
+        		
+        		GameAPI.getGamePlayer(attacker.getPlayer()).updateWeapon();
+        		
+                //  STAT BONUS  //
+                GeneratedItemType type = weapon.getGeneratedItemType();
+                
+                if (type == GeneratedItemType.AXE) {
+                	critHit += 3;
+                } else if (type == GeneratedItemType.SWORD) {
+                	damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.23);
+                } else if (type == GeneratedItemType.POLEARM) {
+                	damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue() * 0.23);
                 }
-                GamePlayer gp = GameAPI.getGamePlayer((Player) attacker);
-
-                // a player switches weapons, so we need to recalculate weapon attributes
-                if (!gp.getCurrentWeapon().equals(GameAPI.getItemUID(weapon))) {
-                    GameAPI.calculateAllAttributes((Player) attacker);
-                    gp.setCurrentWeapon(GameAPI.getItemUID(weapon));
-                }
-
-                attackerAttributes = gp.getAttributes();
-            } else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
-                attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
-            } else {
-                return 0;
-            }
-
-            // BASE DAMAGE
-            double damage = Utils.randInt(attackerAttributes.get("damage")[0], attackerAttributes.get("damage")[1]);
-            boolean isHitCrit = false;
-
-            // VS MONSTERS AND PLAYERS
-            if (isDefenderPlayer) {
-                damage += ((((double) attackerAttributes.get("vsPlayers")[1]) / 100.) * damage);
-                if (attacker.hasMetadata("type")) {
-                    if (attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                        if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
-                            ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).onMonsterAttack((Player) receiver);
-                        }
-                    }
-                }
-            } else {
-                if (receiver.hasMetadata("type")) {
-                    if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                        damage += ((((double) attackerAttributes.get("vsMonsters")[1]) / 100.) * damage);
-                    }
-                }
-            }
-
-            // DPS AND PURE DAMAGE
-            damage += damage * (((double) Utils.randInt(attackerAttributes.get("dps")[0], attackerAttributes.get("dps")[1])) / 100.);
-
-            damage += attackerAttributes.get("pureDamage")[1];
-            int critHit = attackerAttributes.get("criticalHit")[1];
-
-            // STAT BONUSES
-            switch (new Attribute(weapon).getItemType()) {
-                case AXE:
-                    critHit += 3;
-                case POLEARM:
-                    if (attackerAttributes.get("strength")[1] != 0) {
-                        damage += (damage / 100.) * (attackerAttributes.get("strength")[1] * 0.023D);
-                    }
-                    break;
-                case SWORD:
-                    if (attackerAttributes.get("vitality")[1] != 0) {
-                        damage += (damage / 100.) * (attackerAttributes.get("vitality")[1] * 0.023D);
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            // KNOCKBACK
-            if (isAttackerPlayer && attackerAttributes.get("knockback")[1] > 0) {
-                if (new Random().nextInt(100) < attackerAttributes.get("knockback")[1]) {
-                    knockbackEntity((Player) attacker, receiver, 1.5);
-                }
-            }
-
-            int weaponTier = new Attribute(weapon).getItemTier().getTierId();
-
-            // BLIND AND SLOW
-            if (attackerAttributes.get("blind")[1] > 0) {
-                if (new Random().nextInt(100) < attackerAttributes.get("blind")[1]) {
-                    applyBlind(receiver, weaponTier);
-                }
-            }
-
-            if (attackerAttributes.get("slow")[1] > 0) {
-                if (new Random().nextInt(100) < attackerAttributes.get("slow")[1]) {
-                    applySlow(receiver);
-                }
-            }
-
-            // ELEMENTAL DAMAGE
-            if (isAttackerPlayer) {
-                if (isDefenderPlayer) {
-                    receiver.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
-                    receiver.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
-                }
-                if (attackerAttributes.get("fireDamage")[1] != 0) {
-                    applyFireDebuff(receiver, weaponTier);
-                    damage += attackerAttributes.get("fireDamage")[1];
-                } else if (attackerAttributes.get("iceDamage")[1] != 0) {
-                    applyIceDebuff(receiver, weaponTier);
-                    damage += attackerAttributes.get("iceDamage")[1];
-                } else if (attackerAttributes.get("poisonDamage")[1] != 0) {
-                    applyPoisonDebuff(receiver, weaponTier);
-                    damage += attackerAttributes.get("poisonDamage")[1];
-                }
-            } else if (GameAPI.isMobElemental(attacker)) {
-                if (GameAPI.getMobElement(attacker).equals("fire")) {
-                    applyFireDebuff(receiver, weaponTier);
-                } else if (GameAPI.getMobElement(attacker).equals("ice")) {
-                    applyIceDebuff(receiver, weaponTier);
-                } else if (GameAPI.getMobElement(attacker).equals("poison")) {
-                    applyPoisonDebuff(receiver, weaponTier);
-                }
-            }
-
-            // CRIT CHANCE
-            if (new Random().nextInt(100) < critHit) {
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
-                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                isHitCrit = true;
-            }
-
-            // LIFESTEAL ONLY FOR PLAYERS.
-            if (isAttackerPlayer) {
-                if (attackerAttributes.get("lifesteal")[1] != 0) {
-                    double lifeToHeal = ((((float) attackerAttributes.get("lifesteal")[1]) / 100.) * damage);
-                    HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                }
-            }
-
-            // DAMAGE BUFFS
-            damage = applyIncreaseDamagePotion(attacker, damage);
-
-            if (!isAttackerPlayer) {
-                if (attacker.hasMetadata("attack")) {
-                    damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100.));
-                }
-            }
-
-            if (attacker.hasMetadata("damageBonus")) {
-                damage += (damage * (attacker.getMetadata("damageBonus").get(0).asDouble() / 100.));
-            }
-
-            damage = addSpecialDamage(attacker, damage);
-
-            // LEVEL DAMAGE
-            if (isDefenderPlayer && !isAttackerPlayer) {
-                // add 5% damage per level difference
-                int attackerLevel = attacker.getMetadata("level").get(0).asInt();
-                int defenderLevel = GameAPI.getGamePlayer((Player) receiver).getLevel();
-                if (attackerLevel > defenderLevel) {
-                    damage = addLevelDamage(attackerLevel, defenderLevel, damage);
-                }
-            }
-
-            if (isHitCrit) {
-                if (isAttackerPlayer) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId
-                            ()).toString())) {
-                        attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
-                    }
-                    receiver.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
-                }
-                damage *= 2;
-            }
-
-            if (!isAttackerPlayer) {
-                if (damage >= weaponTier * 600) {
-                    //Should prevent shit like 40k damage from T2. T1 damage capped at 600, T5 at 3k.
-                    damage = weaponTier * 600;
-                }
-            }
-
-            return Math.round(damage);
-        } catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
-            // recalculate all attributes as a failsafe
-            if (!isAttackerPlayer) {
-                Utils.log.warning("[DamageAPI] Mob caused exception in calculateWeaponDamage.");
-                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
-                ex.printStackTrace();
-                Utils.log.info("Attacker: " + attacker.getName());
-                Utils.log.info("Defender: " + receiver.getName());
-                Utils.log.info("Attacker attributes: ");
-                ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes().toString();
-                return 0;
-            }
-            GameAPI.calculateAllAttributes((Player) attacker);
-            Utils.log.info("[DamageAPI] calculateWeaponDamage attribute error.");
-            ex.printStackTrace();
-            Utils.log.info("Attacker: " + attacker.getName());
-            Utils.log.info("Defender: " + receiver.getName());
-            Utils.log.info("Attacker attributes: ");
-            GameAPI.getGamePlayer((Player) attacker).getAttributes().toString();
-            return 0;
-        }
-    }
-
-    public static void applyPoisonDebuff(LivingEntity receiver, int weaponTier) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
-
-            switch (weaponTier) {
-                case 1:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-                    break;
-                case 2:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-                    break;
-                case 3:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-                    break;
-                case 4:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-                    break;
-                case 5:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-                    break;
-            }
-        }, 1);
-    }
-
-    public static void applyFireDebuff(LivingEntity receiver, int weaponTier) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, receiver.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-            switch (weaponTier) {
-                case 1:
-                    receiver.setFireTicks(15);
-                    break;
-                case 2:
-                    receiver.setFireTicks(25);
-                    break;
-                case 3:
-                    receiver.setFireTicks(30);
-                    break;
-                case 4:
-                    receiver.setFireTicks(35);
-                    break;
-                case 5:
-                    receiver.setFireTicks(40);
-                    break;
-            }
-        }, 1);
-
-    }
-
-    public static void applySlow(LivingEntity receiver) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (receiver.hasMetadata("type")) {
-                final int MOB_TIER = receiver.getMetadata("tier").get(0).asInt();
-                if (MOB_TIER == 4 || MOB_TIER == 5)
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                else
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
-            } else {
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
-            }
-        }, 1);
-    }
-
-    public static void applyBlind(LivingEntity receiver, int weaponTier) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            switch (weaponTier) {
-                case 1:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
-                    break;
-                case 2:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
-                    break;
-                case 3:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
-                    break;
-                case 4:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                    break;
-                case 5:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                    break;
-                default:
-                    break;
-            }
-        }, 1);
-
-    }
-
-    public static void applyIceDebuff(LivingEntity receiver, int weaponTier) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8226);
-
-            switch (weaponTier) {
-                case 1:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                    break;
-                case 2:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                    break;
-                case 3:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                    break;
-                case 4:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                    break;
-                case 5:
-                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                    break;
-            }
-        }, 1);
-    }
-
-    //This makes mobs stronger when they hit you IF they are higher than you. Not if you are higher than them...
-    private static double addLevelDamage(int attackerLevel, int receiverLevel, double damage) {
-        int difference = attackerLevel - receiverLevel;
-        if (difference > 10) difference = 10;
-        return damage * (1 + (difference * 0.09));
-    }
-
-    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
-        ItemStack attackerWeapon = damager.getEquipment().getItemInMainHand();
-        if (GameAPI.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(damager))) {
-            DamageAPI.polearmAOEProcessing.add(damager);
-            boolean damagerIsMob = damager.hasMetadata("type");
-            for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                if (!(entity instanceof LivingEntity)) continue;
-                // mobs should only be able to damage players, not other mobs
-                if (damagerIsMob && !GameAPI.isPlayer(entity))
-                    continue;
-                // no damage in safezones
-                if (GameAPI.isInSafeRegion(event.getEntity().getLocation()) || GameAPI.isInSafeRegion(damager.getLocation()))
-                    continue;
-                // let's not damage ourself
-                if (entity.equals(damager)) continue;
-                if (entity != event.getEntity() && !(entity instanceof Player)) {
-                    if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
-                        if (damage - armorCalculation[0] <= 0) continue;
-                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
-                    }
-                } else if (GameAPI.isPlayer(entity)) {
-                    if (damagerIsMob) {
-                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
-                        if (damage - armorCalculation[0] <= 0) continue;
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage, armorCalculation[0], armorCalculation[1]);
-                    } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
-                        if (GameAPI._hiddenPlayers.contains((Player) entity)) continue;
-                        if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
-                            if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
-                                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                                    damager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                                }
-                                continue;
-                            }
-                            if (Affair.getInstance().areInSameParty(damager, (Player) entity)) {
-                                continue;
-                            }
-
-                            if (GuildDatabaseAPI.get().areInSameGuild(damager.getUniqueId(), entity.getUniqueId())) {
-                                continue;
-                            }
-                        }
-                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
-                        if (damage - armorCalculation[0] <= 0) continue;
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
-                    }
-                }
-            }
-            DamageAPI.polearmAOEProcessing.remove(damager);
-        }
-    }
-
-    /**
-     * Calculates the weapon damage based on the metadata of the projectile, the attacker and receiver
-     *
-     * @param attacker
-     * @param receiver
-     * @param projectile
-     * @since 1.0
-     */
-    public static double calculateProjectileDamage(LivingEntity attacker, LivingEntity receiver, Projectile projectile) {
-        boolean isAttackerPlayer = attacker instanceof Player;
-        boolean isDefenderPlayer = receiver instanceof Player;
-        try {
-            Map<String, Integer[]> attributes;
-            // grab the attacker's armor attributes
-            if (isAttackerPlayer) {
-                attributes = GameAPI.getGamePlayer((Player) attacker).getAttributes();
-            } else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
-                attributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
-            } else {
-                return 0;
-            }
-
-            if (!projectile.hasMetadata("damageMin") || !projectile.hasMetadata("damageMax")) {
-                return 1;
-            }
-            double damage = Utils.randInt(projectile.getMetadata("damageMin").get(0).asInt(), projectile.getMetadata
-                    ("damageMax").get(0).asInt());
-            boolean isHitCrit = false;
-
-            // VS PLAYERS AND VS MONSTERS
-            if (isDefenderPlayer) {
-                if (projectile.getMetadata("vsPlayers").get(0).asDouble() != 0) {
-                    damage += ((projectile.getMetadata("vsPlayers").get(0).asDouble() / 100) * damage);
-                }
-            } else {
-                if (receiver.hasMetadata("type") && receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-
-                    if (projectile.getMetadata("vsMonsters").get(0).asDouble() != 0) {
-                        damage += ((projectile.getMetadata("vsMonsters").get(0).asDouble() / 100) * damage);
-                    }
-                }
-            }
-
-            // PURE DAMAGE
-            if (projectile.getMetadata("pureDamage").get(0).asInt() != 0) {
-                damage += projectile.getMetadata("pureDamage").get(0).asInt();
-            }
-
-            // KNOCKBACK
-            if (isAttackerPlayer && projectile.getMetadata("knockback").get(0).asInt() > 0) {
-                if (new Random().nextInt(100) < projectile.getMetadata("knockback").get(0).asInt()) {
-                    knockbackEntity((Player) attacker, receiver, 1.5);
-                }
-            }
-
-            int weaponTier = projectile.getMetadata("itemTier").get(0).asInt();
-
-            // DPS
-            damage += damage * (((double) Utils.randInt(attributes.get("dps")[0], attributes.get("dps")[1])) / 100.);
-
-            // BLIND AND SLOW
-            if (projectile.getMetadata("blind").get(0).asInt() > 0) {
-                if (new Random().nextInt(100) < projectile.getMetadata("blind").get(0).asInt()) {
-                    applyBlind(receiver, weaponTier);
-                }
-            }
-
-            if (projectile.getMetadata("slow").get(0).asInt() > 0) {
-                if (new Random().nextInt(100) < projectile.getMetadata("slow").get(0).asInt()) {
-                    applySlow(receiver);
-                }
-            }
-
-            // ELEMENTAL DAMAGE
-            if (isAttackerPlayer) {
-                if (isDefenderPlayer) {
-                    receiver.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
-                    receiver.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
-                }
-                if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
-                    applyFireDebuff(receiver, weaponTier);
-                    damage += projectile.getMetadata("fireDamage").get(0).asInt();
-                } else if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
-                    applyIceDebuff(receiver, weaponTier);
-                    damage += projectile.getMetadata("iceDamage").get(0).asInt();
-                } else if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
-                    applyPoisonDebuff(receiver, weaponTier);
-                    damage += projectile.getMetadata("poisonDamage").get(0).asInt();
-                }
-            } else if (GameAPI.isMobElemental(attacker)) {
-                if (GameAPI.getMobElement(attacker).equals("fire")) {
-                    applyFireDebuff(receiver, weaponTier);
-                } else if (GameAPI.getMobElement(attacker).equals("ice")) {
-                    applyIceDebuff(receiver, weaponTier);
-                } else if (GameAPI.getMobElement(attacker).equals("poison")) {
-                    applyPoisonDebuff(receiver, weaponTier);
-                }
-            }
-
-            // STAT BONUS DAMAGE
-            switch (projectile.getType()) {
+        	}
+        } else if (res.getProjectile().hasMetadata("itemTier")){
+        	weaponTier = res.getProjectile().getMetadata("itemTier").get(0).asInt();
+        	
+        	//  STAT BONUS  //
+            switch (res.getProjectile().getType()) {
                 case ARROW:
                 case TIPPED_ARROW:
-                    damage += (damage / 100.) * attributes.get("dexterity")[1] * 0.015D;
+                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.15);
                     break;
                 case SNOWBALL:
                 case SMALL_FIREBALL:
                 case ENDER_PEARL:
                 case FIREBALL:
                 case WITHER_SKULL:
-                    damage += (damage / 100.) * attributes.get("intellect")[1] * 0.02D;
+                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.2);
                     break;
                 default:
                     break;
             }
+        	
+        } else {
+        	res.setDamage(1);
+        	return;
+        }
+        
+        //  CRIT  //
+        critHit += attacker.getAttributes().getAttribute(WeaponAttributeType.CRITICAL_HIT).getValue();
+        boolean isHitCrit = false;
+        
+        
+        //  VS MONSTERS AND PLAYERS  //
+        WeaponAttributeType vsEntity = defender.isPlayer() ? WeaponAttributeType.VS_PLAYER : WeaponAttributeType.VS_MONSTERS;
+        damage += ((double)attacker.getAttributes().getAttribute(vsEntity).getValue() / 100) * damage;
+        
+        //  EXECUTE ATTACK HOOK  //
+        if (defender.isPlayer() && EnumEntityType.HOSTILE_MOB.isType(attacker.getEntity()))
+        	if (((CraftLivingEntity) attacker.getEntity()).getHandle() instanceof DRMonster)
+        		((DRMonster) ((CraftLivingEntity) attacker.getEntity()).getHandle()).onMonsterAttack(defender.getPlayer());
+        
+        //  DPS  //
+        damage += damage * ((double)attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100);
 
-            if (projectile.getMetadata("criticalHit").get(0).asInt() != 0) {
-                if (new Random().nextInt(100) < projectile.getMetadata("criticalHit").get(0).asInt()) {
-                    try {
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation().add(0, 1, 0),
-                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    isHitCrit = true;
-                }
-            }
+        //  KNOCKBACK  //
+        if (attacker.isPlayer() && getChance(attacker.getAttributes(), WeaponAttributeType.KNOCKBACK))
+        	knockbackEntity(attacker.getPlayer(), defender.getEntity(), 1.5);
 
-            if (isAttackerPlayer) {
-                if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
-                    double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
-                    HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                }
-            }
+        //  BLIND  //
+        if (getChance(attacker.getAttributes(), WeaponAttributeType.BLIND))
+        	applyBlind(defender.getEntity(), weaponTier);
+            
+        //  SLOW  //
+        if (getChance(attacker.getAttributes(), WeaponAttributeType.SLOW))
+        	applySlow(defender.getEntity());
 
-            damage = applyIncreaseDamagePotion(attacker, damage);
+        //  ELEMENTAL DAMAGE  //
+        if (attacker.isPlayer()) {
+        	if (defender.isPlayer()) {
+        		defender.getEntity().setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+        		defender.getEntity().setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getEntity().getName()));
+        	}
+                
+        	for (ElementalAttribute ea : ElementalAttribute.values()) {
+        		if (attacker.getAttributes().hasAttribute(ea.getAttack())) {
+        			applyDebuff(defender.getEntity(), ea, weaponTier);
+        			damage += attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+        		}
+        	}
+                
+        } else if (GameAPI.isMobElemental(attacker.getEntity())) {
+        	applyDebuff(defender.getEntity(), GameAPI.getMobElement(attacker.getEntity()), weaponTier);
+        }
 
-            damage = addSpecialDamage(attacker, damage);
+        //  CRIT CHANCE  //
+        if (new Random().nextInt(100) < critHit) {
+        	ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, defender.getEntity().getLocation(),
+        			new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+        	isHitCrit = true;
+        }
 
-            // LEVEL DAMAGE
-            if (isDefenderPlayer && !isAttackerPlayer) {
-                // add 5% damage per level difference
-                int attackerLevel = attacker.getMetadata("level").get(0).asInt();
-                int defenderLevel = GameAPI.getGamePlayer((Player) receiver).getLevel();
-                if (attackerLevel > defenderLevel) {
-                    damage = addLevelDamage(attackerLevel, defenderLevel, damage);
-                }
-            }
+        //  LIFESTEAL  //
+        if (attacker.isPlayer() && attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL)) {
+        	double lifeToHeal = ((double)attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() / 100) * damage;
+        	HealthHandler.healPlayer(attacker.getPlayer(), (int)lifeToHeal + 1);
+        }
+        
+        //  STRENGTH BUFF  //
+        damage = applyIncreaseDamagePotion(attacker.getEntity(), damage);
 
-            if (!(isAttackerPlayer)) {
-                if (attacker.hasMetadata("attack")) {
-                    damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
-                }
-            }
-            if (attacker.hasMetadata("damageBonus")) {
-                damage += (damage * (attacker.getMetadata("damageBonus").get(0).asDouble() / 100.));
+        //  ADD DAMAGE BONUS  //
+        if (attacker.getEntity().hasMetadata("damageBonus"))
+        	damage += (damage * (attacker.getEntity().getMetadata("damageBonus").get(0).asDouble() / 100.));
+        
+        //  ADD ELITE BONUS  //
+        damage = addSpecialDamage(attacker.getEntity(), damage);
+        
+        //  LEVEL DAMAGE  //
+        if (defender.isPlayer() && !attacker.isPlayer()) {
+        	// add 5% damage per level difference
+        	int attackerLevel = attacker.getEntity().getMetadata("level").get(0).asInt();
+        	int defenderLevel = GameAPI.getGamePlayer((Player) defender).getLevel();
+        	if (attackerLevel > defenderLevel)
+        		damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+        }
 
-            }
-            if (isHitCrit) {
-                if (isAttackerPlayer) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId
-                            ()).toString())) {
-                        attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
-                    }
-                    receiver.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
-                }
-                damage = damage * 2;
-            }
+        //  CRITICAL HIT  //
+        if (isHitCrit) {
+        	if (attacker.isPlayer()) {
+        		if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getPlayer().getUniqueId()).toString()))
+        			attacker.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
+        		
+        		defender.getEntity().getWorld().playSound(attacker.getEntity().getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
+        	}
+        	damage *= 2;
+        }
+        
+        //  DAMAGE CAP  //
+        if (!attacker.isPlayer() && damage >= weaponTier * 600)
+        	damage = weaponTier * 600;
 
-            if (!isAttackerPlayer) {
-                if (damage >= weaponTier * 600) {
-                    //Should prevent shit like 40k damage from T2. T1 damage capped at 600, T5 at 3k.
-                    damage = weaponTier * 600;
-                }
-            }
-            return Math.round(damage);
-        } catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
-            // recalculate all attributes as a failsafe
-            if (!isAttackerPlayer) {
-                Utils.log.warning("[DamageAPI] Mob caused exception in calculateProjectileDamage.");
-                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
-                ex.printStackTrace();
-                Utils.log.info("Attacker: " + attacker.getName());
-                Utils.log.info("Defender: " + receiver.getName());
-                Utils.log.info("Attacker attributes: ");
-                ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes().toString();
-                return 0;
-            }
-            GameAPI.calculateAllAttributes((Player) attacker);
-            Utils.log.info("[DamageAPI] calculateProjectileDamage attribute error.");
-            ex.printStackTrace();
-            Utils.log.info("Attacker: " + attacker.getName());
-            Utils.log.info("Defender: " + receiver.getName());
-            Utils.log.info("Attacker attributes: ");
-            GameAPI.getGamePlayer((Player) attacker).getAttributes().toString();
-            return 0;
+        res.setDamage(damage);
+        return;
+    }
+    
+    private static boolean getChance(AttributeList al, AttributeType at) {
+    	return al.hasAttribute(at) && new Random().nextInt(100) < al.getAttribute(at).getValue();
+    }
+    
+    private static void applyDebuff(LivingEntity defender, ElementalAttribute ea, int tier) {
+    	if (ea == ElementalAttribute.PURE)
+    		return;
+    	
+    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+    		defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+    		
+    		if (ea == ElementalAttribute.FIRE) {
+    			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, defender.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, defender.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
+                final int[] FIRE_TICKS = new int[] {15, 25, 30, 35, 40};
+                defender.setFireTicks(FIRE_TICKS[tier - 1]);
+    		} else {
+    			defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+                defender.getWorld().playEffect(defender.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
+                
+                final int[] POTION_TICKS = new int[] {30, 40, 50, 40, 50};
+                defender.addPotionEffect(new PotionEffect(ea.getAttackPotion(), POTION_TICKS[tier - 1], tier / 4));
+    		}
+    	}, 1);
+    }
+
+    public static void applySlow(LivingEntity defender) {
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+        	int tickLength = 100;
+            if (defender.hasMetadata("type") && defender.getMetadata("tier").get(0).asInt() >= 4)
+                tickLength = 40;
+            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 1));
+        }, 1);
+    }
+
+    public static void applyBlind(LivingEntity defender, int weaponTier) {
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+        	int tickDelay = Math.min((weaponTier + 2) * 10, 60);
+        	defender.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, tickDelay, 1));
+        }, 1);
+    }
+    
+    //This makes mobs stronger when they hit you IF they are higher than you. Not if you are higher than them...
+    private static double addLevelDamage(int attackerLevel, int defenderLevel, double damage) {
+        int difference = attackerLevel - defenderLevel;
+        if (difference > 10)
+        	difference = 10;
+        return damage * (1 + (difference * 0.09));
+    }
+
+    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
+        ItemStack held = damager.getEquipment().getItemInMainHand();
+        
+        if (!ItemWeaponPolearm.isPolearm(held))
+        	return;
+        
+        boolean damagerIsMob = !(damager instanceof Player);
+        
+        for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+        	//  ARE WE AN ALLOWED ENTITY  //
+        	if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)))
+        		continue;
+        	//  NO DAMAGE IN SAFE ZONES  //
+        	if (GameAPI.isInSafeRegion(event.getEntity().getLocation()) || GameAPI.isInSafeRegion(damager.getLocation()))
+        		continue;
+        	//  DONT DAMAGE OURSELVES  //
+        	if (entity.equals(damager))
+        		continue;
+        	
+        	AttackResult res = new AttackResult(damager, (LivingEntity)event.getEntity());
+        	res.setDamage(damage);
+        	applyArmorReduction(res, true);
+        	
+        	if (entity != event.getEntity() && !res.getDefender().isPlayer()) {
+        		//  DAMAGING HOSTILE MOB  //
+        		if (EnumEntityType.HOSTILE_MOB.isType(entity))
+        			HealthHandler.damageMonster(res);
+        	} else if (res.getDefender().isPlayer()) {
+        		if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
+        			if (GameAPI._hiddenPlayers.contains((Player) entity))
+        				continue;
+        			if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
+        				if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
+        					if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString()))
+        						damager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+        					continue;
+        				}
+        				//  IGNORE PARTIES  //
+        				if (Affair.getInstance().areInSameParty(damager, (Player) entity))
+        					continue;
+        				
+        				//  IGNORE GUILDS  //
+        				if (GuildDatabaseAPI.get().areInSameGuild(damager.getUniqueId(), entity.getUniqueId()))
+        					continue;
+        			}
+        			HealthHandler.damagePlayer(res);
+        		}
+        	}
         }
     }
 
@@ -685,30 +354,16 @@ public class DamageAPI {
     public static double addSpecialDamage(LivingEntity attacker, double damage) {
         if (PowerMove.doingPowerMove(attacker.getUniqueId()))
             return damage;
-        // ELITE CALCULATION
+        
+        //  ELITE DMG BOOST  //
         if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
-            switch (attacker.getMetadata("tier").get(0).asInt()) {
-                case 1:
-                    damage *= 2.5;
-                    break;
-                case 2:
-                    damage *= 2.5;
-                    break;
-                case 3:
-                    damage *= 3;
-                    break;
-                case 4:
-                    damage *= 5;
-                    break;
-                case 5:
-                    damage *= 7;
-                    break;
-                default:
-                    break;
-            }
+            int tier = attacker.getMetadata("tier").get(0).asInt();
+            
+            if(tier <= 2)
+            	return damage *= 2.5f;
+            return damage * (tier <= 2 ? 2.5f : (3 + (tier - 3) * 2));
         } else if (attacker.hasMetadata("boss")) {
-            // DUNGEON BOSS CALCULATION
-            damage *= 3;
+            return damage * 3;
         }
         return damage;
     }
@@ -722,320 +377,184 @@ public class DamageAPI {
                     break;
                 }
             }
-            switch (potionTier) {
-                case 0:
-                    damage *= 1.1;
-                    break;
-                case 1:
-                    damage *= 1.3;
-                    break;
-                case 2:
-                    damage *= 1.5;
-                    break;
-            }
+            
+            if(potionTier > 2)
+            	potionTier = 2;
+            
+            damage *= (1.1 + (0.2 * potionTier));
         }
         return damage;
     }
 
-
-    public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
-        return calculateArmorReduction(attacker, defender, totalDamage, projectile, true);
+    public static void applyArmorReduction(AttackResult res, boolean takeDura) {
+        
+    	CombatEntity attacker = res.getAttacker();
+    	CombatEntity defender = res.getDefender();
+    	double originalDamage = res.getDamage();
+    	double damage = res.getDamage();
+    	
+    	double totalArmor = 0;
+    	double totalArmorReduction = 0;
+    	
+    	//  DAMAGE ARMOR  //
+    	if (defender.isPlayer())
+    		if (takeDura)
+    			for (ItemStack armor : defender.getPlayer().getEquipment().getArmorContents())
+    				new ItemArmor(armor).damageItem(defender.getPlayer(), 1);
+    	
+    	boolean toggleDebug = attacker.isPlayer() ? (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getPlayer().getUniqueId()) : false;
+    	int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
+    	
+    	//  BLOCK AND DODGE  //
+    	Random rand = new Random();
+    	
+    	int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
+    	int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
+    	final int dodgeRoll = rand.nextInt(100);
+    	final int blockRoll = rand.nextInt(100);
+    	
+    	if (dodgeRoll < dodgeChance - accuracy) {
+    		if (toggleDebug && dodgeRoll >= dodgeChance) {
+    			attacker.getEntity().sendMessage(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
+    					defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
+    		}
+    		removeElementalEffects(defender.getEntity());
+    		ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getEntity().getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+    		res.setResult(DamageResultType.DODGE);
+    		return;
+    	} else if (blockRoll < blockChance - accuracy) {
+    		if (toggleDebug && blockRoll >= blockChance) {
+    			attacker.getEntity().sendMessage(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
+    					defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
+    		}
+    		removeElementalEffects(defender.getEntity());
+    		ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getEntity().getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+    		res.setResult(DamageResultType.BLOCK);
+    		return;
+    	}
+    	
+    	//  REFLECT  //
+    	int reflectChance = defender.getAttributes().getAttribute(ArmorAttributeType.REFLECTION).getValue();
+    	if (rand.nextInt(100) < Math.min(75, reflectChance)) {
+    		res.setResult(DamageResultType.REFLECT);
+    		return;
+    	}
+    	
+    	//  BASE ARMOR  //
+    	totalArmor = Math.min(75, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+    	
+    	//  ARMOR PENETRATION  //
+    	ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
+    	if (!res.hasProjectile() && range.getValue() > 0) {
+    		totalArmor -= range.getValue();
+    		if (totalArmor < 0)
+    			totalArmor = 0;
+    	}
+    	
+    	//  THORNS  //
+    	ModifierRange mr = defender.getAttributes().getAttribute(ArmorAttributeType.THORNS);
+    	if (mr.getValue() != 0 && !res.hasProjectile()) { // Only applies to Melee
+    		int damageFromThorns = Math.max(1, (int) Math.round(damage * (mr.getValue() / 100f)));
+    		res.setDamage(damageFromThorns);
+    		attacker.getEntity().getWorld().playEffect(attacker.getEntity().getLocation(), Effect.STEP_SOUND, 18);
+    		HealthHandler.damageEntity(res);
+    		return;
+    	}
+    	
+    	//  ELEMENTAL DAMAGE  //
+    	int elementalDamage = 0;
+    	int armorResistance = 0;
+    	
+    	if (attacker.isPlayer()) {
+    		for(ElementalAttribute ea : ElementalAttribute.values()) {
+    			//  ADD DAMAGE  //
+    			int eDamage = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+    			if (res.hasProjectile())
+    				eDamage = res.getProjectile().getMetadata(ea.getAttack().getNBTName()).get(0).asInt();
+    			elementalDamage += eDamage;
+    			
+    			//  ADD RESISTANCE  //
+    			if (ea.getResist() != null)
+    				armorResistance += defender.getAttributes().getAttribute(ea.getResist()).getValue();
+    		}
+    	} else if (GameAPI.isMobElemental(attacker.getEntity())) {
+			ElementalAttribute ea = GameAPI.getMobElement(attacker.getEntity());
+			
+			if (ea == ElementalAttribute.PURE) {
+				totalArmor = 0;
+			} else {
+				totalArmor *= 0.2;
+				totalArmor += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
+			}
+		}
+    	
+    	//  APPLY ELEMENTAL  //
+    	damage -= elementalDamage;
+    	damage *= (100 - totalArmor) / 100D;
+    	
+    	// elemental damage ignores 80% but add on resistance
+    	if (elementalDamage != 0)
+    		damage += (0.8 * elementalDamage) * ((double) (100 - armorResistance)) / 100d;
+    	
+    	//  ARMOR BONUS  //
+    	if (defender.getEntity().hasMetadata("armorBonus"))
+    		totalArmor += (defender.getEntity().getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
+    	
+    	totalArmorReduction = originalDamage - damage;
+    	
+    	//  POTION BUFF	  //
+    	if (defender.getEntity().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+    		int potionTier = 1;
+    		for (PotionEffect pe : defender.getEntity().getActivePotionEffects()) {
+    			if (pe.getType() == PotionEffectType.DAMAGE_RESISTANCE) {
+    				potionTier = pe.getAmplifier();
+    				break;
+    			}
+    		}
+    		final double[] LEVEL_REDUCTION = new double[] {1, 1.05, 1.1, 1.2};
+    		if(potionTier < LEVEL_REDUCTION.length)
+    			totalArmorReduction *= LEVEL_REDUCTION[potionTier];
+    	}
+    	
+    	res.setDamage(damage);
+    	res.setTotalArmor(totalArmor);
+    	res.setTotalArmorReduction(totalArmorReduction);
+    }
+    
+    public static void fireStaffProjectile(Player player, ItemWeapon staff, boolean subtractDurability) {
+    	if(subtractDurability)
+    		staff.damageItem(player, 1);
+    	GamePlayer gp = GameAPI.getGamePlayer(player);
+    	gp.calculateAllAttributes();
+    	EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
+    	fireStaffProjectile(player, gp.getAttributes(), staff);
     }
 
-    /**
-     * Calculates the new damage based on the armor of the defender and the previous damage
-     *
-     * @param attacker
-     * @param defender
-     * @param totalDamage
-     * @param projectile  must leave null if melee damage (no projectile)!
-     * @since 1.0
-     */
-    public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile, boolean takeDura) {
-
-        boolean isAttackerPlayer = attacker instanceof Player;
-        boolean isDefenderPlayer = defender instanceof Player;
-
-        try {
-            double damageAfterArmor = totalDamage;
-            int totalArmor = 0;
-            double totalArmorReduction = 0;
-            Map<String, Integer[]> defenderAttributes;
-            Map<String, Integer[]> attackerAttributes;
-
-            if (isDefenderPlayer) {
-                Player p = (Player) defender;
-                if (takeDura) {
-                    for (ItemStack armor : defender.getEquipment().getArmorContents()) {
-                        RepairAPI.subtractCustomDurability(p, armor, 1);
-                    }
-                }
-                defenderAttributes = GameAPI.getGamePlayer(p).getAttributes();
-            } else if (((CraftLivingEntity) defender).getHandle() instanceof DRMonster) {
-                defenderAttributes = ((DRMonster) ((CraftLivingEntity) defender).getHandle()).getAttributes();
-            } else {
-                return new double[]{totalArmorReduction, totalArmor};
-            }
-
-            if (isAttackerPlayer) {
-                attackerAttributes = GameAPI.getGamePlayer((Player) attacker).getAttributes();
-            } else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
-                attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
-            } else {
-                return new double[]{totalArmorReduction, totalArmor};
-            }
-
-            // DODGE AND BLOCK
-            int dodgeChance = defenderAttributes.get("dodge")[1];
-            int blockChance = defenderAttributes.get("block")[1];
-            final int DODGE_ROLL = new Random().nextInt(100);
-            final int BLOCK_ROLL = new Random().nextInt(100);
-            boolean toggleDebug = isAttackerPlayer ? (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()) : false;
-            int accuracy = projectile == null ? attackerAttributes.get("accuracy")[1] : 0;
-
-            if (DODGE_ROLL < dodgeChance - accuracy) {
-                if (toggleDebug && DODGE_ROLL >= dodgeChance) {
-                    attacker.sendMessage(ChatColor.GREEN + "Your " + GameAPI.getGamePlayer((Player) attacker)
-                            .getRangedAttributeVal(Item.WeaponAttributeType.ACCURACY)[1] + "% accuracy has prevented " +
-                            defender.getCustomName() + ChatColor.GREEN + " from dodging.");
-                }
-                removeElementalEffects(defender);
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                totalArmorReduction = -1;
-                return new double[]{Math.round(totalArmorReduction), totalArmor};
-            } else if (BLOCK_ROLL < blockChance - accuracy) {
-                if (toggleDebug && BLOCK_ROLL >= blockChance) {
-                    attacker.sendMessage(ChatColor.GREEN + "Your " + GameAPI.getGamePlayer((Player) attacker)
-                            .getRangedAttributeVal(Item.WeaponAttributeType.ACCURACY)[1] + "% accuracy has prevented " +
-                            defender.getCustomName() + ChatColor.GREEN + " from blocking.");
-                }
-                removeElementalEffects(defender);
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                totalArmorReduction = -2;
-                return new double[]{Math.round(totalArmorReduction), totalArmor};
-            }
-            // REFLECT
-            int reflectChance = defenderAttributes.get("reflection")[1];
-            if (ThreadLocalRandom.current().nextInt(100) < Math.min(75, reflectChance)) {
-                totalArmorReduction = -3;
-                return new double[]{Math.round(totalArmorReduction), totalArmor};
-            }
-            // BASE ARMOR
-            totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
-
-            if (totalArmor > 75) totalArmor = 75;
-            // ARMOR PENETRATION
-            if (projectile == null && attackerAttributes.get("armorPenetration")[1] != 0) {
-                totalArmor -= attackerAttributes.get("armorPenetration")[1];
-                if (totalArmor < 0) totalArmor = 0;
-            }
-
-            // THORNS
-            if (defenderAttributes.get("thorns")[1] != 0 && projectile == null) { // thorns only applies for melee
-                // combat now
-                int damageFromThorns = (int) Math.round(totalDamage * (((float) defenderAttributes.get("thorns")[1]) / 100f));
-                if (damageFromThorns <= 0) damageFromThorns = 1; // always at least one damage from thorns
-                if (damageFromThorns > 0) {
-                    attacker.getLocation().getWorld().playEffect(attacker.getLocation(), Effect.STEP_SOUND, 18);
-                }
-                if (isAttackerPlayer) {
-                    if (((Player) attacker).getGameMode() == GameMode.SURVIVAL && !GameAPI.getGamePlayer((Player)
-                            attacker).isInvulnerable()) {
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns, 0, 0, EntityDamageEvent.DamageCause.THORNS);
-                    }
-                } else {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, damageFromThorns);
-                }
-            }
-
-            // ELEMENTAL DAMAGE
-            int pureDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("pureDamage")[1] : 0;
-            int fireDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("fireDamage")[1] : 0;
-            int iceDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("iceDamage")[1] : 0;
-            int poisonDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("poisonDamage")[1] : 0;
-            int elementalDamage = 0;
-            int armorFromResistance = 0;
-
-            if (projectile != null) {
-                pureDamage = 0;
-                fireDamage = projectile.getMetadata("fireDamage").get(0).asInt();
-                iceDamage = projectile.getMetadata("iceDamage").get(0).asInt();
-                poisonDamage = projectile.getMetadata("poisonDamage").get(0).asInt();
-            }
-
-            if (isAttackerPlayer) {
-                if (fireDamage != 0) {
-                    float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
-                    elementalDamage = fireDamage;
-                    if (fireResistance != 0) {
-                        armorFromResistance += fireResistance;
-                    }
-                } else if (iceDamage != 0) {
-                    float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
-                    elementalDamage = iceDamage;
-                    if (iceResistance != 0) {
-                        armorFromResistance += iceResistance;
-                    }
-                } else if (poisonDamage != 0) {
-                    float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
-                    elementalDamage = poisonDamage;
-                    if (poisonResistance != 0) {
-                        armorFromResistance += poisonResistance;
-                    }
-                }
-            } else if (GameAPI.isMobElemental(attacker)) {
-
-                int MAX_RESISTANCE = 75;
-                if (GameAPI.getMobElement(attacker).equals("fire")) {
-                    totalArmor *= 0.2;
-                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("fireResistance")[1]);
-                } else if (GameAPI.getMobElement(attacker).equals("ice")) {
-                    totalArmor *= 0.2;
-                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("iceResistance")[1]);
-                } else if (GameAPI.getMobElement(attacker).equals("poison")) {
-                    totalArmor *= 0.2;
-                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("poisonResistance")[1]);
-                } else if (GameAPI.getMobElement(attacker).equals("pure")) {
-                    totalArmor *= 0;
-                }
-            }
-
-            damageAfterArmor = (damageAfterArmor - pureDamage - elementalDamage) * ((double) (100 - totalArmor)) / 100d;
-            // pure damage ignores all armor
-            damageAfterArmor += pureDamage;
-            // elemental damage ignores 80% but add on resistance
-            if (elementalDamage != 0) {
-                damageAfterArmor += ((0.8) * elementalDamage) * ((double) (100 - armorFromResistance)) / 100d;
-            }
-            totalArmorReduction = totalDamage - damageAfterArmor;
-
-            // POTION EFFECTS
-            if (defender.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-                int potionTier = 1;
-                for (PotionEffect pe : defender.getActivePotionEffects()) {
-                    if (pe.getType() == PotionEffectType.DAMAGE_RESISTANCE) {
-                        potionTier = pe.getAmplifier();
-                        break;
-                    }
-                }
-                switch (potionTier) {
-                    case 1:
-                        totalArmorReduction *= 1.05;
-                        break;
-                    case 2:
-                        totalArmorReduction *= 1.1;
-                        break;
-                    case 3:
-                        totalArmorReduction *= 1.2;
-                        break;
-                }
-            }
-
-            // ARMOR BONUS
-            if (defender.hasMetadata("armorBonus")) {
-                totalArmor += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
-                totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmorReduction;
-            }
-            return new double[]{Math.round(totalArmorReduction), totalArmor};
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Utils.log.warning("Attacker: " + attacker.getName());
-            Utils.log.warning("Defender: " + defender.getName());
-            if (isDefenderPlayer) {
-                GameAPI.calculateAllAttributes((Player) defender);
-            } else {
-                GameAPI.calculateAllAttributes(defender, ((DRMonster) ((CraftLivingEntity) defender).getHandle()).getAttributes());
-            }
-            return new double[]{0, 0};
-        }
-    }
-
-    public static int calculatePlayerStat(Player player, Item.ArmorAttributeType type) {
-        int statAmount[] = new int[4];
-        int totalStat;
-        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        EntityEquipment playerEquipment = player.getEquipment();
-        ItemStack[] playerArmor = playerEquipment.getArmorContents();
-        if (playerArmor[3] != null && playerArmor[3].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
-                nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
-            }
-        }
-        if (playerArmor[2] != null && playerArmor[2].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
-                nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
-            }
-        }
-        if (playerArmor[1] != null && playerArmor[1].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
-                nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
-            }
-        }
-        if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[0]).getTag() != null) {
-                nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
-            }
-        }
-        for (int i = 0; i < nmsTags.length; i++) {
-            if (nmsTags[i] == null) {
-                statAmount[i] += 0;
-            } else {
-                if (nmsTags[i].getInt(type.getNBTName()) != 0) {
-                    statAmount[i] = nmsTags[i].getInt(type.getNBTName());
-                }
-            }
-        }
-        totalStat = statAmount[0] + statAmount[1] + statAmount[2] + statAmount[3];
-
-        return Math.round(totalStat);
-    }
-
-    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag, boolean subtractDurability) {
-        if (subtractDurability)
-            RepairAPI.subtractCustomDurability(player, itemStack, 1);
-        int weaponTier = tag.getInt("itemTier");
-        GamePlayer gp = GameAPI.getGamePlayer(player);
-
-        Map<String, Integer[]> attackerAttributes = gp.getAttributes();
-
-        double accuracy = 0;
-        if(attackerAttributes != null){
-            accuracy = attackerAttributes.get("precision")[1];
-        }
+    public static void fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
+        double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
 
         Projectile projectile = null;
-        switch (weaponTier) {
-            case 1:
-                projectile = player.launchProjectile(Snowball.class);
+        switch (staff.getTier()) {
+            case TIER_1:
+                projectile = attacker.launchProjectile(Snowball.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.15));
                 break;
-            case 2:
-//                projectile = player.launchProjectile(SmallFireball.class);
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, SmallFireball.class, accuracy);
+            case TIER_2:
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity)attacker, null, SmallFireball.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.5));
                 ((SmallFireball) projectile).setYield(0);
                 ((SmallFireball) projectile).setIsIncendiary(false);
                 break;
-            case 3:
-                projectile = player.launchProjectile(EnderPearl.class);
+            case TIER_3:
+                projectile = attacker.launchProjectile(EnderPearl.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
-            case 4:
-//                projectile = player.launchProjectile(WitherSkull.class);
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, WitherSkull.class, accuracy);
+            case TIER_4:
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, WitherSkull.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.25));
                 break;
-            case 5:
-//                projectile = player.launchProjectile(LargeFireball.class);
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, LargeFireball.class, accuracy);
+            case TIER_5:
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, LargeFireball.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
                 ((LargeFireball) projectile).setYield(0);
                 ((LargeFireball) projectile).setIsIncendiary(false);
@@ -1043,144 +562,50 @@ public class DamageAPI {
         }
         if (projectile == null) return;
         projectile.setBounce(false);
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
-        projectile.setShooter(player);
-        // a player switches weapons, so we need to recalculate weapon attributes
-        if (!gp.getCurrentWeapon().equals(GameAPI.getItemUID(itemStack))) {
-            GameAPI.calculateAllAttributes(player);
-            gp.setCurrentWeapon(GameAPI.getItemUID(itemStack));
-        }
-        MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
+        projectile.setShooter(attacker);
+        MetadataUtils.registerProjectileMetadata(attributes, staff.getTier().getId(), projectile);
+    }
+    
+    public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {
+    	if (takeDura)
+        	bow.damageItem(player, 1);
+    	GamePlayer gp = GameAPI.getGamePlayer(player);
+    	gp.calculateAllAttributes();
+    	EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+    	fireBowProjectile(player, bow);
     }
 
-    public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag, boolean takeDura) {
-        if (takeDura)
-            RepairAPI.subtractCustomDurability(player, itemStack, 1);
-        GamePlayer gp = GameAPI.getGamePlayer(player);
-        Projectile projectile;
-        if (tag.hasKey("fireDamage")) {
-            projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0), true);
-        } else if (tag.hasKey("iceDamage")) {
-            projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0), true);
-        } else if (tag.hasKey("poisonDamage")) {
-            projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
-        } else if (tag.hasKey("pureDamage")) {
-            projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
-        } else {
-            projectile = player.launchProjectile(Arrow.class);
-        }
-        if (projectile == null) {
-            return;
-        }
-        projectile.setBounce(false);
-        projectile.setVelocity(projectile.getVelocity().multiply(1.1));
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack), !takeDura);
-        projectile.setShooter(player);
-        EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
-        eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
-        // a player switches weapons, so we need to recalculate weapon attributes
-        if (!gp.getCurrentWeapon().equals(GameAPI.getItemUID(itemStack))) {
-            GameAPI.calculateAllAttributes(player);
-            gp.setCurrentWeapon(GameAPI.getItemUID(itemStack));
-        }
-        MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
-    }
-
-    public static Projectile fireStaffProjectileMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
-        if (!(target instanceof Player)) return null;
-        org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
-        int weaponTier = tag.getInt("itemTier");
+    public static void fireBowProjectile(LivingEntity ent, ItemWeaponBow bow) {
+        
         Projectile projectile = null;
-        switch (weaponTier) {
-            case 1:
-                projectile = livingEntity.launchProjectile(Snowball.class);
-                vector.multiply(1.15);
-                break;
-            case 2:
-                projectile = livingEntity.launchProjectile(SmallFireball.class);
-                vector.multiply(1.5);
-                ((SmallFireball) projectile).setYield(0);
-                ((SmallFireball) projectile).setIsIncendiary(false);
-                break;
-            case 3:
-                projectile = livingEntity.launchProjectile(EnderPearl.class);
-                vector.multiply(1.75);
-                break;
-            case 4:
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) livingEntity.getWorld()).getHandle(), livingEntity, null, WitherSkull.class, 100);
-                vector.multiply(2.25);
-                break;
-            case 5:
-//                projectile = livingEntity.launchProjectile(LargeFireball.class);
-                vector.multiply(2.5);
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) livingEntity.getWorld()).getHandle(), livingEntity, null, LargeFireball.class, 100);
-                ((LargeFireball) projectile).setYield(0);
-                ((LargeFireball) projectile).setIsIncendiary(false);
-                break;
+        
+        for (AttributeType type : bow.getAttributes().keySet()) {
+        	ElementalAttribute ea = ElementalAttribute.getByAttribute(type);
+        	if (ea != null) {
+        		if (projectile == null)
+        			projectile = ent.launchProjectile(TippedArrow.class);
+        		((TippedArrow)projectile).addCustomEffect(new PotionEffect(ea.getDefensePotion(), 0, 0), true);
+        	}
         }
-        if (projectile == null) return null;
+        
+        if(projectile == null)
+            projectile = ent.launchProjectile(Arrow.class);
+        
         projectile.setBounce(false);
-        projectile.setVelocity(vector);
-        projectile.setShooter(livingEntity);
-        MetadataUtils.registerProjectileMetadata(((DRMonster) livingEntity.getHandle()).getAttributes(), tag, projectile);
-        return projectile;
-    }
-
-    public static void fireArrowFromMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
-        if (!(target instanceof Player)) return;
-        org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
-        Projectile projectile;
-        if (GameAPI.isMobElemental(livingEntity)) {
-            switch (GameAPI.getMobElement(livingEntity)) {
-                case "fire":
-                    projectile = livingEntity.launchProjectile(TippedArrow.class);
-                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0),
-                            true);
-                case "ice":
-                    projectile = livingEntity.launchProjectile(TippedArrow.class);
-                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0),
-                            true);
-                case "poison":
-                    projectile = livingEntity.launchProjectile(TippedArrow.class);
-                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
-                    break;
-                case "pure":
-                    projectile = livingEntity.launchProjectile(TippedArrow.class);
-                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
-                    break;
-                default:
-                    projectile = livingEntity.launchProjectile(Arrow.class);
-                    break;
-            }
-        } else {
-            projectile = livingEntity.launchProjectile(Arrow.class);
-        }
-        if (projectile == null) {
-            return;
-        }
-        projectile.setBounce(false);
-        vector.multiply(1.25);
-        projectile.setVelocity(vector);
-        projectile.setShooter(livingEntity);
-        EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
-        eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
-        MetadataUtils.registerProjectileMetadata(((DRMonster) livingEntity.getHandle()).getAttributes(), tag, projectile);
+        projectile.setVelocity(projectile.getVelocity().multiply(1.15));
+        projectile.setShooter(ent);
+        ((CraftArrow) projectile).getHandle().fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
+        MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
     }
 
     public static void removeElementalEffects(LivingEntity ent) {
-        if (ent.hasPotionEffect(PotionEffectType.SLOW)) {
-            ent.removePotionEffect(PotionEffectType.SLOW);
-        }
-        if (ent.hasPotionEffect(PotionEffectType.POISON)) {
-            ent.removePotionEffect(PotionEffectType.POISON);
-        }
-        if (ent.getFireTicks() > 0) {
+    	for(ElementalAttribute ea : ElementalAttribute.values())
+    		if (ea.getAttackPotion() != null && ent.hasPotionEffect(ea.getAttackPotion()))
+    			ent.removePotionEffect(ea.getAttackPotion());
+    	
+    	//  FIRE  //
+        if (ent.getFireTicks() > 0)
             ent.setFireTicks(0);
-        }
     }
 
     public static void knockbackEntity(Player p, Entity ent, double speed) {
@@ -1311,7 +736,7 @@ public class DamageAPI {
         if (holograms.keySet().size() > 4)
             removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
                 () -> removeDamageHologram(createFor, hologram), 20l);
     }
 

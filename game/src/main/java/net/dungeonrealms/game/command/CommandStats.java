@@ -1,11 +1,14 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.player.stats.StatsManager;
+
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.List;
 
@@ -25,7 +28,9 @@ public class CommandStats extends BaseCommand {
 
 
 		Player player = (Player) s;
-		player.openInventory(StatsManager.getInventory(player));
+		Inventory inv = Bukkit.createInventory(null, 18, "Stat Manager");
+		GameAPI.getGamePlayer(player).getStats().updateItems(inv);
+		player.openInventory(inv);
 		return true;
 	}
 }

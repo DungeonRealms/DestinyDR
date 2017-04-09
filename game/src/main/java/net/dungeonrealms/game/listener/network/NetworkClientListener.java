@@ -15,11 +15,13 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.donation.buffs.Buff;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -318,22 +320,12 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 if (DungeonRealms.getInstance().isEventShard)
                                     break;
 
-                                String type = in.readUTF();
+                                EnumBuff buffType = EnumBuff.valueOf(in.readUTF());
                                 int duration = Integer.parseInt(in.readUTF());
-                                int bonusAmount = Integer.parseInt(in.readUTF());
-                                String player_string = in.readUTF();
-                                String from_server = in.readUTF();
-                                switch (type) {
-                                    case "loot":
-                                        DonationEffects.getInstance().activateNewLootBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                        break;
-                                    case "profession":
-                                        DonationEffects.getInstance().activateNewProfessionBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                        break;
-                                    case "level":
-                                        DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                        break;
-                                }
+                                int buffPower = Integer.parseInt(in.readUTF());
+                                String originPlayer = in.readUTF();
+                                String originServer = in.readUTF();
+                                DonationEffects.getInstance().activateLocalBuff(new Buff(buffType, duration, buffPower, originPlayer, originServer));
                                 break;
                             case "Stop":
                                 DungeonRealms.getInstance().isDrStopAll = true;

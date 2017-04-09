@@ -1,38 +1,26 @@
 package net.dungeonrealms.game.world.item.itemgenerator.modifiers;
 
-import com.google.common.collect.Lists;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
-import org.bukkit.ChatColor;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 public class WeaponModifiers {
 
-	public static List<Item.ItemType> weapons = Arrays.asList(Item.ItemType.AXE, Item.ItemType.BOW, Item.ItemType.POLEARM, Item.ItemType.STAFF, Item.ItemType.SWORD);
+	private static GeneratedItemType[] WEAPONS = new GeneratedItemType[] {GeneratedItemType.AXE, GeneratedItemType.BOW, GeneratedItemType.POLEARM, GeneratedItemType.STAFF, GeneratedItemType.SWORD};
+	private static GeneratedItemType[] SEMI_MELEE = new GeneratedItemType[] {GeneratedItemType.AXE, GeneratedItemType.POLEARM, GeneratedItemType.STAFF, GeneratedItemType.SWORD};
 	
-	public static List<String> elements = Arrays.asList("FIRE", "ICE", "POISON");
-	public static List<Double> elementMultipliers = Arrays.asList(0.15D, 1D, 0.10D);
-
-	public static List<String> versus = Arrays.asList("Monsters", "Players");
-	
-	public static ChatColor r = ChatColor.RED;
+	private static WeaponAttributeType[] ELEMENTS = new WeaponAttributeType[] {WeaponAttributeType.FIRE_DAMAGE, WeaponAttributeType.ICE_DAMAGE, WeaponAttributeType.POISON_DAMAGE};
 
 	public class SwordDamage extends ItemModifier {
 
 		public SwordDamage() {
-			super(Collections.singletonList(Item.ItemType.SWORD), 100, "damage", r + "DMG: ", null, false);
-			
-			setOrderPriority(0);
+			super(WeaponAttributeType.DAMAGE, GeneratedItemType.SWORD);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -65,9 +53,7 @@ public class WeaponModifiers {
 	public class AxeDamage extends ItemModifier {
 
         public AxeDamage() {
-            super(Collections.singletonList(Item.ItemType.AXE), 100, "damage", r + "DMG: ", null, false);
-            
-            setOrderPriority(0);
+            super(WeaponAttributeType.DAMAGE, GeneratedItemType.AXE);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -100,9 +86,7 @@ public class WeaponModifiers {
 	public class StaffDamage extends ItemModifier {
 
         public StaffDamage() {
-            super(Collections.singletonList(Item.ItemType.STAFF), 100, "damage", r + "DMG: ", null, false);
-            
-            setOrderPriority(0);
+            super(WeaponAttributeType.DAMAGE, GeneratedItemType.STAFF);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -135,9 +119,7 @@ public class WeaponModifiers {
 	public class PolearmDamage extends ItemModifier {
 
 	    public PolearmDamage() {
-	        super(Collections.singletonList(Item.ItemType.POLEARM), 100, "damage", r + "DMG: ", null, false);
-
-	        setOrderPriority(0);
+	        super(WeaponAttributeType.DAMAGE, GeneratedItemType.POLEARM);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -170,9 +152,7 @@ public class WeaponModifiers {
 	public class BowDamage extends ItemModifier {
 
 	    public BowDamage() {
-	        super(Collections.singletonList(Item.ItemType.BOW), 100, "damage", r + "DMG: ", null, false);
-
-			setOrderPriority(0);
+	        super(WeaponAttributeType.DAMAGE, GeneratedItemType.BOW);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -202,46 +182,9 @@ public class WeaponModifiers {
 
 	}
 
-	/* disabled as of patch 1.9 by Mayley's request
-	/*public class StrDexVitInt extends ItemModifier {
-
-		public StrDexVitInt() {
-			super(weapons, -1, null, null, null);
-			setOrderPriority(11);
-			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 15), 25));
-			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 35), 20).setBonus(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 35), 5).setReplacement(StrDexVitInt.class)));
-			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 15).setBonus(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 5).setReplacement(StrDexVitInt.class).setBonus(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 1).setReplacement(StrDexVitInt.class))));
-			addCondition(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 115), 15).setBonus(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 115), 9).setReplacement(StrDexVitInt.class).setBonus(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 115), 4).setReplacement(StrDexVitInt.class))));
-			addCondition(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 315), 20).setBonus(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 315), 10).setReplacement(StrDexVitInt.class).setBonus(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 315), 5).setReplacement(StrDexVitInt.class))));
-		}
-		
-		@Override
-        public void chooseStat() {
-            List<String> allStats = Arrays.asList("strength", "vitality", "intellect", "dexterity");
-            chosenStat = allStats.get(new Random().nextInt(allStats.size()));
-        }
-        
-        @Override
-        public String getPrefix(ItemMeta meta){
-            if (chosenStat == null || chosenStat.equals("")) {
-                chooseStat();
-            }
-            return r + chosenStat.substring(0, 3).toUpperCase() + ": +";
-        }
-        
-        @Override
-        public String getNBTName() {
-            if (chosenStat == null || chosenStat.equals("")) {
-                chooseStat();
-            }
-            return chosenStat;
-        }
-	}*/
-
 	public class Precision extends ItemModifier {
 		public Precision(){
-			super(Lists.newArrayList(Item.ItemType.STAFF), -1, "precision", r + "PRECISION: ", "%");
-			setOrderPriority(2);
+			super(WeaponAttributeType.PRECISION, GeneratedItemType.STAFF);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 70), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 5, 80), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 10, 95), 30));
@@ -250,8 +193,7 @@ public class WeaponModifiers {
 	public class Critical extends ItemModifier {
 
 		public Critical() {
-			super(weapons, -1, "criticalHit", r + "CRITICAL HIT: ", "%");
-			setOrderPriority(4);
+			super(WeaponAttributeType.CRITICAL_HIT, WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 2), 2));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 4), 5));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 8));
@@ -264,8 +206,7 @@ public class WeaponModifiers {
 	public class LifeSteal extends ItemModifier {
 
 		public LifeSteal() {
-			super(weapons, -1, "lifesteal", r + "LIFE STEAL: ", "%");
-			setOrderPriority(2);
+			super(WeaponAttributeType.LIFE_STEAL, WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 30), 2));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 15), 4));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 12), 5));
@@ -278,8 +219,7 @@ public class WeaponModifiers {
 	public class Knockback extends ItemModifier {
 
 		public Knockback() {
-			super(Arrays.asList(Item.ItemType.AXE, Item.ItemType.POLEARM, Item.ItemType.STAFF, Item.ItemType.SWORD), -1, "knockback", r + "KNOCKBACK: ", "%");
-			setOrderPriority(7);
+			super(WeaponAttributeType.KNOCKBACK, SEMI_MELEE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 3), 3));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 6), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 12), 13));
@@ -292,8 +232,7 @@ public class WeaponModifiers {
 	public class Blind extends ItemModifier {
 
 		public Blind() {
-			super(weapons, -1, "blind", r + "BLIND: ", "%");
-			setOrderPriority(8);
+			super(WeaponAttributeType.BLIND, WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 3));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 7), 5));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 9), 8));
@@ -306,8 +245,7 @@ public class WeaponModifiers {
 	public class Slow extends ItemModifier {
 
 		public Slow() {
-			super(Collections.singletonList(Item.ItemType.BOW), -1, "slow", r + "SLOW: ", "%");
-			setOrderPriority(6);
+			super(WeaponAttributeType.SLOW, GeneratedItemType.BOW);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 3), 3));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 13));
@@ -320,96 +258,43 @@ public class WeaponModifiers {
 	public class Elemental extends ItemModifier {
 
 		public Elemental() {
-			super(Arrays.asList(Item.ItemType.AXE, Item.ItemType.POLEARM, Item.ItemType.STAFF, Item.ItemType.SWORD), -1, null, null, null);
-			setOrderPriority(9);
+			super(ELEMENTS, SEMI_MELEE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 4), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 9), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 25), 15));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 55), 20));
 		}
-		
-		@Override
-        public void chooseStat() {
-            chosenStat = elements.get(new Random().nextInt(elements.size()));
-        }
-        
-        @Override
-        public String getPrefix(ItemMeta meta){
-            chooseStat();
-            return r + chosenStat + " DMG: +";
-        }
-        
-        @Override
-        public String getNBTName() {
-            return chosenStat.toLowerCase() + "Damage";
-        }
 	}
 
 	public class ElementalBow extends ItemModifier {
 
 		public ElementalBow() {
-			super(Collections.singletonList(Item.ItemType.BOW), -1, null, null, null);
+			super(ELEMENTS, Item.GeneratedItemType.BOW);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 8), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 15), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 45), 15));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 75), 20));
 		}
-		
-		@Override
-        public void chooseStat() {
-            chosenStat = elements.get(new Random().nextInt(elements.size()));
-        }
-        
-        @Override
-        public String getPrefix(ItemMeta meta){
-            chooseStat();
-            return r + chosenStat + " DMG: +";
-        }
-        
-        @Override
-        public String getNBTName() {
-            return chosenStat.toLowerCase() + "Damage";
-        }
 	}
 	
 	public class Versus extends ItemModifier {
 
 		public Versus() {
-			super(weapons, -1, null, null, "% DMG");
-			setOrderPriority(1);
+			super(new WeaponAttributeType[] {WeaponAttributeType.VS_PLAYER, WeaponAttributeType.VS_MONSTERS}, WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 20), 12));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 15), 15));
 		}
-		
-		@Override
-		public void chooseStat() {
-		    chosenStat = versus.get(new Random().nextInt(versus.size()));
-		}
-		
-		@Override
-		public String getPrefix(ItemMeta meta){
-			if (chosenStat == null || chosenStat.equals("")) {
-			    chooseStat();
-			}
-		    return r + "vs. " + chosenStat.toUpperCase() + ": +";
-		}
-		
-		@Override
-		public String getNBTName() {
-		    return "vs" + chosenStat;
-		}
 	}
 	
 	public class Pure extends ItemModifier {
 
 		public Pure() {
-			super(Collections.singletonList(Item.ItemType.AXE), -1, "pureDamage", r + "PURE DMG: +", null);
-			setOrderPriority(10);
+			super(WeaponAttributeType.PURE_DAMAGE, GeneratedItemType.AXE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 5));
@@ -422,8 +307,7 @@ public class WeaponModifiers {
 	public class Accuracy extends ItemModifier {
 
 		public Accuracy() {
-			super(Collections.singletonList(Item.ItemType.SWORD), -1, "accuracy", r + "ACCURACY: ", "%");
-			setOrderPriority(3);
+			super(WeaponAttributeType.ACCURACY, GeneratedItemType.SWORD);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 8));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 12));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 15));
@@ -436,8 +320,7 @@ public class WeaponModifiers {
 	public class ArmorPenetration extends ItemModifier {
 
 		public ArmorPenetration() {
-			super(Collections.singletonList(Item.ItemType.AXE), -1, "armorPenetration", r + "ARMOR PENETRATION: ", "%");
-			setOrderPriority(5);
+			super(WeaponAttributeType.ARMOR_PENETRATION, GeneratedItemType.AXE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 1), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 3), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 25));
@@ -446,5 +329,4 @@ public class WeaponModifiers {
 		}
 		
 	}
-	
 }

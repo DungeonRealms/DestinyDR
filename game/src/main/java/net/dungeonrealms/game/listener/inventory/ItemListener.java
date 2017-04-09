@@ -1,23 +1,17 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -37,7 +31,6 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
-import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -49,7 +42,6 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -57,12 +49,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -138,116 +127,50 @@ public class ItemListener implements Listener {
         	return;
         ItemStack item = event.getItemDrop().getItemStack();
 
-        if (GameAPI.isItemSoulbound(item)) {
-            //event.setCancelled(true);
+        //  SOULBOUND ITEM DESTRUCTION PROMPT  //
+        if (ItemManager.isItemSoulbound(item)) {
+            //Don't cancel this event inside of here. It keeps the item in the inventory.
             event.getItemDrop().remove();
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor.RED + " this Soulbound item? ");
             p.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N" + ChatColor.GRAY + " to confirm.");
             p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1.2F);
-            //p.getInventory().remove(item);
+            
             if(p.getItemOnCursor().equals(item))
             	p.setItemOnCursor(null);
-            Chat.listenForMessage(p, (message) -> {
-                if (message.getMessage().equalsIgnoreCase("yes") || message.getMessage().equalsIgnoreCase("y")) {
-                    p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
-                } else {
-                    if (p.getInventory().firstEmpty() == -1) {
-                        p.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
-                    } else {
-                        p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
-                        p.getInventory().addItem(item.clone());
-                    }
-                }
-            }, (player) -> {
-                if (player.getInventory().firstEmpty() == -1) {
-                    player.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
-                    p.getInventory().addItem(item.clone());
-                }
+            
+            Chat.promptPlayerConfirmation(p, () -> {
+            	p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
+            }, () -> {
+            	p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
+                GameAPI.giveOrDropItem(p, item.clone());
             });
 
             return;
         }
         
-        if(GameAPI.isItemPermanentlyUntradeable(item)) {
+        //  PREVENT DROPPING PERMANENTLY UNTRADEABLE ITEMS  //
+        if(ItemManager.isItemPermanentlyUntradeable(item)) {
         	event.setCancelled(true);
         	event.getItemDrop().remove();
         	event.getPlayer().sendMessage(ChatColor.GRAY + "This item is " + ChatColor.UNDERLINE + "not" + ChatColor.GRAY + " droppable.");
         	return;
         }
 
-        if (!GameAPI.isItemDroppable(item)) { 
-        	net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        	NBTTagCompound tag = nmsItem.getTag();
-        	assert tag != null;
+        //  PREVENT DROPPING UNTRADEABLE ITEMS  //
+        if (!ItemManager.isItemTradeable(item)) { 
         	event.getItemDrop().remove();
         	p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
         	p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+        	return;
         }
+        
         PlayerManager.checkInventory(event.getPlayer().getUniqueId());
-    }
-
-    /**
-     * Handles player clicking with a teleportation item
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        Player player = event.getPlayer();
-        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() != Material.BOOK)
-            return;
-
-        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
-            player.sendMessage(ChatColor.RED + "You have been jailed.");
-            return;
-        }
-
-        ItemStack itemStack = player.getEquipment().getItemInMainHand();
-        if (!(CombatLog.isInCombat(event.getPlayer()))) {
-            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                player.sendMessage("You cannot restart a teleport during a cast!");
-                return;
-            }
-            if (TeleportAPI.isTeleportBook(itemStack)) {
-
-                if (!player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    player.sendMessage("You can only use teleport books in the main world.");
-                    return;
-                }
-
-                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-                TeleportLocation teleportTo = TeleportLocation.getTeleportLocation(nmsItem.getTag());
-                
-                if(teleportTo == null)
-                	return;
-                
-                if(!teleportTo.canBeABook()) {
-                	player.sendMessage(ChatColor.RED + "This teleport book is invalid, it has vanished into the wind.");
-                	player.getInventory().setItemInMainHand(null);
-                	player.updateInventory();
-                	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removed " + itemStack.getAmount() + "x " + teleportTo.getDisplayName() + " teleport books from " + player.getName() + ".");
-                	return;
-                }
-                
-                if (teleportTo.canTeleportTo(player)) {
-                    Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, teleportTo);
-                    if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
-                        player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-                    } else {
-                        player.getEquipment().getItemInMainHand().setAmount((player.getEquipment().getItemInMainHand().getAmount() - 1));
-                    }
-                } else {
-                    player.sendMessage(ChatColor.RED + "You cannot teleport to Safe Zones while Chaotic!");
-                }
-            } else {
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
-            }
-        } else {
-            player.sendMessage(ChatColor.RED + "You are in combat! " + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
+        
+        //  SILENTLY REMOVE UNDROPPABLE ITEMS  //
+        if(!ItemManager.isItemDroppable(item)) {
+        	event.getItemDrop().remove();
+        	event.setCancelled(true);
+        	return;
         }
     }
 
@@ -266,24 +189,6 @@ public class ItemListener implements Listener {
         if (tag.hasKey("type")) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Handles Right Click of Character Journal
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseCharacterJournal(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        Player p = event.getPlayer();
-        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK)
-            return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (!tag.hasKey("journal")) return;
-        if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
-        p.getInventory().setItem(p.getInventory().getHeldItemSlot(), ItemManager.createCharacterJournal(p));
-        Quests.getInstance().triggerObjective(p, ObjectiveOpenJournal.class);
     }
 
 
@@ -316,173 +221,6 @@ public class ItemListener implements Listener {
         });
 
         event.setCancelled(true);
-    }
-
-    /**
-     * Handles player right clicking a stat reset book
-     *
-     * @param event
-     * @since 1.0
-     */
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void useEcashItem(PlayerInteractEvent event) {
-        if (event.getItem() != null) {
-            Player player = event.getPlayer();
-
-            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-            if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                if (event.getItem().getAmount() > 1) {
-                    player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                    return;
-                }
-                if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm.");
-                    ItemStack resetBook = event.getItem().clone();
-                    event.getPlayer().getInventory().remove(resetBook);
-                    Chat.listenForMessage(event.getPlayer(), chat -> {
-                        if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                            GameAPI.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
-                            event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
-                        } else {
-                            event.getPlayer().getInventory().addItem(resetBook);
-                            event.getPlayer().sendMessage(ChatColor.RED + "Cancelled");
-                        }
-                    }, p -> {
-                        event.getPlayer().getInventory().addItem(resetBook);
-                        p.sendMessage(ChatColor.RED + "Action cancelled.");
-                    });
-                }
-            }
-            if (event.getItem().getType() == Material.FIREWORK) {
-                if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
-                    if (event.getItem().getAmount() > 1) {
-                        player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                        return;
-                    }
-
-                    if (PunishAPI.isMuted(event.getPlayer().getUniqueId())) {
-                        event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
-                        return;
-                    }
-
-                    event.getPlayer().sendMessage("");
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the message you'd like to send to " + ChatColor.UNDERLINE + "all servers" + ChatColor.YELLOW
-                            + " -- think before you speak!");
-                    event.getPlayer().sendMessage(ChatColor.GRAY + "Type 'cancel' (no apostrophes) to cancel this and get your Global Messenger back.");
-                    event.getPlayer().sendMessage("");
-                    ItemStack messengerItem = event.getItem().clone();
-                    event.getPlayer().getInventory().remove(messengerItem);
-                    Chat.listenForMessage(event.getPlayer(), chat -> {
-                        if (chat.getMessage().equalsIgnoreCase("cancel")) {
-                            event.getPlayer().getInventory().addItem(messengerItem);
-                            event.getPlayer().sendMessage(ChatColor.RED + "Global Messenger - " + ChatColor.BOLD + "CANCELLED");
-                            return;
-                        }
-
-                        String msg = chat.getMessage();
-                        if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
-                            if (!Rank.isDev(event.getPlayer())) {
-                                event.getPlayer().getInventory().addItem(messengerItem);
-                                event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in your global messages please!");
-                                return;
-                            }
-                        }
-
-                        final String fixedMessage = Chat.getInstance().checkForBannedWords(msg);
-
-                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                        out.writeUTF("Alert");
-                        out.writeUTF(" \n" + ChatColor.GOLD.toString() + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(event.getPlayer()) + ChatColor.GOLD + fixedMessage + "\n ");
-
-                        event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
-                    }, p -> {
-                        event.getPlayer().getInventory().addItem(messengerItem);
-                        p.sendMessage(ChatColor.RED + "Action cancelled.");
-                    });
-                }
-            } else if (event.getItem().getType() == Material.ENDER_CHEST) {
-                if (nms.hasTag() && nms.getTag().hasKey("type")) {
-                    if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
-                        if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
-                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
-                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
-                            return;
-                        }
-                        int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-                        if (invlvl >= 6) {
-                            player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
-                            return;
-                        }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
-                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
-                        if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
-                            event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-                        } else {
-                            ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
-                            item.setAmount(item.getAmount() - 1);
-                            event.getPlayer().getEquipment().setItemInMainHand(item);
-                        }
-                        event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
-                    }
-                }
-            } else if (nms.hasTag() && nms.getTag().hasKey("buff")) {
-
-                if (event.getItem().getAmount() > 1) {
-                    player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                    return;
-                }
-
-                String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
-                int duration = nms.getTag().getInt("duration");
-                int bonusAmount = nms.getTag().getInt("bonusAmount");
-                String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
-                final String buffType = nms.getTag().getString("buff");
-
-                event.setCancelled(true);
-                event.setUseInteractedBlock(Event.Result.DENY);
-                event.setUseItemInHand(Event.Result.DENY);
-                player.updateInventory();
-
-                player.sendMessage("");
-                Utils.sendCenteredMessage(player, ChatColor.DARK_GRAY + "***" + ChatColor.GREEN.toString() +
-                        ChatColor.BOLD + itemName.toUpperCase() + " CONFIRMATION" + ChatColor.DARK_GRAY + "***");
-                player.sendMessage(ChatColor.GOLD
-                        + "Are you sure you want to use this item? It will apply a " + bonusAmount + "% buff to all " + nms.getTag().get("description") + " across all servers for " + formattedTime + ". This cannot be undone once it has begun.");
-
-                if (buffType.equals("loot")) {
-                    if (DonationEffects.getInstance().getActiveLootBuff() != null)
-                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
-                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
-                } else if (buffType.equals("profession")) {
-                    if (DonationEffects.getInstance().getActiveProfessionBuff() != null)
-                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
-                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
-                } else if (buffType.equals("level")) {
-                    if (DonationEffects.getInstance().getActiveLevelBuff() != null)
-                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
-                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
-                }
-
-                player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
-                player.sendMessage("");
-                ItemStack buffItem = event.getItem().clone();
-                event.getPlayer().getInventory().remove(event.getItem());
-                Chat.listenForMessage(player, e -> {
-                    if (e.getMessage().equalsIgnoreCase("y")) {
-                        GameAPI.sendNetworkMessage("buff", buffType, String.valueOf(nms.getTag().getInt("duration"))
-                                , String.valueOf(nms.getTag().getInt("bonusAmount")), GameChat.getFormattedName
-                                        (player), DungeonRealms.getInstance().bungeeName);
-                    } else {
-                        event.getPlayer().getInventory().addItem(buffItem);
-                        player.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
-                    }
-                }, p -> {
-                    event.getPlayer().getInventory().addItem(buffItem);
-                    p.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
-                });
-            }
-        }
     }
 
     @EventHandler
@@ -565,9 +303,10 @@ public class ItemListener implements Listener {
     /**
      * This is a prank for the people who are supposedly using vanilla potions in pvp.
      */
-    private void playPotionPrank(ItemStack item, PlayerInteractEvent evt) {
+    private void playPotionPrank(PlayerInteractEvent evt) {
+    	ItemStack item = evt.getItem();
     	Player player = evt.getPlayer();
-    	if(item == null || item.getType() == Material.AIR || ItemManager.isPotion(item) || (item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION))
+    	if(item == null || item.getType() == Material.AIR || PotionItem.isPotion(item) || (item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION))
     		return;
     	evt.setCancelled(true);
     	player.getInventory().remove(item);
@@ -595,288 +334,8 @@ public class ItemListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerDrinkPotionMainHand(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        Player player = event.getPlayer();
-        ItemStack potion;
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem;
-        if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            //Drinking from Offhand.
-            potion = player.getInventory().getItemInOffHand();
-            playPotionPrank(potion, event);
-            nmsItem = CraftItemStack.asNMSCopy(potion);
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                event.setCancelled(true);
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                    player.getInventory().setItemInOffHand(null);
-                    player.updateInventory();
-                    player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
-                    player.updateInventory();
-                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
-                } else {
-                    player.sendMessage(ChatColor.RED + "You are already at full HP!");
-                }
-            }
-        } else if (player.getInventory().getItemInOffHand() == null || player.getInventory().getItemInOffHand().getType() == Material.AIR) {
-            //Drinking from Mainhand.
-            potion = player.getInventory().getItemInMainHand();
-            playPotionPrank(potion, event);
-            nmsItem = CraftItemStack.asNMSCopy(potion);
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                event.setCancelled(true);
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                    player.getInventory().setItemInMainHand(null);
-                    player.updateInventory();
-                    player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
-                    player.updateInventory();
-                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
-                } else {
-                    player.sendMessage(ChatColor.RED + "You are already at full HP!");
-                }
-            }
-        } else {
-            //Have a potion in both hands...
-            ItemStack itemUsed = event.getItem();
-            if (event.getItem() == null || event.getItem().getType() == Material.AIR) return;
-            potion = player.getInventory().getItemInMainHand();
-            nmsItem = CraftItemStack.asNMSCopy(potion);
-            ItemStack potionOffhand = player.getInventory().getItemInOffHand();
-            net.minecraft.server.v1_9_R2.ItemStack nmsOffhand = CraftItemStack.asNMSCopy(potionOffhand);
-            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(itemUsed) == null) return;
-            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(potion) == null && AntiDuplication.getInstance().getUniqueEpochIdentifier(potionOffhand) == null)
-                return;
-            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiDuplication.getInstance().getUniqueEpochIdentifier(potion))) {
-                //Drinking their Mainhand potion
-                if (nmsItem == null || nmsItem.getTag() == null) return;
-                if (!nmsItem.getTag().hasKey("type")) return;
-                if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                    event.setCancelled(true);
-                    event.setUseItemInHand(Event.Result.DENY);
-                    event.setUseInteractedBlock(Event.Result.DENY);
-                    if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                        player.getInventory().setItemInMainHand(null);
-                        player.updateInventory();
-                        player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
-                        player.updateInventory();
-                        HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You are already at full HP!");
-                    }
-                }
-            } else {
-                //Drinking their Offhand potion
-                if (nmsOffhand == null || nmsOffhand.getTag() == null) return;
-                if (!nmsOffhand.getTag().hasKey("type")) return;
-                if (nmsOffhand.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                    event.setCancelled(true);
-                    event.setUseItemInHand(Event.Result.DENY);
-                    event.setUseInteractedBlock(Event.Result.DENY);
-                    if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                        player.getInventory().setItemInOffHand(null);
-                        player.updateInventory();
-                        player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
-                        player.updateInventory();
-                        HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsOffhand.getTag().getInt("healAmount"));
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You are already at full HP!");
-                    }
-                }
-            }
-        }
-    }
-
-    public ItemStack findPlayerNextPotion(Player player) {
-        ItemStack nextPot = null;
-        net.minecraft.server.v1_9_R2.ItemStack nmsPot;
-        int slotCount = -1;
-        for (ItemStack stack : player.getInventory().getContents()) {
-            slotCount++;
-            if (stack == null || stack.getType() == Material.AIR) {
-                continue;
-            }
-            if (stack.getType() != Material.POTION) {
-                continue;
-            }
-            nmsPot = CraftItemStack.asNMSCopy(stack);
-            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("type")) {
-                if (nmsPot.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                    nextPot = stack;
-                    player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
-                    break;
-                }
-            }
-        }
-        return nextPot;
-    }
-
-    private boolean performPreFoodChecks(Player player) {
-        if (CombatLog.isInCombat(player)) {
-            player.sendMessage(ChatColor.RED + "You cannot eat this while in combat!");
-            player.updateInventory();
-            return false;
-        }
-        if (player.hasMetadata("FoodRegen")) {
-            player.sendMessage(ChatColor.RED + "You cannot eat this while you have another food bonus active!");
-            player.updateInventory();
-            return false;
-        }
-        if (player.isSprinting()) {
-            player.sendMessage(ChatColor.RED + "You cannot eat this while sprinting!");
-            player.updateInventory();
-            return false;
-        }
-        return true;
-    }
-
-    private void healPlayerTask(Player player, int amount) {
-        player.setMetadata("FoodRegen", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-
-        int secondsToHeal = 15;
-        new BukkitRunnable() {
-            int time = 0;
-
-            public void run() {
-
-                if (time >= secondsToHeal) {
-                    cancel();
-                    return;
-                }
-
-                time++;
-                if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
-                    HealthHandler.getInstance().healPlayerByAmount(player, amount);
-                } else {
-                    if (player.hasMetadata("FoodRegen")) {
-                        player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
-                        player.sendMessage(ChatColor.RED + "Healing Cancelled!");
-                        cancel();
-                    }
-                }
-            }
-        }.runTaskTimer(DungeonRealms.getInstance(), 0, 20L);
-//
-//        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-//            if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
-//                HealthHandler.getInstance().healPlayerByAmount(player, amount);
-//            } else {
-//                if (player.hasMetadata("FoodRegen")) {
-//                    player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
-//                    player.sendMessage(ChatColor.RED + "Healing Cancelled!");
-//                }
-//            }
-//        }, 0L, 20L);
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//            Bukkit.getScheduler().cancelTask(taskID);
-//            if (player.hasMetadata("FoodRegen")) {
-//                player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
-//            }
-//        }, 310L);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        Player player = event.getPlayer();
-        ItemStack foodItem;
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem;
-        if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            //Eating from Offhand.
-            foodItem = player.getInventory().getItemInOffHand();
-            nmsItem = CraftItemStack.asNMSCopy(foodItem);
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
-                performPreFoodChecks(player);
-                event.setCancelled(true);
-                if (foodItem.getAmount() == 1) {
-                    player.getInventory().setItemInOffHand(null);
-                } else {
-                    foodItem.setAmount(foodItem.getAmount() - 1);
-                    player.getInventory().setItemInOffHand(foodItem);
-                }
-                player.updateInventory();
-                player.setFoodLevel(player.getFoodLevel() + 6);
-                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                    player.sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP/s for 15 Seconds!");
-                    healPlayerTask(player, nmsItem.getTag().getInt("healAmount"));
-                } else {
-                    player.sendMessage(ChatColor.YELLOW + "You are already at full HP, however, your hunger has been satisfied.");
-                }
-            }
-        } else if (player.getInventory().getItemInOffHand() == null || player.getInventory().getItemInOffHand().getType() == Material.AIR) {
-            //Eating from Mainhand.
-            foodItem = player.getInventory().getItemInMainHand();
-            nmsItem = CraftItemStack.asNMSCopy(foodItem);
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
-                performPreFoodChecks(player);
-                event.setCancelled(true);
-                if (foodItem.getAmount() == 1) {
-                    player.getInventory().setItemInMainHand(null);
-                } else {
-                    foodItem.setAmount(foodItem.getAmount() - 1);
-                    player.getInventory().setItemInMainHand(foodItem);
-                }
-                player.updateInventory();
-                player.setFoodLevel(player.getFoodLevel() + 6);
-                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                    player.sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP/s for 15 Seconds!");
-                    healPlayerTask(player, nmsItem.getTag().getInt("healAmount"));
-                } else {
-                    player.sendMessage(ChatColor.YELLOW + "You are already at full HP, however, your hunger has been satisfied.");
-                }
-            }
-        } else {
-            //Have food in both hands...
-            if (event.getItem() == null || event.getItem().getType() == Material.AIR) return;
-            foodItem = player.getInventory().getItemInMainHand();
-            nmsItem = CraftItemStack.asNMSCopy(foodItem);
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
-                performPreFoodChecks(player);
-                event.setCancelled(true);
-                if (foodItem.getAmount() == 1) {
-                    player.getInventory().setItemInMainHand(null);
-                } else {
-                    foodItem.setAmount(foodItem.getAmount() - 1);
-                    player.getInventory().setItemInMainHand(foodItem);
-                }
-                player.updateInventory();
-                player.setFoodLevel(player.getFoodLevel() + 6);
-                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
-                    player.sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP/s for 15 Seconds!");
-                    healPlayerTask(player, nmsItem.getTag().getInt("healAmount"));
-                } else {
-                    player.sendMessage(ChatColor.YELLOW + "You are already at full HP, however, your hunger has been satisfied.");
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPotionSplash(PotionSplashEvent event) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
-        if (nmsItem != null && nmsItem.getTag() != null) {
-            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
-                event.setCancelled(true);
-                for (LivingEntity entity : event.getAffectedEntities()) {
-                    if (!GameAPI.isPlayer(entity)) {
-                        continue;
-                    }
-                    HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
-                }
-            }
-        }
+    public void playerDrinkVanillaPotion(PlayerInteractEvent event) {
+    	playPotionPrank(event);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1029,135 +488,5 @@ public class ItemListener implements Listener {
         }
 
 
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR)) return;
-        Player player = event.getPlayer();
-        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
-            return;
-        }
-        if (player.getEquipment().getItemInMainHand().getType() == Material.SADDLE || player.getEquipment().getItemInMainHand().getType() == Material.EYE_OF_ENDER || player.getEquipment().getItemInMainHand().getType() == Material.NAME_TAG || player.getEquipment().getItemInMainHand().getType() == Material.LEASH) {
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand());
-            NBTTagCompound tag = nmsStack.getTag();
-            if (tag == null) return;
-            if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
-            switch (tag.getString("usage")) {
-                case "mount":
-                case "mule":
-                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
-                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                        return;
-                    }
-                    if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
-                        return;
-                    }
-                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
-                        return;
-                    }
-                    String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
-                    if (mountType == null || mountType.equals("")) {
-                        player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
-                        player.closeInventory();
-                        return;
-                    }
-                    if (tag.getString("usage").equals("mule")) {
-                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                        if (!playerMounts.contains("MULE")) {
-                            player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
-                            return;
-                        }
-                    }
-                    player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
-                    final int[] count = {0};
-                    Location startingLocation = player.getLocation();
-                    final boolean[] cancelled = {false};
-                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                            if (player.getLocation().distanceSquared(startingLocation) <= 4) {
-                                if (!CombatLog.isInCombat(player)) {
-                                    if (!cancelled[0]) {
-                                        if (count[0] < 3) {
-                                            count[0]++;
-                                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
-                                        } else {
-                                            MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
-                                        }
-                                    }
-                                } else {
-                                    if (!cancelled[0]) {
-                                        cancelled[0] = true;
-                                        count[0] = 0;
-                                        player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
-                                    }
-                                }
-                            } else {
-                                if (!cancelled[0]) {
-                                    cancelled[0] = true;
-                                    count[0] = 0;
-                                    player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
-                                }
-                            }
-                        }
-                    }, 0L, 20L);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
-                    break;
-                case "pet":
-                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
-                        EntityAPI.removePlayerPetList(player.getUniqueId());
-                        return;
-                    }
-                    String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
-                    if (petType == null || petType.equals("")) {
-                        player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
-                        player.closeInventory();
-                        return;
-                    }
-                    String petName;
-                    if (petType.contains("@")) {
-                        petName = petType.split("@")[1];
-                        petType = petType.split("@")[0];
-                    } else {
-                        petName = EnumPets.getByName(petType).getDisplayName();
-                    }
-                    PetUtils.spawnPet(player.getUniqueId(), petType, petName);
-                    player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
-                    break;
-                case "trail":
-                    if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
-                        DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
-                        return;
-                    }
-                    String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
-                    if (trailType == null || trailType.equals("")) {
-                        player.sendMessage(ChatColor.RED + "You don't have an active trail, please enter the trails section in your profile to set one.");
-                        player.closeInventory();
-                        return;
-                    }
-                    DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
-                    player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
-                    break;
-            }
-        }
     }
 }

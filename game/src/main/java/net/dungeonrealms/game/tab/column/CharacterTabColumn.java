@@ -1,13 +1,18 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+
 import com.google.common.collect.Sets;
+
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.tab.Column;
-import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -46,17 +51,7 @@ public class CharacterTabColumn extends Column {
                     new Variable("energy") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            int calculatedValue;
-
-                            try {
-                                calculatedValue = gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN);
-                            } catch (NullPointerException ignored) {
-                                return "";
-                            }
-
-                            return String.valueOf(calculatedValue);
+                            return getAttribute(player, ArmorAttributeType.ENERGY_REGEN);
                         }
                     },
                     new Variable("hps") {
@@ -71,10 +66,7 @@ public class CharacterTabColumn extends Column {
                     new Variable("dps") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null || !gp.isAttributesLoaded()) return null;
-
-                            return String.valueOf(gp.getAttributes().get("dps")[0] + " - " + gp.getAttributes().get("dps")[1]);
+                            return getAttribute(player, WeaponAttributeType.DAMAGE);
                         }
                     },
                     new Variable("alignment") {
@@ -100,5 +92,10 @@ public class CharacterTabColumn extends Column {
 
         }
         return this;
+    }
+    
+    private String getAttribute(Player player, AttributeType type) {
+    	GamePlayer gp = GameAPI.getGamePlayer(player);
+    	return gp != null ? gp.getAttributes().getAttribute(type).toString() : "X";
     }
 }

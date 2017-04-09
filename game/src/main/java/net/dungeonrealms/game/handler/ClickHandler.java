@@ -6,10 +6,13 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.item.items.functional.ItemHealingFood;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
@@ -26,7 +29,6 @@ import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -36,6 +38,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -93,7 +96,7 @@ public class ClickHandler {
                     } else {
                         EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
                         if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
-                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                            if (BankMechanics.takeGemsFromInventory(player, nmsStack.getTag().getInt("mountCost"))) {
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
                                 if (mount != EnumMounts.MULE) {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
@@ -465,7 +468,7 @@ public class ClickHandler {
                                 player.getInventory().addItem(muleUpgrade);
                             } else {
                                 //Give them their scroll.
-                                player.getInventory().addItem(ItemManager.createProtectScroll(nmsStack.getTag().getInt("shardTier")));
+                                player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(nmsStack.getTag().getInt("shardTier"))).createItem());
                             }
                             return;
                         } else {
@@ -726,7 +729,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 switch (slot) {
                     case 0:
-                        player.openInventory(StatsManager.getInventory(player));
+                        GameAPI.getGamePlayer(player).getStats().openMenu(player);
                         break;
                     case 1:
                         PlayerMenus.openFriendInventory(player);
@@ -857,7 +860,7 @@ public class ClickHandler {
                 if (player.getInventory().firstEmpty() != -1) {
                     if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
                          ItemStack copy = ShopListener.removePriceLore(stack.clone());
-                        player.getInventory().addItem(AntiDuplication.getInstance().applyAntiDupe(copy));
+                         player.getInventory().addItem(AntiDuplication.getInstance().applyAntiDupe(copy));
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
@@ -887,8 +890,7 @@ public class ClickHandler {
                 price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
                     if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                        ItemStack toGive = ItemManager.createHealingFood(tier, rarity);
-                        player.getInventory().addItem(toGive);
+                        player.getInventory().addItem(new ItemHealingFood(ItemHealingFood.EnumHealingFood.get(tier, rarity)).createItem());
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
@@ -1803,7 +1805,7 @@ public class ClickHandler {
                     if (player.getInventory().firstEmpty() != -1) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
                             player.sendMessage(ChatColor.GREEN + "You have purchased a retraining book.");
-                            player.getInventory().addItem(ItemManager.createRetrainingBook());
+                            player.getInventory().addItem(new ItemRetrainingBook().createItem());
                             player.closeInventory();
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
@@ -1817,7 +1819,7 @@ public class ClickHandler {
                     if (player.getInventory().firstEmpty() != -1) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
                             player.sendMessage(ChatColor.GREEN + "You have purchased a global messenger.");
-                            player.getInventory().addItem(ItemManager.createGlobalMessenger());
+                            player.getInventory().addItem(new ItemGlobalMessager().createItem());
                             player.closeInventory();
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");

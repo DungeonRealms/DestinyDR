@@ -2,48 +2,87 @@ package net.dungeonrealms.game.donation.buffs;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.json.JsonBuilder;
+
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
 import java.io.Serializable;
 
 /**
  * Created by Alan on 7/28/2016.
+ * 
+ * TODO: This could be done better.
  */
 @Getter
 @Setter
-public abstract class Buff implements Serializable {
-
-    protected long timeUntilExpiry;
+public class Buff implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	protected long timeUntilExpiry;
     protected float bonusAmount;
     protected int duration;
     protected String activatingPlayer;
     protected String fromServer;
-
-    public void activateBuff() {
-        this.timeUntilExpiry = System.currentTimeMillis() + duration * 1000;
-        onActivateBuff();
+    protected EnumBuff type;
+    
+    public Buff(EnumBuff type, int duration, int power, String activatingPlayer, String fromServer) {
+    	this.type = type;
+    	this.duration = duration;
+    	this.bonusAmount = power;
+    	this.activatingPlayer = activatingPlayer;
+    	this.fromServer = fromServer;
+    }
+    
+    /**
+     * Activate this buff.
+     */
+    public void activate() {
+    	this.timeUntilExpiry = System.currentTimeMillis() + duration * 1000;
+    	String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
+        Bukkit.getServer().broadcastMessage("");
+        Bukkit.getServer().broadcastMessage(
+                ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + "(" + fromServer + ") " + ChatColor.RESET + activatingPlayer + ChatColor.GOLD
+                        + " has just activated " + ChatColor.UNDERLINE + "+" + bonusAmount + "% " + ChatColor.stripColor(type.getItemName()) + ChatColor.GOLD
+                        + " for " + formattedTime + " by using 'Global Level EXP Buff' from the store!");
+        Bukkit.getServer().broadcastMessage("");
+        
         Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 10f, 1f));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> deactivateBuff(), duration * 20L);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::deactivate, duration * 20L);
+    }
+    
+    /**
+     * Deactivate this buff.
+     */
+    public void deactivate() {
+    	final DonationEffects de = DonationEffects.getInstance();
+        Buff nextBuff = de.getQueuedBuffs(type).poll();
+        
+        Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
+                + "+" + bonusAmount + "% " + ChatColor.stripColor(type.getItemName()) + ChatColor.GOLD + " has expired.");
+        
+        if (nextBuff != null)
+            nextBuff.activate();
+        
+        de.saveBuffData();
     }
 
-    public abstract void onActivateBuff();
-
-    public abstract void deactivateBuff();
-
     public String serialize() {
-        StringBuilder sb = new StringBuilder();
         JsonBuilder jb = new JsonBuilder();
         jb.setData("timeUntilExpiry", timeUntilExpiry).setData("bonusAmount", bonusAmount).setData("duration",
                 duration).setData("activatingPlayer", activatingPlayer).setData("fromServer", fromServer);
         return jb.getJson().toString();
     }
 
-    public static Buff deserialize(String serializedBuff, Class<? extends Buff> clazz) {
+    public static Buff deserialize(String serializedBuff) {
         if (serializedBuff == null || serializedBuff.equals("")) return null;
 
         JsonParser jsParser = new JsonParser();
@@ -51,7 +90,7 @@ public abstract class Buff implements Serializable {
         Buff instance = null;
 
         try {
-            instance = clazz.newInstance();
+            instance = Buff.class.newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

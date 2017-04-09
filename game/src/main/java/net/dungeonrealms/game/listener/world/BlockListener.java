@@ -10,6 +10,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.command.CommandSpawn;
 import net.dungeonrealms.game.command.CommandSpawner;
+import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.miscellaneous.Repair;
@@ -29,6 +30,7 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -296,7 +298,7 @@ public class BlockListener implements Listener {
                                 String weapon = data[1];
                                 if (!weapon.equalsIgnoreCase("none")) {
 
-                                    net.dungeonrealms.game.world.item.Item.ItemType type = net.dungeonrealms.game.world.item.Item.ItemType.getByName(weapon);
+                                    GeneratedItemType type = GeneratedItemType.getByName(weapon);
                                     if (type != null)
                                         mobSpawner.setWeaponType(weapon);
                                     else
@@ -459,128 +461,6 @@ public class BlockListener implements Listener {
         }
     }
 
-    /**
-     * Handles `ing ore
-     *
-     * @param e
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void breakOre(BlockBreakEvent e) {
-        Block block = e.getBlock();
-        Random rand = new Random();
-        if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-
-        if (block == null) return;
-        if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
-            return;
-        if (!Mining.getInstance().isMineable(block))
-            return;
-        if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
-            e.setCancelled(true);
-            ItemStack stackInHand = e.getPlayer().getEquipment().getItemInMainHand();
-            if (Mining.isDRPickaxe(stackInHand)) {
-                Player p = e.getPlayer();
-                Material type = block.getType();
-                int tier = Mining.getBlockTier(type);
-                int pickTier = Mining.getPickTier(stackInHand);
-                if (pickTier < tier) {
-                    p.sendMessage(ChatColor.RED + "Your pick is not strong enough to mine this ore!");
-                    return;
-                }
-
-                int experienceGain = Mining.getOreEXP(stackInHand, type);
-                GamePlayer gamePlayer = GameAPI.getGamePlayer(e.getPlayer());
-                if (gamePlayer == null) return;
-                gamePlayer.addExperience((experienceGain / 12), false, true);
-                int duraBuff = Mining.getDurabilityBuff(stackInHand);
-                int breakChance = Mining.getBreakChance(stackInHand);
-                breakChance += Mining.getSuccessChance(stackInHand);
-                int willBreak = rand.nextInt(100);
-                int oreToAdd = 0;
-
-                p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
-                e.getBlock().setType(Material.STONE);
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
-
-                if (willBreak < breakChance || pickTier > tier) {
-                    Mining.addExperience(stackInHand, experienceGain, p);
-                    oreToAdd++;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
-                    if (rand.nextInt(100) > duraBuff) {
-                        RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 2);
-                    }
-                } else {
-                    if (rand.nextInt(100) > duraBuff) {
-                        RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 1);
-                    }
-                    p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
-                    return;
-                }
-
-
-                int doubleDrop = rand.nextInt(100) + 1;
-
-                if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
-                    oreToAdd++;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
-                }
-
-                int tripleDrop = rand.nextInt(100) + 1;
-                if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
-                    oreToAdd = oreToAdd + 2;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 2);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
-                }
-
-                ItemStack ore = Mining.getBlock(type);
-                ore.setAmount(oreToAdd);
-
-                if (p.getInventory().firstEmpty() == -1) {
-                    p.getWorld().dropItem(p.getLocation(), ore);
-                    p.sendMessage(ChatColor.GRAY + "Your inventory was " + ChatColor.UNDERLINE + "full" + ChatColor.GRAY + ", so the ore has been dropped at your feet.");
-                } else {
-                    p.getInventory().addItem(ore);
-                }
-
-
-                int dropGems = rand.nextInt(100) + 1;
-                if (Mining.getGemFindChance(stackInHand) >= dropGems) {
-                    int amount = 0;
-                    switch (tier) {
-                        case 1:
-                            amount = rand.nextInt(20) + 1;
-                            break;
-                        case 2:
-                            amount = rand.nextInt(40 - 20) + 20;
-                            break;
-                        case 3:
-                            amount = rand.nextInt(60 - 40) + 40;
-                            break;
-                        case 4:
-                            amount = rand.nextInt(90 - 70) + 70;
-                            break;
-                        case 5:
-                            amount = rand.nextInt(110 - 90) + 90;
-                            break;
-                    }
-                    amount = (int) (amount * 0.80D);
-
-                    if (amount > 0) {
-                        p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
-                        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                            p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
-                    }
-                }
-            }
-        }
-
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void cookFish(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -608,51 +488,6 @@ public class BlockListener implements Listener {
                 cookedFish.setType(Material.COOKED_FISH);
 
                 e.getPlayer().updateInventory();
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void handleMiningFatigue(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
-
-        if (event.getClickedBlock() == null || event.getClickedBlock().getType() == null || event.getClickedBlock().getType() == Material.AIR)
-            return;
-
-        Player p = event.getPlayer();
-
-        if (p.getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
-            return;
-        if (!Mining.isDRPickaxe(p.getEquipment().getItemInMainHand())) return;
-
-        ItemStack stackInHand = p.getEquipment().getItemInMainHand();
-        Block block = event.getClickedBlock();
-        if (block == null || block.getType() == Material.AIR) return;
-        if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
-            Material type = block.getType();
-            int tier = Mining.getBlockTier(type);
-            int pickTier = Mining.getPickTier(stackInHand);
-
-            p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-
-            switch (pickTier) {
-                case 1:
-                    break;
-                case 2:
-                    if (tier == pickTier && block.getType() == Material.EMERALD_ORE)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, 0));
-                    break;
-                case 3:
-                    if (tier == pickTier)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
-                    break;
-                case 4:
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
-                    break;
-                case 5:
-                    if (tier != 4)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
-                    break;
             }
         }
     }
@@ -695,7 +530,7 @@ public class BlockListener implements Listener {
             return;
         }
         ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
-        if (!GameAPI.isWeapon(item) && !GameAPI.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)) {
+        if (!ItemGear.isCustomTool(item)) {
             event.setCancelled(true);
             return;
         }

@@ -13,6 +13,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.game.item.items.functional.ItemHearthstone;
+import net.dungeonrealms.game.item.items.functional.ItemPlayerProfile;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -33,6 +35,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,8 +56,8 @@ public class CraftingMenu implements Listener {
                 PacketType type = packet.getType();
                 if (type == CLIENT_COMMAND && packet.getClientCommands().read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
                     if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-                    	player.getOpenInventory().getTopInventory().setItem(1, ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{ChatColor.GREEN + "Open Profile"}));
-                        player.getOpenInventory().getTopInventory().setItem(2, ItemManager.getPlayerHearthstone(player));
+                    	player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).createItem());
+                        player.getOpenInventory().getTopInventory().setItem(2, new ItemHearthstone(player).createItem());
                     }
                     GameAPI.runAsSpectators(player, (spectator) -> {
                     	spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");
@@ -71,37 +74,13 @@ public class CraftingMenu implements Listener {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         HandlerList.unregisterAll(this);
     }
-
-    private static void useHearthstone(Player player) {
-        player.closeInventory();
-        if (!(CombatLog.isInCombat(player))) {
-            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                player.sendMessage("You cannot restart a teleport during a cast!");
-                return;
-            }
-            if (TeleportAPI.canUseHearthstone(player)) {
-                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, null);
-            }
-        } else {
-            player.sendMessage(ChatColor.RED + "You are in combat! Please wait " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
-        }
-    }
     
-    private static void openProfile(Player player){
-    	player.closeInventory();
-        PlayerMenus.openPlayerProfileMenu(player);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void inventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player && event.getInventory() instanceof CraftingInventory && event.getInventory().getSize() == 5) {
-            if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) return;
-            if(event.getRawSlot() == 2 || event.getRawSlot() == 1)
-            	event.setCancelled(true);
-            if(event.getRawSlot() == 1)
-            	openProfile((Player) event.getWhoClicked());
-            if(event.getRawSlot() == 2)
-            	useHearthstone((Player) event.getWhoClicked());
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCraftingInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().setItem(1, null);
+            player.getOpenInventory().getTopInventory().setItem(2, null);
         }
     }
     

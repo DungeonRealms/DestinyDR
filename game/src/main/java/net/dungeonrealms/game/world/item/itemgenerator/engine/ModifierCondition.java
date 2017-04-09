@@ -5,7 +5,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ModifierCondition {
 	
@@ -15,38 +14,17 @@ public class ModifierCondition {
 	private int chance = -1;
 	private List<Class<? extends ItemModifier>> cantContain;
 	private ModifierCondition bonus;
-	private String chosenPrefix;
-	private String chosenSuffix;
 
+	public ModifierCondition(Item.ItemTier tier, Item.ItemRarity rarity, ModifierRange range){
+		this(tier, rarity, range, 0);
+	}
+	
 	public ModifierCondition(Item.ItemTier tier, Item.ItemRarity rarity, ModifierRange range, int chance){
 		this.tier = tier;
 		this.rarity = rarity;
 		this.range = range;
 		this.chance = chance;
 		this.cantContain = new ArrayList<>();
-	}
-	
-	public ModifierCondition(Item.ItemTier tier, Item.ItemRarity rarity, ModifierRange range){
-		this.tier = tier;
-		this.rarity = rarity;
-		this.range = range;
-		this.cantContain = new ArrayList<>();
-	}
-	
-	public void setChosenPrefix(String prefix){
-		this.chosenPrefix = prefix;
-	}
-	
-	public void setChosenSuffix(String suffix){
-		this.chosenSuffix = suffix;
-	}
-	
-	public String getChosenPrefix(){
-		return chosenPrefix;
-	}
-	
-	public String getChosenSuffix(){
-		return chosenSuffix;
 	}
 	
 	public ModifierCondition setBonus(ModifierCondition bonus){
@@ -82,18 +60,6 @@ public class ModifierCondition {
 	
 	public List<Class<? extends ItemModifier>> getCantContain() {
 	    return cantContain;
-	}
-
-	public boolean canApply(List<ModifierCondition> conditions) {
-		for(ModifierCondition mc : conditions){
-			if(mc.equals(this)) continue;
-			
-			//If this is the same stat as what we are trying to apply, we can't do that.
-			if(mc.getChosenPrefix() != null)
-				if(mc.getChosenPrefix().equals(getChosenPrefix()))
-					return false;
-		}
-		return true;
 	}
 	
 	public boolean checkCantContain(Class<? extends ItemModifier> mod) {

@@ -125,7 +125,11 @@ public class Chat {
     		}
     		
     		if(num > max || num < min){
-    			player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
+    			if ((min == 1 || min == 0) && num < min) {
+    				player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
+    			} else {
+    				player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
+    			}
     			failCallback.run();
     			return;
     		}

@@ -135,7 +135,7 @@ public class ObjectiveKill implements QuestObjective {
 				return;
 			}
 			
-			this.setEntityType(monster.getEnum(), monster.getTier(evt.getRightClicked()));
+			this.setEntityType(monster.getEnum(), monster.getTier());
 			this.selectors.remove(evt.getPlayer());
 			evt.getPlayer().sendMessage(ChatColor.GREEN + "Entity Type updated to Tier " + this.tier + " " + this.monsterType.name);
 		}
@@ -162,28 +162,25 @@ public class ObjectiveKill implements QuestObjective {
 	}
 	
 	@Override
-	public void onStart(Player player){
+	public void onStart(Player player) {
 		System.out.println("Kill glow check.");
 		updateGlow(player);
 	}
 	
-	public void updateGlow(Player player){
+	public void updateGlow(Player player) {
 		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
 		if(data == null)
 			return;
 		QuestProgress progress = data.getQuestProgress(this.questStage.getQuest());
-		if(this.amount > progress.getObjectiveCounter()){
+		if(this.amount > progress.getObjectiveCounter())
 			performNearby(player, 75, (ent) -> GlowAPI.setGlowing(ent, Color.RED, player));
-		}else{
-			disableGlow(player);
-		}
 	}
 	
-	public void onEnd(Player player){
+	public void onEnd(Player player) {
 		disableGlow(player);
 	}
 	
-	public void disableGlow(Player player){
+	public void disableGlow(Player player) {
 		performNearby(player, 100, (ent) -> GlowAPI.setGlowing(ent, false, player));
 	}
 	
@@ -195,7 +192,7 @@ public class ObjectiveKill implements QuestObjective {
 		net.minecraft.server.v1_9_R2.Entity nmsEnt = ((CraftEntity)ent).getHandle();
 		if(nmsEnt instanceof DRMonster) {
 			DRMonster monster = (DRMonster)nmsEnt;
-			return monster.getEnum() == monsterType && monster.getTier(ent) >= tier;
+			return monster.getEnum() == monsterType && monster.getTier() >= tier;
 		}
 		return false;
 	}

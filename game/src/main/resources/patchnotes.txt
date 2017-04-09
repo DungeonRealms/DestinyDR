@@ -1,9 +1,7 @@
 Build <build>
 
 &8Changes&0
-- Collection bin is automatically loaded into shop.
-- Staff mobs nerfed
-- Shop code heavily condensed.
+- Realms Optimized
 
 &8Bugfixes&0
-- Fixed soulbound item bugs
+- 

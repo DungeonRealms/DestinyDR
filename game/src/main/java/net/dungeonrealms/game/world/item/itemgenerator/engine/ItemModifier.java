@@ -1,56 +1,46 @@
 package net.dungeonrealms.game.world.item.itemgenerator.engine;
 
+import lombok.Getter;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.Item.ItemType;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public abstract class ItemModifier implements Comparable<ItemModifier> {
 	
 	private List<ModifierCondition> conditions = new ArrayList<>();
-	private List<ItemType> possibleApplicants;
-	private int chance = 0; // chance of obtaining modifier on item
-	private String NBTName; // internal name for NBT tags
-	private String prefix; // prefix on lore
-	private String suffix; // suffix on lore
-	private int orderPriority = 10;
-	private boolean includeOnReroll = true;
-	protected String chosenStat; // for multiple possible stats
+	private List<GeneratedItemType> possibleApplicants;
 	
-	public ItemModifier(List<ItemType> possibleApplicants, int chance, String NBTName, String prefix, String suffix){
-		this(possibleApplicants, chance, NBTName, prefix, suffix, true);
+	@Getter
+	private AttributeType currentAttribute;
+	private AttributeType[] possibleAttributes;
+	
+	public ItemModifier(AttributeType attribute, GeneratedItemType... pI) {
+		this(new AttributeType[] {attribute}, pI);
 	}
 	
-	public ItemModifier(List<ItemType> possibleApplicants, int chance, String NBTName, String prefix, String suffix, boolean includeOnReroll){
-        this.possibleApplicants = possibleApplicants;
-        this.chance = chance;
-        this.NBTName = NBTName;
-        this.prefix = prefix;
-        this.suffix = suffix;
-        this.includeOnReroll = includeOnReroll;
+	public ItemModifier(AttributeType[] attributes, GeneratedItemType... possibleItems){
+        this.possibleApplicants = Arrays.asList(possibleItems);
+        this.possibleAttributes = attributes;
+        this.currentAttribute = attributes[0];
         ItemGenerator.modifiers.put(this.getClass(), this);
         ItemGenerator.modifierObjects.add(this);
     }
 	
-	public void setOrderPriority(int position){
-		this.orderPriority = position;
-	}
-	
-	public int getOrderPriority(){
-		return orderPriority;
-	}
-	
 	@Override
 	public int compareTo(ItemModifier other){
-	    return other.getOrderPriority() - orderPriority;
+	    return other.getCurrentAttribute().getId() - getCurrentAttribute().getId();
 	}
 	
-	public boolean canApply(ItemType type) {
+	public boolean canApply(GeneratedItemType type) {
 		return possibleApplicants != null && possibleApplicants.contains(type);
 	}
 	
@@ -68,53 +58,9 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 				return condition;
 		return null;
 	}
-	
-	//TODO: Move all this into the ModifierCondition class.
-	//TODO: Fix this mess.
-	public ModifierCondition generateModifier(ModifierCondition condition, ItemMeta meta) {
-		String prefix = getPrefix(meta);
-		String suffix = getSuffix(meta);
-		
-		condition.setChosenPrefix(prefix);
-		condition.setChosenSuffix(suffix);
-		return condition;
+
+	public void rollAttribute() {
+		if (this.possibleAttributes.length > 1)
+			this.currentAttribute = this.possibleAttributes[new Random().nextInt(this.possibleAttributes.length)];
 	}
-	
-	public ItemMeta applyModifier(ModifierCondition condition, ItemMeta meta){
-		String random = condition.getRange().generateRandom();
-		random = ((condition.getChosenPrefix() != null) ? condition.getChosenPrefix() : "") + random + ((condition.getChosenSuffix() != null) ? condition.getChosenSuffix() : "");
-		
-		List<String> lore = meta.getLore();
-		lore.add(random);
-		meta.setLore(lore);
-		
-		return meta;
-	}
-
-	public String getPrefix(ItemMeta meta) {
-		return prefix;
-	}
-
-	public String getSuffix(ItemMeta meta) {
-		return suffix;
-	}
-	
-	public int getChance(){
-		return chance;
-	}
-
-    public boolean isIncludeOnReroll() {
-        return includeOnReroll;
-    }
-
-    public void setIncludeOnReroll(boolean includeOnReroll) {
-        this.includeOnReroll = includeOnReroll;
-    }
-
-    public String getNBTName() {
-        return NBTName;
-    }
-
-    // choose one stat for multiple stat modifiers
-    public void chooseStat() {}
 }

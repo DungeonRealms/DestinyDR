@@ -35,10 +35,13 @@ public class Notice {
     }
 
     public Notice() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
             Bukkit.getOnlinePlayers().forEach(this::executeVoteReminder);
         }, 0L, 6000L);
-
+        
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
+        	Bukkit.getOnlinePlayers().forEach(GameAPI::sendStatNotification);
+        }, 0, (20 * 60) * 10);
     }
 
     //TODO: Friends, Guilds and clickable acceptance.

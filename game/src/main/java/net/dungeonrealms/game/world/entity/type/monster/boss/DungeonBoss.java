@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -25,6 +26,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * Created by Chase on Oct 18, 2015
  */
 
-public interface DungeonBoss extends Boss {
+public interface DungeonBoss extends DRMonster {
 
     EnumDungeonBoss getEnumBoss();
     
@@ -47,11 +49,40 @@ public interface DungeonBoss extends Boss {
     
     public int getXPDrop();
     
-    public Entity getBukkitEntity();
-    
     public String[] getItems();
     
     public void addKillStat(GamePlayer gp);
+    
+    default void onBossDeath() {
+    	
+    }
+    
+    default void onBossAttack(EntityDamageByEntityEvent event) {
+    	
+    }
+    
+    
+    //  OVERRIDDEN STUFF  //
+    @Override
+    default void setupMonster(int tier) {
+    	setupNMS();
+    }
+    
+    @Override
+    default void onMonsterAttack(Player p) {}
+
+    @Override
+    default void onMonsterDeath(Player killer) {}
+    
+    @Override
+    default ItemStack getWeapon(){
+    	return ItemGenerator.getNamedItem(getItems()[0]);
+    }
+    
+    @Override
+    default int getTier(){
+    	return getEnumBoss().getDungeonType().getTier();
+    }
     
     default net.minecraft.server.v1_9_R2.Entity spawnMinion(EnumMonster monsterType, String mobName, int tier) {
     	return spawnMinion(monsterType, mobName, tier, true);
@@ -79,14 +110,6 @@ public interface DungeonBoss extends Boss {
         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         return entity;
-    }
-    
-    default ItemStack getWeapon(){
-    	return ItemGenerator.getNamedItem(getItems()[0]);
-    }
-    
-    default int getTier(){
-    	return getEnumBoss().getDungeonType().getTier();
     }
     
     default void setArmor(){

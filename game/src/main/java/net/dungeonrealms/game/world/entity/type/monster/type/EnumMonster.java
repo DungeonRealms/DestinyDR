@@ -191,4 +191,8 @@ public enum EnumMonster {
         }
     }
 
+	public ItemStack getSkullItem() {
+		return getSkullItem(this);
+	}
+
 }

@@ -101,69 +101,69 @@ public class EntityStats {
     public static void setMonsterElite(Entity entity, EnumNamedElite namedElite, int tier, EnumMonster monster, int lvl, boolean isDungeon) {
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
-            Item.ItemType weaponType;
+            Item.GeneratedItemType weaponType;
             switch (monster) {
                 case Zombie:
                 case LordsGuard:
-                    weaponType = random.nextBoolean() ? Item.ItemType.SWORD : Item.ItemType.AXE;
+                    weaponType = random.nextBoolean() ? Item.GeneratedItemType.SWORD : Item.GeneratedItemType.AXE;
                     break;
                 case Bandit:
                 case Bandit1:
                 case PassiveBandit:
-                    weaponType = Item.ItemType.AXE;
+                    weaponType = Item.GeneratedItemType.AXE;
                     break;
                 case FireImp:
                 case StaffZombie:
                 case Daemon2:
-                    weaponType = Item.ItemType.STAFF;
+                    weaponType = Item.GeneratedItemType.STAFF;
                     break;
                 case Daemon:
-                    weaponType = Item.ItemType.POLEARM;
+                    weaponType = Item.GeneratedItemType.POLEARM;
                     break;
                 case Skeleton:
                 case Skeleton1:
                 case Skeleton2:
                 case PassiveSkeleton1:
-                    weaponType = Item.ItemType.BOW;
+                    weaponType = Item.GeneratedItemType.BOW;
                     break;
                 case Silverfish:
                 case GreaterAbyssalDemon:
-                    weaponType = Item.ItemType.SWORD;
+                    weaponType = Item.GeneratedItemType.SWORD;
                     break;
                 case Tripoli1:
                 case Tripoli:
-                    weaponType = Item.ItemType.AXE;
+                    weaponType = Item.GeneratedItemType.AXE;
                     break;
                 case Monk:
-                    weaponType = Item.ItemType.POLEARM;
+                    weaponType = Item.GeneratedItemType.POLEARM;
                     break;
                 case Lizardman:
-                    weaponType = Item.ItemType.POLEARM;
+                    weaponType = Item.GeneratedItemType.POLEARM;
                     break;
                 case Undead:
-                    weaponType = Item.ItemType.SWORD;
+                    weaponType = Item.GeneratedItemType.SWORD;
                     break;
                 case Blaze:
-                    weaponType = Item.ItemType.STAFF;
+                    weaponType = Item.GeneratedItemType.STAFF;
                     break;
                 case Spider1:
                 case Spider2:
-                    weaponType = Item.ItemType.SWORD;
+                    weaponType = Item.GeneratedItemType.SWORD;
                     break;
                 case Mage:
-                    weaponType = Item.ItemType.STAFF;
+                    weaponType = Item.GeneratedItemType.STAFF;
                     break;
                 case Golem:
-                    weaponType = Item.ItemType.SWORD;
+                    weaponType = Item.GeneratedItemType.SWORD;
                     break;
                 case Goblin:
-                    weaponType = Item.ItemType.AXE;
+                    weaponType = Item.GeneratedItemType.AXE;
                     break;
                 case Enderman:
-                    weaponType = Item.ItemType.SWORD;
+                    weaponType = Item.GeneratedItemType.SWORD;
                     break;
                 default:
-                    weaponType = Item.ItemType.getRandomWeapon();
+                    weaponType = Item.GeneratedItemType.getRandomWeapon();
                     break;
             }
             Item.ItemRarity rarity = GameAPI.getItemRarity(true);
@@ -210,7 +210,7 @@ public class EntityStats {
         LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
         ItemStack[] armor = new ItemGenerator().setRarity(Item.ItemRarity.UNIQUE).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
         ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
-        Item.ItemType type = Item.ItemType.getTypeFromMaterial(weapon.getType());
+        Item.GeneratedItemType type = Item.GeneratedItemType.getTypeFromMaterial(weapon.getType());
         weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.UNIQUE).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));

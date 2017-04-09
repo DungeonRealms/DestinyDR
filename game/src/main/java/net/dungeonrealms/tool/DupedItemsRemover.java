@@ -3,16 +3,15 @@ package net.dungeonrealms.tool;
 import com.mongodb.Block;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bson.Document;
@@ -156,7 +155,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 playerOrbs += i.getAmount();
             else if (BankMechanics.getInstance().isBankNote(i))
                 playerGems += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
-            if (!RepairAPI.isItemArmorOrWeapon(i)) continue;
+            if (!ItemGear.isCustomTool(i)) continue;
             final String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
             if (uniqueEpochIdentifier == null) continue;
 
@@ -197,7 +196,7 @@ public class DupedItemsRemover implements GenericMechanic {
         int dupedItemsFound = 0;
         for (int i = 0; i < items.length; i++) {
             if (items[i] == null || items[i].getType() == Material.AIR) continue;
-            if (!RepairAPI.isItemArmorOrWeapon(items[i])) continue;
+            if (!ItemGear.isCustomTool(items[i])) continue;
             final String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(items[i]);
             if (uniqueEpochIdentifier == null) continue;
 

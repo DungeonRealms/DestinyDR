@@ -1,6 +1,10 @@
 package net.dungeonrealms.game.quests;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -73,7 +77,7 @@ public class QuestItem implements ISaveable {
 					created = generator.generateItem().getItem();
 					break;
 				case ORB:
-					created = ItemManager.createOrbofAlteration();
+					created = new ItemOrb().createItem();
 					break;
 				case PICKAXE:
 					created = ItemManager.createPickaxe(this.tier.getTierId());
@@ -82,13 +86,13 @@ public class QuestItem implements ISaveable {
 					created = ItemManager.createFishingPole(this.tier.getTierId());
 					break;
 				case WEAPON_ENCH_SCROLL:
-					created = ItemManager.createWeaponEnchant(this.tier.getTierId());
+					created = new ItemEnchantWeapon(this.tier).createItem();
 					break;
 				case ARMOR_ENCH_SCROLL:
-					created = ItemManager.createArmorEnchant(this.tier.getTierId());
+					created = new ItemEnchantArmor(this.tier).createItem();
 					break;
 				case PROT_SCROLL:
-					created = ItemManager.createProtectScroll(this.tier.getTierId());
+					created = new ItemProtectionScroll(this.tier).createItem();
 					break;
 				case GEM_NOTE:
 					created = BankMechanics.createGems(this.itemAmount);

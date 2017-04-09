@@ -484,7 +484,7 @@ public class GuildMechanics {
 
                 // Confirms purchase
                 if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                    if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+                    if (BankMechanics.getGemsInInventory(player) < 5000) {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                         return;
                     }
@@ -509,7 +509,7 @@ public class GuildMechanics {
                         player.sendMessage("");
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
                         player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-                        BankMechanics.getInstance().takeGemsFromInventory(5000, player);
+                        BankMechanics.takeGemsFromInventory(player, 5000);
 
                         // guild tags in scoreboard disabled
                         GamePlayer gp = GameAPI.getGamePlayer(player);
@@ -564,7 +564,7 @@ public class GuildMechanics {
             }
 
             // 5000 gems is require to register a guild
-            if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+            if ((BankMechanics.getGemsInInventory(player) < 5000)) {
                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                 return;
             }

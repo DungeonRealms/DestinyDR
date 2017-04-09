@@ -1,30 +1,43 @@
 package net.dungeonrealms.game.world.entity.type.monster;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
+import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -33,182 +46,204 @@ import java.util.*;
  */
 public interface DRMonster {
 
-    void onMonsterAttack(Player p);
-
-    void onMonsterDeath(Player killer);
-
-    EnumMonster getEnum();
-
-    Map<String, Integer[]> getAttributes();
-    
-    default int getTier(Entity entity){
-    	return entity.getMetadata("tier").get(0).asInt();
+    default void onMonsterAttack(Player p) {
+    	
     }
 
-    default void checkItemDrop(int tier, EnumMonster nullArgs, Entity ent, Player killer) {
-        if (ent.getWorld().getName().contains("DUNGEON")) {
-            //No normal drops in dungeons.
+    default void onMonsterDeath(Player killer) {
+    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> checkItemDrop(killer));
+    }
+    
+    default void setupMonster(int tier) {
+    	setTier(tier);
+    	setGear();
+    	setSkullTexture();
+    	
+    	//  SET CUSTOM NAME  //
+    	String customName = getEnum().getPrefix() + " " + getEnum().name + " " + getEnum().getSuffix() + " ";
+        getNMS().setCustomName(customName);
+        getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        getBukkitEntity().setCustomNameVisible(true);
+        
+        //  SET NMS DATA  //
+        setupNMS();
+    }
+    
+    default void setupNMS() {
+    	getNMS().getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+        getNMS().getAttributeInstance(GenericAttributes.c).setValue(1.00d);
+        getNMS().noDamageTicks = 0;
+        getNMS().maxNoDamageTicks = 0;
+    }
+    
+    default void setGear() {
+    	int tier = getTier();
+    	ItemStack[] armor = GameAPI.getTierArmor(tier);
+		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+		Random random = new Random();
+		boolean forcePlace = tier >= 3;
+		
+		int chance = 6 + tier;
+		//  SET BOOTS  //
+		if (forcePlace || random.nextInt(10) <= chance) {
+			livingEntity.getEquipment().setBoots(armor[0]);
+			getNMS().setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+		} else {
+			forcePlace = true;
+		}
+		
+		//  SET LEGGINGS  //
+		if (forcePlace || random.nextInt(10) <= chance) {
+			livingEntity.getEquipment().setLeggings(armor[1]);
+			getNMS().setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+			forcePlace = tier >= 3;
+		} else {
+			forcePlace = true;
+		}
+		
+		//  SET CHESTPLATE  //
+		if (forcePlace || random.nextInt(10) <= chance) {
+			livingEntity.getEquipment().setChestplate(armor[2]);
+			getNMS().setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
+		}
+		
+		//  SET WEAPON  //
+		ItemStack weapon = getWeapon();
+		getNMS().setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		livingEntity.getEquipment().setItemInMainHand(weapon);
+		
+    }
+
+    EnumMonster getEnum();
+    
+    EntityLiving getNMS();
+
+    AttributeList getAttributes();
+    
+    CraftEntity getBukkitEntity();
+    
+    default ItemStack getWeapon() {
+    	return makeItem(new ItemWeaponMelee());
+    }
+    
+    default ItemStack makeItem(ItemGear gear) {
+    	return gear.setTier(ItemTier.getByTier(getTier())).generateItem();
+    }
+    
+    default void setSkullTexture() {
+    	if(getEnum() != null && getEnum().getSkullItem() != null) {
+    		ItemStack helmet = getEnum().getSkullItem();
+    		((LivingEntity)getBukkitEntity()).getEquipment().setHelmet(helmet);
+    		getNMS().setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(helmet));
+    	}
+    }
+    
+    default void setTier(int tier) {
+    	getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+    }
+    
+    default int getTier(){
+    	return getBukkitEntity().getMetadata("tier").get(0).asInt();
+    }
+
+    default void checkItemDrop(Player killer) {
+    	Entity ent = getBukkitEntity();
+    	
+    	//No normal drops in dungeons.
+        if (ent.getWorld().getName().contains("DUNGEON"))
             return;
-        }
-        if (ent.hasMetadata("boss")) {
-            //Boss will handle this.
+        
+        //Boss will handle this.
+        if (ent.hasMetadata("boss"))
             return;
-        }
-        if (ent.hasMetadata("combatlog")) {
-            //combat log npcs have special drop mechanics
+        
+        //combat log npcs have special drop mechanics
+        if (ent.hasMetadata("combatlog"))
             return;
-        }
+        
+        int tier = getTier();
         Random random = new Random();
         GamePlayer gp = GameAPI.getGamePlayer(killer);
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
-        double gold_drop_multiplier = (gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
-        int killerItemFind = gp.getRangedAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
+        
+        ModifierRange gemFinder = gp.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND);
+        double gemFind = (gemFinder.getValHigh() / 100) + 1;
+        int killerItemFind = gp.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValHigh();
+        
         Location loc = ent.getLocation();
         World world = ((CraftWorld) loc.getWorld()).getHandle();
 
         int gemRoll = random.nextInt(100);
-        int gemChance = 0;
-        int chance = 0;
-        switch (tier) {
-            case 1:
-                gemChance = 50;
-                chance = ent.hasMetadata("elite") ? 750 : 120; // 75%, 12%
-                break;
-            case 2:
-                gemChance = 40;
-                chance = ent.hasMetadata("elite") ? 400 : 50; // 40%, 5%
-                break;
-            case 3:
-                gemChance = 30;
-                chance = ent.hasMetadata("elite") ? 90 : 30; // 9%, 3%
-                break;
-            case 4:
-                gemChance = 20;
-                chance = ent.hasMetadata("elite") ? 30 : 15; // 3%, 1.5%
-                break;
-            case 5:
-                gemChance = 35;
-                chance = ent.hasMetadata("elite") ? 10 : 4; // 1%, 0.4%
-                break;
-        }
-        if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.game.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]
-            /*for (String s : SpawningMechanics.customMobLootTables.get(ChatColor.stripColor(ent.getMetadata("namedElite").get(0).asString()))) {
-                String customItemName = s.substring(1, s.indexOf(":"));
-                int namedEliteChance = (int)Math.round(Double.parseDouble(s.substring(s.lastIndexOf('%') + 1)) * 10d);
-                if (DonationEffects.getInstance().isLootBuffActive()) namedEliteChance *= 1.2;
-                if (new Random().nextInt(1000) < namedEliteChance) {
-                    ItemStack stack = ItemGenerator.getNamedItem(customItemName);
-                    if (stack == null) return;
-                    RepairAPI.setCustomItemDurability(stack, Utils.randInt(200, 1000));
-                    world.getWorld().dropItem(loc.add(0, 1, 0), stack);
-                }
-            }
-            return;*/
+        DropRate dr = DropRate.getRate(tier);
+        int gemChance = dr.getMobGemChance();
+        int chance = ent.hasMetadata("elite") ? dr.getEliteDropChance() : dr.getNormalDropChance();
+        
+        // If it's a named elite, bring the drop chances down.
+        if (ent.hasMetadata("namedElite"))
             chance /= 3;
-        }
 
-        if (DonationEffects.getInstance().getActiveLootBuff() != null) {
+        if (DonationEffects.getInstance().getActiveLootBuff() != null)
             chance += chance * (DonationEffects.getInstance().getActiveLootBuff().getBonusAmount() / 100f);
-        }
 
-        if (gemRoll < (gemChance * gold_drop_multiplier)) {
-            if (gemRoll >= gemChance) {
-                if (toggleDebug) {
-                    killer.sendMessage(ChatColor.GREEN + "Your " + gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + "% Gem Find has resulted in a drop.");
-                }
-            }
-            double gem_drop_amount = 0;
-            double drop_multiplier = 1;
-            // Elite = 1.5x money chance / item chance.
-            if (ent.hasMetadata("elite")) {
-                drop_multiplier = 1.5;
-            }
+        if (gemRoll < (gemChance * gemFind)) {
+            if (gemRoll >= gemChance)
+                if (toggleDebug)
+                    killer.sendMessage(ChatColor.GREEN + "Your " + gemFinder.getValHigh() + "% Gem Find has resulted in a drop.");
 
-            switch (tier) {
-                case 1:
-                    gem_drop_amount = (random.nextInt(3 - 1) + 1) * gold_drop_multiplier;
-                    break;
-                case 2:
-                    gem_drop_amount = (random.nextInt(12 - 2) + 2) * gold_drop_multiplier;
-                    break;
-                case 3:
-                    gem_drop_amount = (random.nextInt(30 - 10) + 10) * gold_drop_multiplier;
-                    break;
-                case 4:
-                    gem_drop_amount = (random.nextInt(50 - 20) + 20) * gold_drop_multiplier;
-                    break;
-                case 5:
-                    gem_drop_amount = (random.nextInt(200 - 75) + 75) * gold_drop_multiplier;
-                    break;
-            }
-            gem_drop_amount *= drop_multiplier;
+            double gemsDropped = Utils.randInt(dr.getGemDropMin(), dr.getGemDropMax());
+            gemsDropped *= gemFind;
+            if (ent.hasMetadata("elite"))
+            	gemsDropped *= 1.5;
 
-            while (gem_drop_amount > 64) {
-                gem_drop_amount -= 64;
+            while (gemsDropped > 64) {
+                gemsDropped -= 64;
                 ItemStack item = BankMechanics.gem.clone();
                 item.setAmount(64);
                 ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             }
-            if (gem_drop_amount > 0) {
+            
+            if (gemsDropped > 0) {
                 ItemStack item = BankMechanics.gem.clone();
-                item.setAmount((int) gem_drop_amount);
+                item.setAmount((int) gemsDropped);
                 ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             }
         }
 
         int dropRoll = random.nextInt(1000);
+        
         List<ItemStack> toDrop = new ArrayList<>();
-        for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
-            if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
-                continue;
-            }
-            toDrop.add(stack);
-        }
-        if (!ent.hasMetadata("elite")) {
-            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
-            AntiDuplication.getInstance().applyAntiDupe(helmet);
-            toDrop.add(helmet);
-        }
+        for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents())
+            if (stack != null && stack.getType() != Material.AIR && stack.getType() != Material.SKULL && stack.getType() != Material.SKULL_ITEM)
+            	toDrop.add(stack);
+        
+        if (!ent.hasMetadata("elite"))
+        	toDrop.add(new ItemArmor().setTier(ItemTier.getByTier(getTier())).setType(GeneratedItemType.HELMET).generateItem());
+        
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
         Collections.shuffle(toDrop);
         if (dropRoll < chance + (chance * killerItemFind / 100)) {
-            if (dropRoll >= chance) {
-                if (toggleDebug) {
+            if (dropRoll >= chance)
+                if (toggleDebug)
                     killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
-                }
-            }
-            ItemStack drop = null;
+            
+            ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
             if (new Random().nextInt(2) == 0) { // 50% chance for weapon, 50% for armor
                 ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
-                if (weapon != null && weapon.getType() != Material.AIR) {
+                if (weapon != null && weapon.getType() != Material.AIR)
                     drop = weapon;
-                }
             }
-            else {
-                drop = toDrop.get(random.nextInt(toDrop.size()));
-            }
+            
+            //  DROP ITEM  //
             if (drop != null && drop.getType() != Material.AIR) {
-                RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
-                EnchantmentAPI.removeGlow(drop);
-                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), drop));
+            	ItemGear gear = (ItemGear)PersistentItem.constructItem(drop);
+            	gear.damageItem(null, Utils.randInt(0, ItemGear.MAX_DURABILITY - (int)(ItemGear.MAX_DURABILITY / 7.5)));
+                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gear.generateItem()));
             }
         }
+        
         int scrollDrop = random.nextInt(100);
-        int scrollDropChance;
-        switch (tier) {
-            case 1:
-            case 2:
-            case 3:
-                scrollDropChance = 2;
-                break;
-            case 4:
-            case 5:
-                scrollDropChance = 1;
-                break;
-            default:
-                scrollDropChance = 1;
-                break;
-        }
+        int scrollDropChance = dr.getTeleportBookChance();
+        
         if (scrollDropChance >= scrollDrop) {
             TeleportLocation[][] locations = new TeleportLocation[][] {
             		{TeleportLocation.CYRENNICA},
@@ -221,10 +256,10 @@ public interface DRMonster {
             
             ItemStack teleport = ItemManager.createTeleportBook(locations[tier][random.nextInt(locations[tier].length)]);
             
-            if (teleport != null) {
+            if (teleport != null)
                 ItemManager.whitelistItemDrop(killer, ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport));
-            }
         }
+        
         /*if (weapon.getType() == Material.BOW) {
             int arrowRoll = random.nextInt(99);
             if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {

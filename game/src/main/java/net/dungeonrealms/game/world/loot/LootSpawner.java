@@ -2,11 +2,16 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.loot.types.LootType;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -65,18 +70,18 @@ public class LootSpawner {
 //					stack = LootManager.generateRandomTierItem(tier);
                     continue;
                 } else if (GameAPI.isOrb(stack)) {
-                    stack = ItemManager.createOrbofAlteration();
+                    stack = new ItemOrb().createItem();
                 } else if (ItemManager.isEnchantScroll(stack)) {
                     int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
                     String type = CraftItemStack.asNMSCopy(stack).getTag().getString("type");
                     if (type.equalsIgnoreCase("armorenchant"))
-                        stack = ItemManager.createArmorEnchant(tier);
+                        stack = new ItemEnchantArmor(tier).createItem();
                     else
-                        stack = ItemManager.createWeaponEnchant(tier);
-                } else if (ItemManager.isProtectScroll(stack)) {
+                        stack = new ItemEnchantWeapon(tier).createItem();
+                } else if (new ItemProtectionScroll().isInstanceOf(stack)) {
                     int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
-                    stack = ItemManager.createProtectScroll(tier);
-                } else if (BankMechanics.getInstance().isBankNote(stack)) {
+                    stack = new ItemProtectionScroll(tier).createItem();
+                } else if (BankMechanics.isBankNote(stack)) {
                     stack = BankMechanics.createBankNote(CraftItemStack.asNMSCopy(stack).getTag().getInt("worth"), "");
                 }
 

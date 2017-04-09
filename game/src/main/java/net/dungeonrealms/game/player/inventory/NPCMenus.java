@@ -3,6 +3,11 @@ package net.dungeonrealms.game.player.inventory;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
+import net.dungeonrealms.game.item.items.functional.ItemHealingFood;
+import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -11,6 +16,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 
@@ -193,22 +199,13 @@ public class NPCMenus {
         inv.setItem(1, new ItemBuilder().setItem(ItemManager.createMuleUpgrade(3)).addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
                 .addLore(ChatColor.GRAY + "Display Item")
                 .setNBTInt("shardCost", 8000).setNBTInt("shardTier", 4).build());
-        inv.setItem(2, new ItemBuilder().setItem(ItemManager.createProtectScroll(1)).addLore(ChatColor.WHITE + "1500 Portal Shards")
-                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 1)
-                .setNBTString("shardColor", ChatColor.WHITE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(3, new ItemBuilder().setItem(ItemManager.createProtectScroll(2)).addLore(ChatColor.WHITE + "1500 " + ChatColor.GREEN + "Portal Shards")
-                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 2)
-                .setNBTString("shardColor", ChatColor.GREEN.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(4, new ItemBuilder().setItem(ItemManager.createProtectScroll(3)).addLore(ChatColor.WHITE + "1500 " + ChatColor.AQUA + "Portal Shards")
-                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 3)
-                .setNBTString("shardColor", ChatColor.AQUA.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(5, new ItemBuilder().setItem(ItemManager.createProtectScroll(4)).addLore(ChatColor.WHITE + "1500 " + ChatColor.LIGHT_PURPLE + "Portal Shards")
-                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 4)
-                .setNBTString("shardColor", ChatColor.LIGHT_PURPLE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(6, new ItemBuilder().setItem(ItemManager.createProtectScroll(5)).addLore(ChatColor.WHITE + "1500 " + ChatColor.YELLOW + "Portal Shards")
-                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 5)
-                .setNBTString("shardColor", ChatColor.YELLOW.toString()).setNBTInt("shardCost", 1500).build());
-
+        
+        for (int i = 0; i < 5; i++) {
+        	ItemTier tier = ItemTier.getByTier(i + 1);
+        	inv.setItem(i + 2, new ItemBuilder().setItem(new ItemProtectionScroll(tier).createItem()).addLore(ChatColor.WHITE + "1500 " + tier.getColor() + "PortalShards")
+        			.addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", tier.getTierId())
+        			.setNBTString("shardColor", tier.getColor().toString()).setNBTInt("shardCost", 1500).build());
+        }
         player.openInventory(inv);
     }
 
@@ -248,25 +245,14 @@ public class NPCMenus {
     public static void openItemVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Item Vendor");
 
-        ItemStack orbOfPeace = ShopMechanics.addPrice(ItemManager.createOrbofPeace(false), 100);
-        ItemStack orbOfFlight = ShopMechanics.addPrice(ItemManager.createOrbofFlight(false), 500);
-
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
             ItemStack item = GameAPI.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
-            ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
-
-            inv.setItem(0, guildBanner);
-            inv.setItem(1, orbOfFlight);
-            inv.setItem(2, orbOfPeace);
-
-
-        } else {
-
-            inv.setItem(0, orbOfFlight);
-            inv.setItem(1, orbOfPeace);
-
+            inv.addItem(ShopMechanics.addPrice(item, 1000));
         }
+        
+        inv.addItem(ShopMechanics.addPrice(new ItemFlightOrb(false).createItem(), 500));
+        inv.addItem(ShopMechanics.addPrice(new ItemPeaceOrb(false).createItem(), 100));
 
         for (int i = 0; i < inv.getContents().length; i++) {
             ItemStack item = inv.getContents()[i];
@@ -286,48 +272,10 @@ public class NPCMenus {
 
     public static void openFoodVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
-        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, Item.ItemRarity.COMMON), 2);
-        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, Item.ItemRarity.RARE), 4);
-        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, Item.ItemRarity.UNIQUE), 8);
-
-        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, Item.ItemRarity.COMMON), 10);
-        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, Item.ItemRarity.RARE), 14);
-        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, Item.ItemRarity.UNIQUE), 18);
-
-
-        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, Item.ItemRarity.COMMON), 20);
-        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, Item.ItemRarity.RARE), 25);
-        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, Item.ItemRarity.UNIQUE), 30);
-
-        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, Item.ItemRarity.COMMON), 35);
-        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, Item.ItemRarity.RARE), 45);
-        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, Item.ItemRarity.UNIQUE), 55);
-
-        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, Item.ItemRarity.COMMON), 95);
-        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, Item.ItemRarity.RARE), 100);
-        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE), 128);
-
-        inv.setItem(0, addDisplayLore(potato));
-        inv.setItem(1, addDisplayLore(loadedPotato));
-        inv.setItem(2, addDisplayLore(apple));
-
-        inv.setItem(3, addDisplayLore(unCookedChicken));
-        inv.setItem(4, addDisplayLore(RoastedChicken));
-        inv.setItem(5, addDisplayLore(pumpkinPie));
-
-        inv.setItem(6, addDisplayLore(saltedPork));
-        inv.setItem(7, addDisplayLore(seasonedPork));
-        inv.setItem(8, addDisplayLore(mushroomSoup));
-
-        inv.setItem(9, addDisplayLore(frozenSteak));
-        inv.setItem(10, addDisplayLore(sizzlingSteak));
-        inv.setItem(11, addDisplayLore(grilledRabbit));
-
-        inv.setItem(12, addDisplayLore(kingsApple));
-        inv.setItem(13, addDisplayLore(enchantedApple));
-        inv.setItem(14, addDisplayLore(goldCarrot));
+        
+        for(EnumHealingFood food : EnumHealingFood.values())
+        	inv.addItem(addDisplayLore(ShopMechanics.addPrice(new ItemHealingFood(food).createItem(), food.getPrice())));
+        
         player.openInventory(inv);
     }
-
-
 }

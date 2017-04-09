@@ -73,7 +73,7 @@ public class CommandEss extends BaseCommand {
                         return true;
                     }
 
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
                         String uuid = DatabaseAPI.getInstance().getUUIDFromName(args[1]);
                         if (uuid == null || uuid.equals("")) {
                             commandSender.sendMessage(ChatColor.RED + "Failed to find a user with the name " + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ".");
@@ -112,13 +112,13 @@ public class CommandEss extends BaseCommand {
                                 if (access) {
                                     online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
                                 }
-                                CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(online.getUniqueId());
+                                CurrencyTab tab = BankMechanics.getCurrencyTab(online.getUniqueId());
                                 if (tab != null) {
                                     tab.hasAccess = access;
                                 } else if (access) {
                                     tab = new CurrencyTab(online.getUniqueId());
                                     tab.loadCurrencyTab(null);
-                                    BankMechanics.getInstance().getCurrencyTab().put(online.getUniqueId(), tab);
+                                    BankMechanics.setCurrencyTab(online.getUniqueId(), tab);
                                 }
 
                             }

@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 
 public class DebugUtil {
@@ -19,7 +18,7 @@ public class DebugUtil {
         		+ "Inventory: " + (p.getInventory() != null ? p.getInventory().getTitle() : "None") + "\n"
         		+ (gp == null ? "GamePlayer is null!\n" : ""
         			+ "Level: " + gp.getLevel() + "\n"
-        			+ "Health: " + HealthHandler.getInstance().getPlayerHPLive(p) + " / " + HealthHandler.getInstance().getPlayerMaxHPLive(p) + "\n")
+        			+ "Health: " + gp.getHP() + " / " + gp.getMaxHP() + "\n")
         		+ "Packetlog Started for 30 seconds.";
         
         GameAPI.sendDevMessage(playerReport);

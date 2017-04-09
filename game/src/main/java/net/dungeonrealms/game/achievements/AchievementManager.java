@@ -75,17 +75,17 @@ public class AchievementManager implements GenericMechanic, Listener {
      * @param uuid
      * @since 1.0
      */
-    public void handleLogin(UUID uuid) {
+    @SuppressWarnings("unchecked")
+	public void handleLogin(UUID uuid) {
         if (Bukkit.getPlayer(uuid) == null) return;
         List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
-        if (playerPets.size() > 0) {
+        if (playerPets.size() > 0)
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PET_COMPANION);
-        }
-        if (playerPets.size() >= 3) {
+        
+        if (playerPets.size() >= 3)
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ANIMAL_TAMER);
-        }
-        int playerBankGems = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid);
-        BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
+        
+        BankMechanics.checkBankAchievements(uuid);
         if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
             //TODO: Check if they are Officer when type is implemented.

@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.world.loot.types;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -228,7 +230,7 @@ public enum LootType {
                             item = ItemManager.createRealmChest();
                             break;
                         case MAGMA_CREAM:
-                            item = ItemManager.createOrbofAlteration();
+                            item = new ItemOrb().createItem();
                             break;
                         case MELON_BLOCK:
                             item = new ItemStack(Material.MELON, 16);

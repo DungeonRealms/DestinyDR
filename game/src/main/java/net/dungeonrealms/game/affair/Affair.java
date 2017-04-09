@@ -8,6 +8,8 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -16,12 +18,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -104,7 +101,7 @@ public class Affair implements GenericMechanic {
                 for (Player player : allPlayers) {
                     if (player != null) {
                         Score score = objective.getScore(player.getName());
-                        score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
+                        score.setScore(HealthHandler.getPlayerHP(player));
 
                         //Only set the scoreboard if we need to as setScoreboard will send packets and also cause the sb to flicker
                         if (player.getScoreboard() != board) {
@@ -309,7 +306,7 @@ public class Affair implements GenericMechanic {
         //If its gone or something dont pls.
         if (!event.getItem().isValid()) return;
 
-        if (!GameAPI.isArmor(item) && !GameAPI.isWeapon(item)) return;
+        if (!ItemArmor.isArmor(item) && !ItemWeapon.isWeapon(item)) return;
 
         int blocks = 40;
 

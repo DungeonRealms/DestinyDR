@@ -1,15 +1,12 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
@@ -17,9 +14,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.dungeonrealms.game.world.item.Item.*;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
 
@@ -30,7 +25,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -54,9 +48,10 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         ghast = new InfernalGhast(this);
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
         EntityStats.setBossRandomStats(this.ghast, 100, 4);
-        ghast.setArmor(new ItemGenerator().setTier(Item.ItemTier.getByTier(4)).setRarity(Item.ItemRarity.UNIQUE).getArmorSet(),
-                new ItemGenerator().setTier(Item.ItemTier.getByTier(4)).setRarity(Item.ItemRarity.UNIQUE)
-                        .setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
+        ItemArmor am = new ItemArmor();
+        am.setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.UNIQUE);
+        ghast.setArmor(am.generateArmorSet(),
+                new ItemArmor().setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.UNIQUE).generateItem());
     }
 
     public String[] getItems() {

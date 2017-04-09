@@ -6,8 +6,10 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -95,7 +97,7 @@ public class MailHandler {
         UUID toUUID;
 
         // Determine whether or not this item can be sent via the mailing system.
-        if (!GameAPI.isItemTradeable(itemStack)) {
+        if (!ItemManager.isItemTradeable(itemStack)) {
             player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
             return false;
         }

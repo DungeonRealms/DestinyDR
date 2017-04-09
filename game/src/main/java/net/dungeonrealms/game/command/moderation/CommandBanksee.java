@@ -44,7 +44,7 @@ public class CommandBanksee extends BaseCommand {
 
         String playerName = args[0];
         if (Bukkit.getPlayer(playerName) != null) {
-            Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
+            Storage storage = BankMechanics.getStorage(Bukkit.getPlayer(playerName).getUniqueId());
             sender.openInventory(storage.inv);
         } else {
             if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {

@@ -23,7 +23,6 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.common.game.util.AsyncUtils;
-import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
@@ -32,33 +31,29 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.functional.ItemPlayerJournal;
+import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
-import net.dungeonrealms.game.player.duel.DuelOffer;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
-import net.dungeonrealms.game.quests.Quest;
-import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -68,13 +63,14 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -83,7 +79,6 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.PacketDataSerializer;
 import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
 
@@ -104,17 +99,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.inventivetalent.glow.GlowAPI;
 
 import io.netty.buffer.Unpooled;
 
@@ -128,7 +123,6 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
@@ -269,20 +263,6 @@ public class GameAPI {
         return "";
     }
 
-
-    public static ItemStack makeItemUntradeable(ItemStack item) {
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-            lore.add(ChatColor.GRAY + "Untradeable");
-            meta.setLore(lore);
-        }
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("subtype", "starter");
-        nbtItem.setInteger("untradeable", 1);
-        return nbtItem.getItem();
-    }
-
     public static int getItemSlot(PlayerInventory inv, String type) {
         for (int i = 0; i < inv.getContents().length; i++) {
             ItemStack item = inv.getContents()[i];
@@ -353,49 +333,14 @@ public class GameAPI {
     //639 Realm instance
 
     public static ItemStack[] getTierArmor(int tier) {
-        int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (chance <= 10) {
-            return new ItemGenerator().setRarity(Item.ItemRarity.UNIQUE).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 30) {
-            return new ItemGenerator().setRarity(Item.ItemRarity.RARE).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 150) {
-            return new ItemGenerator().setRarity(Item.ItemRarity.UNCOMMON).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-        } else {
-            return new ItemGenerator().setRarity(Item.ItemRarity.COMMON).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-        }
-    }
-
-    public static Item.ItemRarity getItemRarity(boolean isElite) {
-        int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (isElite) chance *= 0.9;
-        if (chance <= 10) {
-            return Item.ItemRarity.UNIQUE;
-        } else if (chance <= 30) {
-            return Item.ItemRarity.RARE;
-        } else if (chance <= 150) {
-            return Item.ItemRarity.UNCOMMON;
-        } else {
-            return Item.ItemRarity.COMMON;
-        }
+        ItemArmor armor = new ItemArmor();
+        armor.setTier(ItemTier.getByTier(tier));
+        armor.setRarity(ItemRarity.getRandomRarity());
+        return armor.generateArmorSet();
     }
 
     public static ChatColor getTierColor(int tier) {
-        if (tier == 1) {
-            return ChatColor.WHITE;
-        }
-        if (tier == 2) {
-            return ChatColor.GREEN;
-        }
-        if (tier == 3) {
-            return ChatColor.AQUA;
-        }
-        if (tier == 4) {
-            return ChatColor.LIGHT_PURPLE;
-        }
-        if (tier == 5) {
-            return ChatColor.YELLOW;
-        }
-        return ChatColor.WHITE;
+        return ItemTier.getByTier(tier).getColor();
     }
 
     public static GameClient getClient() {
@@ -526,7 +471,8 @@ public class GameAPI {
     }
 
 
-    public static String getServerLoad() {
+    @SuppressWarnings("deprecation")
+	public static String getServerLoad() {
         double tps = MinecraftServer.getServer().recentTps[0];
         return ((tps >= 19.90) ? ChatColor.GREEN + "Very Low" : (tps > 19.0) ? ChatColor.GREEN + "Low" : (tps > 15.0) ? ChatColor.YELLOW + "Medium" : ChatColor.RED + "High");
     }
@@ -570,7 +516,7 @@ public class GameAPI {
     		Utils.log.info("Not sending " + task + ", we haven't connected.");
     		return;
     	}
-        getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
+        getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
     }
 
     public static void sendDevMessage(String message, String... contents) {
@@ -618,49 +564,26 @@ public class GameAPI {
     }
 
 
-    public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, String element) {
-        ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), element));
+    public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, ElementalAttribute ea) {
+        ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), ea.name()));
         String name = ent.getCustomName();
         String[] splitName = name.split(" ", 2);
-
-
-        ElementalDamage damage = ElementalDamage.getFromName(element);
-        if (damage != null) {
-            if (damage == ElementalDamage.PURE)
-                name = damage.getPrefixColor() + damage.getElementalDamagePrefix() + " " + name;
-            else
-                name = damage.getPrefixColor() + (splitName.length == 1 ? damage.getName() + " " + splitName[0] : splitName[0] + " " + damage.getName() + " " + splitName[1]);
-        }
-//        switch (element) {
-//            case "pure":
-//                name = ChatColor.GOLD + "Holy " + name;
-//                break;
-//            case "fire":
-//                name = ChatColor.RED + (splitName.length == 1 ? "Fire " + splitName[0] : splitName[0] + " Fire " + splitName[1]);
-//                break;
-//            case "ice":
-//                name = ChatColor.BLUE + (splitName.length == 1 ? "Ice " + splitName[0] : splitName[0] + " Ice " + splitName[1]);
-//                break;
-//            case "poison":
-//                name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
-//                break;
-//            default:
-//                break;
-//        }
-
+        
+        if (ea == ElementalAttribute.PURE || splitName.length == 1)
+        	name = ea.getColor() + ea.getPrefix() + " " + name;
+        else
+        	name = ea.getColor() + splitName[0] + " " + ea.getPrefix() + " " + splitName[1];
+        
         ent.setCustomName(name.trim());
         ent.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), name.trim()));
-        if (GameAPI.isWeapon(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand())) {
-            EnchantmentAPI.addGlow(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand());
-        }
     }
 
     public static boolean isMobElemental(LivingEntity ent) {
         return ent.hasMetadata("element");
     }
 
-    public static String getMobElement(LivingEntity ent) {
-        return ent.getMetadata("element").get(0).asString();
+    public static ElementalAttribute getMobElement(LivingEntity ent) {
+        return ElementalAttribute.valueOf(ent.getMetadata("element").get(0).asString());
     }
 
     /**
@@ -808,11 +731,12 @@ public class GameAPI {
 
         // BANK AND COLLECTION BIN
         if (BankMechanics.storage.containsKey(uuid)) {
-            Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
+        	Storage s = BankMechanics.getStorage(uuid);
+            Inventory inv = s.inv;
             if (inv != null)
                 operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.INVENTORY_STORAGE.getKey(), ItemSerialization.toString(inv)))));
 
-            inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
+            inv = s.collection_bin;
             if (inv != null)
                 operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.INVENTORY_COLLECTION_BIN.getKey(), ItemSerialization.toString(inv)))));
 
@@ -858,7 +782,7 @@ public class GameAPI {
 
         // MISC
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.CURRENT_FOOD.getKey(), player.getFoodLevel()))));
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
+        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getPlayerHP(player)))));
 
         KarmaHandler.getInstance().saveToMongo(player);
 
@@ -907,7 +831,7 @@ public class GameAPI {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
-            for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
+            for (DamageTracker tracker : HealthHandler.getMonsterTrackers().values()) {
                 tracker.removeDamager(player);
             }
             
@@ -1129,8 +1053,8 @@ public class GameAPI {
 
             player.updateInventory();
         }
-
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        
+        Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
             String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
             if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
                 int size = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, uuid);
@@ -1155,7 +1079,7 @@ public class GameAPI {
             if (tab.hasAccess)
                 Bukkit.getLogger().info("Loaded currency tab for " + player.getName());
         });
-        BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
+        BankMechanics.setCurrencyTab(player.getUniqueId(), currencyTab);
 
         String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
         int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
@@ -1182,14 +1106,16 @@ public class GameAPI {
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
-            //TutorialMechanics.getInstance().doLogin(player);
-             /*PLAYER IS NEW*/
+            
+            //  PLAYER IS NEW  //
+            sendNetworkMessage("GMMessage", ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!");
             //sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
+            
             ItemManager.giveStarter(player, true);
 
             // Fix missing journal & portal rune
-            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
+            player.getInventory().setItem(8, new ItemPlayerJournal().generateItem());
+            player.getInventory().setItem(7, new ItemPortalRune(player).generateItem());
 
             if (DungeonRealms.getInstance().isEventShard) {
                 PlayerManager.PlayerToggles toggle;
@@ -1226,9 +1152,9 @@ public class GameAPI {
 
         player.setGameMode(GameMode.SURVIVAL);
 
-        for (int j = 0; j < 20; j++) {
+        for (int j = 0; j < 20; j++)
             player.sendMessage("");
-        }
+        
         player.setMaximumNoDamageTicks(0);
         player.setNoDamageTicks(0);
 
@@ -1417,27 +1343,14 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
 
-        // calculate attributes and check inventory
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            GameAPI.calculateAllAttributes(player);
-            PlayerManager.checkInventory(uuid);
-        }, 2 * 20L);
-
-        if (gp.getPlayer() != null) {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                if (gp.getStats().freePoints > 0) {
-                    final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                            "To allocate click ", ChatColor.WHITE);
-                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
-                    normal.addText(ChatColor.GREEN + "*");
-                    normal.sendToPlayer(gp.getPlayer());
-                }
-            }, 100);
-        }
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+        	gp.calculateAllAttributes();
+        	PlayerManager.checkInventory(uuid);
+        }, 40);
+        
+        Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
 
         if (Rank.isTrialGM(player)) {
-            HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
-            HealthHandler.getInstance().setPlayerHPLive(player, 10000);
 
             gp.setInvulnerable(true);
             gp.setTargettable(false);
@@ -1482,6 +1395,8 @@ public class GameAPI {
         createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
         createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
         createIfMissing(uuid, EnumData.TOGGLE_GLOW, true);
+        createIfMissing(uuid, EnumData.RAF_CHECKED, false);
+        createIfMissing(uuid, EnumData.RAF_COUNTER, 0);
     }
 
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {
@@ -1710,162 +1625,8 @@ public class GameAPI {
             return false;
         }
     }
-
-    public static File getRemoteDataFolder() {
-        String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
-        File file = DungeonRealms.getInstance().getDataFolder();
-        if (filePath.contains("/home/servers")) {
-            if (filePath.contains("d1")) {
-                filePath = "d1";
-            } else if (filePath.contains("d2")) {
-                filePath = "d2";
-            } else if (filePath.contains("d3")) {
-                filePath = "d3";
-            } else if (filePath.contains("d4")) {
-                filePath = "d4";
-            } else if (filePath.contains("d5")) {
-                filePath = "d5";
-            }
-            String webRoot = "/home/servers/" + filePath + "/";
-            file = new File(webRoot, DungeonRealms.getInstance().getDataFolder() + "");
-        }
-        return file;
-    }
-
-    public static void setAttributeVal(Item.AttributeType type, Integer[] val, Player p) {
-        GameAPI.getGamePlayer(p).setAttributeVal(type, val);
-    }
-
-    public static Integer[] changeAttributeVal(Item.AttributeType type, Integer[] difference, Player p) {
-        if (GameAPI.getGamePlayer(p) != null) {
-            if (type != null) {
-                return GameAPI.getGamePlayer(p).changeAttributeVal(type, difference);
-            }
-        }
-        return new Integer[]{0, 0};
-    }
-
-    public static int getStaticAttributeVal(Item.AttributeType type, Player p) {
-        return GameAPI.getGamePlayer(p).getStaticAttributeVal(type);
-    }
-
-    /**
-     * Gets the value of a player's specified attribute. Must be a non-range
-     * attribute.
-     *
-     * @param type
-     * @param p
-     * @return if a ranged attribute, throws an error message and returns -1.
-     */
-    public static Integer[] getRangedAttributeVal(Item.AttributeType type, Player p) {
-        if (GameAPI.getGamePlayer(p) != null) {
-            if (type != null) {
-                return GameAPI.getGamePlayer(p).getRangedAttributeVal(type);
-            }
-        }
-        return new Integer[]{0, 0};
-    }
-
-    /**
-     * Given an attribute, gets the total value of the attribute from the player's
-     * armor and weapon if applicable. Even if the AttributeType passed is an Armor
-     * or Weapon Attribute Type, the type will still try to calculate the total
-     * from the player's armor or weapon if applicable. For the attributes damage
-     * and health, takes into account benefits given from stats (str, dex, vit, int).
-     *
-     * @param type - an attribute, can be either an armor or weapon attribute
-     * @param p    - the player to calculate the total value for
-     * @return - the total value of the attribute from the player's equipment. If the
-     * attribute has ranged values, the first index is the min and second the max.
-     * Otherwise, the first index is the value.
-     * @since 2.0
-     */
-    public static int[] calculateAttribute(Item.AttributeType type, Player p) {
-        if (type instanceof Item.ArmorAttributeType) { // armor type
-            Item.ArmorAttributeType armorType = (Item.ArmorAttributeType) type;
-            ItemStack[] armorSet = p.getInventory().getArmorContents();
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = null;
-            NBTTagCompound tag = null;
-
-            for (ItemStack armor : armorSet) {
-                if (!GameAPI.isArmor(armor)) {
-                    continue;
-                }
-                nmsStack = CraftItemStack.asNMSCopy(armor);
-                tag = nmsStack.getTag();
-
-                if (tag.hasKey(type.getNBTName()) || tag.hasKey(type.getNBTName() + "Max")) {
-
-                }
-            }
-
-            // check if a weapon can also have this attribute
-            if (Item.WeaponAttributeType.getByName(armorType.getName()) != null) {
-
-            }
-        } else if (type instanceof Item.WeaponAttributeType) {
-            Item.WeaponAttributeType weaponType = (Item.WeaponAttributeType) type;
-
-            // check if armor can also have this attribute
-            if (Item.ArmorAttributeType.getByName(weaponType.getName()) != null) {
-
-            }
-        }
-
-        return new int[]{0, 0};
-    }
-
-    public static String getItemUID(ItemStack i) {
-        if (!(GameAPI.isWeapon(i))) return "";
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(i);
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return "";
-        if (tag.hasKey("u")) return tag.getString("u");
-        return "";
-    }
-
-    /**
-     * Calculates the value for all attributes and loads it into memory. Calculates
-     * both armor and weapon attributes. Called on player login.
-     *
-     * @param p - Player that needs attribute calculation
-     * @return - the HashMap in the player attributes object containing each attribute
-     * as a key along with respective total attribute value as the value.
-     * @since 2.0
-     */
-    public static Map<String, Integer[]> calculateAllAttributes(Player p) {
-        Map<String, Integer[]> attributes = new HashMap<>();
-        GamePlayer gp = GameAPI.getGamePlayer(p);
-        assert gp != null;
-
-        // calculate from armor and weapon, then update the gp attributes property
-        calculateArmorAttributes(attributes, p.getInventory().getArmorContents(), true);
-        calculateWeaponAttributes(attributes, p.getInventory().getItemInMainHand(), true);
-
-        gp.setCurrentWeapon(getItemUID(p.getEquipment().getItemInMainHand()));
-
-        // add stat bonuses from the stat menu
-        changeAttributeVal(attributes, Item.ArmorAttributeType.STRENGTH, gp.getStats().strPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.DEXTERITY, gp.getStats().dexPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.INTELLECT, gp.getStats().intPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.VITALITY, gp.getStats().vitPoints);
-
-        // apply stat bonuses (str, dex, int, and vit)
-        applyStatBonuses(attributes, gp);
-
-        // set the player's attribute field
-        gp.setAttributes(attributes);
-
-        if (!gp.isAttributesLoaded())
-            HealthHandler.getInstance().handleLoginEvents(p);
-
-        // so energy regen doesn't start before attributes have been loaded
-        gp.setAttributesLoaded(true);
-
-        return attributes;
-    }
-
-    public static void calculateAllAttributes(LivingEntity ent, Map<String, Integer[]> attributes) {
+    
+    public static void calculateAllAttributes(LivingEntity ent, AttributeList attributes) {
         ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
         // check if we have a skull
@@ -1873,337 +1634,13 @@ public class GameAPI {
         Item.ItemTier tier = Item.ItemTier.getByTier(intTier);
         if (armorSet[3].getType() == Material.SKULL_ITEM && (intTier >= 3 || new Random().nextInt(10) <= (6 + intTier))) {
             // if we have a skull we need to generate a helmet so mob stats are calculated correctly
-            armorSet[3] = new ItemGenerator().setTier(tier).setRarity(GameAPI.getItemRarity(ent.hasMetadata("elite"))).generateItem().getItem();
+            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(ent.hasMetadata("elite"))).generateItem();
         }
 
-        calculateArmorAttributes(attributes, armorSet, true);
-        calculateWeaponAttributes(attributes, ent.getEquipment().getItemInMainHand(), true);
-        applyStatBonuses(attributes);
-    }
-
-    /**
-     * Calculates the difference in attributes when a player switches weapons. To save processing
-     * power, only called when the player attempts to attack a mob with a new weapon.
-     * <p>
-     * NOTE: if attributes like str are added to weapons, this type will have to be called
-     * whenever a player switches weapons.
-     *
-     * @param p
-     * @param newWeapon
-     */
-    public static void handlePlayerWeaponSwitch(Player p, ItemStack newWeapon, ItemStack oldWeapon) {
-        GamePlayer gp = GameAPI.getGamePlayer(p);
-        assert gp != null;
-
-        if (!GameAPI.isWeapon(newWeapon) && !GameAPI.isWeapon(oldWeapon)) return;
-
-        if (newWeapon == null || newWeapon.getType() == Material.AIR) {
-            List<String> oldModifiers = GameAPI.getModifiers(oldWeapon);
-            net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
-            // iterate through to get decreases from stats not in the new armor
-            oldModifiers.forEach(modifier -> {
-                Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
-                // calculate new values
-                Integer[] newTotalVal = type.isRange()
-                        ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-                        gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-                        : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
-                gp.setAttributeVal(type, newTotalVal);
-            });
-        } else {
-            List<String> newModifiers = GameAPI.getModifiers(newWeapon);
-            net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newWeapon).getTag();
-
-            if (oldWeapon != null && oldWeapon.getType() != Material.AIR) {
-                List<String> oldModifiers = GameAPI.getModifiers(oldWeapon);
-                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
-
-                // tbh, the milliseconds saved by writing this type and handleArmorDifferences probably wasn't
-                // worth the effort...
-
-                // get differences
-                if (newModifiers != null) {
-                    newModifiers.forEach(modifier -> {
-                        // get the attribute type to determine if we need a percentage or not and to get the
-                        // correct display name
-                        Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
-
-                        if (type.isRange()) {
-                            gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") - ((oldTag != null) ?
-                                    oldTag.getInt(modifier + "Min") : 0), newTag.getInt(modifier + "Max") - ((oldTag != null) ?
-                                    oldTag.getInt(modifier + "Max") : 0)});
-                        } else {
-                            gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) - ((oldTag != null) ? oldTag
-                                    .getInt(modifier) : 0)});
-                        }
-                    });
-                }
-
-                if (oldModifiers != null) {
-                    // iterate through to get decreases from stats not in the new armor
-                    oldModifiers.removeAll(newModifiers);
-                    oldModifiers.forEach(modifier -> {
-                        Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
-                        Integer[] newTotalVal = type.isRange()
-                                ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-                                gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-                                : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
-                        gp.setAttributeVal(type, newTotalVal);
-                    });
-                }
-            } else {
-                newModifiers.forEach(modifier -> {
-                    // get the attribute type to determine if we need a percentage or not and to get the
-                    // correct display name
-                    Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
-                    // calculate new values
-                    Integer[] newTotalVal = type.isRange()
-                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
-                            gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
-                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
-                    gp.setAttributeVal(type, newTotalVal);
-                });
-            }
-        }
-
-        gp.setCurrentWeapon(GameAPI.getItemUID(newWeapon));
-    }
-
-    /**
-     * Given an attributes Map, applies the appropriate bonuses to various
-     * non-damage related attributes from the strength, vitality, dexterity,
-     * and intellect values in the Map.
-     *
-     * @param attributes
-     */
-    public static void applyStatBonuses(Map<String, Integer[]> attributes) {
-        // STRENGTH BONUSES
-        float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
-        changeAttributeVal(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
-
-        // DEXTERITY BONUSES
-        float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
-        changeAttributeVal(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
-
-        // INTELLECT BONUSES
-        float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
-        changeAttributeVal(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
-        changeAttributeVal(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
-
-        // VITALITY BONUSES
-        float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
-    }
-
-    public static void applyStatBonuses(Map<String, Integer[]> attributes, GamePlayer gp) {
-        Map<Item.AttributeType, Float> attributeBonusesFromStats = gp.getAttributeBonusesFromStats();
-        // STRENGTH BONUSES
-        float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
-        changeAttributeVal(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.ARMOR, strength * 0.03f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.BLOCK, strength * 0.017f);
-
-        // DEXTERITY BONUSES
-        float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
-        changeAttributeVal(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
-        changeAttributeVal(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
-        attributeBonusesFromStats.put(Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
-
-        // INTELLECT BONUSES
-        float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
-        changeAttributeVal(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
-        changeAttributeVal(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
-        attributeBonusesFromStats.put(Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
-
-        // VITALITY BONUSES
-        float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
-    }
-
-    /**
-     * Recalculates the stat bonuses for a player by reading their attributesBonusesFromStats property in their GamePlayer.
-     *
-     * @param attributes
-     * @param attributeBonusesFromStats
-     * @param gp
-     */
-    public static void recalculateStatBonuses(Map<String, Integer[]> attributes, Map<Item.AttributeType, Float> attributeBonusesFromStats, GamePlayer gp) {
-        attributeBonusesFromStats.entrySet().forEach(entry -> {
-            if (entry.getKey().isPercentage() || entry.getKey().equals(Item.ArmorAttributeType.HEALTH_REGEN)) {
-                changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, -Math.round(entry.getValue()));
-            } else {
-                gp.changeAttributeValPercentage(entry.getKey(), -Math.round(entry.getValue()));
-            }
-        });
-        applyStatBonuses(attributes, gp);
-    }
-
-    /**
-     * Changes the value of an attribute by the given difference. This difference
-     * may be positive or negative.
-     *
-     * @param type
-     * @param difference
-     * @return the new value of the attribute
-     */
-    private static Integer[] changeAttributeVal(Map<String, Integer[]> attributes, Item.AttributeType type, float difference) {
-        Integer[] oldVal = attributes.getOrDefault(type.getNBTName(), new Integer[]{0, 0});
-        Integer[] newTotalVal = new Integer[]{Math.round(oldVal[0] + difference), Math.round(oldVal[1] + difference)};
-        attributes.put(type.getNBTName(), newTotalVal);
-        return newTotalVal;
-    }
-
-    /**
-     * Changes the value of an attribute by a percent difference. This difference
-     * may be positive or negative.
-     *
-     * @param type
-     * @param percentDifference
-     * @return the new value of the attribute
-     */
-    private static Integer[] changeAttributeValPercentage(Map<String, Integer[]> attributes, Item.AttributeType type, float percentDifference) {
-        int newLow = (int) Math.round(attributes.get(type.getNBTName())[0] * ((percentDifference + 100.) / 100.));
-        int newHigh = (int) Math.round(attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.));
-        if (newLow < 0) newLow = 0;
-        if (newHigh < 0) newHigh = 0;
-        attributes.put(type.getNBTName(), new Integer[]{newLow, newHigh});
-        return new Integer[]{newLow, newHigh};
-    }
-
-    /**
-     * Puts the attributes on an armorset in the given attributes map. Does not
-     * necessarily update the gameplayer attributes field. Called in the
-     * calculateAllAttributes type.
-     *
-     * @param attributes
-     * @param armorSet
-     * @param includeAbsentAttributes if true add all attributes not present
-     *                                to map with values 0, 0
-     */
-    public static void calculateArmorAttributes(Map<String, Integer[]> attributes, ItemStack[] armorSet, boolean includeAbsentAttributes) {
-        // populate the map with default values if necessary
-        if (includeAbsentAttributes) {
-            for (Item.ArmorAttributeType type : Item.ArmorAttributeType.values()) {
-                attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
-            }
-        }
-        // iterate through armorset
-        for (ItemStack armor : armorSet) {
-            if (!GameAPI.isArmor(armor)) continue;
-
-            List<String> modifiers = GameAPI.getModifiers(armor);
-            NBTTagCompound tag = CraftItemStack.asNMSCopy(armor).getTag();
-            assert tag != null;
-
-            modifiers.forEach(modifier -> {
-                Item.ArmorAttributeType type = Item.ArmorAttributeType.getByNBTName(modifier);
-                assert type != null;
-
-                if (type.isRange()) {
-                    attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
-                            Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
-                            Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")});
-                } else {
-                    attributes.put(type.getNBTName(), new Integer[]{0, attributes.get(modifier)[1] + tag.getInt(modifier)});
-                }
-            });
-        }
-    }
-
-    /**
-     * Puts the attributes on a given weapon in the given attributes map. Does
-     * not necessarily update the gameplayer attributes field. Called in the
-     * calculateAllAttributes type.
-     *
-     * @param attributes
-     * @param weapon
-     * @param includeAbsentAttributes if true add all attributes not present
-     *                                to map with values 0, 0
-     */
-    public static void calculateWeaponAttributes(Map<String, Integer[]> attributes, ItemStack weapon, boolean includeAbsentAttributes) {
-        // populate the map with default values
-        if (includeAbsentAttributes) {
-            for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
-                attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
-            }
-        }
-
-        if (GameAPI.isWeapon(weapon)) {
-            List<String> modifiers = GameAPI.getModifiers(weapon);
-            NBTTagCompound tag = CraftItemStack.asNMSCopy(weapon).getTag();
-            assert tag != null;
-
-            modifiers.forEach(modifier -> {
-                Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
-                assert type != null;
-
-                if (type.isRange()) {
-                    attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
-                            Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
-                            Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")
-                    });
-                } else {
-                    attributes.put(type.getNBTName(), new Integer[]{0, attributes.getOrDefault(modifier, new
-                            Integer[]{0, 0})[1] + tag.getInt(modifier)});
-                }
-            });
-        }
-    }
-
-    /**
-     * Gets all the modifier names of an item.
-     *
-     * @param item
-     * @return - null if the item does not contain any modifiers
-     */
-    public static List<String> getModifiers(ItemStack item) {
-        if (item == null) return null;
-        List<String> modifiersList = new ArrayList<>();
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-        if (!nmsStack.hasTag()) return null;
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return null;
-        if (tag.hasKey("modifiers")) {
-            NBTTagList list = tag.getList("modifiers", 8);
-            for (int i = 0; i < list.size(); i++) {
-                modifiersList.add(list.getString(i));
-            }
-            return modifiersList;
-        }
-        return null;
-    }
-
-    public static boolean isWeapon(ItemStack stack) {
-        if (stack == null || stack.getType() == Material.AIR) return false;
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return !(nms == null || nms.getTag() == null) && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
-    }
-
-    public static boolean isArmor(ItemStack stack) {
-        if (stack == null || stack.getType() == Material.AIR) return false;
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return !(nms == null || nms.getTag() == null) && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
-    }
-
-    /**
-     * @param is
-     * @return
-     */
-    public static boolean isOrb(ItemStack is) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
-        return !(nms == null || nms.getTag() == null) && is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
+        attributes.addStats(ent.getEquipment().getItemInMainHand());
+        for (ItemStack armor : armorSet)
+        	attributes.addStats(armor);
+        attributes.applyStatBonuses();
     }
 
     public static String getCustomID(ItemStack i) {
@@ -2211,60 +1648,6 @@ public class GameAPI {
         if (nms == null || nms.getTag() == null) return null;
         NBTTagCompound tag = nms.getTag();
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
-    }
-
-    public static boolean isItemTradeable(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-        if (nms != null && nms.getTag() != null) {
-            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important"))
-                return false;
-            
-            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter"))
-                return false;
-            
-            if (nms.getTag().hasKey("untradeable") && nms.getTag().getInt("untradeable") == 1)
-                return false;
-            
-            return !(isItemPermanentlyUntradeable(itemStack) || isItemSoulbound(itemStack));
-            
-        }
-        
-        return true;
-    }
-
-    public static boolean isItemDroppable(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-        if (nms != null && nms.getTag() != null)
-            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("nondrop"))
-                return false;
-        return isItemTradeable(itemStack);
-    }
-
-    public static boolean isItemSoulbound(ItemStack item) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if (nms == null || nms.getTag() == null) return false;
-        NBTTagCompound tag = nms.getTag();
-        return (tag.hasKey("soulbound") && tag.getInt("soulbound") == 1);
-    }
-    
-    public static ItemStack makePermanentlyUntradeable(ItemStack item) {
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-            lore.add(ChatColor.GRAY + "Permanent Untradeable");
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setInteger("puntradeable", 1);
-        return nbtItem.getItem();
-    }
-
-    public static boolean isItemPermanentlyUntradeable(ItemStack item) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if (nms == null || nms.getTag() == null) return false;
-        NBTTagCompound tag = nms.getTag();
-        return tag.hasKey("puntradeable") && tag.getInt("puntradeable") == 1;
     }
 
     /**
@@ -2283,7 +1666,6 @@ public class GameAPI {
         int level = Utils.getRandomFromTier(tier, "low");
         EntityStats.setMonsterRandomStats(entity, level, tier);
         String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
         entity.setCustomName(lvlName + ChatColor.RESET + customName);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -2315,9 +1697,8 @@ public class GameAPI {
         for (Entity ent : nearby) {
             if (ent instanceof Player) {
                 Player p = (Player) ent;
-                if (p.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(p) && p.getSpectatorTarget() != null && p.getSpectatorTarget() == spectated) {
+                if (p.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(p) && p.getSpectatorTarget() != null && p.getSpectatorTarget() == spectated)
                     callback.accept(p);
-                }
             }
         }
     }
@@ -2434,6 +1815,37 @@ public class GameAPI {
 	}
 	
 	/**
+	 * Remove a supplied armor piece from the player's inventory.
+	 * Returns the dropped piece or null.
+	 */
+	public static ItemStack removeArmor(Player player, ItemStack is) {
+		GeneratedItemType type = GeneratedItemType.getType(is.getType());
+		ItemStack item = null;
+		
+		switch (type) {
+			case HELMET:
+				item = player.getEquipment().getHelmet();
+				player.getEquipment().setHelmet(new ItemStack(Material.AIR));
+				break;
+			case CHESTPLATE:
+				item = player.getEquipment().getChestplate();
+				player.getEquipment().setChestplate(new ItemStack(Material.AIR));
+				break;
+			case LEGGINGS:
+				item = player.getEquipment().getLeggings();
+				player.getEquipment().setLeggings(new ItemStack(Material.AIR));
+				break;
+			case BOOTS:
+				item = player.getEquipment().getBoots();
+				player.getEquipment().setBoots(new ItemStack(Material.AIR));
+				break;
+			default:
+		}
+		
+		return item;
+	}
+	
+	/**
 	 * Add an item into a player's inventory.
 	 * If there isn't enough space, drop it.
 	 */
@@ -2448,7 +1860,7 @@ public class GameAPI {
 		
 		if(player.getInventory().firstEmpty() == -1) {
 			player.getWorld().dropItem(player.getLocation(), item);
-			player.sendMessage(ChatColor.RED + "There was not enough space in your inventory for this item, so it has dropped.");
+			player.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "full" + ChatColor.RED + ", so this item has been dropped at your feet.");
 		} else {
 			player.getInventory().addItem(item);
 		}
@@ -2480,5 +1892,49 @@ public class GameAPI {
             zipFile.addFolder(targetFile, parameters);
         else
             System.out.println("[ZIPPER] - Don't know how to handle " + targetFile.getName());
+	}
+	
+	public static ItemStack getItem(Player player, EquipmentSlot slot) {
+		EntityEquipment e = player.getEquipment();
+		switch (slot) {
+			case HAND:
+				return e.getItemInMainHand();
+			case OFF_HAND:
+				return e.getItemInOffHand();
+			case CHEST:
+				return e.getChestplate();
+			case FEET:
+				return e.getBoots();
+			case HEAD:
+				return e.getHelmet();
+			case LEGS:
+				return e.getLeggings();
+		}
+		return null;
+	}
+
+	public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {
+		if (slot == EquipmentSlot.HAND) {
+			player.getEquipment().setItemInMainHand(stack);
+		} else if (slot == EquipmentSlot.OFF_HAND) {
+			player.getEquipment().setItemInOffHand(stack);
+		} else {
+			Utils.log.info("Could not set hand item of " + player.getName() + ". Tried to set hand " + slot.name() + ".");
+		}
+	}
+	
+	public static void sendStatNotification(Player p) {
+		GamePlayer gp = getGamePlayer(p);
+		if(gp == null)
+			return;
+		if (gp.getStats().getFreePoints() > 0) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+				final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+						"To allocate click ", ChatColor.WHITE);
+				normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+				normal.addText(ChatColor.GREEN + "*");
+				normal.sendToPlayer(gp.getPlayer());
+			});
+		}
 	}
 }

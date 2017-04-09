@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.achievements;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -612,6 +614,45 @@ public class Achievements {
             return hideWhenIncomplete;
         }
     }
-
-
+    
+    public enum EnumAchievementMonsterKill {
+    	MONSTER_HUNTER_I(100),
+    	MONSTER_HUNTER_II(300),
+    	MONSTER_HUNTER_III(5000),
+    	MONSTER_HUNTER_IV(1000),
+    	MONSTER_HUNTER_VI(2000);
+    	
+    	@Getter private int killRequirement;
+    	
+    	EnumAchievementMonsterKill(int req) {
+    		this.killRequirement = req;
+    	}
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    	
+    }
+    
+    public enum EnumAchievementMoney {
+    	ACQUIRE_CURRENCY_I(100),
+    	ACQUIRE_CURRENCY_II(1000),
+    	ACQUIRE_CURRENCY_III(5000),
+    	ACQUIRE_CURRENCY_IV(10000),
+    	ACQUIRE_CURRENCY_V(50000),
+    	ACQUIRE_CURRENCY_VI(100000),
+    	ACQUIRE_CURRENCY_VII(500000),
+    	ACQUIRE_CURRENCY_VIII(1000000);
+    	
+    	@Getter private int moneyRequirement;
+    	
+    	EnumAchievementMoney(int req) {
+    		this.moneyRequirement = req;
+    	}
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    	
+    }
 }

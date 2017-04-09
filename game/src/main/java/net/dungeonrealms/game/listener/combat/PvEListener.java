@@ -1,25 +1,27 @@
 package net.dungeonrealms.game.listener.combat;
 
-import com.sun.org.apache.regexp.internal.RE;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievementMonsterKill;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
-import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -33,6 +35,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,25 +48,40 @@ import java.util.Random;
 public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void playerMeleeMob(EntityDamageByEntityEvent event) {
-        if (!GameAPI.isPlayer(event.getDamager())) return;
+    public void playerAttackMob(EntityDamageByEntityEvent event) {
+    	
+    	Player damager = null;
+    	Projectile projectile = null;
+    	LivingEntity receiver = (LivingEntity) event.getEntity();
+    	
+        if (GameAPI.isPlayer(event.getDamager())) {
+        	damager = (Player) event.getDamager();
+        } else if(DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager())) {
+        	ProjectileSource shooter = ((Projectile)event.getDamager()).getShooter();
+        	if(!(shooter instanceof Player))
+        		return;
+        	damager = (Player) shooter;
+        	projectile = (Projectile) event.getDamager();
+        } else {
+        	return;
+        }
+        
+        //  THIS ONLY HANDLES PvE  //
         if (event.getEntity() instanceof Player) return;
+        
+        //  NO HITTING PETS  //
         if (EntityMechanics.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (EntityMechanics.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        
+        //  ONLY HANDLE MOB ATTACKS  //
         if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("type")) return;
-        } else {
-            if (event.getEntity().hasMetadata("type")) {
-                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
-            } else {
-                return;
-            }
+            if (!event.getEntity().hasMetadata("type"))
+            	return;
+        } else if (EnumEntityType.BUFF.isType(event.getEntity())){
+            return;
         }
 
         event.setDamage(0);
-
-        Player damager = (Player) event.getDamager();
-        LivingEntity receiver = (LivingEntity) event.getEntity();
 
         if (DamageAPI.isInvulnerable(receiver)) {
             if (receiver.hasMetadata("boss")) {
@@ -76,192 +95,37 @@ public class PvEListener implements Listener {
             return;
         }
 
-        double finalDamage;
-
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
-        } else {
-            CombatLog.addToCombat(damager);
-        }
-
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
-
+        CombatLog.updateCombat(damager);
+        
+        ItemStack held = damager.getEquipment().getItemInMainHand();
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(held));
+        
         if (!receiver.hasMetadata("boss"))
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
-
-        if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
-            HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, 1);
+        
+        if (!ItemWeapon.isWeapon(held)) {
+        	AttackResult res = new AttackResult(damager, receiver);
+        	res.setDamage(1);
+        	HealthHandler.damageMonster(res);
             checkPowerMove(event, receiver);
             return;
         }
 
-        Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
-        Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
-
-        if(!(receiver instanceof Player)) {
-            switch (weaponType) {
-                case BOW:
-                    switch (tier) {
-                        case TIER_1:
-                            DamageAPI.knockbackEntity(damager, receiver, 1.2);
-                            event.setCancelled(true);
-                            damager.updateInventory();
-                            return;
-                        case TIER_2:
-                            DamageAPI.knockbackEntity(damager, receiver, 1.5);
-                            event.setCancelled(true);
-                            damager.updateInventory();
-                            return;
-                        case TIER_3:
-                            DamageAPI.knockbackEntity(damager, receiver, 1.8);
-                            event.setCancelled(true);
-                            damager.updateInventory();
-                            return;
-                        case TIER_4:
-                            DamageAPI.knockbackEntity(damager, receiver, 2.0);
-                            event.setCancelled(true);
-                            damager.updateInventory();
-                            return;
-                        case TIER_5:
-                            DamageAPI.knockbackEntity(damager, receiver, 2.2);
-                            event.setCancelled(true);
-                            damager.updateInventory();
-                            return;
-                        default:
-                            return;
-                    }
-                default:
-                    break;
-            }
+        if(!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
+        	event.setCancelled(true);
+        	DamageAPI.knockbackEntity(damager, receiver, 1.2);
+        	damager.updateInventory();
+        	return;
         }
-
-        finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver, true);
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
-        double armorReducedDamage = armorCalculation[0];
-        String defenderName;
-        if (receiver.hasMetadata("customname")) {
-            defenderName = receiver.getMetadata("customname").get(0).asString().trim();
-        } else {
-            defenderName = "Enemy";
-        }
-        if (armorReducedDamage == -1) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
-            //The defender dodged the attack
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            finalDamage = 0;
-            return;
-        } else if (armorReducedDamage == -2) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            finalDamage = 0;
-            return;
-        } else if (armorReducedDamage == -3) {
-            //Reflect when its fixed. @TODO
-
-            //Against elites / bosses maybe do 50% less?
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + defenderName + ChatColor.RED + ")");
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-
-            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, 0, 0);
-            return;
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
-        }
-        HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
-        DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
-        checkPowerMove(event, receiver);
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void playerRangedMob(EntityDamageByEntityEvent event) {
-        if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
-        if (event.getEntity() instanceof Player) return;
-        if (EntityMechanics.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (EntityMechanics.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        Projectile projectile = (Projectile) event.getDamager();
-        if (!(projectile.getShooter() instanceof Player)) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            return;
-        }
-        if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("type")) return;
-        } else {
-            if (event.getEntity().hasMetadata("type")) {
-                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
-            } else {
-                return;
-            }
-        }
-
-        event.setDamage(0);
-
-        Player damager = (Player) projectile.getShooter();
-        LivingEntity receiver = (LivingEntity) event.getEntity();
-
-        if (DamageAPI.isInvulnerable(receiver)) {
-            if (receiver.hasMetadata("boss")) {
-                if (receiver instanceof CraftLivingEntity) {
-                    DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
-                    b.onBossAttack(event);
-                }
-            }
-            event.setCancelled(true);
-            damager.updateInventory();
-            return;
-        }
-
-        double finalDamage;
-
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
-        } else {
-            CombatLog.addToCombat(damager);
-        }
-
-        if (!receiver.hasMetadata("boss"))
-            DamageAPI.knockbackEntity(damager, receiver, 0.4);
-
-        finalDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
-        double armorReducedDamage = armorCalculation[0];
-        String defenderName;
-        if (receiver.hasMetadata("customname")) {
-            defenderName = receiver.getMetadata("customname").get(0).asString().trim();
-        } else {
-            defenderName = "Enemy";
-        }
-        if (armorReducedDamage == -1) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
-            //The defender dodged the attack
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            finalDamage = 0;
-            return;
-        } else if (armorReducedDamage == -2) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            finalDamage = 0;
-            return;
-        } else if (armorReducedDamage == -3) {
-            //Reflect when its fixed. @TODO
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + defenderName + ChatColor.RED + ")");
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-
-            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, -5, 0);
-            return;
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
-            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
-        }
-        HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
-
+        //  CALCULATE DAMAGE  //
+        AttackResult res = new AttackResult(damager, receiver, projectile);
+    	DamageAPI.calculateWeaponDamage(res, true);
+    	DamageAPI.applyArmorReduction(res, true);
+        
+        res.applyDamage();
+        
+        //  EXTRA WEAPON ONLY DAMAGE  //
+        DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, damager);
         checkPowerMove(event, receiver);
     }
 
@@ -274,9 +138,9 @@ public class PvEListener implements Listener {
         LivingEntity monster = event.getEntity();
         Player killer = monster.getKiller();
         Player highestDamage = null;
-        if (HealthHandler.getInstance().getMonsterTrackers().containsKey(monster.getUniqueId())) {
-            highestDamage = HealthHandler.getInstance().getMonsterTrackers().get(monster.getUniqueId()).findHighestDamageDealer();
-        }
+        if (HealthHandler.getMonsterTrackers().containsKey(monster.getUniqueId()))
+            highestDamage = HealthHandler.getMonsterTrackers().get(monster.getUniqueId()).findHighestDamageDealer();
+        
         if (highestDamage == null || !highestDamage.isOnline()) {
             if (killer != null) {
                 highestDamage = killer;
@@ -286,7 +150,7 @@ public class PvEListener implements Listener {
         }
         for(int i = 0; i < 3; i++)
         	DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
-        HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
+        HealthHandler.getMonsterTrackers().remove(monster.getUniqueId());
         DRMonster drMonster = ((DRMonster) ((CraftLivingEntity) monster).getHandle());
         drMonster.onMonsterDeath(highestDamage);
         
@@ -325,36 +189,13 @@ public class PvEListener implements Listener {
                 }
                 if (nearbyPartyMembers.size() > 0) {
                     nearbyPartyMembers.add(highestDamage);
-                    switch (nearbyPartyMembers.size()) {
-                        case 1:
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            exp *= 1.2;
-                            break;
-                        case 4:
-                            exp *= 1.3;
-                            break;
-                        case 5:
-                            exp *= 1.4;
-                            break;
-                        case 6:
-                            exp *= 1.5;
-                            break;
-                        case 7:
-                            exp *= 1.6;
-                            break;
-                        case 8:
-                            exp *= 1.7;
-                            break;
-                        default:
-                            break;
-                    }
+                    //  ADD BOOST  //
+                    if (nearbyPartyMembers.size() > 2 && nearbyPartyMembers.size() <= 8)
+                    	exp *= 1.1 + (((double)nearbyPartyMembers.size() - 2) / 10);
+                    //  DISTRIBUTE EVENLY  //
                     exp /= nearbyPartyMembers.size();
-                    for (Player player : nearbyPartyMembers) {
+                    for (Player player : nearbyPartyMembers)
                         GameAPI.getGamePlayer(player).addExperience(exp, true, true);
-                    }
                 } else {
                     gamePlayer.addExperience(exp, false, true);
                 }
@@ -384,28 +225,10 @@ public class PvEListener implements Listener {
             default:
                 break;
         }
-        switch (playerStatistics.getTotalMobKills()) {
-            case 100:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_I);
-                break;
-            case 300:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_II);
-                break;
-            case 500:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_III);
-                break;
-            case 1000:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_IV);
-                break;
-            case 1500:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_V);
-                break;
-            case 2000:
-                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_VI);
-                break;
-            default:
-                break;
-        }
+        
+        for (EnumAchievementMonsterKill ach : EnumAchievementMonsterKill.values())
+        	if (playerStatistics.getTotalMobKills() == ach.getKillRequirement())
+        		Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), ach.getAchievement());
     }
 
     private static void checkPowerMove(EntityDamageByEntityEvent event, LivingEntity receiver) {
@@ -415,26 +238,8 @@ public class PvEListener implements Listener {
 
         int mobTier = receiver.getMetadata("tier").get(0).asInt();
         Random rand = new Random();
-        int powerChance = 0;
+        int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
         if (receiver.hasMetadata("elite")) {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                 PowerMove.doPowerMove("whirlwind", receiver, null);
@@ -452,27 +257,8 @@ public class PvEListener implements Listener {
                 PowerMove.doPowerMove("whirlwind", receiver, null);
             }
         } else {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
+            if (rand.nextInt(100) <= powerChance)
                 PowerMove.doPowerMove("powerstrike", receiver, null);
-            }
         }
     }
 }

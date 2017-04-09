@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 
@@ -435,8 +436,8 @@ public class RealmMaterialFactory {
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
-
-            player.getInventory().setItem(player.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
+            
+            player.getInventory().setItem(player.getInventory().firstEmpty(), ItemManager.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
         }, null);
     }
 

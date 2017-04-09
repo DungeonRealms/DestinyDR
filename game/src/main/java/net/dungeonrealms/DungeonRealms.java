@@ -7,7 +7,6 @@ import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -39,6 +38,7 @@ import net.dungeonrealms.game.command.toggle.*;
 import net.dungeonrealms.game.commands.quests.CommandQuestEditor;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.*;
+import net.dungeonrealms.game.item.FunctionalItemListener;
 import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.listener.TabCompleteCommands;
 import net.dungeonrealms.game.listener.combat.DamageListener;
@@ -59,7 +59,6 @@ import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
@@ -265,14 +264,13 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(DonationEffects.getInstance());
         mm.registerMechanic(HealthHandler.getInstance());
         mm.registerMechanic(KarmaHandler.getInstance());
-        mm.registerMechanic(BankMechanics.getInstance());
         mm.registerMechanic(BungeeChannelListener.getInstance());
         mm.registerMechanic(NetworkClientListener.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new ShopMechanics());
         mm.registerMechanic(new EntityMechanics());
         mm.registerMechanic(PatchTools.getInstance());
-        mm.registerMechanic(Mining.getInstance());
+        mm.registerMechanic(new Mining());
         mm.registerMechanic(Realms.getInstance());
         mm.registerMechanic(Affair.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
@@ -301,6 +299,7 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms - Registering Events");
 
+        pm.registerEvents(new FunctionalItemListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new InventoryListener(), this);
@@ -372,7 +371,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSudoChat());
         cm.registerCommand(new CommandLookup());
         cm.registerCommand(new CommandAnnounce());
-//        cm.registerCommand(new CommandWatchList());
+        cm.registerCommand(new CommandWatchList());
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPLoot());

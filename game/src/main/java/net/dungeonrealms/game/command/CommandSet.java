@@ -13,16 +13,19 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -110,30 +113,16 @@ public class CommandSet extends BaseCommand {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, false);
                 break;
             case "durability":
-                if (args.length < 3) {
-                    player.sendMessage(ChatColor.RED + "Invalid usage! /set durability SUBTRACT #");
+            	ItemStack i = player.getInventory().getItemInMainHand();
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Invalid usage! /set durability #");
                     break;
-                } else if (player.getInventory().getItemInMainHand() == null) {
-                    player.sendMessage(ChatColor.RED + "Error! You must have an item in your main hand.");
-                    break;
-                }
-
-                switch (args[1].toLowerCase()) {
-                    case "add":
-                        if (RepairAPI.canItemBeRepaired(player.getInventory().getItemInMainHand())) {
-                            player.sendMessage(ChatColor.RED + "Error! You cannot repair this item.");
-                            break;
-                        }
-
-                        player.sendMessage(ChatColor.RED + "Error! Coming soon...");
-                        break;
-                    case "subtract":
-                        RepairAPI.subtractCustomDurability(player, player.getInventory().getItemInMainHand(), Integer.parseInt(args[2]));
-                        player.sendMessage(ChatColor.GREEN + "Subtracted " + args[2] + " from item in your main hand.");
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.RED + "Error! " + args[1] + " is invalid.");
-                        break;
+                } else if (!ItemGear.isCustomTool(i)) {
+                    player.sendMessage(ChatColor.RED + "Error! This item is not repairable!");
+                } else {
+                	ItemGear gear = (ItemGear)PersistentItem.constructItem(i);
+                	gear.damageItem(player, Integer.parseInt(args[1]));
+                	player.sendMessage(ChatColor.GREEN + "Damaged!");
                 }
                 break;
             case "spawner":
@@ -177,12 +166,15 @@ public class CommandSet extends BaseCommand {
                 SpawningMechanics.getALLSPAWNERS().forEach(BaseMobSpawner::kill);
                 break;
             case "pick":
-                Mining.lvlUp(Mining.getPickTier(player.getEquipment().getItemInMainHand()), player);
-                player.updateInventory();
-                break;
             case "rod":
-                Fishing.lvlUp(Fishing.getRodTier(player.getEquipment().getItemInMainHand()), player);
-                player.updateInventory();
+            	ItemStack held = player.getEquipment().getItemInMainHand();
+                if (!ProfessionItem.isProfessionItem(held)) {
+                	player.sendMessage("This is not a profession item.");
+                	return true;
+                }
+                ProfessionItem pr = (ProfessionItem)PersistentItem.constructItem(held);
+                pr.levelUp(player);
+                player.getEquipment().setItemInMainHand(pr.generateItem());
                 break;
             case "shopoff":
                 if (args.length < 2) {
@@ -287,8 +279,8 @@ public class CommandSet extends BaseCommand {
                 }
                 int hp = Integer.parseInt(args[1]);
                 if (hp > 0) {
-                    HealthHandler.getInstance().setPlayerMaxHPLive(player, hp);
-                    HealthHandler.getInstance().setPlayerHPLive(player, hp);
+                    HealthHandler.setPlayerMaxHP(player, hp);
+                    HealthHandler.setPlayerHP(player, hp);
                     player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
                 } else {
                     player.sendMessage(ChatColor.RED + "Unable to set health to " + hp + ", value is  too low.");

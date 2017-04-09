@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.world.spawning;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.command.CommandSpawner;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.base.*;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -19,8 +19,9 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
-import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -176,7 +177,7 @@ public class SpawningMechanics implements GenericMechanic {
                     String weaponData = extraData.substring(extraData.indexOf("@WEP@") + 5, extraData.lastIndexOf("@WEP@"));
                     Bukkit.getLogger().info("Weapon data: " + weaponData);
 
-                    Item.ItemType itemType = Item.ItemType.getByName(weaponData);
+                    GeneratedItemType itemType = GeneratedItemType.getByName(weaponData);
 
                     if (itemType == null) {
                         Bukkit.getLogger().info("Invalid weapon type: " + weaponData);
@@ -306,7 +307,6 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     public static Entity getEliteMob(World world, int tier, EnumNamedElite elite) {
-        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
         Entity entity;
         switch (elite) {
             case MITSUKI:
@@ -315,26 +315,26 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new MeleeZombie(world, EnumMonster.Bandit, tier);
                 break;
             case MOTHEROFDOOM:
-                entity = new LargeSpider(world, tier, EnumMonster.Spider1);
+                entity = new LargeSpider(world, tier);
                 break;
             case LORD_TAYLOR:
-                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Undead, type);
+                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Undead);
                 break;
             case IMPATHEIMPALER:
-                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Goblin, type);
+                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Goblin);
                 break;
             case KILATAN:
                 entity = new StaffSkeleton(world, EnumMonster.Daemon, tier);
                 break;
             case DURANOR:
             case ZION:
-                entity = new MeleeSkeleton(world, EnumMonster.Monk, type, tier);
+                entity = new MeleeSkeleton(world, EnumMonster.Monk, tier);
                 break;
             case BLAYSHAN:
                 entity = new MeleeZombie(world, EnumMonster.Naga, tier);
                 break;
             case ACERON:
-                entity = new RangedWitherSkeleton(world, EnumMonster.Undead, type, tier);
+                entity = new RangedWitherSkeleton(world, EnumMonster.Undead, tier);
                 break;
             default:
                 entity = null;
@@ -348,7 +348,6 @@ public class SpawningMechanics implements GenericMechanic {
      * @return
      */
     public static Entity getMob(World world, int tier, EnumMonster monsEnum) {
-        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
         Entity entity;
         switch (monsEnum) {
             case PassiveChicken:
@@ -365,22 +364,22 @@ public class SpawningMechanics implements GenericMechanic {
             case PassiveBandit:
                 switch (new Random().nextInt(4)) {
                     case 0:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
                         entity = new MeleeZombie(world, monsEnum, tier);
                         break;
                     case 2:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     case 3:
                         entity = new MeleeZombie(world, monsEnum, tier);
                         break;
                     case 4:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
@@ -391,18 +390,18 @@ public class SpawningMechanics implements GenericMechanic {
 ////                }
 //                break;
             case RangedPirate:
-                entity = new RangedSkeleton(world, monsEnum, type, tier);
+                entity = new RangedSkeleton(world, monsEnum, tier);
                 break;
             case Pirate:
                 switch (new Random().nextInt(2)) {
                     case 0:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
@@ -412,13 +411,13 @@ public class SpawningMechanics implements GenericMechanic {
                         entity = new StaffSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     case 2:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
@@ -428,13 +427,13 @@ public class SpawningMechanics implements GenericMechanic {
                         entity = new StaffSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     case 2:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
@@ -452,13 +451,13 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new StaffSkeleton(world, EnumMonster.Mage, tier);
                 break;
             case Spider1:
-                entity = new LargeSpider(world, tier, EnumMonster.Spider1);
+                entity = new LargeSpider(world, tier);
                 break;
             case Spider2:
-                entity = new SmallSpider(world, tier, EnumMonster.Spider2);
+                entity = new SmallSpider(world, tier);
                 break;
             case Golem:
-                entity = new MeleeGolem(world, tier, type);
+                entity = new MeleeGolem(world, tier);
                 break;
             case Naga:
                 switch (new Random().nextInt(3)) {
@@ -481,22 +480,22 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new MeleeZombie(world, EnumMonster.Tripoli, tier);
                 break;
             case Blaze:
-                entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
+                entity = new BasicEntityBlaze(world, tier);
                 break;
             case Skeleton2:
             case FrozenSkeleton:
                 switch (new Random().nextInt(3)) {
                     case 0:
-                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedWitherSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
-                        entity = new MeleeWitherSkeleton(world, tier, monsEnum, EnumEntityType.HOSTILE_MOB);
+                        entity = new MeleeWitherSkeleton(world, tier, monsEnum);
                         break;
                     case 2:
-                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedWitherSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedWitherSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
@@ -505,33 +504,33 @@ public class SpawningMechanics implements GenericMechanic {
             case PassiveSkeleton1:
                 switch (new Random().nextInt(3)) {
                     case 0:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     case 1:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     case 2:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                     case 3:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new RangedSkeleton(world, monsEnum, tier);
                         break;
                     default:
-                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, tier);
                         break;
                 }
                 break;
             case Wither:
-                entity = new MeleeWitherSkeleton(world, tier, monsEnum, EnumEntityType.HOSTILE_MOB);
+                entity = new MeleeWitherSkeleton(world, tier, monsEnum);
                 break;
             case MagmaCube:
-                entity = new DRMagma(world, EnumMonster.MagmaCube, tier);
+                entity = new DRMagma(world, tier);
                 break;
             case Daemon:
-                entity = new DRPigman(world, EnumMonster.Daemon, tier);
+                entity = new DRPigman(world, tier);
                 break;
             case StaffZombie:
-                entity = new StaffZombie(world, EnumMonster.StaffZombie, tier);
+                entity = new StaffZombie(world, tier);
                 break;
             case Daemon2:
                 entity = new StaffSkeleton(world, EnumMonster.Daemon2, tier);
@@ -540,7 +539,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new DRSilverfish(world, EnumMonster.Silverfish, tier);
                 break;
             case SpawnOfInferno:
-                entity = new DRMagma(world, EnumMonster.SpawnOfInferno, tier);
+                entity = new DRMagma(world, tier);
                 break;
             case GreaterAbyssalDemon:
                 entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
@@ -561,7 +560,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new MeleeZombie(world, EnumMonster.Undead, tier);
                 break;
             case Witch:
-                entity = new DRWitch(world, EnumMonster.Witch, tier);
+                entity = new DRWitch(world, tier);
                 break;
             case Pig:
                 entity = new EntityPig(world);

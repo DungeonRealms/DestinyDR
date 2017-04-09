@@ -1,1061 +1,324 @@
 package net.dungeonrealms.game.profession;
 
-import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemFishingPole;
+import net.dungeonrealms.game.item.items.functional.*;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.data.FishingTier;
+import net.dungeonrealms.game.mechanic.data.PotionTier;
+import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.profession.fishing.*;
+import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Created by Chase on Oct 28, 2015
+ * Fishing Profession - Contains all the code for the fishing mechanic.
+ * 
+ * Redone by Kneesnap on April 8th, 2017.
  */
-public class Fishing implements GenericMechanic {
-    /**
-     * @param tier
-     * @return
-     */
-    public static int getTierLvl(int tier) {
-        switch (tier) {
-            case 1:
-                return 1;
-            case 2:
-                return 20;
-            case 3:
-                return 40;
-            case 4:
-                return 60;
-            case 5:
-                return 80;
-        }
-        return 1;
-    }
+public class Fishing implements GenericMechanic, Listener {
 
-    public static int getNextLevelUp(int tier) {
-        if (tier == 1) {
-            return 20;
-        }
-        if (tier == 2) {
-            return 40;
-        }
-        if (tier == 3) {
-            return 60;
-        }
-        if (tier == 4) {
-            return 80;
-        }
-        if (tier == 5) {
-            return 100;
-        }
-        return -1;
-    }
+	private Random random = new Random();
+	
+	public Fishing() {
+		Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
+	}
 
-    public static int getLvl(ItemStack i) {
-        return CraftItemStack.asNMSCopy(i).getTag().getInt("level");
-    }
-
-    public static int getFishTier(ItemStack fish) {
-        return CraftItemStack.asNMSCopy(fish).getTag().getInt("itemTier");
-    }
-
-    public static boolean hasEnchants(ItemStack is) {
-        ItemMeta meta = is.getItemMeta();
-        List<String> lore = meta.getLore();
-        for (String line : lore) {
-            for (FishingRodEnchant enchants : FishingRodEnchant.values()) {
-                if (line.contains(enchants.name))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public enum EnumFish {
-        Shrimp("A raw and pink crustacean", 1),
-        Anchovie("A small blue, oily fish", 1),
-        Crayfish("A lobster-like and brown crustacean", 1),
-        Carp("A Large, silver-scaled fish", 2),
-        Herring("A colourful and medium-sized fish", 2),
-        Sardine("A small and oily green fish", 2),
-        Salmon("A beautiful jumping fish", 3),
-        Trout("A non-migrating Salmon", 3),
-        Cod("A cold-water, deep sea fish", 3),
-        Lobster("A Large, red crustacean", 4),
-        Tuna("A large, sapphire blue fish", 4),
-        Bass("A very large and white fish", 4),
-        Shark("A terrifying and massive predator", 5),
-        Swordfish("An elongated fish with a long bill", 5),
-        Monkfish("A flat, large, and scary-looking fish", 5);
-
-
-        public int tier;
-        public String desc;
-
-        EnumFish(String desc, int tier) {
-            this.desc = desc;
-            this.tier = tier;
-        }
-
-        public static EnumFish getFish(int tier) {
-            List<EnumFish> fishList = getTieredFishList(tier);
-            return fishList.get(random.nextInt(fishList.size() - 1));
-        }
-
-        private static List<EnumFish> getTieredFishList(int tier) {
-            List<EnumFish> fishList = new ArrayList<>();
-            for (EnumFish fish : values()) {
-                if (fish.tier == tier)
-                    fishList.add(fish);
-            }
-            return fishList;
-        }
-
-        public static String getFishDesc(String fishName) {
-            for (EnumFish fish : values()) {
-                if (fish.name().equalsIgnoreCase(fishName))
-                    return fish.desc;
-            }
-            return "A freshly caught fish.";
-        }
-    }
-
-    private static Random random = new Random();
-
-
-    public static ItemStack getFishDrop(int tier) {
-        EnumFish fishType = EnumFish.values()[((tier - 1) * 3) + random.nextInt(3)]; // 0, 1, 2
-        ChatColor fishColor = ChatColor.RED;
-        ItemStack fishItem = new ItemStack(Material.RAW_FISH, 1);
-        String fishName = fishType.name();
-        int hunger_to_heal = 0;
-
-        int buff_chance = 0;
-        int do_i_buff = random.nextInt(100);
-
-        boolean fish_buff = false;
-        String fish_buff_s = "";
-
-        if (tier == 1) {
-            buff_chance = 20;
-            hunger_to_heal = 10;// %
-
-            fishColor = ChatColor.WHITE;
-
-            if (buff_chance >= do_i_buff) {
-                fish_buff = true;
-                int buff_type = random.nextInt(100);
-                int buff_val = 0;
-                if (buff_type >= 0 && buff_type <= 15) {
-                    // Of Power (DMG) 1-2%
-                    buff_val = random.nextInt(2) + 1;
-                    fishName += " of Lesser Power";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(20s)";
-                } else if (buff_type > 15 && buff_type <= 25) {
-                    // Of Health 1-3% HP (instant heal)
-                    buff_val = random.nextInt(3) + 1;
-                    fishName = ChatColor.WHITE.toString() + "Small, Healing " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 25 && buff_type <= 50) {
-                    // Of Speed 15 seconds of speed I.
-                    fishItem.setDurability((short)1);
-                	fishName += " of Lesser Agility";
-                    fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(15s)";
-                } else if (buff_type > 50 && buff_type <= 60) {
-                    // Of Satiety, fill up 20% of food (2 full squares)
-                    buff_val = 20;
-                    fishName += " of Minor Satiety";
-                    fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 60 && buff_type <= 70) {
-                    // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = random.nextInt(2) + 1;
-                    fishName += " of Weak Defense";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(20s)";
-                } else if (buff_type > 70) {
-                    // Nightvision for 60 seconds.
-                    buff_val = random.nextInt(2) + 1;
-                    fishName += " of Vision";
-                    fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
-                }
-            }
-        } else if (tier == 2) {
-            buff_chance = 25;
-            hunger_to_heal = 20;// %
-            fishColor = ChatColor.GREEN;
-
-            if (buff_chance >= do_i_buff) {
-                fish_buff = true;
-                int buff_type = random.nextInt(100);
-                int buff_val = 0;
-                if (buff_type >= 0 && buff_type <= 10) {
-                    // Of Power (DMG) 1-2%
-                    buff_val = random.nextInt(3) + 1;
-                    fishName += " of Power";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(25s)";
-                } else if (buff_type > 10 && buff_type <= 15) {
-                    // Of HP REGEN
-                    buff_val = random.nextInt(5) + 5;
-                    fishName += " of Regeneration";
-                    fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                } else if (buff_type > 15 && buff_type <= 20) {
-                    // OF BLOCK%
-                    buff_val = random.nextInt(5) + 1;
-                    fishName += " of Blocking";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(25s)";
-                } else if (buff_type > 20 && buff_type <= 30) {
-                    // Of Health (instant heal)
-                    buff_val = random.nextInt(5) + 1;
-                    fishName = ChatColor.GREEN.toString() + "Healing " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
-                    fishName += " of Agility";
-                    fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(20s)";
-                } else if (buff_type > 55 && buff_type <= 65) {
-                    // Of Satiety, fill up 20% of food (2 full squares)
-                    buff_val = 25;
-                    fishName += " of Satiety";
-                    fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 65 && buff_type <= 75) {
-                    // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = random.nextInt(3) + 1;
-                    fishName += " of Defense";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(25s)";
-                } else if (buff_type > 75) {
-                    // Nightvision for 60 seconds.
-                    buff_val = random.nextInt(2) + 1;
-                    fishName += " of Vision";
-                    fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(45s)";
-                }
-            }
-        } else if (tier == 3) {
-            buff_chance = 33;
-            hunger_to_heal = 30;// %
-
-            fishColor = ChatColor.AQUA;
-            if (buff_chance >= do_i_buff) {
-                fish_buff = true;
-                int buff_type = random.nextInt(100);
-                int buff_val = 0;
-                if (buff_type >= 0 && buff_type <= 10) {
-                    // Of Power (DMG) 1-2%
-                    buff_val = random.nextInt(3) + 3;
-                    fishName += " of Greater Power";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(30s)";
-                } else if (buff_type > 10 && buff_type <= 15) {
-                    // Of HP REGEN
-                    buff_val = random.nextInt(11) + 5;
-                    fishName += " of Mighty Regeneration";
-                    fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                } else if (buff_type > 15 && buff_type <= 20) {
-                    // OF BLOCK%
-                    buff_val = random.nextInt(5) + 1;
-                    fishName += " of Blocking";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(30s)";
-                } else if (buff_type > 20 && buff_type <= 30) {
-                    // Of Health (instant heal)
-                    buff_val = random.nextInt(4) + 4;
-                    fishName = ChatColor.AQUA.toString() + "Large, Healing " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
-                    fishName += " of Lasting Agility";
-                    fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
-                } else if (buff_type > 55 && buff_type <= 65) {
-                    // Of Satiety, fill up 20% of food (2 full squares)
-                    buff_val = 30;
-                    fishName += " of Great Satiety";
-                    fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 65 && buff_type <= 75) {
-                    // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = random.nextInt(3) + 3;
-                    fishName += " of Mighty Defense";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(30s)";
-                } else if (buff_type > 75) {
-                    // Nightvision for 60 seconds.
-                    buff_val = random.nextInt(2) + 1;
-                    fishName += " of Lasting Vision";
-                    fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(60s)";
-                }
-            }
-        } else if (tier == 4) {
-            buff_chance = 33;
-            hunger_to_heal = 40;// %
-            fishColor = ChatColor.LIGHT_PURPLE;
-
-            int buff_time = random.nextInt(10) + 40; // Up to 49s.
-
-            if (buff_chance >= do_i_buff) {
-                fish_buff = true;
-                int buff_type = random.nextInt(100);
-                int buff_val = 0;
-                if (buff_type >= 0 && buff_type <= 10) {
-                    // Of Power (DMG) 1-2%
-                    buff_val = random.nextInt(6) + 5;
-                    fishName += " of Ancient Power";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 10 && buff_type <= 15) {
-                    // Of HP REGEN
-                    buff_val = random.nextInt(6) + 10;
-                    fishName += " of Enhanced Regeneration";
-                    fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                } else if (buff_type > 15 && buff_type <= 20) {
-                    // OF BLOCK%
-                    buff_val = random.nextInt(5) + 4;
-                    fishName += " of Greater Blocking";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 20 && buff_type <= 30) {
-                    // Of Health (instant heal)
-                    buff_val = random.nextInt(4) + 4;
-                    fishName = ChatColor.LIGHT_PURPLE.toString() + "Healthy " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
-                    fishName += " of Bursting Agility";
-                    fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(15s)";
-                } else if (buff_type > 55 && buff_type <= 65) {
-                    // Of Satiety, fill up 20% of food (2 full squares)
-                    buff_val = 30;
-                    fishName = ChatColor.LIGHT_PURPLE.toString() + "Huge " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 65 && buff_type <= 75) {
-                    // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = random.nextInt(5) + 4;
-                    fishName += " of Fortified Defense";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type >= 75 && buff_type < 80) {
-                    // Vampirism
-                    buff_val = random.nextInt(2) + 4;
-                    fishName = "Albino " + ChatColor.LIGHT_PURPLE.toString() + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFESTEAL " +
-                            ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 80) {
-                    // Nightvision for 60 seconds.
-                    fishName += " of Eagle Vision";
-                    fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (II) BUFF " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-            }
-        } else if (tier == 5) {
-            buff_chance = 45;
-            hunger_to_heal = 50;// %
-            fishColor = ChatColor.YELLOW;
-
-            int buff_time = random.nextInt(11) + 50; // Up to 60s.
-
-            if (buff_chance >= do_i_buff) {
-                fish_buff = true;
-                int buff_type = random.nextInt(100);
-                int buff_val = 0;
-                if (buff_type >= 0 && buff_type <= 10) {
-                    // Of Power (DMG) 1-2%
-                    buff_val = random.nextInt(11) + 5;
-                    fishName += " of Legendary Power";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 10 && buff_type <= 15) {
-                    // Of HP REGEN
-                    buff_val = random.nextInt(6) + 10;
-                    fishName += " of Extreme Regeneration";
-                    fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                } else if (buff_type > 15 && buff_type <= 20) {
-                    // OF BLOCK%
-                    buff_val = random.nextInt(5) + 4;
-                    fishName += " of Greater Blocking";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 20 && buff_type <= 30) {
-                    // Of Health (instant heal)
-                    buff_val = random.nextInt(6) + 5;
-                    fishName = ChatColor.YELLOW.toString() + "Legendary " + fishName + " of Medicine";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 30 && buff_type <= 45) {
-                    fishItem.setDurability((short)1);
-                    fishName += " of Godlike Speed";
-                    fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(30s)";
-                } else if (buff_type > 45 && buff_type <= 50) {
-                    // Of Satiety, fill up 20% of food (2 full squares)
-                    buff_val = 40;
-                    fishName = ChatColor.YELLOW.toString() + "Gigantic " + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                } else if (buff_type > 50 && buff_type <= 60) {
-                    // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = random.nextInt(6) + 5;
-                    fishName = ChatColor.YELLOW.toString() + "Hardended " + fishName + " of Legendary Defense";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 60 && buff_type <= 65) {
-                    // Vampirism
-                    buff_val = random.nextInt(5) + 3;
-                    fishName = "Albino " + ChatColor.YELLOW.toString() + fishName;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFE STEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 65 && buff_type <= 85) {
-                    // Nightvision for 60 seconds.
-                    fishName += " of Omniscient Vision";
-                    fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (II) BUFF " + ChatColor.GRAY.toString() + "(" + (buff_time + 60) + "s)";
-                } else if (buff_type > 85 && buff_type <= 90) {
-                    // Critical hit bonus
-                    buff_val = random.nextInt(5) + 1;
-                    fishName = "Perfect " + ChatColor.YELLOW.toString() + fishName + " of Accuracy";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% CRITICAL HIT " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                } else if (buff_type > 90) {
-                    // Energy Regen Buff
-                    buff_val = random.nextInt(5) + 1;
-                    fishName = ChatColor.YELLOW.toString() + fishName + " of Hidden Energy";
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ENERGY REGEN " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-            }
-        }
-
-        List<String> fishLore = new ArrayList<>();
-        if (fish_buff) {
-            fishLore.add(fish_buff_s);
-        }
-        fishLore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
-        fishLore.add(ChatColor.GRAY.toString() + EnumFish.getFishDesc(fishName));
-
-        fishName = fishColor + "Raw " + fishName;
-
-        ItemMeta im = fishItem.getItemMeta();
-        im.setDisplayName(fishName);
-        im.setLore(fishLore);
-        fishItem.setItemMeta(im);
-
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(fishItem);
-        nms.getTag().setInt("itemTier", tier);
-
-        return CraftItemStack.asBukkitCopy(nms);
-    }
-
-
-    public static int getEXPNeeded(int level) {
-        if (level == 1) {
-            return 176; // formula doens't work on level 1.
-        }
-        if (level == 100) {
-            return 0;
-        }
-        int previous_level = level - 1;
-        return (int) (Math.pow((previous_level), 2) + ((previous_level) * 20) + 150 + ((previous_level) * 4) + getEXPNeeded((previous_level)));
-    }
-
-    public static int getFishEXP(int tier) {
-        if (tier == 1) {
-            return (int) (2.0D * (250 + random.nextInt((int) (250 * 0.3D))));
-        }
-        if (tier == 2) {
-            return (int) (2.0D * (430 + random.nextInt((int) (430 * 0.3D))));
-        }
-        if (tier == 3) {
-            return (int) (2.0D * (820 + random.nextInt((int) (820 * 0.3D))));
-        }
-        if (tier == 4) {
-            return (int) (2.0D * (1050 + random.nextInt((int) (1050 * 0.3D))));
-        }
-        if (tier == 5) {
-            return (int) (2.0D * (1230 + random.nextInt((int) (1230 * 0.3D))));
-        }
-        return 1;
-    }
-
-    /**
-     * Check if itemstack is a DR fishing pole.
-     *
-     * @param stack
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isDRFishingPole(ItemStack stack) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms != null && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
-    }
-
-//    public static HashMap<UUID, String> fishBuffs = new HashMap<>();
-
-    /**
-     * Add Experience to the specified stack(fishing pole)
-     *
-     * @param stack
-     */
-    public static void gainExp(ItemStack stack, Player p, int exp) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        int currentXP = nms.getTag().getInt("XP");
-        int maxXP = nms.getTag().getInt("maxXP");
-        int tier = nms.getTag().getInt("itemTier");
-        int professionBuffBonus = 0;
-        if (DonationEffects.getInstance().getActiveProfessionBuff() != null) {
-            professionBuffBonus = Math.round(exp * (DonationEffects.getInstance().getActiveProfessionBuff()
-                    .getBonusAmount() / 100f));
-            exp += professionBuffBonus;
-        }
-        currentXP += exp;
-
-        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
-            p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + exp + ChatColor.BOLD + " EXP"
-                    + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(currentXP - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stack)) + " EXP]");
-            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-            if (professionBuffBonus > 0) {
-                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
-                        .toString() + ChatColor.BOLD + "PROF. BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
-                        + "+" + ChatColor.YELLOW + Math.round(professionBuffBonus) + ChatColor.BOLD + " EXP " +
-                        ChatColor.GRAY + "[" + currentXP + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded
-                        (getLvl(stack)) + " EXP]");
-            }
-        }
-
-        if (currentXP > maxXP) {
-            lvlUp(tier, p);
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent e) {
+        final Player pl = e.getPlayer();
+        if (!GameAPI.isMainWorld(pl.getWorld())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+            e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
+            e.setCancelled(true);
             return;
-        } else
-            nms.getTag().setInt("XP", currentXP);
-        stack = CraftItemStack.asBukkitCopy(nms);
-        p.getEquipment().setItemInMainHand(stack);
-        ItemMeta meta = stack.getItemMeta();
-        List<String> lore = stack.getItemMeta().getLore();
-        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-        double percentDone = 100.0 * currentXP / maxXP;
-        double percentDoneDisplay = (percentDone / 100) * 50.0D;
-        int display = (int) percentDoneDisplay;
-        if (display <= 0) {
-            display = 1;
-        }
-        if (display > 50) {
-            display = 50;
-        }
-        String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
-                + expBar.substring(display, expBar.length());
-        int lvl = CraftItemStack.asNMSCopy(stack).getTag().getInt("level");
-        lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
-        lore.set(1, ChatColor.GRAY.toString() + currentXP + ChatColor.GRAY + " / " + ChatColor.GRAY + maxXP);
-        lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
-
-        meta.setLore(lore);
-        if (!meta.hasEnchant(Enchantment.LURE))
-            meta.addEnchant(Enchantment.LURE, 3, false);
-
-        stack.setItemMeta(meta);
-        p.getEquipment().setItemInMainHand(stack);
-    }
-
-
-    public static int getTreasureFindChance(ItemStack is) {
-        int chance = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return chance;
         }
 
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("TREASURE FIND")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
-                return chance;
+        e.setExpToDrop(0);
+        
+        ItemStack held = pl.getEquipment().getItemInMainHand();
+        if (!ItemFishingPole.isFishingPole(held)) {
+            e.setCancelled(true);
+            return;
+        }
+        ItemFishingPole pole = (ItemFishingPole)PersistentItem.constructItem(held);
+
+        if (e.getState().equals(State.FISHING)) {
+            Location loc = Fishing.getInstance().getFishingSpot(e.getPlayer().getLocation());
+            if (loc == null) {
+                e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+                e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
+                e.setCancelled(true);
+                return;
+            }
+            
+            int areaTier = getFishingSpotTier(loc);
+            if (areaTier > pole.getTier().getId()) {
+                e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
+                e.getPlayer().sendMessage(ChatColor.RED + "Your current pole is too weak to catch any fish here.");
+                e.setCancelled(true);
+                return;
             }
         }
 
-        return chance;
-    }
+        if (e.getState() == State.CAUGHT_FISH) {
+            Random random = new Random();
+            final Location fishLoc = getFishingSpot(pl.getLocation());
+            final int spotTier = getFishingSpotTier(pl.getLocation());
+            if (e.getCaught() != null)
+                e.getCaught().remove();
 
-    public static int getJunkFindChance(ItemStack is) {
-        int chance = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return chance;
-        }
-
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("JUNK FIND")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
-                return chance;
+            if (fishLoc == null || spotTier == -1) {
+                pl.sendMessage(ChatColor.RED + "You must be near a Fishing Location to catch fish!");
+                return;
             }
-        }
 
-        return chance;
-    }
+            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue();
+            
+            pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                int fishRoll = new Random().nextInt(100);
+                int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
-    public static int getDoubleDropChance(ItemStack is) {
-        int chance = 0;
+                if (pole.getTier().getId() == spotTier)
+                	successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
 
-        if (!(isDRFishingPole(is))) {
-            return chance;
-        }
+                successRate += pole.getAttributes().getAttribute(FishingAttributeType.CATCH_SUCCESS).getValue();
 
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("DOUBLE")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
-                return chance;
-            }
-        }
-
-        return chance;
-    }
-
-    public static int getTripleDropChance(ItemStack is) {
-        int chance = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return chance;
-        }
-
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("TRIPLE")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
-                return chance;
-            }
-        }
-
-        return chance;
-    }
-
-    public static int getSuccessChance(ItemStack is) {
-        int chance = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return chance;
-        }
-
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("SUCCESS")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
-                return chance;
-            }
-        }
-
-        return chance;
-    }
-
-    public static int getDurabilityBuff(ItemStack is) {
-        int buff = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return buff;
-        }
-
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("DURABILITY")) {
-                buff = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
-                return buff;
-            }
-        }
-
-        return buff;
-    }
-
-    /**
-     * Get the enchant leve of a fishing rod
-     *
-     * @param itemStack  The fishing rod
-     * @param rodEnchant The enchant to check for
-     * @return The enchant level
-     */
-    public static int getEnchantBuff(ItemStack itemStack, FishingRodEnchant rodEnchant) {
-        switch (rodEnchant) {
-            case Durability:
-                return getDurabilityBuff(itemStack);
-            case CatchingSuccess:
-                return getSuccessChance(itemStack);
-            case TripleCatch:
-                return getTripleDropChance(itemStack);
-            case TreasureFind:
-                return getTreasureFindChance(itemStack);
-            case DoubleCatch:
-                return getDoubleDropChance(itemStack);
-            case JunkFind:
-                return getJunkFindChance(itemStack);
-            default:
-                break;
-        }
-        return 0;
-    }
-
-    /**
-     * Get all enchant data of a fishing rod
-     *
-     * @param itemStack The fishing rod
-     * @return Enchant data
-     */
-    public static HashMap<FishingRodEnchant, Integer> getEnchantData(ItemStack itemStack) {
-        if (isDRFishingPole(itemStack)) {
-            if (hasEnchants(itemStack)) {
-                HashMap<FishingRodEnchant, Integer> objectMap = Maps.newHashMap();
-                for (FishingRodEnchant rodEnchant : FishingRodEnchant.values()) {
-                    objectMap.put(rodEnchant, getEnchantBuff(itemStack, rodEnchant));
+                if (successRate <= fishRoll) {
+                    pl.sendMessage(ChatColor.RED + "It got away..");
+                    if (new Random().nextInt(100) > duraBuff)
+                    	pole.damageItem(pl, 1);
+                    return;
                 }
-                return objectMap;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Add an enchant to a fishing rod
-     *
-     * @param itemStack The itemstack
-     * @param enchant   The enchant
-     * @param buffLevel The enchant level
-     */
-    public static void addDefaultEnchant(ItemStack itemStack, FishingRodEnchant enchant, int buffLevel) {
-        ItemMeta meta = itemStack.getItemMeta();
-        List<String> lore = meta.getLore();
-        Iterator<String> i = lore.iterator();
-        int prevValue = -1;
-
-        while (i.hasNext()) {
-            String line = i.next();
-            if (line.contains(enchant.name)) {
-                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
-                i.remove();
-            }
-        }
-
-        String clone = lore.get(lore.size() - 1);
-        int value = buffLevel;
-        if (value == 0)
-            value = 1;
-        if (prevValue != -1 && prevValue > value)
-            value = prevValue;
-        lore.remove(lore.size() - 1);
-        lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
-        lore.add(clone);
-        meta.setLore(lore);
-        itemStack.setItemMeta(meta);
-    }
-
-
-    public static void giveRandomStatBuff(ItemStack stack, int tier) {
-        int typeID = new Random().nextInt(6);
-        ItemMeta meta = stack.getItemMeta();
-        List<String> lore = meta.getLore();
-        FishingRodEnchant enchant = null;
-        main:
-        switch (tier) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-                switch (typeID) {
-                    case 0:
-                    case 1:
-                        enchant = FishingRodEnchant.DoubleCatch;
-                        break main;
-                    case 2:
-                        enchant = FishingRodEnchant.CatchingSuccess;
-                        break main;
-                    case 3:
-                        enchant = FishingRodEnchant.TripleCatch;
-                        break main;
-                    case 4:
-                        enchant = FishingRodEnchant.Durability;
-                        break main;
-                    case 5:
-                        enchant = FishingRodEnchant.JunkFind;
-                        break main;
+                
+                FishingTier fTier = FishingTier.getTierByLevel(pole.getLevel());
+                ItemStack fish = new ItemFish(fTier, EnumFish.getRandomFish(fTier.getTier())).generateItem();
+                int fishDrop = 1;
+                
+                if (new Random().nextInt(100) > duraBuff)
+                	pole.damageItem(pl, 2);
+                
+                pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+                
+                int exp = fTier.getXP();
+                pole.addExperience(pl, exp);
+                
+                GamePlayer gp = GameAPI.getGamePlayer(pl);
+                gp.addExperience(exp / 8, false, true);
+                gp.getPlayerStatistics().setFishCaught(gp.getPlayerStatistics().getFishCaught() + 1);
+                boolean toggleDebug = (boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId());
+                
+                if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() >= random.nextInt(100) + 1) {
+                	fishDrop *= 2;
+                	if (toggleDebug)
+                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                 }
-            case 4:
-            case 5:
-                switch (typeID) {
-                    case 0:
-                        enchant = FishingRodEnchant.DoubleCatch;
-                        break main;
-                    case 1:
-                        enchant = FishingRodEnchant.TreasureFind;
-                        break main;
-                    case 2:
-                        enchant = FishingRodEnchant.CatchingSuccess;
-                        break main;
-                    case 3:
-                        enchant = FishingRodEnchant.TripleCatch;
-                        break main;
-                    case 4:
-                        enchant = FishingRodEnchant.Durability;
-                        break main;
-                    case 5:
-                        enchant = FishingRodEnchant.JunkFind;
-                        break main;
+                
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() >= random.nextInt(100) + 1) {
+                	fishDrop *= 3;
+                	if (toggleDebug)
+                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
-        }
-
-        Iterator<String> i = lore.iterator();
-        int prevValue = -1;
-
-        while (i.hasNext()) {
-            String line = i.next();
-            if (line.contains(enchant.name)) {
-                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
-                i.remove();
-            }
-        }
-
-
-        String clone = lore.get(lore.size() - 1);
-        int value = enchant.getBuff(tier);
-        if (value == 0)
-            value = 1;
-        if (prevValue != -1 && prevValue > value)
-            value = prevValue;
-        lore.remove(lore.size() - 1);
-        lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
-        lore.add(clone);
-        meta.setLore(lore);
-        stack.setItemMeta(meta);
-
-    }
-
-    public static void lvlUp(int tier, Player p) {
-        ItemStack rod = p.getEquipment().getItemInMainHand();
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rod);
-        int lvl = nms.getTag().getInt("level") + 1;
-        boolean addEnchant = false;
-        if (lvl < 101) {
-            switch (lvl) {
-                case 20:
-                    tier = 2;
-                    addEnchant = true;
-                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_I);
-                    break;
-                case 40:
-                    tier = 3;
-                    addEnchant = true;
-                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_II);
-                    break;
-                case 60:
-                    tier = 4;
-                    addEnchant = true;
-                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_III);
-                    break;
-                case 80:
-                    tier = 5;
-                    addEnchant = true;
-                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_IV);
-                    break;
-                case 100:
-                    addEnchant = true;
-                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_V);
-                    p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishing Rod has reached " + ChatColor.UNDERLINE + "LVL 100"
-                            + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishing Rod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishing Rod and may be applied to a new Fishing Rod.");
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(2) " + ChatColor.YELLOW + "If you continue to use this" +
-                            " Fishing Rod until it runs out of durability, it will transform into a LVL 1 Fishing Rod "
-                            + ", but it will retain all its custom stats.");
-                    p.sendMessage("");
-                    break;
-                default:
-                    break;
-            }
-            nms = CraftItemStack.asNMSCopy(rod);
-            p.sendMessage(ChatColor.YELLOW + "Your Fishing Rod has increased to level " + ChatColor.AQUA + lvl);
-            nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
-            nms.getTag().setInt("XP", 0);
-            nms.getTag().setInt("level", lvl);
-            nms.getTag().setInt("itemTier", tier);
-
-            rod = CraftItemStack.asBukkitCopy(nms);
-            ItemMeta meta = rod.getItemMeta();
-            List<String> lore = meta.getLore();
-            String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-            lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
-            lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
-            lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
-            String name = "Basic Fishing Rod";
-
-            switch (tier) {
-                case 1:
-                    name = ChatColor.WHITE + "Basic Fishing Rod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
-                    break;
-                case 2:
-                    name = ChatColor.GREEN.toString() + "Advanced Fishing Rod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of oak wood and thread.");
-                    break;
-                case 3:
-                    name = ChatColor.AQUA.toString() + "Expert Fishing Rod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of ancient oak wood and spider silk.");
-                    break;
-                case 4:
-                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishing Rod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of jungle bamboo and spider silk.");
-                    break;
-                case 5:
-                    name = ChatColor.YELLOW.toString() + (lvl == 100 ? "Grand " : "") + "Master Fishing Rod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk.");
-                    break;
-                default:
-                    break;
-            }
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-            if (!meta.hasEnchant(Enchantment.LURE))
-                meta.addEnchant(Enchantment.LURE, 3, false);
-            rod.setItemMeta(meta);
-            if (addEnchant)
-                giveRandomStatBuff(rod, tier);
-
-            p.getEquipment().setItemInMainHand(rod);
+                
+                pl.getEquipment().setItemInMainHand(pole.generateItem());
+                fish.setAmount(fishDrop);
+                GameAPI.giveOrDropItem(pl, fish);
+                
+                //  Junk Find.
+                if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= new Random().nextInt(100) + 1) {
+                	int junkType = new Random().nextInt(100) + 1; // 0, 1, 2
+                	ItemStack junk = null;
+                	
+                	if (junkType < 70) {
+                		junk = new PotionItem(PotionTier.getById(spotTier)).generateItem();
+                		junk.setAmount(Math.max(1, 6 - spotTier) + random.nextInt(3));
+                	} else if (junkType < 95) {
+                		junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
+                		junk.setAmount(Math.max(2, 25 - (spotTier * 5)) + random.nextInt(7));
+                	} else {
+                		int tierRoll = random.nextInt(100);
+                		int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
+                		junkTier = Math.max(junkTier, spotTier);
+                		junk = ItemManager.createRandomCombatItem().setRarity(ItemRarity.COMMON)
+                				.setTier(ItemTier.getByTier(junkTier)).generateItem();
+                	}
+                	
+                	if (junk != null) {
+                		int itemCount = junk.getAmount();
+                		if (junk.getType() == Material.POTION) {
+                			int amount = junk.getAmount();
+                			junk.setAmount(1);
+                			while (amount > 0) {
+                				amount--;
+                				GameAPI.giveOrDropItem(pl, junk);
+                			}
+                		} else {
+                			GameAPI.giveOrDropItem(pl, junk);
+                		}
+                		
+                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + itemCount + "x "
+                				+ junk.getItemMeta().getDisplayName());
+                	}
+                }
+                
+                // Treasure Find.
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= new Random().nextInt(300) + 1) {
+                	// Give em treasure!
+                	int treasureType = new Random().nextInt(3); // 0, 1
+                	ItemStack treasure = null;
+                	if (treasureType == 0) {
+                		treasure = new ItemOrb().generateItem();
+                	} else if (treasureType == 1) {
+                		int tierRoll = random.nextInt(100);
+                		int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
+                		treasureTier = Math.max(treasureTier, spotTier);
+                		ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : ItemRarity.RARE;
+                		treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
+                				.setRarity(rarity).generateItem();
+                	} else if (treasureType == 2) {
+                		treasure = new ItemFlightOrb().generateItem();
+                	}
+                	
+                	if (treasure != null) {
+                		GameAPI.giveOrDropItem(pl, treasure);
+                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                				+ treasure.getItemMeta().getDisplayName());
+                	}
+                }
+            }, 10);
         }
     }
+	
+	public static FishBuff loadBuff(NBTTagCompound tag) {
+		
+		FishBuffType fbt = FishBuffType.valueOf(tag.getString("buffType"));
+		try {
+			Class<? extends FishBuff> buffCls = fbt.getBuffClass();
+			FishingTier tier = FishingTier.values()[tag.getInt("itemTier") - 1];
+			return buffCls.getConstructor(tag.getClass(), tier.getClass()).newInstance(tag, tier);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Failed to construct " + fbt.name());
+		}
+		return null;
+	}
+	
+	public static FishBuff getRandomBuff(FishingTier tier) {
+		int roll = new Random().nextInt(100);
+		int check = 0;
+		for (FishBuffType bType : FishBuffType.values()) {
+			try {
+				Class<? extends FishBuff> buffCls = bType.getBuffClass();
+				FishBuff buff = buffCls.getConstructor(tier.getClass()).newInstance(tier);
+				if (roll >= check && roll < check + buff.getChance())
+					return buff;
+				check += buff.getChance();
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Failed to construct " + bType.name());
+			}
+		}
+		return null;
+	}
+	
+	
+	
+	@AllArgsConstructor
+    public enum EnumFish {
+		
+		//  TIER 1  //
+        Shrimp(1, "A raw and pink crustacean"),
+        Anchovie(1, "A small blue, oily fish"),
+        Crayfish(1, "A lobster-like and brown crustacean"),
+        
+        //  TIER 2  //
+        Carp(2, "A Large, silver-scaled fish"),
+        Herring(2, "A colourful and medium-sized fish"),
+        Sardine(2, "A small and oily green fish"),
+        
+        //  TIER 3  //
+        Salmon(3, "A beautiful jumping fish"),
+        Trout(3, "A non-migrating Salmon"),
+        Cod(3, "A cold-water, deep sea fish"),
+        
+        //  TIER 4  //
+        Lobster(4, "A Large, red crustacean"),
+        Tuna(4, "A large, sapphire blue fish"),
+        Bass(4, "A very large and white fish"),
+        
+        //  TIER 5  //
+        Shark(5, "A terrifying and massive predator"),
+        Swordfish(5, "An elongated fish with a long bill"),
+        Monkfish(5, "A flat, large, and scary-looking fish");
 
 
-    /**
-     * Get the tier of said Rod.
-     *
-     * @param rodStack
-     * @return Integer
-     * @since 1.0
-     */
-    public static int getRodTier(ItemStack rodStack) {
-        return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
-    }
-
-
-    public enum FishingRodEnchant {
-        DoubleCatch("DOUBLE CATCH"),
-        TripleCatch("TRIPLE CATCH"),
-        TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"),
-        CatchingSuccess("FISHING SUCCESS"),
-        JunkFind("JUNK FIND");
-
-
-        public String name;
-
-        FishingRodEnchant(String display) {
-            this.name = display;
+        @Getter private int tier;
+        @Getter private String desciption;
+        
+        public String getName() {
+        	return name();
         }
 
-        public int getBuff(int tier) {
-            Random rand = new Random();
-            switch (this) {
-                case DoubleCatch:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                        case 2:
-                            return rand.nextInt(5) + 1;
-                        case 3:
-                            return rand.nextInt(9) + 1;
-                        case 4:
-                            return rand.nextInt(13) + 1;
-                        case 5:
-                            return rand.nextInt(24) + 1;
-                    }
-                case TripleCatch:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                        case 2:
-                            return rand.nextInt(2) + 1;
-                        case 3:
-                            return rand.nextInt(3) + 1;
-                        case 4:
-                            return rand.nextInt(4) + 1;
-                        case 5:
-                            return rand.nextInt(5) + 1;
-                    }
-                    break;
-                case TreasureFind:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                            return 0;
-                        case 4:
-                        case 5:
-                            return 1;
-                    }
-                    break;
-                case Durability:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                            return rand.nextInt(5) + 1;
-                        case 2:
-                            return rand.nextInt(10) + 1;
-                        case 3:
-                            return rand.nextInt(15) + 1;
-                        case 4:
-                            return rand.nextInt(20) + 1;
-                        case 5:
-                            return rand.nextInt(25) + 1;
-                    }
-                    break;
-                case CatchingSuccess:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            return rand.nextInt(2) + 1;
-                        case 5:
-                            return rand.nextInt(6) + 1;
-                    }
-                    break;
-                case JunkFind:
-                    switch (tier) {
-                        case 0:
-                        case 1:
-                            return rand.nextInt(11) + 1;
-                        case 2:
-                            return rand.nextInt(12) + 1;
-                        case 3:
-                            return rand.nextInt(13) + 1;
-                        case 4:
-                            return rand.nextInt(14) + 1;
-                        case 5:
-                            return rand.nextInt(15) + 1;
-                    }
-                    break;
-            }
-
-            return 1;
-        }
-
-        public static FishingRodEnchant getEnchant(String enchantTypeString) {
-            for (FishingRodEnchant temp : values()) {
-                Bukkit.getLogger().info(temp.name + " || " + enchantTypeString);
-                if (temp.name().equalsIgnoreCase(enchantTypeString) || temp.name.contains(enchantTypeString) || temp.name.equalsIgnoreCase(enchantTypeString))
-                    return temp;
-            }
-            return FishingRodEnchant.DoubleCatch;
+        public static EnumFish getRandomFish(int tier) {
+            List<EnumFish> fishList = new ArrayList<>();
+            for (EnumFish fish : values())
+            	if (fish.getTier() == tier)
+            		fishList.add(fish);
+            return fishList.get(new Random().nextInt(fishList.size() - 1));
         }
     }
-
-    public static ItemStack getEnchant(int tier, FishingRodEnchant enchant) {
-        int stat = enchant.getBuff(tier);
-        String statBuff = ChatColor.RED + enchant.name + " " + stat + "%";
-        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishing Rod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishing rod with special attributes."}).build();
-
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "fishingenchant");
-        nms.getTag().setInt(enchant.name(), stat);
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
-    }
-
-    public static ItemStack getEnchant(int tier, FishingRodEnchant enchant, int percent) {
-        String statBuff = ChatColor.RED + enchant.name + " " + percent + "%";
-        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishing Rod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishing rod with special attributes."}).build();
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "fishingenchant");
-        nms.getTag().setInt(enchant.name(), percent);
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
-    }
-
+	
+	@AllArgsConstructor
+	public enum FishBuffType {
+		DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
+		HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
+		REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
+		SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
+		HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
+		ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
+		VISION(FishVisionBuff.class, "NIGHTVISION BUFF", "", "", "", 0),
+		BLOCK(FishBlockBuff.class, "+", "% BLOCK", "", "Blocking", 0);
+		
+		@Getter private Class<? extends FishBuff> buffClass;
+		@Getter private String buffPrefix;
+		@Getter private String buffSuffix;
+		@Getter private String prefix;
+		@Getter private String baseSuffix;
+		@Getter private int fishMeta;
+		
+		
+		public static FishBuffType getByName(String str) {
+			for (FishBuffType t : values())
+				if (t.name().equals(str))
+					return t;
+			return null;
+		}
+	}
 
     public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
     public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
@@ -1083,249 +346,6 @@ public class Fishing implements GenericMechanic {
         return -1;
     }
 
-    public static boolean isCustomFish(ItemStack is) {
-        if (is != null && is.getType() == Material.COOKED_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isCustomRawFish(ItemStack is) {
-        if (is != null && is.getType() == Material.RAW_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static void restoreFood(Player p, ItemStack fish) {
-        List<String> lore = fish.getItemMeta().getLore();
-        int food_to_restore = 0;
-
-        for (String s : lore) {
-            if (s.contains("% HUNGER")) {
-                double percent = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));
-                int local_amount = (int) ((percent / 100.0D) * 20D);
-                food_to_restore += local_amount;
-            }
-        }
-
-        int cur_food = p.getFoodLevel();
-        if (cur_food + food_to_restore >= 20) {
-            p.setFoodLevel(20);
-            p.setSaturation(20);
-        } else {
-            p.setFoodLevel(cur_food + food_to_restore);
-            p.setSaturation(p.getSaturation() + food_to_restore);
-        }
-    }
-
-    public static void applyFishBuffs(Player p, ItemStack fish) {
-        List<String> lore = fish.getItemMeta().getLore();
-
-        for (String s : lore) {
-            s = ChatColor.stripColor(s);
-            if (s.contains("% HP (instant)")) {
-                double percent_to_heal = Double.parseDouble(s.substring(s.indexOf("+") + 1, s.indexOf("%"))) / 100;
-                double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(p);
-                int amount_to_heal = (int) Math.round((percent_to_heal * max_hp));
-                double current_hp = HealthHandler.getInstance().getPlayerHPLive(p);
-                if (current_hp + 1 > max_hp) {
-                    continue;
-                }
-                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
-                    p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + amount_to_heal + ChatColor.BOLD + " HP"
-                            + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
-                            + ((int) current_hp + amount_to_heal) + "/" + (int) max_hp + "HP]");
-                }
-
-                if ((current_hp + amount_to_heal) >= max_hp) {
-                    p.setHealth(20);
-                    HealthHandler.getInstance().setPlayerHPLive(p, (int) max_hp);
-                } else if (p.getHealth() <= 19 && ((current_hp + amount_to_heal) < max_hp)) {
-                    HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerHPLive(p) + amount_to_heal);
-                    double health_percent = (HealthHandler.getInstance().getPlayerHPLive(p) + amount_to_heal) / max_hp;
-                    double new_health_display = health_percent * 20;
-                    if (new_health_display > 19) {
-                        if (health_percent >= 1) {
-                            new_health_display = 20;
-                        } else if (health_percent < 1) {
-                            new_health_display = 19;
-                        }
-                    }
-                    if (new_health_display < 1) {
-                        new_health_display = 1;
-                    }
-                    p.setHealth((int) new_health_display);
-
-                }
-            } else if (s.startsWith("REGEN")) {
-                if (p.hasMetadata("fishhpRegen")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish hp regen applied.");
-                    return;
-                }
-
-                double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
-                int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
-                double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(p);
-
-                final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + amount_to_regen_per_interval + ChatColor.BOLD
-                        + " HP/s" + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
-
-                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishhpRegen", DungeonRealms.getInstance());
-                    p.removePotionEffect(PotionEffectType.REGENERATION);
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, regen_interval * 20L);
-            } else if (s.startsWith("SPEED")) {
-
-                String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
-                int effect_tier = 0;
-                if (tier_symbol.equalsIgnoreCase("II")) {
-                    effect_tier = 1;
-                }
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
-            } else if (s.startsWith("NIGHTVISION")) {
-
-                String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
-                int effect_tier = 0;
-                if (tier_symbol.equalsIgnoreCase("II")) {
-                    effect_tier = 1;
-                }
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
-            } else if (s.contains("ENERGY REGEN")) {
-
-                if (p.hasMetadata("fishEnRegen")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish energy regen applied.");
-                    return;
-                }
-
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + " Energy/s"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-                p.setMetadata("fishEnRegen", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishEnRegen", DungeonRealms.getInstance());
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-            } else if (s.contains("% DMG")) {
-                if (p.hasMetadata("fishDMG")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish damage applied.");
-                    return;
-                }
-
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% DMG"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                p.setMetadata("fishDMG", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishDMG", DungeonRealms.getInstance());
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-
-
-            } else if (s.contains("% ARMOR")) {
-                if (p.hasMetadata("fishArmor")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish armor applied.");
-                    return;
-                }
-
-                p.setMetadata("fishArmor", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% ARMOR"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishArmor", DungeonRealms.getInstance());
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-            } else if (s.contains("% BLOCK")) {
-                if (p.hasMetadata("fishBlock")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish block applied.");
-                    return;
-                }
-
-                p.setMetadata("fishBlock", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% BLOCK"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishBlock", DungeonRealms.getInstance());
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-            } else if (s.contains("% LIFESTEAL")) {
-                if (p.hasMetadata("fishLifesteal")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish life steal applied.");
-                    return;
-                }
-
-                p.setMetadata("fishLifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishLifesteal", DungeonRealms.getInstance());
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-            } else if (s.contains("% CRIT")) {
-                if (p.hasMetadata("fishCrit")) {
-                    p.sendMessage(ChatColor.GRAY + "You already have fish life steal applied.");
-                    return;
-                }
-
-                p.setMetadata("fishCrit", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-
-                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
-                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% CRIT"
-                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    p.removeMetadata("fishCrit", DungeonRealms.getInstance());
-
-                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
-                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
-                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                }, effect_time * 20L);
-            }
-        }
-    }
-
     public void loadFishingLocations() {
         int count = 0;
         ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig()
@@ -1344,14 +364,8 @@ public class Fishing implements GenericMechanic {
         Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
     }
 
-    private static Fishing instance;
-
-    public static Fishing getInstance() {
-        if (instance == null)
-            instance = new Fishing();
-        return instance;
-
-    }
+    @Getter
+    private static Fishing instance = new Fishing();
 
     @Override
     public EnumPriority startPriority() {
@@ -1399,7 +413,7 @@ public class Fishing implements GenericMechanic {
 
     @Override
     public void stopInvocation() {
-
+    	
     }
-
+    
 }

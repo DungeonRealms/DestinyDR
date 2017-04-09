@@ -44,11 +44,6 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     }
 
     @Override
-    public void onBossDeath() {
-        
-    }
-
-    @Override
     public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (canSpawnMobs(livingEntity)) {

@@ -7,9 +7,25 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.handler.MailHandler;
+import net.dungeonrealms.game.item.items.core.ItemFishingPole;
+import net.dungeonrealms.game.item.items.core.ItemPickaxe;
+import net.dungeonrealms.game.item.items.functional.ItemBuff;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantFishingRod;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.dungeonrealms.game.world.item.Item.PickaxeAttributeType;
+import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -21,7 +37,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.UUID;
-
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 /**
  * Created by Brad on 24/12/2016.
  */
@@ -92,18 +108,7 @@ public class CommandStore extends BaseCommand {
                     if (args.length >= 5) {
                         buffBonus = Integer.parseInt(args[4]);
                     }
-
-                    switch (args[2].toLowerCase()) {
-                        case "loot":
-                            items.add(ItemManager.createLootBuff(buffDuration, buffBonus));
-                            break;
-                        case "profession":
-                            items.add(ItemManager.createProfessionBuff(buffDuration, buffBonus));
-                            break;
-                        case "level":
-                            items.add(ItemManager.createLevelBuff(buffDuration, buffBonus));
-                            break;
-                    }
+                    items.add(new ItemBuff(EnumBuff.valueOf(args[2].toUpperCase()), buffDuration, buffBonus).generateItem());
                 } else {
                     sender.sendMessage(ChatColor.RED + "Invalid usage! Missing buff type.");
                     return false;
@@ -114,23 +119,22 @@ public class CommandStore extends BaseCommand {
                     String scrollType = args[2].toLowerCase();
                     int scrollTier = Integer.parseInt(args[3]);
                     if (scrollTier >= 1 && scrollTier <= 5) {
+                    	ItemTier tier = ItemTier.getByTier(scrollTier);
                         if (scrollType.equals("weapon")) {
-                            items.add(ItemManager.createWeaponEnchant(scrollTier));
+                            items.add(new ItemEnchantWeapon(tier).generateItem());
                         } else if (scrollType.equals("armor") || scrollType.equals("armour")) {
-                            items.add(ItemManager.createArmorEnchant(scrollTier));
+                            items.add(new ItemEnchantArmor(tier).generateItem());
                         } else if (scrollType.equals("protect") || scrollType.equals("protection")) {
-                            items.add(ItemManager.createProtectScroll(scrollTier));
+                            items.add(new ItemProtectionScroll(tier).generateItem());
                         } else if (scrollType.equals("mining") || scrollType.equals("pick") || scrollType.equals("pickaxe")) {
                             if (args.length >= 5) {
-                                Mining.EnumMiningEnchant enchantType = Mining.EnumMiningEnchant.getEnchant(args[4]);
-                                items.add((args.length >= 6 ? Mining.getEnchant(scrollTier, enchantType, Integer.parseInt(args[5])) : Mining.getEnchant(scrollTier, enchantType)));
+                            	items.add(new ItemEnchantPickaxe(PickaxeAttributeType.valueOf(args[4].toUpperCase())).generateItem());
                             } else {
                                 sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
                             }
                         } else if (scrollType.equals("fishing") || scrollType.equals("fish") || scrollType.equals("rod") || scrollType.equals("fishingrod")) {
                             if (args.length >= 5) {
-                                Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(args[4]);
-                                items.add((args.length >= 6 ? Fishing.getEnchant(scrollTier, enchantType, Integer.parseInt(args[5])) : Fishing.getEnchant(scrollTier, enchantType)));
+                            	items.add(new ItemEnchantFishingRod(FishingAttributeType.valueOf(args[4].toUpperCase())).generateItem());
                             } else {
                                 sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
                             }
@@ -145,16 +149,16 @@ public class CommandStore extends BaseCommand {
                 }
                 break;
             case "orb_of_alteration":
-                items.add(ItemManager.createOrbofAlteration());
+                items.add(new ItemOrb().generateItem());
                 break;
             case "orb_of_peace":
-                items.add(ItemManager.createOrbofPeace(true));
+                items.add(new ItemPeaceOrb().generateItem());
                 break;
             case "orb_of_flight":
-                items.add(ItemManager.createOrbofFlight(true));
+                items.add(new ItemFlightOrb().generateItem());
                 break;
             case "global_messenger":
-                items.add(ItemManager.createGlobalMessenger());
+                items.add(new ItemGlobalMessager().generateItem());
                 break;
             case "realm_chest":
                 items.add(ItemManager.createRealmChest());
@@ -177,14 +181,14 @@ public class CommandStore extends BaseCommand {
                         case "mine":
                         case "pick":
                         case "pickaxe":
-                            items.add(ItemManager.createPickaxe(tier));
+                        	items.add(new ItemPickaxe(tier).generateItem());
                             break;
                         case "fishing":
                         case "fish":
                         case "rod":
                         case "fishingrod":
                         case "fishing_rod":
-                            items.add(ItemManager.createFishingPole(tier));
+                        	items.add(new ItemFishingPole(tier).generateItem());
                             break;
                         default:
                             sender.sendMessage(ChatColor.RED + "Invalid usage! Invalid profession item.");

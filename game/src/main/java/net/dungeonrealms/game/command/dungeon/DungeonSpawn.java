@@ -55,6 +55,7 @@ public class DungeonSpawn extends BaseCommand {
         if (tier == 1) {
             Entity entity = null;
             EnumMonster monster = null;
+            
             switch (strings[1].toLowerCase()) {
                 case "mayelpirate":
                     monster = EnumMonster.MayelPirate;
@@ -66,7 +67,7 @@ public class DungeonSpawn extends BaseCommand {
                     break;
                 case "rangedpirate":
                     monster = EnumMonster.Pirate;
-                    entity = new RangedSkeleton(world, EnumMonster.Pirate, EnumEntityType.HOSTILE_MOB, 1);
+                    entity = new RangedSkeleton(world, EnumMonster.Pirate, 1);
                     break;
                 case "staffpirate":
                     monster = EnumMonster.Pirate;
@@ -74,7 +75,7 @@ public class DungeonSpawn extends BaseCommand {
                     break;
                 case "spider":
                     monster = EnumMonster.Spider1;
-                    entity = new LargeSpider(world, 1, EnumMonster.Spider1);
+                    entity = new LargeSpider(world, 1);
                     break;
                 case "bandit":
                     monster = EnumMonster.Bandit;
@@ -82,7 +83,7 @@ public class DungeonSpawn extends BaseCommand {
                     break;
                 case "rangedbandit":
                     monster = EnumMonster.Bandit;
-                    entity = new RangedSkeleton(world, EnumMonster.Bandit, EnumEntityType.HOSTILE_MOB, 1);
+                    entity = new RangedSkeleton(world, EnumMonster.Bandit, 1);
                     break;
                 case "staffbandit":
                     monster = EnumMonster.Bandit;

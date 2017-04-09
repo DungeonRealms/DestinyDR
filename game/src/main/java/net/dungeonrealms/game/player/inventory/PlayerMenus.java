@@ -649,8 +649,12 @@ public class PlayerMenus {
         }
         player.openInventory(inv);
     }
-
+    
     public static void openPlayerProfileMenu(Player player) {
+    	player.openInventory(getPlayerProfileMenu(player));
+    }
+
+    public static Inventory getPlayerProfileMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Profile");
         inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "Stat Distribution", new String[]{
                 "",
@@ -731,10 +735,8 @@ public class PlayerMenus {
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open toggles menu.",
                 ChatColor.GRAY + "Display Item"
         }));
-
-        player.openInventory(inv);
-        
         Quests.getInstance().triggerObjective(player, ObjectiveOpenProfile.class);
+        return inv;
     }
 
     public static ItemStack editItem(String playerName, String name, String[] lore) {

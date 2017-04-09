@@ -3,12 +3,13 @@ package net.dungeonrealms.game.listener.inventory;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.miscellaneous.ScrapTier;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -116,7 +117,7 @@ public class CurrencyTabListener implements Listener {
 
                     if (scrap == null) return;
 
-                    CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
+                    CurrencyTab tab = BankMechanics.getCurrencyTab(player.getUniqueId());
 
                     if (tab == null) {
                         player.closeInventory();
@@ -209,24 +210,6 @@ public class CurrencyTabListener implements Listener {
                     tab.updateInventory(event.getInventory());
                 }
 
-            }
-        } else if (event.getInventory().getName().equalsIgnoreCase("Bank Chest") && (CurrencyTab.isEnabled() || Rank.isHeadGM((Player) event.getWhoClicked()))) {
-            if (event.getRawSlot() == 1) {
-                Player player = (Player) event.getWhoClicked();
-                event.setCancelled(true);
-                event.setResult(Event.Result.DENY);
-                //Clicking on
-                CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
-                if (tab == null || !tab.hasAccess) {
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
-                    player.sendMessage(ChatColor.RED + "You have not unlocked the Scrap Tab!");
-                    player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
-                    player.closeInventory();
-                    return;
-                }
-
-                Inventory inventory = tab.createCurrencyInventory();
-                player.openInventory(inventory);
             }
         }
     }

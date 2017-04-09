@@ -152,6 +152,8 @@ public class CombatLog implements GenericMechanic {
     public static void updatePVP(Player player) {
         if (inPVP(player)) {
             PVP_COMBAT.put(player, 10);
+        } else {
+        	addToPVP(player);
         }
     }
 
@@ -214,9 +216,10 @@ public class CombatLog implements GenericMechanic {
     // END PVP COMBAT
 
     public static void updateCombat(Player player) {
-        if (isInCombat(player)) {
+        if (isInCombat(player))
             COMBAT.put(player, 10);
-        }
+        else
+        	addToCombat(player);
     }
 
     public static void addToCombat(Player player) {

@@ -117,39 +117,7 @@ public class TeleportAPI {
     public static int getPlayerHearthstoneCD(UUID uuid) {
         return Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid);
     }
-
-    /**
-     * Checks if the item is a teleportation book
-     *
-     * @param itemStack
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isTeleportBook(ItemStack itemStack) {
-        if (itemStack.getType() != Material.BOOK) {
-            return false;
-        }
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsItem.getTag();
-        return !(tag == null) && tag.getString("type").equalsIgnoreCase("teleport");
-    }
-
-    /**
-     * Checks if the item is a hearthstone
-     *
-     * @param itemStack
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isHearthstone(ItemStack itemStack) {
-        if (itemStack.getType() != Material.QUARTZ) {
-            return false;
-        }
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsItem.getTag();
-        return !(tag == null) && tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
-    }
-
+    
     /**
      * Gets the location of a players hearthstone from Mongo
      *

@@ -1,13 +1,16 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff;
 
-import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -21,17 +24,9 @@ import java.util.LinkedHashSet;
 public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
 
     public StaffSkeleton(World world, EnumMonster mons, int tier) {
-        super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
-        setWeapon(tier);
-        clearGoalSelectors();
-        this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, .6F));
-        this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(2, new PathfinderGoalRandomLookaround(this));
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 15, 60, 15.0F));
-    }
-
-    public StaffSkeleton(World world) {
-        super(world);
+        super(world, mons, tier);
+        
+        //  SET NMS DATA  //
         clearGoalSelectors();
         this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
@@ -40,10 +35,8 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
     }
 
     @Override
-    public void setWeapon(int tier) {
-        org.bukkit.inventory.ItemStack weapon = new ItemGenerator().setType(Item.ItemType.STAFF).setTier(Item.ItemTier.getByTier(tier)).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
-        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-        ((LivingEntity) this.getBukkitEntity()).getEquipment().setItemInMainHand(weapon);
+    public org.bukkit.inventory.ItemStack getWeapon() {
+        return makeItem(new ItemWeaponStaff());
     }
 
     @Override
@@ -51,10 +44,6 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
         NBTTagCompound tag = nmsItem.getTag();
         DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
-    }
-
-    @Override
-    protected void setStats() {
     }
 
     private void clearGoalSelectors() {

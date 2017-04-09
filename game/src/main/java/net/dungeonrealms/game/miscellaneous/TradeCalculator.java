@@ -1,12 +1,19 @@
 package net.dungeonrealms.game.miscellaneous;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -146,7 +153,7 @@ public class TradeCalculator {
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
                 if (tag.hasKey("type") && GameAPI.isItemTradeable(is) && !GameAPI.isItemSoulbound(is)) {
-                    if (GameAPI.isArmor(is)) {
+                    if (ItemArmor.isArmor(is)) {
                         switch (tag.getInt("itemType")) {
                             case 5:
                                 payout = 1;
@@ -161,7 +168,7 @@ public class TradeCalculator {
                                 payout = 1;
                                 break;
                         }
-                    } else if (GameAPI.isWeapon(is)) {
+                    } else if (ItemWeapon.isWeapon(is)) {
                         payout = 2;
                     }
                     switch (tier) {
@@ -452,13 +459,11 @@ public class TradeCalculator {
         if (t1_scraps > 0) {
             while (t1_scraps >= 80) {
                 t1_scraps -= 80;
-                ItemStack scroll = ItemManager.createWeaponEnchant(1);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_1).createItem());
             }
             while (t1_scraps >= 70) {
                 t1_scraps -= 70;
-                ItemStack scroll = ItemManager.createArmorEnchant(1);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_1).createItem());
             }
             int payout = t1_scraps / 2;
             while (payout > 64) {
@@ -477,14 +482,12 @@ public class TradeCalculator {
 
             while (t2_scraps >= 140) {
                 t2_scraps -= 140;
-                ItemStack scroll = ItemManager.createWeaponEnchant(2);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_2).createItem());
             }
 
             while (t2_scraps >= 125) {
                 t2_scraps -= 125;
-                ItemStack scroll = ItemManager.createArmorEnchant(2);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_2).createItem());
             }
 
             int payout = 2 * t2_scraps;
@@ -503,14 +506,12 @@ public class TradeCalculator {
         if (t3_scraps > 0) {
             while (t3_scraps >= 110) {
                 t3_scraps -= 110;
-                ItemStack scroll = ItemManager.createWeaponEnchant(3);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_3).createItem());
             }
 
             while (t3_scraps >= 100) {
                 t3_scraps -= 100;
-                ItemStack scroll = ItemManager.createArmorEnchant(3);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_3).createItem());
             }
             int payout = 2 * t3_scraps;
             while (payout > 64) {
@@ -528,19 +529,17 @@ public class TradeCalculator {
         if (t4_scraps > 0) {
             while (t4_scraps >= 88) {
                 t4_scraps -= 88;
-                ItemStack scroll = ItemManager.createWeaponEnchant(4);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_4).createItem());
             }
 
             while (t4_scraps >= 80) {
                 t4_scraps -= 80;
-                ItemStack scroll = ItemManager.createArmorEnchant(4);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_4).createItem());
             }
 
             while (t4_scraps >= 60) {
                 t4_scraps -= 60;
-                merchant_offer.add(ItemManager.createOrbofAlteration());
+                merchant_offer.add(new ItemOrb().createItem());
             }
             int payout = 2 * t4_scraps;
             while (payout > 64) {
@@ -558,20 +557,17 @@ public class TradeCalculator {
         if (t5_scraps > 0) {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
-                ItemStack scroll = ItemManager.createWeaponEnchant(5);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_5).createItem());
             }
 
             while (t5_scraps >= 30) {
                 t5_scraps -= 30;
-                ItemStack scroll = ItemManager.createArmorEnchant(5);
-                merchant_offer.add(scroll);
+                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_5).createItem());
             }
 
             while (t5_scraps >= 20) {
                 t5_scraps -= 20;
-                ItemStack orb = ItemManager.createOrbofAlteration();
-                merchant_offer.add(orb);
+                merchant_offer.add(new ItemOrb().createItem());
             }
             int payout = 3 * t5_scraps;
             while (payout > 64) {

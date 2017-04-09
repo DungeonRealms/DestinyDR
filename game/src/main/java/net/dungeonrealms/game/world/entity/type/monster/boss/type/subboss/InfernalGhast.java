@@ -30,8 +30,6 @@ import java.util.Map;
 public class InfernalGhast extends DRGhast implements DungeonBoss {
 
     private InfernalAbyss boss;
-    @Getter
-    protected Map<String, Integer[]> attributes = new HashMap<>();
 
     /**
      * @param infernalAbyss

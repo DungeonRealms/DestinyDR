@@ -38,7 +38,11 @@ public enum EnumData {
     ACTIVE_TRAIL("info.activetrail"),
     ACTIVE_MOUNT_SKIN("info.activemountskin"),
     QUEST_DATA("info.questData"),
-
+    
+    RAF_REFERRER("info.refferer"),
+    RAF_CHECKED("info.rafChecked"),
+    RAF_COUNTER("stats.players_referred"),
+    
     GEMS_COUNT("info.gemsCount"),
 
     ACHIEVEMENTS("collectibles.achievements"),

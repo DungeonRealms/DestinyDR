@@ -8,19 +8,18 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,11 +31,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -180,7 +175,7 @@ public class ShopListener implements Listener {
                     event.setCurrentItem(new ItemStack(Material.AIR));
                     addItemToShop(clicker, shop, stackClicked);
                 } else {
-                    removePrice(event.getCurrentItem());
+                    event.setCurrentItem(removePrice(event.getCurrentItem()));
                 }
                 return;
             }
@@ -234,7 +229,9 @@ public class ShopListener implements Listener {
                         }
                     	
                     	//  CHANGES THE ITEM PRICE  //
-                    	shop.inventory.setItem(event.getRawSlot(), setPrice(shop.inventory.getItem(event.getRawSlot()), price));
+                    	VanillaItem i = new VanillaItem(shop.inventory.getItem(event.getRawSlot()));
+                    	i.setPrice(price);
+                    	shop.inventory.setItem(event.getRawSlot(), i.generateItem());
                         clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
                     }, () -> clicker.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
@@ -266,8 +263,10 @@ public class ShopListener implements Listener {
             
             boolean shiftClick = event.isShiftClick();
             if (!clicker.hasMetadata("pricing")) {
-                if (!hasPrice(itemClicked)) return;
-                int itemPrice = getPrice(itemClicked);
+                int itemPrice = new VanillaItem(itemClicked).getPrice();
+                if (itemPrice <= 0)
+                	return;
+                
                 if (!shiftClick) {
                     clicker.setMetadata("pricing", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
@@ -327,7 +326,10 @@ public class ShopListener implements Listener {
             if (shop.inventory.firstEmpty() >= 0) {
                 int slot = shop.inventory.firstEmpty();
                 
-                shop.inventory.setItem(slot, setPrice(BankMechanics.shopPricing.get(player.getName()), price));
+                VanillaItem i = new VanillaItem(BankMechanics.shopPricing.get(player.getName()));
+                i.setPrice(price);
+                shop.inventory.setItem(slot, i.generateItem());
+                
                 player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
 
                 player.sendMessage(new String[]{
@@ -370,9 +372,9 @@ public class ShopListener implements Listener {
         }
     	
     	//  MAKE SURE WE CAN PAY FOR THIS  //
-    	int itemPrice = getPrice(item);
+    	int itemPrice = new VanillaItem(item).getPrice();
         int totalPrice = quantity * itemPrice;
-        if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(player) < totalPrice)) {
+        if (totalPrice > 0 && (BankMechanics.getGemsInInventory(player) < totalPrice)) {
         	player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
         	player.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
             return;
@@ -385,7 +387,7 @@ public class ShopListener implements Listener {
         }
     	
         //  GIVE THE ITEM TO THE BUYER  //
-        BankMechanics.getInstance().takeGemsFromInventory(totalPrice, player);
+        BankMechanics.takeGemsFromInventory(player, totalPrice);
         ItemStack toGive = removePrice(item.clone());
         toGive.setAmount(quantity);
         player.getInventory().addItem(toGive);
@@ -457,62 +459,9 @@ public class ShopListener implements Listener {
         shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " ❤");
     }
     
-    public static boolean hasPrice(ItemStack item) {
-    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if(!nms.hasTag())
-        	return false;
-    	NBTTagCompound nbt = nms.getTag();
-    	return nbt.hasKey("Price");
-    }
-    
-    public static int getPrice(ItemStack item) {
-    	if(!hasPrice(item))
-    		return 0;
-    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound nbt = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
-        return nbt.getInt("Price");
-    }
-    
-    public static ItemStack setPrice(ItemStack item, int price) {
-    	item = removePriceLore(item);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        if (meta.hasLore())
-            lore = (ArrayList<String>) meta.getLore();
-        lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-                + ChatColor.WHITE.toString() + price + "g" + ChatColor.GREEN + " each");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound nbt = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
-        nbt.setInt("Price", price);
-        nms.setTag(nbt);
-        return CraftItemStack.asBukkitCopy(nms);
-    }
-    
-    public static ItemStack removePrice(ItemStack item) {
-    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(removePriceLore(item));
-    	NBTTagCompound nbt = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
-    	if(nbt.hasKey("Price"))
-    		nbt.remove("Price");
-    	nms.setTag(nbt);
-    	return CraftItemStack.asBukkitCopy(nms);
-    }
-    
-    public static ItemStack removePriceLore(ItemStack item) {
-    	ItemMeta meta = item.getItemMeta();
-    	List<String> lore = meta.getLore();
-        if (lore != null) {
-            for (int i = 0; i < lore.size(); i++) {
-                String current = lore.get(i);
-                if (current.contains("Price")) {
-                    lore.remove(i);
-                    break;
-                }
-            }
-        }
-        meta.setLore(lore);
-    	item.setItemMeta(meta);
-    	return item;
+    public ItemStack removePrice(ItemStack item) {
+    	VanillaItem i = new VanillaItem(item);
+    	i.removePrice();
+    	return i.generateItem();
     }
 }
