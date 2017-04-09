@@ -190,7 +190,7 @@ public class Quests implements GenericMechanic {
 	}
 	
 	public static boolean isEnabled(){
-		return DungeonRealms.getInstance().isMasterShard;
+		return true;
 	}
 	
 	public void triggerObjective(Player player, Class<? extends QuestObjective> cls){
