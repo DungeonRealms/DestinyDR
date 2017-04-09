@@ -34,6 +34,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/24/2015.
@@ -160,7 +161,7 @@ public class EnergyListener implements Listener {
         if (!(GameAPI.isPlayer(event.getEntity()))) return;
         Player player = (Player) event.getEntity();
         if (event.getFoodLevel() < player.getFoodLevel()) {
-            if (new Random().nextInt(4) >= 1) {
+            if (Math.random() <= .80) {
                 event.setCancelled(true);
                 return;
             }
