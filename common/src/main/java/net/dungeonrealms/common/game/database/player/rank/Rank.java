@@ -178,11 +178,6 @@ public class Rank {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("builder") || isGM(player);
     }
-    
-    public static boolean isBuilder(OfflinePlayer player) {
-    	String rank = Rank.getInstance().getRank(player.getUniqueId());
-		return rank.equalsIgnoreCase("builder") || isGM(player);
-	}
 
     /**
      * Returns true if the user does not have the "default" rank.
