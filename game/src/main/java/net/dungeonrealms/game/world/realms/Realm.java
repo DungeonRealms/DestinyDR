@@ -253,7 +253,7 @@ public class Realm {
 
         Location portalLocation = getPortalLocation().clone();
 
-        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        portalLocation.getBlock().setType(Material.AIR);
         portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
         portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 1.5F, 0.75F);
@@ -642,6 +642,8 @@ public class Realm {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            
+            Realms.getInstance().getRealmMap().remove(getOwner());
         }
 	}
 	
