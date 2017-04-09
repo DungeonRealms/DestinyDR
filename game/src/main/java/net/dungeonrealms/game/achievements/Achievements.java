@@ -60,6 +60,11 @@ public class Achievements {
      * @since 1.0
      */
     public void giveAchievement(UUID uuid, EnumAchievements achievement) {
+    	
+    	if (!Bukkit.isPrimaryThread()) {
+    		Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> giveAchievement(uuid, achievement));
+    		return;
+    	}
         // Achievements are disabled on the event shard.
         if (DungeonRealms.getInstance().isEventShard)
             return;
