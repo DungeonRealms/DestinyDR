@@ -157,6 +157,35 @@ public class ParticleAPI {
     }
 
     /**
+     * Sends a particle to a location so that every player within 25 blocks can see it
+     *
+     * @param particleEffect
+     * @param location
+     * @param xOffset
+     * @param yOffset
+     * @param zOffset
+     * @param particleSpeed
+     * @param particleCount
+     * @since 1.0
+     */
+    public static void sendParticleToLocationAsync(final ParticleEffect particleEffect, final Location location, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
+        Object packet = null;
+        try {
+            packet = newPacket(particleEffect, location, xOffset, yOffset, zOffset, particleSpeed, particleCount);
+        } catch (Exception e) {
+            Utils.log.info("Something went wrong creating a packet");
+        }
+
+        for (Player player : GameAPI.getNearbyPlayersAsync(location, 25)) {
+            try {
+                sendPacketToPlayer(player, packet);
+            } catch (Exception e) {
+                Utils.log.info("Unable to send particle packet to player " + player.getName());
+            }
+        }
+    }
+
+    /**
      * Creates a new packet to send to players with given parameters
      *
      * @param particleEffect

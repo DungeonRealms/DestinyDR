@@ -285,6 +285,8 @@ public class MainListener implements Listener {
             e.printStackTrace();
             return;
         }
+
+        GameAPI.asyncTracker.add(player);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
@@ -383,6 +385,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+        GameAPI.asyncTracker.remove(event.getPlayer());
         onDisconnect(event.getPlayer(), true);
     }
 

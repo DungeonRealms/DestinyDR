@@ -48,9 +48,9 @@ public class Rank {
         String rank;
 
         if(document == null)
-          rank = Rank.getInstance().getRank(player.getUniqueId());
+            rank = Rank.getInstance().getRank(player.getUniqueId());
         else
-          rank = Rank.getInstance().getRank(document);
+            rank = Rank.getInstance().getRank(document);
 
         switch (name) {
             case "dev":
@@ -91,11 +91,11 @@ public class Rank {
     }
 
     public static boolean isDev(CommandSender commandSender) {
-		return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer)commandSender)));
-	}
+        return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer)commandSender)));
+    }
 
     public static boolean isDev(Player player){//This is for legacy purposes.
-    	return isDev((OfflinePlayer)player);
+        return isDev((OfflinePlayer)player);
     }
 
     /**
@@ -172,6 +172,11 @@ public class Rank {
     public static boolean isYouTuber(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+    }
+
+    public static boolean isBuilder(OfflinePlayer player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return rank.equalsIgnoreCase("builder") || isGM(player);
     }
     
     public static boolean isBuilder(OfflinePlayer player) {

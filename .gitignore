@@ -28,3 +28,5 @@ tools/pushBuildToServer/pushUS3.bat
 /tools
 /deployment
 
+.floo
+*.flooignore

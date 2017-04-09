@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.loot;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -22,11 +23,15 @@ import java.util.Random;
  */
 public class LootSpawner {
 
+    @Getter
     public long delay = 100;
+    @Getter
     public Location location;
+    @Getter
     public Block block;
     public Inventory inv;
     public boolean broken;
+    @Getter
     public LootType lootType;
 
     public LootSpawner(Block chest, long delay, LootType lootType) {
@@ -43,7 +48,7 @@ public class LootSpawner {
     /**
      * Sets the loot in the chest based on tier.
      */
-    private void setContents() {
+    public void setContents() {
         HashMap<ItemStack, Double> loot = lootType.getLoot();
         if (loot.isEmpty()) {
             Utils.log.info("LOOT EMPTY RETURNNING...");

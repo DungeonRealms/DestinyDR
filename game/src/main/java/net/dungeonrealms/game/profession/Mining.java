@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.profession;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -360,6 +362,8 @@ public class Mining implements GenericMechanic {
                     .getBonusAmount() / 100f));
             experienceGain += professionBuffBonus;
         }
+
+        experienceGain *= 1.3;
         currentXP += experienceGain;
 
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
@@ -383,7 +387,7 @@ public class Mining implements GenericMechanic {
         p.getEquipment().setItemInMainHand(stackInHand);
         ItemMeta meta = stackInHand.getItemMeta();
         List<String> lore = stackInHand.getItemMeta().getLore();
-        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        String expBar = "||||||||||||||||||||||||||||||||||||||||||||||||||";
         double percentDone = 100.0 * currentXP / maxXP;
         double percentDoneDisplay = (percentDone / 100) * 50.0D;
         int display = (int) percentDoneDisplay;
@@ -763,11 +767,34 @@ public class Mining implements GenericMechanic {
         goldOre = new ItemBuilder().setItem(Material.GOLD_ORE, (short) 0, GameAPI.getTierColor(5).toString() + "Gold Ore", new String[]{ChatColor.GRAY + "A sparking piece of gold ore"}).build();
     }
 
+    @Getter
     private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<>();
+
+    private List<String> CONFIG = Lists.newArrayList();
+
+    public void removeOreLocation(Location location){
+        ORE_LOCATIONS.remove(location);
+        for(String oreSpawn : Lists.newArrayList(CONFIG)){
+            if(oreSpawn.startsWith(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ())){
+                //Coorrrd!
+                CONFIG.remove(oreSpawn);
+                DungeonRealms.getInstance().getConfig().set("orespawns", CONFIG);
+                DungeonRealms.getInstance().saveConfig();
+                return;
+            }
+        }
+    }
+
+    public void addOreLocation(Location location, Material ore){
+        ORE_LOCATIONS.put(location, ore);
+        CONFIG.add(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "=" + ore.name());
+        DungeonRealms.getInstance().getConfig().set("orespawns", CONFIG);
+        DungeonRealms.getInstance().saveConfig();
+    }
 
     public void loadOreLocations() {
         int count = 0;
-        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("orespawns");
+        CONFIG = DungeonRealms.getInstance().getConfig().getStringList("orespawns");
         for (String line : CONFIG) {
             if (line.contains("=")) {
                 try {

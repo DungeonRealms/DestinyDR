@@ -40,13 +40,13 @@ public class Constants {
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
-        DEVELOPERS = new String[]{"Atlas__", "Bradez1571", "Kneesnap", "iFamasssxD"};
+        DEVELOPERS = new String[]{"Bradez1571", "Kneesnap", "iFamasssxD", "Ingot"};
         MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;
-        MASTER_SERVER_IP = "131.153.29.90";
+        MASTER_SERVER_IP = "158.69.23.169";
         MASTER_SERVER_PORT = 22964;
         NET_READ_BUFFER_SIZE = 16384;
         NET_WRITE_BUFFER_SIZE = 32768;

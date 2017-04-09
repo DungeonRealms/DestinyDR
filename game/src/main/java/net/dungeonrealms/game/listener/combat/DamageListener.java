@@ -23,6 +23,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.Graveyard;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
@@ -78,6 +79,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -546,7 +548,6 @@ public class DamageListener implements Listener {
             }
         }
 
-        System.out.println(alignment);
         List<ItemStack> alreadySaved = Lists.newArrayList();
         if (alignment != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             double durability_to_take = (1500 * 0.30D); // 30%
@@ -647,6 +648,63 @@ public class DamageListener implements Listener {
             }
         }
 
+
+        if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+            //Keep 9 pouches max 50% each to drop, after 9 all drop.
+            LinkedList<ItemStack> highestPouches = new LinkedList<>();
+
+            for (ItemStack item : event.getDrops()) {
+                if (item != null && item.getType() == Material.INK_SACK && BankMechanics.isGemPouch(item)) {
+                    highestPouches.add(item);
+                }
+            }
+
+            //Sort all the pouches we have by tier.
+            highestPouches.sort((item1, item2) -> {
+                int tier1 = BankMechanics.getPouchTier(item1);
+                int tier2 = BankMechanics.getPouchTier(item2);
+
+                return tier1 > tier2 ? -1 : tier1 == tier2 ? 0 : 1;
+            });
+
+
+            for (int i = 0; i < 9; i++) {
+                //Get first 9 if theres that many.
+                if (i >= highestPouches.size()) break;
+
+                //Dont save, unlucky..
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    //It dropped on the ground instead...
+                    event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_WITHER_SHOOT, .7F, 1.9F);
+                    continue;
+                }
+
+                ItemStack pouch = highestPouches.get(i);
+
+                int tier = BankMechanics.getPouchTier(pouch);
+                int amount = BankMechanics.getPouchAmount(pouch);
+
+                //Remove this pouch from the drops, add an empty one instead.
+                event.getDrops().remove(pouch);
+
+                //Empty gem
+                gearToSave.add(BankMechanics.getInstance().createGemPouch(tier, 0));
+                //Add that amount of gems to the drop so they lose the gems.
+
+                if (amount > 64) {
+                    while (amount >= 64) {
+                        amount -= 64;
+                        event.getDrops().add(BankMechanics.createGems(64));
+                        if (amount < 64 && amount > 0) {
+                            //Drop the left overs as well..
+                            event.getDrops().add(BankMechanics.createGems(amount));
+                        }
+                    }
+                } else {
+                    event.getDrops().add(BankMechanics.createGems(amount));
+                }
+            }
+        }
         gearToSave.addAll(event.getDrops().stream().filter((is) -> (GameAPI.isItemPermanentlyUntradeable(is) || GameAPI.isItemSoulbound(is)) && !alreadySaved.contains(is)).collect(Collectors.toList()));
 
         gearToSave.stream().filter(stack -> event.getDrops().contains(stack)).forEach(stack -> {
@@ -656,7 +714,26 @@ public class DamageListener implements Listener {
         List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : event.getDrops()) {
             if (stack == null) continue;
-            if (stack.getType() != Material.SKULL_ITEM) {
+            if (stack.getType() == Material.INK_SACK && BankMechanics.isGemPouch(stack)) {
+                //Pouch, add gems instead of the pouch
+                int tier = BankMechanics.getPouchTier(stack);
+                int amount = BankMechanics.getPouchAmount(stack);
+                if (amount > 64) {
+                    while (amount >= 64) {
+                        amount -= 64;
+                        toDrop.add(BankMechanics.createGems(64));
+                        if (amount < 64 && amount > 0) {
+                            //Drop the left overs as well..
+                            toDrop.add(BankMechanics.createGems(amount));
+                        }
+                    }
+                } else {
+                    toDrop.add(BankMechanics.createGems(amount));
+                }
+
+                //Add an empty gem pouch to the drop.
+                toDrop.add(BankMechanics.getInstance().createGemPouch(tier, 0));
+            } else if (stack.getType() != Material.SKULL_ITEM) {
                 toDrop.add(stack);
             }
         }
@@ -696,19 +773,19 @@ public class DamageListener implements Listener {
         p.setFireTicks(0);
         p.setFallDistance(0);
         EntityMechanics.setVelocity(p, p.getVelocity().zero());
-        
+
         p.updateInventory();
-        
+
         //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-        	PlayerManager.checkInventory(p.getUniqueId());
+            PlayerManager.checkInventory(p.getUniqueId());
 
             for (ItemStack stack : gearToSave)
                 p.getInventory().addItem(stack);
 
             ItemManager.giveStarter(p);
         });
-        
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             p.setCanPickupItems(true);
             p.setGameMode(GameMode.SURVIVAL);
@@ -824,7 +901,7 @@ public class DamageListener implements Listener {
             }
         }
         if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
-            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
                     + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
@@ -1160,7 +1237,7 @@ public class DamageListener implements Listener {
         }
 
         if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(hand))) {
-            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
                     + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(hand)) + " to use this weapon.");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);

@@ -324,7 +324,7 @@ public class Realms implements GenericMechanic {
 			return null;
 		
 		for(Realm realm : getRealms())
-			if(realm.getWorld().equals(world))
+			if(world.equals(realm.getWorld()))
 				return realm;
 		return null;
 	}

@@ -360,7 +360,7 @@ public class RestrictionListener implements Listener {
             // Level restrictions on equipment removed on 7/18/16 Build#131
             if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
                 event.setCancelled(true);
-                p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
+                p.sendMessage(ChatColor.RED + "You must be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                         + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(i)) + " to use this weapon.");
                 p.updateInventory();
                 return;
@@ -395,7 +395,7 @@ public class RestrictionListener implements Listener {
             if (player.getEquipment().getItemInMainHand() != null) {
                 if (GameAPI.isWeapon(player.getEquipment().getItemInMainHand())) {
                     if (!canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
-                        player.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
+                        player.sendMessage(ChatColor.RED + "You must be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                                 + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
                         event.setCancelled(true);
                         event.setDamage(0);

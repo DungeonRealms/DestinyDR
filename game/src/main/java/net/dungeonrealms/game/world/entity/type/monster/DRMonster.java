@@ -111,6 +111,8 @@ public interface DRMonster {
             chance += chance * (DonationEffects.getInstance().getActiveLootBuff().getBonusAmount() / 100f);
         }
 
+        chance *= 2;
+
         if (gemRoll < (gemChance * gold_drop_multiplier)) {
             if (gemRoll >= gemChance) {
                 if (toggleDebug) {
@@ -138,7 +140,7 @@ public interface DRMonster {
                     gem_drop_amount = (random.nextInt(50 - 20) + 20) * gold_drop_multiplier;
                     break;
                 case 5:
-                    gem_drop_amount = (random.nextInt(200 - 75) + 75) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(125) + 75) * gold_drop_multiplier;
                     break;
             }
             gem_drop_amount *= drop_multiplier;
