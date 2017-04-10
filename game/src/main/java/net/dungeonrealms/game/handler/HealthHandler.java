@@ -947,7 +947,7 @@ public class HealthHandler implements GenericMechanic {
                 //entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
                 Player player = (Player) attacker;
-                if (player.getMetadata("sprinting") != null) {
+                if (player.hasMetadata("sprinting") && player.isSprinting()) {
                     player.setSprinting(false);
                     player.removeMetadata("sprinting", DungeonRealms.getInstance());
                     if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
