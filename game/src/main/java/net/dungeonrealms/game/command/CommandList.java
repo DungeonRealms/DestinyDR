@@ -22,9 +22,13 @@ public class CommandList extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
-
-        if (commandSender instanceof Player && !Rank.isTrialGM((Player) commandSender))
+        if (commandSender instanceof Player && !Rank.isPMOD((Player) commandSender))
             return false;
+
+        // We want to force only showing PMODs online for users with the PMOD rank.
+        boolean isModerator = (commandSender instanceof Player && !Rank.isTrialGM((Player) commandSender));
+        if (isModerator)
+            args[0] = "-m";
 
         if (args.length > 0 && (args[0].equals("-h") || args[0].equals("-help"))) {
             commandSender.sendMessage(new String[] {
@@ -56,7 +60,7 @@ public class CommandList extends BaseCommand {
             // Searching for staff but player isn't staff, skip...
             if (staffOnly && !Rank.isPMOD(player)) continue;
             // Searching for mods only but player isn't a mod, skip...
-            if (pmodsOnly && !playerRank.equalsIgnoreCase("pmod") && !playerRank.equalsIgnoreCase("hiddenmod")) continue;
+            if (pmodsOnly && !playerRank.equalsIgnoreCase("pmod")) continue;
 
             onlinePlayers++;
 
@@ -64,7 +68,13 @@ public class CommandList extends BaseCommand {
             String playerName = GameChat.getPreMessage(player, false, "local");
             playerName = playerName.substring(0, playerName.length() - 4);
 
-            message.addRunCommand(ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + player.getDisplayName());
+            String messageString = ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " ");
+            if (!isModerator) {
+                message.addRunCommand(messageString, ChatColor.GRAY, "/tp " + player.getDisplayName());
+            } else {
+                message.addText(messageString, ChatColor.GRAY);
+            }
+
             players.append(playerName);
         }
 
