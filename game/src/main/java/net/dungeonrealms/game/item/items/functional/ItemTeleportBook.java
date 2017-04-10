@@ -74,7 +74,7 @@ public class ItemTeleportBook extends FunctionalItem {
 		}
         
 		if (!getTeleportLocation().canTeleportTo(player)) {
-			player.sendMessage(ChatColor.RED + "You cannot warp to Safezones whilst chaotic.");
+			player.sendMessage(ChatColor.RED + "You cannot use teleport books whilst chaotic.");
 			return;
 		}
 		

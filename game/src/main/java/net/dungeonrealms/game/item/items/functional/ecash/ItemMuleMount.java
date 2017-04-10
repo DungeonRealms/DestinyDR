@@ -5,8 +5,12 @@ import lombok.Setter;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
@@ -20,26 +24,22 @@ public class ItemMuleMount extends FunctionalItem {
 	@Getter @Setter
 	private MuleTier tier;
 	
-	public ItemMuleMount() {
+	public ItemMuleMount(Player player) {
 		super(ItemType.MULE);
 		setUntradeable(true);
-		setTier(MuleTier.ADVENTURER);
+		
+		Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+        if (muleTier == null) {
+            player.sendMessage(ChatColor.RED + "No mule data found.");
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
+            muleTier = 1;
+        }
+		setTier(MuleTier.getByTier((int) muleTier));
 	}
 	
 	public ItemMuleMount(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
-		setTier(MuleTier.valueOf(getTagString(TIER)));
-		super.loadItem();
-	}
-	
-	@Override
-	public void updateItem() {
-		setTagString(TIER, getTier().name());
-		super.updateItem();
+		setTier(MuleTier.ADVENTURER); //Failsafe. Shouldn't ever happen.
 	}
 
 	@Override
@@ -74,5 +74,9 @@ public class ItemMuleMount extends FunctionalItem {
 	@Override
 	protected ItemStack getStack() {
 		return new ItemStack(Material.LEASH);
+	}
+	
+	public static boolean isMule(ItemStack item) {
+		return isType(item, ItemType.MULE);
 	}
 }

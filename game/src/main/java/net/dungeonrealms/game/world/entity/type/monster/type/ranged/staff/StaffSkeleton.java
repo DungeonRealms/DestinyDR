@@ -41,9 +41,7 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
+    	DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponStaff(getHeld()));
     }
 
     private void clearGoalSelectors() {

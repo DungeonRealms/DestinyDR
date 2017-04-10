@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 
@@ -51,12 +52,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        Projectile proj = DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
-//        if(proj != null){
-//            proj.setVelocity(proj.getVelocity().multiply(2));
-//        }
+    	DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponStaff(getHeld()));
     }
 
     @Override

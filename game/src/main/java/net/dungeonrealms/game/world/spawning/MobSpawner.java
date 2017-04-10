@@ -3,15 +3,18 @@ package net.dungeonrealms.game.world.spawning;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -259,5 +262,9 @@ public abstract class MobSpawner {
         }
 
         return false;
+    }
+    
+    public ElementalAttribute getElement() {
+    	return ElementalAttribute.valueOf(elementalDamage.toUpperCase());
     }
 }

@@ -24,34 +24,36 @@ public class Item {
 
     public enum GeneratedItemType {
         // WEAPONS
-    	SWORD(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.GOLD_SWORD}, new String[] {"Shortsword", "Broadsword", "Magic Sword", "Ancient Sword", "Legendary Sword"}),
-        POLEARM(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SPADE, Material.IRON_SPADE, Material.DIAMOND_SPADE, Material.GOLD_SPADE}, new String[] {"Spear", "Halberd", "Magic Polearm", "Ancient Polearm", "Legendary Polearm"}),
-        AXE(AttributeBank.WEAPON, new Material[] {Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[] {"Hatchet", "Great Axe", "War Axe", "Ancient Axe", "Legendary Axe"}),
-        STAFF(AttributeBank.WEAPON, new Material[] {Material.WOOD_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.DIAMOND_HOE, Material.GOLD_HOE}, new String[] {"Staff", "Battlestaff", "Wizard Staff", "Ancient Staff", "Legendary Staff"}),
-        BOW(AttributeBank.WEAPON, Material.BOW, new String[] {"Shortbow", "Longbow", "Magic Bow", "Ancient Bow", "Legendary Bow"}),
+    	SWORD(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.GOLD_SWORD}, new String[] {"Shortsword", "Broadsword", "Magic Sword", "Ancient Sword", "Legendary Sword"}, 2),
+        POLEARM(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SPADE, Material.IRON_SPADE, Material.DIAMOND_SPADE, Material.GOLD_SPADE}, new String[] {"Spear", "Halberd", "Magic Polearm", "Ancient Polearm", "Legendary Polearm"}, 2),
+        AXE(AttributeBank.WEAPON, new Material[] {Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[] {"Hatchet", "Great Axe", "War Axe", "Ancient Axe", "Legendary Axe"}, 2),
+        STAFF(AttributeBank.WEAPON, new Material[] {Material.WOOD_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.DIAMOND_HOE, Material.GOLD_HOE}, new String[] {"Staff", "Battlestaff", "Wizard Staff", "Ancient Staff", "Legendary Staff"}, 2),
+        BOW(AttributeBank.WEAPON, Material.BOW, new String[] {"Shortbow", "Longbow", "Magic Bow", "Ancient Bow", "Legendary Bow"}, 2),
         
         // ARMOR
-        HELMET(AttributeBank.ARMOR, new Material[] {Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.GOLD_HELMET}, new String[] {"Leather Coif", "Medium Helmet", "Full Helmet", "Ancient Full Helmet", "Legendary Full Helmet"}),
-        CHESTPLATE(AttributeBank.ARMOR, new Material[] {Material.LEATHER_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.GOLD_CHESTPLATE}, new String[] {"Leather Chestplate", "Chainmail", "Platemail", "Magic Platemail", "Legendary Platemail"}),
-        LEGGINGS(AttributeBank.ARMOR, new Material[] {Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.GOLD_LEGGINGS}, new String[] {"Leather Leggings", "Chainmail Leggings", "Platemail Leggings", "Magic Platemail Leggings", "Legendary Platemail Leggings"}),
-        BOOTS(AttributeBank.ARMOR, new Material[] {Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS, Material.GOLD_BOOTS}, new String[] {"Leather Boots", "Chainmail Boots", "Platemail Boots", "Magic Platemail Boots", "Legendary Platemail Boots"}),
+        HELMET(AttributeBank.ARMOR, new Material[] {Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.GOLD_HELMET}, new String[] {"Leather Coif", "Medium Helmet", "Full Helmet", "Ancient Full Helmet", "Legendary Full Helmet"}, 1),
+        CHESTPLATE(AttributeBank.ARMOR, new Material[] {Material.LEATHER_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.GOLD_CHESTPLATE}, new String[] {"Leather Chestplate", "Chainmail", "Platemail", "Magic Platemail", "Legendary Platemail"}, 3),
+        LEGGINGS(AttributeBank.ARMOR, new Material[] {Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.GOLD_LEGGINGS}, new String[] {"Leather Leggings", "Chainmail Leggings", "Platemail Leggings", "Magic Platemail Leggings", "Legendary Platemail Leggings"}, 2),
+        BOOTS(AttributeBank.ARMOR, new Material[] {Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS, Material.GOLD_BOOTS}, new String[] {"Leather Boots", "Chainmail Boots", "Platemail Boots", "Magic Platemail Boots", "Legendary Platemail Boots"}, 1),
     	
     	// PROFESSION
-    	PICKAXE(AttributeBank.PICKAXE, new Material[] {Material.WOOD_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.GOLD_PICKAXE}, new String[] {"", "", "", "", ""}),
-    	FISHING_ROD(AttributeBank.FISHING_ROD, Material.FISHING_ROD, new String[] {"", "", "", "", ""});
+    	PICKAXE(AttributeBank.PICKAXE, new Material[] {Material.WOOD_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.GOLD_PICKAXE}, new String[] {"", "", "", "", ""}, 0),
+    	FISHING_ROD(AttributeBank.FISHING_ROD, Material.FISHING_ROD, new String[] {"", "", "", "", ""}, 0);
     	
         @Getter private Material[] materials;
         @Getter private String[] gearNames;
         @Getter private AttributeBank attributeBank;
+        @Getter private int merchantScraps;
         
-        GeneratedItemType(AttributeBank attributes, Material material, String[] names) {
-        	this(attributes, new Material[] {material, material, material, material, material}, names);
+        GeneratedItemType(AttributeBank attributes, Material material, String[] names, int scraps) {
+        	this(attributes, new Material[] {material, material, material, material, material}, names, scraps);
         }
         
-        GeneratedItemType(AttributeBank attributes, Material[] material, String[] names) {
+        GeneratedItemType(AttributeBank attributes, Material[] material, String[] names, int scraps) {
         	this.materials = material;
         	this.gearNames = names;
         	this.attributeBank = attributes;
+        	this.merchantScraps = scraps;
         }
 
         public static GeneratedItemType getRandomWeapon() {

@@ -138,6 +138,13 @@ public abstract class ItemGeneric extends PersistentItem {
 		setShowPrice(getTagBool("showPrice"));
 	}
 	
+	/**
+	 * Remove the item unique id. Used by Loot Chests to not produce duplicate items.
+	 */
+	public void removeEpoch() {
+		removeTag("u");
+	}
+	
 	@Override
 	public ItemStack getItem() {
 		return isDestroyed() ? new ItemStack(Material.AIR) : super.getItem();

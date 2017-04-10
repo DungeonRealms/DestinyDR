@@ -7,7 +7,7 @@ import net.dungeonrealms.game.world.entity.util.pathfinders.PathFinderShootBow;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -39,9 +39,7 @@ public class RangedZombie extends DRZombie implements IRangedEntity {
 
     @Override
     public void a(EntityLiving entityLiving, float v) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityLiving.getBukkitEntity());
+        DamageAPI.fireBowProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponBow(getHeld()));
     }
 
     private void clearGoalSelectors() {

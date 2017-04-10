@@ -263,7 +263,7 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(Integer.parseInt(args[1]))).generateItem());
                     break;
                 case "realmchest":
-                    player.getInventory().addItem(ItemManager.createRealmChest());
+                    player.getInventory().addItem(new ItemRealmChest().generateItem());
                     break;
                 case "pouch":
                     tier = Integer.parseInt(args[1]);

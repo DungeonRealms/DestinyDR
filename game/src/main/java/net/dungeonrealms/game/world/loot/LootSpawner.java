@@ -2,8 +2,11 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -65,26 +68,14 @@ public class LootSpawner {
             }
 //			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
             if (spawn_chance >= do_i_spawn) {
-                if (stack.getType() == Material.IRON_SWORD) {
-//					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
-//					stack = LootManager.generateRandomTierItem(tier);
+                if (stack.getType() == Material.IRON_SWORD)
                     continue;
-                } else if (GameAPI.isOrb(stack)) {
-                    stack = new ItemOrb().createItem();
-                } else if (ItemManager.isEnchantScroll(stack)) {
-                    int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
-                    String type = CraftItemStack.asNMSCopy(stack).getTag().getString("type");
-                    if (type.equalsIgnoreCase("armorenchant"))
-                        stack = new ItemEnchantArmor(tier).createItem();
-                    else
-                        stack = new ItemEnchantWeapon(tier).createItem();
-                } else if (new ItemProtectionScroll().isInstanceOf(stack)) {
-                    int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
-                    stack = new ItemProtectionScroll(tier).createItem();
-                } else if (BankMechanics.isBankNote(stack)) {
-                    stack = BankMechanics.createBankNote(CraftItemStack.asNMSCopy(stack).getTag().getInt("worth"), "");
-                }
-
+                ItemGeneric item = (ItemGeneric)PersistentItem.constructItem(stack);
+                if (item.isAntiDupe())
+                	item.removeEpoch();
+                stack = item.generateItem();
+                
+                
                 count++;
                 inv.addItem(stack);
             }

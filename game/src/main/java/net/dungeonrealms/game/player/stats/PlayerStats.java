@@ -153,8 +153,10 @@ public class PlayerStats {
     }
 
     ItemStack loadConfirmItem() {
-        return ItemManager.createItemWithData(Material.INK_SACK, ChatColor.GREEN + "Confirm", new String[]{ChatColor.GRAY + "Click to confirm your stat ", ChatColor.GRAY + "point allocation.  If you ",
-                ChatColor.GRAY + "want to undo your changes, ", ChatColor.GRAY + "press escape."}, DyeColor.LIME.getDyeData());
+        ItemStack stack = ItemManager.createItem(Material.INK_SACK, ChatColor.GREEN + "Confirm", new String[]{"Click to confirm your stat ", "point allocation.  If you ",
+                "want to undo your changes, ", "press escape."});
+        stack.setDurability(DyeColor.LIME.getDyeData());
+        return stack;
     }
 
 
@@ -220,5 +222,9 @@ public class PlayerStats {
 	
 	public double getHPRegen() {
 		return getStat(Stats.VITALITY) * 0.03;
+	}
+
+	public double getDPS() {
+		return getStat(Stats.DEXTERITY) * 0.03;
 	}
 }

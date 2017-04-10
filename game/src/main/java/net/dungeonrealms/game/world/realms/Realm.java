@@ -46,6 +46,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
@@ -330,9 +331,7 @@ public class Realm {
 		if(owner == null)
 			return;
 		
-		int slot = GameAPI.getItemSlot(owner.getInventory(), "realmPortalRune");
-        if (slot != -1)
-        	owner.getInventory().setItem(slot, ItemManager.createRealmPortalRune(owner.getUniqueId()));
+		PlayerManager.checkInventory(owner);
         owner.updateInventory();
 	}
 	

@@ -1114,8 +1114,7 @@ public class GameAPI {
             ItemManager.giveStarter(player, true);
 
             // Fix missing journal & portal rune
-            player.getInventory().setItem(8, new ItemPlayerJournal().generateItem());
-            player.getInventory().setItem(7, new ItemPortalRune(player).generateItem());
+            PlayerManager.checkInventory(player);
 
             if (DungeonRealms.getInstance().isEventShard) {
                 PlayerManager.PlayerToggles toggle;
@@ -1345,7 +1344,7 @@ public class GameAPI {
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
         	gp.calculateAllAttributes();
-        	PlayerManager.checkInventory(uuid);
+        	PlayerManager.checkInventory(player);
         }, 40);
         
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
@@ -1912,15 +1911,40 @@ public class GameAPI {
 		}
 		return null;
 	}
+	
+	/**
+	 * Sets the item in the given equipment slot. There is no built-in spigot method for this.
+	 */
+	public static void setItem(Player player, EquipmentSlot slot, ItemStack stack) {
+		EntityEquipment e = player.getEquipment();
+		switch (slot) {
+			case HAND:
+				e.setItemInMainHand(stack);
+				break;
+			case OFF_HAND:
+				e.setItemInOffHand(stack);
+				break;
+			case CHEST:
+				e.setChestplate(stack);
+				break;
+			case FEET:
+				e.setBoots(stack);
+				break;
+			case HEAD:
+				e.setHelmet(stack);
+				break;
+			case LEGS:
+				e.setLeggings(stack);
+				break;
+		}
+	}
 
 	public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {
-		if (slot == EquipmentSlot.HAND) {
-			player.getEquipment().setItemInMainHand(stack);
-		} else if (slot == EquipmentSlot.OFF_HAND) {
-			player.getEquipment().setItemInOffHand(stack);
-		} else {
+		if (slot != EquipmentSlot.HAND || slot != EquipmentSlot.OFF_HAND) {
 			Utils.log.info("Could not set hand item of " + player.getName() + ". Tried to set hand " + slot.name() + ".");
+			return;
 		}
+		setItem(player, slot, stack);
 	}
 	
 	public static void sendStatNotification(Player p) {

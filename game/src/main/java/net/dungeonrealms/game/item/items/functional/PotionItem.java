@@ -28,7 +28,7 @@ public class PotionItem extends FunctionalItem {
 	@Getter
 	private PotionTier tier;
 	
-	@Getter @Setter
+	@Getter
 	private boolean splash;
 	
 	@Setter
@@ -51,6 +51,11 @@ public class PotionItem extends FunctionalItem {
 		int healAmount = isFromShop() ? Utils.randInt(tier.getShopHealthMin(), tier.getShopHealthMax()) : tier.getDefaultHealth();
         healAmount = (((healAmount + 5) / 10) * 10);
         setHealAmount(healAmount);
+	}
+	
+	public PotionItem setSplash(boolean splash) {
+		this.splash = splash;
+		return this;
 	}
 	
 	public int getHealAmount() {

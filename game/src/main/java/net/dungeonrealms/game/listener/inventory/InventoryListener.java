@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
-import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -9,56 +8,39 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.command.moderation.*;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Stats;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.stats.PlayerStats;
-import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -76,9 +58,9 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onImportantInventoryClick(InventoryClickEvent event) {
 
-        if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
-            if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-        }
+        if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR))
+            if (event.getSlotType() == InventoryType.SlotType.ARMOR)
+            	return;
 
         ClickHandler.getInstance().doClick(event);
     }
@@ -221,9 +203,7 @@ public class InventoryListener implements Listener {
                     if (name.equals("their inventory")) {
                         msg.append(ChatColor.YELLOW + " top inventory: " + getInventoryName(event.getInventory().getName()));
                     }
-
                 }
-
 
                 if (event.getCursor() != null) {
                     msg.append(" cursor: ").append(ChatColor.GRAY.toString()).append(event.getCursor().getAmount()).append("x ").append(event.getCursor().hasItemMeta() && event.getCursor().getItemMeta().hasDisplayName() ? event.getCursor().getItemMeta().getDisplayName() : event.getCursor().getType().name());
@@ -400,11 +380,9 @@ public class InventoryListener implements Listener {
             for (ItemStack stack : bin.getContents())
                 if (stack != null && stack.getType() != Material.AIR)
                 	i++;
-            if (i == 0) {
-                //storage.clearCollectionBin();
-            	DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-            	storage.collection_bin = null;
-            }
+            
+            if (i == 0)
+                storage.clearCollectionBin();
         }
     }
 
@@ -439,7 +417,8 @@ public class InventoryListener implements Listener {
      * @since 1.0 handles Trading inventory items.
      */
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onTradeInvClicked(InventoryClickEvent event) {
         if (GameAPI.isShop(event.getInventory())) return;
         Player player = (Player) event.getWhoClicked();
@@ -504,31 +483,22 @@ public class InventoryListener implements Listener {
             if (nms.hasTag() && nms.getTag().hasKey("status")) {
                 String status = nms.getTag().getString("status");
                 event.setCancelled(true);
-                if (status.equalsIgnoreCase("ready")) {
-                    trade.updateReady(event.getWhoClicked().getUniqueId());
-                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                            null, DyeColor.GRAY.getDyeData());
-                    nms = CraftItemStack.asNMSCopy(item);
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    nbt.setString("status", "notready");
-                    nms.setTag(nbt);
-                    nms.c(ChatColor.YELLOW + "NOT READY");
-                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                    trade.checkReady();
-                    return;
-                } else {
-                    trade.updateReady(event.getWhoClicked().getUniqueId());
-                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
-                            null, DyeColor.LIME.getDyeData());
-                    nms = CraftItemStack.asNMSCopy(item);
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    nbt.setString("status", "ready");
-                    nms.setTag(nbt);
-                    nms.c(ChatColor.YELLOW + "READY");
-                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                    trade.checkReady();
-                    return;
-                }
+                
+                boolean ready = status.equalsIgnoreCase("ready");
+                trade.updateReady(event.getWhoClicked().getUniqueId());
+                ItemStack item = new ItemStack(Material.INK_SACK);
+                item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.GREEN.getDyeData());
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                item.setItemMeta(meta);
+                nms = CraftItemStack.asNMSCopy(item);
+                NBTTagCompound nbt = new NBTTagCompound();
+                nbt.setString("status", ready ? "notready" : "ready");
+                nms.setTag(nbt);
+                nms.c(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                trade.checkReady();
+                return;
             }
             Player clicker = (Player) event.getWhoClicked();
             trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
@@ -551,7 +521,8 @@ public class InventoryListener implements Listener {
             event.setCancelled(true);
             int slot = event.getRawSlot();
             Player p = (Player) event.getWhoClicked();
-            PlayerStats stats = StatsManager.getPlayerStats(p);
+            GamePlayer gp = GameAPI.getGamePlayer(p);
+            PlayerStats stats = gp.getStats();
 
             if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
                 final Inventory inv = event.getInventory();
@@ -619,6 +590,7 @@ public class InventoryListener implements Listener {
         }
     }
 
+    //TODO: Why do we do this?
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDoWeirdArmorThing(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
@@ -627,163 +599,5 @@ public class InventoryListener implements Listener {
         event.setCancelled(true);
         event.setResult(Event.Result.DENY);
         event.getWhoClicked().sendMessage(ChatColor.RED + "Please do not try to equip armor this way!");
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerShiftClickWithImportantItem(InventoryClickEvent event) {
-        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getClick().isShiftClick()) {
-            Inventory clicked = event.getInventory();
-            if (clicked == event.getWhoClicked().getInventory()) {
-                ItemStack clickedOn = event.getCurrentItem();
-                if (clickedOn != null) {
-                    if (clickedOn.getType() == Material.SADDLE || clickedOn.getType() == Material.EYE_OF_ENDER || clickedOn.getType() == Material.NAME_TAG) {
-                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
-                        NBTTagCompound tag = nmsStack.getTag();
-                        if (tag == null) return;
-                        if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerClickWithImportantItem(InventoryClickEvent event) {
-        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getInventory().getName().equals("Party Loot Selection")) {
-            event.setCancelled(true);
-            event.setResult(Event.Result.DENY);
-            return;
-        }
-
-        Inventory clicked = event.getInventory();
-        if (clicked != event.getWhoClicked().getInventory()) {
-            ItemStack onCursor = event.getCursor();
-            if (onCursor != null) {
-                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG || onCursor.getType() == Material.LEASH) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
-                    NBTTagCompound tag = nmsStack.getTag();
-                    if (tag == null) return;
-                    if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerDragImportantItem(InventoryDragEvent event) {
-        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        ItemStack dragged = event.getOldCursor();
-        if (dragged != null) {
-            if (dragged.getType() == Material.SADDLE || dragged.getType() == Material.EYE_OF_ENDER || dragged.getType() == Material.NAME_TAG || dragged.getType() == Material.LEASH) {
-                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
-                NBTTagCompound tag = nmsStack.getTag();
-                if (tag == null) return;
-                if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
-                int inventorySize = event.getInventory().getSize();
-                for (int i : event.getRawSlots()) {
-                    if (i < inventorySize) {
-                        event.setCancelled(true);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerApplyMuleUpgrade(InventoryClickEvent event) {
-        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-        if (event.getCurrentItem() != null && event.getCursor() != null &&
-                event.getCursor().getType() != Material.AIR && event.getCurrentItem().getType() != Material.AIR) {
-            ItemStack cursor = event.getCursor();
-            ItemStack current = event.getCurrentItem();
-
-            Player pl = (Player) event.getWhoClicked();
-            if (current.getType() == Material.LEASH && cursor.getType() == Material.CHEST) {
-                //Check for mule upgrade?
-                net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
-                net.minecraft.server.v1_9_R2.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
-                if (nmsCursor.hasTag() && nmsCurrent.hasTag()) {
-                    NBTTagCompound tag = nmsCursor.getTag();
-                    //Mule upgrade item.
-                    if (tag.hasKey("usage") && tag.hasKey("muleLevel") && tag.getString("usage").equals("muleUpgrade")) {
-                        NBTTagCompound currentTag = nmsCurrent.getTag();
-                        if (currentTag.hasKey("usage") && currentTag.hasKey("muleTier") && currentTag.getString("usage").equals("mule")) {
-                            event.setCancelled(true);
-                            event.setResult(Event.Result.DENY);
-                            //Upgrading mule.
-                            //Check if its the right upgrade.
-                            int upgradeLevel = tag.getInt("muleLevel");
-                            int currentTier = currentTag.getInt("muleTier");
-
-                            if (currentTier + 1 < upgradeLevel || currentTier == upgradeLevel) {
-                                //Cant upgrade.
-                                pl.sendMessage(ChatColor.RED + "You cannot apply this upgrade to this mule!");
-                                return;
-                            }
-
-                            if (event.getCursor().getAmount() > 1) {
-                                cursor.setAmount(cursor.getAmount() - 1);
-                                pl.setItemOnCursor(cursor);
-                            } else {
-                                event.setCursor(null);
-                                pl.setItemOnCursor(null);
-                            }
-
-                            MuleTier newTier = MuleTier.getByTier(upgradeLevel);
-                            if (newTier == null) {
-                                pl.sendMessage(ChatColor.RED + "Unable to find proper upgrade level.");
-                                return;
-                            }
-                            pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
-
-                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true, true, null);
-
-                            if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
-                                Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
-                                //Close all people viewing this inventory.
-                                Lists.newArrayList(inv.getViewers()).forEach(HumanEntity::closeInventory);
-
-                                if (newTier.getSize() != inv.getSize()) {
-                                    Inventory upgradeInventory = Bukkit.createInventory(null, newTier.getSize(), "Mule Storage");
-                                    //Upgrade that shit.
-                                    for (int i = 0; i < inv.getSize(); i++) {
-                                        //Set that inventory of the items.
-                                        if (upgradeInventory.getSize() > i)
-                                            upgradeInventory.setItem(i, inv.getItem(i));
-                                    }
-
-                                    //Clear the old inventory.
-                                    inv.clear();
-                                    MountUtils.inventories.put(pl.getUniqueId(), upgradeInventory);
-                                }
-                            }
-
-                            ItemStack newMule = new ItemMuleMount().generateItem();
-
-                            ItemStack[] contents = pl.getInventory().getContents();
-                            contents[event.getSlot()] = newMule;
-                            pl.getInventory().setContents(contents);
-                            pl.updateInventory();
-                            pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void craftingInventoryClose(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-            player.getOpenInventory().getTopInventory().setItem(1, null);
-            player.getOpenInventory().getTopInventory().setItem(2, null);
-        }
     }
 }

@@ -415,7 +415,7 @@ public class RealmMaterialFactory {
             }
 
 
-            if (!isEcash && BankMechanics.getInstance().getTotalGemsInInventory(player) < total_price) {
+            if (!isEcash && BankMechanics.getGemsInInventory(player) < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " gem(s)/ea = " + (pricePerItem * amount_to_buy) + " gem(s).");
                 return;
@@ -432,7 +432,7 @@ public class RealmMaterialFactory {
             }
 
             if (isEcash) DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
-            else BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
+            else BankMechanics.takeGemsFromInventory(player, total_price);
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");

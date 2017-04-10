@@ -44,7 +44,7 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
         this.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
         this.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
         maxHP = hp;
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) this.getBukkitEntity(), hp);
+        HealthHandler.setMonsterHP((LivingEntity) this.getBukkitEntity(), hp);
         this.getBukkitEntity().setPassenger(boss.getBukkitEntity());
         DamageAPI.setArmorBonus(getBukkitEntity(), 50);
         this.getBukkitEntity().setPassenger(boss.getBukkitEntity());
@@ -78,12 +78,12 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
     @Override
     public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity en = (LivingEntity) event.getEntity();
-        double totalHP = HealthHandler.getInstance().getMonsterMaxHPLive(en);
+        double totalHP = HealthHandler.getMonsterMaxHP(en);
         if (totalHP < 10000) {
             totalHP = maxHP;
         }
         totalHP *= 0.5;
-        double currHP = HealthHandler.getInstance().getMonsterHPLive(en);
+        double currHP = HealthHandler.getMonsterHP(en);
 
         if (currHP <= totalHP) {
             this.getBukkitEntity().eject();

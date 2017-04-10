@@ -1,21 +1,27 @@
 package net.dungeonrealms.game.world.spawning;
 
 import com.google.common.collect.Lists;
+
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.*;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.Item;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -188,11 +194,7 @@ public class EliteMobSpawner extends MobSpawner {
             EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, level, false);
             giveCustomEquipment(eliteType, entity);
 
-
-            ItemStack forceWeap = getWeaponType() != null ? AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
-                    .setType(net.dungeonrealms.game.world.item.Item.ItemType.getByName(getWeaponType()))
-                    .setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(tier))
-                    .setRarity(GameAPI.getItemRarity(true)).generateItem().getItem()) : null;
+            ItemStack forceWeap = getWeaponType() != null ? new ItemWeapon(ItemType.getType(getWeaponType())).setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.getRandomRarity(true)).generateItem() : null;
 
             if (entity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
                 LivingEntity ent = (LivingEntity) entity.getBukkitEntity();
@@ -206,12 +208,10 @@ public class EliteMobSpawner extends MobSpawner {
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             SPAWNED_MONSTERS.add(entity);
 
-            if (this.getElementalDamage() != null) {
-                if(ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
-                    //Set the element ourselves.
-                    GameAPI.setMobElement(entity, this.getElementalDamage());
-                }
-            }
+            if (getElement() != null)
+                if(ThreadLocalRandom.current().nextInt(100) <= this.getElementChance())
+                    GameAPI.setMobElement(entity, getElement());
+            
             entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
             if (hasCustomName) {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim());
@@ -347,8 +347,8 @@ public class EliteMobSpawner extends MobSpawner {
                 }
             }
             GameAPI.calculateAllAttributes(livingEntity, ((DRMonster) entity).getAttributes());
-            entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-            HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
+            entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
+            HealthHandler.setMonsterHP((LivingEntity) entity.getBukkitEntity(), HealthHandler.getMonsterMaxHP((LivingEntity) entity.getBukkitEntity()));
         }
     }
 

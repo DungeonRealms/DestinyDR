@@ -77,8 +77,8 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
                 DamageAPI.removeInvulnerable(en);
             
         }
-        int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
-        int hp = HealthHandler.getInstance().getMonsterHPLive(en);
+        int health = HealthHandler.getMonsterMaxHP(en);
+        int hp = HealthHandler.getMonsterHP(en);
         float tenPercentHP = (float) (health * .10);
         if (hp <= (float) (health * 0.5)) {
             if (canAddsRespawn) {
@@ -97,8 +97,8 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         }
         if (hp <= tenPercentHP) {
             if (!firstHeal) {
-                HealthHandler.getInstance().healMonsterByAmount(en, HealthHandler.getInstance().getMonsterMaxHPLive(en));
-                HealthHandler.getInstance().setMonsterHPLive(en, HealthHandler.getInstance().getMonsterMaxHPLive(en));
+                HealthHandler.healMonster(en, HealthHandler.getMonsterMaxHP(en));
+                HealthHandler.setMonsterHP(en, HealthHandler.getMonsterMaxHP(en));
                 canAddsRespawn = true;
                 if (!firstHeal) {
                     firstHeal = true;

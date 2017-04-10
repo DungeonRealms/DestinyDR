@@ -25,11 +25,15 @@ public enum MuleTier {
     public String getName() {
         return color + name;
     }
-
+    
+    public MuleTier getLast() {
+    	return this == values()[0] ? this : values()[ordinal() - 1];
+    }
+    
     public static MuleTier getByTier(int tier) {
-        for (MuleTier muleTier : values()) {
-            if (muleTier.getTier() == tier) return muleTier;
-        }
+        for (MuleTier muleTier : values())
+            if (muleTier.getTier() == tier) 
+            	return muleTier;
         return null;
     }
 }

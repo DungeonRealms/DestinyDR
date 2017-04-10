@@ -15,11 +15,15 @@ public class ItemEnchantPickaxe extends ItemEnchantProfession {
 	}
 	
 	public ItemEnchantPickaxe() {
-		super(ItemType.ENCHANT_PICKAXE, "Pickaxe");
+		this((ItemPickaxe)null);
 	}
 	
 	public ItemEnchantPickaxe(ItemStack stack) {
 		super(stack);
+	}
+	
+	public ItemEnchantPickaxe(ItemPickaxe item) {
+		super(ItemType.ENCHANT_PICKAXE, "Pickaxe", item);
 	}
 
 	@Override

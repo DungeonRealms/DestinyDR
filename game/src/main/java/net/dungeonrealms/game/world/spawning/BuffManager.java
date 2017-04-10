@@ -2,17 +2,20 @@ package net.dungeonrealms.game.world.spawning;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.type.EnderCrystal;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 import java.util.Set;
@@ -56,9 +59,10 @@ public class BuffManager implements GenericMechanic {
             if (player.getGameMode().equals(GameMode.SPECTATOR)) continue;
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) continue;
             if (GameAPI._hiddenPlayers.contains(player)) continue;
-            if (player.getEquipment().getItemInMainHand().getType() != Material.AIR && player.getEquipment().getItemInMainHand() != null)
-                if (Mining.isDRPickaxe(player.getEquipment().getItemInMainHand()) || Fishing.isDRFishingPole(player.getEquipment().getItemInMainHand()))
-                    continue;
+            ItemStack held = player.getEquipment().getItemInMainHand();
+            if (held.getType() != Material.AIR && held != null)
+            	if (ProfessionItem.isProfessionItem(held))
+            		continue;
             if (getNearbyBuffs(player, 15).size() >= 1) continue;
             if (GameAPI.getNearbyPlayers(player.getLocation(), 10).size() > 2) continue;
             if (new Random().nextInt(21) < 4) {

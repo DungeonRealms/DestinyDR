@@ -6,7 +6,7 @@ import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -28,8 +28,6 @@ public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEnt
 
     @Override
     public void a(EntityLiving entityliving, float f) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
+    	DamageAPI.fireBowProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponBow(getHeld()));
     }
 }

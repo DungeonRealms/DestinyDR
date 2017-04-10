@@ -3,7 +3,6 @@ package net.dungeonrealms.game.quests.gui;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestItem;
 import net.dungeonrealms.game.quests.QuestItem.ItemOption;
@@ -37,7 +36,7 @@ public class GuiQuestItemGenerator extends GuiBase {
 		
 		this.setSlot(1, GeneratedItemType.SWORD.getTier(item.getTier()), ChatColor.GREEN + "Weapon", new String[] {"Click here to mark this item as a weapon"}, setType(ItemOption.WEAPON));
 		
-		this.setSlot(2, ItemManager.createPickaxe(item.getTier().getTierId()).getType(), ChatColor.GREEN + "Pickaxe", new String[] {"Click here to mark this item as a pickaxe."}, setType(ItemOption.PICKAXE));
+		this.setSlot(2, GeneratedItemType.PICKAXE.getTier(item.getTier()), ChatColor.GREEN + "Pickaxe", new String[] {"Click here to mark this item as a pickaxe."}, setType(ItemOption.PICKAXE));
 		
 		this.setSlot(3, Material.FISHING_ROD, ChatColor.GREEN + "Fishing Rod", new String[] {"Click here to mark this item as a fishing rod."}, setType(ItemOption.FISHING_ROD));
 		

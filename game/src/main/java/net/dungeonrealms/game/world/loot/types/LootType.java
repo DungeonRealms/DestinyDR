@@ -1,10 +1,20 @@
 package net.dungeonrealms.game.world.loot.types;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemGem;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
+import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,7 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -79,7 +91,7 @@ public enum LootType {
      *
      */
     private void loadItems() {
-        File file = new File(GameAPI.getRemoteDataFolder() + "//loot//" + fileName);
+        File file = new File(DungeonRealms.getInstance().getDataFolder().getPath() + "/loot/" + fileName);
         if (!file.exists()) {
             Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
             return;
@@ -122,7 +134,7 @@ public enum LootType {
                         case FLOWER_POT:
                         case FLOWER_POT_ITEM:
                             //Quiver drops, replace these with gems for now.
-                            item = BankMechanics.createBankNote(120, "");
+                        	item = new ItemGemNote("Loot Chest", 120).generateItem();
                             break;
                         case EMERALD:
                             int min_amount = Integer.parseInt(s.substring(s.indexOf(":") + 1, s.indexOf("-")));
@@ -135,102 +147,42 @@ public enum LootType {
                             }
 
                             if (amount_to_spawn > 64) {
-                                item = BankMechanics.createBankNote(amount_to_spawn, "");
+                            	item = new ItemGemNote("Loot Chest", amount_to_spawn).generateItem();
                             } else {
-                                item = BankMechanics.gem.clone();
-                                item.setAmount(amount_to_spawn);
+                            	item = new ItemGem(amount_to_spawn).generateItem();
                             }
                             break;
                         case POTION:
-                            switch (item_meta) {
-                                case 1:
-                                    item = ItemManager.createHealthPotion(1, false, false);
-                                    break;
-                                case 5:
-                                    item = ItemManager.createHealthPotion(2, false, false);
-                                    break;
-                                case 9:
-                                    item = ItemManager.createHealthPotion(3, false, false);
-                                    break;
-                                case 12:
-                                    item = ItemManager.createHealthPotion(4, false, false);
-                                    break;
-                                case 3:
-                                    item = ItemManager.createHealthPotion(5, false, false);
-                                    break;
-                                case 16385:
-                                    item = ItemManager.createHealthPotion(1, false, true);
-                                    break;
-                                case 16389:
-                                    item = ItemManager.createHealthPotion(2, false, true);
-                                    break;
-                                case 16393:
-                                    item = ItemManager.createHealthPotion(3, false, true);
-                                    break;
-                                case 16396:
-                                    item = ItemManager.createHealthPotion(4, false, true);
-                                    break;
-                                case 16387:
-                                    item = ItemManager.createHealthPotion(5, false, true);
-                                    break;
-                            }
-                            break;
+                        	List<Integer> noSplash = Arrays.asList(1, 5, 9, 12, 3);
+                        	List<Integer> splashes = Arrays.asList(16385, 16389, 16393, 16396, 16398);
+                        	boolean splash = splashes.contains(item_meta);
+                        	PotionTier tier = null;
+                        	
+                        	if (noSplash.contains(item_meta))
+                        		tier = PotionTier.getById(noSplash.indexOf(item_meta) + 1);
+                        	if (splashes.contains(item_meta))
+                        		tier = PotionTier.getById(splashes.indexOf(item_meta) + 1);
+                        	
+                        	if (tier == null)
+                        		break;
+                        	item = new PotionItem(tier).setSplash(splash).generateItem();
                         case EMPTY_MAP:
-                            switch (item_meta) {
-                                case 1:
-                                    item = ItemManager.createRandomTeleportBook();
-                                    break;
-                                case 2:
-                                    item = ItemManager.createRandomTeleportBook();
-                                    break;
-                                case 3:
-                                    item = ItemManager.createRandomTeleportBook();
-                                    break;
-                                case 4:
-                                    item = ItemManager.createRandomTeleportBook();
-                                    break;
-                                case 11:
-                                    item = ItemManager.createWeaponEnchant(1);
-                                    break;
-                                case 12:
-                                    item = ItemManager.createWeaponEnchant(2);
-                                    break;
-                                case 13:
-                                    item = ItemManager.createWeaponEnchant(3);
-                                    break;
-                                case 14:
-                                    item = ItemManager.createWeaponEnchant(4);
-                                    break;
-                                case 15:
-                                    item = ItemManager.createWeaponEnchant(5);
-                                    break;
-                                case 21:
-                                    item = ItemManager.createArmorEnchant(1);
-                                    break;
-                                case 22:
-                                    item = ItemManager.createArmorEnchant(2);
-                                    break;
-                                case 23:
-                                    item = ItemManager.createArmorEnchant(3);
-                                    break;
-                                case 24:
-                                    item = ItemManager.createArmorEnchant(4);
-                                    break;
-                                case 25:
-                                    item = ItemManager.createArmorEnchant(5);
-                                    break;
-                                default:
-                                    continue;
-                            }
-                            break;
+                        	if (item_meta <= 4) {
+                        		item = new ItemTeleportBook().generateItem();
+                        	} else if (item_meta <= 15 && item_meta > 10) {
+                        		item = new ItemEnchantWeapon(ItemTier.getByTier(item_meta - 10)).generateItem();
+                        	} else if (item_meta <= 25 && item_meta > 20) {
+                        		item = new ItemEnchantArmor(ItemTier.getByTier(item_meta - 20)).generateItem();
+                        	}
+                        	break;
                         case SNOW_BALL:
                         case WATCH:
                             continue;
                         case CHEST:
-                            item = ItemManager.createRealmChest();
+                            item = new ItemRealmChest().generateItem();
                             break;
                         case MAGMA_CREAM:
-                            item = new ItemOrb().createItem();
+                            item = new ItemOrb().generateItem();
                             break;
                         case MELON_BLOCK:
                             item = new ItemStack(Material.MELON, 16);

@@ -94,14 +94,14 @@ public class BuffUtils {
             if (fullHP) {
                 correctName += " (100%)";
                 for (Player player : toBuff) {
-                    HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
+                    HealthHandler.setPlayerHP(player, HealthHandler.getPlayerMaxHP(player));
                 }
             } else {
                 correctName += " (50%)";
                 for (Player player : toBuff) {
-                    double maxHP = HealthHandler.getInstance().getPlayerMaxHPLive(player);
+                    double maxHP = HealthHandler.getPlayerMaxHP(player);
                     double halfMax = maxHP / 2.D;
-                    double currentHP = HealthHandler.getInstance().getPlayerHPLive(player);
+                    double currentHP = HealthHandler.getPlayerHP(player);
 
                     double healthPercent = (currentHP + halfMax) / maxHP;
                     double toDisplay = healthPercent * 20.D;
@@ -116,7 +116,7 @@ public class BuffUtils {
                         toDisplay = 1D;
                     }
 
-                    HealthHandler.getInstance().setPlayerHPLive(player, (int) (currentHP + halfMax));
+                    HealthHandler.setPlayerHP(player, (int) (currentHP + halfMax));
                     player.setHealth((int) toDisplay);
                 }
             }

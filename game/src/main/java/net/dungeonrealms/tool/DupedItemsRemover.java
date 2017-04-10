@@ -6,7 +6,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -151,12 +154,12 @@ public class DupedItemsRemover implements GenericMechanic {
         int dupedItemsFound = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null || i.getType() == Material.AIR) continue;
-            if (GameAPI.isOrb(i))
+            if (ItemOrb.isOrb(i))
                 playerOrbs += i.getAmount();
-            else if (BankMechanics.getInstance().isBankNote(i))
-                playerGems += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
+            else if (ItemMoney.isMoney(i))
+                playerGems += ((ItemMoney)PersistentItem.constructItem(i)).getGemValue();
             if (!ItemGear.isCustomTool(i)) continue;
-            final String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
+            final String uniqueEpochIdentifier = AntiDuplication.getUniqueEpochIdentifier(i);
             if (uniqueEpochIdentifier == null) continue;
 
             if (uids.containsKey(uniqueEpochIdentifier)) {

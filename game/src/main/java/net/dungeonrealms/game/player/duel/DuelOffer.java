@@ -2,17 +2,21 @@ package net.dungeonrealms.game.player.duel;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.*;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
@@ -21,7 +25,9 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -273,63 +279,38 @@ public class DuelOffer {
 //        sharedInventory.setItem(32, getWeaponItem());
     }
 
-    /**
-     * @return
-     */
     private ItemStack getWeaponItem() {
-        switch (tierWeapon) {
-            case TIER_1:
-                return ItemManager.createItem(Material.WOOD_SWORD, "Weapon Tier Limit", null);
-            case TIER_2:
-                return ItemManager.createItem(Material.STONE_SWORD, "Weapon Tier Limit", null);
-            case TIER_3:
-                return ItemManager.createItem(Material.IRON_SWORD, "Weapon Tier Limit", null);
-            case TIER_4:
-                return ItemManager.createItem(Material.DIAMOND_SWORD, "Weapon Tier Limit", null);
-            case TIER_5:
-                return ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
-        }
-        return null;
+    	ItemStack item = new ItemStack(GeneratedItemType.SWORD.getMaterials()[tierWeapon.getId() - 1]);
+    	ItemMeta meta = item.getItemMeta();
+    	meta.setDisplayName(ChatColor.WHITE + "Weapon Tier Limit");
+    	item.setItemMeta(meta);
+    	return item;
     }
-
-    public void updateOffer() {
-        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                null, DyeColor.GRAY.getDyeData());
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+    
+    @SuppressWarnings("deprecation")
+	public ItemStack createAcceptButton(boolean toggle) {
+    	ItemStack accept = new ItemStack(Material.INK_SACK);
+    	accept.setDurability(toggle ? DyeColor.GREEN.getDyeData() : DyeColor.GRAY.getDyeData());
+    	ItemMeta meta = accept.getItemMeta();
+    	meta.setDisplayName(ChatColor.YELLOW + (toggle ? "READY" : "NOT READY"));
+    	accept.setItemMeta(meta);
+    	
+    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(accept);
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("status", "notready");
+        nbt.setString("status", toggle ? "ready" : "notready");
         nms.setTag(nbt);
-        nms.c(ChatColor.YELLOW + "NOT READY");
-        ItemStack newItem = CraftItemStack.asBukkitCopy(nms);
-//        sharedInventory.setItem(0, newItem);
-//        sharedInventory.setItem(8, newItem);
-        p1Ready = false;
-        p2Ready = false;
-
+        nms.c(ChatColor.YELLOW + (toggle ? "READY" : "NOT READY"));
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
-    /**
-     * @return
-     */
     private ItemStack getArmorItem() {
-        switch (tierArmor) {
-            case TIER_1:
-                return ItemManager.createItem(Material.LEATHER_CHESTPLATE, "Armor Tier Limit", null);
-            case TIER_2:
-                return ItemManager.createItem(Material.CHAINMAIL_CHESTPLATE, "Armor Tier Limit", null);
-            case TIER_3:
-                return ItemManager.createItem(Material.IRON_CHESTPLATE, "Armor Tier Limit", null);
-            case TIER_4:
-                return ItemManager.createItem(Material.DIAMOND_CHESTPLATE, "Armor Tier Limit", null);
-            case TIER_5:
-                return ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
-        }
-        return null;
+    	ItemStack item = new ItemStack(GeneratedItemType.CHESTPLATE.getMaterials()[tierWeapon.getId() - 1]);
+    	ItemMeta meta = item.getItemMeta();
+    	meta.setDisplayName(ChatColor.WHITE + "Armor Tier Limit");
+    	item.setItemMeta(meta);
+    	return item;
     }
 
-    /**
-     *
-     */
     public void checkReady() {
         if (p1Ready && p2Ready) {
             Bukkit.getPlayer(player1).closeInventory();
@@ -396,114 +377,34 @@ public class DuelOffer {
     }
 
     /**
-     *
+     * Removes items not permitted in this duel.
      */
-    public void checkArmorAndWeapon() {
-        Player pl = this.getPlayer1();
-        if (pl != null) {
-            int max_armor_tier = tierArmor.getTierId();
-            ItemStack helmet = pl.getInventory().getHelmet();
-            ItemStack chest = pl.getInventory().getChestplate();
-            ItemStack legs = pl.getInventory().getLeggings();
-            ItemStack boots = pl.getInventory().getBoots();
-
-            if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(helmet) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
-                    pl.getInventory().setHelmet(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (chest != null && chest.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(chest) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
-                    pl.getInventory().setChestplate(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (legs != null && legs.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(legs) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
-                    pl.getInventory().setLeggings(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (boots != null && boots.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(boots) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
-                    pl.getInventory().setBoots(new ItemStack(Material.AIR));
-                }
-            }
-            if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
-                if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    int tier = RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand());
-                    if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) != 0)
-                        if (tier > tierWeapon.getTierId()) {
-                            pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
-                            ItemStack stack = pl.getEquipment().getItemInMainHand();
-                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
-                            pl.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-
-                        }
-                }
-
-            HealthHandler.getInstance().updatePlayerHP(pl);
-
-            pl = this.getPlayer2();
-
-            helmet = pl.getInventory().getHelmet();
-            chest = pl.getInventory().getChestplate();
-            legs = pl.getInventory().getLeggings();
-            boots = pl.getInventory().getBoots();
-
-            if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(helmet) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
-                    pl.getInventory().setHelmet(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (chest != null && chest.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(chest) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
-                    pl.getInventory().setChestplate(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (legs != null && legs.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(legs) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
-                    pl.getInventory().setLeggings(new ItemStack(Material.AIR));
-                }
-            }
-
-            if (boots != null && boots.getType() != Material.AIR) {
-                if ((RepairAPI.getArmorOrWeaponTier(boots) > max_armor_tier)) {
-                    pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
-                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
-                    pl.getInventory().setBoots(new ItemStack(Material.AIR));
-                }
-            }
-            if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
-                if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) != 0)
-                        if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) > tierWeapon.getTierId()) {
-                            pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
-                            ItemStack stack = pl.getEquipment().getItemInMainHand();
-                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
-                            pl.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-
-                        }
-                }
-
-            HealthHandler.getInstance().updatePlayerHP(pl);
+    private void checkPlayer(Player pl) {
+    	if(pl == null)
+    		return;
+    	
+    	int maxTier = tierArmor.getId();
+        int illegal = 0;
+        
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+        	ItemStack item = GameAPI.getItem(pl, slot);
+        	if (!ItemArmor.isArmor(item))
+        		continue;
+        	ItemArmor armorItm = new ItemArmor(item);
+        	
+        	if (armorItm.getTier().getId() > maxTier) {
+        		illegal++;
+        		GameAPI.setItem(pl, slot, new ItemStack(Material.AIR));
+        		GameAPI.giveOrDropItem(pl, item);
+        	}
         }
+        
+        if (illegal > 0)
+        	pl.sendMessage(ChatColor.RED + "Took off " + illegal + " illegal items.");
+    }
+    
+    public void checkArmorAndWeapon() {
+        checkPlayer(getPlayer1());
+        checkPlayer(getPlayer2());
     }
 }

@@ -536,7 +536,7 @@ public class DamageListener implements Listener {
         
         //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-        	PlayerManager.checkInventory(p.getUniqueId());
+        	PlayerManager.checkInventory(p);
 
             for (ItemStack stack : gearToSave)
                 p.getInventory().addItem(stack);
@@ -555,7 +555,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        PlayerManager.checkInventory(event.getPlayer().getUniqueId());
+        PlayerManager.checkInventory(event.getPlayer());
     }
 
     /**

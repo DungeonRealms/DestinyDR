@@ -19,11 +19,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MiningTier {
 	
-	TIER_1(0, 90, 35, 120, EnumAchievements.PICKAXE_LEVEL_I, Material.COAL_ORE, "Coal", "A chunk of coal ore.", Material.WOOD_PICKAXE, "Novice", "sturdy wood"),
-	TIER_2(20, 275, 35, 300,EnumAchievements.PICKAXE_LEVEL_II, Material.EMERALD_ORE, "Emerald", "An unrefined piece of emerald ore.", Material.STONE_PICKAXE, "Apprentice", "cave stone"),
-	TIER_3(40, 460, 80, 600, EnumAchievements.PICKAXE_LEVEL_III, Material.IRON_ORE, "Iron", "A piece of raw iron.", Material.IRON_PICKAXE, "Expert", "forged iron"),
-	TIER_4(60, 820, 40, 1200, EnumAchievements.PICKAXE_LEVEL_IV, Material.DIAMOND_ORE, "Diamond", "A sharp chunk of diamond ore.", Material.DIAMOND_PICKAXE, "Supreme", "hardened diamond"),
-	TIER_5(80, 1025, 55, 2400, EnumAchievements.PICKAXE_LEVEL_V, Material.GOLD_ORE, "Gold", "A sparking piece of gold ore", Material.GOLD_PICKAXE, "Master", "reinforced gold");
+	TIER_1(0, 90, 35, 120, EnumAchievements.PICKAXE_LEVEL_I, Material.COAL_ORE, "Coal", "A chunk of coal ore.", Material.WOOD_PICKAXE, "Novice", "sturdy wood", new int[] {100}),
+	TIER_2(20, 275, 35, 300,EnumAchievements.PICKAXE_LEVEL_II, Material.EMERALD_ORE, "Emerald", "An unrefined piece of emerald ore.", Material.STONE_PICKAXE, "Apprentice", "cave stone", new int[] {150, 70}),
+	TIER_3(40, 460, 80, 600, EnumAchievements.PICKAXE_LEVEL_III, Material.IRON_ORE, "Iron", "A piece of raw iron.", Material.IRON_PICKAXE, "Expert", "forged iron", new int[] {200, 100, 40}),
+	TIER_4(60, 820, 40, 1200, EnumAchievements.PICKAXE_LEVEL_IV, Material.DIAMOND_ORE, "Diamond", "A sharp chunk of diamond ore.", Material.DIAMOND_PICKAXE, "Supreme", "hardened diamond", new int[] {140, 80, 35}),
+	TIER_5(80, 1025, 55, 2400, EnumAchievements.PICKAXE_LEVEL_V, Material.GOLD_ORE, "Gold", "A sparking piece of gold ore", Material.GOLD_PICKAXE, "Master", "reinforced gold", new int[] {80, 60, 40, 20});
 	
 	@Getter private int level;
 	private int baseXP;
@@ -37,6 +37,7 @@ public enum MiningTier {
 	
 	private String name;
 	private String description;
+	@Getter private int[] pouchCosts;
 	
 	public int getTier() { 
 		return ordinal() + 1;

@@ -589,12 +589,8 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     public static void rollElement(Entity ent, EnumMonster enumMonster) {
-        if (enumMonster.elementalChance > 0) {
-            if (new Random().nextInt(100) < enumMonster.elementalChance) {
-                String element = enumMonster.getRandomElement();
-                GameAPI.setMobElement(ent, element);
-            }
-        }
+        if (enumMonster.elementalChance > 0 && new Random().nextInt(100) < enumMonster.elementalChance)
+        	GameAPI.setMobElement(ent, enumMonster.getRandomElement());
     }
 
     @Override

@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
@@ -40,9 +41,7 @@ public class StaffWitherSkeleton extends DRSkeleton implements IRangedEntity {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
+    	DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponStaff(getHeld()));
     }
 
     private void clearGoalSelectors() {

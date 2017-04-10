@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
@@ -238,7 +239,7 @@ public class Quest implements ISaveable {
 		
 		if(this.gemReward > 0){
 			player.sendMessage(ChatColor.GREEN + "You acquired " + this.gemReward + " gems!");
-			player.getInventory().addItem(BankMechanics.createBankNote(this.gemReward, this.getQuestName()));
+			player.getInventory().addItem(new ItemGemNote(getQuestName(), gemReward).generateItem());
 		}
 		
 		//This delay is purely for "cosmetic" purposes.

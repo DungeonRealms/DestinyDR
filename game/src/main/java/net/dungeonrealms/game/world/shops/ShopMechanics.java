@@ -8,7 +8,10 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -112,9 +115,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        if (!GameAPI.isItemDroppable(i)) return false;
-        if(i.getType() == Material.EMERALD || i.getType() == Material.PAPER) return false;
-        return true;
+    	return ItemManager.isItemTradeable(i) && !ItemMoney.isMoney(i);
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
@@ -155,11 +156,17 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
                     
                     //  LOAD ITEMS FROM COLLECTION BIN  //
-                    Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                    Storage storage = BankMechanics.getStorage(player.getUniqueId());
                     if (storage.collection_bin != null) {
-                    	for(ItemStack i : storage.collection_bin.getContents())
-                    		if(i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
-                    			shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));
+                    	for(ItemStack i : storage.collection_bin.getContents()) {
+                    		if(i != null && i.getType() != Material.AIR) {
+                    			VanillaItem vi = new VanillaItem(i);
+                    			if (vi.getPrice() <= 0)
+                    				continue;
+                    			vi.setShowPrice(true);
+                    			shop.inventory.addItem(vi.generateItem()); 
+                    		}
+                    	}
                         player.sendMessage(ChatColor.GREEN + "The items from your collection bin have been loaded into your shop.");
                         storage.clearCollectionBin();
                     }

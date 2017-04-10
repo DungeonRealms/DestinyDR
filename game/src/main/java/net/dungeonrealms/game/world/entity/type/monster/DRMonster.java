@@ -9,11 +9,14 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
+import net.dungeonrealms.game.item.items.functional.ItemGem;
+import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.DropRate;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
@@ -182,8 +185,8 @@ public interface DRMonster {
         if (ent.hasMetadata("namedElite"))
             chance /= 3;
 
-        if (DonationEffects.getInstance().getActiveLootBuff() != null)
-            chance += chance * (DonationEffects.getInstance().getActiveLootBuff().getBonusAmount() / 100f);
+        if (DonationEffects.getInstance().hasBuff(EnumBuff.LOOT))
+        	chance += chance * (DonationEffects.getInstance().getBuff(EnumBuff.LOOT).getBonusAmount() / 100f);
 
         if (gemRoll < (gemChance * gemFind)) {
             if (gemRoll >= gemChance)
@@ -194,18 +197,12 @@ public interface DRMonster {
             gemsDropped *= gemFind;
             if (ent.hasMetadata("elite"))
             	gemsDropped *= 1.5;
-
-            while (gemsDropped > 64) {
-                gemsDropped -= 64;
-                ItemStack item = BankMechanics.gem.clone();
-                item.setAmount(64);
-                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
-            }
             
-            if (gemsDropped > 0) {
-                ItemStack item = BankMechanics.gem.clone();
-                item.setAmount((int) gemsDropped);
-                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
+            while (gemsDropped > 0) {
+            	int drop = Math.min((int)gemsDropped, 64);
+            	gemsDropped -= drop;
+            	ItemGem gem = new ItemGem(drop);
+            	ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gem.generateItem()));
             }
         }
 
@@ -254,7 +251,7 @@ public interface DRMonster {
             		{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}
             };
             
-            ItemStack teleport = ItemManager.createTeleportBook(locations[tier][random.nextInt(locations[tier].length)]);
+            ItemStack teleport = new ItemTeleportBook(locations[tier][random.nextInt(locations[tier].length)]).generateItem();
             
             if (teleport != null)
                 ItemManager.whitelistItemDrop(killer, ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport));
@@ -274,6 +271,10 @@ public interface DRMonster {
                 world.getWorld().dropItem(loc.add(0, 1, 0), item);
             }
         }*/ // arrows are no longer needed (uncomment if we ever add them back)
+    }
+    
+    default ItemStack getHeld() {
+    	return ((LivingEntity)this.getBukkitEntity()).getEquipment().getItemInMainHand();
     }
 
 }

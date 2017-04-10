@@ -14,6 +14,7 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantScroll;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -527,7 +528,7 @@ public class RealmListener implements Listener {
         }
         
         if (b.getType() == Material.CHEST)
-            loot = ItemManager.createRealmChest();
+            loot = new ItemRealmChest().generateItem();
         
         //Get data from bukkit drops.
         for(ItemStack i : b.getDrops())

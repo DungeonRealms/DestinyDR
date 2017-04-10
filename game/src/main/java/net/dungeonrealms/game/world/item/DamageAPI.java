@@ -13,6 +13,7 @@ import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.item.items.core.ItemWeaponPolearm;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
@@ -529,8 +530,12 @@ public class DamageAPI {
     	EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
     	fireStaffProjectile(player, gp.getAttributes(), staff);
     }
+    
+    public static Projectile fireStaffProjectile(LivingEntity attacker, ItemWeaponStaff staff) {
+    	return fireStaffProjectile(attacker, staff.getAttributes(), staff);
+    }
 
-    public static void fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
+    public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
         double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
 
         Projectile projectile = null;
@@ -560,10 +565,11 @@ public class DamageAPI {
                 ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
         }
-        if (projectile == null) return;
+        if (projectile == null) return null;
         projectile.setBounce(false);
         projectile.setShooter(attacker);
         MetadataUtils.registerProjectileMetadata(attributes, staff.getTier().getId(), projectile);
+        return projectile;
     }
     
     public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {

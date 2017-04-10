@@ -2,8 +2,11 @@ package net.dungeonrealms.game.world.entity.type.monster.type;
 
 import lombok.Getter;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
+
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,50 +17,50 @@ import java.util.Random;
  */
 public enum EnumMonster {
 
-    InfernalEndermen("infernalendermen", "Endermen", "", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 20),
-    Troll("troll", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, Collections.singletonList("poison"), 20),
-    Troll1("troll1", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, Collections.singletonList("poison"), 20),
-    Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}, Collections.singletonList("fire"), 20),
-    Bandit("bandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
-    Bandit1("bandit1", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
-    PassiveBandit("passivebandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
+    InfernalEndermen("infernalendermen", "Endermen", "", new String[]{""}, new String[]{""}, 20, ElementalAttribute.FIRE),
+    Troll("troll", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, 20, ElementalAttribute.POISON),
+    Troll1("troll1", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, 20, ElementalAttribute.POISON),
+    Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}, 20, ElementalAttribute.FIRE),
+    Bandit("bandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, 15, ElementalAttribute.POISON),
+    Bandit1("bandit1", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, 15, ElementalAttribute.POISON),
+    PassiveBandit("passivebandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, 15, ElementalAttribute.POISON),
     Pirate("pirate", "Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
     RangedPirate("rangedpirate", "Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     MayelPirate("mayelpirate", "Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
-    Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}, Collections.singletonList("ice"), 25),
-    Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
-    Tripoli1("tripoli1","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
-    Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted"}, new String[]{""}, Collections.singletonList("ice"), 30),
-    Spider1("spider1", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, Collections.singletonList("ice"), 10),
-    Spider2("spider2", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, Collections.singletonList("ice"), 10),
-    FireImp("imp", "Fire Imp", "Devil", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 15),
-    Blaze("blaze", "Blaze", "Blaze", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 15),
+    Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}, 25, ElementalAttribute.ICE),
+    Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, 3, ElementalAttribute.FIRE),
+    Tripoli1("tripoli1","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, 3, ElementalAttribute.FIRE),
+    Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted"}, new String[]{""}, 30, ElementalAttribute.ICE),
+    Spider1("spider1", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, 10, ElementalAttribute.ICE),
+    Spider2("spider2", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, 10, ElementalAttribute.ICE),
+    FireImp("imp", "Fire Imp", "Devil", new String[]{""}, new String[]{""}, 15, ElementalAttribute.FIRE),
+    Blaze("blaze", "Blaze", "Blaze", new String[]{""}, new String[]{""}, 15, ElementalAttribute.FIRE),
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
-    LordsGuard("lordsguard", "Lords Guard", "Wither", new String[]{"Infernal"}, new String[]{""}, Collections.singletonList("fire"), 80),
+    LordsGuard("lordsguard", "Lords Guard", "Wither", new String[]{"Infernal"}, new String[]{""}, 80, ElementalAttribute.FIRE),
 
-    StaffZombie("staffzombie", "Zombie", "Steve", new String[]{"Deadly", "Piercing"}, new String[]{"Ranger"}, Collections.singletonList("pure"), 5),
-    Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
-    PassiveSkeleton1("passiveskeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
-    Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
-    Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
-    Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, Collections.singletonList("fire"), 10),
+    StaffZombie("staffzombie", "Zombie", "Steve", new String[]{"Deadly", "Piercing"}, new String[]{"Ranger"}, 5, ElementalAttribute.PURE),
+    Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, 5, ElementalAttribute.PURE),
+    PassiveSkeleton1("passiveskeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, 5, ElementalAttribute.PURE),
+    Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, 5, ElementalAttribute.PURE),
+    Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}, 5, ElementalAttribute.PURE),
+    Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, 10, ElementalAttribute.FIRE),
 
-    MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}, Collections.singletonList("fire"), 40),
-    Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
-    Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 10),
-    Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 15),
-	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""}, Collections.singletonList("fire"), 10),
+    MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}, 40, ElementalAttribute.FIRE),
+    Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}, 5, ElementalAttribute.PURE),
+    Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}, 10, ElementalAttribute.PURE),
+    Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}, 15, ElementalAttribute.ICE),
+	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""}, 10, ElementalAttribute.FIRE),
 	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""}),
-	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}, Collections.singletonList("poison"), 15),
-	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""}, Collections.singletonList("fire"), 10),
+	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}, 15, ElementalAttribute.POISON),
+	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""}, 10, ElementalAttribute.FIRE),
 
-    Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 10),
+    Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""}, 10, ElementalAttribute.ICE),
     Undead("undead", "Undead", "", new String[]{""}, new String[]{""}),
-    FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 15),
-    Witch("witch", "Old Hag", "", new String[]{""}, new String[]{""}, Collections.singletonList("poison"), 100), // witches do poison damage 100% of the time
-    Daemon2("daemon2", "Daemon", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 10),
-    Acolyte("acolyte", "Acolyte", "", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 20),
-    Enderman("enderman", "Apparition", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 15),
+    FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}, 15, ElementalAttribute.ICE),
+    Witch("witch", "Old Hag", "", new String[]{""}, new String[]{""}, 100, ElementalAttribute.POISON), // witches do poison damage 100% of the time
+    Daemon2("daemon2", "Daemon", "", new String[]{""}, new String[]{""}, 10, ElementalAttribute.PURE),
+    Acolyte("acolyte", "Acolyte", "", new String[]{""}, new String[]{""}, 20, ElementalAttribute.FIRE),
+    Enderman("enderman", "Apparition", "", new String[]{""}, new String[]{""}, 15, ElementalAttribute.PURE),
     PassiveChicken("passivechicken", "Quillen", "", new String[]{"Fierce"}, new String[]{""}),
     Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
     Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
@@ -70,7 +73,7 @@ public enum EnumMonster {
     public String mobHead;
     public String[] prefix;
     public String[] suffix;
-    public List<String> possibleElementalTypes;
+    public List<ElementalAttribute> possibleElementalTypes;
     public int elementalChance;
 
     EnumMonster(String idname, String name, String mobHead, String[] prefix, String[] suffix) {
@@ -79,17 +82,17 @@ public enum EnumMonster {
         this.mobHead = mobHead;
         this.prefix = prefix;
         this.suffix = suffix;
-        this.possibleElementalTypes = Collections.emptyList();
+        this.possibleElementalTypes = new ArrayList<>();
         this.elementalChance = 0;
     }
 
-    EnumMonster(String idname, String name, String mobHead, String[] prefix, String[] suffix, List<String> elementalTypes, int elementalChance) {
+    EnumMonster(String idname, String name, String mobHead, String[] prefix, String[] suffix, int elementalChance, ElementalAttribute... elements) {
         this.idName = idname;
         this.name = name;
         this.mobHead = mobHead;
         this.prefix = prefix;
         this.suffix = suffix;
-        this.possibleElementalTypes = elementalTypes;
+        this.possibleElementalTypes = Arrays.asList(elements);
         this.elementalChance = elementalChance;
     }
 
@@ -130,7 +133,7 @@ public enum EnumMonster {
 		return null;
 	}
 
-    public String getRandomElement() {
+    public ElementalAttribute getRandomElement() {
         return possibleElementalTypes.get(new Random().nextInt(possibleElementalTypes.size()));
     }
 

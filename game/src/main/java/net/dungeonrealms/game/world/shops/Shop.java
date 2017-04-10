@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -148,7 +149,9 @@ public class Shop {
             if (stack != null && stack.getType() != Material.AIR) {
                 if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status") || stack.getType() == Material.BARRIER && nms.hasTag() && nms.getTag().hasKey("statusClose"))
                     continue;
-                inv.addItem(ShopListener.removePriceLore(stack));
+                VanillaItem vi = new VanillaItem(stack);
+                vi.setShowPrice(false);
+                inv.addItem(vi.generateItem());
                 count++;
             }
         }
@@ -157,7 +160,7 @@ public class Shop {
                 Bukkit.getPlayer(ownerUUID).sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
             }
 
-            Storage storage = BankMechanics.getInstance().getStorage(ownerUUID);
+            Storage storage = BankMechanics.getStorage(ownerUUID);
             if (storage != null) {
                 storage.collection_bin = inv;
             }
@@ -265,12 +268,12 @@ public class Shop {
                 p.sendMessage(ChatColor.RED + "Shop upgrade cancelled.");
                 return;
             }
-            if (BankMechanics.getInstance().getTotalGemsInInventory(p) < cost) {
+            if (BankMechanics.getGemsInInventory(p) < cost) {
                 p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
                 p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "COST: " + ChatColor.RED + cost + ChatColor.BOLD + "G");
                 return;
             }
-            BankMechanics.getInstance().takeGemsFromInventory(cost, p);
+            BankMechanics.takeGemsFromInventory(p, cost);
             upgradeShop(p, new_tier);
             p.sendMessage("");
             p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** SHOP UPGRADE TO LEVEL " + new_tier + " COMPLETE ***");

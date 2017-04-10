@@ -37,13 +37,15 @@ public abstract class ItemEnchantScroll extends FunctionalItem {
 
 	@Override
 	public void loadItem() {
-		setTier(ItemTier.getByTier(getTagInt(TIER)));
+		if (hasTag(TIER))
+			setTier(ItemTier.getByTier(getTagInt(TIER)));
 		super.loadItem();
 	}
 	
 	@Override
 	public void updateItem() {
-		setTagInt(TIER, getTier().getId());
+		if (getTier() != null)
+			setTagInt(TIER, getTier().getId());
 		super.updateItem();
 	}
 	

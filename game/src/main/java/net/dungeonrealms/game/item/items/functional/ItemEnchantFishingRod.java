@@ -18,8 +18,12 @@ public class ItemEnchantFishingRod extends ItemEnchantProfession {
 		super(stack);
 	}
 	
+	public ItemEnchantFishingRod(ItemFishingPole pole) {
+		super(ItemType.ENCHANT_FISHING_ROD, "Fishing Rod", pole);
+	}
+	
 	public ItemEnchantFishingRod() {
-		super(ItemType.ENCHANT_FISHING_ROD, "Fishing Rod");
+		this((ItemFishingPole)null);
 	}
 
 	@Override

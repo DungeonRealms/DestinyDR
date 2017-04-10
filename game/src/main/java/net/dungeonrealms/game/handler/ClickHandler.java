@@ -40,6 +40,7 @@ import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -742,16 +743,22 @@ public class ClickHandler {
                         PlayerMenus.openFriendInventory(player);
                         break;
                     case 6:
-                        if (event.getClick() == ClickType.RIGHT) return;
-                        PlayerMenus.openPlayerParticleMenu(player);
+                        if (event.getClick() == ClickType.RIGHT)
+                        	CraftingMenu.addTrailItem(player);
+                        else
+                        	PlayerMenus.openPlayerParticleMenu(player);
                         break;
                     case 7:
-                        if (event.getClick() == ClickType.RIGHT) return;
-                        PlayerMenus.openPlayerMountMenu(player);
+                        if (event.getClick() == ClickType.RIGHT)
+                        	CraftingMenu.addMountItem(player);
+                        else
+                        	PlayerMenus.openPlayerMountMenu(player);
                         break;
                     case 8:
-                        if (event.getClick() == ClickType.RIGHT) return;
-                        PlayerMenus.openPlayerPetMenu(player);
+                        if (event.getClick() == ClickType.RIGHT)
+                        	CraftingMenu.addPetItem(player);
+                        else
+                        	PlayerMenus.openPlayerPetMenu(player);
                         break;
                     case 16: {
                         if (event.getClick() == ClickType.RIGHT) return;

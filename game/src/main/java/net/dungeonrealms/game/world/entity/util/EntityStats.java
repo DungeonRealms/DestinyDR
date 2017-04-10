@@ -4,14 +4,19 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -166,14 +171,15 @@ public class EntityStats {
                     weaponType = Item.GeneratedItemType.getRandomWeapon();
                     break;
             }
-            Item.ItemRarity rarity = GameAPI.getItemRarity(true);
-            if (isDungeon) {
-                rarity = Item.ItemRarity.UNIQUE;
-            }
-            ItemStack[] armor = new ItemGenerator().setRarity(rarity).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(GameAPI.getItemRarity(true)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+            
+            ItemTier iTier = ItemTier.getByTier(tier);
+            ItemArmor a = (ItemArmor) new ItemArmor().setRarity(isDungeon ? ItemRarity.UNIQUE : ItemRarity.getRandomRarity(true)).setTier(iTier);
+            ItemStack[] armor = a.generateArmorSet();
+            ItemStack weapon = new ItemWeapon().setTier(iTier).setRarity(isDungeon ? ItemRarity.UNIQUE : ItemRarity.getRandomRarity(true)).generateItem();
+            
             for (ItemStack i : armor) {
-                if (i == null || i.getType() == Material.AIR) continue;
+                if (i == null || i.getType() == Material.AIR)
+                	continue;
                 EnchantmentAPI.addGlow(i);
             }
             EnchantmentAPI.addGlow(weapon);
@@ -195,23 +201,23 @@ public class EntityStats {
         }
         ((LivingEntity) entity.getBukkitEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, lvl);
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
+        HealthHandler.setMonsterHP((LivingEntity) entity.getBukkitEntity(), HealthHandler.getMonsterMaxHP((LivingEntity) entity.getBukkitEntity()));
     }
 
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, lvl);
-        int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
+        int maxHp = HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
+        HealthHandler.setMonsterHP((LivingEntity) entity.getBukkitEntity(), maxHp);
     }
 
     public static void createDungeonMob(Entity entity, int level, int tier) {
         LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
-        ItemStack[] armor = new ItemGenerator().setRarity(Item.ItemRarity.UNIQUE).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-        ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
-        Item.GeneratedItemType type = Item.GeneratedItemType.getTypeFromMaterial(weapon.getType());
-        weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.UNIQUE).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemTier iTier = ItemTier.getByTier(tier);
+        ItemArmor a = (ItemArmor) new ItemArmor().setRarity(ItemRarity.UNIQUE).setTier(iTier);
+        ItemStack[] armor = a.generateArmorSet();
+        ItemStack weapon = new ItemWeapon().setTier(iTier).setRarity(ItemRarity.UNIQUE).generateItem();
         entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
         entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
@@ -221,9 +227,9 @@ public class EntityStats {
         livingEntity.getEquipment().setLeggings(armor[1]);
         livingEntity.getEquipment().setChestplate(armor[2]);
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-        int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
+        int maxHp = HealthHandler.getMonsterMaxHPOnSpawn(livingEntity);
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
-        HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
+        HealthHandler.setMonsterHP(livingEntity, maxHp);
     }
 
     /**
@@ -234,7 +240,7 @@ public class EntityStats {
     public static void setBossRandomStats(Entity entity, int level, int tier) {
         final CraftEntity bukkitEntity = entity.getBukkitEntity();
         bukkitEntity.setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-        bukkitEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) bukkitEntity)));
+        bukkitEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) bukkitEntity)));
         bukkitEntity.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         bukkitEntity.setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
         LivingEntity ent = (LivingEntity) bukkitEntity;
@@ -247,7 +253,7 @@ public class EntityStats {
             EnchantmentAPI.addGlow(ent.getEquipment().getItemInMainHand());
 
         ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true));
-        HealthHandler.getInstance().setMonsterHPLive(ent, HealthHandler.getInstance().getMonsterMaxHPLive(ent));
+        HealthHandler.setMonsterHP(ent, HealthHandler.getMonsterMaxHP(ent));
     }
 
 }

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -20,7 +21,6 @@ import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.*;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -69,7 +69,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     public void doFinalForm(double hp) {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), (int) hp));
-        HealthHandler.getInstance().setMonsterHPLive(livingEntity, (int) hp);
+        HealthHandler.setMonsterHP(livingEntity, (int) hp);
         livingEntity.setMaximumNoDamageTicks(0);
         livingEntity.setNoDamageTicks(0);
         livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -97,13 +97,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        Projectile proj = DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
-        if(proj != null){
-            //Needs to fly a little further so it actually hits the target?
+    	if (!ItemWeaponStaff.isStaff(getHeld()))
+    		return;
+    	ItemWeaponStaff staff = new ItemWeaponStaff(getHeld());
+    	
+        Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), staff.getAttributes(), staff);
+        if(proj != null)
             proj.setVelocity(proj.getVelocity().multiply(1.25));
-        }
     }
 
     private void pushAwayPlayer(Entity entity, Player p, double speed) {
@@ -140,13 +140,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             }
         }
 
-        double halfHP = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.5;
-        if (HealthHandler.getInstance().getMonsterHPLive(en) <= halfHP && !hasFiredGhast) {
+        double halfHP = HealthHandler.getMonsterMaxHP(en) * 0.5;
+        if (HealthHandler.getMonsterHP(en) <= halfHP && !hasFiredGhast) {
             say("Behold, the powers of the inferno.");
             ghast.setLocation(this.locX, this.locY + 7, this.locZ, 1, 1);
-            ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
+            ghast.init(HealthHandler.getMonsterHP(en));
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
-            ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
+            ghast.init(HealthHandler.getMonsterHP(en));
             say("The inferno will devour you!");
             for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
                 pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");

@@ -37,6 +37,7 @@ public enum ItemType {
 	ENCHANT_PICKAXE("enchantPickaxe", ItemEnchantPickaxe.class),
 	ENCHANT_FISHING_ROD("enchantFishingRod", ItemEnchantFishingRod.class),
 	PROTECTION_SCROLL("protScroll", ItemProtectionScroll.class),
+	REALM_CHEST("realmChest", ItemRealmChest.class),
 	
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
@@ -53,6 +54,7 @@ public enum ItemType {
 	RETRAINING_BOOK("retrainingBook", ItemRetrainingBook.class),
 	MOUNT("mount", ItemMount.class),
 	MULE("mule", ItemMuleMount.class),
+	MULE_UPGRADE("muleUpgrade", ItemMuleUpgrade.class),
 	PARTICLE_TRAIL("trail", ItemParticleTrail.class),
 	PET("pet", ItemPet.class),
 	

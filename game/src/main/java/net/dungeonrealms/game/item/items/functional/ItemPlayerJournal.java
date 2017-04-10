@@ -97,7 +97,9 @@ public class ItemPlayerJournal extends FunctionalItem {
 
 	@Override
 	protected String[] getLore() {
-		return null;
+		return new String[] {
+				ChatColor.GREEN + "Left Click: " + ChatColor.GRAY + "Invite to Party",
+				ChatColor.GREEN + "Sneak-Right Click: " + ChatColor.GRAY + "Setup Shop"};
 	}
 
 	@Override

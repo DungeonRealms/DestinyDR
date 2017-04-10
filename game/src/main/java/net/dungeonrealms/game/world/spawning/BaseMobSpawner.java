@@ -3,14 +3,18 @@ package net.dungeonrealms.game.world.spawning;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -159,11 +163,7 @@ public class BaseMobSpawner extends MobSpawner {
             if (entity == null) {
                 return;
             }
-
-            ItemStack forcedWeapon = getWeaponType() != null ?  AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
-                    .setType(Item.ItemType.getByName(getWeaponType()))
-                    .setTier(Item.ItemTier.getByTier(tier))
-                    .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem()) : null;
+            ItemStack forcedWeapon = getWeaponType() != null ? new ItemWeapon().setType(GeneratedItemType.getByName(getWeaponType())).setTier(ItemTier.getByTier(tier)).generateItem() : null;
 
 
             if (entity.getBukkitEntity() instanceof LivingEntity && forcedWeapon != null) {
@@ -175,10 +175,8 @@ public class BaseMobSpawner extends MobSpawner {
                 int level = Utils.getRandomFromTier(tier, lvlRange);
                 EntityStats.setMonsterRandomStats(entity, level, tier);
                 if (this.getElementalDamage() != null && !entity.getBukkitEntity().hasMetadata("element")) {
-                    if (ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
-                        //Set the element ourselves.
-                        GameAPI.setMobElement(entity, this.getElementalDamage());
-                    }
+                    if (ThreadLocalRandom.current().nextInt(100) <= this.getElementChance())
+                        GameAPI.setMobElement(entity, this.getElement());
                 } else {
                     SpawningMechanics.rollElement(entity, monsterType);
                 }
@@ -225,7 +223,7 @@ public class BaseMobSpawner extends MobSpawner {
                             if (this.getElementalDamage() != null) {
                                 if (ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
                                     //Set the element ourselves.
-                                    GameAPI.setMobElement(newEntity, this.getElementalDamage());
+                                    GameAPI.setMobElement(newEntity, getElement());
                                 }
                             } else {
                                 SpawningMechanics.rollElement(newEntity, monsterType);
@@ -247,10 +245,7 @@ public class BaseMobSpawner extends MobSpawner {
                             newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + newMobName.trim()));
                         }
 
-                        ItemStack forceWeap = getWeaponType() != null ? AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
-                                .setType(Item.ItemType.getByName(getWeaponType()))
-                                .setTier(Item.ItemTier.getByTier(tier))
-                                .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem()) : null;
+                        ItemStack forceWeap = getWeaponType() != null ? new ItemWeapon().setType(GeneratedItemType.getByName(getWeaponType())).setTier(ItemTier.getByTier(tier)).generateItem() : null;
 
                         if (newEntity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
                             LivingEntity ent = (LivingEntity) newEntity.getBukkitEntity();

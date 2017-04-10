@@ -1,596 +1,193 @@
 package net.dungeonrealms.game.miscellaneous;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.item.items.core.ItemArmor;
-import net.dungeonrealms.game.item.items.core.ItemWeapon;
+
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.CombatItem;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemGemPouch;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
+import net.dungeonrealms.game.mechanic.data.MiningTier;
+import net.dungeonrealms.game.mechanic.data.PotionTier;
+import net.dungeonrealms.game.mechanic.data.PouchTier;
+import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Created by Kieran on 11/5/2015.
+ * Calculates the items a merchant will give to a player.
+ * 
+ * Recoded by Kneesnap on April 9th, 2017.
  */
 public class TradeCalculator {
 
-    public static List<ItemStack> calculateMerchantOffer(List<ItemStack> player_Offer) {
-        List<ItemStack> merchant_offer = new ArrayList<>();
-        List<ItemStack> to_remove = new ArrayList<>();
-        int t1_scraps = 0, t2_scraps = 0, t3_scraps = 0, t4_scraps = 0, t5_scraps = 0;
-        int t1_ore = 0, t2_ore = 0, t3_ore = 0, t4_ore = 0, t5_ore = 0;
-        int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0, t5_pot = 0;
-        int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0, t5_Splash_pot = 0;
-        int orbs = 0;
-
-        //TODO: Potions
-
-        for (ItemStack is : player_Offer) {
-            if (is == null || is.getType() == Material.AIR) {
-                continue;
-            }
-
-            if (is.getType() == Material.POTION) {
-                if (GameAPI.isItemTradeable(is)) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
-                    if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
-                        switch (nmsStack.getTag().getInt("itemTier")) {
-                            case 1:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                    t1_pot += is.getAmount();
-                                } else {
-                                    t1_Splash_pot += is.getAmount();
-                                }
-                                break;
-                            case 2:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                    t2_pot += is.getAmount();
-                                } else {
-                                    t2_Splash_pot += is.getAmount();
-                                }
-                                break;
-                            case 3:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                    t3_pot += is.getAmount();
-                                } else {
-                                    t3_Splash_pot += is.getAmount();
-                                }
-                                break;
-                            case 4:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                    t4_pot += is.getAmount();
-                                } else {
-                                    t4_Splash_pot += is.getAmount();
-                                }
-                                break;
-                            case 5:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                    t5_pot += is.getAmount();
-                                } else {
-                                    t5_Splash_pot += is.getAmount();
-                                }
-                                break;
-                        }
-                        to_remove.add(is);
-                    }
-                }
-            }
-            if (is.getType() == Material.COAL_ORE || is.getType() == Material.EMERALD_ORE || is.getType() == Material.IRON_ORE
-                    || is.getType() == Material.DIAMOND_ORE || is.getType() == Material.GOLD_ORE) {
-                int tier = Mining.getBlockTier(is.getType());
-                switch (tier) {
-                    case 1:
-                        t1_ore += is.getAmount();
-                        break;
-                    case 2:
-                        t2_ore += is.getAmount();
-                        break;
-                    case 3:
-                        t3_ore += is.getAmount();
-                        break;
-                    case 4:
-                        t4_ore += is.getAmount();
-                        break;
-                    case 5:
-                        t5_ore += is.getAmount();
-                        break;
-                }
-                to_remove.add(is);
-            }
+    public static List<ItemStack> calculateMerchantOffer(List<ItemStack> playerOffer) {
+        List<PersistentItem> merchantOffer = new ArrayList<>();
+        List<ItemStack> remove = new ArrayList<>();
+        List<ItemStack> items = new ArrayList<>();
+        
+        
+        List<PotionItem> potions = new ArrayList<>();
+        Map<ScrapTier, Integer> scraps = new HashMap<>();
+        Map<MiningTier, Integer> ore = new HashMap<>();
+        
+        for (ScrapTier t : ScrapTier.values())
+        	scraps.put(t, 0);
+        
+        for (MiningTier t : MiningTier.values())
+        	ore.put(t, 0);
+        
+        for (ItemStack is : playerOffer) {
+        	if (is == null || is.getType() == Material.AIR || !ItemManager.isItemTradeable(is))
+        		continue;
+        	
+        	boolean removeItem = false; //Whether this item should be removed from the player's inventory.
+        	
+        	//  POTION  //
+        	if (PotionItem.isPotion(is)) {
+        		PotionItem potion = new PotionItem(is);
+        		if (potion.getTier() == PotionTier.TIER_5)
+        			continue;
+        		removeItem = true;
+        		potions.add(potion);
+        	}
+        	
+        	//  ORE  //
+        	MiningTier oreTier = MiningTier.getTierFromOre(is.getType());
+        	if (oreTier != null) {
+        		removeItem = true;
+        		ore.put(oreTier, ore.get(oreTier) + is.getAmount());
+        	}
+        	
+        	//  SCRAP  //
+        	if (ItemScrap.isScrap(is)) {
+        		removeItem = true;
+        		ItemScrap scrap = new ItemScrap(is);
+        		scraps.put(scrap.getTier(), scraps.get(scrap.getTier()) + is.getAmount());
+        	}
+        	
+        	//  GEAR  //
+        	if (CombatItem.isCombatItem(is)) {
+        		CombatItem ci = (CombatItem)PersistentItem.constructItem(is);
+        		removeItem = true;
+        		int scrap = ci.getGeneratedItemType().getMerchantScraps();
+        		ScrapTier scrapTier = ScrapTier.getScrapTier(ci.getTier().getId());
+        		
+        		// Generate Scrap
+        		ItemStack item = new ItemScrap(scrapTier.getNext()).generateItem();
+        		item.setAmount(scrapTier == ScrapTier.TIER5 ? 2 * scrap : scrap);
+        		items.add(item);
+        	}
+        	
+        	//  ORB OF ALTERATION  //
+        	if (ItemOrb.isOrb(is)) {
+        		removeItem = true;
+        		ItemStack scrap = new ItemScrap(ScrapTier.TIER5).generateItem();
+        		scrap.setAmount(20);
+        		items.add(scrap);
+        	}
+        	
+        	//  PROFESSION ITEM  //
+        	if (ProfessionItem.isProfessionItem(is)) {
+        		removeItem = true;
+        		ProfessionItem pi = (ProfessionItem)PersistentItem.constructItem(is);
+        		merchantOffer.add(pi.getEnchant());
+        	}
+        	
+        	if (removeItem)
+        		remove.add(is);
         }
-
-        for (ItemStack is : player_Offer) {
-            if (is == null || is.getType() == Material.AIR) {
-                continue;
-            }
-            if (RepairAPI.isItemArmorScrap(is)) {
-                int tier = RepairAPI.getScrapTier(is);
-                switch (tier) {
-                    case 1:
-                        t1_scraps += is.getAmount();
-                        break;
-                    case 2:
-                        t2_scraps += is.getAmount();
-                        break;
-                    case 3:
-                        t3_scraps += is.getAmount();
-                        break;
-                    case 4:
-                        t4_scraps += is.getAmount();
-                        break;
-                    case 5:
-                        t5_scraps += is.getAmount();
-                        break;
-                }
-                to_remove.add(is);
-            }
+        
+        remove.forEach(playerOffer::remove);
+        
+        //  POTION TRADES  //
+        for(boolean splash : new boolean[] {true, false}) {
+        	for (PotionTier tier : PotionTier.values()) {
+        		if (tier == PotionTier.TIER_5)
+        			continue;
+        		
+        		int potsNeeded = 7 - tier.getId();
+        		int totalPots = (int) potions.stream().filter(p -> p.isSplash() == splash && p.getTier() == tier).count();
+        		
+        		while (totalPots >= potsNeeded) {
+        			totalPots -= potsNeeded;
+        			merchantOffer.add(new PotionItem(PotionTier.getById(tier.getId() + 1)).setSplash(splash));
+        		}
+        		
+        		for (int i = 0; i < totalPots; i++)
+        			merchantOffer.add(new PotionItem(tier).setSplash(splash));
+        	}
         }
-
-        to_remove.forEach(player_Offer::remove);
-
-        for (ItemStack is : player_Offer) {
-            if (is == null || is.getType() == Material.AIR) {
-                continue;
-            }
-            if (!GameAPI.isItemTradeable(is)) {
-                continue;
-            }
-            int tier = RepairAPI.getArmorOrWeaponTier(is);
-            if (RepairAPI.isItemArmorOrWeapon(is)) {
-                int payout = 0;
-                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
-                NBTTagCompound tag = nmsItem.getTag();
-                if (tag.hasKey("type") && GameAPI.isItemTradeable(is) && !GameAPI.isItemSoulbound(is)) {
-                    if (ItemArmor.isArmor(is)) {
-                        switch (tag.getInt("itemType")) {
-                            case 5:
-                                payout = 1;
-                                break;
-                            case 6:
-                                payout = 3;
-                                break;
-                            case 7:
-                                payout = 2;
-                                break;
-                            case 8:
-                                payout = 1;
-                                break;
-                        }
-                    } else if (ItemWeapon.isWeapon(is)) {
-                        payout = 2;
-                    }
-                    switch (tier) {
-                        case 1:
-                            ItemStack scrap1 = ItemManager.createArmorScrap(2);
-                            scrap1.setAmount(payout);
-                            merchant_offer.add(scrap1);
-                            break;
-                        case 2:
-                            ItemStack scrap2 = ItemManager.createArmorScrap(3);
-                            scrap2.setAmount(payout);
-                            merchant_offer.add(scrap2);
-                            break;
-                        case 3:
-                            ItemStack scrap3 = ItemManager.createArmorScrap(4);
-                            scrap3.setAmount(payout);
-                            merchant_offer.add(scrap3);
-                            break;
-                        case 4:
-                            ItemStack scrap4 = ItemManager.createArmorScrap(5);
-                            scrap4.setAmount(payout);
-                            merchant_offer.add(scrap4);
-                            break;
-                        case 5:
-                            ItemStack scrap5 = ItemManager.createArmorScrap(5);
-                            scrap5.setAmount(payout * 2);
-                            merchant_offer.add(scrap5);
-                            break;
-                    }
-                }
-            }
-            if (is.getType() == Material.MAGMA_CREAM) {
-                if (GameAPI.isOrb(is)) {
-                    int orbCount = is.getAmount();
-                    int payout = 20 * orbCount;
-                    while (payout > 64) {
-                        ItemStack scrap = ItemManager.createArmorScrap(5);
-                        scrap.setAmount(64);
-                        merchant_offer.add(scrap);
-                        payout -= 64;
-                    }
-                    if (payout > 0) {
-                        ItemStack scrap = ItemManager.createArmorScrap(5);
-                        scrap.setAmount(payout);
-                        merchant_offer.add(scrap);
-                    }
-                }
-            } else if (Fishing.isDRFishingPole(is) && Fishing.hasEnchants(is)) {
-                for (String line : is.getItemMeta().getLore()) {
-                    if (!line.contains("%"))
-                        continue;
-                    String enchantString = line.substring(2, line.indexOf("+")).trim();
-                    Fishing.FishingRodEnchant enchant = Fishing.FishingRodEnchant.getEnchant(enchantString);
-                    int percent = Integer.parseInt(line.substring(line.indexOf("+"), line.indexOf("%")));
-                    ItemStack enchantItem = Fishing.getEnchant(tier, enchant, percent);
-                    merchant_offer.add(enchantItem);
-                }
-            } else if (Mining.isDRPickaxe(is) && Mining.hasEnchants(is)) {
-                for (String line : is.getItemMeta().getLore()) {
-                    if (!line.contains("%"))
-                        continue;
-                    String enchantString = line.substring(2, line.indexOf("+")).trim();
-                    Mining.EnumMiningEnchant enchant = Mining.EnumMiningEnchant.getEnchant(enchantString);
-                    int percent = Integer.parseInt(line.substring(line.indexOf("+"), line.indexOf("%")));
-                    ItemStack enchantItem = Mining.getEnchant(tier, enchant, percent);
-                    merchant_offer.add(enchantItem);
-                }
-            }
+        
+        //  ORE TRADES  //
+        for (MiningTier oreTier : MiningTier.values()) {
+        	int currentOre = ore.get(oreTier);
+        	
+        	for (int i = 0; i < oreTier.getPouchCosts().length; i++) {
+        		int pouchCost = oreTier.getPouchCosts()[i];
+        		PouchTier t = PouchTier.getById(i + 1);
+        		
+        		while (currentOre >= pouchCost) {
+        			currentOre -= pouchCost;
+        			merchantOffer.add(new ItemGemPouch(t));
+        		}
+        		
+        		ItemStack scrap = new ItemScrap(ScrapTier.getScrapTier(Math.max(2, t.getId() - 1))).generateItem();
+        		int giveScrap = (int) (currentOre * Math.max(0.5D, Math.pow(2, -t.getId() + 2)));
+        		while (giveScrap > 0) {
+        			int sub = Math.min(currentOre, 64);
+        			currentOre -= sub;
+        			ItemStack add = scrap.clone();
+        			add.setAmount(sub);
+        			items.add(add);
+        		}
+        	}
         }
-        if (t1_pot > 0) {
-            while (t1_pot >= 6) {
-                t1_pot -= 6;
-                ItemStack pot = ItemManager.createHealthPotion(2, true, false);
-                merchant_offer.add(pot);
-            }
+        
+        //  SCRAP TRADES  //
+        for (ScrapTier tier : ScrapTier.values()) {
+        	int scrapAmt = scraps.get(tier);
+        	ItemTier currTier = ItemTier.getByTier(tier.getTier());
+        	
+        	while (scrapAmt > tier.getWepEnchPrice() && tier.getWepEnchPrice() > 0) {
+        		scrapAmt -= tier.getWepEnchPrice();
+        		merchantOffer.add(new ItemEnchantWeapon(currTier));
+        	}
+        	
+        	while (scrapAmt > tier.getArmEnchPrice() && tier.getArmEnchPrice() > 0) {
+        		scrapAmt -= tier.getArmEnchPrice();
+        		merchantOffer.add(new ItemEnchantArmor(currTier));
+        	}
+        	
+        	while (scrapAmt > tier.getOrbPrice() && tier.getOrbPrice() > 0) {
+        		scrapAmt -= tier.getOrbPrice();
+        		merchantOffer.add(new ItemOrb());
+        	}
+        	
+        	ItemStack scrap = new ItemScrap(tier.downgrade()).generateItem();
+        	double mult = (tier == ScrapTier.TIER1 ? 0.5D : (tier == ScrapTier.TIER5 ? 3D : 2D));
+        	int leftOver = (int) (scrapAmt * mult);
+        	while (leftOver > 0) {
+        		int sub = Math.min(leftOver, 64);
+        		leftOver -= sub;
+        		ItemStack add = scrap.clone();
+        		add.setAmount(sub);
+        		items.add(add);
+        	}
         }
-        if (t2_pot > 0) {
-            while (t2_pot >= 5) {
-                t2_pot -= 5;
-                ItemStack pot = ItemManager.createHealthPotion(3, true, false);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t3_pot > 0) {
-            while (t3_pot >= 3) {
-                t3_pot -= 3;
-                ItemStack pot = ItemManager.createHealthPotion(4, true, false);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t4_pot > 0) {
-            while (t4_pot >= 3) {
-                t4_pot -= 3;
-                ItemStack pot = ItemManager.createHealthPotion(5, true, false);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t5_pot > 0) {
-            while (t5_pot >= 2) {
-                t5_pot -= 2;
-                ItemStack pot = ItemManager.createHealthPotion(5, false, false);
-                merchant_offer.add(pot);
-                ItemStack gems = BankMechanics.createBankNote(100, "Merchant");
-                merchant_offer.add(gems);
-            }
-        }
-
-        if (t1_Splash_pot > 0) {
-            while (t1_Splash_pot >= 6) {
-                t1_Splash_pot -= 6;
-                ItemStack pot = ItemManager.createHealthPotion(2, true, true);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t2_Splash_pot > 0) {
-            while (t2_Splash_pot >= 5) {
-                t2_Splash_pot -= 5;
-                ItemStack pot = ItemManager.createHealthPotion(3, true, true);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t3_Splash_pot > 0) {
-            while (t3_Splash_pot >= 3) {
-                t3_Splash_pot -= 3;
-                ItemStack pot = ItemManager.createHealthPotion(4, true, true);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t4_Splash_pot > 0) {
-            while (t4_Splash_pot >= 3) {
-                t4_Splash_pot -= 3;
-                ItemStack pot = ItemManager.createHealthPotion(5, true, true);
-                merchant_offer.add(pot);
-            }
-        }
-        if (t5_Splash_pot > 0) {
-            while (t5_Splash_pot >= 2) {
-                t5_Splash_pot -= 2;
-                ItemStack pot = ItemManager.createHealthPotion(5, false, true);
-                merchant_offer.add(pot);
-                ItemStack gems = BankMechanics.createBankNote(200, "Merchant");
-                merchant_offer.add(gems);
-            }
-        }
-
-
-        if (t1_ore > 0) {
-            while (t1_ore >= 100) {
-                t1_ore -= 100;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
-                merchant_offer.add(pouch);
-            }
-
-            int payout = t1_ore * 2;
-            while (payout > 64) {
-                payout -= 64;
-                ItemStack scrap = ItemManager.createArmorScrap(1);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(1);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t2_ore > 0) {
-            while (t2_ore >= 150) {
-                t2_ore -= 150;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
-                merchant_offer.add(pouch);
-            }
-
-            while (t2_ore >= 70) {
-                t2_ore -= 70;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
-                merchant_offer.add(pouch);
-            }
-
-            int payout = t2_ore;
-            while (payout > 64) {
-                payout -= 64;
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t3_ore > 0) {
-            while (t3_ore >= 200) {
-                t3_ore -= 200;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t3_ore >= 100) {
-                t3_ore -= 100;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t3_ore >= 40) {
-                t3_ore -= 40;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
-                merchant_offer.add(pouch);
-            }
-
-            int payout = t3_ore / 2;
-            while (payout > 64) {
-                payout -= 64;
-                ItemStack scrap = ItemManager.createArmorScrap(3);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(3);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t4_ore > 0) {
-            while (t4_ore >= 140) {
-                t4_ore -= 140;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t4_ore >= 80) {
-                t4_ore -= 80;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t4_ore >= 35) {
-                t4_ore -= 35;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
-                merchant_offer.add(pouch);
-            }
-
-            int payout = t4_ore / 2;
-            while (payout > 64) {
-                payout -= 64;
-                ItemStack scrap = ItemManager.createArmorScrap(4);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(4);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t5_ore > 0) {
-            while (t5_ore >= 80) {
-                t5_ore -= 80;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(4, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t5_ore >= 60) {
-                t5_ore -= 60;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t5_ore >= 40) {
-                t5_ore -= 40;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
-                merchant_offer.add(pouch);
-            }
-            while (t5_ore >= 20) {
-                t5_ore -= 20;
-                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
-                merchant_offer.add(pouch);
-            }
-
-            int payout = t5_ore / 2;
-            while (payout > 64) {
-                payout -= 64;
-                ItemStack scrap = ItemManager.createArmorScrap(5);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(5);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t1_scraps > 0) {
-            while (t1_scraps >= 80) {
-                t1_scraps -= 80;
-                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_1).createItem());
-            }
-            while (t1_scraps >= 70) {
-                t1_scraps -= 70;
-                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_1).createItem());
-            }
-            int payout = t1_scraps / 2;
-            while (payout > 64) {
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-                payout -= 64;
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t2_scraps > 0) {
-
-            while (t2_scraps >= 140) {
-                t2_scraps -= 140;
-                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_2).createItem());
-            }
-
-            while (t2_scraps >= 125) {
-                t2_scraps -= 125;
-                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_2).createItem());
-            }
-
-            int payout = 2 * t2_scraps;
-            while (payout > 64) {
-                ItemStack scrap = ItemManager.createArmorScrap(1);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-                payout -= 64;
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(1);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t3_scraps > 0) {
-            while (t3_scraps >= 110) {
-                t3_scraps -= 110;
-                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_3).createItem());
-            }
-
-            while (t3_scraps >= 100) {
-                t3_scraps -= 100;
-                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_3).createItem());
-            }
-            int payout = 2 * t3_scraps;
-            while (payout > 64) {
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-                payout -= 64;
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(2);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t4_scraps > 0) {
-            while (t4_scraps >= 88) {
-                t4_scraps -= 88;
-                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_4).createItem());
-            }
-
-            while (t4_scraps >= 80) {
-                t4_scraps -= 80;
-                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_4).createItem());
-            }
-
-            while (t4_scraps >= 60) {
-                t4_scraps -= 60;
-                merchant_offer.add(new ItemOrb().createItem());
-            }
-            int payout = 2 * t4_scraps;
-            while (payout > 64) {
-                ItemStack scrap = ItemManager.createArmorScrap(3);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-                payout -= 64;
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(3);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-        if (t5_scraps > 0) {
-            while (t5_scraps >= 33) {
-                t5_scraps -= 33;
-                merchant_offer.add(new ItemEnchantWeapon(ItemTier.TIER_5).createItem());
-            }
-
-            while (t5_scraps >= 30) {
-                t5_scraps -= 30;
-                merchant_offer.add(new ItemEnchantArmor(ItemTier.TIER_5).createItem());
-            }
-
-            while (t5_scraps >= 20) {
-                t5_scraps -= 20;
-                merchant_offer.add(new ItemOrb().createItem());
-            }
-            int payout = 3 * t5_scraps;
-            while (payout > 64) {
-                ItemStack scrap = ItemManager.createArmorScrap(4);
-                scrap.setAmount(64);
-                merchant_offer.add(scrap);
-                payout -= 64;
-            }
-            if (payout > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(4);
-                scrap.setAmount(payout);
-                merchant_offer.add(scrap);
-            }
-        }
-
-        if (orbs > 0) {
-            while (orbs > 0) {
-                ItemStack scrap = ItemManager.createArmorScrap(5);
-                scrap.setAmount(20);
-                merchant_offer.add(scrap);
-            }
-        }
-
-        //TODO: Trade Enchantment Scrolls for Scraps based on upcoming poll.
-        return merchant_offer;
+        
+        merchantOffer.forEach(pi -> items.add(pi.generateItem()));
+        return items;
     }
 }

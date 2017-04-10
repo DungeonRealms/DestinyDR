@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
@@ -10,8 +11,8 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -38,9 +39,7 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
      */
     @Override
     public void a(EntityLiving entityliving, float f) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
+        DamageAPI.fireBowProjectile((LivingEntity) getBukkitEntity(), new ItemWeaponBow(getHeld()));
     }
 
     @Override
@@ -64,8 +63,8 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     }
     
     private boolean canSpawnMobs(LivingEntity livingEntity) {
-        int maxHP = HealthHandler.getInstance().getMonsterMaxHPLive(livingEntity);
-        int currentHP = HealthHandler.getInstance().getMonsterHPLive(livingEntity);
+        int maxHP = HealthHandler.getMonsterMaxHP(livingEntity);
+        int currentHP = HealthHandler.getMonsterHP(livingEntity);
         
         if (currentHP <= maxHP * 0.8 && !canSpawn) {
         	canSpawn = true;

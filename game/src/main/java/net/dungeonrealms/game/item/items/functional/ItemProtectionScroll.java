@@ -19,6 +19,10 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 
 public class ItemProtectionScroll extends ItemEnchantScroll {
 	
+	public ItemProtectionScroll(ItemStack item) {
+		super(item);
+	}
+	
 	public ItemProtectionScroll() {
 		this(ItemTier.TIER_1);
 	}

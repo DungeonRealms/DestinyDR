@@ -18,6 +18,7 @@ import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -37,6 +38,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 /**
  * Created by Brad on 24/12/2016.
@@ -161,7 +163,7 @@ public class CommandStore extends BaseCommand {
                 items.add(new ItemGlobalMessager().generateItem());
                 break;
             case "realm_chest":
-                items.add(ItemManager.createRealmChest());
+                items.add(new ItemRealmChest().generateItem());
                 break;
             case "profession":
                 if (args.length >= 3) {

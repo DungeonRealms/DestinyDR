@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.mastery;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -30,6 +32,14 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 */
 	public ModifierRange getAttribute(AttributeType t) {
 		return hasAttribute(t) ? this.get(t) : new ModifierRange(t.isRange() ? ModifierType.RANGE : ModifierType.STATIC, 0, 0);
+	}
+	
+	/**
+	 * Gets a list of all the attributes this has.
+	 * Basically keySet() except it checks the value is > 0
+	 */
+	public List<AttributeType> getAttributes() {
+		return keySet().stream().filter(this::hasAttribute).collect(Collectors.toList());
 	}
 	
 	/**

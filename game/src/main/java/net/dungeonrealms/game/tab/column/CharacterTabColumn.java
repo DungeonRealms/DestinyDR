@@ -60,7 +60,7 @@ public class CharacterTabColumn extends Column {
                             GamePlayer gp = GameAPI.getGamePlayer(player);
                             if (gp == null) return null;
 
-                            return String.valueOf((HealthHandler.getInstance().getPlayerHPRegenLive(player) + gp.getStats().getHPRegen()));
+                            return String.valueOf((HealthHandler.getPlayerHPRegen(player) + gp.getStats().getHPRegen()));
                         }
                     },
                     new Variable("dps") {

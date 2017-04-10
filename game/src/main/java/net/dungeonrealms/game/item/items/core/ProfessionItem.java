@@ -8,6 +8,9 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantFishingRod;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantProfession;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -86,6 +89,19 @@ public abstract class ProfessionItem extends ItemGear {
 		addLore("Level: " + getTier().getColor() + getLevel());
         addLore(getXP() + " / " + getNeededXP());
         addLore("EXP: " + formattedXPBar);
+	}
+	
+	/**
+	 * Gets an enchant for this item. (Uses special cases, so it needs to be updated for every new profession item.)
+	 */
+	public ItemEnchantProfession getEnchant() {
+		if (this instanceof ItemPickaxe) {
+			return new ItemEnchantPickaxe((ItemPickaxe)this);
+		} else if (this instanceof ItemFishingPole) {
+			return new ItemEnchantFishingRod((ItemFishingPole)this);
+		}
+		Utils.log.info("Couldn't create enchant for profession item - " + getClass().getName());
+		return null;
 	}
 	
 	/**

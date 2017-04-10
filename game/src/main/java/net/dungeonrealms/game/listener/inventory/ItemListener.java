@@ -9,35 +9,22 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
-import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.quests.objectives.ObjectiveOpenJournal;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -50,7 +37,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -58,7 +44,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.glow.GlowAPI;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -164,7 +149,7 @@ public class ItemListener implements Listener {
         	return;
         }
         
-        PlayerManager.checkInventory(event.getPlayer().getUniqueId());
+        PlayerManager.checkInventory(event.getPlayer());
         
         //  SILENTLY REMOVE UNDROPPABLE ITEMS  //
         if(!ItemManager.isItemDroppable(item)) {

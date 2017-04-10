@@ -4,8 +4,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
@@ -14,8 +12,6 @@ import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -23,69 +19,30 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.stats.PlayerStats;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.realms.RealmTier;
-import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.*;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionType;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * Created by Nick on 9/18/2015.
+ * ItemManager - Contains basic item utils.
+ * 
+ * Redone by Kneesnap in early April 2017.
  */
 public class ItemManager {
-
-    public static ItemStack createRealmChest() {
-        return createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
-    }
-
-    public static ItemStack createMuleUpgrade(int tier) {
-        ItemStack is = null;
-        if (tier == 2)
-            is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Adventurer's Storage Mule Chest", new String[]{
-                    ChatColor.RED + "18 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.GREEN + "Old Storage Mule" + ChatColor.GRAY + " to expand its inventory!"}))
-//                    .addLore(ChatColor.WHITE + "5000" + ChatColor.AQUA + " Portal Key Shards")
-                    .setNBTInt("muleLevel", 2).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").setNBTString("destroy", "yes").build();
-        else if (tier == 3)
-            is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Royal Storage Mule Chest", new String[]{
-                    ChatColor.RED + "27 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.AQUA + "Adventurer's Storage Mule", ChatColor.GRAY + "to further expand its inventory!"}))
-//                    .addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
-                    .setNBTInt("muleLevel", 3).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").setNBTString("destroy", "yes").build();
-
-        return is;
-    }
-
+	
     /**
      * Adds a starter kit to the player.
      *
@@ -175,45 +132,13 @@ public class ItemManager {
     }
 
     /**
-     * @param m
-     * @param name
-     * @param lore
-     * @return ItemStack
-     */
-    public static ItemStack createItem(Material m, String name, String[] lore) {
-        ItemStack is = new ItemStack(m, 1);
-        ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(name);
-        if (lore != null)
-            meta.setLore(Arrays.asList(lore));
-        is.setItemMeta(meta);
-        return is;
-    }
-
-    /**
-     * @param m
-     * @param name
-     * @param lore
-     * @return ItemStack
-     */
-    public static ItemStack createItemWithData(Material m, String name, String[] lore, short i) {
-        ItemStack is = new ItemStack(m, 1, i);
-        ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(name);
-        if (lore != null)
-            meta.setLore(Arrays.asList(lore));
-        is.setItemMeta(meta);
-        return is;
-    }
-
-    /**
      * Creates a character journal for a player.
      * This should ONLY be called when force opening this book for the player.
      * In other words, use new ItemPlayerJournal(Player).generateItem() instead of this.
      * We can save space / cpu power by only generating this when the player opens it.
      */
     public static ItemStack createCharacterJournal(Player p) {
-        ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.GREEN.toString() + ChatColor.BOLD + "Character Journal", new String[]{ChatColor.GREEN + "Left Click: " + ChatColor.GRAY + "Invite to Party", ChatColor.GREEN + "Sneak-Right Click: " + ChatColor.GRAY + "Setup Shop"});
+    	ItemStack stack = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta bm = (BookMeta) stack.getItemMeta();
         List<String> pages = new ArrayList<>();
         String page1_string;
@@ -228,8 +153,6 @@ public class ItemManager {
         KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                 playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
-        DecimalFormat df = new DecimalFormat("#.##");
-        PlayerStats stats = gp.getStats();
 
         if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
             String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
@@ -247,8 +170,8 @@ public class ItemManager {
         		+ "   " + (HealthHandler.getPlayerHPRegen(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + gp.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString() + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
-        		+ "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
-                + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
+        		+ "   " + gp.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                + "   " + gp.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValue() + ChatColor.BOLD.toString() + " ITEM FIND";
         
         questPage_string = ChatColor.BLACK + "" + ChatColor.BOLD + ChatColor.UNDERLINE + "  Quest Progress  \n\n";
         int quests = 0;
@@ -281,11 +204,11 @@ public class ItemManager {
         String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
                 + ChatColor.ITALIC.toString()
                 + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment." + new_line
-                + ChatColor.DARK_GRAY.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
-                + ChatColor.GREEN.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
-                + ChatColor.AQUA.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
-                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId())
-                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
+                + ChatColor.DARK_GRAY + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
+                + ChatColor.GREEN + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
+                + ChatColor.AQUA + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
+                + ChatColor.LIGHT_PURPLE + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId()) + "\n"
+                + ChatColor.GOLD + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
 
         page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
@@ -399,5 +322,17 @@ public class ItemManager {
 	
 	public static CombatItem createRandomCombatItem() {
 		return new Random().nextBoolean() ? new ItemWeapon() : new ItemArmor();
+	}
+
+	public static ItemStack createItem(Material mat, String name, String[] lore) {
+		ItemStack stack = new ItemStack(mat);
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(name);
+		List<String> l = new ArrayList<>();
+		for(String s : lore)
+			l.add(ChatColor.GRAY + s);
+		meta.setLore(l);
+		stack.setItemMeta(meta);
+		return stack;
 	}
 }
