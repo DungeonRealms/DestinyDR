@@ -513,7 +513,7 @@ public class GameAPI {
 
     public static String getServerLoad() {
         double tps = MinecraftServer.getServer().recentTps[0];
-        return ((tps >= 19.90) ? ChatColor.GREEN + "Very Low" : (tps > 19.0) ? ChatColor.GREEN + "Low" : (tps > 15.0) ? ChatColor.YELLOW + "Medium" : ChatColor.RED + "High");
+        return ((tps >= 19.99) ? ChatColor.GREEN + "Extremely Low" : (tps >= 19.90) ? ChatColor.GREEN + "Very Low" : (tps > 19.0) ? ChatColor.GREEN + "Low" : (tps > 15.0) ? ChatColor.YELLOW + "Medium" : ChatColor.RED + "High");
     }
 
 
