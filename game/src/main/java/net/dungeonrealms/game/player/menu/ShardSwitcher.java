@@ -139,7 +139,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                             player.sendMessage(ChatColor.RED + "Commencing shard transfer... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
                             taskTimer[0]--;
 
-                            if (taskTimer[0] == 0) {
+                            if (taskTimer[0] <= 0) {
                                 GameAPI.moveToShard(player, bungeeName);
                                 cancel();
                             }
@@ -281,6 +281,11 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             return;
         }
 
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
+            return;
+        }
+
         long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
         if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
@@ -293,10 +298,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             }
         }
 
-        if (CombatLog.isInCombat(player)) {
-            player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
-            return;
-        }
 
 
         player.openInventory(inventory);

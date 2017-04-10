@@ -35,6 +35,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.ArrayList;
@@ -622,6 +623,7 @@ public class HealthHandler implements GenericMechanic {
                 leAttacker.sendMessage(msg);
                 GameAPI.runAsSpectators(leAttacker, (pl) -> pl.sendMessage(msg));
             }
+
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
 
@@ -943,6 +945,21 @@ public class HealthHandler implements GenericMechanic {
                 handleMonsterDamageTracker(entity.getUniqueId(), (Player) attacker, damage);
                 checkForNewTarget(entity);
                 //entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
+
+                Player player = (Player) attacker;
+                if (player.hasMetadata("sprinting") && player.isSprinting()) {
+                    player.setSprinting(false);
+                    player.removeMetadata("sprinting", DungeonRealms.getInstance());
+                    if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
+                        int foodLevel = player.getFoodLevel();
+                        if (player.getFoodLevel() > 1) {
+                            player.setFoodLevel(1);
+                        }
+                        if (foodLevel > 1) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 3L);
+                        }
+                    }
+                }
 
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
