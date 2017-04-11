@@ -8,23 +8,22 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.MojangsonParser;
-import net.minecraft.server.v1_9_R2.NBTBase;
-import net.minecraft.server.v1_9_R2.NBTBase.NBTNumber;
-import net.minecraft.server.v1_9_R2.NBTTagByte;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagInt;
-import net.minecraft.server.v1_9_R2.NBTTagList;
-import net.minecraft.server.v1_9_R2.NBTTagString;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParser;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.*;
 
 public class ItemGenerator {
@@ -46,25 +45,30 @@ public class ItemGenerator {
             Utils.log.warning("[ItemGenerator] Custom item " + templateName + " not found!");
             return new ItemStack(Material.AIR); // No such custom template!
         }
-        //TODO: Load
-        
-        JsonObject fullObj = new JsonObject();
-        ItemStack item = new ItemStack(Material.valueOf(fullObj.get("id").getAsString()), fullObj.get("count").getAsInt(), fullObj.get("damage").getAsShort());
-        
         try {
+        	
+        	BufferedReader br = new BufferedReader(new FileReader(file));
+        	JsonObject fullObj = new JsonParser().parse(br).getAsJsonObject();
+        	ItemStack item = new ItemStack(Material.valueOf(fullObj.get("id").getAsString()), fullObj.get("count").getAsInt(), fullObj.get("damage").getAsShort());
+        	
         	if (fullObj.has("tag")) {
         		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         		NBTTagCompound tag = MojangsonParser.parse(fullObj.get("tag").getAsString());
         		
         		if (tag.hasKey("u"))
         			tag.setString("u", AntiDuplication.createEpoch(item));
+        		
+        		tag.setString("customId", templateName);
         		nms.setTag(tag);
         		item = CraftItemStack.asBukkitCopy(nms);
         	}
+        	
+        	return item;
         } catch (Exception e) {
         	e.printStackTrace();
         }
-        return item;
+        
+        return null;
     }
     
     /**
@@ -83,6 +87,16 @@ public class ItemGenerator {
     	fullObj.addProperty("damage", item.getDurability());
     	fullObj.addProperty("id", item.getType().name());
     	fullObj.addProperty("tag", toSave.getTag().toString());
+    	
+    	try {
+			FileWriter file = new FileWriter(getFile(itemName));
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			file.write(gson.toJson(fullObj));
+			file.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+			Bukkit.getLogger().warning("Failed to save " + itemName + ".item");
+		}
     }
 
     public static void loadModifiers() {

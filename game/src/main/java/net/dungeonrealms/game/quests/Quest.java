@@ -7,7 +7,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.md_5.bungee.api.ChatColor;

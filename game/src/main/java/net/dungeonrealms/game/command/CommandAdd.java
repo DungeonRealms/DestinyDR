@@ -87,6 +87,21 @@ public class CommandAdd extends BaseCommand {
         if (args.length > 0) {
             int tier;
             switch (args[0]) {
+            	case "save":
+            		ItemStack held = player.getEquipment().getItemInMainHand();
+            		if (held == null || held.getType() == Material.AIR) {
+            			player.sendMessage(ChatColor.RED + "You must be holding an item");
+            			return true;
+            		}
+            		
+            		if (args.length == 1) {
+            			player.sendMessage(ChatColor.RED + "You must enter an item ID.");
+            			return true;
+            		}
+            		
+            		ItemGenerator.saveItem(held, args[1]);
+            		player.sendMessage(ChatColor.GREEN + "Saved " + args[1] + ".");
+            		break;
                 case "nameditem":
                     if (args.length == 2) {
                         String namedItem = null;
