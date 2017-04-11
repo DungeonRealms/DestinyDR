@@ -1,8 +1,10 @@
 package net.dungeonrealms.lobby;
 
+import com.esotericsoftware.minlog.Log;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -18,7 +20,6 @@ import net.dungeonrealms.lobby.commands.CommandSetPin;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
-
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -34,10 +35,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.esotericsoftware.minlog.Log;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -134,9 +131,10 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
 
-            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-            player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-            player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            String rankColor = Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName();
+            player.setPlayerListName(rankColor);
+            player.setDisplayName(rankColor);
+            player.setCustomName(rankColor);
 
             player.teleport(new Location(player.getWorld(), -420.512, 8.5, -149.540));
 
