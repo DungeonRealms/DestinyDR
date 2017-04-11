@@ -39,6 +39,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -668,7 +669,7 @@ public class ItemManager {
         if(isNew)
         	player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-
+        
         if (Utils.randInt(0, 1) == 1) {
             ItemStack fixedSword = ItemGenerator.getNamedItem("training_sword");
             player.getInventory().addItem(new ItemBuilder().setItem(fixedSword).setNBTString("dataType", "starterSet").build());
@@ -676,18 +677,23 @@ public class ItemManager {
             ItemStack fixedAxe = ItemGenerator.getNamedItem("training_axe");
             player.getInventory().addItem(new ItemBuilder().setItem(fixedAxe).setNBTString("dataType", "starterSet").build());
         }
-
+        
+        EntityEquipment e = player.getEquipment();
         ItemStack fixedHelmet = ItemGenerator.getNamedItem("traininghelm");
-        player.getInventory().setHelmet(new ItemBuilder().setItem(fixedHelmet).setNBTString("dataType", "starterSet").build());
+        if (e.getHelmet() == null || e.getHelmet().getType() == Material.AIR)
+        	player.getInventory().setHelmet(new ItemBuilder().setItem(fixedHelmet).setNBTString("dataType", "starterSet").build());
 
         ItemStack fixedChestplate = ItemGenerator.getNamedItem("trainingchest");
-        player.getInventory().setChestplate(new ItemBuilder().setItem(fixedChestplate).setNBTString("dataType", "starterSet").build());
+        if (e.getChestplate() == null || e.getChestplate().getType() == Material.AIR)
+        	player.getInventory().setChestplate(new ItemBuilder().setItem(fixedChestplate).setNBTString("dataType", "starterSet").build());
 
         ItemStack fixedLeggings = ItemGenerator.getNamedItem("traininglegs");
-        player.getInventory().setLeggings(new ItemBuilder().setItem(fixedLeggings).setNBTString("dataType", "starterSet").build());
+        if (e.getLeggings() == null || e.getLeggings().getType() == Material.AIR)
+        	player.getInventory().setLeggings(new ItemBuilder().setItem(fixedLeggings).setNBTString("dataType", "starterSet").build());
 
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
-        player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
+        if (e.getBoots() == null || e.getBoots().getType() == Material.AIR)
+        	player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
         
         GameAPI.calculateAllAttributes(player);
         HealthHandler.getInstance().updatePlayerHP(player);
