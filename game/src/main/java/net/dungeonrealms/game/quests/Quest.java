@@ -208,14 +208,26 @@ public class Quest implements ISaveable {
 				Quests.getInstance().updateActionBar(player);
 			}
 		}else{
+			String line = stage.getDialogue().get(qp.getCurrentLine()).getText();
 			stage.getDialogue().get(qp.getCurrentLine()).doDialogue(player, qp, stage);
 			final QuestStage currentStage = stage;
 			qp.clearQuestDelay();
 			qp.setQuestDelay(Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				if(qp.getCurrentStage() == currentStage && qp.isDoingQuest() && player.isOnline())
 					advanceQuest(player);
-			}, 40));
+			}, getDelayNextDialogLine(line)));
 		}
+	}
+
+	private int getDelayNextDialogLine(String currentLine) {
+
+		//returns the delay until the next line so people have time to read it.
+		if(currentLine == null) return 40;
+
+		int toReturn = (int)(currentLine.length() * 1.5);
+		//The default. Shouldn't be shorter than this.
+		if(toReturn <= 40) return 40;
+		return toReturn;
 	}
 	
 	private void completeQuest(Player player, QuestPlayerData data){
