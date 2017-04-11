@@ -1895,8 +1895,8 @@ public class GameAPI {
 	/**
 	 * Sets the item in the given equipment slot. There is no built-in spigot method for this.
 	 */
-	public static void setItem(Player player, EquipmentSlot slot, ItemStack stack) {
-		EntityEquipment e = player.getEquipment();
+	public static void setItem(LivingEntity livingEntity, EquipmentSlot slot, ItemStack stack) {
+		EntityEquipment e = livingEntity.getEquipment();
 		switch (slot) {
 			case HAND:
 				e.setItemInMainHand(stack);

@@ -276,5 +276,9 @@ public interface DRMonster {
     default ItemStack getHeld() {
     	return ((LivingEntity)this.getBukkitEntity()).getEquipment().getItemInMainHand();
     }
+    
+    default void calculateAttributes() {
+    	GameAPI.calculateAllAttributes((LivingEntity) getBukkitEntity(), getAttributes());
+    }
 
 }

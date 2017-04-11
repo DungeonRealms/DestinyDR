@@ -32,10 +32,13 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -198,7 +201,6 @@ public class EliteMobSpawner extends MobSpawner {
 
             if (entity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
                 LivingEntity ent = (LivingEntity) entity.getBukkitEntity();
-
                 ent.getEquipment().setItemInMainHand(forceWeap);
             }
 
@@ -223,133 +225,29 @@ public class EliteMobSpawner extends MobSpawner {
             }
         }
     }
-
-    /**
-     * @param entity
-     */
-
+    
     private void giveCustomEquipment(EnumNamedElite eliteType, Entity entity) {
-        EntityInsentient toGive = (EntityInsentient) entity;
-        ItemStack[] armorWeapon = new ItemStack[5];
-        switch (eliteType) {
-            case MITSUKI:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "sword");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "chest");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case COPJAK:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "axe");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boot");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case IMPATHEIMPALER:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "polearm");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case GREEDKING:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "axe");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case BLAYSHAN:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "axe");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case DURANOR:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "halberd");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
-                break;
-            case MOTHEROFDOOM:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Sword");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Helm");
-                break;
-            case KILATAN:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "staff");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
-                break;
-            case ZION:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "sword");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
-                break;
-            case ACERON:
-                break;
-            case LORD_TAYLOR:
-                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "sword");
-                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
-                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
-                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
-                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
-                break;
-            default:
-                break;
+    	if (eliteType == EnumNamedElite.NONE)
+        	return;
+    	
+        LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
+        
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+        	if (slot == EquipmentSlot.OFF_HAND) // Skip offhand.
+        		continue;
+        	
+        	ItemStack item = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + Utils.capitalize(slot.name()));
+        	if (item == null || item.getType() == Material.AIR)
+        		continue;
+        	
+        	EnchantmentAPI.addGlow(item);
+        	GameAPI.setItem(livingEntity, slot, item);
         }
-        LivingEntity livingEntity = (LivingEntity) toGive.getBukkitEntity();
-        if (eliteType != EnumNamedElite.NONE) {
-            toGive.setEquipment(EnumItemSlot.MAINHAND, null);
-            toGive.setEquipment(EnumItemSlot.FEET, null);
-            toGive.setEquipment(EnumItemSlot.LEGS, null);
-            toGive.setEquipment(EnumItemSlot.CHEST, null);
-            toGive.setEquipment(EnumItemSlot.HEAD, null);
-            livingEntity.getEquipment().setHelmet(null);
-            livingEntity.getEquipment().setChestplate(null);
-            livingEntity.getEquipment().setLeggings(null);
-            livingEntity.getEquipment().setBoots(null);
-            livingEntity.getEquipment().setItemInMainHand(null);
-            for (int i = 0; i <= 4; i++) {
-                if (armorWeapon[i] != null && armorWeapon[i].getType() != Material.AIR) {
-                    EnchantmentAPI.addGlow(armorWeapon[i]);
-                    switch (i) {
-                        case 0:
-                            livingEntity.getEquipment().setItemInMainHand(armorWeapon[i]);
-                            toGive.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(armorWeapon[i]));
-                            break;
-                        case 1:
-                            livingEntity.getEquipment().setBoots(armorWeapon[i]);
-                            toGive.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armorWeapon[i]));
-                            break;
-                        case 2:
-                            livingEntity.getEquipment().setLeggings(armorWeapon[i]);
-                            toGive.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armorWeapon[i]));
-                            break;
-                        case 3:
-                            livingEntity.getEquipment().setChestplate(armorWeapon[i]);
-                            toGive.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armorWeapon[i]));
-                            break;
-                        case 4:
-                            livingEntity.getEquipment().setHelmet(armorWeapon[i]);
-                            toGive.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armorWeapon[i]));
-                            break;
-                    }
-                }
-            }
-            GameAPI.calculateAllAttributes(livingEntity, ((DRMonster) entity).getAttributes());
-            entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-            HealthHandler.setMonsterHP((LivingEntity) entity.getBukkitEntity(), HealthHandler.getMonsterMaxHP((LivingEntity) entity.getBukkitEntity()));
-        }
+        ((DRMonster)entity).calculateAttributes();
+        
+        int maxHP = HealthHandler.getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
+        HealthHandler.setMonsterHP((LivingEntity) entity.getBukkitEntity(), maxHP);
     }
 
     public void remove() {
@@ -417,7 +315,6 @@ public class EliteMobSpawner extends MobSpawner {
     public int getTimerID() {
         return timerID;
     }
-
 
     public String getCustomName() {
         return monsterCustomName;

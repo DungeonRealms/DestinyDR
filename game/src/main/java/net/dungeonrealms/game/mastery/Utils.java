@@ -232,6 +232,10 @@ public class Utils {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
     }
 
+    public static String capitalize(String s) {
+    	return ucfirst(s);
+    }
+    
     public static String ucfirst(String string) {
         return Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();
     }
@@ -329,6 +333,15 @@ public class Utils {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC-0"));
         return dateFormat.format(new Date(milliseconds));
+    }
+    
+    /**
+     * Sanitizes user input so it can be used as a file path.
+     * Works by changing all non alphanumeric characters to underscore.
+     * Multiple characters in a row will be treated as a single underscore.
+     */
+    public static String sanitizeFileName(String fileName) {
+    	return fileName.replaceAll("[^a-zA-Z0-9\\._]+", "_");
     }
 
 }
