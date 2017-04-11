@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.world;
 
+import edu.umd.cs.findbugs.ba.BlockType;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -58,11 +59,13 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -843,7 +846,16 @@ public class RealmListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
-    	
+
+        if(event.getPlayer().hasMetadata("realmcd")) {
+            Long timer = event.getPlayer().getMetadata("realmcd").get(0).asLong();
+            if(System.currentTimeMillis() - timer <= TimeUnit.SECONDS.toMillis(3)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+
     	//Remove Pets
     	if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
             Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
@@ -880,9 +892,20 @@ public class RealmListener implements Listener {
             DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
             // Teleports them inside the realm.
             event.setTo(realm.getWorld().getSpawnLocation().clone().add(0, 2, 0));
+
+            event.getPlayer().setMetadata("realmcd", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             
         } else if (Realms.getInstance().isInRealm(event.getPlayer())) {
         	// Player is exiting a realm.
+            if(event.getPlayer().hasMetadata("realmcd")) {
+                Long timer = event.getPlayer().getMetadata("realmcd").get(0).asLong();
+                if(System.currentTimeMillis() - timer <= TimeUnit.SECONDS.toMillis(3)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            event.getPlayer().setMetadata("realmcd", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }
