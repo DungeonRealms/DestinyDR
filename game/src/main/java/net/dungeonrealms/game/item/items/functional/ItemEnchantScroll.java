@@ -94,6 +94,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem {
 	@Override
 	protected ItemUsage[] getUsage() {
 		return new ItemUsage[] {ItemUsage.INVENTORY_SWAP_PLACE, ItemUsage.LEFT_CLICK_AIR,
+				ItemUsage.LEFT_CLICK_ENTITY, ItemUsage.RIGHT_CLICK_ENTITY,
 				ItemUsage.LEFT_CLICK_BLOCK, ItemUsage.RIGHT_CLICK_AIR, ItemUsage.RIGHT_CLICK_BLOCK};
 	}
 

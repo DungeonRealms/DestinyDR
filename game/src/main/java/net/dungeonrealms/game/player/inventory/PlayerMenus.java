@@ -164,12 +164,9 @@ public class PlayerMenus {
         Set<String> playerPets = new HashSet<>((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
 
         if (Rank.isSubscriber(player))
-            for (EnumPets p : EnumPets.values()) {
-                if (p == EnumPets.BABY_HORSE)
-                    continue;
-
-                playerPets.add(p.getRawName());
-            }
+            for (EnumPets p : EnumPets.values())
+                if (p != EnumPets.BABY_HORSE)
+                	playerPets.add(p.getName());
 
 
         if (playerPets.size() <= 0) {
@@ -331,7 +328,7 @@ public class PlayerMenus {
 
         for (String skinType : playerMountSkins) {
             ItemStack itemStack = EnumMountSkins.getByName(skinType).getSelectionItem();
-            itemStack.setDurability(EnumMountSkins.getByName(skinType).getShortID());
+            itemStack.setDurability((short) EnumMountSkins.getByName(skinType).getShortID());
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("skinType", new NBTTagString(skinType));

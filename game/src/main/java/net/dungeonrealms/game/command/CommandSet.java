@@ -17,6 +17,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
@@ -106,11 +107,8 @@ public class CommandSet extends BaseCommand {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, false);
                 break;
             case "portal_keys":
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, false);
+            	for (ShardTier tier : ShardTier.values())
+            		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, tier.getShardData(), 1500, false);
                 break;
             case "durability":
             	ItemStack i = player.getInventory().getItemInMainHand();

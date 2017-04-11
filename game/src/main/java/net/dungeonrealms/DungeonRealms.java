@@ -62,6 +62,7 @@ import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
+import net.dungeonrealms.game.player.inventory.ShopMenuListener;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -299,6 +300,7 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms - Registering Events");
 
+        pm.registerEvents(new ShopMenuListener(), this);
         pm.registerEvents(new FunctionalItemListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ItemListener(), this);

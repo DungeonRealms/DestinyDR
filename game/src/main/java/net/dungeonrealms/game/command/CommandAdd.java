@@ -301,15 +301,6 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(new ItemGemNote(player.getName(), quantity).generateItem());
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
                     break;
-                case "displayitem":
-                    player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
-                            ChatColor.RED + "Speed 140%",
-                            ChatColor.RED + "Jump 110%",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
-                            ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g",
-                            ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
-                    break;
                 case "teleport":
                 case "teleports":
                     if (args.length == 1) {
@@ -357,23 +348,23 @@ public class CommandAdd extends BaseCommand {
                             continue;
                         }
                         if (!playerPets.isEmpty()) {
-                            if (playerPets.contains(pets.getRawName().toUpperCase())) {
+                            if (playerPets.contains(pets.getName().toUpperCase())) {
                                 continue;
                             }
                             boolean hasPet = false;
                             for (String playerPet : playerPets) {
-                                if (playerPet.contains("@") && playerPet.split("@")[0].equals(pets.getRawName())) {
+                                if (playerPet.contains("@") && playerPet.split("@")[0].equals(pets.getName())) {
                                     hasPet = true;
                                     break;
                                 }
                             }
                             if (hasPet) continue;
                         }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getRawName(), true);
-                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
+                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getName(), true);
+                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, EnumPets.BAT.getRawName(), true);
+                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, EnumPets.BAT.getName(), true);
 
                     // Add all trails to the player.
                     List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, currentProfile.getUniqueId());
@@ -393,15 +384,15 @@ public class CommandAdd extends BaseCommand {
                     List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, currentProfile.getUniqueId());
                     for (EnumMountSkins mountSkins : EnumMountSkins.values()) {
                         if (!playerMountSkins.isEmpty()) {
-                            if (playerMountSkins.contains(mountSkins.getRawName().toUpperCase())) {
+                            if (playerMountSkins.contains(mountSkins.getName().toUpperCase())) {
                                 continue;
                             }
                         }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, mountSkins.getRawName(), true);
-                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(mountSkins.getRawName()) + ChatColor.GREEN + " mount skin to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
+                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, mountSkins.getName(), true);
+                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(mountSkins.getName()) + ChatColor.GREEN + " mount skin to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, EnumMountSkins.SKELETON_HORSE.getRawName(), true);
+                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, EnumMountSkins.SKELETON_HORSE.getName(), true);
 
                     player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + " has received everything.");
                     break;

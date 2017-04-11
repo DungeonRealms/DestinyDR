@@ -35,7 +35,6 @@ import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.inventory.ECashMenus;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
@@ -86,169 +85,7 @@ public class ClickHandler {
         int slot = event.getRawSlot();
         if (slot == -999) return;
 
-        /*
-        Animal Tamer NPC
-         */
         switch (name) {
-            case "Animal Tamer":
-                event.setCancelled(true);
-                if (slot > 18) return;
-                if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack == null) return;
-                    if (nmsStack.getTag() == null) return;
-                    List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                    if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
-                        player.sendMessage(ChatColor.RED + "You already own this mount!");
-                        return;
-                    } else {
-                        EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
-                        if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
-                            if (BankMechanics.takeGemsFromInventory(player, nmsStack.getTag().getInt("mountCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
-                                if (mount != EnumMounts.MULE) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
-                                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
-                                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mount")) {
-                                        player.getInventory().addItem(new ItemMount().generateItem());
-                                    }
-                                } else {
-                                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mule")) {
-                                        Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-                                        if (muleTier == null) {
-                                            player.sendMessage(ChatColor.RED + "No mule data found.");
-                                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
-                                            muleTier = 1;
-                                        }
-                                        MuleTier tier = MuleTier.getByTier((int) muleTier);
-                                        if (tier == null) {
-                                            System.out.println("Invalid mule tier!");
-                                            return;
-                                        }
-                                        player.getInventory().addItem(new ItemMuleMount().generateItem());
-                                    }
-                                }
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
-                                return;
-                            }
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
-                        }
-                    }
-                }
-                break;
-
-
-        /*
-        Skill Trainer NPC
-         */
-            case "Profession Vendor":
-                event.setCancelled(true);
-                if (slot > 9) return;
-                if (event.getCurrentItem().getType() != Material.AIR) {
-                    if (BankMechanics.takeGemsFromInventory(player, 100)) {
-                        switch (slot) {
-                            case 0:
-                                player.getInventory().addItem(new ItemPickaxe().generateItem());
-                                player.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                                player.closeInventory();
-                                break;
-                            case 1:
-                                player.getInventory().addItem(new ItemFishingPole().generateItem());
-                                player.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                                player.closeInventory();
-                                break;
-                            default:
-                                break;
-                        }
-                        return;
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + "100" + ChatColor.RED + " Gems");
-                    }
-                    return;
-                }
-                break;
-
-
-        /*
-        E-Cash Vendor NPC
-         */
-            case "E-Cash Vendor":
-                event.setCancelled(true);
-                if (slot > 25) return;
-                switch (slot) {
-                    case 1:
-                        ECashMenus.openEcashPets(player);
-                        break;
-                    case 3:
-                        ECashMenus.openEcashEffects(player);
-                        break;
-                    case 5:
-                        ECashMenus.openMountSkins(player);
-                        break;
-                    case 7:
-                        ECashMenus.openEcashMisc(player);
-                        break;
-                    default:
-                        break;
-                }
-                if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack == null) return;
-                    if (nmsStack.getTag() == null) return;
-                    if (nmsStack.getTag().hasKey("donationStore")) {
-                        player.closeInventory();
-                        final JSONMessage normal4 = new JSONMessage(ChatColor.GOLD + "To Purchase E-Cash from our Shop, Click ", ChatColor.GOLD);
-                        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://www.dungeonrealms.net/store");
-                        normal4.sendToPlayer(player);
-                    }
-                }
-                break;
-
-
-        /*
-        Inn Keeper NPC
-         */
-            case "Hearthstone Re-Location":
-                event.setCancelled(true);
-                if (slot > 9) return;
-                if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack == null) return;
-                    if (nmsStack.getTag() == null) return;
-                    if (nmsStack.getTag().hasKey("hearthstoneLocation")) {
-                        String hearthstoneLocation = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, player.getUniqueId()));
-                        if (hearthstoneLocation.equalsIgnoreCase(nmsStack.getTag().getString("hearthstoneLocation"))) {
-                            player.sendMessage(ChatColor.RED + "Your Hearthstone is already at this location!");
-                            return;
-                        } else {
-                            if (TeleportLocation.valueOf(nmsStack.getTag().getString("hearthstoneLocation").toUpperCase()).canSetHearthstone(player)) {
-                                if (BankMechanics.takeGemsFromInventory(player, nmsStack.getTag().getInt("gemCost"))) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
-                                    player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
-                                    player.closeInventory();
-                                    return;
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You do NOT have enough gems for this location, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("gemCost") + ChatColor.RED + " Gems.");
-                                    return;
-                                }
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You have not explored the surrounding area of this Hearthstone Location yet");
-                                return;
-                            }
-                        }
-                    }
-                }
-                break;
-
-
-        /*
-        Merchant
-         */
             case "Merchant":
                 Inventory tradeWindow = event.getInventory();
                 if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
@@ -451,44 +288,6 @@ public class ClickHandler {
                     player.updateInventory();
                 }
                 break;
-            case "Dungeoneer":
-                event.setCancelled(true);
-                if (slot > 9) return;
-                if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack == null) return;
-                    if (nmsStack.getTag() == null) return;
-                    if (nmsStack.getTag().hasKey("shardTier") && nmsStack.getTag().hasKey("shardCost")) {
-                        int shardCost = nmsStack.getTag().getInt("shardCost");
-                        if (player.getInventory().firstEmpty() == -1) {
-                            player.sendMessage(ChatColor.RED + "Your inventory is currently full!");
-                            return;
-                        }
-                        if (GameAPI.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
-                            player.sendMessage(ChatColor.RED + "- " + shardCost + ChatColor.BOLD + "PKS");
-                            player.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                            player.closeInventory();
-
-                            //Give them their scroll.
-                            if (event.getCurrentItem().getType() == Material.CHEST) {
-                                //Add the storage mule upgrade.
-                                ItemStack muleUpgrade = ItemManager.createMuleUpgrade(nmsStack.getTag().getInt("muleLevel"));
-                                player.getInventory().addItem(muleUpgrade);
-                            } else {
-                                //Give them their scroll.
-                                player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(nmsStack.getTag().getInt("shardTier"))).generateItem());
-                            }
-                            return;
-                        } else {
-                            String color = nmsStack.getTag().getString("shardColor");
-                            player.sendMessage(ChatColor.RED + "You do " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " have enough " + color + "Portal Key Shards" + ChatColor.RED + " to buy a " + event.getCurrentItem().getItemMeta().getDisplayName());
-                            player.sendMessage(ChatColor.RED + "COST: " + ChatColor.WHITE + shardCost + color + " Portal Key Shards");
-                            player.sendMessage(ChatColor.GRAY + "Defeat " + ChatColor.UNDERLINE + "Instanced Dungeons" + ChatColor.GRAY + " to obtain Portal Key Shards.");
-                            return;
-                        }
-                    }
-                }
-                break;
             case "Friend Management":
                 event.setCancelled(true);
                 if (slot >= 44) return;
@@ -535,10 +334,6 @@ public class ClickHandler {
                 break;
             case "Pet Selection":
                 event.setCancelled(true);
-                if (event.getCurrentItem().getType() == Material.BARRIER) {
-                    PlayerMenus.openPlayerProfileMenu(player);
-                    return;
-                }
                 if (event.getCurrentItem().getType() == Material.LEASH) {
                     if (EntityAPI.hasPetOut(player.getUniqueId())) {
                         Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
@@ -857,62 +652,6 @@ public class ClickHandler {
                     PlayerMenus.openPlayerProfileMenu(player);
                 }
 
-                break;
-            case "Item Vendor":
-                event.setCancelled(true);
-                if (event.getClickedInventory().equals(player.getInventory()))
-                    return;
-
-                ItemStack stack = event.getCurrentItem();
-
-                if (stack == null || stack.getType() == Material.AIR) return;
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                if (!nms.getTag().hasKey("worth")) {
-                    return;
-                }
-                int price = nms.getTag().getInt("worth");
-                if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.takeGemsFromInventory(player, price)) {
-                    	VanillaItem vi = new VanillaItem(stack);
-                    	vi.removePrice();
-                    	vi.setAntiDupe(true);
-                    	player.getInventory().addItem(vi.generateItem());
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
-                    }
-                } else {
-                    player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
-                }
-                break;
-            case "Food Vendor":
-                event.setCancelled(true);
-                stack = event.getCurrentItem();
-                if (stack == null || stack.getType() == Material.AIR) return;
-                nms = CraftItemStack.asNMSCopy(stack);
-                if (!nms.getTag().hasKey("worth")) {
-                    return;
-                }
-                if (!nms.getTag().hasKey("itemRarity")) {
-                    return;
-                }
-                if (!nms.getTag().hasKey("itemTier")) {
-                    return;
-                }
-                int tier = nms.getTag().getInt("itemTier");
-                Item.ItemRarity rarity = Item.ItemRarity.getById(nms.getTag().getInt("itemRarity"));
-                if (rarity == null) {
-                    return;
-                }
-                price = nms.getTag().getInt("worth");
-                if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.takeGemsFromInventory(player, price)) {
-                        player.getInventory().addItem(new ItemHealingFood(ItemHealingFood.EnumHealingFood.get(tier, rarity)).generateItem());
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
-                    }
-                } else {
-                    player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
-                }
                 break;
             case "Mount Skin Selection":
                 event.setCancelled(true);
@@ -1692,46 +1431,7 @@ public class ClickHandler {
 
                 PlayerMenus.openHeadGameMasterTogglesMenu(player);
                 break;
-            case "E-Cash Pets":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-                if (slot == 0) {
-                    NPCMenus.openECashPurchaseMenu(player);
-                    return;
-                }
-                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack == null) return;
-                if (nmsStack.getTag() == null) return;
-                if (!nmsStack.getTag().hasKey("petType")) return;
-                if (!nmsStack.getTag().hasKey("eCash")) return;
-                String petType = nmsStack.getTag().getString("petType");
-                List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
-                EnumPets pets = EnumPets.getByName(petType);
-                if (pets == null) {
-                    return;
-                }
-                if (!playerPets.isEmpty()) {
-                    for (String pet : playerPets) {
-                        if (pet.contains(petType.toUpperCase())) {
-                            player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + pets.getDisplayName() + ChatColor.RED + " pet.");
-                            return;
-                        }
-                    }
-                }
-                int eCashCost = nmsStack.getTag().getInt("eCash");
-                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
-                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
-                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {
-                        player.getInventory().addItem(new ItemPet().generateItem());
-                    }
-                    player.closeInventory();
-                } else {
-                    player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                }
-                break;
-            case "E-Cash Effects":
+            /*case "E-Cash Effects":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
                 if (slot == 0) {
@@ -1805,67 +1505,7 @@ public class ClickHandler {
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
                 }
-                break;
-            case "E-Cash Miscellaneous":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-                if (slot == 0) {
-                    NPCMenus.openECashPurchaseMenu(player);
-                    return;
-                }
-                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack == null) return;
-                if (nmsStack.getTag() == null) return;
-                if (nmsStack.getTag().hasKey("retrainingBook")) {
-                    eCashCost = nmsStack.getTag().getInt("eCash");
-                    if (player.getInventory().firstEmpty() != -1) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a retraining book.");
-                            player.getInventory().addItem(new ItemRetrainingBook().generateItem());
-                            player.closeInventory();
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                        }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                    }
-                }
-                if (nmsStack.getTag().hasKey("globalMessenger")) {
-                    eCashCost = nmsStack.getTag().getInt("eCash");
-                    if (player.getInventory().firstEmpty() != -1) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a global messenger.");
-                            player.getInventory().addItem(new ItemGlobalMessager().generateItem());
-                            player.closeInventory();
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                        }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                    }
-                }
-                if (nmsStack.getTag().hasKey("buff")) {
-                    eCashCost = nmsStack.getTag().getInt("eCash");
-                    final String buffType = nmsStack.getTag().getString("buff");
-                    int duration = nmsStack.getTag().getInt("duration");
-                    int bonus = nmsStack.getTag().getInt("bonusAmount");
-                    EnumBuff buff = EnumBuff.valueOf(buffType.toUpperCase());
-                    
-                    if (player.getInventory().firstEmpty() != -1) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + buff.getFriendlyName() + ".");
-
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
-                            player.getInventory().addItem(new ItemBuff(buff, duration, bonus).generateItem());
-                            player.closeInventory();
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                        }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                    }
-                }
-                break;
+                break;*/
         }
     }
 }

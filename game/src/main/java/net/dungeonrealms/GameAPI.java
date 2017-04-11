@@ -40,6 +40,7 @@ import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.functional.ItemPlayerJournal;
 import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -1587,38 +1588,17 @@ public class GameAPI {
     }
 
     public static boolean removePortalShardsFromPlayer(Player player, int shardTier, int amount) {
-        if (amount <= 0) {
+        if (amount <= 0)
             return true;
-            // Someone done fucked up and made it remove a negative amount.
-            // Probably Chase.
-        }
-        EnumData dataToCheck;
-        switch (shardTier) {
-            case 1:
-                dataToCheck = EnumData.PORTAL_SHARDS_T1;
-                break;
-            case 2:
-                dataToCheck = EnumData.PORTAL_SHARDS_T2;
-                break;
-            case 3:
-                dataToCheck = EnumData.PORTAL_SHARDS_T3;
-                break;
-            case 4:
-                dataToCheck = EnumData.PORTAL_SHARDS_T4;
-                break;
-            case 5:
-                dataToCheck = EnumData.PORTAL_SHARDS_T5;
-                break;
-            default:
-                return false;
-        }
+        
+        
+        EnumData dataToCheck = ShardTier.getByTier(shardTier).getShardData();
         int playerPortalKeyShards = (int) DatabaseAPI.getInstance().getData(dataToCheck, player.getUniqueId());
-        if (playerPortalKeyShards <= 0) {
+        if (playerPortalKeyShards <= 0)
             return false;
-        }
+        
         if (playerPortalKeyShards - amount >= 0) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, dataToCheck, (amount * -1),
-                    true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, dataToCheck, -amount, true);
             return true;
         } else {
             return false;

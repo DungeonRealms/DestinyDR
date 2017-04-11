@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.QuestPlayerData;
@@ -202,14 +203,11 @@ public class ItemManager {
 
 
         String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
-                + ChatColor.ITALIC.toString()
-                + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment." + new_line
-                + ChatColor.DARK_GRAY + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
-                + ChatColor.GREEN + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
-                + ChatColor.AQUA + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
-                + ChatColor.LIGHT_PURPLE + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId()) + "\n"
-                + ChatColor.GOLD + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
-
+                + ChatColor.ITALIC.toString() + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment.";
+        
+        for (ShardTier tier : ShardTier.values())
+        	portalShardPage += (tier.getColor() != ChatColor.WHITE ? tier.getColor() : ChatColor.DARK_GRAY) + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(tier.getShardData(), p.getUniqueId());
+        
         page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/ask" + "\n" + ChatColor.BLACK.toString() + "Ask any questions." + new_line

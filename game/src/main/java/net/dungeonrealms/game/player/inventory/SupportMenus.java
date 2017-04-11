@@ -514,13 +514,13 @@ public class SupportMenus {
         for (EnumPets petType : EnumPets.values()) {
             boolean hasUnlockedPet = false;
             for (String unlockedPets : unlockedPlayerPets) {
-                if (unlockedPets.equalsIgnoreCase(petType.getRawName())) {
+                if (unlockedPets.equalsIgnoreCase(petType.getName())) {
                     hasUnlockedPet = true;
                     break;
                 }
             }
 
-            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
+            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
                     ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."
             });
 

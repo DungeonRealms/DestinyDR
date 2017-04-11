@@ -2,9 +2,11 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.listener.NPCMenu;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,6 +30,13 @@ public class CommandInterface extends BaseCommand {
 
         if (args.length >= 1) {
 
+        	for (NPCMenu menu : NPCMenu.values()) {
+        		if (menu.getNpcName().toLowerCase().contains(args[0])) {
+        			menu.open(player);
+        			return true;
+        		}
+        	}
+        	
             switch (args[0].toLowerCase()) {
                 case "bank":
                     Storage storage = BankMechanics.getStorage(player.getUniqueId());
@@ -38,45 +47,12 @@ public class CommandInterface extends BaseCommand {
                     player.openInventory(storage.inv);
                     break;
 
-                case "item":
-                case "itemvendor":
-                case "item_vendor":
-                    NPCMenus.openItemVendorMenu(player);
-                    break;
-
-                case "food":
-                case "foodvendor":
-                case "food_vendor":
-                    NPCMenus.openFoodVendorMenu(player);
-                    break;
-
-                case "skill":
-                case "profession":
-                case "skillvendor":
-                case "professionvendor":
-                case "skill_vendor":
-                case "profession_vendor":
-                    NPCMenus.openProfessionPurchaseMenu(player);
-                    break;
-
-                case "dungeoneer":
-                    NPCMenus.openDungeoneerMenu(player);
-                    break;
-
-                case "hearthstone":
-                    NPCMenus.openHearthstoneRelocateMenu(player);
-                    break;
-
                 case "wizard":
                     NPCMenus.openWizardMenu(player);
                     break;
 
                 case "merchant":
                     NPCMenus.openMerchantMenu(player);
-                    break;
-
-                case "mount":
-                    NPCMenus.openMountPurchaseMenu(player);
                     break;
 
                 case "ecash":

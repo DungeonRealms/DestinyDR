@@ -38,6 +38,10 @@ public enum ItemType {
 	ENCHANT_FISHING_ROD("enchantFishingRod", ItemEnchantFishingRod.class),
 	PROTECTION_SCROLL("protScroll", ItemProtectionScroll.class),
 	REALM_CHEST("realmChest", ItemRealmChest.class),
+	GUILD_BANNER("guildBanner", ItemGuildBanner.class),
+	SHOP("shopItem", ShopItem.class),
+	MOUNT_SELECTOR("mountSelect", ItemMountSelector.class),
+	MOUNT_SKIN_SELECTOR("mountSkinSel", ItemMountSkin.class),
 	
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
@@ -57,6 +61,9 @@ public enum ItemType {
 	MULE_UPGRADE("muleUpgrade", ItemMuleUpgrade.class),
 	PARTICLE_TRAIL("trail", ItemParticleTrail.class),
 	PET("pet", ItemPet.class),
+	PET_SELECTOR("petSelector", ItemPetSelector.class),
+	PARTICLE_SELECTOR("particleSelector", ItemParticleSelector.class),
+	HEARTHSTONE_RELOCATE("hearthstoneRelocator", ItemHearthStoneRelocator.class),
 	
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),

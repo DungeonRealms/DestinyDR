@@ -610,56 +610,34 @@ public class MainListener implements Listener {
         // AVOID DOUBLE CLICK //
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000L);
 
+        NPCMenu menu = NPCMenu.getMenu(npcNameStripped);
+        
         // Event NPCs and Restrictions
         if (DungeonRealms.getInstance().isEventShard) {
-            if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor") || npcNameStripped.equalsIgnoreCase("Skill Trainer")
-                    || npcNameStripped.equalsIgnoreCase("Item Vendor") || npcNameStripped.equalsIgnoreCase("Merchant")
-                    || npcNameStripped.equalsIgnoreCase("Animal Tamer") || npcNameStripped.equalsIgnoreCase("Innkeeper")) {
+            if ((menu != null && !menu.isAllowedOnEvent()) || npcNameStripped.equalsIgnoreCase("Merchant")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk to this NPC on this shard.");
                 return;
             }
         }
-
-        if (npcNameStripped.equalsIgnoreCase("Animal Tamer")) {
-            NPCMenus.openMountPurchaseMenu(event.getPlayer());
-            return;
-        }
+        
+        if (menu != null)
+        	menu.open(event.getPlayer());
+        
         if (npcNameStripped.equalsIgnoreCase("Merchant")) {
             NPCMenus.openMerchantMenu(event.getPlayer());
             return;
         }
-        if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor")) {
-            NPCMenus.openECashPurchaseMenu(event.getPlayer());
-            return;
-        }
+        
         if (npcNameStripped.equalsIgnoreCase("Wizard")) {
             NPCMenus.openWizardMenu(event.getPlayer());
             return;
         }
-        if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
-            NPCMenus.openDungeoneerMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
-            NPCMenus.openProfessionPurchaseMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
-            NPCMenus.openFoodVendorMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
-            NPCMenus.openItemVendorMenu(event.getPlayer());
-            return;
-        }
+        
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             GuildMechanics.getInstance().startGuildCreationDialogue(event.getPlayer());
             return;
         }
-        if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
-            NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
-            return;
-        }
+        
         if (npcNameStripped.equalsIgnoreCase("Banker") || npcNameStripped.equalsIgnoreCase("Roaming Banker")
                 || npcNameStripped.equalsIgnoreCase("Wandering Banker") || npcNameStripped.equalsIgnoreCase("Hallen")
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
@@ -671,34 +649,6 @@ public class MainListener implements Listener {
             }
             storage.openBank(event.getPlayer());
         }
-        /* if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
-            if (GameAPI.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
-                event.getPlayer().sendMessage("");
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Are you ready to start ye adventure " + event.getPlayer().getName() + "?"); //+ " " + ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Y " + ChatColor.GRAY.toString() + "/" + ChatColor.RED.toString() + ChatColor.BOLD.toString() + " N");
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Type either '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' or '" + ChatColor.RED + "N" + ChatColor.GRAY + "' -- Yes or No; Once you leave this island you can never come back, your epic adventure in the lands of Andalucia will begin!");
-                event.getPlayer().sendMessage("");
-                Chat.listenForMessage(event.getPlayer(), e -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    if (e.getMessage().equalsIgnoreCase("y")) {
-                        event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
-                        ItemManager.giveStarter(event.getPlayer());
-
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " â�¢ " + ChatColor.YELLOW + "Need more information? Visit our wiki " + ChatColor.WHITE);
-                            normal.addURL(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "http://dungeonrealms.wikia.com/wiki/Main_Page");
-                            normal.addSuggestCommand(ChatColor.YELLOW.toString() + " or for any questions. Click " + ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/ask ");
-                            normal.addText(ChatColor.GOLD + " â�¢ ");
-
-                            event.getPlayer().sendMessage("");
-                            normal.sendToPlayer(event.getPlayer());
-                            event.getPlayer().sendMessage("");
-
-                            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
-                        }, 40);
-                    }
-                }), pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
-            }
-        }*/
     }
 
     /**

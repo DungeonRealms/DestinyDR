@@ -15,11 +15,13 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.item.items.functional.ItemGuildBanner;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -488,17 +490,11 @@ public class GuildMechanics {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                         return;
                     }
-
-                    BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
-                    meta.setLore(new ArrayList<>());
-                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
-                    meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
-                    info.getCurrentBanner().setItemMeta(meta);
-
-                    String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
+                    
+                    ItemStack banner = new ItemGuildBanner(info).generateItem();
 
                     // Registers guild in database
-                    GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
+                    GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), ItemSerialization.itemStackToBase64(banner), onComplete -> {
                         if (!onComplete) {
                             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                             return;

@@ -14,6 +14,7 @@ import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -570,7 +571,7 @@ public class DungeonManager implements GenericMechanic {
             for (Player p : Bukkit.getWorld(worldName).getPlayers()) {
                 p.sendMessage(GameAPI.getTierColor(getType().getTier()) + "You have gained " + ChatColor.UNDERLINE + shardsToGive
                 		+ " Portal Shards" + GameAPI.getTierColor(getType().getTier()) + " for completing this Dungeon.");
-                DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, getType().getShardData(), shardsToGive, true);
+                DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, getType().getShardTier().getShardData(), shardsToGive, true);
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 teleportPlayersOut(true);
@@ -737,7 +738,7 @@ public class DungeonManager implements GenericMechanic {
         		Mayel.class, "banditTrove", "T1Dungeon",
         		ChatColor.WHITE + "" + ChatColor.BOLD + "Bandit Trove",
         		EnumMounts.WOLF,
-        		EnumData.PORTAL_SHARDS_T1, 100, 250,
+        		ShardTier.TIER_1, 100, 250,
         		1, EnumAchievements.BANDIT_TROVE,
         		529, 55, -313,
         		Sound.AMBIENT_CAVE, 1F, 1F),
@@ -747,7 +748,7 @@ public class DungeonManager implements GenericMechanic {
         		Burick.class, "varenglade", "DODungeon",
         		ChatColor.AQUA + "" + ChatColor.BOLD + "Varenglade",
         		EnumMounts.SLIME,
-        		EnumData.PORTAL_SHARDS_T3, 100, 375, 
+        		ShardTier.TIER_3, 100, 375, 
         		3, EnumAchievements.VARENGLADE,
         		-364, 60, -1,
         		Sound.ENTITY_ENDERDRAGON_HURT, 4F, 0.5F),
@@ -756,7 +757,7 @@ public class DungeonManager implements GenericMechanic {
         		InfernalAbyss.class, "infernalAbyss", "fireydungeon",
         		ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Infernal Abyss",
         		EnumMounts.SPIDER,
-        		EnumData.PORTAL_SHARDS_T4, 150, 250,
+        		ShardTier.TIER_4, 150, 250,
         		4, EnumAchievements.INFERNAL_ABYSS,
         		-54, 158, 646,
         		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
@@ -774,7 +775,7 @@ public class DungeonManager implements GenericMechanic {
         @Getter private EnumMounts mount;
         @Getter private int minShards;
         @Getter private int maxShards;
-        @Getter private EnumData shardData;
+        @Getter private ShardTier shardTier;
         @Getter private int tier;
         @Getter private EnumAchievements achievement;
         private Class<? extends DungeonBoss> bossClass;
@@ -786,7 +787,7 @@ public class DungeonManager implements GenericMechanic {
         private float pitch;
 
         DungeonType(String bossName, String location, Class<? extends DungeonBoss> cls, String worldGuardName, String dataFileName, String dungeonName, EnumMounts mounts,
-        		EnumData shard, int min, int max, int tier, EnumAchievements ach, int x, int y, int z,
+        		ShardTier shard, int min, int max, int tier, EnumAchievements ach, int x, int y, int z,
         		Sound sound, float volume, float pitch) {
             this.bossName = bossName;
             this.dungeonName = dungeonName;
@@ -796,7 +797,7 @@ public class DungeonManager implements GenericMechanic {
             this.mount = mounts;
             this.minShards = min;
             this.maxShards = max;
-            this.shardData = shard;
+            this.shardTier = shard;
             this.tier = tier;
             this.achievement = ach;
             this.x = x;

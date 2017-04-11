@@ -24,6 +24,11 @@ public class ItemMuleMount extends FunctionalItem {
 	@Getter @Setter
 	private MuleTier tier;
 	
+	public ItemMuleMount(MuleTier tier) {
+		super(ItemType.MULE);
+		setTier(tier);
+	}
+	
 	public ItemMuleMount(Player player) {
 		super(ItemType.MULE);
 		setUntradeable(true);
