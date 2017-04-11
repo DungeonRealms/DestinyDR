@@ -71,7 +71,7 @@ public class Quests implements GenericMechanic {
 		if(!this.playerDataMap.containsKey(player))
 			return;
 		QuestPlayerData data = this.playerDataMap.get(player);
-		for(Quest q : data.getCurrentQuests()){
+		for(Quest q : data.getCurrentQuests()) {
 			QuestProgress qp = this.playerDataMap.get(player).getQuestProgress(q);
 			if(qp == null || qp.getCurrentStage() == null)
 				continue;

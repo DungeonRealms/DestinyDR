@@ -188,7 +188,7 @@ public class ObjectiveKill implements QuestObjective {
 	}
 	
 	private void performNearby(Player player, int radius, Consumer<Entity> action){
-		player.getNearbyEntities(radius, radius, radius).stream().filter(e -> isApplicable(e)).forEach(action::accept);
+		player.getNearbyEntities(radius, radius, radius).stream().filter(this::isApplicable).forEach(action);
 	}
 	
 	public boolean isApplicable(Entity ent){
