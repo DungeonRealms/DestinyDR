@@ -698,6 +698,8 @@ public class BankListener implements Listener {
     	if(event.getInventory().getTitle().equalsIgnoreCase("Storage Chest"))
     		if(BankMechanics.isMoney(event.getOldCursor()) || !GameAPI.isItemTradeable(event.getOldCursor()))
     			event.setCancelled(true);
+
+        if(event.getInventory() != null && event.getInventory().getName().equalsIgnoreCase("merchant")) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
