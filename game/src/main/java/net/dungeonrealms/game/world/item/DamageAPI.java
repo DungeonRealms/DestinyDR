@@ -486,7 +486,7 @@ public class DamageAPI {
 
                 float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(attackerWeapon);
 
-                float totalEnergyCost = (float) ((energyCostPerSwing * .15) * (hitCounter));
+                float totalEnergyCost = (float) ((energyCostPerSwing * .25) * (hitCounter));
                 EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), totalEnergyCost);
             }
 

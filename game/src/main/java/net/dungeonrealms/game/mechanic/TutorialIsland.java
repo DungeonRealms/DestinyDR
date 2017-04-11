@@ -88,7 +88,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
     }
 
 
-    public boolean onTutorialIsland(UUID uuid) {
+    public static boolean onTutorialIsland(UUID uuid) {
         return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial_island");
     }
 

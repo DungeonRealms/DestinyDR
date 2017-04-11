@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -22,6 +21,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -33,6 +33,8 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -48,7 +50,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -208,12 +209,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-    	
-    	if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
-    		event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
-    		return;
-    	}
-    	
+
+        if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
+            event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
+            return;
+        }
+
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
             event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
             DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
@@ -787,6 +788,23 @@ public class MainListener implements Listener {
                 int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
                 success_rate += success_mod; // %CHANCE
 
+                if (TutorialIsland.onTutorialIsland(pl.getUniqueId())) {
+                    QuestPlayerData quests = Quests.getInstance().playerDataMap.get(pl);
+                    if (quests != null) {
+                        for (Quest q : quests.getCurrentQuests()) {
+                            if (q != null && q.getQuestName().equalsIgnoreCase("Tutorial Island")) {
+                                QuestPlayerData.QuestProgress qp = quests.getQuestProgress(q);
+                                if (qp != null && qp.getCurrentStage() != null && qp.getCurrentStage().getObjective() != null) {
+                                    if (qp.getCurrentStage().getObjective().getClass().equals(ObjectiveCatchFish.class)) {
+                                        success_rate = 100;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (success_rate <= do_i_get_fish) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     if (new Random().nextInt(100) > duraBuff) {
@@ -1005,7 +1023,7 @@ public class MainListener implements Listener {
                         }
                     }
                 }
-                
+
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
             }, 10L);
         }

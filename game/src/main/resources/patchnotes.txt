@@ -4,8 +4,9 @@ Build <build>
 - &a&l2x&0 Drop Rates
 - &a&l30%&0 Increased Profession EXP Rates
 - Orbs now tradeable for 180 T3 Scrap
-- Balanced Polearm Energy Cost
+- Balanced Polearm Energy Cost a bit more
 - Nerfed Food Loss a bit
 
 &8&lBug Fixes&0
 - Fixed glow not working for some people.
+- Fixed going Chaotic after a duel in the Wilderness

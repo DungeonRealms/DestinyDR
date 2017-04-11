@@ -612,7 +612,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
 
-            if (!isReflectedDamage) {
+            if (!isReflectedDamage && !logCombat) {
                 //Track this player damage for when we die.
                 player.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
