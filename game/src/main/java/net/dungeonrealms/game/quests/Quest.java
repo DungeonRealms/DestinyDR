@@ -230,9 +230,9 @@ public class Quest implements ISaveable {
 		player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "Quest Complete> " + ChatColor.AQUA + this.getQuestName());
 		data.completeQuest(this);
 
-		if(this.getQuestName().equalsIgnoreCase("Tutorial Island")){
-			ItemManager.giveStarter(player, true);
-		}
+		//if (this.getQuestName().equalsIgnoreCase("Tutorial Island")) {
+		//	ItemManager.giveStarter(player, true);  //This replaces any armor they're wearing already, plus they get this when they login.
+		//}
 		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 		
 		player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
