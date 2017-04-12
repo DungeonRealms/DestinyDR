@@ -1016,8 +1016,8 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
 
-            if (event.getEntity().hasMetadata("boss")) {
-                if (event.getEntity() instanceof CraftLivingEntity) {
+            if (event.getEntity().hasMetadata("boss") || event.getEntity().hasMetadata("easter")) {
+                if (event.getEntity() instanceof CraftLivingEntity && event.getEntity().hasMetadata("boss")) {
                     DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
                     if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast) {
                         //Dont suffocate the ghast, teleport him to the middle.

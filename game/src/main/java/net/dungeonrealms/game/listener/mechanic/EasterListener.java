@@ -18,6 +18,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -139,7 +140,7 @@ public class EasterListener implements Listener {
         if (item.getType() == Material.EMPTY_MAP) {
             //White Scroll
             int isWhiteSCrollChance = random.nextInt(100);
-            if(isWhiteSCrollChance <= 25) {
+            if (isWhiteSCrollChance <= 25) {
                 int chance = random.nextInt(1000);
                 int tier = chance >= 999 ? 5 : chance >= 800 ? 4 : chance >= 600 ? 3 : chance >= 300 ? 2 : 1;
                 return ItemManager.createProtectScroll(tier);
@@ -187,6 +188,13 @@ public class EasterListener implements Listener {
         easterRabbits.removeIf(rab -> rab.getRoller() != null && rab.getRoller().equals(event.getPlayer()));
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity().hasMetadata("easter")) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onProjectileLand(ProjectileHitEvent event) {
         Projectile entity = event.getEntity();
@@ -203,12 +211,14 @@ public class EasterListener implements Listener {
             Rabbit rabbit = (Rabbit) entity.getWorld().spawnEntity(entity.getLocation(), EntityType.RABBIT);
             rabbit.setInvulnerable(true);
             rabbit.setAI(false);
+            rabbit.setMetadata("easter", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
 
             Zombie zombie = (Zombie) entity.getWorld().spawnEntity(entity.getLocation(), EntityType.ZOMBIE);
             zombie.setBaby(true);
             zombie.setInvulnerable(true);
             zombie.setAI(false);
             zombie.getEquipment().setHelmet(this.skullItem.clone());
+            zombie.setMetadata("easter", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
 
             Item item = entity.getWorld().dropItem(entity.getLocation(), new ItemStack(Material.MAGMA_CREAM));
 
@@ -216,11 +226,13 @@ public class EasterListener implements Listener {
             item.setPickupDelay(Integer.MAX_VALUE);
             item.setInvulnerable(true);
             item.setGlowing(true);
+            item.setMetadata("easter", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
 
             ArmorStand stand = (ArmorStand) entity.getWorld().spawnEntity(entity.getLocation(), EntityType.ARMOR_STAND);
             stand.setInvulnerable(true);
             stand.setVisible(false);
             stand.setPassenger(item);
+            stand.setMetadata("easter", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
 
             zombie.setPassenger(stand);
             rabbit.setPassenger(zombie);
@@ -262,9 +274,14 @@ public class EasterListener implements Listener {
             if (entity.isValid())
                 entity.remove();
 
-            if(this.item != null && this.item.isValid()){
+            if (this.item != null && this.item.isValid()) {
                 this.item.remove();
             }
+
+            if (this.zombie != null) {
+                this.zombie.remove();
+            }
+
         }
     }
 }
