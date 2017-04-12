@@ -388,8 +388,13 @@ public class RealmListener implements Listener {
         Realm realm = Realms.getInstance().getRealm(p);
 
 
+
         if (tag.getString("orb").equalsIgnoreCase("flight")) {
 
+            if(realm == null) {
+                p.sendMessage(ChatColor.RED + "You need to be in your realm to do this!");
+                return;
+            }
             if (!realm.getProperty("peaceful")) {
                 p.sendMessage(ChatColor.RED + "You can only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED
                         + " in a peaceful realm.");
@@ -414,6 +419,11 @@ public class RealmListener implements Listener {
             property.setValue(true);
             property.setAcknowledgeExpiration(true);
         } else if (tag.getString("orb").equalsIgnoreCase("peace")) {
+
+            if(realm == null) {
+                p.sendMessage(ChatColor.RED + "You need to be in your realm to do this!");
+                return;
+            }
             GamePlayer gp = GameAPI.getGamePlayer(p);
 
             if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
