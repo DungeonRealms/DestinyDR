@@ -161,7 +161,8 @@ public interface DRMonster {
             }
         }
 
-        if(random.nextInt(100) == 0){
+        //4%, 3%, 2%, 1%, .6%
+        if(random.nextInt(1000) <= (tier == 5 ? 40 : tier == 4 ? 30 : tier == 3 ? 20 : tier == 2 ? 10 : tier == 1 ? 4 : 6)){
             ItemStack item = EasterListener.createEasterEgg();
             ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, ent, .5F, .5F, .5F, .1F, 20);
             ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));

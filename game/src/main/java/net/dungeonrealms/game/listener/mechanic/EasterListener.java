@@ -57,7 +57,7 @@ public class EasterListener implements Listener {
         List<Material> displayMaterials = Lists.newArrayList(Material.MAGMA_CREAM, Material.EMERALD, Material.EMPTY_MAP, Material.FIREWORK_CHARGE, Material.BREAD);
         //Show 10 items total?
         int maxTicks = 25;
-        int realMax = 30;
+        int realMax = 35;
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             Iterator<EasterBunny> bunnies = easterRabbits.iterator();
             while (bunnies.hasNext()) {
