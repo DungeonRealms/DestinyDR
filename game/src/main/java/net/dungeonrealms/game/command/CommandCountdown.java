@@ -15,6 +15,7 @@ public class CommandCountdown extends BaseCommand {
 	private static int length;
 	private static int interval;
 	private static String message;
+	private static boolean restart;
 	private static int broadcastTask;
 	
 	public CommandCountdown() {
@@ -34,7 +35,7 @@ public class CommandCountdown extends BaseCommand {
 		}
 		
 		if(args.length < 3) {
-			sender.sendMessage(ChatColor.RED + "Syntax: /" + label + " <length> <frequency> <message...>");
+			sender.sendMessage(ChatColor.RED + "Syntax: /" + label + " <length> <frequency> <restart> <message...>");
 			sender.sendMessage(ChatColor.RED + "Length and frequency are measured in minutes.");
 			return true;
 		}
@@ -42,6 +43,7 @@ public class CommandCountdown extends BaseCommand {
 		try {
 			int length = Integer.parseInt(args[0]);
 			int interval = Integer.parseInt(args[1]);
+			boolean restart = Boolean.parseBoolean(args[2]);
 			
 			//  GETS THE BROADCAST MESSAGE  //
 			String message = "";
@@ -52,12 +54,12 @@ public class CommandCountdown extends BaseCommand {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 			
 			if(!message.contains("{0}")) {
-				sender.sendMessage(ChatColor.RED + "You must include {0} (Timer Variable) inside the message.");
+				sender.sendMessage(ChatColor.RED + "You must include {0} (timer variable) inside the message.");
 				return true;
 			}
 			
 			//  STARTS THE BROADCAST  //
-			startBroadcast(length, interval, message);
+			startBroadcast(length, interval, message, restart);
 			sender.sendMessage(ChatColor.GREEN + "Countdown started.");
 			return true;
 		} catch(NumberFormatException e) {
@@ -68,11 +70,12 @@ public class CommandCountdown extends BaseCommand {
 	}
 	
 	
-	public static void startBroadcast(int l, int i, String m) {
+	public static void startBroadcast(int l, int i, String m, boolean r) {
 		//(Add the interval because it is immediately subtracted when a broadcast occurs)
 		length = l + i;
 		interval = i;
 		message = m;
+		restart = r;
 		sendBroadcast();
 	}
 	
@@ -87,9 +90,13 @@ public class CommandCountdown extends BaseCommand {
 		length -= interval;
 		broadcastTask = 0;
 		
-		if(length > 0){
+		if (length > 0){
 			GameAPI.sendNetworkMessage("Broadcast", message.replaceAll("\\{0\\}", length + ""));
 			broadcastTask = Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), CommandCountdown::sendBroadcast, interval * 20 * 60).getTaskId();
+		} else if (length == 0) {
+			DungeonRealms.getInstance().isDrStopAll = true;
+			GameAPI.sendStopAllServersPacket();
+			GameAPI.stopGame();
 		}
 	}
 }
