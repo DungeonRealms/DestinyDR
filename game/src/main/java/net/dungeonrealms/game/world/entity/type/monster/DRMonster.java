@@ -6,8 +6,10 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.listener.mechanic.EasterListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -20,6 +22,7 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -156,6 +159,13 @@ public interface DRMonster {
                 item.setAmount((int) gem_drop_amount);
                 ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             }
+        }
+
+        if(random.nextInt(100) == 0){
+            ItemStack item = EasterListener.createEasterEgg();
+            ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, ent, .5F, .5F, .5F, .1F, 20);
+            ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
+            world.getWorld().playSound(ent.getLocation(), Sound.ENTITY_CHICKEN_EGG, 3, 1.1F);
         }
 
         int dropRoll = random.nextInt(1000);

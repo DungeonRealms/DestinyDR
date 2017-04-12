@@ -6,6 +6,7 @@ Build <build>
 - Orbs now tradeable for 180 T3 Scrap
 - Balanced Polearm Energy Cost a bit more
 - Nerfed Food Loss a bit
+- &5Easter Eggs&0 now drop from mobs, they can give some great prizes!
 
 &8&lBug Fixes&0
 - Fixed glow not working for some people.
