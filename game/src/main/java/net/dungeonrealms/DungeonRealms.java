@@ -45,10 +45,7 @@ import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
 import net.dungeonrealms.game.listener.inventory.*;
-import net.dungeonrealms.game.listener.mechanic.BankListener;
-import net.dungeonrealms.game.listener.mechanic.BossListener;
-import net.dungeonrealms.game.listener.mechanic.EnergyListener;
-import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
+import net.dungeonrealms.game.listener.mechanic.*;
 import net.dungeonrealms.game.listener.network.BungeeChannelListener;
 import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
@@ -302,6 +299,7 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms - Registering Events");
 
+        pm.registerEvents(new EasterListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new InventoryListener(), this);

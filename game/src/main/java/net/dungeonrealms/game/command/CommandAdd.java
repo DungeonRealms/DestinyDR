@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.listener.mechanic.EasterListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -72,6 +73,9 @@ public class CommandAdd extends BaseCommand {
         if (args.length > 0) {
             int tier;
             switch (args[0]) {
+                case "easteregg":
+                    player.getInventory().addItem(EasterListener.createEasterEgg());
+                    break;
                 case "nameditem":
                     if (args.length == 2) {
                         String namedItem = null;

@@ -10,15 +10,14 @@ import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.EnderCrystal;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

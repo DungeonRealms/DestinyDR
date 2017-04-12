@@ -349,6 +349,7 @@ public class MainListener implements Listener {
     public void onMountDismount(VehicleExitEvent event) {
         if (!(GameAPI.isPlayer(event.getExited()))) {
             if (event.getExited() instanceof EntityArmorStand) {
+                Bukkit.getLogger().info("Removing armor stand...");
                 event.getExited().remove();
             }
             return;
