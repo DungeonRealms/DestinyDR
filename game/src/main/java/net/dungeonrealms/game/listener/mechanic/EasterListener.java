@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -97,7 +98,8 @@ public class EasterListener implements Listener {
                     }
 
                     ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, bunny.getItem(), .5F, .5F, .5F, .1F, 30);
-                    player.sendMessage(ChatColor.GRAY + "You received " + (prize.getAmount() > 1 ? prize.getAmount() + "x " : "a(n) ") + prize.getItemMeta().getDisplayName() + ChatColor.GRAY + " from your " + ChatColor.LIGHT_PURPLE + "Easter Egg" + ChatColor.GRAY + "!");
+                    String prizeName = prize.getItemMeta().hasDisplayName() ? prize.getItemMeta().getDisplayName() : StringUtils.capitaliseAllWords(prize.getType().name().replace("_", " ").toLowerCase());
+                    player.sendMessage(ChatColor.GRAY + "You received " + (prize.getAmount() > 1 ? prize.getAmount() + "x " : "a(n) ") + prizeName + ChatColor.GRAY + " from your " + ChatColor.LIGHT_PURPLE + "Easter Egg" + ChatColor.GRAY + "!");
                     player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 3F, .8F);
                     player.updateInventory();
                     bunny.setTicks(bunny.getTicks() + 1);
@@ -130,11 +132,13 @@ public class EasterListener implements Listener {
         if (chance >= .3) return ItemManager.createArmorScrap(4);
         if (chance >= .25) return ItemManager.createArmorScrap(3);
         if (chance >= .20) return ItemManager.createArmorScrap(2);
+        if(chance >= .1)return new ItemStack(Material.BREAD, ThreadLocalRandom.current().nextInt(3) + 1);
         return ItemManager.createArmorScrap(1);
     }
 
     private ItemStack createRealPrize(ItemStack item) {
         Random random = ThreadLocalRandom.current();
+
         if (item.getType() == Material.MAGMA_CREAM) return ItemManager.createOrbofAlteration();
         if (item.getType() == Material.EMERALD) return BankMechanics.createGems(random.nextInt(50) + 5);
         if (item.getType() == Material.EMPTY_MAP) {
