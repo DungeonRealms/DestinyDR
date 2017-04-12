@@ -558,6 +558,10 @@ public class GameAPI {
         getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
     }
 
+    public static void sendIngameDevMessage(String message, String... contents) {
+        sendNetworkMessage("IGN_DEVMessage", message, contents);
+    }
+
     public static void sendDevMessage(String message, String... contents) {
         sendNetworkMessage("DEVMessage", message, contents);
     }

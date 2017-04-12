@@ -165,7 +165,7 @@ public interface DRMonster {
             ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, ent, .5F, .5F, .5F, .1F, 20);
             ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             world.getWorld().playSound(ent.getLocation(), Sound.ENTITY_CHICKEN_EGG, 3, 1.1F);
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> GameAPI.sendDevMessage("Dropping Easter egg for " + killer.getName() + " on {SERVER}"));
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> GameAPI.sendIngameDevMessage(ChatColor.LIGHT_PURPLE + "Dropping easter egg for " + killer.getName() + " on {SERVER}."));
         }
 
         int dropRoll = random.nextInt(1000);

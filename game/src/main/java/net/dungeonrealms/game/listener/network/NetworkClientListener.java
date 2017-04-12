@@ -127,6 +127,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         });
                         break;
                     }
+                    case "IGN_DEVMessage":
                     case "DEVMessage": {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {
