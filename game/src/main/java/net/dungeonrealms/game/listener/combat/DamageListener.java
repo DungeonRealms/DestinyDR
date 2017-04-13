@@ -1076,6 +1076,11 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (!(event.getEntity() instanceof Player) && (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.LAVA)){
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
 
         switch (event.getCause()) {
             case FALL:
@@ -1113,9 +1118,11 @@ public class DamageListener implements Listener {
                     dmg = 0;
                 break;
             case FIRE_TICK:
-                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
                     dmg = maxHP * 0.01;
-                else dmg = 0;
+                }else {
+                    dmg = 0;
+                }
                 break;
             case LAVA:
             case FIRE:

@@ -1429,7 +1429,7 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             GameAPI.calculateAllAttributes(player);
             PlayerManager.checkInventory(uuid);
-        }, 2 * 20L);
+        }, 5);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
