@@ -322,7 +322,10 @@ public class HealthHandler implements GenericMechanic {
     public static void healPlayer(Player player, int healAmount) {
     	double currentHP = getPlayerHP(player);
         double maxHP = getPlayerMaxHP(player);
-        double newHealth = currentHP + healAmount;
+        if (currentHP >= maxHP)
+        	return;
+        
+        double newHealth = Math.min(currentHP + healAmount, maxHP);
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString()))
             player.sendMessage(ChatColor.GREEN + "        +" + healAmount + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + (int) newHealth + "/" + (int) maxHP + "HP]");
@@ -767,9 +770,12 @@ public class HealthHandler implements GenericMechanic {
             return player.getMetadata("regenHP").get(0).asInt();
         } else {
         	GamePlayer gp = GameAPI.getGamePlayer(player);
-        	int hpRegen = gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5;
-            player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), hpRegen));
-            return hpRegen;
+        	if (gp != null) {
+        		int hpRegen = gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5;
+            	player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), hpRegen));
+            	return hpRegen;
+        	}
+        	return 0;
         }
     }
 }

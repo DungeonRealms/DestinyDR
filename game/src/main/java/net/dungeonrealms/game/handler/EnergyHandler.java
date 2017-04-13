@@ -133,7 +133,7 @@ public class EnergyHandler implements GenericMechanic {
             }
             // get regenAmount, 10% base energy regen (calculated here because it's hidden)
             
-            float regenAmount = (((float) gp.getAttributes().get(ArmorAttributeType.ENERGY_REGEN).getValue()) / 100.0F) + 0.20F;
+            float regenAmount = (((float) gp.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).getValue()) / 100.0F) + 0.20F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.05F;

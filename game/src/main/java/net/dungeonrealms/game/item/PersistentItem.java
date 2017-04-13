@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item;
 
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
@@ -174,16 +175,17 @@ public abstract class PersistentItem {
 	 */
 	public static ItemType getType(ItemStack item) {
 		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		if(!nms.hasTag() || !nms.getTag().hasKey("type"))
+		if(nms == null || !nms.hasTag() || !nms.getTag().hasKey("type"))
 			return null;
 		return ItemType.getType(nms.getTag().getString("type"));
 	}
 	
 	/**
 	 * Returns if a given itemstack is of a given type.
+	 * Null-Safe
 	 */
 	public static boolean isType(ItemStack item, ItemType type) {
-		return getType(item).equals(type);
+		return type.equals(getType(item));
 	}
 	
 	public ItemMeta getMeta() {
@@ -196,7 +198,7 @@ public abstract class PersistentItem {
 	public static PersistentItem constructItem(ItemStack item) {
 		ItemType type = getType(item);
 		if (type == null)
-			return null;
+			return new VanillaItem(item);
 		
 		try {
 			return type.getItemClass().getDeclaredConstructor(ItemStack.class).newInstance(item);
@@ -205,6 +207,6 @@ public abstract class PersistentItem {
 			Utils.log.info("Failed to construct " + type.getItemClass().getName() + ". Is it missing a constructor accepting only ItemStack?");
 		}
 		
-		return null;
+		return new VanillaItem(item);
 	}
 }

@@ -52,7 +52,7 @@ public class GamePlayer {
     /**
      * Attribute values and their values
      */
-    private AttributeList attributes;
+    private AttributeList attributes = new AttributeList();
 
     @Getter
     private ArrayList<String> ignoredPlayers = new ArrayList<>();

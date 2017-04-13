@@ -29,6 +29,7 @@ public class ItemTeleportBook extends FunctionalItem {
 	
 	public ItemTeleportBook(TeleportLocation tl) {
 		super(ItemType.TELEPORT_BOOK);
+		setTeleportLocation(tl);
 	}
 	
 	public ItemTeleportBook(ItemStack item) {
@@ -65,16 +66,17 @@ public class ItemTeleportBook extends FunctionalItem {
             player.sendMessage(ChatColor.RED + "You can only use teleport books in the main world.");
             return;
         }
+		
+		if (!getTeleportLocation().canTeleportTo(player)) {
+			player.sendMessage(ChatColor.RED + "You cannot use teleport books whilst chaotic.");
+			return;
+		}
+		
 		evt.setUsed(true);
 		
 		if (!getTeleportLocation().canBeABook()) {
 			player.sendMessage(ChatColor.RED + "This teleport book is invalid, so it has vanished into the wind.");
 			GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removed 1x " + getTeleportLocation().getDisplayName() + " teleport books from " + player.getName() + ".");
-			return;
-		}
-        
-		if (!getTeleportLocation().canTeleportTo(player)) {
-			player.sendMessage(ChatColor.RED + "You cannot use teleport books whilst chaotic.");
 			return;
 		}
 		

@@ -24,6 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.mongodb.BasicDBList;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -49,9 +51,7 @@ public class DonationEffects implements GenericMechanic {
     public Set<Creeper> fireWorkCreepers = new CopyOnWriteArraySet<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
-  
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
-
 
     private static Random random = new Random();
 
@@ -70,7 +70,10 @@ public class DonationEffects implements GenericMechanic {
         
         // Load buffs from the DB.
         for (EnumBuff buffType : EnumBuff.values()) {
+        	this.buffMap.put(buffType, new LinkedList<Buff>());
         	ArrayList<String> buffs = (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms.getInstance().bungeeName, buffType.getDatabaseTag());
+        	if (buffs == null)
+        		continue;
         	Queue<Buff> queue = this.buffMap.get(buffType);
         	buffs.forEach(s -> {
         		Buff buff = Buff.deserialize(s);
@@ -110,7 +113,7 @@ public class DonationEffects implements GenericMechanic {
     	for (EnumBuff buffType : EnumBuff.values()) {
     		//Remove existing buffs.
     		DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-					buffType.getDatabaseTag(), "", true);
+					buffType.getDatabaseTag(), new BasicDBList(), true);
     		//Add queued buffs.
     		for (Buff buff : getQueuedBuffs(buffType))
     			DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,

@@ -64,7 +64,7 @@ public class PotionItem extends FunctionalItem {
 	
 	@Override
 	protected void loadItem() {
-		setTier(PotionTier.getById(getTagInt("itemTier")));
+		setTier(PotionTier.getById(getTagInt(TIER)));
 		setSplash(getItem().getType() == Material.SPLASH_POTION);
 		setHealAmount(getTagInt("healAmount"));
 		super.loadItem();
@@ -73,7 +73,7 @@ public class PotionItem extends FunctionalItem {
 	@Override
 	public void updateItem() {
 		setTagInt("healAmount", this.healAmount);
-		setTagInt("itemTier", getTier().getId());
+		setTagInt(TIER, getTier().getId());
 		super.updateItem();
 	}
 
@@ -101,8 +101,9 @@ public class PotionItem extends FunctionalItem {
         int slotCount = -1;
         for (ItemStack stack : player.getInventory().getContents()) {
         	slotCount++;
-        	if (isPotion(stack))
-        		GameAPI.setHandItem(player, stack, slot);
+        	if (!isPotion(stack))
+        		continue;
+        	GameAPI.setHandItem(player, stack, slot);
         	player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
         	return;
         }

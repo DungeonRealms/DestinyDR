@@ -8,11 +8,14 @@ import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
@@ -42,5 +45,16 @@ public class FunctionalItemListener implements Listener {
 	@EventHandler
 	public void onPlayerConsume(PlayerItemConsumeEvent evt) {
 		FunctionalItem.attemptUseItem(new ItemConsumeEvent(evt));
+	}
+	
+	@EventHandler
+	public void onEntityAttack(EntityDamageByEntityEvent evt) {
+		if (evt.getDamager() instanceof Player)
+			FunctionalItem.attemptUseItem(new ItemClickEvent(evt));
+	}
+	
+	@EventHandler
+	public void onEntityInteract(PlayerInteractEntityEvent evt) {
+		FunctionalItem.attemptUseItem(new ItemClickEvent(evt));
 	}
 }

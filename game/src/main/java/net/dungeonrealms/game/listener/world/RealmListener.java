@@ -230,7 +230,7 @@ public class RealmListener implements Listener {
         for (Realm realm : Realms.getInstance().getRealms()) {
         	Player owner = Bukkit.getPlayer(realm.getOwner());
             if (owner != null && owner.isOnline()) {
-                if (!realm.getProperty("peaceful") && realm.getProperty("flight")) {
+                if (realm.isChaotic() && realm.getProperty("flight")) {
                     RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getRealmProperties().get("flight");
                     property.setExpiry(System.currentTimeMillis() - 1000L);
                 }

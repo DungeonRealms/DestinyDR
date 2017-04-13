@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Chase, by fixed by Proxying and under inspection of xFinityPro. Later it was changed by Kneesnap.
+ * Created by Chase, by fixed by Proxying and under inspection of xFinityPro. Later it was changed by Kneesnap. Probably it will be changed sometime in the future.
  */
 public class BankListener implements Listener {
 

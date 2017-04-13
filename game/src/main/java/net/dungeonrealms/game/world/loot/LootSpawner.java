@@ -68,13 +68,13 @@ public class LootSpawner {
             }
 //			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
             if (spawn_chance >= do_i_spawn) {
-                if (stack.getType() == Material.IRON_SWORD)
+                if (stack.getType() == Material.IRON_SWORD || stack.getType() == Material.AIR)
                     continue;
                 ItemGeneric item = (ItemGeneric)PersistentItem.constructItem(stack);
+                
                 if (item.isAntiDupe())
                 	item.removeEpoch();
                 stack = item.generateItem();
-                
                 
                 count++;
                 inv.addItem(stack);
@@ -92,23 +92,18 @@ public class LootSpawner {
      * Checking if the inventory is empty, then break the chest.
      */
     public void update(Player player) {
-        if (inv.getContents().length > 0) {
-            for (ItemStack stack : inv.getContents()) {
-                if (stack != null) {
-                    if (stack.getType() != (Material.AIR)) {
+        if (inv.getContents().length > 0)
+            for (ItemStack stack : inv.getContents())
+                if (stack != null && stack.getType() != Material.AIR)
                         return;
-                    }
-                }
-            }
-        }
+        
         GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
         if (gamePlayer == null) return;
         gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
-        for (int i = 0; i < 6; i++) {
-            player.getWorld().playEffect(block.getLocation().add(i, 0.5, i), Effect.TILE_BREAK, 25, 12);
-            player.getWorld().playEffect(block.getLocation().add(i, 0.35, i), Effect.TILE_BREAK, 25, 12);
-            player.getWorld().playEffect(block.getLocation().add(i, 0.2, i), Effect.TILE_BREAK, 25, 12);
-        }
+        for (int i = 0; i < 6; i++)
+        	for (double yOffset = 0.2; yOffset <= 0.5; yOffset += 0.15)
+        		player.getWorld().playEffect(block.getLocation().add(i, yOffset, i), Effect.TILE_BREAK, 25, 12);
+        
         player.playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
         block.getDrops().clear();
         block.setType(Material.AIR);

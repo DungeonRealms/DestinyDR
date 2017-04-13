@@ -98,6 +98,8 @@ public abstract class ItemGear extends ItemGeneric {
 	@Override
 	protected void loadItem() {
 		super.loadItem();
+		System.out.println(getAttributes() != null);
+		this.attributes = new AttributeList();
 		
 		//  LOAD GENERAL DATA  //
 		setGeneratedItemType(GeneratedItemType.getType(getItem().getType()));
@@ -109,16 +111,17 @@ public abstract class ItemGear extends ItemGeneric {
 		this.enchantCount = getTagInt("enchant");
 		
 		//  LOAD DURABILITY  //
-		if (((Repairable)getItem()).hasRepairCost()) {
+		if (((Repairable)getMeta()).hasRepairCost()) {
 			this.durability = ((Repairable)getItem()).getRepairCost();
 		} else {
-			double percent = (Math.min(1, (getItem().getType().getMaxDurability() - getItem().getDurability())) / Math.min(1, getItem().getType().getMaxDurability()));
+			double percent = (Math.max(1, (getItem().getType().getMaxDurability() - getItem().getDurability())) / Math.max(1, getItem().getType().getMaxDurability()));
 			//We don't just multiply by MAX_DURABILITY because that results in rounding at the wrong decimal place.
 			this.durability = (int) (Math.round(percent * 100) * (MAX_DURABILITY / 100));
 		}
 		
 		//  LOAD ATTRIBUTES  //
-		this.getAttributes().load(getTag(), getGeneratedItemType().getAttributeBank().getAttributes());
+		if (getGeneratedItemType() != null)
+			getAttributes().load(getTag(), getGeneratedItemType().getAttributeBank().getAttributes());
 		
 		//  ROLL ATTRIBUTES  //
 		if(isRollStats())

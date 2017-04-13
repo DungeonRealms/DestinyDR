@@ -88,7 +88,7 @@ public enum TeleportLocation {
 		if (GameAPI.getGamePlayer(player) == null)
             return false;
         
-        return GameAPI.getGamePlayer(player).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC;
+        return GameAPI.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC;
 	}
 	
 	public static TeleportLocation getTeleportLocation(NBTTagCompound tag){

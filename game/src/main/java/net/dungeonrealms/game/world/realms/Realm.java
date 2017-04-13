@@ -45,7 +45,6 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;

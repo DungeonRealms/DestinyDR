@@ -1920,7 +1920,7 @@ public class GameAPI {
 	}
 
 	public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {
-		if (slot != EquipmentSlot.HAND || slot != EquipmentSlot.OFF_HAND) {
+		if (slot != EquipmentSlot.HAND && slot != EquipmentSlot.OFF_HAND) {
 			Utils.log.info("Could not set hand item of " + player.getName() + ". Tried to set hand " + slot.name() + ".");
 			return;
 		}

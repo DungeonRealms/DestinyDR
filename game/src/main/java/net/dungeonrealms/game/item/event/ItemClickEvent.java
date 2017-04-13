@@ -7,10 +7,12 @@ import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemUsage;
@@ -29,28 +31,31 @@ public class ItemClickEvent extends FunctionalItemEvent {
 	@Getter
 	private Entity clickedEntity;
 	
-	private PlayerInteractEvent event;
+	private Cancellable event;
 	
 	@Getter
 	private EquipmentSlot hand;
 	
 	public ItemClickEvent(EntityDamageByEntityEvent evt) {
-		super((Player)evt.getDamager(), ((Player)evt.getDamager()).getEquipment().getItemInMainHand(), ItemUsage.LEFT_CLICK_ENTITY);
-		this.hand = EquipmentSlot.HAND;
+		this((Player)evt.getDamager(), ((Player)evt.getDamager()).getEquipment().getItemInMainHand(),
+				EquipmentSlot.HAND, evt, ItemUsage.LEFT_CLICK_ENTITY);
 		this.clickedEntity = evt.getEntity();
 	}
 	
 	public ItemClickEvent(PlayerInteractEntityEvent evt) {
-		super(evt.getPlayer(), GameAPI.getItem(evt.getPlayer(), evt.getHand()), ItemUsage.RIGHT_CLICK_ENTITY);
-		this.hand = evt.getHand();
+		this(evt.getPlayer(), GameAPI.getItem(evt.getPlayer(), evt.getHand()), evt.getHand(), evt, ItemUsage.RIGHT_CLICK_ENTITY);
 		this.clickedEntity = evt.getRightClicked();
 	}
 	
 	public ItemClickEvent(PlayerInteractEvent evt) {
-		super(evt.getPlayer(), evt.getItem(), ItemUsage.valueOf(evt.getAction().name()));
+		this(evt.getPlayer(), evt.getItem(), evt.getHand(), evt, ItemUsage.valueOf(evt.getAction().name()));
 		this.clickedBlock = evt.hasBlock() ? evt.getClickedBlock() : null;
-		this.hand = evt.getHand();
-		this.event = evt;
+	}
+	
+	private ItemClickEvent(Player player, ItemStack item, EquipmentSlot hand, Cancellable event, ItemUsage usage) {
+		super(player, item, usage);
+		this.hand = hand;
+		this.event = event;
 		setCancelled(true); //By default we block the bukkit event for this so it doesn't mess up the world.
 	}
 

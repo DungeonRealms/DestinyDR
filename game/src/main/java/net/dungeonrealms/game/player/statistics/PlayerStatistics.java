@@ -10,6 +10,8 @@ import java.util.UUID;
 
 /**
  * Created by Kieran Quigley (Proxying) on 26-Jun-16.
+ * 
+ * Holy cow.... Make this not terrible soon. ~Knee
  */
 public class PlayerStatistics {
 

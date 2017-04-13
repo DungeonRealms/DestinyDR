@@ -26,6 +26,7 @@ public abstract class FunctionalItemEvent {
 	@Getter //Get the vanilla item.
 	private ItemStack vanillaItem;
 	
+	@Getter
 	private FunctionalItem item;
 
 	@Getter //What usages will trigger the code?
@@ -45,12 +46,10 @@ public abstract class FunctionalItemEvent {
 		this.player = player;
 		this.vanillaItem = item;
 		this.usage = usage;
-	}
-	
-	public FunctionalItem getItem() {
-		if(this.item == null)
-			this.item = (FunctionalItem)PersistentItem.constructItem(this.vanillaItem);
-		return this.item;
+		
+		PersistentItem pi = PersistentItem.constructItem(item);
+		if (pi instanceof FunctionalItem)
+			this.item = (FunctionalItem)pi;
 	}
 	
 	protected void setVanillaItem(ItemStack item) {

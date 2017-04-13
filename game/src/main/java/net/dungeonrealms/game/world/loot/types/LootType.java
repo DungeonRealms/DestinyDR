@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.loot.types;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
@@ -11,21 +10,16 @@ import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
 import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -153,15 +147,12 @@ public enum LootType {
                             }
                             break;
                         case POTION:
-                        	List<Integer> noSplash = Arrays.asList(1, 5, 9, 12, 3);
-                        	List<Integer> splashes = Arrays.asList(16385, 16389, 16393, 16396, 16398);
-                        	boolean splash = splashes.contains(item_meta);
+                        	boolean splash = item_meta >= 16384;
                         	PotionTier tier = null;
                         	
-                        	if (noSplash.contains(item_meta))
-                        		tier = PotionTier.getById(noSplash.indexOf(item_meta) + 1);
-                        	if (splashes.contains(item_meta))
-                        		tier = PotionTier.getById(splashes.indexOf(item_meta) + 1);
+                        	for (PotionTier t : PotionTier.values())
+                        		if (t.getItemMeta() == item_meta || t.getItemMeta() == item_meta - 16384)
+                        			tier = t;
                         	
                         	if (tier == null)
                         		break;

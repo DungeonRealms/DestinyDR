@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemGemNote extends ItemMoney {
 
 	@Getter
-	private List<String> signers;
+	private List<String> signers = new ArrayList<>();
 	
 	public static final int MAX_SIZE = 100000;
 	
@@ -84,7 +85,7 @@ public class ItemGemNote extends ItemMoney {
 	protected String[] getLore() {
 		return new String[] { ChatColor.WHITE + "" + ChatColor.BOLD + "Value: " + ChatColor.WHITE + getGemValue() + " Gems",
 				"Exchange at any bank for GEM(s)",
-				signers.size() == 0 ? "Signed by " + ChatColor.WHITE + signers.get(0) : ""};
+				signers.size() == 1 ? "Signed by " + ChatColor.WHITE + signers.get(0) : ""};
 	}
 
 	@Override
@@ -119,7 +120,7 @@ public class ItemGemNote extends ItemMoney {
 		player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + getGemValue() + " Gems." + ChatColor.GRAY + " Please enter the amount");
         player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
         player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");
-        player.getInventory().setItemInMainHand(null);
+        evt.setUsed(true);
         
         Chat.listenForNumber(player, 1, getGemValue(), num -> {
         	int newValue = getGemValue() - num;

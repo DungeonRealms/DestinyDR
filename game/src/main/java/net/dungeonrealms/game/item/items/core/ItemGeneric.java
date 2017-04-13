@@ -67,6 +67,7 @@ public abstract class ItemGeneric extends PersistentItem {
 		super(item);
 		this.itemType = type;
 		this.lore = new ArrayList<>();
+		this.dataMap = new HashMap<>();
 		
 		//Alert us if anything goes awry. Attempts to delete the item. (It likely won't)
 		if (isEventItem() && !(DungeonRealms.getInstance().isMasterShard || DungeonRealms.getInstance().isEventShard)) {
@@ -123,6 +124,9 @@ public abstract class ItemGeneric extends PersistentItem {
 
 	@Override
 	protected void loadItem() {
+		if (dataMap == null)
+			dataMap = new HashMap<>();
+		
 		for(ItemData data : ItemData.values())
 			dataMap.put(data, getData(data));
 		
@@ -184,7 +188,8 @@ public abstract class ItemGeneric extends PersistentItem {
 			}
 		}
 		
-		// Only update the lore if this is being generated. (TODO Wait, why did I add this?)
+		// Only update the lore if this is being generated. Prevents lore being added twice.
+		// We could technically clear the lore when an item is generated and add it here instead.
 		if (isGenerating())
 			getMeta().setLore(this.lore);
 		getItem().setItemMeta(getMeta());

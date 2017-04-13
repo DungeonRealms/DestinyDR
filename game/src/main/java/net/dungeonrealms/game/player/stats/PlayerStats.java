@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by Chase on Nov 2, 2015
+ * Redone by Kneesnap in early 2017.
  */
 public class PlayerStats {
     private UUID playerUUID;
@@ -54,8 +54,11 @@ public class PlayerStats {
      * @since 1.0;
      */
     public void loadPlayerStats() {
-        for(Stats s : Stats.values())
+        for(Stats s : Stats.values()) {
         	setStat(s, (int) DatabaseAPI.getInstance().getData(s.getData(), playerUUID));
+        	setTempStat(s, 0);
+        }
+        
         this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
         this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
         this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
@@ -152,7 +155,8 @@ public class PlayerStats {
         });
     }
 
-    ItemStack loadConfirmItem() {
+    @SuppressWarnings("deprecation")
+	ItemStack loadConfirmItem() {
         ItemStack stack = ItemManager.createItem(Material.INK_SACK, ChatColor.GREEN + "Confirm", new String[]{"Click to confirm your stat ", "point allocation.  If you ",
                 "want to undo your changes, ", "press escape."});
         stack.setDurability(DyeColor.LIME.getDyeData());
@@ -170,7 +174,6 @@ public class PlayerStats {
     /**
      * Called to sync database with players server stats
      */
-
     public void updateDatabase() {
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
         for (Stats s : Stats.values())
@@ -197,8 +200,6 @@ public class PlayerStats {
 
     /**
      * Resets the player stats.
-     *
-     * @since 1.0
      */
     public void unallocateAllPoints() {
         resetTemp();
@@ -214,7 +215,6 @@ public class PlayerStats {
         resetAmounts++;
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, resetAmounts, true);
     }
-
 
 	public double getEnergyRegen() {
 		return getStat(Stats.INTELLECT) * 0.00015;

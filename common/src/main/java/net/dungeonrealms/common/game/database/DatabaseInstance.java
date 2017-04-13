@@ -100,7 +100,8 @@ public class DatabaseInstance {
             String username = ini.get("DB", "username", String.class);
             String password = ini.get("DB", "password", String.class);
             String hostname = ini.get("DB", "host", String.class);
-            return new Database(hostname, username, password, database);
+            String replica = ini.get("DB", "replicaset", String.class);
+            return new Database(hostname, username, password, database, replica);
         } catch (InvalidFileFormatException e1) {
         	Bukkit.getLogger().info("InvalidFileFormat in credentials.ini!");
         } catch (FileNotFoundException e1) {
