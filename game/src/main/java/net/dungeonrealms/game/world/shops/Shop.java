@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.shops;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -14,7 +13,6 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -108,21 +106,21 @@ public class Shop {
         ShopMechanics.ALLSHOPS.remove(ownerName);
         // Remove blocks
         hologram.delete();
-        if(!shutDown){ //Prevents a crash in crashHandler() (Accessing Bukkit API Async)
-        	block1.setType(Material.AIR);
-        	block2.setType(Material.AIR);
-        	block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+        if (!shutDown) { //Prevents a crash in crashHandler() (Accessing Bukkit API Async)
+            block1.setType(Material.AIR);
+            block2.setType(Material.AIR);
+            block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         }
 
         Player owner = Bukkit.getPlayer(ownerUUID);
-        
+
         viewCount = 0;
         //Rip concurrency.
         Lists.newArrayList(inventory.getViewers()).forEach(HumanEntity::closeInventory);
         uniqueViewers.clear();
-        
+
         saveCollectionBin(shutDown);
-        
+
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
@@ -153,17 +151,17 @@ public class Shop {
             }
         }
         if (count > 0) {
-            if (Bukkit.getPlayer(ownerUUID) != null) {
-                Bukkit.getPlayer(ownerUUID).sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
-            }
+            Player player = Bukkit.getPlayer(ownerUUID);
+            if (player != null)
+                player.sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
 
             Storage storage = BankMechanics.getInstance().getStorage(ownerUUID);
-            if (storage != null) {
+            if (storage != null)
                 storage.collection_bin = inv;
-            }
+
             String invToString = ItemSerialization.toString(inv);
             //Only save on shutdown / logout, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
-            if(shutDown)
+            if (shutDown)
                 DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);

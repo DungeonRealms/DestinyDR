@@ -16,6 +16,7 @@ import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.listener.DataListener;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -303,6 +304,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms - Registering Events");
 
         pm.registerEvents(new DamageListener(), this);
+        pm.registerEvents(new DataListener(), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);

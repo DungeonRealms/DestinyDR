@@ -42,7 +42,7 @@ public class CommandCountdown extends BaseCommand {
 		try {
 			int length = Integer.parseInt(args[0]);
 			int interval = Integer.parseInt(args[1]);
-			
+
 			//  GETS THE BROADCAST MESSAGE  //
 			String message = "";
 			for(int i = 2; i < args.length; i++)

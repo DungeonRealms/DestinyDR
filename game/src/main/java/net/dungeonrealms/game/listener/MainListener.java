@@ -220,7 +220,6 @@ public class MainListener implements Listener {
             DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
             return;
         }
-
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
             if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {

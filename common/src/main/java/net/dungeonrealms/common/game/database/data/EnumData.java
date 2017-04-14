@@ -5,24 +5,24 @@ package net.dungeonrealms.common.game.database.data;
  */
 public enum EnumData {
 
-    UUID("info.uuid"),
-    USERNAME("info.username"),
-    HEALTH("info.health"),
-    FIRST_LOGIN("info.firstLogin"),
-    LAST_LOGIN("info.lastLogin"),
-    LAST_LOGOUT("info.lastLogout"),
-    FREE_ECASH("info.freeEcash"),
-    LAST_SHARD_TRANSFER("info.lastShardTransfer"),
-    LEVEL("info.netLevel"),
-    IP_ADDRESS("info.ipAddress"),
-    IS_PLAYING("info.isPlaying"),
-    IS_COMBAT_LOGGED("info.isCombatLogged"),
-    EXPERIENCE("info.experience"),
-    GEMS("info.gems"),
-    HEARTHSTONE("info.hearthstone"),
-    ECASH("info.ecash"),
-    FRIENDS("info.friends"),
-    IGNORED("info.ignored"),
+    UUID("info.uuid"), //
+    USERNAME("info.username"), //
+    HEALTH("info.health"), //
+    FIRST_LOGIN("info.firstLogin"), //
+    LAST_LOGIN("info.lastLogin"), //
+    LAST_LOGOUT("info.lastLogout"), //
+    FREE_ECASH("info.freeEcash"), //
+    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //
+    LEVEL("info.netLevel"), //
+    IP_ADDRESS("info.ipAddress"), //
+    IS_PLAYING("info.isPlaying"), //
+    IS_COMBAT_LOGGED("info.isCombatLogged"), //
+    EXPERIENCE("info.experience"),//
+    GEMS("info.gems"),//
+    HEARTHSTONE("info.hearthstone"),//
+    ECASH("info.ecash"),//
+    FRIENDS("info.friends"),//
+    IGNORED("info.ignored"),//
     ALIGNMENT("info.alignment"),
     ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),
