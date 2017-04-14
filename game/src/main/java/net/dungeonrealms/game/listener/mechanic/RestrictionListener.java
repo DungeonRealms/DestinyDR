@@ -478,10 +478,7 @@ public class RestrictionListener implements Listener {
     public void loggingOutOpenInventory(InventoryOpenEvent event) {
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
-            try {
-                event.getPlayer().closeInventory();
-            } catch (Exception ignored) {
-            }
+            event.getPlayer().closeInventory();
         }
     }
 

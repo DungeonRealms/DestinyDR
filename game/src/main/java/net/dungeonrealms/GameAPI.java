@@ -796,14 +796,18 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
+    	System.out.println("Saving player data for " + uuid.toString() + "...");
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) {
+        	System.out.println("They're logging in, let's not.");
             return false;
         }
         String name = (String) DatabaseAPI.getInstance().getData(EnumData.USERNAME, player.getUniqueId());
-        if (name == null || name.length() < 1)
-            return false;
+        if (name == null || name.length() < 1) {
+            System.out.println("Their name is null?");
+        	return false;
+        }
 
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -866,13 +870,14 @@ public class GameAPI {
 
         //  QUEST DATA  //
         Quests.getInstance().savePlayerToMongo(player);
-
+        
+        System.out.println("Sending DB Bulk Update!");
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
     }
     
     public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
-    	handleLogout(uuid, async, doAfter, true, true);
+    	handleLogout(uuid, async, doAfter, true);
     }
 
     /**
@@ -883,7 +888,7 @@ public class GameAPI {
      *              different method.
      * @since 1.0
      */
-    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter, boolean save, boolean remove) {
+    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter, boolean remove) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
@@ -1523,7 +1528,7 @@ public class GameAPI {
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
                 doAfter -> GameAPI.handleLogout(player.getUniqueId(), true,
-                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName), true, false)
+                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName), false)
         );
     }
 
@@ -2345,7 +2350,7 @@ public class GameAPI {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
-        }), true, false);
+        }), false);
     }
 
     /**
