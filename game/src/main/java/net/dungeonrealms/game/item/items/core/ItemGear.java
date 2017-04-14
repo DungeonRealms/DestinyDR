@@ -124,7 +124,7 @@ public abstract class ItemGear extends ItemGeneric {
 			getAttributes().load(getTag(), getGeneratedItemType().getAttributeBank().getAttributes());
 		
 		//  ROLL ATTRIBUTES  //
-		if(isRollStats())
+		if (isRollStats()) 
 			rollStats(false);
 	}
 	
@@ -365,6 +365,7 @@ public abstract class ItemGear extends ItemGeneric {
 	 * Rolls the stats for this item.
 	 */
 	public void rollStats(boolean isReroll) {
+		setRollStats(false);
 		clearLore();
 		//Simulate random order.
 		Collections.shuffle(ItemGenerator.modifierObjects);

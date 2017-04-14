@@ -156,7 +156,7 @@ public class HealthHandler implements GenericMechanic {
         	showData = (Player)player.getSpectatorTarget();
 
         GamePlayer gamePlayer = GameAPI.getGamePlayer(showData);
-        if (!gamePlayer.isAttributesLoaded())
+        if (gamePlayer == null || !gamePlayer.isAttributesLoaded())
             return;
         
         int currentHP = getPlayerHP(showData);
@@ -729,20 +729,22 @@ public class HealthHandler implements GenericMechanic {
         double[] hostileModifier = new double[] {.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[] {1.8, 2.5, 3, 4, 5.5};
         
-        int tier = entity.getMetadata("tier").get(0).asInt();
+        if (entity.hasMetadata("tier")) {
+        	int tier = entity.getMetadata("tier").get(0).asInt();
         
-        //  HOSTILE MODIFIER  //
-        if (EnumEntityType.HOSTILE_MOB.isType(entity))
-        	totalHP *= hostileModifier[tier - 1];
+        	//  HOSTILE MODIFIER  //
+        	if (EnumEntityType.HOSTILE_MOB.isType(entity))
+        		totalHP *= hostileModifier[tier - 1];
         
-        //  ELITE MODIFIER  //
-        if (entity.hasMetadata("entity"))
-        	totalHP *= eliteModifier[tier - 1];
+        	//  ELITE MODIFIER  //
+        	if (entity.hasMetadata("entity"))
+        		totalHP *= eliteModifier[tier - 1];
 
-        //  BOSS MULTIPLIER  //
-        if (entity.hasMetadata("boss"))
-            totalHP *= 6;
-
+        	//  BOSS MULTIPLIER  //
+        	if (entity.hasMetadata("boss"))
+        		totalHP *= 6;
+        }
+        
         return totalHP;
     }
 

@@ -56,7 +56,7 @@ public class Mining implements GenericMechanic, Listener {
         ItemStack stackInHand = p.getEquipment().getItemInMainHand();
         Block block = event.getClickedBlock();
 
-        if (ItemPickaxe.isPickaxe(stackInHand))
+        if (!ItemPickaxe.isPickaxe(stackInHand))
             return;
         
         ItemPickaxe pickaxe = new ItemPickaxe(stackInHand);

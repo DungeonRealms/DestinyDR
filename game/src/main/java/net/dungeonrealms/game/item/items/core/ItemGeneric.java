@@ -192,7 +192,7 @@ public abstract class ItemGeneric extends PersistentItem {
 		// We could technically clear the lore when an item is generated and add it here instead.
 		if (isGenerating())
 			getMeta().setLore(this.lore);
-		getItem().setItemMeta(getMeta());
+		getItem().setItemMeta(getMeta()); //This is here because sometimes we update the item without generating a new one. (In case of durability changes)
 		resetLore = true;
 	}
 	

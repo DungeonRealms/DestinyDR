@@ -61,7 +61,9 @@ public abstract class PersistentItem {
 		this.generating = true;
 		this.item = getStack();
 		updateItem();
+		ItemMeta meta = getMeta().clone();
 		setTag(this.tag);
+		getItem().setItemMeta(meta);
 		this.generating = false;
 		return getItem();
 	}

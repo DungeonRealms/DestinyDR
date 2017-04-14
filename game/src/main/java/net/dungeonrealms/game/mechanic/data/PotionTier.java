@@ -21,7 +21,7 @@ public enum PotionTier {
 	private final int shopHealthMax;
 	
 	public int getId() {
-		return ordinal();
+		return ordinal() + 1;
 	}
 
 	public static PotionTier getById(int tier) {

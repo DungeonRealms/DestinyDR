@@ -36,6 +36,7 @@ import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -58,6 +59,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.util.*;
+
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 //import net.dungeonrealms.common.game.database.player.rank.NewRank;
 
@@ -121,6 +123,12 @@ public class CommandAdd extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "/ad nameitem <name>");
                     }
                     break;
+                case "attributes":
+                	player.sendMessage(ChatColor.GREEN + "Player Attributes:");
+                	GamePlayer gp = GameAPI.getGamePlayer(player);
+                	for (AttributeType at : gp.getAttributes().getAttributes())
+                		player.sendMessage(at.getNBTName() + " - " + gp.getAttributes().getAttribute(at).toString());
+                	break;
                 case "pcheck":
                     player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
                     break;

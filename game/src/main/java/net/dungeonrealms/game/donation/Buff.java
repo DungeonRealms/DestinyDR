@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.donation.buffs;
+package net.dungeonrealms.game.donation;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.json.JsonBuilder;
 

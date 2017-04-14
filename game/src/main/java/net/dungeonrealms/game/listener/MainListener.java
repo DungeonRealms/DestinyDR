@@ -254,11 +254,9 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onShardClick(InventoryClickEvent event) {
-        if (event.getInventory().getTitle() != null) {
-            if (event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards")) {
+        if (event.getInventory().getTitle() != null)
+            if (event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards"))
                 event.setCancelled(true);
-            }
-        }
     }
 
     /**
