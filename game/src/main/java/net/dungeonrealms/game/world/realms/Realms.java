@@ -125,8 +125,8 @@ public class Realms implements GenericMechanic {
     	//Don't do anything while this is upgrading, it's not ready yet.
     	if(realm.getState() == RealmState.UPGRADING)
     		return;
-    	
-    	realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
+
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
     	
     	realm.setState(RealmState.REMOVING);
     	
