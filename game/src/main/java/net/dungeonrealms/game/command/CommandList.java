@@ -28,7 +28,7 @@ public class CommandList extends BaseCommand {
         // We want to force only showing PMODs online for users with the PMOD rank.
         boolean isModerator = (commandSender instanceof Player && !Rank.isTrialGM((Player) commandSender));
         if (isModerator)
-            args[0] = "-m";
+            args = new String[] {"-m"};
 
         if (args.length > 0 && (args[0].equals("-h") || args[0].equals("-help"))) {
             commandSender.sendMessage(new String[] {

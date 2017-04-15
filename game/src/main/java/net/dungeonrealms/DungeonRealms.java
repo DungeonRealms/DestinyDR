@@ -363,6 +363,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandISay());
         cm.registerCommand(new CommandModeration());
         cm.registerCommand(new CommandStaffChat());
+        cm.registerCommand(new CommandGmChat());
+        cm.registerCommand(new CommandDevChat());
         cm.registerCommand(new CommandBroadcast());
         cm.registerCommand(new CommandGm());
         cm.registerCommand(new CommandHeadGm());
