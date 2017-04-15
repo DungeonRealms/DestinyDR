@@ -7,6 +7,7 @@ import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
@@ -25,8 +26,7 @@ public enum TeleportLocation {
 	TROLLSBANE("Trollsbane Tavern", WorldRegion.TROLLSBANE, 7500, 962, 95, 1069, -153.0F, 1F),
 	TRIPOLI("Tripoli", WorldRegion.TRIPOLI, 7500, -1320, 91, 370, 153F, 1F),
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
-	//+ ChatColor.RED + " WARNING: CHAOTIC ZONE"
-	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, false, true);
+	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, true);
 	
 	private String displayName;
 	private WorldRegion region;
@@ -85,10 +85,11 @@ public enum TeleportLocation {
 	}
 	
 	public boolean canTeleportTo(Player player){
-		if (GameAPI.getGamePlayer(player) == null)
+		GamePlayer gp = GameAPI.getGamePlayer(player);
+		if (gp == null)
             return false;
         
-        return GameAPI.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC;
+        return gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC;
 	}
 	
 	public static TeleportLocation getTeleportLocation(NBTTagCompound tag){

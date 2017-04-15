@@ -26,6 +26,7 @@ public class ShopMenuPet extends ShopMenu {
 	protected void setItems() {
 		addItem(BACK);
 		
+		@SuppressWarnings("unchecked")
 		ShopItemClick buyPet = (player, item) -> {
 			List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
 			ItemPetSelector petSelector = (ItemPetSelector) item.getSoldItem();

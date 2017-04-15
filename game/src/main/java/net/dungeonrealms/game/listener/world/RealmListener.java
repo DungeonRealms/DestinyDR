@@ -228,6 +228,9 @@ public class RealmListener implements Listener {
         if (!e.getType().equals(UpdateType.SEC)) return;
         
         for (Realm realm : Realms.getInstance().getRealms()) {
+        	if (!realm.isOpen())
+        		continue;
+        	
         	Player owner = Bukkit.getPlayer(realm.getOwner());
             if (owner != null && owner.isOnline()) {
                 if (realm.isChaotic() && realm.getProperty("flight")) {

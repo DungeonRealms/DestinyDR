@@ -49,6 +49,7 @@ public class ShopItem extends ItemGeneric {
 		super(ItemType.SHOP);
 		this.soldItem = purchase;
 		this.callback = cb;
+		setData(ItemData.MENU, true);
 	}
 	
 	public ShopItem setECash(int eCash) {
@@ -75,7 +76,6 @@ public class ShopItem extends ItemGeneric {
 			setTagInt("shardTier", getShardTier().getTier());
 			setTagInt("shards", getShards());
 		}
-		addLore("Display Item");
 		super.updateItem();
 	}
 	
@@ -89,12 +89,12 @@ public class ShopItem extends ItemGeneric {
 		return isType(item, ItemType.SHOP);
 	}
 	
-	public interface ShopItemClick {
-		public boolean onClick(Player p, ShopItem shop);
-	}
-
 	public void setShards(int i, ShardTier byTier) {
 		this.shards = i;
 		setShardTier(byTier);
+	}
+	
+	public interface ShopItemClick {
+		public boolean onClick(Player p, ShopItem shop);
 	}
 }

@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.player.inventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
@@ -134,12 +136,32 @@ public abstract class ShopMenu {
 		ShopMenuListener.getMenus().put(player, this);
 	}
 	
+	protected static ItemStack createItem(Material mat, String name) {
+		return createItem(mat, name, null);
+	}
+	
+	protected static ItemStack createItem(Material mat, String name, String[] lore) {
+		ItemStack stack = new ItemStack(mat);
+		ItemMeta meta = stack.getItemMeta();
+		
+		// Name
+		if (name != null)
+			meta.setDisplayName(name);
+		
+		// Lore
+		List<String> l = new ArrayList<>();
+		if (lore != null)
+			for(String s : lore)
+				l.add(ChatColor.GRAY + s);
+		meta.setLore(l);
+		
+		
+		stack.setItemMeta(meta);
+		return stack;
+	}
+	
 	private static void createStaticItems() {
-		ItemStack back = new ItemStack(Material.BARRIER);
-		ItemMeta backMeta = back.getItemMeta();
-		backMeta.setDisplayName(ChatColor.GREEN + "Return");
-		back.setItemMeta(backMeta);
-		BACK = new ShopItem(new VanillaItem(back), (player, item) -> {
+		BACK = new ShopItem(new VanillaItem(createItem(Material.BARRIER, ChatColor.GREEN + "Return")), (player, item) -> {
 			ShopMenu menu = ShopMenuListener.getMenu(player);
 			if (menu.getLastMenu() != null)
 				menu.getLastMenu().open(player);

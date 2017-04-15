@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -20,6 +21,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -137,6 +140,17 @@ public class ItemListener implements Listener {
         	event.setCancelled(true);
         	return;
         }
+    }
+    
+    @EventHandler //Prevents dropping undroppable items and having the pop back up in your inventory.
+    public void onInventoryClick(InventoryClickEvent evt) {
+    	if (evt.getAction() != InventoryAction.DROP_ALL_SLOT && evt.getAction() != InventoryAction.DROP_ONE_SLOT)
+    		return;
+    	
+    	if (!(new VanillaItem(evt.getCurrentItem()).isUndroppable()))
+    		return;
+    	
+    	evt.setCancelled(true);
     }
     
     /**

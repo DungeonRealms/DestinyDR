@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import java.util.Arrays;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
@@ -21,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class ItemPlayerJournal extends FunctionalItem {
 	
@@ -33,6 +36,13 @@ public class ItemPlayerJournal extends FunctionalItem {
 		super(item);
 	}
 
+	@Override
+	public void updateItem() {
+		((BookMeta)getMeta()).setAuthor("DungeonRealms Team");
+		((BookMeta)getMeta()).setPages(Arrays.asList("Journal failed to load."));
+		super.updateItem();
+	}
+	
 	@Override
 	public void onClick(ItemClickEvent evt) {
 		Player player = evt.getPlayer();

@@ -17,6 +17,10 @@ public class ItemPlayerProfile extends FunctionalItem {
 
 	private Player player;
 	
+	public ItemPlayerProfile(ItemStack item) {
+		this((Player)null);
+	}
+	
 	public ItemPlayerProfile(Player player) {
 		super(ItemType.OPEN_PROFILE);
 		setUndroppable(true);
@@ -26,7 +30,9 @@ public class ItemPlayerProfile extends FunctionalItem {
 	@Override
 	public void updateItem() {
 		getItem().setDurability((short)3);
-		((SkullMeta)getMeta()).setOwner(this.player.getName());
+		if (this.player != null)
+			((SkullMeta)getMeta()).setOwner(this.player.getName());
+		super.updateItem();
 	}
 
 	@Override

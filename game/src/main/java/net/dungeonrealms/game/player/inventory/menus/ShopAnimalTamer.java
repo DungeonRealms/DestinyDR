@@ -39,6 +39,7 @@ public class ShopAnimalTamer extends ShopMenu {
 		addItem(new ShopItem(new ItemMuleMount(MuleTier.OLD), cb)).setPrice(5000);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean buyMount(Player player, ShopItem item) {
 		List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
 		EnumMounts mount = (item.getSoldItem() instanceof ItemMountSelector) ? ((ItemMountSelector) item.getSoldItem()).getTier().getMount() : EnumMounts.MULE;
@@ -56,13 +57,15 @@ public class ShopAnimalTamer extends ShopMenu {
 		}
 		
 		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
-        if (mount != EnumMounts.MULE) {
+        
+		if (mount != EnumMounts.MULE) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
             CraftingMenu.addMountItem(player);
         } else {
             CraftingMenu.addMuleItem(player);
         }
+        
         player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
         

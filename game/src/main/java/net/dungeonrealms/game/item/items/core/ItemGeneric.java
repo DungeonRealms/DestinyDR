@@ -13,11 +13,14 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * ItemGeneric - A GearItem that can be applied to any item.
@@ -51,6 +54,9 @@ public abstract class ItemGeneric extends PersistentItem {
 	
 	private long soulboundTrade = 0;
 	private List<String> soulboundAllowedTraders;
+	
+	@Getter
+	private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
 	
 	//Tier should share the same name for consistency.
 	protected static final String TIER = "itemTier";
@@ -98,27 +104,27 @@ public abstract class ItemGeneric extends PersistentItem {
 	}
 	
 	public ItemGeneric setPermUntradeable(boolean perm) {
-		dataMap.put(ItemData.PUNTRADEABLE, perm);
+		setData(ItemData.PUNTRADEABLE, perm);
 		return this;
 	}
 	
 	public ItemGeneric setSoulbound(boolean soulbound) {
-		dataMap.put(ItemData.SOULBOUND, soulbound);
+		setData(ItemData.SOULBOUND, soulbound);
 		return this;
 	}
 	
 	public ItemGeneric setUndroppable(boolean undroppable) {
-		dataMap.put(ItemData.UNDROPPABLE, undroppable);
+		setData(ItemData.UNDROPPABLE, undroppable);
 		return this;
 	}
 	
 	public ItemGeneric setUntradeable(boolean untradeable) {
-		dataMap.put(ItemData.UNTRADEABLE, untradeable);
+		setData(ItemData.UNTRADEABLE, untradeable);
 		return this;
 	}
 	
 	public ItemGeneric setEventItem(boolean event) {
-		dataMap.put(ItemData.EVENT, event);
+		setData(ItemData.EVENT, event);
 		return this;
 	}
 
@@ -127,8 +133,10 @@ public abstract class ItemGeneric extends PersistentItem {
 		if (dataMap == null)
 			dataMap = new HashMap<>();
 		
+		this.meta = getItem().getItemMeta();
+		
 		for(ItemData data : ItemData.values())
-			dataMap.put(data, getData(data));
+			dataMap.put(data, getTagBool(data.getNBTTag()));
 		
 		if (isSoulbound() && hasTag("soulboundTrade")) {
 			long time = getTag().getLong("soulboundTrade");
@@ -153,6 +161,12 @@ public abstract class ItemGeneric extends PersistentItem {
 	public ItemStack getItem() {
 		return isDestroyed() ? new ItemStack(Material.AIR) : super.getItem();
 	}
+	
+	@Override
+	public ItemStack generateItem() {
+		this.meta = getStack().getItemMeta();
+		return super.generateItem();
+	}
 
 	@Override
 	public void updateItem() {
@@ -161,9 +175,9 @@ public abstract class ItemGeneric extends PersistentItem {
 		
 		for (ItemData data : ItemData.values()) {
 			boolean enabled = getSData(data);
-			setData(data, enabled);
-			//Update the lore.
-			if(data.getDisplay() != null)
+			setTagBool(data.getNBTTag(), enabled);
+			
+			if(data.getDisplay() != null && enabled)
 				addLore(data.getDisplay());
 		}
 		
@@ -188,12 +202,26 @@ public abstract class ItemGeneric extends PersistentItem {
 			}
 		}
 		
-		// Only update the lore if this is being generated. Prevents lore being added twice.
-		// We could technically clear the lore when an item is generated and add it here instead.
-		if (isGenerating())
-			getMeta().setLore(this.lore);
-		getItem().setItemMeta(getMeta()); //This is here because sometimes we update the item without generating a new one. (In case of durability changes)
+		saveMeta();
 		resetLore = true;
+	}
+	
+	/**
+	 * Saves data in meta to NBT.
+	 * Just using setItemMeta will override NBT tags, so we set them manually.
+	 */
+	private void saveMeta() {
+		ItemStack withMeta = getItem().clone();
+		getMeta().setLore(this.lore);
+		withMeta.setItemMeta(getMeta());
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(withMeta);
+		if (!nms.hasTag())
+			return;
+		NBTTagCompound merge = nms.getTag();
+		for (String key : merge.c())
+			if (!hasTag(key))
+				getTag().set(key, merge.get(key));
+		getItem().setItemMeta(getMeta());
 	}
 	
 	/**
@@ -241,25 +269,20 @@ public abstract class ItemGeneric extends PersistentItem {
 		this.lore.clear();
 	}
 	
-	private boolean getSData(ItemData data) {
+	protected boolean getSData(ItemData data) {
 		return dataMap.containsKey(data) && dataMap.get(data);
 	}
 	
-	private boolean getData(ItemData data) {
-		return getTagBool(data.getNBTTag());
+	protected void setData(ItemData data, boolean enabled) {
+		dataMap.put(data, enabled);
 	}
 	
-	private void setData(ItemData data, boolean enabled) {
-		if(!hasTag(data.getNBTTag()) && !enabled) //Don't set tags to their default value, waste of memory.
-			return;
-		setTagBool(data.getNBTTag(), enabled);
-	}
-	
-	private enum ItemData { 
+	protected enum ItemData { 
 		SOULBOUND(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "Soulbound"),
 		UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
 		PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
 		EVENT(ChatColor.RED + "Event Item"),
+		MENU(ChatColor.GRAY + "Display Item"),
 		UNDROPPABLE(null);
 		
 		@Getter

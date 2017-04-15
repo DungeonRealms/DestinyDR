@@ -6,7 +6,6 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * PersistentItem - Items that contain a variety of data that need to be loaded or changed.
@@ -24,10 +23,11 @@ public abstract class PersistentItem {
 		this.item = item;
 		if(item != null)
 			loadItem();
+		//TODO: Move all the load items into the constructor.
 	}
 	
 	public ItemStack getItem() {
-		return item == null ? generateItem() : item;
+		return item == null ? getStack() : item;
 	}
 	
 	/**
@@ -61,9 +61,8 @@ public abstract class PersistentItem {
 		this.generating = true;
 		this.item = getStack();
 		updateItem();
-		ItemMeta meta = getMeta().clone();
 		setTag(this.tag);
-		getItem().setItemMeta(meta);
+		// We are no longer generating the item.
 		this.generating = false;
 		return getItem();
 	}
@@ -120,6 +119,8 @@ public abstract class PersistentItem {
 	 */
 	public void setTagBool(String key, boolean val) {
 		NBTTagCompound tag = getTag();
+		if (!val && !tag.hasKey(key)) //Don't bother using extra space, since it will default to false.
+			return;
 		tag.setBoolean(key, val);
 	}
 	
@@ -188,13 +189,6 @@ public abstract class PersistentItem {
 	 */
 	public static boolean isType(ItemStack item, ItemType type) {
 		return type.equals(getType(item));
-	}
-	
-	public ItemMeta getMeta() {
-		ItemMeta meta = getItem().getItemMeta();
-		if(!getItem().hasItemMeta())
-			getItem().setItemMeta(meta);
-		return meta;
 	}
 	
 	public static PersistentItem constructItem(ItemStack item) {

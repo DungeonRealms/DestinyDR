@@ -18,6 +18,10 @@ public class ItemHearthstone extends FunctionalItem {
 
 	private Player player;
 	
+	public ItemHearthstone(ItemStack item) {
+		this((Player)null);
+	}
+	
 	public ItemHearthstone(Player player) {
 		super(ItemType.HEARTHSTONE);
 		this.player = player;
@@ -34,7 +38,7 @@ public class ItemHearthstone extends FunctionalItem {
 		return new String[]{
                 ChatColor.DARK_GRAY + "Home location",
                 "",
-                "Use: Returns you to " + ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
+                "Use: Returns you to " + ChatColor.YELLOW + (player != null ? TeleportAPI.getLocationFromDatabase(player.getUniqueId()) : "Error Village"),
                 "",
                 ChatColor.YELLOW + "Speak to an Innkeeper to change location."};
 	}
@@ -47,6 +51,7 @@ public class ItemHearthstone extends FunctionalItem {
 
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
+		this.player = evt.getPlayer();
 		evt.setCancelled(true);
 		evt.closeInventory();
 		if (!CombatLog.isInCombat(evt.getPlayer())) {
@@ -56,8 +61,8 @@ public class ItemHearthstone extends FunctionalItem {
                 return;
             }
             
-            if (TeleportAPI.canUseHearthstone(evt.getPlayer()))
-                Teleportation.getInstance().teleportPlayer(evt.getPlayer().getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, null);
+            if (TeleportAPI.canUseHearthstone(player))
+                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, null);
         
 		} else {
 			evt.getPlayer().sendMessage(ChatColor.RED + "You are in combat! Please wait (" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");

@@ -24,7 +24,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 * Does this item have a specified attribute?
 	 */
 	public boolean hasAttribute(AttributeType t) {
-		return this.containsKey(t) && getAttribute(t).getValue() > 0;
+		return this.containsKey(t) && get(t) != null && get(t).getValue() > 0;
 	}
 	
 	/**

@@ -40,9 +40,11 @@ public abstract class FunctionalItem extends ItemGeneric {
 	
 	@Override
 	public void updateItem() {
-		if (getLore() != null)
-			for (String line : getLore())
+		String[] lore = getLore();
+		if (lore != null)
+			for (String line : lore)
 				addLore(line);
+		getMeta().setDisplayName(getDisplayName());
 		super.updateItem();
 	}
 	

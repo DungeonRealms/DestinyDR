@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.item.itemgenerator.engine;
 
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTBase;
+import net.minecraft.server.v1_9_R2.NBTBase.NBTNumber;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -16,13 +17,14 @@ public class ModifierRange implements Cloneable {
 	private boolean halve;
 	
 	public ModifierRange(NBTBase loadFrom) {
-		if (loadFrom instanceof NBTTagInt) {
-			valLow = ((NBTTagInt)loadFrom).d();
+		if (loadFrom instanceof NBTNumber) {
+			valLow = ((NBTNumber)loadFrom).d();
 			this.modifierType = ModifierType.STATIC;
-		} else if(loadFrom instanceof NBTTagList) {
+		} else if (loadFrom instanceof NBTTagList) {
 			NBTTagList range = (NBTTagList)loadFrom;
 			valLow = range.c(0);
 			valHigh = range.c(1);
+			this.modifierType = ModifierType.RANGE;
 		} else {
 			Utils.log.info("Tried to load unknown NBT type as ModifierRange!. Id = " + loadFrom.getTypeId());
 		}
@@ -137,7 +139,9 @@ public class ModifierRange implements Cloneable {
 	 */
 	@Override
 	public ModifierRange clone() {
-		return new ModifierRange(modifierType, low, lowHigh, high);
+		ModifierRange mr = new ModifierRange(modifierType, low, lowHigh, high);
+		mr.setVal(valLow, valHigh);
+		return mr;
 	}
 	
 	/**

@@ -16,7 +16,7 @@ public class ModifierCondition {
 	private ModifierCondition bonus;
 
 	public ModifierCondition(Item.ItemTier tier, Item.ItemRarity rarity, ModifierRange range){
-		this(tier, rarity, range, 0);
+		this(tier, rarity, range, -1);
 	}
 	
 	public ModifierCondition(Item.ItemTier tier, Item.ItemRarity rarity, ModifierRange range, int chance){

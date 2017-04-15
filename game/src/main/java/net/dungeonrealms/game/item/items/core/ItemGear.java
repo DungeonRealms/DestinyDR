@@ -37,7 +37,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
 
 /**
  * ItemGear - Contains shared methods for gear that can have attributes, be orbed, etc.
@@ -47,20 +46,20 @@ import org.bukkit.inventory.meta.Repairable;
  */
 public abstract class ItemGear extends ItemGeneric {
 
+	@Getter @Setter
+	private boolean Protected; //Uppercast to avoid being the keyword "protected".
+	
 	@Getter //The tier of this item.
 	private ItemTier tier;
 	
 	@Getter //The rarity of this item.
 	private ItemRarity rarity;
 	
-	@Getter
+	@Getter @Setter
 	private int enchantCount;
 	
 	@Getter
 	private int durability;
-	
-	@Getter @Setter //Whether this item should have its stats rolled next update.
-	private boolean rollStats;
 	
 	@Getter
 	private AttributeList attributes = new AttributeList();
@@ -69,7 +68,7 @@ public abstract class ItemGear extends ItemGeneric {
 	private GeneratedItemType generatedItemType;
 	
 	public static final int MAX_DURABILITY = 1500;
-	private static final String PROTECTION = "protected";
+	
 	//Enchant Success Chances
 	private static final int[] SUCCESS_CHANCE = {100, 100, 100, 70, 60, 50, 35, 25, 20, 15, 10, 5};
 	private static final int[] DURABILITY_WARNINGS = {30, 10, 5, 2};
@@ -86,7 +85,7 @@ public abstract class ItemGear extends ItemGeneric {
 		setTier(ItemTier.getRandomTier());
 		setRarity(ItemRarity.getRandomRarity());
 		this.durability = MAX_DURABILITY;
-		setRollStats(true);
+		rollStats(false);
 	}
 	
 	//Used for loading existing items usually.
@@ -98,21 +97,20 @@ public abstract class ItemGear extends ItemGeneric {
 	@Override
 	protected void loadItem() {
 		super.loadItem();
-		System.out.println(getAttributes() != null);
 		this.attributes = new AttributeList();
 		
 		//  LOAD GENERAL DATA  //
 		setGeneratedItemType(GeneratedItemType.getType(getItem().getType()));
-		this.setTier(ItemTier.getByTier(getTagInt(TIER)));
+		setTier(ItemTier.getByTier(getTagInt(TIER)));
+		setProtected(getTagBool("protected"));
+		setEnchantCount(getTagInt("enchant"));
 		
 		if(hasTag("itemRarity"))
 			this.setRarity(ItemRarity.valueOf(getTagString("itemRarity")));
 		
-		this.enchantCount = getTagInt("enchant");
-		
 		//  LOAD DURABILITY  //
-		if (((Repairable)getMeta()).hasRepairCost()) {
-			this.durability = ((Repairable)getItem()).getRepairCost();
+		if (hasTag("RepairCost")) {
+			this.durability = getTagInt("RepairCost");
 		} else {
 			double percent = (Math.max(1, (getItem().getType().getMaxDurability() - getItem().getDurability())) / Math.max(1, getItem().getType().getMaxDurability()));
 			//We don't just multiply by MAX_DURABILITY because that results in rounding at the wrong decimal place.
@@ -122,10 +120,6 @@ public abstract class ItemGear extends ItemGeneric {
 		//  LOAD ATTRIBUTES  //
 		if (getGeneratedItemType() != null)
 			getAttributes().load(getTag(), getGeneratedItemType().getAttributeBank().getAttributes());
-		
-		//  ROLL ATTRIBUTES  //
-		if (isRollStats()) 
-			rollStats(false);
 	}
 	
 	@Override
@@ -134,11 +128,9 @@ public abstract class ItemGear extends ItemGeneric {
 		if(getRarity() != null)
 			setTagString("itemRarity", getRarity().name());
 		
-		this.attributes.save(getTag());
-		setTagInt(TIER, getTier().getTierId());
 		setTagInt("enchant", getEnchantCount());
-		
-		((Repairable)getMeta()).setRepairCost(getDurability());
+		setTagBool("protected", isProtected());
+		setTagInt("RepairCost", getDurability());
 		
 		// Removes the extra tag on gear, Ie: Diamond Sword - "+7 Attack Damage"
 		getTag().set("AttributeModifiers", new NBTTagList());
@@ -187,7 +179,6 @@ public abstract class ItemGear extends ItemGeneric {
 	}
 	
 	private void updateLore() {
-		
 		//  SAVE ATTRIBUTES TO NBT  //
 		NBTTagCompound nbtAttributes = new NBTTagCompound();
 		for(AttributeType t : this.getAttributes().keySet()) {
@@ -228,7 +219,7 @@ public abstract class ItemGear extends ItemGeneric {
 			boolean contains = name.contains(rawItemName);
 			String suffix = type.getDisplaySuffix(contains);
 			if(!suffix.equals(""))
-				name += " " + (contains ? rawItemName + " " : "of ") + suffix;
+				name += rawItemName + " " + (contains ? "" : "of") + " " + suffix;
 		}
 		
 		if(!name.contains(rawItemName))
@@ -349,7 +340,7 @@ public abstract class ItemGear extends ItemGeneric {
 	public void protectItem() {
 		if (isProtected())
 			return;
-		setTagBool(PROTECTION, true);
+		setTagBool("protected", true);
 	}
 	
 	/**
@@ -358,15 +349,14 @@ public abstract class ItemGear extends ItemGeneric {
 	public void removeProtection() {
 		if (!isProtected())
 			return;
-		removeTag(PROTECTION);
+		removeTag("protected");
 	}
 	
 	/**
 	 * Rolls the stats for this item.
 	 */
 	public void rollStats(boolean isReroll) {
-		setRollStats(false);
-		clearLore();
+		
 		//Simulate random order.
 		Collections.shuffle(ItemGenerator.modifierObjects);
 		ItemMeta meta = getItem().getItemMeta();
@@ -420,7 +410,7 @@ public abstract class ItemGear extends ItemGeneric {
 				range = keptAttributes.get(im.getCurrentAttribute());
 			
 			//  SAVE NEW STAT  //
-			this.attributes.put(im.getCurrentAttribute(), mc.getRange().clone());
+			this.attributes.put(im.getCurrentAttribute(), range.clone());
 		}
 	}
 	
@@ -433,13 +423,6 @@ public abstract class ItemGear extends ItemGeneric {
         
 		if (mc.getBonus() != null)
 			attemptAddModifier(conditions, mc.getBonus(), im, rand, reRoll);
-	}
-	
-	/**
-	 * Is this item protected?
-	 */
-	public boolean isProtected() {
-		return getTagBool(PROTECTION);
 	}
 	
 	public static boolean isCustomTool(ItemStack item) {
