@@ -32,7 +32,7 @@ public class DataListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLogiin(PlayerJoinEvent event) {
+    public void onPlayerLogin(PlayerJoinEvent event) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
         wrapper.loadPlayerInventory(event.getPlayer());

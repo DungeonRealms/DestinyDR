@@ -10,6 +10,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
@@ -171,7 +172,8 @@ public class Quests implements GenericMechanic {
 	
 	public void handleLogin(Player player){
 		Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
-			String data = (String)DatabaseAPI.getInstance().getData(EnumData.QUEST_DATA, player.getUniqueId());
+			PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player.getUniqueId());
+			String data = wrapper.getQuestData();
 			JsonArray object = new JsonParser().parse(data).getAsJsonArray();
 			this.playerDataMap.put(player, new QuestPlayerData(player, object));
 			for(Quest q : this.playerDataMap.get(player).getCurrentQuests()){

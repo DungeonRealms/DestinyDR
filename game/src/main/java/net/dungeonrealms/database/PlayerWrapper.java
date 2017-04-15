@@ -9,10 +9,14 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -39,45 +43,52 @@ public class PlayerWrapper {
     private UUID uuid;
 
     @Getter
-    private int accountID;
-
-    @Getter
-    private int characterID;
+    private int accountID, characterID;
 
     @Getter
     private PlayerStats playerStats;
 
     @Getter
     @Setter
-    private int health, level, freeEcash, ecash, experience, gems, gemsCount;
-
+    private int health, level, ecash, experience, gems;
 
     @Getter
-    private long lastLogin, lastLogout, lastShardTransfer;
+    private long lastLogin, lastLogout, lastShardTransfer, lastFreeEcash;
 
     @Getter
     private Inventory pendingInventory, pendingArmor;
 
-
     @Getter
-    String shardPlayingOn;
+    @Setter
+    String shardPlayingOn, questData;
 
     @Getter
     @Setter
-    private int bankLevel, shopLevel, muleLevel;
+    String activeMount, activePet, activeTrail, activeMountSkin;
 
     @Getter
     @Setter
-    int netLevel;
+    private int bankLevel, shopLevel, muleLevel, storedFoodLevel;
+
 
     @Getter
-    private boolean isPlaying = false, combatLogged = false;
-
+    private boolean isPlaying = false, combatLogged = false, shopOpened = false, loggerDied = false, enteringRealm = false;
     @Getter
     String ipAddress, hearthstone;
 
+    @Getter
+    @Setter
+    private KarmaHandler.EnumPlayerAlignments alignment;
 
-    private List<String> friendsList = Lists.newArrayList(), ignored = Lists.newArrayList();
+    @Getter
+    @Setter
+    private int alignmentTime = 0;
+
+    @Getter
+    @Setter
+    private Location storedLocation;
+
+    private List<Integer> friendsList = Lists.newArrayList(), ignored = Lists.newArrayList(), pending = Lists.newArrayList(), achievements = Lists.newArrayList();
 
 
     public PlayerWrapper(UUID uuid) {
@@ -118,13 +129,40 @@ public class PlayerWrapper {
                 this.accountID = result.getInt("users.account_id");
                 this.isPlaying = result.getBoolean("users.is_online");
                 this.shardPlayingOn = result.getString("users.currentShard");
-                int characterID = result.getInt("characters.character_id");
+                this.characterID = result.getInt("characters.character_id");
+                this.health = result.getInt("characters.health");
+                this.level = result.getInt("characters.level");
                 this.loadBanks(result);
                 this.loadPlayerPendingInventory(result);
                 this.loadPlayerPendingEquipment(result);
+                this.loadMuleInventory(result);
+                this.loadLocation(result);
+
+
+                this.lastLogin = result.getLong("users.last_login");
+                this.lastLogout = result.getLong("users.last_logout");
+                this.lastShardTransfer = result.getLong("users.last_shard_transfer");
 
                 this.playerStats = new PlayerStats(characterID);
                 this.playerStats.extractData(result);
+
+                this.ecash = result.getInt("users.ecash");
+                this.lastFreeEcash = result.getLong("users.last_free_ecash");
+                this.gems = result.getInt("characters.gems");
+                this.experience = result.getInt("characters.experience");
+
+                //String activeMount, activePet, activeTrail, activeMountSkin;
+                this.activeMount = result.getString("characters.activeMount");
+                this.activePet = result.getString("characters.activeMount");
+                this.activeTrail = result.getString("characters.activeMount");
+                this.activeMountSkin = result.getString("characters.activeMount");
+                this.questData = result.getString("characters.questData");
+                this.shopLevel = result.getInt("characters.shop_level");
+                this.storedFoodLevel = result.getInt("characters.foodLevel");
+                this.combatLogged = result.getBoolean("characters.combatLogged");
+
+
+
                 if (callback != null)
                     callback.accept(this);
             }
@@ -132,6 +170,26 @@ public class PlayerWrapper {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @SneakyThrows
+    private void loadLocation(ResultSet set) {
+        String locString = set.getString("characters.location");
+        //These coords are Cyren Bank. This is what it will use if there is any trouble parsing.
+        int x = -371;
+        int y = 83;
+        int z = 340;
+
+        try {
+            String[] locArray = locString.split(",");
+            x = Integer.parseInt(locArray[0]);
+            y = Integer.parseInt(locArray[1]);
+            z = Integer.parseInt(locArray[2]);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        this.storedLocation = new Location(Bukkit.getWorlds().get(0),x,y,z);
     }
 
     public void setPlaying(boolean playing) {
@@ -161,8 +219,6 @@ public class PlayerWrapper {
             CompletableFuture.runAsync(() -> saveData(false), SQL_EXECUTOR_SERVICE);
             return;
         }
-
-
 
 
         if (callback != null)
@@ -221,9 +277,29 @@ public class PlayerWrapper {
 
     }
 
+    @SneakyThrows
+    public void loadMuleInventory(ResultSet set) {
+        String invString = set.getString("characters.mule_storage");
+        muleLevel = set.getInt("characters.mule_level");
+        if (muleLevel > 3) {
+            muleLevel = 3;
+        }
+        MuleTier tier = MuleTier.getByTier(muleLevel);
+        Inventory muleInv = null;
+        if (tier != null) {
+            muleInv = Bukkit.createInventory(null, tier.getSize(), "Mule Storage");
+            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+                //Make sure the inventory is as big as we need
+                muleInv = ItemSerialization.fromString(invString, tier.getSize());
+            }
+        }
+        if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
+            MountUtils.inventories.put(uuid, muleInv);
+    }
+
     private String getEquipmentString(Player player) {
         Inventory toSave = Bukkit.createInventory(null, 9);
-        for(int index = 0; index < 5; index++) {
+        for (int index = 0; index < 5; index++) {
             ItemStack equipment = player.getEquipment().getArmorContents()[index];
             toSave.getContents()[index] = equipment;
         }
@@ -238,8 +314,8 @@ public class PlayerWrapper {
     }
 
     public void loadPlayerArmor(Player player) {
-        if(pendingArmor == null) return;
-        for(int index = 0; index < 5; index++) {
+        if (pendingArmor == null) return;
+        for (int index = 0; index < 5; index++) {
             //We are doing 5 for the new shield slot.
             ItemStack current = pendingArmor.getContents()[index];
             player.getEquipment().getArmorContents()[index] = current;
