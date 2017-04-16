@@ -25,6 +25,7 @@ import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
@@ -856,7 +857,8 @@ public class GameAPI {
 
         // MISC
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.CURRENT_FOOD.getKey(), player.getFoodLevel()))));
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
+//        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
+
 
         KarmaHandler.getInstance().saveToMongo(player);
 
@@ -1044,6 +1046,7 @@ public class GameAPI {
             return;
         }
         Player player = Bukkit.getPlayer(uuid);
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(uuid);
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
@@ -1154,12 +1157,13 @@ public class GameAPI {
 
         });
 
-        CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
-        currencyTab.loadCurrencyTab(tab -> {
-            if (tab.hasAccess)
-                Bukkit.getLogger().info("Loaded currency tab for " + player.getName());
-        });
-        BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
+        //Old currency tab loading..
+//        CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
+//        currencyTab.loadCurrencyTab(tab -> {
+//            if (tab.hasAccess)
+//                Bukkit.getLogger().info("Loaded currency tab for " + player.getName());
+//        });
+//        BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
 
         String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
         int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
@@ -1185,7 +1189,8 @@ public class GameAPI {
                     Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
+            playerWrapper.setFirstLogin(System.currentTimeMillis());
+//            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
             //sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
@@ -1350,12 +1355,14 @@ public class GameAPI {
         //Unfinished, correct way to remove it was never implemented. Should be after 3 PvP attacks.
 
         // Free E-Cash
-        int freeEcash = (int) (Long.valueOf(DatabaseAPI.getInstance().getData(EnumData.FREE_ECASH, uuid).toString()) / 1000);
+        int freeEcash = (int) (playerWrapper.getLastFreeEcash() / 1000);
         int currentTime = (int) (System.currentTimeMillis() / 1000);
         if (currentTime - freeEcash >= 86400) {
             int ecashReward = Utils.randInt(10, 15);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
+            playerWrapper.setLastFreeEcash(System.currentTimeMillis());
+            playerWrapper.setEcash(playerWrapper.getEcash() + ecashReward);
+//            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
+//            DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
             player.sendMessage(new String[]{
                     ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
                     ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by voting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://dungeonrealms.net/vote"
@@ -1363,9 +1370,12 @@ public class GameAPI {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
         }
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
+        playerWrapper.setUsername(player.getName());
+//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
+        playerWrapper.setShardPlayingOn(DungeonRealms.getInstance().bungeeName);
+        playerWrapper.setPlaying(true);
+//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();

@@ -12,6 +12,7 @@ import net.dungeonrealms.common.game.database.concurrent.query.SingleUpdateQuery
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.GameChat;
@@ -112,13 +113,16 @@ public class CommandEss extends BaseCommand {
                                 if (access) {
                                     online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
                                 }
-                                CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(online.getUniqueId());
+
+                                PlayerWrapper plWrapper = PlayerWrapper.getPlayerWrapper(online);
+                                CurrencyTab tab = plWrapper.getCurrencyTab();
                                 if (tab != null) {
                                     tab.hasAccess = access;
                                 } else if (access) {
                                     tab = new CurrencyTab(online.getUniqueId());
                                     tab.loadCurrencyTab(null);
-                                    BankMechanics.getInstance().getCurrencyTab().put(online.getUniqueId(), tab);
+
+                                    plWrapper.setCurrencyTab(tab);
                                 }
 
                             }

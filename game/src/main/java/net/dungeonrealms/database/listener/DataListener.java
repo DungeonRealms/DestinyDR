@@ -14,10 +14,22 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class DataListener implements Listener {
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerWrapper wrapper = new PlayerWrapper(event.getUniqueId());
         PlayerWrapper.setWrapper(event.getUniqueId(), wrapper);
+        wrapper.loadPunishment(false);
+
+        if(wrapper.isBanned()) {
+            //This will never get called. It will catch them in the lobby instead.
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.RED.toString()
+
+                    + " is banned. Your ban expires in " + ChatColor.UNDERLINE.toString() + wrapper.getTimeWhenBanExpires() + "." +
+                    "\n\n" + ChatColor.RED.toString()
+                    + "You were banned for:\n" + ChatColor.UNDERLINE.toString() + wrapper.getBanReason());
+            return;
+        }
         wrapper.loadData(false);
 
         if(wrapper.isPlaying()) {
@@ -31,6 +43,7 @@ public class DataListener implements Listener {
         }
     }
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent event) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
@@ -39,6 +52,7 @@ public class DataListener implements Listener {
         wrapper.loadPlayerArmor(event.getPlayer());
     }
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());

@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 
-public class PlayerStats extends LoadableData {
+public class PlayerStats implements LoadableData, SaveableData {
 
     @Getter
     private int characterID;
@@ -64,10 +64,10 @@ public class PlayerStats extends LoadableData {
     }
 
     public String getUpdateStatement(){
-        return String.format("UPDATE statistics SET players_kills = %s, lawful_kills = %s, unlawful_kills = %s, deaths = %s, " +
-                "monster_kills_t1 = %s, monster_kills_t2 = %s, monster_kills_t3 = %s, monster_kills_t4 = %s, monster_kills_t5 = %s," +
-                "boss_kills_mayel = %s, boss_kills_burick = %s, boss_kills_infernalAbyss = %s, loot_opened = %s, duels_won = %s, duels_lost = %s, ore_mined = %s," +
-                "fish_caught = %s, orbs_used = %s, time_played = %s, successful_enchants = %s, failed_enchants = %s, ecash_spent = %s, gems_earned = %s, gems_spent = %s " +
+        return String.format("UPDATE statistics SET players_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
+                "monster_kills_t1 = '%s', monster_kills_t2 = '%s', monster_kills_t3 = '%s', monster_kills_t4 = '%s', monster_kills_t5 = '%s'," +
+                "boss_kills_mayel = '%s', boss_kills_burick = '%s', boss_kills_infernalAbyss = '%s', loot_opened = '%s', duels_won = '%s', duels_lost = '%s', ore_mined = '%s'," +
+                "fish_caught = '%s', orbs_used = '%s', time_played = '%s', successful_enchants = '%s', failed_enchants = '%s', ecash_spent = '%s', gems_earned = '%s', gems_spent = '%s' " +
                 "WHERE character_id = '%s';",
                 getPlayerKills(), getLawfulKills(), getUnlawfulKills(), getDeaths(),
                 getT1MonsterKills(), getT2MonsterKills(), getT3MonsterKills(), getT4MonsterKills(), getT5MonsterKills(),

@@ -14,6 +14,7 @@ import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -286,7 +287,8 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             return;
         }
 
-        long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
+        long lastShardTransfer = PlayerWrapper.getPlayerWrapper(player).getLastShardTransfer();
+//        long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
         if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
             if (GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {

@@ -200,6 +200,7 @@ public class ShardSelector extends AbstractMenu {
         }
         
         try{
+            //Not sure what to do with this? Manually pull from db or something?
         	long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
         
         	if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {

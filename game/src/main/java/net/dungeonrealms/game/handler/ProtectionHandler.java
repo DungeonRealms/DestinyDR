@@ -3,6 +3,7 @@ package net.dungeonrealms.game.handler;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.ChatColor;
@@ -39,19 +40,20 @@ public class ProtectionHandler implements GenericMechanic, Listener {
 
     }
 
-    public void handleLogin(Player player) {
-        long firstJoin = (long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, player.getUniqueId());
-        if ((System.currentTimeMillis() - firstJoin) < (24 * 3600000)) {
-            if ((int) DatabaseAPI.getInstance().getData(EnumData.PLAYER_KILLS, player.getUniqueId()) == 0) {
-                //Still under 24 hour newbie protection.
-                long hours = (System.currentTimeMillis() - firstJoin) / 3600000;
-                int remainingHours = 24 - (int) hours;
-                player.sendMessage("");
-                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
-                player.setMetadata("newbie_protection", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-            }
-        }
-    }
+//    public void handleLogin(Player player) {
+//        PlayerWrapper
+//        long firstJoin = (long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, player.getUniqueId());
+//        if ((System.currentTimeMillis() - firstJoin) < (24 * 3600000)) {
+//            if ((int) DatabaseAPI.getInstance().getData(EnumData.PLAYER_KILLS, player.getUniqueId()) == 0) {
+//                Still under 24 hour newbie protection.
+//                long hours = (System.currentTimeMillis() - firstJoin) / 3600000;
+//                int remainingHours = 24 - (int) hours;
+//                player.sendMessage("");
+//                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
+//                player.setMetadata("newbie_protection", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+//            }
+//        }
+//    }
 
     public void removePlayerProtection(Player player) {
         if (player.hasMetadata("newbie_protection")) {

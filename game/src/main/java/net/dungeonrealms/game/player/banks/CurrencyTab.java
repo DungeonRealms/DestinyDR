@@ -45,6 +45,23 @@ public class CurrencyTab {
         this.owner = owner;
     }
 
+    public CurrencyTab deserializeCurrencyTab(String data) {
+        if (data == null || !data.contains(":")) return null;
+        String[] args = data.split(":");
+
+        try {
+            for (int i = 0; i < ScrapTier.values().length; i++) {
+                ScrapTier tier = ScrapTier.values()[i];
+                scrapStorage.put(tier, Integer.parseInt(args[i]));
+            }
+
+        } catch (Exception e) {
+            Bukkit.getLogger().info("Unable to parse currency tab for " + owner.toString());
+            e.printStackTrace();
+        }
+        return this;
+    }
+
     public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
         if (scrapStorage.isEmpty()) {
             Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {

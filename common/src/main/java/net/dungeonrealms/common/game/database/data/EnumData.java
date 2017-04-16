@@ -5,63 +5,62 @@ package net.dungeonrealms.common.game.database.data;
  */
 public enum EnumData {
 
-    UUID("info.uuid"), //
-    USERNAME("info.username"), //
-    HEALTH("info.health"), //
-    FIRST_LOGIN("info.firstLogin"), //
-    LAST_LOGIN("info.lastLogin"), //
-    LAST_LOGOUT("info.lastLogout"), //
-    FREE_ECASH("info.freeEcash"), //
-    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //
-    LEVEL("info.netLevel"), //
-    IP_ADDRESS("info.ipAddress"), //
-    IS_PLAYING("info.isPlaying"), //
-    IS_COMBAT_LOGGED("info.isCombatLogged"), //
-    EXPERIENCE("info.experience"),//
-    GEMS("info.gems"),//
-    HEARTHSTONE("info.hearthstone"),//
-    ECASH("info.ecash"),//
-    FRIENDS("info.friends"),//
-    IGNORED("info.ignored"),//
-    ALIGNMENT("info.alignment"),//
-    ALIGNMENT_TIME("info.alignmentTime"),//
-    CURRENT_LOCATION("info.currentLocation"),//
-    HASSHOP("info.shopOpen"),//
-    SHOPLEVEL("info.shopLevel"),//
-    MULELEVEL("info.muleLevel"),//
-    CURRENT_FOOD("info.foodLevel"),//
-    LOGGERDIED("info.loggerdied"),//
-    ENTERINGREALM("info.enteringrealm"),//
-    CURRENTSERVER("info.current"),//
-    ACTIVE_MOUNT("info.activemount"),//
-    ACTIVE_PET("info.activepet"),//
-    ACTIVE_TRAIL("info.activetrail"),//
-    ACTIVE_MOUNT_SKIN("info.activemountskin"),//
-    QUEST_DATA("info.questData"),//
+    UUID("info.uuid"), //Loaded
+    USERNAME("info.username"), //Loaded
+//    HEALTH("info.health"), // Loaded
+    FIRST_LOGIN("info.firstLogin"), //Loaded
+    LAST_LOGIN("info.lastLogin"), //Loaded
+    LAST_LOGOUT("info.lastLogout"), //Loaded
+//    FREE_ECASH("info.freeEcash"), //Loaded
+    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
+    LEVEL("info.netLevel"), //Loaded
+    IP_ADDRESS("info.ipAddress"), //Loaded
+    IS_PLAYING("info.isPlaying"), //Loaded
+    IS_COMBAT_LOGGED("info.isCombatLogged"), //Loaded
+    EXPERIENCE("info.experience"),//Loaded
+    GEMS("info.gems"),//Loaded
+    HEARTHSTONE("info.hearthstone"),//Loaded
+    ECASH("info.ecash"),//Loaded
+    FRIENDS("info.friends"),//Loaded
+    IGNORED("info.ignored"),//Loaded
+    ALIGNMENT("info.alignment"),//Loaded
+    ALIGNMENT_TIME("info.alignmentTime"),//Loaded
+    CURRENT_LOCATION("info.currentLocation"),//Loaded
+    HASSHOP("info.shopOpen"),//Loaded
+    SHOPLEVEL("info.shopLevel"),//Loaded
+    MULELEVEL("info.muleLevel"),//Loaded
+    CURRENT_FOOD("info.foodLevel"),//Loaded
+    LOGGERDIED("info.loggerdied"),//Loaded
+    ENTERINGREALM("info.enteringrealm"),//Loaded
+    CURRENTSERVER("info.current"),//Loaded
+    ACTIVE_MOUNT("info.activemount"),//Loaded
+    ACTIVE_PET("info.activepet"),//Loaded
+    ACTIVE_TRAIL("info.activetrail"),//Loaded
+    ACTIVE_MOUNT_SKIN("info.activemountskin"),//Loaded
+    QUEST_DATA("info.questData"),//Loaded
 
-    GEMS_COUNT("info.gemsCount"),
+//    GEMS_COUNT("info.gemsCount"),
 
-    ACHIEVEMENTS("collectibles.achievements"),
+    ACHIEVEMENTS("collectibles.achievements"),//No idea how we are going to do this one. Started to look into it but didn't really see
 
-    LOGIN_PIN("rank.loginCode"),
-    RANK("rank.rank"),
-    RANK_SUB_EXPIRATION("rank.expiration_date"),
-    PURCHASE_HISTORY("rank.purchaseHistory"),
+    LOGIN_PIN("rank.loginCode"), //Not taking this over. This will be replaced with 2FA.
+    RANK("rank.rank"), // Loaded
+    RANK_SUB_EXPIRATION("rank.expiration_date"), // Loaded
 
-    CURRENCY_TAB_ACCESS("currencytab.access"),
-    CURRENCY_TAB_T1("currencytab.t1"),
-    CURRENCY_TAB_T2("currencytab.t2"),
-    CURRENCY_TAB_T3("currencytab.t3"),
-    CURRENCY_TAB_T4("currencytab.t4"),
-    CURRENCY_TAB_T5("currencytab.t5"),
+    //Converted to CurrencyTab in PlayerWrapper.
+    CURRENCY_TAB_ACCESS("currencytab.access"),//Loaded
+    CURRENCY_TAB_T1("currencytab.t1"),//Loaded
+    CURRENCY_TAB_T2("currencytab.t2"),//Loaded
+    CURRENCY_TAB_T3("currencytab.t3"),//Loaded
+    CURRENCY_TAB_T4("currencytab.t4"),//Loaded
+    CURRENCY_TAB_T5("currencytab.t5"),//Loaded
 
-    INVENTORY_COLLECTION_BIN("inventory.collection_bin"),
-    INVENTORY_MULE("inventory.mule"),
-    INVENTORY_STORAGE("inventory.storage"),
-    INVENTORY("inventory.player"),
-    INVENTORY_LEVEL("inventory.level"),
-    ARMOR("inventory.armor"),
-    ITEMUIDS("inventory.itemuids"),
+    INVENTORY_COLLECTION_BIN("inventory.collection_bin"), //Loaded
+    INVENTORY_MULE("inventory.mule"), //Loaded
+    INVENTORY_STORAGE("inventory.storage"), //Loaded (this is the bank)
+    INVENTORY("inventory.player"), //Loaded
+    INVENTORY_LEVEL("inventory.level"), //Loaded (this is bank size)
+    ARMOR("inventory.armor"), //Loaded
 
     GUILD("info.guild"),
 
@@ -72,86 +71,87 @@ public enum EnumData {
     LAST_NOTES_SIZE("notices.lastBuildNotesSize"),
     LAST_VOTE("notices.lastVote"),
 
-    BANNED_TIME("punishments.banned"),
-    MUTE_TIME("punishments.muted"),
-    BANNED_REASON("punishments.bannedReason"),
-    MUTE_REASON("punishments.muteReason"),
+    BANNED_TIME("punishments.banned"), //Loaded
+    MUTE_TIME("punishments.muted"), //Loaded
+    BANNED_REASON("punishments.bannedReason"),//Loaded
+    MUTE_REASON("punishments.muteReason"),//Loaded
 
-    REALM_UPLOAD("realm.uploading"),
-    REALM_UPGRADE("realm.upgrading"),
-    REALM_TITLE("realm.title"),
-    REALM_LAST_RESET("realm.lastReset"),
-    REALM_TIER("realm.tier"),
+    REALM_UPLOAD("realm.uploading"), //Loaded
+    REALM_UPGRADE("realm.upgrading"),//Loaded
+    REALM_TITLE("realm.title"),//Loaded
+    REALM_LAST_RESET("realm.lastReset"),//Loaded
+    REALM_TIER("realm.tier"),//Loaded
 
-    MOUNTS("collectibles.mounts"),
-    PETS("collectibles.pets"),
-    BUFFS("collectibles.buffs"),
-    PARTICLES("collectibles.particles"),
-    MOUNT_SKINS("collectibles.mountskins"),
+    MOUNTS("collectibles.mounts"),// Loaded
+    PETS("collectibles.pets"),// Loaded
+    BUFFS("collectibles.buffs"), //never used/
+    PARTICLES("collectibles.particles"),// Loaded
+    MOUNT_SKINS("collectibles.mountskins"),//Loaded
 
-    TOGGLE_DEBUG("toggles.debug"),
-    TOGGLE_TRADE("toggles.trade"),
-    TOGGLE_TRADE_CHAT("toggles.tradeChat"),
-    TOGGLE_GLOBAL_CHAT("toggles.globalChat"),
-    TOGGLE_RECEIVE_MESSAGE("toggles.receiveMessage"),
-    TOGGLE_PVP("toggles.pvp"),
-    TOGGLE_DUEL("toggles.duel"),
-    TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
-    TOGGLE_SOUNDTRACK("toggles.soundtrack"),
-    TOGGLE_TIPS("toggles.tips"),
-    TOGGLE_GLOW("toggles.glow"),
-    TOGGLE_DAMAGE_INDICATORS("toggles.damageIndicators"),
-    TOGGLE_VANISH("toggles.vanish"), // for GMs only
+    TOGGLE_DEBUG("toggles.debug"),//Loaded
+    TOGGLE_TRADE("toggles.trade"),//Loaded
+    TOGGLE_TRADE_CHAT("toggles.tradeChat"),//Loaded
+    TOGGLE_GLOBAL_CHAT("toggles.globalChat"),//Loaded
+    TOGGLE_RECEIVE_MESSAGE("toggles.receiveMessage"),//Loaded
+    TOGGLE_PVP("toggles.pvp"),//Loaded
+    TOGGLE_DUEL("toggles.duel"),//Loaded
+    TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),//Loaded
+    TOGGLE_SOUNDTRACK("toggles.soundtrack"),//Loaded
+    TOGGLE_TIPS("toggles.tips"),//Loaded
+    TOGGLE_GLOW("toggles.glow"),//Loaded
+    TOGGLE_DAMAGE_INDICATORS("toggles.damageIndicators"),//Loaded
+    TOGGLE_VANISH("toggles.vanish"), // Loaded
 
-    PORTAL_SHARDS_T1("portalKeyShards.tier1"),
-    PORTAL_SHARDS_T2("portalKeyShards.tier2"),
-    PORTAL_SHARDS_T3("portalKeyShards.tier3"),
-    PORTAL_SHARDS_T4("portalKeyShards.tier4"),
-    PORTAL_SHARDS_T5("portalKeyShards.tier5"),
+    //Gotta go cut grass rip
+    PORTAL_SHARDS_T1("portalKeyShards.tier1"),//Loaded
+    PORTAL_SHARDS_T2("portalKeyShards.tier2"),//Loaded
+    PORTAL_SHARDS_T3("portalKeyShards.tier3"),//Loaded
+    PORTAL_SHARDS_T4("portalKeyShards.tier4"),//Loaded
+    PORTAL_SHARDS_T5("portalKeyShards.tier5"),//Loaded
 
-    PLAYER_KILLS("stats.player_kills"),//
-    LAWFUL_KILLS("stats.lawful_kills"),//
-    UNLAWFUL_KILLS("stats.unlawful_kills"),//
-    DEATHS("stats.deaths"),//
-    T1_MOB_KILLS("stats.monster_kills_t1"),//
-    T2_MOB_KILLS("stats.monster_kills_t2"),//
-    T3_MOB_KILLS("stats.monster_kills_t3"),//
-    T4_MOB_KILLS("stats.monster_kills_t4"),//
-    T5_MOB_KILLS("stats.monster_kills_t5"),//
-    BOSS_KILLS_MAYEL("stats.boss_kills_mayel"),//
-    BOSS_KILLS_BURICK("stats.boss_kills_burick"),//
-    BOSS_KILLS_INFERNALABYSS("stats.boss_kills_infernalAbyss"),//
-    LOOT_OPENED("stats.loot_opened"),//
-    DUELS_WON("stats.duels_won"),//
-    DUELS_LOST("stats.duels_lost"),//
-    ORE_MINED("stats.ore_mined"),//
-    FISH_CAUGHT("stats.fish_caught"),//
-    ORBS_USED("stats.orbs_used"),//
-    TIME_PLAYED("stats.time_played"),//
-    SUCCESSFUL_ENCHANTS("stats.successful_enchants"),//
-    FAILED_ENCHANTS("stats.failed_enchants"),//
-    ECASH_SPENT("stats.ecash_spent"),//
-    GEMS_EARNED("stats.gems_earned"),//
-    GEMS_SPENT("stats.gems_spent"),//
+    PLAYER_KILLS("stats.player_kills"),//Loaded
+    LAWFUL_KILLS("stats.lawful_kills"),//Loaded
+    UNLAWFUL_KILLS("stats.unlawful_kills"),//Loaded
+    DEATHS("stats.deaths"),//Loaded
+    T1_MOB_KILLS("stats.monster_kills_t1"),//Loaded
+    T2_MOB_KILLS("stats.monster_kills_t2"),//Loaded
+    T3_MOB_KILLS("stats.monster_kills_t3"),//Loaded
+    T4_MOB_KILLS("stats.monster_kills_t4"),//Loaded
+    T5_MOB_KILLS("stats.monster_kills_t5"),//Loaded
+    BOSS_KILLS_MAYEL("stats.boss_kills_mayel"),//Loaded
+    BOSS_KILLS_BURICK("stats.boss_kills_burick"),//Loaded
+    BOSS_KILLS_INFERNALABYSS("stats.boss_kills_infernalAbyss"),//Loaded
+    LOOT_OPENED("stats.loot_opened"),//Loaded
+    DUELS_WON("stats.duels_won"),//Loaded
+    DUELS_LOST("stats.duels_lost"),//Loaded
+    ORE_MINED("stats.ore_mined"),//Loaded
+    FISH_CAUGHT("stats.fish_caught"),//Loaded
+    ORBS_USED("stats.orbs_used"),//Loaded
+    TIME_PLAYED("stats.time_played"),//Loaded
+    SUCCESSFUL_ENCHANTS("stats.successful_enchants"),//Loaded
+    FAILED_ENCHANTS("stats.failed_enchants"),//Loaded
+    ECASH_SPENT("stats.ecash_spent"),//Loaded
+    GEMS_EARNED("stats.gems_earned"),//Loaded
+    GEMS_SPENT("stats.gems_spent"),//Loaded
 
 
     /*
     Player Attributes
      */
     //Adds Armor, Block Chance, Axe Damage and Polearm Damage
-    STRENGTH("attributes.strength"),
+    STRENGTH("attributes.strength"), //Loaded
     //Add DPS%, Dodge Chance, Armor Penetration and Bow Damage
-    DEXTERITY("attributes.dexterity"),
+    DEXTERITY("attributes.dexterity"),//Loaded
     //Adds Energy Regeneration, elemental damage, critical hit chance and staff damamge.
-    INTELLECT("attributes.intellect"),
+    INTELLECT("attributes.intellect"),//Loaded
     //Adds Health, hp regen, elemental resistance, and sword damage.
-    VITALITY("attributes.vitality"),
+    VITALITY("attributes.vitality"),//Loaded
 
-    RESETS("attributes.resets"),
+    RESETS("attributes.resets"),//Loaded
 
-    FREERESETS("attributes.freeresets"),
+    FREERESETS("attributes.freeresets"),//Loaded
 
-    BUFFER_POINTS("attributes.bufferPoints");
+    BUFFER_POINTS("attributes.bufferPoints");//Loaded
 
 
     private String key;

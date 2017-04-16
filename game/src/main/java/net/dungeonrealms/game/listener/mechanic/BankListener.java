@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
@@ -794,32 +795,35 @@ public class BankListener implements Listener {
         if (CurrencyTab.isEnabled()) {
             List<String> currencyLore = Lists.newArrayList();
 
-            CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(uuid);
-            if (tab != null && tab.hasAccess) {
-                currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
-                currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");
-                currencyLore.add("");
-                currencyLore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Stored");
-                currencyLore.add(ChatColor.GREEN.toString() + tab.getTotalScrapStored() + ChatColor.BOLD + " / " + ChatColor.GREEN + "500");
-                currencyLore.add("");
-                currencyLore.add(ChatColor.GRAY + "Click to view your Scrap Tab.");
-            } else {
-                currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
-                currencyLore.add("");
-                currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
-                currencyLore.add("");
-                currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
-                currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+            PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(uuid);
+
+            if(playerWrapper != null) {
+                CurrencyTab tab = playerWrapper.getCurrencyTab();
+                if (tab != null && tab.hasAccess) {
+                    currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+                    currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");
+                    currencyLore.add("");
+                    currencyLore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Stored");
+                    currencyLore.add(ChatColor.GREEN.toString() + tab.getTotalScrapStored() + ChatColor.BOLD + " / " + ChatColor.GREEN + "500");
+                    currencyLore.add("");
+                    currencyLore.add(ChatColor.GRAY + "Click to view your Scrap Tab.");
+                } else {
+                    currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+                    currencyLore.add("");
+                    currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
+                    currencyLore.add("");
+                    currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
+                    currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+                }
+
+                ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))
+                        .setName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Tab").setLore(currencyLore).build();
+
+                NBTWrapper wrapper = new NBTWrapper(currencyTab);
+                wrapper.setString("scrapTab", "true");
+                wrapper.setString("ench", "");
+                inv.setItem(1, wrapper.build());
             }
-
-            ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))
-                    .setName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Tab").setLore(currencyLore).build();
-
-            NBTWrapper wrapper = new NBTWrapper(currencyTab);
-            wrapper.setString("scrapTab", "true");
-            wrapper.setString("ench", "");
-            inv.setItem(1, wrapper.build());
-
         }
 
         ItemMeta meta = bankItem.getItemMeta();

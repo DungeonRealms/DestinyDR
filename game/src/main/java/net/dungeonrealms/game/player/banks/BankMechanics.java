@@ -39,8 +39,8 @@ public class BankMechanics implements GenericMechanic {
 
     public static HashMap<String, ItemStack> shopPricing = new HashMap<>();
 
-    @Getter
-    public Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
+//    @Getter
+//    public Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
     private static BankMechanics instance = null;
 
     public static BankMechanics getInstance() {
