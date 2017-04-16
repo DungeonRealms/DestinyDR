@@ -78,12 +78,10 @@ public class ItemInventoryEvent extends FunctionalItemEvent {
 		//Update the result.
 		if (getUsage() == ItemUsage.INVENTORY_PICKUP_ITEM || getUsage() == ItemUsage.INVENTORY_SWAP_PICKUP) {
 			event.setCurrentItem(getResultItem());
-			if(getUsage() == ItemUsage.INVENTORY_SWAP_PICKUP)
-				getPlayer().setItemOnCursor(getSwappedItem());
-		} else {
 			getPlayer().setItemOnCursor(getSwappedItem());
-			if(getUsage() == ItemUsage.INVENTORY_SWAP_PLACE)
-				event.setCurrentItem(getSwappedItem());
+		} else {
+			event.setCurrentItem(getSwappedItem());
+			getPlayer().setItemOnCursor(getResultItem());
 		}
 		
 		if (isCancelled())

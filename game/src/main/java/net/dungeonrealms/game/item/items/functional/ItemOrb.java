@@ -61,6 +61,7 @@ public class ItemOrb extends FunctionalItem {
         ItemStack oldItem = evt.getSwappedItem().clone();
         
         ItemGear gear = (ItemGear)PersistentItem.constructItem(oldItem);
+        int oldOrbSize = gear.getAttributes().getAttributes().size();
         gear.rollStats(true);
         ItemStack newItem = gear.generateItem();
         evt.setSwappedItem(newItem);
@@ -68,7 +69,7 @@ public class ItemOrb extends FunctionalItem {
         //  ORB PARTICLES  //
         
         gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
-        if (oldItem.getItemMeta().getLore().size() < newItem.getItemMeta().getLore().size()) {
+        if (oldOrbSize < gear.getAttributes().getAttributes().size()) {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, player.getLocation().add(0, 2.5, 0),
             		new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 100);

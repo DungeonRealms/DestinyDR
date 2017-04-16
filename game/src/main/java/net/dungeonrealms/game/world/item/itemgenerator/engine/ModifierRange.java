@@ -150,8 +150,8 @@ public class ModifierRange implements Cloneable {
 	public void save(NBTTagCompound tag, String tagName) {
 		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
 			NBTTagList range = new NBTTagList();
-			range.a(0, new NBTTagInt(getValLow()));
-			range.a(1, new NBTTagInt(getValHigh()));
+			range.add(new NBTTagInt(getValLow()));
+			range.add(new NBTTagInt(getValHigh()));
 			tag.set(tagName, range);
 		} else {
 			tag.setInt(tagName, getValue());

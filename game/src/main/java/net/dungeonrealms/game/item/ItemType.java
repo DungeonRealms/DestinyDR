@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.item;
 
-import java.util.Random;
-
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ecash.*;
@@ -16,11 +14,16 @@ import lombok.Getter;
 public enum ItemType {
 
 	//  COMBAT  //
-	MELEE("melee", ItemWeaponMelee.class, GeneratedItemType.SWORD, GeneratedItemType.AXE),
+	SWORD("sword", ItemWeaponSword.class, GeneratedItemType.SWORD),
+	AXE("axe", ItemWeaponAxe.class, GeneratedItemType.AXE),
 	POLEARM("polearm", ItemWeaponPolearm.class, GeneratedItemType.POLEARM),
 	STAFF("staff", ItemWeaponStaff.class, GeneratedItemType.STAFF),
 	BOW("bow", ItemWeaponBow.class, GeneratedItemType.BOW),
-	ARMOR("armor", ItemArmor.class, GeneratedItemType.HELMET, GeneratedItemType.CHESTPLATE, GeneratedItemType.LEGGINGS, GeneratedItemType.BOOTS),
+	
+	HELMET("helmet", ItemArmorHelmet.class, GeneratedItemType.HELMET),
+	CHESTPLATE("chestplate", ItemArmorChestplate.class, GeneratedItemType.CHESTPLATE),
+	LEGGINGS("leggings", ItemArmorLeggings.class, GeneratedItemType.LEGGINGS),
+	BOOTS("boots", ItemArmorBoots.class, GeneratedItemType.BOOTS),
 	
 	//  PROFESSION TOOLS  //
 	PICKAXE("pick", ItemPickaxe.class, GeneratedItemType.PICKAXE),
@@ -76,21 +79,23 @@ public enum ItemType {
 	
 	@Getter private final String NBT;
 	@Getter private final Class<? extends PersistentItem> itemClass;
-	private GeneratedItemType[] generatedType;
+	@Getter private GeneratedItemType type;
 	
-	ItemType(String nbt, Class<? extends PersistentItem> cls, GeneratedItemType... gType) {
-		this.NBT = nbt;
-		this.itemClass = cls;
-		this.generatedType = gType;
+	ItemType(String nbt, Class<? extends PersistentItem> cls) {
+		this(nbt, cls, null);
 	}
 	
-	/**
-	 * Gets the GeneratedItemType of an item.
-	 * Will throw an error if there is no defined GeneratedItemType.
-	 */
-	public GeneratedItemType getType() {
-		assert this.generatedType != null && this.generatedType.length > 0;
-		return this.generatedType[new Random().nextInt(this.generatedType.length)];
+	ItemType(String nbt, Class<? extends PersistentItem> cls, GeneratedItemType gType) {
+		this.NBT = nbt;
+		this.itemClass = cls;
+		this.type = gType;
+	}
+	
+	public static ItemType getByName(String name) {
+		for (ItemType type : values())
+			if (name.equalsIgnoreCase(name))
+				return type;
+		return null;
 	}
 	
 	public static ItemType getType(String type) {

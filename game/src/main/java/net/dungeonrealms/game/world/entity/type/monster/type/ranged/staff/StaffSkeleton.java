@@ -1,18 +1,11 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff;
 
-import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
-import net.dungeonrealms.game.world.item.Item.ItemRarity;
-import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.minecraft.server.v1_9_R2.*;
 
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Field;

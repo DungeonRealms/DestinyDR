@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
 import lombok.Getter;
-import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
+import net.dungeonrealms.game.item.items.core.ItemWeaponSword;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.inventory.ItemStack;
+
 /**
  * Created by Kieran Quigley (Proxying) on 21-Jun-16.
  */
@@ -39,7 +39,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
 
     @Override
     public ItemStack getWeapon() {
-        return makeItem(new ItemWeaponMelee().setType(GeneratedItemType.SWORD));
+    	return makeItem(new ItemWeaponSword());
     }
 
     @Override

@@ -9,6 +9,8 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
@@ -24,27 +26,17 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
-import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagInt;
-import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 
 import org.bukkit.Bukkit;
@@ -104,23 +96,16 @@ public class CommandAdd extends BaseCommand {
             		ItemGenerator.saveItem(held, args[1]);
             		player.sendMessage(ChatColor.GREEN + "Saved " + args[1] + ".");
             		break;
+            	case "load":
                 case "nameditem":
-                    if (args.length == 2) {
-                        String namedItem = null;
-                        try {
-                            namedItem = args[1];
-                        } catch (Exception e) {
-                            player.sendMessage(ChatColor.RED + "Argument 2 must be a string");
-                            e.printStackTrace();
-                        }
-                        if (namedItem != null) {
-                            ItemStack itemStack = ItemGenerator.getNamedItem(namedItem);
-                            if (itemStack != null) {
-                                player.getInventory().addItem(itemStack);
-                            }
-                        }
+                    if (args.length > 1) {
+                        String namedItem = args[1];
+                        ItemStack itemStack = ItemGenerator.getNamedItem(namedItem);
+                        player.getInventory().addItem(itemStack);
+                        if (itemStack == null)
+                        	player.sendMessage(ChatColor.RED + "Item not found.");
                     } else {
-                        player.sendMessage(ChatColor.RED + "/ad nameitem <name>");
+                        player.sendMessage(ChatColor.RED + "/ad " + args[0] + " <name>");
                     }
                     break;
                 case "attributes":
@@ -155,52 +140,26 @@ public class CommandAdd extends BaseCommand {
                 	NewRank.setRank(player.getUniqueId(), newRank, expiry);
                 	player.sendMessage(ChatColor.GREEN + "Rank Set.");
                 	break;*/
+                case "armor":
                 case "weapon":
                 	//TODO: Attribute editor.
                     try {
-                    	ItemWeapon generator = new ItemWeapon();
-                        generator.setType(GeneratedItemType.getRandomWeapon());
+                    	CombatItem gear = args[0].equals("armor") ? new ItemArmor() : new ItemWeapon();
                         
                         if (args.length >= 2)
-                            generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
+                        	gear.setTier(ItemTier.getByTier(Integer.parseInt(args[1])));
 
                         if (args.length >= 3)
-                            generator.setType(GeneratedItemType.getByName(args[2]));
+                        	gear.setType(ItemType.valueOf(args[2].toUpperCase()));
 
                         if (args.length >= 4)
-                            generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
+                        	gear.setRarity(ItemRarity.valueOf(args[3].toUpperCase()));
                         
-                        player.getInventory().addItem(generator.generateItem());
+                        player.getInventory().addItem(gear.generateItem());
 
                     } catch (Exception ex) {
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
-                    break;
-                case "armor":
-                	//TODO: Attribute Editor.
-                    try {
-                    	ItemArmor generator = new ItemArmor();
-                    	generator.setGeneratedItemType(GeneratedItemType.getRandomArmor());
-                    	
-                        if (args.length >= 2)
-                            generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
-                        
-                        if (args.length >= 3)
-                            generator.setGeneratedItemType(GeneratedItemType.getByName(args[2]));
-                        
-                        if (args.length >= 4)
-                            generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
-                        
-                        player.getInventory().addItem(generator.generateItem());
-                        
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
-                    }
-                    break;
-                case "customitem":
-                    String name = args[1];
-                    player.getInventory().addItem(ItemGenerator.getNamedItem(name));
                     break;
                 case "particle":
                     if (args[1] != null)

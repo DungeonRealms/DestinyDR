@@ -197,7 +197,7 @@ public class EliteMobSpawner extends MobSpawner {
             EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, level, false);
             giveCustomEquipment(eliteType, entity);
 
-            ItemStack forceWeap = getWeaponType() != null ? new ItemWeapon(ItemType.getType(getWeaponType())).setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.getRandomRarity(true)).generateItem() : null;
+            ItemStack forceWeap = getWeaponType() != null ? new ItemWeapon(getWeaponType()).setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.getRandomRarity(true)).generateItem() : null;
 
             if (entity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
                 LivingEntity ent = (LivingEntity) entity.getBukkitEntity();

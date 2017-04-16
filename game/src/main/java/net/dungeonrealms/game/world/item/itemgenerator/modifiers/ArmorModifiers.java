@@ -1,9 +1,10 @@
 package net.dungeonrealms.game.world.item.itemgenerator.modifiers;
 
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -11,12 +12,10 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
 
 public class ArmorModifiers {
 	
-	private static GeneratedItemType[] ARMOR = new GeneratedItemType[] {GeneratedItemType.BOOTS, GeneratedItemType.CHESTPLATE, GeneratedItemType.LEGGINGS, GeneratedItemType.HELMET};
-
 	public class HPRegen extends ItemModifier {
 
 		public HPRegen() {
-			super(ArmorAttributeType.HEALTH_REGEN, ARMOR);
+			super(ArmorAttributeType.HEALTH_REGEN, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 5, 15)).setCantContain(ArmorModifiers.EnergyRegen.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 17, 40)).setCantContain(ArmorModifiers.EnergyRegen.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 50, 70)).setCantContain(ArmorModifiers.EnergyRegen.class));
@@ -29,7 +28,7 @@ public class ArmorModifiers {
 	public class MainArmor extends ItemModifier {
 
 		public MainArmor() {
-			super(ArmorAttributeType.ARMOR, GeneratedItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
+			super(ArmorAttributeType.ARMOR, ItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(MainDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)).setCantContain(MainDPS.class));
@@ -62,7 +61,7 @@ public class ArmorModifiers {
 	public class LeggingArmor extends ItemModifier {
 
 		public LeggingArmor() {
-			super(ArmorAttributeType.ARMOR, GeneratedItemType.LEGGINGS); // 50% chance for DPS, 50% for armor
+			super(ArmorAttributeType.ARMOR, ItemType.LEGGINGS); // 50% chance for DPS, 50% for armor
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(MainDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)).setCantContain(MainDPS.class));
@@ -95,7 +94,7 @@ public class ArmorModifiers {
 	public class HelmetsArmor extends ItemModifier {
 
 		public HelmetsArmor() {
-			super(ArmorAttributeType.ARMOR, GeneratedItemType.HELMET); // 50% chance for DPS, 50% for armor
+			super(ArmorAttributeType.ARMOR, ItemType.HELMET); // 50% chance for DPS, 50% for armor
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(OtherDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)).setCantContain(OtherDPS.class));
@@ -128,7 +127,7 @@ public class ArmorModifiers {
 	public class BootsArmor extends ItemModifier {
 
 		public BootsArmor() {
-			super(ArmorAttributeType.ARMOR, GeneratedItemType.BOOTS); // 50% chance for DPS, 50% for armor
+			super(ArmorAttributeType.ARMOR, ItemType.BOOTS); // 50% chance for DPS, 50% for armor
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(OtherDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)).setCantContain(OtherDPS.class));
@@ -161,7 +160,7 @@ public class ArmorModifiers {
 	public class MainDPS extends ItemModifier {
 
         public MainDPS() {
-            super(ArmorAttributeType.DAMAGE, GeneratedItemType.LEGGINGS, GeneratedItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
+            super(ArmorAttributeType.DAMAGE, ItemType.LEGGINGS, ItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)));
@@ -193,7 +192,7 @@ public class ArmorModifiers {
 	public class MainDPS1 extends ItemModifier {
 
         public MainDPS1() {
-            super(ArmorAttributeType.DAMAGE, GeneratedItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
+            super(ArmorAttributeType.DAMAGE, ItemType.CHESTPLATE); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)));
@@ -226,7 +225,7 @@ public class ArmorModifiers {
 	public class OtherDPS extends ItemModifier {
 
         public OtherDPS() {
-            super(ArmorAttributeType.DAMAGE, GeneratedItemType.HELMET, GeneratedItemType.BOOTS); // 50% chance for DPS, 50% for armor
+            super(ArmorAttributeType.DAMAGE, ItemType.HELMET, ItemType.BOOTS); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)));
@@ -259,7 +258,7 @@ public class ArmorModifiers {
 	public class OtherDPS1 extends ItemModifier {
 
         public OtherDPS1() {
-            super(ArmorAttributeType.DAMAGE, GeneratedItemType.BOOTS); // 50% chance for DPS, 50% for armor
+            super(ArmorAttributeType.DAMAGE, ItemType.BOOTS); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)));
@@ -292,7 +291,7 @@ public class ArmorModifiers {
 	public class ChestplateHP extends ItemModifier {
 
         public ChestplateHP() {
-            super(ArmorAttributeType.HEALTH_POINTS, GeneratedItemType.CHESTPLATE);
+            super(ArmorAttributeType.HEALTH_POINTS, ItemType.CHESTPLATE);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 10, 30 )));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 31, 60)));
@@ -325,7 +324,7 @@ public class ArmorModifiers {
 	public class LeggingsHP extends ItemModifier {
 
         public LeggingsHP() {
-            super(ArmorAttributeType.HEALTH_POINTS, GeneratedItemType.LEGGINGS);
+            super(ArmorAttributeType.HEALTH_POINTS, ItemType.LEGGINGS);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 10, 30 )));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 31, 60)));
@@ -358,7 +357,7 @@ public class ArmorModifiers {
 	public class BootsHP extends ItemModifier {
 
         public BootsHP() {
-            super(ArmorAttributeType.HEALTH_POINTS, GeneratedItemType.BOOTS);
+            super(ArmorAttributeType.HEALTH_POINTS, ItemType.BOOTS);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 5, 12)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 13, 27)));
@@ -390,7 +389,7 @@ public class ArmorModifiers {
 	public class HelmetHP extends ItemModifier {
 
         public HelmetHP() {
-            super(ArmorAttributeType.HEALTH_POINTS, GeneratedItemType.HELMET);
+            super(ArmorAttributeType.HEALTH_POINTS, ItemType.HELMET);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 5, 12)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 13, 27)));
@@ -423,7 +422,7 @@ public class ArmorModifiers {
 	public class StrDexVitInt extends ItemModifier {
 
 		public StrDexVitInt() {
-			super(new ArmorAttributeType[] {ArmorAttributeType.STRENGTH, ArmorAttributeType.DEXTERITY, ArmorAttributeType.VITALITY, ArmorAttributeType.INTELLECT}, ARMOR);
+			super(new ArmorAttributeType[] {ArmorAttributeType.STRENGTH, ArmorAttributeType.DEXTERITY, ArmorAttributeType.VITALITY, ArmorAttributeType.INTELLECT}, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 15), 25));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 35), 20).setBonus(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 35), 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 15).setBonus(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 5).setBonus(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 75), 1))));
@@ -435,7 +434,7 @@ public class ArmorModifiers {
 	public class EnergyRegen extends ItemModifier {
 
 		public EnergyRegen() {
-			super(ArmorAttributeType.ENERGY_REGEN, ARMOR);
+			super(ArmorAttributeType.ENERGY_REGEN, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5, true)));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 3, 7, true)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 5, 9, true)));
@@ -448,7 +447,7 @@ public class ArmorModifiers {
 	public class Thorns extends ItemModifier {
 
 		public Thorns() {
-			super(ArmorAttributeType.THORNS, ARMOR);
+			super(ArmorAttributeType.THORNS, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 2), 3));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 3), 3));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
@@ -461,7 +460,7 @@ public class ArmorModifiers {
 	public class Dodge extends ItemModifier {
 
 		public Dodge() {
-			super(ArmorAttributeType.DODGE, ARMOR);
+			super(ArmorAttributeType.DODGE, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));
@@ -474,7 +473,7 @@ public class ArmorModifiers {
 	public class Block extends ItemModifier {
 
 		public Block() {
-			super(ArmorAttributeType.BLOCK, ARMOR);
+			super(ArmorAttributeType.BLOCK, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));
@@ -487,7 +486,7 @@ public class ArmorModifiers {
 	public class Resistances extends ItemModifier {
 
 		public Resistances() {
-			super(new ArmorAttributeType[] {ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE}, ARMOR);
+			super(new ArmorAttributeType[] {ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE}, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 15));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 7), 15));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 20), 25));
@@ -499,7 +498,7 @@ public class ArmorModifiers {
 	public class Reflection extends ItemModifier {
 
 		public Reflection() {
-			super(ArmorAttributeType.REFLECTION, ARMOR);
+			super(ArmorAttributeType.REFLECTION, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 1), 3));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 2), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
@@ -512,7 +511,7 @@ public class ArmorModifiers {
 	public class GemFind extends ItemModifier {
 
 		public GemFind() {
-			super(ArmorAttributeType.GEM_FIND, ARMOR);
+			super(ArmorAttributeType.GEM_FIND, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 5));
@@ -525,7 +524,7 @@ public class ArmorModifiers {
 	public class ItemFind extends ItemModifier {
 
 		public ItemFind() {
-			super(ArmorAttributeType.ITEM_FIND, ARMOR);
+			super(ArmorAttributeType.ITEM_FIND, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 1), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 2), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 3), 5));

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -8,7 +9,6 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.ChatColor;
@@ -25,7 +25,6 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
 
     public InfernalLordsGuard(World world, int tier) {
         super(world, 4, EnumMonster.LordsGuard);
- 
         
         this.setOnFire(Integer.MAX_VALUE);
         int level = 30;
@@ -37,8 +36,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
     
     @Override
     public ItemStack getWeapon() {
-    	return makeItem(new ItemWeapon().setType(random.nextDouble() <= 0.75 ?
-    			GeneratedItemType.POLEARM : GeneratedItemType.SWORD).setRarity(ItemRarity.COMMON));
+    	return makeItem(new ItemWeapon(ItemType.POLEARM, ItemType.SWORD).setRarity(ItemRarity.COMMON));
     }
 
 

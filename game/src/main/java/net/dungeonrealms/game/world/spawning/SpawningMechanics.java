@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.command.CommandSpawner;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -19,7 +20,6 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
@@ -177,12 +177,12 @@ public class SpawningMechanics implements GenericMechanic {
                     String weaponData = extraData.substring(extraData.indexOf("@WEP@") + 5, extraData.lastIndexOf("@WEP@"));
                     Bukkit.getLogger().info("Weapon data: " + weaponData);
 
-                    GeneratedItemType itemType = GeneratedItemType.getByName(weaponData);
+                    ItemType itemType = ItemType.getByName(weaponData);
 
                     if (itemType == null) {
                         Bukkit.getLogger().info("Invalid weapon type: " + weaponData);
                     } else {
-                        spawner.setWeaponType(itemType.name());
+                        spawner.setWeaponType(itemType);
                     }
 
                     extraData = !extraData.endsWith("@WEP@") ? extraData.substring(extraData.lastIndexOf("@WEP@") + 4) : extraData;

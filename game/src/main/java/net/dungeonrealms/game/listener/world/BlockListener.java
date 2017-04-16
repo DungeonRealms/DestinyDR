@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.command.CommandSpawner;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
@@ -18,7 +19,6 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
 import net.dungeonrealms.game.world.realms.Realm;
@@ -28,6 +28,7 @@ import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -48,6 +49,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -278,10 +280,9 @@ public class BlockListener implements Listener {
                             if (data != null && data.length >= 2) {
                                 String weapon = data[1];
                                 if (!weapon.equalsIgnoreCase("none")) {
-
-                                    GeneratedItemType type = GeneratedItemType.getByName(weapon);
+                                	ItemType type = ItemType.getByName(weapon);
                                     if (type != null)
-                                        mobSpawner.setWeaponType(weapon);
+                                        mobSpawner.setWeaponType(type);
                                     else
                                         player.sendMessage(ChatColor.RED + "Weapon not found for " + weapon);
                                 } else if (mobSpawner.getWeaponType() != null && checkIfExists) {

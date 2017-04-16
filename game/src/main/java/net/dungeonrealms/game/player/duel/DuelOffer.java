@@ -10,11 +10,13 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemArmorChestplate;
+import net.dungeonrealms.game.item.items.core.ItemWeaponSword;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import net.dungeonrealms.game.world.item.Item.*;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.*;
@@ -280,7 +282,7 @@ public class DuelOffer {
     }
 
     private ItemStack getWeaponItem() {
-    	ItemStack item = new ItemStack(GeneratedItemType.SWORD.getMaterials()[tierWeapon.getId() - 1]);
+    	ItemStack item = new ItemWeaponSword().setTier(tierWeapon).generateItem();
     	ItemMeta meta = item.getItemMeta();
     	meta.setDisplayName(ChatColor.WHITE + "Weapon Tier Limit");
     	item.setItemMeta(meta);
@@ -304,7 +306,7 @@ public class DuelOffer {
     }
 
     private ItemStack getArmorItem() {
-    	ItemStack item = new ItemStack(GeneratedItemType.CHESTPLATE.getMaterials()[tierWeapon.getId() - 1]);
+    	ItemStack item = new ItemArmorChestplate().setTier(tierArmor).generateItem();
     	ItemMeta meta = item.getItemMeta();
     	meta.setDisplayName(ChatColor.WHITE + "Armor Tier Limit");
     	item.setItemMeta(meta);

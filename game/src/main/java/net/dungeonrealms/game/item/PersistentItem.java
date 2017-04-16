@@ -19,6 +19,10 @@ public abstract class PersistentItem {
 	
 	private boolean generating;
 	
+	public PersistentItem() {
+		this(null);
+	}
+	
 	public PersistentItem(ItemStack item) {
 		this.item = item;
 		if(item != null)
@@ -80,7 +84,8 @@ public abstract class PersistentItem {
 	 */
 	public void setTag(NBTTagCompound tag) {
 		net.minecraft.server.v1_9_R2.ItemStack nms = getNMSCopy();
-		nms.setTag(tag);
+		if (nms != null)
+			nms.setTag(tag);
 		this.item = CraftItemStack.asBukkitCopy(nms);
 	}
 	

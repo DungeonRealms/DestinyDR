@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
@@ -79,9 +80,8 @@ public abstract class MobSpawner {
     @Setter
     private Hologram editHologram;
 
-    @Getter
-    @Setter
-    private String weaponType;
+    @Getter @Setter
+    private ItemType weaponType;
 
     @Getter
     @Setter
@@ -199,7 +199,7 @@ public abstract class MobSpawner {
         builder.append(this.initialRespawnDelay).append("#").append(mininmumXZ).append("-").append(maximumXZ).append("$");
 
         if (this.weaponType != null) {
-            builder.append("@WEP@").append(weaponType.toUpperCase()).append("@WEP@");
+            builder.append("@WEP@").append(weaponType.name()).append("@WEP@");
         }
 
         if (this.elementalDamage != null) {

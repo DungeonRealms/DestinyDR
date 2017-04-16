@@ -1109,7 +1109,7 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             
             //  PLAYER IS NEW  //
-            sendNetworkMessage("GMMessage", ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!");
+            sendNetworkMessage("IGN_GMMessage", ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!");
             //sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
             
             ItemManager.giveStarter(player, true);
@@ -1800,25 +1800,29 @@ public class GameAPI {
 	public static ItemStack removeArmor(Player player, ItemStack is) {
 		GeneratedItemType type = GeneratedItemType.getType(is.getType());
 		ItemStack item = null;
+		EntityEquipment e = player.getEquipment();
 		
 		switch (type) {
 			case HELMET:
-				item = player.getEquipment().getHelmet();
-				player.getEquipment().setHelmet(new ItemStack(Material.AIR));
+				item = e.getHelmet();
+				e.setHelmet(new ItemStack(Material.AIR));
 				break;
 			case CHESTPLATE:
-				item = player.getEquipment().getChestplate();
-				player.getEquipment().setChestplate(new ItemStack(Material.AIR));
+				item = e.getChestplate();
+				e.setChestplate(new ItemStack(Material.AIR));
 				break;
 			case LEGGINGS:
-				item = player.getEquipment().getLeggings();
-				player.getEquipment().setLeggings(new ItemStack(Material.AIR));
+				item = e.getLeggings();
+				e.setLeggings(new ItemStack(Material.AIR));
 				break;
 			case BOOTS:
-				item = player.getEquipment().getBoots();
-				player.getEquipment().setBoots(new ItemStack(Material.AIR));
+				item = e.getBoots();
+				e.setBoots(new ItemStack(Material.AIR));
 				break;
 			default:
+				Utils.printTrace();
+				GameAPI.sendDevMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Attempted to remove " + type + " from " + player.getName() + " as armor on {SERVER}!");
+				break;
 		}
 		
 		return item;

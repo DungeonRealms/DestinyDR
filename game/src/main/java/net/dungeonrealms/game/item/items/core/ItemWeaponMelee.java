@@ -10,11 +10,13 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ItemWeaponMelee extends ItemWeapon {
 	
+	public static final ItemType[] MELEE = new ItemType[] {ItemType.SWORD, ItemType.AXE, ItemType.POLEARM};
+	
 	public ItemWeaponMelee() {
-		super(ItemType.MELEE, ItemType.POLEARM);
+		this(MELEE);
 	}
 	
-	public ItemWeaponMelee(ItemType type) {
+	public ItemWeaponMelee(ItemType... type) {
 		super(type);
 	}
 	
@@ -23,6 +25,6 @@ public class ItemWeaponMelee extends ItemWeapon {
 	}
 	
 	public static boolean isMelee(ItemStack item) {
-		return isType(item, ItemType.MELEE) || ItemWeaponPolearm.isPolearm(item);
+		return ItemWeaponSword.isSword(item) || ItemWeaponAxe.isAxe(item) || ItemWeaponPolearm.isPolearm(item);
 	}
 }

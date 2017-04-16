@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.item.items.functional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -31,17 +30,13 @@ public class ItemGemNote extends ItemMoney {
 	
 	public ItemGemNote(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
-		this.signers = Arrays.asList(getTagString("signers").split(","));
-		super.loadItem();
+		for (String s : getTagString("signers").split(","))
+			this.signers.add(s);
 	}
 	
 	@Override
 	public void updateItem() {
-		if (getGemValue() > 50000)
+		if (getGemValue() > getMaxStorage() / 2)
 			GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.GOLD + "[WARNING] " + ChatColor.WHITE + getLastSigner() + " created a Bank Note worth " + ChatColor.GREEN + getGemValue() + ChatColor.WHITE + " on {SERVER}.");
 		
 		setTagString("signers", String.join(",", this.signers));
@@ -68,7 +63,7 @@ public class ItemGemNote extends ItemMoney {
 	 * Get the last signer of this gem note.
 	 */
 	public String getLastSigner() {
-		return this.signers.get(this.signers.size() - 1);
+		return this.signers.isEmpty() ? "" : this.signers.get(this.signers.size() - 1);
 	}
 
 	@Override
@@ -96,12 +91,13 @@ public class ItemGemNote extends ItemMoney {
 		ItemGemNote combine = new ItemGemNote(evt.getSwappedItem());
 		int combinedGems = combine.getGemValue() + getGemValue();
 		
+		evt.setCancelled(true);
+		
 		if(combinedGems > getMaxStorage()) {
 			evt.getPlayer().sendMessage(ChatColor.RED + "You cannot create a banknote of this value.");
 			return;
 		}
 		
-		evt.setCancelled(true);
 		evt.setUsed(true);
 		evt.getPlayer().sendMessage(ChatColor.GRAY + "You have combined bank notes " + ChatColor.ITALIC
 				+ getGemValue() + "G + " + combine.getGemValue() + "G " + ChatColor.GRAY

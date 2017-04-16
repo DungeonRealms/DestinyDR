@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.item.items.core;
 
+import java.util.Random;
+
 import net.dungeonrealms.game.item.ItemType;
 
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class CombatItem extends ItemGear {
 	
 	public CombatItem() {
-		super(ItemType.ARMOR, ItemType.BOW, ItemType.POLEARM, ItemType.STAFF, ItemType.MELEE);
+		this(new Random().nextBoolean() ? ItemArmor.ARMOR : ItemWeapon.WEAPONS);
 	}
 	
 	public CombatItem(ItemType... type) {

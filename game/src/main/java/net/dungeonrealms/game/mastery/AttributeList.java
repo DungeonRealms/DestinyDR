@@ -153,9 +153,8 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 
 	public void save(NBTTagCompound tag) {
 		NBTTagCompound attr = new NBTTagCompound();
-		for (AttributeType type : keySet())
-			if (hasAttribute(type))
-				getAttribute(type).save(tag, type.getNBTName());
+		for (AttributeType type : getAttributes())
+			getAttribute(type).save(attr, type.getNBTName());
 		tag.set("itemAttributes", attr);
 	}
 	
@@ -169,7 +168,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 					aType = type;
 			
 			if (aType != null) {
-				this.put(aType, new ModifierRange(tag.get(key)));
+				this.put(aType, new ModifierRange(attr.get(key)));
 			} else {
 				Utils.log.info("Could not find Item attribute " + key + " for " + key.toString());
 			}

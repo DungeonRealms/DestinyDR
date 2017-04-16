@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -106,97 +107,80 @@ public class EntityStats {
     public static void setMonsterElite(Entity entity, EnumNamedElite namedElite, int tier, EnumMonster monster, int lvl, boolean isDungeon) {
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
-            Item.GeneratedItemType weaponType;
+        	ItemTier iTier = ItemTier.getByTier(tier);
+            ItemWeapon weapon = new ItemWeapon();
+            weapon.setTier(iTier).setRarity(isDungeon ? ItemRarity.UNIQUE : ItemRarity.getRandomRarity(true));
+            
+            //TODO: Move to enum.
             switch (monster) {
                 case Zombie:
                 case LordsGuard:
-                    weaponType = random.nextBoolean() ? Item.GeneratedItemType.SWORD : Item.GeneratedItemType.AXE;
+                	weapon.setType(random.nextBoolean() ? ItemType.SWORD : ItemType.AXE);
                     break;
+                
+                // SWORD //
+                case Golem:
+                case Spider1:
+                case Spider2:
+                case Undead:
+                case Enderman:
+                case Silverfish:
+                case GreaterAbyssalDemon:
+                	weapon.setType(ItemType.SWORD);
+                	break;
+                	
+                // AXE //
+                case Goblin:
+                case Tripoli1:
+                case Tripoli:
                 case Bandit:
                 case Bandit1:
                 case PassiveBandit:
-                    weaponType = Item.GeneratedItemType.AXE;
+                	weapon.setType(ItemType.AXE);
                     break;
+                
+                // STAFF //
+                case Blaze:
+                case Mage:
                 case FireImp:
                 case StaffZombie:
                 case Daemon2:
-                    weaponType = Item.GeneratedItemType.STAFF;
+                	weapon.setType(ItemType.STAFF);
                     break;
+                
+                // POLEARM //
+                case Monk:
+                case Lizardman:
                 case Daemon:
-                    weaponType = Item.GeneratedItemType.POLEARM;
+                	weapon.setType(ItemType.POLEARM);
                     break;
+                    
+                // BOW //
                 case Skeleton:
                 case Skeleton1:
                 case Skeleton2:
                 case PassiveSkeleton1:
-                    weaponType = Item.GeneratedItemType.BOW;
-                    break;
-                case Silverfish:
-                case GreaterAbyssalDemon:
-                    weaponType = Item.GeneratedItemType.SWORD;
-                    break;
-                case Tripoli1:
-                case Tripoli:
-                    weaponType = Item.GeneratedItemType.AXE;
-                    break;
-                case Monk:
-                    weaponType = Item.GeneratedItemType.POLEARM;
-                    break;
-                case Lizardman:
-                    weaponType = Item.GeneratedItemType.POLEARM;
-                    break;
-                case Undead:
-                    weaponType = Item.GeneratedItemType.SWORD;
-                    break;
-                case Blaze:
-                    weaponType = Item.GeneratedItemType.STAFF;
-                    break;
-                case Spider1:
-                case Spider2:
-                    weaponType = Item.GeneratedItemType.SWORD;
-                    break;
-                case Mage:
-                    weaponType = Item.GeneratedItemType.STAFF;
-                    break;
-                case Golem:
-                    weaponType = Item.GeneratedItemType.SWORD;
-                    break;
-                case Goblin:
-                    weaponType = Item.GeneratedItemType.AXE;
-                    break;
-                case Enderman:
-                    weaponType = Item.GeneratedItemType.SWORD;
-                    break;
-                default:
-                    weaponType = Item.GeneratedItemType.getRandomWeapon();
+                	weapon.setType(ItemType.BOW);
                     break;
             }
             
-            ItemTier iTier = ItemTier.getByTier(tier);
+            
             ItemArmor a = (ItemArmor) new ItemArmor().setRarity(isDungeon ? ItemRarity.UNIQUE : ItemRarity.getRandomRarity(true)).setTier(iTier);
             ItemStack[] armor = a.generateArmorSet();
-            ItemStack weapon = new ItemWeapon().setTier(iTier).setRarity(isDungeon ? ItemRarity.UNIQUE : ItemRarity.getRandomRarity(true)).generateItem();
+            ItemStack weaponItem = weapon.generateItem();
             
-            for (ItemStack i : armor) {
-                if (i == null || i.getType() == Material.AIR)
-                	continue;
-                EnchantmentAPI.addGlow(i);
-            }
-            EnchantmentAPI.addGlow(weapon);
+            // Apply glow.
+            for (ItemStack i : armor)
+                if (i != null && i.getType() != Material.AIR)
+                	EnchantmentAPI.addGlow(i);
+            
+            EnchantmentAPI.addGlow(weaponItem);
+            
             //Actually keep my gear?
             if (monster != EnumMonster.LordsGuard) {
                 LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
-                entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-                entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
-                entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
-                entity.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
-                entity.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
-
-                livingEntity.getEquipment().setItemInMainHand(weapon);
-                livingEntity.getEquipment().setBoots(armor[0]);
-                livingEntity.getEquipment().setLeggings(armor[1]);
-                livingEntity.getEquipment().setChestplate(armor[2]);
-                livingEntity.getEquipment().setHelmet(armor[3]);
+                livingEntity.getEquipment().setArmorContents(armor);
+                livingEntity.getEquipment().setItemInMainHand(weaponItem);
             }
         }
         ((LivingEntity) entity.getBukkitEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));

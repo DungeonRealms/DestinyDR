@@ -12,8 +12,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ItemWeapon extends CombatItem {
 	
+	public final static ItemType[] WEAPONS = new ItemType[] {ItemType.BOW, ItemType.STAFF, ItemType.SWORD, ItemType.AXE, ItemType.POLEARM};
+	
 	public ItemWeapon() {
-		super(ItemType.BOW, ItemType.MELEE, ItemType.POLEARM, ItemType.STAFF);
+		this(WEAPONS);
 	}
 	
 	public ItemWeapon(ItemType... type) {

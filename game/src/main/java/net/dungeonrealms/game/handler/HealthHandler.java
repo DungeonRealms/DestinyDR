@@ -230,7 +230,7 @@ public class HealthHandler implements GenericMechanic {
         
         //  SET VANILLA HEALTH  //
         double vanillaMax = entity.getMaxHealth();
-        double vanillaHealth = (hp / getMonsterMaxHP(entity)) * vanillaMax;
+        double vanillaHealth = (hp / Math.max(1, getMonsterMaxHP(entity))) * vanillaMax;
         vanillaHealth = Math.min(vanillaHealth, vanillaMax - (1 / vanillaMax));
         vanillaHealth = Math.max(1, vanillaHealth);
         entity.setHealth((int)vanillaHealth);

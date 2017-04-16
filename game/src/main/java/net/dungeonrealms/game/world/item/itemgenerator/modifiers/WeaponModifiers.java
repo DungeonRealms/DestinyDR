@@ -1,7 +1,8 @@
 package net.dungeonrealms.game.world.item.itemgenerator.modifiers;
 
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
@@ -12,15 +13,14 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
 
 public class WeaponModifiers {
 
-	private static GeneratedItemType[] WEAPONS = new GeneratedItemType[] {GeneratedItemType.AXE, GeneratedItemType.BOW, GeneratedItemType.POLEARM, GeneratedItemType.STAFF, GeneratedItemType.SWORD};
-	private static GeneratedItemType[] SEMI_MELEE = new GeneratedItemType[] {GeneratedItemType.AXE, GeneratedItemType.POLEARM, GeneratedItemType.STAFF, GeneratedItemType.SWORD};
+	private static ItemType[] SEMI_MELEE = new ItemType[] {ItemType.AXE, ItemType.POLEARM, ItemType.STAFF, ItemType.SWORD};
 	
 	private static WeaponAttributeType[] ELEMENTS = new WeaponAttributeType[] {WeaponAttributeType.FIRE_DAMAGE, WeaponAttributeType.ICE_DAMAGE, WeaponAttributeType.POISON_DAMAGE};
 
 	public class SwordDamage extends ItemModifier {
 
 		public SwordDamage() {
-			super(WeaponAttributeType.DAMAGE, GeneratedItemType.SWORD);
+			super(WeaponAttributeType.DAMAGE, ItemType.SWORD);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -53,7 +53,7 @@ public class WeaponModifiers {
 	public class AxeDamage extends ItemModifier {
 
         public AxeDamage() {
-            super(WeaponAttributeType.DAMAGE, GeneratedItemType.AXE);
+            super(WeaponAttributeType.DAMAGE, ItemType.AXE);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -86,7 +86,7 @@ public class WeaponModifiers {
 	public class StaffDamage extends ItemModifier {
 
         public StaffDamage() {
-            super(WeaponAttributeType.DAMAGE, GeneratedItemType.STAFF);
+            super(WeaponAttributeType.DAMAGE, ItemType.STAFF);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -119,7 +119,7 @@ public class WeaponModifiers {
 	public class PolearmDamage extends ItemModifier {
 
 	    public PolearmDamage() {
-	        super(WeaponAttributeType.DAMAGE, GeneratedItemType.POLEARM);
+	        super(WeaponAttributeType.DAMAGE, ItemType.POLEARM);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -152,7 +152,7 @@ public class WeaponModifiers {
 	public class BowDamage extends ItemModifier {
 
 	    public BowDamage() {
-	        super(WeaponAttributeType.DAMAGE, GeneratedItemType.BOW);
+	        super(WeaponAttributeType.DAMAGE, ItemType.BOW);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -184,7 +184,7 @@ public class WeaponModifiers {
 
 	public class Precision extends ItemModifier {
 		public Precision(){
-			super(WeaponAttributeType.PRECISION, GeneratedItemType.STAFF);
+			super(WeaponAttributeType.PRECISION, ItemType.STAFF);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 70), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 5, 80), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 10, 95), 30));
@@ -193,7 +193,7 @@ public class WeaponModifiers {
 	public class Critical extends ItemModifier {
 
 		public Critical() {
-			super(WeaponAttributeType.CRITICAL_HIT, WEAPONS);
+			super(WeaponAttributeType.CRITICAL_HIT, ItemWeapon.WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 2), 2));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 4), 5));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 8));
@@ -206,7 +206,7 @@ public class WeaponModifiers {
 	public class LifeSteal extends ItemModifier {
 
 		public LifeSteal() {
-			super(WeaponAttributeType.LIFE_STEAL, WEAPONS);
+			super(WeaponAttributeType.LIFE_STEAL, ItemWeapon.WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 30), 2));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 15), 4));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 12), 5));
@@ -232,7 +232,7 @@ public class WeaponModifiers {
 	public class Blind extends ItemModifier {
 
 		public Blind() {
-			super(WeaponAttributeType.BLIND, WEAPONS);
+			super(WeaponAttributeType.BLIND, ItemWeapon.WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 3));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 7), 5));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 9), 8));
@@ -245,7 +245,7 @@ public class WeaponModifiers {
 	public class Slow extends ItemModifier {
 
 		public Slow() {
-			super(WeaponAttributeType.SLOW, GeneratedItemType.BOW);
+			super(WeaponAttributeType.SLOW, ItemType.BOW);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 3), 3));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 13));
@@ -270,7 +270,7 @@ public class WeaponModifiers {
 	public class ElementalBow extends ItemModifier {
 
 		public ElementalBow() {
-			super(ELEMENTS, Item.GeneratedItemType.BOW);
+			super(ELEMENTS, ItemType.BOW);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 8), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 15), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 10));
@@ -282,7 +282,7 @@ public class WeaponModifiers {
 	public class Versus extends ItemModifier {
 
 		public Versus() {
-			super(new WeaponAttributeType[] {WeaponAttributeType.VS_PLAYER, WeaponAttributeType.VS_MONSTERS}, WEAPONS);
+			super(new WeaponAttributeType[] {WeaponAttributeType.VS_PLAYER, WeaponAttributeType.VS_MONSTERS}, ItemWeapon.WEAPONS);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 10));
@@ -294,7 +294,7 @@ public class WeaponModifiers {
 	public class Pure extends ItemModifier {
 
 		public Pure() {
-			super(WeaponAttributeType.PURE_DAMAGE, GeneratedItemType.AXE);
+			super(WeaponAttributeType.PURE_DAMAGE, ItemType.AXE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 5));
@@ -307,7 +307,7 @@ public class WeaponModifiers {
 	public class Accuracy extends ItemModifier {
 
 		public Accuracy() {
-			super(WeaponAttributeType.ACCURACY, GeneratedItemType.SWORD);
+			super(WeaponAttributeType.ACCURACY, ItemType.SWORD);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 8));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 12));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 15));
@@ -320,7 +320,7 @@ public class WeaponModifiers {
 	public class ArmorPenetration extends ItemModifier {
 
 		public ArmorPenetration() {
-			super(WeaponAttributeType.ARMOR_PENETRATION, GeneratedItemType.AXE);
+			super(WeaponAttributeType.ARMOR_PENETRATION, ItemType.AXE);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 1), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 3), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 5), 25));

@@ -27,6 +27,7 @@ public class ItemScrap extends FunctionalItem {
 	public ItemScrap(ScrapTier tier) {
 		super(ItemType.SCRAP);
 		setAntiDupe(false);
+		setTier(tier);
 	}
 	
 	public ItemScrap(ItemStack item) {

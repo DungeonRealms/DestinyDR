@@ -22,6 +22,10 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class Item {
 
+	/**
+	 * This enum is for all gear basically.
+	 * Tierable equipment that can have attributes (stats).
+	 */
     public enum GeneratedItemType {
         // WEAPONS
     	SWORD(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.GOLD_SWORD}, new String[] {"Shortsword", "Broadsword", "Magic Sword", "Ancient Sword", "Legendary Sword"}, 2),
@@ -182,6 +186,10 @@ public class Item {
 
 		public int getId() {
 			return getTierId();
+		}
+		
+		public static ItemTier maxTier() {
+			return values()[values().length - 1];
 		}
 
     }

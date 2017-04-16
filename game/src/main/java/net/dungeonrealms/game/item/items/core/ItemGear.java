@@ -64,7 +64,7 @@ public abstract class ItemGear extends ItemGeneric {
 	@Getter
 	private AttributeList attributes = new AttributeList();
 	
-	@Getter @Setter
+	@Getter
 	private GeneratedItemType generatedItemType;
 	
 	public static final int MAX_DURABILITY = 1500;
@@ -80,8 +80,8 @@ public abstract class ItemGear extends ItemGeneric {
 	//Used for item generators usually.
 	public ItemGear(ItemType type) {
 		super(type);
+		setType(type);
 		setAntiDupe(true);
-		setType(type.getType());
 		setTier(ItemTier.getRandomTier());
 		setRarity(ItemRarity.getRandomRarity());
 		this.durability = MAX_DURABILITY;
@@ -100,7 +100,7 @@ public abstract class ItemGear extends ItemGeneric {
 		this.attributes = new AttributeList();
 		
 		//  LOAD GENERAL DATA  //
-		setGeneratedItemType(GeneratedItemType.getType(getItem().getType()));
+		this.generatedItemType = GeneratedItemType.getType(getItem().getType());
 		setTier(ItemTier.getByTier(getTagInt(TIER)));
 		setProtected(getTagBool("protected"));
 		setEnchantCount(getTagInt("enchant"));
@@ -128,6 +128,7 @@ public abstract class ItemGear extends ItemGeneric {
 		if(getRarity() != null)
 			setTagString("itemRarity", getRarity().name());
 		
+		setTagInt(TIER, getTier().getId());
 		setTagInt("enchant", getEnchantCount());
 		setTagBool("protected", isProtected());
 		setTagInt("RepairCost", getDurability());
@@ -140,6 +141,15 @@ public abstract class ItemGear extends ItemGeneric {
 		if(getEnchantCount() > 3)
 			EnchantmentAPI.addGlow(getItem());
 		super.updateItem();
+	}
+	
+	/**
+	 * Change the item type of this item.
+	 */
+	public ItemGear setType(ItemType type) {
+		super.setType(type);
+		this.generatedItemType = type.getType();
+		return this;
 	}
 	
 	@Override
@@ -163,14 +173,13 @@ public abstract class ItemGear extends ItemGeneric {
 	 */
 	protected abstract void applyEnchantStats();
 	
-	public ItemGear setType(GeneratedItemType type) {
-		this.setGeneratedItemType(type);
-		return this;
-	}
-	
 	public ItemGear setRarity(ItemRarity rarity) {
 		this.rarity = rarity;
 		return this;
+	}
+	
+	public ItemGear setTier(int tier) {
+		return setTier(ItemTier.getByTier(tier));
 	}
 	
 	public ItemGear setTier(ItemTier tier) {
@@ -219,7 +228,7 @@ public abstract class ItemGear extends ItemGeneric {
 			boolean contains = name.contains(rawItemName);
 			String suffix = type.getDisplaySuffix(contains);
 			if(!suffix.equals(""))
-				name += rawItemName + " " + (contains ? "" : "of") + " " + suffix;
+				name += (contains ? "" : rawItemName + " of") + " " + suffix;
 		}
 		
 		if(!name.contains(rawItemName))
@@ -234,7 +243,7 @@ public abstract class ItemGear extends ItemGeneric {
 	 * Enchants this item.
 	 */
 	public void enchantItem(Player p) {
-		boolean success = new Random().nextInt(100) <= SUCCESS_CHANCE[enchantCount - 1];
+		boolean success = new Random().nextInt(100) <= SUCCESS_CHANCE[enchantCount];
         GamePlayer gp = GameAPI.getGamePlayer(p);
         
         if (!success) {
@@ -273,8 +282,6 @@ public abstract class ItemGear extends ItemGeneric {
 	 */
 	public void repair() {
 		this.durability = MAX_DURABILITY;
-		//Play effects and stuff.
-		updateItem();
 	}
 	
 	
@@ -289,17 +296,24 @@ public abstract class ItemGear extends ItemGeneric {
 			setDestroyed(true);
 			if (player == null)
 				return;
-			player.getInventory().remove(getItem()); //TEST WITH ARMOR
+			// Item has broken!
+			player.getInventory().remove(getItem());
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
 			onItemBreak(player);
 			player.updateInventory();
 			return;
 		}
 		
-		updateItem();
 		if (player == null)
 			return;
 		
+		// Update the item in the player's inventory.
+		int slot = player.getInventory().first(getItem());
+		if (slot > -1)
+			player.getInventory().setItem(slot, generateItem());
+		player.updateInventory();
+		
+		// Durability warnings.
 		for (int i : DURABILITY_WARNINGS) {
 			int max = MAX_DURABILITY / i;
 			int min = (MAX_DURABILITY - 100) / i;
@@ -367,7 +381,8 @@ public abstract class ItemGear extends ItemGeneric {
 		//  ROLL STATS  //
 		for (ItemModifier im : ItemGenerator.modifierObjects) {
 			//Is this applicable to the current item material?
-			if (im.canApply(getGeneratedItemType())) {
+			// In the future if we add t6 the generatedItemType system will need to be changed.
+			if (im.canApply(getItemType())) {
 				ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 				
 				if (mc != null)

@@ -10,6 +10,7 @@ import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -25,21 +26,21 @@ public class FunctionalItemListener implements Listener {
 			InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_SOME, InventoryAction.PICKUP_HALF, InventoryAction.PICKUP_ONE,
 			InventoryAction.PLACE_ALL, InventoryAction.PLACE_SOME, InventoryAction.PLACE_ONE);
 	
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteract(PlayerInteractEvent evt) {
-		if(evt.getAction() == Action.PHYSICAL)
-			return;
-		FunctionalItem.attemptUseItem(new ItemClickEvent(evt));
+		if(evt.getAction() != Action.PHYSICAL)
+			FunctionalItem.attemptUseItem(new ItemClickEvent(evt));
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent evt) {
-		if(CHECKED_CLICKS.contains(evt.getAction())) {
-			FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt));
-			//Two events get called for this, one for the item we're placing, and the one we're pulling.
-			if (evt.getAction() == InventoryAction.SWAP_WITH_CURSOR)
-				FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt, true));
-		}
+		if(!CHECKED_CLICKS.contains(evt.getAction()))
+			return;
+		
+		FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt));
+		//Two events get called for this, one for the item we're placing, and the one we're pulling.
+		if (evt.getAction() == InventoryAction.SWAP_WITH_CURSOR)
+			FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt, true));
 	}
 	
 	@EventHandler

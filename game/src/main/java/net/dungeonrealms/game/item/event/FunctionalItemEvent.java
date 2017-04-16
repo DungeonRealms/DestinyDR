@@ -44,16 +44,16 @@ public abstract class FunctionalItemEvent {
 	
 	public FunctionalItemEvent(Player player, ItemStack item, ItemUsage usage) {
 		this.player = player;
-		this.vanillaItem = item;
-		this.usage = usage;
-		
-		PersistentItem pi = PersistentItem.constructItem(item);
-		if (pi instanceof FunctionalItem)
-			this.item = (FunctionalItem)pi;
+		setVanillaItem(item);
+		setUsage(usage);
 	}
 	
 	protected void setVanillaItem(ItemStack item) {
-		this.vanillaItem = item;
+		setResultItem(item);
+		
+		PersistentItem pi = PersistentItem.constructItem(getVanillaItem());
+		if (pi instanceof FunctionalItem)
+			this.item = (FunctionalItem) pi;
 	}
 	
 	protected void setUsage(ItemUsage usage) {
@@ -61,7 +61,7 @@ public abstract class FunctionalItemEvent {
 	}
 	
 	public void setResultItem(ItemStack item) {
-		setVanillaItem(item);
+		this.vanillaItem = item;
 	}
 	
 	protected ItemStack getResultItem() {

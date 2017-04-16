@@ -8,6 +8,7 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
@@ -31,7 +32,6 @@ import net.dungeonrealms.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.EntityArrow;
@@ -108,13 +108,14 @@ public class DamageAPI {
         		GameAPI.getGamePlayer(attacker.getPlayer()).updateWeapon();
         		
                 //  STAT BONUS  //
-                GeneratedItemType type = weapon.getGeneratedItemType();
+                ItemType type = weapon.getItemType();
                 
-                if (type == GeneratedItemType.AXE) {
+                
+                if (type == ItemType.AXE) {
                 	critHit += 3;
-                } else if (type == GeneratedItemType.SWORD) {
+                } else if (type == ItemType.SWORD) {
                 	damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.23);
-                } else if (type == GeneratedItemType.POLEARM) {
+                } else if (type == ItemType.POLEARM) {
                 	damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue() * 0.23);
                 }
         	}

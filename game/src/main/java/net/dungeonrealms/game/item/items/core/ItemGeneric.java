@@ -128,6 +128,11 @@ public abstract class ItemGeneric extends PersistentItem {
 		return this;
 	}
 
+	protected ItemGeneric setType(ItemType type) {
+		this.itemType = type;
+		return this;
+	}
+	
 	@Override
 	protected void loadItem() {
 		if (dataMap == null)
@@ -192,7 +197,7 @@ public abstract class ItemGeneric extends PersistentItem {
 
 		//  APPLY ANTI DUPE  //
 		if (isAntiDupe() && !hasTag("u"))
-			setTagString("u", AntiDuplication.createEpoch(getItem())); //TODO: Make sure this is never lost.
+			setTagString("u", AntiDuplication.createEpoch(getItem()));
 		
 		if (getPrice() > 0) {
 			setTagInt("price", getPrice());
@@ -219,8 +224,7 @@ public abstract class ItemGeneric extends PersistentItem {
 			return;
 		NBTTagCompound merge = nms.getTag();
 		for (String key : merge.c())
-			if (!hasTag(key))
-				getTag().set(key, merge.get(key));
+			getTag().set(key, merge.get(key));
 		getItem().setItemMeta(getMeta());
 	}
 	

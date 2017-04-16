@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.world.item.itemgenerator.engine;
 
 import lombok.Getter;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,17 +17,17 @@ import java.util.Random;
 public abstract class ItemModifier implements Comparable<ItemModifier> {
 	
 	private List<ModifierCondition> conditions = new ArrayList<>();
-	private List<GeneratedItemType> possibleApplicants;
+	private List<ItemType> possibleApplicants;
 	
 	@Getter
 	private AttributeType currentAttribute;
 	private AttributeType[] possibleAttributes;
 	
-	public ItemModifier(AttributeType attribute, GeneratedItemType... pI) {
+	public ItemModifier(AttributeType attribute, ItemType... pI) {
 		this(new AttributeType[] {attribute}, pI);
 	}
 	
-	public ItemModifier(AttributeType[] attributes, GeneratedItemType... possibleItems){
+	public ItemModifier(AttributeType[] attributes, ItemType... possibleItems){
         this.possibleApplicants = Arrays.asList(possibleItems);
         this.possibleAttributes = attributes;
         this.currentAttribute = attributes[0];
@@ -40,7 +40,7 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 	    return other.getCurrentAttribute().getId() - getCurrentAttribute().getId();
 	}
 	
-	public boolean canApply(GeneratedItemType type) {
+	public boolean canApply(ItemType type) {
 		return possibleApplicants != null && possibleApplicants.contains(type);
 	}
 	

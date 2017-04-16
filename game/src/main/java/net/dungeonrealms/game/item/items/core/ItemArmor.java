@@ -4,7 +4,6 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
-import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,8 +14,14 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ItemArmor extends CombatItem {
 
+	public final static ItemType[] ARMOR = new ItemType[] {ItemType.HELMET, ItemType.CHESTPLATE, ItemType.LEGGINGS, ItemType.BOOTS};
+	
 	public ItemArmor() {
-		super(ItemType.ARMOR);
+		this(ARMOR);
+	}
+	
+	public ItemArmor(ItemType... type) {
+		super(type);
 	}
 	
 	public ItemArmor(ItemStack item) {
@@ -27,11 +32,9 @@ public class ItemArmor extends CombatItem {
 	 * Generates an entire armor set with the parameters of this item.
 	 */
 	public ItemStack[] generateArmorSet() {
-		GeneratedItemType[] armor = new GeneratedItemType[] {GeneratedItemType.HELMET, GeneratedItemType.CHESTPLATE,
-				GeneratedItemType.LEGGINGS, GeneratedItemType.BOOTS};
-		ItemStack[] ret = new ItemStack[armor.length];
-		for (int i = 0; i < armor.length; i++) {
-			setType(armor[i]);
+		ItemStack[] ret = new ItemStack[ARMOR.length];
+		for (int i = 0; i < ARMOR.length; i++) {
+			setType(ARMOR[i]);
 			ret[i] = generateItem();
 		}
 		return ret;
@@ -62,6 +65,7 @@ public class ItemArmor extends CombatItem {
 	}
 	
 	public static boolean isArmor(ItemStack item) {
-		return isType(item, ItemType.ARMOR);
+		return ItemArmorHelmet.isHelmet(item) || ItemArmorChestplate.isChestplate(item)
+				|| ItemArmorLeggings.isLeggings(item) || ItemArmorBoots.isBoots(item);
 	}
 }
