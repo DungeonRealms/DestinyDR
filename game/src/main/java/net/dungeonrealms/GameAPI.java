@@ -37,6 +37,7 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -892,7 +893,11 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
-
+        if(MainListener.savedOnLogout.contains(uuid)){
+            //Already saved? Missed the ball?
+            Bukkit.getLogger().info("Skipping rest of save due to being already saved on logout early for " + uuid);
+            return;
+        }
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -912,8 +917,17 @@ public class GameAPI {
                 if (DungeonManager.getInstance().isDungeonItem(stack))
                     player.getInventory().remove(stack);
 
+
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
+            MainListener.savedAfterSharding.add(uuid);
+
+            if(MainListener.savedOnLogout.contains(uuid)){
+                //Already saved? Missed the ball?
+                Bukkit.getLogger().info("Skipping rest of save due to being already saved on logout for " + uuid);
+                return;
+            }
+
             //IMPORTANT: Anything put after here runs AFTER data is synced with mongo.
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -1509,6 +1523,7 @@ public class GameAPI {
      * @param serverBungeeName Bungee name
      */
     public static void moveToShard(Player player, String serverBungeeName) {
+        //Ignores all logouts essentially..
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
         // prevent any interaction while the data is being uploaded

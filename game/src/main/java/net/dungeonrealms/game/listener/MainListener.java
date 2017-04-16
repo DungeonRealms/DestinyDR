@@ -87,6 +87,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -273,6 +274,9 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
 
+        //No left over shit..
+        savedOnLogout.remove(player.getUniqueId());
+        savedAfterSharding.remove(player.getUniqueId());
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             player.kickPlayer(ChatColor.RED + "Unable to load your character.");
             return;
@@ -395,14 +399,29 @@ public class MainListener implements Listener {
         onDisconnect(event.getPlayer(), true);
     }
 
+    public static volatile CopyOnWriteArrayList<UUID> savedAfterSharding = new CopyOnWriteArrayList<>();
+    public static volatile CopyOnWriteArrayList<UUID> savedOnLogout = new CopyOnWriteArrayList<>();
+
+
     private void onDisconnect(Player player, boolean performChecks) {
 
-        if (player.hasMetadata("sharding"))
+        boolean sharding = player.hasMetadata("sharding");
+        if (player.hasMetadata("sharding")) {
             player.removeMetadata("sharding", DungeonRealms.getInstance());
+        }
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(player.getUniqueId())) {
-            Utils.log.info("Ignored quit event for player " + player.getName());
+            //Still remove this shit..
             GameAPI.IGNORE_QUIT_EVENT.remove(player.getUniqueId());
+            if (!sharding) {
+                Utils.log.info("Ignored quit event for player " + player.getName());
+                return;
+            }
+        }
+
+        if (savedAfterSharding.contains(player.getUniqueId())) {
+            //Dont save, was already saved through the shard process.
+            Utils.log.info("Not re-saving data for " + player.getName() + " because /shard already saved it correctly.");
             return;
         }
 
@@ -427,7 +446,9 @@ public class MainListener implements Listener {
         }
         player.updateInventory();
         // Good to go lads
-        GameAPI.handleLogout(player.getUniqueId(), true, null);
+        GameAPI.handleLogout(player.getUniqueId(), true, (result) -> {
+            savedOnLogout.add(player.getUniqueId());
+        });
     }
 
     /**

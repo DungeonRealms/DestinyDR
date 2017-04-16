@@ -126,12 +126,15 @@ public class Realms implements GenericMechanic {
     	if(realm.getState() == RealmState.UPGRADING)
     		return;
 
-        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
+            realm.setState(RealmState.REMOVING);
+            realm.removeRealm(true);
+        });
     	
-    	realm.setState(RealmState.REMOVING);
-    	
+
     	//Must run sync.
-    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> realm.removeRealm(true), 5);
+//    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> realm.removeRealm(true), 5);
     }
     
     /**
