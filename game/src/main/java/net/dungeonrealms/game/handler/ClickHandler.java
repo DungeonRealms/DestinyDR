@@ -940,6 +940,10 @@ public class ClickHandler {
                     player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed. Please re-summon your mount.");
                 }
                 break;
+
+            case "Event Achievements":
+                event.setCancelled(true);
+                return;
             case "Achievements":
                 event.setCancelled(true);
                 if (slot > 9) return;
