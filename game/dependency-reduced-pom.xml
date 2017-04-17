@@ -112,22 +112,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib-API</artifactId>
-      <version>4.0</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>cglib-nodep</artifactId>
-          <groupId>cglib</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>BukkitExecutors</artifactId>
-          <groupId>com.comphenix.executors</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
       <version>6.1</version>
@@ -202,6 +186,13 @@
       <version>2.4.1</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/BossBarAPI_v2.4.1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.comphenix.protocol</groupId>
+      <artifactId>ProtocolLib</artifactId>
+      <version>RELEASE</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com</groupId>
