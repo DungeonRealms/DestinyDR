@@ -19,6 +19,7 @@ import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
@@ -82,11 +83,10 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import sun.util.resources.cldr.sq.CalendarData_sq_AL;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -392,11 +392,17 @@ public class MainListener implements Listener {
             event.allow();
     }
 
+    private SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
         onDisconnect(event.getPlayer(), true);
+
+        //Send this logout to the lobby / master server..
+        if (!DungeonRealms.getInstance().isAlmostRestarting() && !CrashDetector.crashDetected) {
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> GameAPI.sendNetworkMessage("playerLogout", event.getPlayer().getUniqueId().toString(), 30 + ""));
+        }
     }
 
     public static volatile CopyOnWriteArrayList<UUID> savedAfterSharding = new CopyOnWriteArrayList<>();

@@ -1,6 +1,8 @@
 package net.dungeonrealms.lobby;
 
 import com.esotericsoftware.minlog.Log;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -14,6 +16,7 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.lobby.bungee.NetworkClientListener;
 import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
@@ -42,6 +45,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/11/2016
@@ -58,6 +63,9 @@ public class Lobby extends JavaPlugin implements Listener {
     private GhostFactory ghostFactory;
 
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
+
+    @Getter
+    private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
 
     @Override
     public void onEnable() {
@@ -83,10 +91,24 @@ public class Lobby extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
 
+        if (this.client != null)
+            new NetworkClientListener().startInitialization(this.client);
+
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
         cm.registerCommand(new CommandBuild());
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+//            recentLogouts.getAllPresent((iter))
+            recentLogouts.asMap().forEach((id, timer) -> timer.decrementAndGet());
+        }, 20, 20);
+    }
+
+    public void sendClientMessage(String task, String message, String[] contents) {
+        if (this.client != null) {
+            this.client.sendNetworkMessage(task, message, contents);
+        }
     }
 
     @EventHandler
@@ -146,10 +168,10 @@ public class Lobby extends JavaPlugin implements Listener {
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
 
-            if(Rank.isPMOD(player)){
+            if (Rank.isPMOD(player)) {
                 Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
 
-                    String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
+                    String lastIp = (String) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
 
                     if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
                         player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
@@ -158,14 +180,14 @@ public class Lobby extends JavaPlugin implements Listener {
                     }
 
                     String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
-                    if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
+                    if (DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null) {
                         player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
-                    }else{
+                    } else {
                         player.sendMessage(messagePrefix + "Please login with /pin <pin>");
                     }
                 });
 
-            }else{
+            } else {
                 this.allowLogin(player, false);
             }
         });
@@ -233,7 +255,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
             e.setCancelled(true);
 
-            if(!Lobby.getInstance().isLoggedIn(p)){
+            if (!Lobby.getInstance().isLoggedIn(p)) {
                 p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can use this.");
                 return;
             }
@@ -276,8 +298,8 @@ public class Lobby extends JavaPlugin implements Listener {
         return false;
     }
 
-    public void allowLogin(Player player, boolean addToList){
-        if(addToList && !this.allowedStaff.contains(player.getUniqueId()))
+    public void allowLogin(Player player, boolean addToList) {
+        if (addToList && !this.allowedStaff.contains(player.getUniqueId()))
             this.allowedStaff.add(player.getUniqueId());
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -286,7 +308,7 @@ public class Lobby extends JavaPlugin implements Listener {
         getClient().sendTCP(out.toByteArray());
     }
 
-    public boolean isLoggedIn(Player player){
+    public boolean isLoggedIn(Player player) {
         return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }

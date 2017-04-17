@@ -11,13 +11,13 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
@@ -144,7 +144,7 @@ public class ShardSelector extends AbstractMenu {
         else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
         else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
         else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
-        else if(shardID.startsWith("EVENT-")) return new ItemStack(Material.GOLD_INGOT);
+        else if (shardID.startsWith("EVENT-")) return new ItemStack(Material.GOLD_INGOT);
 
         return new ItemStack(Material.END_CRYSTAL);
     }
@@ -198,19 +198,21 @@ public class ShardSelector extends AbstractMenu {
             player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
             return;
         }
-        
-        try{
-        	long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
-        
-        	if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
-            	if ((System.currentTimeMillis() - lastShardTransfer) < 30000) {
-                	player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
-                	return;
-            	}
-        	}
-        }catch(Exception e){
-        	//Catches an NPE relating to if a player has a last shard transfer time
-        	e.printStackTrace();
+        try {
+            AtomicInteger secondsLeft = Lobby.getInstance().getRecentLogouts().getIfPresent(player.getUniqueId());
+
+            if (secondsLeft != null) {
+                if (secondsLeft.get() > 0 && !Rank.isTrialGM(player)) {
+                    int left = secondsLeft.get();
+                    player.sendMessage(ChatColor.RED + "You must wait " + left + " second(s) before you can transfer between shards.");
+                    return;
+                } else {
+                    Lobby.getInstance().getRecentLogouts().invalidate(player.getUniqueId());
+                }
+            }
+        } catch (Exception e) {
+            //Catches an NPE relating to if a player has a last shard transfer time
+            e.printStackTrace();
         }
 
         player.openInventory(inventory);
