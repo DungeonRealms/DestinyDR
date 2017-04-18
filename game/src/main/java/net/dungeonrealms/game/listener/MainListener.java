@@ -83,10 +83,12 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import sun.util.resources.cldr.sq.CalendarData_sq_AL;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -277,6 +279,7 @@ public class MainListener implements Listener {
         //No left over shit..
         savedOnLogout.remove(player.getUniqueId());
         savedAfterSharding.remove(player.getUniqueId());
+        Bukkit.getLogger().info("Removing from savedOnLogout and savedAfterSharding for " + player.getName());
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             player.kickPlayer(ChatColor.RED + "Unable to load your character.");
             return;
@@ -393,6 +396,7 @@ public class MainListener implements Listener {
     }
 
     private SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
@@ -452,8 +456,12 @@ public class MainListener implements Listener {
         }
         player.updateInventory();
         // Good to go lads
-        GameAPI.handleLogout(player.getUniqueId(), true, (result) -> {
-            savedOnLogout.add(player.getUniqueId());
+
+        String name = player.getName();
+        UUID uuid = player.getUniqueId();
+        GameAPI.handleLogout(uuid, true, (result) -> {
+            savedOnLogout.add(uuid);
+            Bukkit.getLogger().info("Adding to savedOnLogout for " + name);
         });
     }
 
