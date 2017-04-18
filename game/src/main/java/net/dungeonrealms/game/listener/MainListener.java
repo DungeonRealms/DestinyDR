@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
+import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -409,8 +410,8 @@ public class MainListener implements Listener {
         }
     }
 
-    public static volatile CopyOnWriteArrayList<UUID> savedAfterSharding = new CopyOnWriteArrayList<>();
-    public static volatile CopyOnWriteArrayList<UUID> savedOnLogout = new CopyOnWriteArrayList<>();
+    public static volatile Set<UUID> savedAfterSharding = new ConcurrentSet<>();
+    public static volatile Set<UUID> savedOnLogout = new ConcurrentSet<>();
 
 
     private void onDisconnect(Player player, boolean performChecks) {
