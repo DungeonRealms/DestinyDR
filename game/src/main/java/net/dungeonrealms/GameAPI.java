@@ -921,8 +921,6 @@ public class GameAPI {
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
             MainListener.savedAfterSharding.add(uuid);
-            Bukkit.getLogger().info("Adding to savedAfterSharding for " + uuid.toString());
-
             if(MainListener.savedOnLogout.contains(uuid)){
                 //Already saved? Missed the ball?
                 Bukkit.getLogger().info("Skipping rest of save due to being already saved on logout for " + uuid);

@@ -280,7 +280,6 @@ public class MainListener implements Listener {
         //No left over shit..
         savedOnLogout.remove(player.getUniqueId());
         savedAfterSharding.remove(player.getUniqueId());
-        Bukkit.getLogger().info("Removing from savedOnLogout and savedAfterSharding for " + player.getName());
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             player.kickPlayer(ChatColor.RED + "Unable to load your character.");
             return;
@@ -462,7 +461,6 @@ public class MainListener implements Listener {
         UUID uuid = player.getUniqueId();
         GameAPI.handleLogout(uuid, true, (result) -> {
             savedOnLogout.add(uuid);
-            Bukkit.getLogger().info("Adding to savedOnLogout for " + name);
         });
     }
 
