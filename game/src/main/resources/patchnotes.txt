@@ -4,10 +4,7 @@ Build <build>
 - &a&l2x&0 Drop Rates
 - &a&l30%&0 Increased Profession EXP Rates
 - Orbs now tradeable for 180 T3 Scrap
-- Balanced Polearm Energy Cost a bit more
-- Nerfed Food Loss a bit
-- &5Easter Eggs&0 now drop from mobs, they can give some great prizes!
-- Mobs no longer take fire tick / lava damage
+- Easter Eggs no longer drop from mobs.
 
 &8&lBug Fixes&0
 - Fixed glow not working for some people.
