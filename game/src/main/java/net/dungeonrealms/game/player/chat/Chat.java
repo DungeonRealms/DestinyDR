@@ -1,17 +1,16 @@
 package net.dungeonrealms.game.player.chat;
 
-import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -64,76 +63,76 @@ public class Chat {
      * @param orElse   the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
-    	
-    	if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")){
-        	player.closeInventory();
-    	}
-        
-    	if (chatListeners.remove(player) != null) {
+
+        if (player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")) {
+            player.closeInventory();
+        }
+
+        if (chatListeners.remove(player) != null) {
             Consumer<? super Player> old = orElseListeners.remove(player);
             if (old != null) {
                 old.accept(player);
             }
         }
-    	
+
         if (consumer != null) {
             chatListeners.put(player, consumer);
             if (orElse != null) orElseListeners.put(player, orElse);
         }
     }
-    
+
     public static void promptPlayerConfirmation(Player player, Runnable confirm, Runnable cancel) {
-    	listenForMessage(player, (event) -> {
-    		String message = event.getMessage();
-    		if(message.equalsIgnoreCase("confirm") || message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y") || message.equalsIgnoreCase("accept")) {
-    			confirm.run();
-    		} else if (message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n") || message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("deny")) {
-    			cancel.run();
-    		} else {
-    			player.sendMessage(ChatColor.RED + "Unknown response.");
-    			cancel.run();
-    		}
-    	}, p -> cancel.run());
+        listenForMessage(player, (event) -> {
+            String message = event.getMessage();
+            if (message.equalsIgnoreCase("confirm") || message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y") || message.equalsIgnoreCase("accept")) {
+                confirm.run();
+            } else if (message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n") || message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("deny")) {
+                cancel.run();
+            } else {
+                player.sendMessage(ChatColor.RED + "Unknown response.");
+                cancel.run();
+            }
+        }, p -> cancel.run());
     }
-    
-    public static void listenForNumber(Player player, Consumer<Integer> successCallback, Runnable failCallback){
-    	listenForNumber(player, Integer.MIN_VALUE, Integer.MAX_VALUE, successCallback, failCallback);
+
+    public static void listenForNumber(Player player, Consumer<Integer> successCallback, Runnable failCallback) {
+        listenForNumber(player, Integer.MIN_VALUE, Integer.MAX_VALUE, successCallback, failCallback);
     }
-    
+
     /**
      * Listens for a number.
      * Cancel callback will be run if "cancel", a non-number, a number larger than the max, or a number smaller than the minimum is entered.
-     * 
+     *
      * @param consumer Success Callback
      * @param Consumer Fail Callback
      */
-    public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback){
-    	Chat.listenForMessage(player, (evt) -> {
-    		int num;
-    		
-    		if(evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")){
-    			failCallback.run();
-    			return;
-    		}
-    		
-    		try{
-    			num = Integer.parseInt(evt.getMessage());
-    		}catch(Exception e){
-    			player.sendMessage(ChatColor.RED + "That is not a valid number!");
-    			failCallback.run();
-    			return;
-    		}
-    		
-    		if(num > max || num < min){
-    			player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
-    			failCallback.run();
-    			return;
-    		}
-    		successCallback.accept(num);
-    	}, (p) -> {
-    		if(failCallback != null)
-    			failCallback.run();
-    	});
+    public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback) {
+        Chat.listenForMessage(player, (evt) -> {
+            int num;
+
+            if (evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")) {
+                failCallback.run();
+                return;
+            }
+
+            try {
+                num = Integer.parseInt(evt.getMessage());
+            } catch (Exception e) {
+                player.sendMessage(ChatColor.RED + "That is not a valid number!");
+                failCallback.run();
+                return;
+            }
+
+            if (num > max || num < min) {
+                player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
+                failCallback.run();
+                return;
+            }
+            successCallback.accept(num);
+        }, (p) -> {
+            if (failCallback != null)
+                failCallback.run();
+        });
     }
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore",
@@ -142,7 +141,7 @@ public class Chat {
                     "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
                     "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga", "atherialrunes", "atherial",
-           "autism", "autismrealms", "jiggaboo", "hitler", "jews", "titanrift", "fucked", "mckillzone",
+            "autism", "autismrealms", "jiggaboo", "hitler", "jews", "titanrift", "fucked", "mckillzone",
             "MysticRunes.net", "play.wynncraft.com", "mineca.de", "play.atherialrunes.net", "autismrealms.us", "play.mckillzone.net", "niger", "kys"));
 
     /**
@@ -152,54 +151,54 @@ public class Chat {
      * @param recipientName
      * @param finalMessage
      */
-    public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
 
-        Player recipient = Bukkit.getPlayer(recipientName);
-        if (recipient != null && DatabaseAPI.getInstance().PLAYERS.containsKey(recipient.getUniqueId())) {
-            sendPrivateMessage(player, recipientName, DatabaseAPI.getInstance().PLAYERS.get(recipient.getUniqueId()), finalMessage);
-        } else
-            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> sendPrivateMessage(player, recipientName, document, finalMessage)));
-    }
+    private static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
 
-    private static void sendPrivateMessage(Player player, String recipientName, Document document, String finalMessage) {
-        String testUUID = DatabaseAPI.getInstance().getData(EnumData.UUID, document).toString();
+        PlayerWrapper sendingWrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(sendingWrapper == null) return;
 
-        if (testUUID.equals("")) {
-            player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
-            return;
-        }
-
-        if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isTrialGM(player))
-            if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
-                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+        SQLDatabaseAPI.getInstance().getUUIDFromName(recipientName, false, (uuid) -> {
+            if (uuid == null) {
+                player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
                 return;
             }
 
-        if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isTrialGM(player))) {
-            player.sendMessage(ChatColor.RED + "That user is not currently online.");
-            return;
-        }
+            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isTrialGM(player))
+                    if (!wrapper.getToggles().isReceiveMessage()) {
+                        player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                        return;
+                    }
 
-        List<String> ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, document);
+                if (!wrapper.isPlaying() || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
+                    player.sendMessage(ChatColor.RED + "That user is not currently online.");
+                    return;
+                }
 
-        boolean ignoringPlayer = ignoredPlayers != null && ignoredPlayers.contains(player.getUniqueId().toString());
 
-        ShardInfo shard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, document));
 
-        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
-                ChatColor.WHITE + finalMessage);
+                boolean ignoringPlayer = wrapper.getIgnoredFriends().containsKey(uuid);
 
-        if (!ignoringPlayer) {
-            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
-                    ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
-                    .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
-                    finalMessage));
+                ShardInfo shard = ShardInfo.getByPseudoName(wrapper.getShardPlayingOn());
 
-            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
-        } else {
-            Bukkit.getLogger().info("Supressing message from ignored player " + player.getName() + " to " + recipientName + " Message: " + finalMessage);
-        }
+                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
+                        (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
+                        ChatColor.WHITE + finalMessage);
+
+                if (!ignoringPlayer) {
+                    GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
+                            ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
+                            .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
+                            finalMessage));
+
+                    GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+                } else {
+                    Bukkit.getLogger().info("Supressing message from ignored player " + player.getName() + " to " + recipientName + " Message: " + finalMessage);
+                }
+            });
+        });
+
+
     }
 
     /**
@@ -219,11 +218,12 @@ public class Chat {
         }
     }
 
-    public static List<Player> getRecipients(boolean tradeChat){
+    public static List<Player> getRecipients(boolean tradeChat) {
         return Bukkit.getOnlinePlayers().stream().filter((pl) ->
                 GameAPI.isPlayer(pl) && (!tradeChat || ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, pl.getUniqueId()))))
                 .collect(Collectors.toList());
     }
+
     /**
      * Monitor the players primary language also check for bad words.
      *

@@ -208,36 +208,37 @@ public class MainListener implements Listener {
         e.getWorld().setKeepSpawnInMemory(false);
     }
 
-    @EventHandler
-    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-
-        if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
-            event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
-            return;
-        }
-
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
-            event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
-            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
-            return;
-        }
-        if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
-            String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
-                event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
-
-                        + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
-                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
-                        + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
-                return;
-            }
-        }
-
-        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
-
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-    }
+//    @EventHandler(priority = EventPriority.HIGH)
+//    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+//
+//        if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
+//            event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
+//            return;
+//        }
+//
+//        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
+//            event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+//            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
+//            return;
+//        }
+//
+//        if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
+//            String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
+//            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
+//                event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
+//
+//                        + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
+//                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
+//                        + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
+//                return;
+//            }
+//        }
+//
+//        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
+//
+//        // REQUEST PLAYER'S DATA ASYNC //
+//        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+//    }
 
     @EventHandler
     public void asyncChat(AsyncPlayerChatEvent event) {
@@ -272,18 +273,18 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            player.kickPlayer(ChatColor.RED + "Unable to load your character.");
-            return;
-        }
+//
+//        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+//            player.kickPlayer(ChatColor.RED + "Unable to load your character.");
+//            return;
+//        }
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
         try {
-            GameAPI.handleLogin(player.getUniqueId());
+            GameAPI.handleLogin(player);
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");

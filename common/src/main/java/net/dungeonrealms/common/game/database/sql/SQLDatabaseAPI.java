@@ -5,6 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
+import net.dungeonrealms.common.game.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -28,7 +30,7 @@ public class SQLDatabaseAPI {
 
     private Map<UUID, Map<DataType, Object>> storedData = new HashMap<>();
 
-    private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("SQL Thread").build());
+    private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
 
     private Cache<String, UUID> cachedNames = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
@@ -47,10 +49,23 @@ public class SQLDatabaseAPI {
 
     /**
      * Thread safe method, if the uuid had to be loaded in from the database then the callback will be called asynchronously
-     * @param name name to search for.
+     *
+     * @param name         name to search for.
      * @param loadCallback
      */
-    public void getUUIDFromName(String name, Consumer<UUID> loadCallback) {
+    public void getUUIDFromName(String name, boolean contactMojang, @NonNull Consumer<UUID> loadCallback) {
+        UUID stored;
+        if (name.contains("-") && name.length() > 25) {
+            try {
+                stored = UUID.fromString(name);
+                if (loadCallback != null) {
+                    //Just translate the given uuid?
+                    loadCallback.accept(stored);
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+        }
         Player pl = Bukkit.getPlayer(name);
         if (pl != null) {
             if (loadCallback != null) {
@@ -61,7 +76,7 @@ public class SQLDatabaseAPI {
             return;
         }
 
-        UUID stored = this.cachedNames.getIfPresent(name.toLowerCase());
+        stored = this.cachedNames.getIfPresent(name.toLowerCase());
         if (stored != null) {
             if (loadCallback != null) {
                 loadCallback.accept(stored);
@@ -78,6 +93,10 @@ public class SQLDatabaseAPI {
                         UUID found = UUID.fromString(rs.getString("uuid"));
                         this.cachedNames.put(name.toLowerCase(), found);
                         loadCallback.accept(found);
+                        return;
+                    } else if (contactMojang) {
+                        //Get UUID from Mojang? Prefer not to do this since they rate limit pretty easily..
+                        UUIDFetcher.getUUID(name, loadCallback);
                         return;
                     }
                 } catch (Exception e) {

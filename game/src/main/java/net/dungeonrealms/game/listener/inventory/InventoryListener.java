@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.ClickHandler;
@@ -146,6 +147,21 @@ public class InventoryListener implements Listener {
         Player onlineNow = Bukkit.getPlayer(target);
 
         String serializedInv = ItemSerialization.toString(inv);
+
+        PlayerWrapper.getPlayerWrapper(target, (wrapper) -> {
+
+            if (wrapper.isPlaying()) {
+                if (player.isOnline()) {
+                    player.sendMessage(ChatColor.RED + (onlineNow != null ? onlineNow.getName() : target.toString()) + " has sinced logged into DungeonRealms and your modified inventory would not been saved properly.");
+                    player.sendMessage(ChatColor.RED + "Please /mulesee them on their shard to see their live mule inventory.");
+                }
+            } else {
+//                wrapper.save
+
+                if (player.isOnline())
+                    player.sendMessage(ChatColor.RED + "Saved offline mule inventory to our database.");
+            }
+        });
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
             //Check again incase this data isnt accurate.
@@ -285,9 +301,9 @@ public class InventoryListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            	handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
-            	/*HealthHandler.getInstance().setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_POINTS, player) + 50);
-            	HealthHandler.getInstance().setPlayerHPRegenLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_REGEN, player) + 5);
+                handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
+                /*HealthHandler.getInstance().setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_POINTS, player) + 50);
+                HealthHandler.getInstance().setPlayerHPRegenLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_REGEN, player) + 5);
             	if (HealthHandler.getInstance().getPlayerHPLive(player) > HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
             		HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
             	}*/
@@ -467,15 +483,15 @@ public class InventoryListener implements Listener {
             Inventory bin = storage.collection_bin;
             if (bin == null)
                 return;
-            
+
             int i = 0;
             for (ItemStack stack : bin.getContents())
                 if (stack != null && stack.getType() != Material.AIR)
-                	i++;
+                    i++;
             if (i == 0) {
                 //storage.clearCollectionBin();
-            	DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-            	storage.collection_bin = null;
+                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+                storage.collection_bin = null;
             }
         }
     }
@@ -576,7 +592,7 @@ public class InventoryListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-            
+
             if (!GameAPI.isItemDroppable(event.getCurrentItem()) && !GameAPI.isItemSoulbound(event.getCurrentItem())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);

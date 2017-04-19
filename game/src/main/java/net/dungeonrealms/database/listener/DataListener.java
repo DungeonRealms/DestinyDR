@@ -1,21 +1,23 @@
 package net.dungeonrealms.database.listener;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-/**
+ /**
  * Created by Rar349 on 4/13/2017.
  */
 public class DataListener implements Listener {
 
     @SuppressWarnings("unused")
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerWrapper wrapper = new PlayerWrapper(event.getUniqueId());
         PlayerWrapper.setWrapper(event.getUniqueId(), wrapper);
@@ -41,6 +43,17 @@ public class DataListener implements Listener {
                     + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
             return;
         }
+
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
+            return;
+        }
+
+        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
+
+        // REQUEST PLAYER'S DATA ASYNC //
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
     @SuppressWarnings("unused")
@@ -52,14 +65,10 @@ public class DataListener implements Listener {
         wrapper.loadPlayerArmor(event.getPlayer());
     }
 
-    @SuppressWarnings("unused")
-    @EventHandler
+    @EventHandler()
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
-        wrapper.saveData(true, (wrap) -> {
-            wrap.setPlaying(false);
-        });
-
+//        wrapper.saveData(true, event.getPlayer(), true, (newWrapper) -> newWrapper.setPlayingStatus(false));
     }
 }

@@ -8,8 +8,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -42,7 +44,7 @@ public class PlayerWrapper {
     @Getter
     private static Map<UUID, PlayerWrapper> playerWrappers = new HashMap<>();
 
-    private static final ExecutorService SQL_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("SQL Thread").build());
+    private static final ExecutorService SQL_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("PlayerWrapper SQL Thread").build());
 
     @Getter
     private UUID uuid;
@@ -52,6 +54,10 @@ public class PlayerWrapper {
 
     @Getter
     private PlayerStats playerStats;
+
+    @Getter
+    @Setter
+    private long timeCreated;
 
     @Getter
     @Setter
@@ -133,6 +139,10 @@ public class PlayerWrapper {
     @Getter
     @Setter
     private UUID whoBannedMe, whoMutedMe;
+
+    @Getter
+    @Setter
+    private boolean firstTimePlaying = false;
 
     @Getter
     private HashMap<UUID, Integer> friendsList = new HashMap<>(), ignoredFriends = new HashMap<>(), pendingFriends = new HashMap<>();
@@ -276,6 +286,8 @@ public class PlayerWrapper {
                 this.portalShardsT4 = result.getInt("characters.portalShardsT4");
                 this.portalShardsT5 = result.getInt("characters.portalShardsT5");
 
+                this.timeCreated = result.getLong("characters.created");
+
                 this.loadPunishment(true);
 
 
@@ -342,9 +354,13 @@ public class PlayerWrapper {
         }
     }
 
+
     @SneakyThrows
     private void loadLocation(ResultSet set) {
         String locString = set.getString("characters.location");
+        if(locString == null || locString.isEmpty() || locString.equalsIgnoreCase("null")) {
+            firstTimePlaying = true;
+        }
         try {
             String[] locArray = locString.split(",");
             double x = Integer.parseInt(locArray[0]);
@@ -362,12 +378,21 @@ public class PlayerWrapper {
         }
     }
 
-    public void setPlaying(boolean playing) {
+    private String getLocationString(Player player) {
+        return new StringBuilder().append(player.getLocation().getBlockX()).append(',').append(player.getLocation().getBlockY()).append(',').append(player.getLocation().getBlockZ()).append(',').append((int) player.getLocation().getYaw()).append(',').append((int) player.getLocation().getPitch()).toString();
+    }
+
+    public String getFormattedShardName() {
+        if (!isPlaying()) return "None";
+        ShardInfo shard = ShardInfo.getByPseudoName(getShardPlayingOn());
+        return shard != null ? shard.getShardID() : "";
+    }
+
+    public void setPlayingStatus(boolean playing) {
         if (playing == this.isPlaying) return;
         this.isPlaying = playing;
 
         CompletableFuture.runAsync(() -> {
-
             try {
                 @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
                         "UPDATE users SET is_online = ?, currentShard = ?,  WHERE `users`.`uuid` = ?;");
@@ -382,23 +407,35 @@ public class PlayerWrapper {
         }, SQL_EXECUTOR_SERVICE);
     }
 
-    public void saveData(boolean async) {
-        this.saveData(async, null);
+    public void saveData(boolean async, Player player, boolean isOnline) {
+        this.saveData(async, player, isOnline,null);
     }
 
 
-    public void saveData(boolean async, Consumer<PlayerWrapper> callback) {
+    public void saveData(boolean async, Player player, boolean isOnline, Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> saveData(false), SQL_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> saveData(false, player, isOnline,callback), SQL_EXECUTOR_SERVICE);
             return;
         }
 
         try {
 
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                    "INSERT INTO ");
+                    "");
 
+            statement.addBatch(getCharacterReplaceQuery(player));
+            statement.addBatch(getAttributes().getUpdateStatement());
+            statement.addBatch(getPlayerStats().getUpdateStatement());
+            statement.addBatch(getToggles().getUpdateStatement());
+            if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
+            statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getHostName(), System.currentTimeMillis()));
 
+            statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank(), getRankExpiration()));
+
+            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm()));
+            statement.addBatch(getUsersUpdateQuery(player,isOnline));
+
+            statement.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -406,6 +443,75 @@ public class PlayerWrapper {
 
         if (callback != null)
             callback.accept(this);
+    }
+
+
+    private String getCharacterReplaceQuery(Player player) {
+
+        Inventory collectionBin = BankMechanics.getInstance().getStorage(uuid).collection_bin;
+        String binString = null;
+        if (collectionBin != null) binString = ItemSerialization.toString(collectionBin);
+
+        Inventory mule = MountUtils.inventories.get(player.getUniqueId());
+        String muleString = null;
+        if (mule != null) muleString = ItemSerialization.toString(mule);
+
+        String toReturn = "REPLACE INTO characters (character_id, account_id, created, level, experience, alignment, inventory_storage, armour_storage, gems, bank_storage, bank_level, shop_level, collection_storage, mule_storage, mule_level, health, location, activeMount, activePet, activeTrail, activeMountSkin, questData, foodLevel, combatLogged, shopOpened, loggerDied, currentHearthStone, alignmentTime, portalShardsT1, portalShardsT2, portalShardsT3, portalShardsT4, portalShardsT5) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');";
+        toReturn = String.format(toReturn, getCharacterID(), getAccountID(), getTimeCreated(), getLevel(), getExperience(), getAlignment().name(), ItemSerialization.toString(player.getInventory()), getEquipmentString(player), getGems(), ItemSerialization.toString(BankMechanics.storage.get(player.getUniqueId()).inv), getBankLevel(), getShopLevel(), binString, muleString, getMuleLevel(), getHealth(), getLocationString(player), getActiveMount(), getActiveMountSkin(), getQuestData(), player.getFoodLevel(), isCombatLogged(), isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5());
+        return toReturn;
+    }
+
+    private String getUsersUpdateQuery(Player player, boolean isOnline) {
+
+        String toReturn = "REPLACE INTO users (account_id, uuid, username, selected_character_id, ecash, joined, last_login, last_logout, last_free_ecash, last_shard_transfer, is_online, shop_open, currentShard, currencyTab, firstLogin) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');";
+        toReturn = String.format(toReturn, getAccountID(), player.getUniqueId(), player.getName(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isShopOpened(), this.isPlaying ? DungeonRealms.getShard().getShardID() : "null", getCurrencyTab().getSerializedScrapTab(), getFirstLogin());
+        return toReturn;
+    }
+
+    private String getFriendUpdateQuery() {
+        StringBuilder toReturn = new StringBuilder("REPLACE INTO friends (account_id, friend_id, status) VALUES ");
+        boolean isFirstValues = true;
+        for (int friendID : friendsList.values()) {
+            if (!isFirstValues) toReturn.append(", ");
+            toReturn.append('(');
+            toReturn.append(getAccountID());
+            toReturn.append(',');
+            toReturn.append(friendID);
+            toReturn.append(',');
+            toReturn.append("friends");
+            toReturn.append(')');
+            isFirstValues = false;
+        }
+
+        for (int friendID : ignoredFriends.values()) {
+            if (!isFirstValues) toReturn.append(", ");
+            toReturn.append('(');
+            toReturn.append(getAccountID());
+            toReturn.append(',');
+            toReturn.append(friendID);
+            toReturn.append(',');
+            toReturn.append("blocked");
+            toReturn.append(')');
+            isFirstValues = false;
+        }
+
+        for (int friendID : pendingFriends.values()) {
+            if (!isFirstValues) toReturn.append(", ");
+            toReturn.append('(');
+            toReturn.append(getAccountID());
+            toReturn.append(',');
+            toReturn.append(friendID);
+            toReturn.append(',');
+            toReturn.append("pending");
+            toReturn.append(')');
+            isFirstValues = false;
+        }
+
+        return toReturn.toString();
+    }
+
+    private boolean hasFriendData() {
+        return !friendsList.isEmpty() || !ignoredFriends.isEmpty() || !pendingFriends.isEmpty();
     }
 
     public static PlayerWrapper getPlayerWrapper(Player toGet) {
@@ -513,6 +619,12 @@ public class PlayerWrapper {
         return ItemSerialization.toString(toSave);
     }
 
+    public void loadPlayerAfterLogin(Player player) {
+        player.teleport(this.storedLocation);
+        this.loadPlayerInventory(player);
+        this.loadPlayerArmor(player);
+    }
+
     public void loadPlayerInventory(Player player) {
         if (pendingInventory == null) return;
         player.getInventory().setContents(pendingInventory.getContents());
@@ -528,6 +640,12 @@ public class PlayerWrapper {
         }
 
         player.updateInventory();
+    }
+
+    public void saveOfflineMuleInventory() {
+        CompletableFuture.runAsync(() -> {
+//            SQLDatabaseAPI.getInstance().getDatabase().
+        }, SQL_EXECUTOR_SERVICE);
     }
 
     public boolean isBanned() {

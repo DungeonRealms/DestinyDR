@@ -1,26 +1,18 @@
 package net.dungeonrealms.game.command;
 
-import com.mongodb.client.model.Filters;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
-import net.dungeonrealms.common.game.database.concurrent.query.SingleUpdateQuery;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -74,60 +66,53 @@ public class CommandEss extends BaseCommand {
                         return true;
                     }
 
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        String uuid = DatabaseAPI.getInstance().getUUIDFromName(args[1]);
-                        if (uuid == null || uuid.equals("")) {
+                    SQLDatabaseAPI.getInstance().getUUIDFromName(args[1], (uuid) -> {
+
+                        if (uuid == null) {
                             commandSender.sendMessage(ChatColor.RED + "Failed to find a user with the name " + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ".");
                             return;
                         }
 
                         boolean access;
-
                         try {
                             access = Boolean.parseBoolean(args[2]);
                         } catch (Exception e) {
                             commandSender.sendMessage(ChatColor.RED + "Invalid: " + args[2]);
                             return;
                         }
-                        UUID id = UUID.fromString(uuid);
-
-                        Document data = new Document("access", access).append("t1", 0).append("t2", 0).append("t3", 0).append("t4", 0).append("t5", 0);
-                        Document currencyTab = new Document("currencytab", data);
-
-                        //Local additions so it works on this server if they are on it.
-                        Document stored = DatabaseAPI.getInstance().PLAYERS.get(id);
-                        if (stored != null)
-                            stored.append("currencytab", data);
-
+//                        Document data = new Document("access", access).append("t1", 0).append("t2", 0).append("t3", 0).append("t4", 0).append("t5", 0);
+//                        Document currencyTab = new Document("currencytab", data);
+//
+//                        //Local additions so it works on this server if they are on it.
+//                        Document stored = DatabaseAPI.getInstance().PLAYERS.get(id);
+//                        if (stored != null)
+//                            stored.append("currencytab", data);
                         //Adds them to the database and sets that document for that uuid.
-                        MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid), new Document(EnumOperators.$SET.getUO(), currencyTab), doc -> {
-                            Bukkit.getLogger().info("Created / editted document for " + uuid + " to " + access);
-                            //Send update packet, hopefully works.
-                            GameAPI.updatePlayerData(id);
-                        }));
+//                        MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid), new Document(EnumOperators.$SET.getUO(), currencyTab), doc -> {
+//                            Bukkit.getLogger().info("Created / editted document for " + uuid + " to " + access);
+//                            //Send update packet, hopefully works.
+//                            GameAPI.updatePlayerData(id);
+//                        }));
 
+                        Player online = Bukkit.getPlayer(uuid);
+                        if (online != null) {
+                            if (access) {
+                                online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
+                            }
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            Player online = Bukkit.getPlayer(id);
-                            if (online != null) {
-                                if (access) {
-                                    online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
-                                }
+                            PlayerWrapper.getPlayerWrapper(online.getUniqueId(), (wrapper) -> {
 
-                                PlayerWrapper plWrapper = PlayerWrapper.getPlayerWrapper(online);
-                                CurrencyTab tab = plWrapper.getCurrencyTab();
+                                CurrencyTab tab = wrapper.getCurrencyTab();
                                 if (tab != null) {
                                     tab.hasAccess = access;
                                 } else if (access) {
                                     tab = new CurrencyTab(online.getUniqueId());
-                                    tab.loadCurrencyTab(null);
-
-                                    plWrapper.setCurrencyTab(tab);
+                                    wrapper.setCurrencyTab(tab);
                                 }
+                                commandSender.sendMessage(ChatColor.RED + "Scrap tab set to " + access + " for " + args[1]);
 
-                            }
-                            commandSender.sendMessage(ChatColor.RED + "Scrap tab set to " + access + " for " + args[1]);
-                        });
+                            });
+                        }
                     });
                     return true;
                 case "hearthstone":
@@ -210,7 +195,7 @@ public class CommandEss extends BaseCommand {
                             EnumMounts mount = EnumMounts.getByName(mountType);
                             if (mount != null && mount.getMountData() != null) {
                                 //Give the player the item?
-                                if(found != null){
+                                if (found != null) {
                                     found.getInventory().addItem(mount.getMountData().createMountItem(mount));
                                     commandSender.sendMessage(ChatColor.RED + "Mount given to " + found.getName());
                                     return true;

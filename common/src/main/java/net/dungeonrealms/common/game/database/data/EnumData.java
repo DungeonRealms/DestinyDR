@@ -9,7 +9,7 @@ public enum EnumData {
     USERNAME("info.username"), //Loaded
 //    HEALTH("info.health"), // Loaded
     FIRST_LOGIN("info.firstLogin"), //Loaded
-    LAST_LOGIN("info.lastLogin"), //Loaded
+//    LAST_LOGIN("info.lastLogin"), //Loaded
     LAST_LOGOUT("info.lastLogout"), //Loaded
 //    FREE_ECASH("info.freeEcash"), //Loaded
     LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
@@ -48,12 +48,12 @@ public enum EnumData {
     RANK_SUB_EXPIRATION("rank.expiration_date"), // Loaded
 
     //Converted to CurrencyTab in PlayerWrapper.
-    CURRENCY_TAB_ACCESS("currencytab.access"),//Loaded
-    CURRENCY_TAB_T1("currencytab.t1"),//Loaded
-    CURRENCY_TAB_T2("currencytab.t2"),//Loaded
-    CURRENCY_TAB_T3("currencytab.t3"),//Loaded
-    CURRENCY_TAB_T4("currencytab.t4"),//Loaded
-    CURRENCY_TAB_T5("currencytab.t5"),//Loaded
+//    CURRENCY_TAB_ACCESS("currencytab.access"),//Loaded
+//    CURRENCY_TAB_T1("currencytab.t1"),//Loaded
+//    CURRENCY_TAB_T2("currencytab.t2"),//Loaded
+//    CURRENCY_TAB_T3("currencytab.t3"),//Loaded
+//    CURRENCY_TAB_T4("currencytab.t4"),//Loaded
+//    CURRENCY_TAB_T5("currencytab.t5"),//Loaded
 
     INVENTORY_COLLECTION_BIN("inventory.collection_bin"), //Loaded
     INVENTORY_MULE("inventory.mule"), //Loaded

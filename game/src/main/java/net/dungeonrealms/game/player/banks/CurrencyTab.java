@@ -55,6 +55,7 @@ public class CurrencyTab {
                 scrapStorage.put(tier, Integer.parseInt(args[i]));
             }
 
+            hasAccess = true;
         } catch (Exception e) {
             Bukkit.getLogger().info("Unable to parse currency tab for " + owner.toString());
             e.printStackTrace();
@@ -62,30 +63,42 @@ public class CurrencyTab {
         return this;
     }
 
-    public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
-        if (scrapStorage.isEmpty()) {
-            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//    public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
+//        if (scrapStorage.isEmpty()) {
+//            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//
+//                Boolean access = (Boolean) DatabaseAPI.getInstance().getData(EnumData.CURRENCY_TAB_ACCESS, owner);
+//
+//                if (access == null || !access) {
+//                    hasAccess = false;
+//                } else {
+//                    hasAccess = true;
+//                    for (ScrapTier tier : ScrapTier.values()) {
+//                        Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
+//                        scrapStorage.put(tier, found == null ? 0 : found);
+//                    }
+//                }
+//
+//                if (doAfter != null)
+//                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> doAfter.accept(this));
+//            });
+//        } else if (doAfter != null) {
+//            doAfter.accept(this);
+//        }
+//    }
 
-                Boolean access = (Boolean) DatabaseAPI.getInstance().getData(EnumData.CURRENCY_TAB_ACCESS, owner);
 
-                if (access == null || !access) {
-                    hasAccess = false;
-                } else {
-                    hasAccess = true;
-                    for (ScrapTier tier : ScrapTier.values()) {
-                        Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
-                        scrapStorage.put(tier, found == null ? 0 : found);
-                    }
-                }
+    public String getSerializedScrapTab() {
+        if(!this.hasAccess)return null;
+        StringBuilder builder = new StringBuilder();
 
-                if (doAfter != null)
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> doAfter.accept(this));
-            });
-        } else if (doAfter != null) {
-            doAfter.accept(this);
+        for (int i = 0; i < ScrapTier.values().length; i++) {
+            ScrapTier tier = ScrapTier.values()[i];
+            Integer count = scrapStorage.get(tier);
+            builder.append(count == null ? 0 : count).append(":");
         }
+        return builder.toString();
     }
-
 
     public Inventory createCurrencyInventory() {
         Inventory inventory = Bukkit.createInventory(null, 9 * 3, getInventoryName());
