@@ -816,6 +816,7 @@ public class MainListener implements Listener {
 
                 if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand())) {
                     // They get fish!
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl.getUniqueId());
                     ItemStack fish = Fishing.getFishDrop(spot_tier);
                     if (pl.getInventory().firstEmpty() != -1) {
                         pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
@@ -833,7 +834,8 @@ public class MainListener implements Listener {
                     GamePlayer gamePlayer = GameAPI.getGamePlayer(pl);
                     if (gamePlayer == null) return;
                     gamePlayer.addExperience(exp / 8, false, true);
-                    gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
+                    wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 1);
+//                    gamePlayer().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);
@@ -846,7 +848,8 @@ public class MainListener implements Listener {
                         if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                         }
-                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
+                        //Caught another..
+                        wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 1);
                     }
 
                     int doi_triple_drop = new Random().nextInt(100) + 1;
@@ -869,7 +872,7 @@ public class MainListener implements Listener {
                         if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                         }
-                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 2);
+                        wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 2);
                     }
 
                     int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());

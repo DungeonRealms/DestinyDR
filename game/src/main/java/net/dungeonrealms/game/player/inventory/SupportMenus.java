@@ -19,10 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Brad on 16/06/2016.
@@ -56,7 +53,7 @@ public class SupportMenus {
             Player online = Bukkit.getPlayer(playerName);
 //            UUID uuid = online != null && online.getDisplayName().equalsIgnoreCase(playerName) ? online.getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, (uuid) -> {
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
                 // Always grab new data, unless they're logged in (which shouldn't ever be the case)
                 if (online == null && PlayerWrapper.getPlayerWrappers().containsKey(uuid)) {
                     PlayerWrapper.getPlayerWrappers().remove(uuid);
@@ -471,7 +468,7 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        List<String> unlockedPlayerTrails = wrapper.getTrails();
+        Set<String> unlockedPlayerTrails = wrapper.getTrails();
         int i = 18;
         for (ParticleAPI.ParticleEffect trailType : ParticleAPI.ParticleEffect.values()) {
             boolean hasUnlockedPlayerTrail = false;
@@ -524,7 +521,7 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        List<String> unlockedPlayerPets = wrapper.getPetsUnlocked();
+        Set<String> unlockedPlayerPets = wrapper.getPetsUnlocked();
         int i = 18;
         for (EnumPets petType : EnumPets.values()) {
             boolean hasUnlockedPet = false;

@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -43,6 +44,11 @@ public class CommandGlobalChat extends BaseCommand {
 
         Player player = (Player) sender;
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) {
+            return false;
+        }
+
         if (PunishAPI.isMuted(player.getUniqueId())) {
             player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
             return true;
@@ -73,7 +79,7 @@ public class CommandGlobalChat extends BaseCommand {
         prefix.append(GameChat.getPreMessage(player, true, messageType));
 
         boolean tradeChat = messageType.equals("trade");
-        if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId())) {
+        if (tradeChat && !wrapper.getToggles().isTradeChat()) {
             player.sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
             return true;
         }

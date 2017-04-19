@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.RealmState;
@@ -35,7 +36,10 @@ public class CommandResetRealm extends BaseCommand {
 
         Player player = (Player) sender;
 
-        long lastReset = (long) DatabaseAPI.getInstance().getData(EnumData.REALM_LAST_RESET, player.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return false;
+
+        long lastReset = wrapper.getLastRealmReset();
 
         if (lastReset != 0 && !Rank.isTrialGM(player)) {
             player.sendMessage(ChatColor.RED + "You may only reset your realm " + ChatColor.UNDERLINE + "ONCE" + ChatColor.RED + " per hour.");

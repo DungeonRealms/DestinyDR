@@ -1,15 +1,14 @@
 package net.dungeonrealms.game.listener.combat;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerGameStats;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
@@ -20,7 +19,6 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -98,7 +96,7 @@ public class PvEListener implements Listener {
         Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
         Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
 
-        if(!(receiver instanceof Player)) {
+        if (!(receiver instanceof Player)) {
             switch (weaponType) {
                 case BOW:
                     switch (tier) {
@@ -284,22 +282,24 @@ public class PvEListener implements Listener {
                 return;
             }
         }
-        for(int i = 0; i < 3; i++)
-        	DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
+        for (int i = 0; i < 3; i++)
+            DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
         DRMonster drMonster = ((DRMonster) ((CraftLivingEntity) monster).getHandle());
         drMonster.onMonsterDeath(highestDamage);
-        
+
         //Handle Quest Kill Objective
         //This has to be declared a second time as final to be used in .forEach
         final Player questReward = highestDamage;
-        for(Quest quest : Quests.getInstance().questStore.getList())
-			quest.getStageList().stream().filter(stage -> stage.getObjective() instanceof ObjectiveKill)
-				.forEach(stage -> ((ObjectiveKill)stage.getObjective()).handleKill(questReward, event.getEntity(), drMonster));
-        
+        for (Quest quest : Quests.getInstance().questStore.getList())
+            quest.getStageList().stream().filter(stage -> stage.getObjective() instanceof ObjectiveKill)
+                    .forEach(stage -> ((ObjectiveKill) stage.getObjective()).handleKill(questReward, event.getEntity(), drMonster));
+
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
-        if (gamePlayer == null) {
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(highestDamage);
+        if (gamePlayer == null || wrapper == null) {
             return;
         }
         if (killer != null) {
@@ -364,26 +364,27 @@ public class PvEListener implements Listener {
         } else {
             gamePlayer.addExperience(exp, false, true);
         }
-        PlayerStatistics playerStatistics = gamePlayer.getPlayerStatistics();
+        PlayerGameStats playerStatistics = wrapper.getPlayerGameStats();
         switch (monster.getMetadata("tier").get(0).asInt()) {
             case 1:
-                playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
+                playerStatistics.setT1MonsterKills(playerStatistics.getT1MonsterKills() + 1);
                 break;
             case 2:
-                playerStatistics.setT2MobsKilled(playerStatistics.getT2MobsKilled() + 1);
+                playerStatistics.setT2MonsterKills(playerStatistics.getT2MonsterKills() + 1);
                 break;
             case 3:
-                playerStatistics.setT3MobsKilled(playerStatistics.getT3MobsKilled() + 1);
+                playerStatistics.setT3MonsterKills(playerStatistics.getT3MonsterKills() + 1);
                 break;
             case 4:
-                playerStatistics.setT4MobsKilled(playerStatistics.getT4MobsKilled() + 1);
+                playerStatistics.setT4MonsterKills(playerStatistics.getT4MonsterKills() + 1);
                 break;
             case 5:
-                playerStatistics.setT5MobsKilled(playerStatistics.getT5MobsKilled() + 1);
+                playerStatistics.setT5MonsterKills(playerStatistics.getT5MonsterKills() + 1);
                 break;
             default:
                 break;
         }
+
         switch (playerStatistics.getTotalMobKills()) {
             case 100:
                 Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_I);
@@ -443,8 +444,7 @@ public class PvEListener implements Listener {
             if (receiver instanceof CraftLivingEntity) {
                 DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
                 b.onBossAttack(event);
-            }
-            else
+            } else
                 return;
             powerChance = 3;
             if (rand.nextInt(100) <= powerChance) {

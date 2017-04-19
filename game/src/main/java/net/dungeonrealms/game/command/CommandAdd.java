@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -455,7 +456,7 @@ public class CommandAdd extends BaseCommand {
                     // This is a special command for giving YouTubers "everything" & for testing.
                     // Therefore, we want to ensure that the player is an authorized developer.
                     if (!Rank.isDev(player)) {
-                        player.sendMessage(ChatColor.RED + "This command can only be executed by a a developer.");
+                        player.sendMessage(ChatColor.RED + "This command can only be executed by a developer.");
                         return false;
                     }
 
@@ -470,8 +471,16 @@ public class CommandAdd extends BaseCommand {
                         }
                     }
 
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(currentProfile);
+
+                    if(wrapper == null) {
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline.");
+                        return false;
+                    }
+
+
                     // Add all pets to the player.
-                    List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, currentProfile.getUniqueId());
+                    Set<String> playerPets = wrapper.getPetsUnlocked();
                     for (EnumPets pets : EnumPets.values()) {
                         if (pets == EnumPets.BABY_HORSE) {
                             continue;

@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -70,27 +71,29 @@ public class AchievementManager implements GenericMechanic, Listener {
     }
 
     /**
-     * Checks the players online to see if they have earned my achievement.
+     * Checks the players online to see if they have earned an achievement.
      *
      * @param uuid
      * @since 1.0
      */
     public void handleLogin(UUID uuid) {
         if (Bukkit.getPlayer(uuid) == null) return;
-        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
-        if (playerPets.size() > 0) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return;
+        if (wrapper.getPetsUnlocked().size() > 0) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PET_COMPANION);
         }
-        if (playerPets.size() >= 3) {
+        if (wrapper.getPetsUnlocked().size() >= 3) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ANIMAL_TAMER);
         }
-        int playerBankGems = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid);
+        int playerBankGems = wrapper.getGems();
         BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
         if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
             //TODO: Check if they are Officer when type is implemented.
         }
         //TODO: Realm level/tier checks when they are implemented.
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             for (String dev : DungeonRealms.getInstance().getDevelopers()) {
                 if (player.getName().equalsIgnoreCase(dev)) {

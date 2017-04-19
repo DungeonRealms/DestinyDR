@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
@@ -29,6 +30,8 @@ public class CommandAnswer extends BaseCommand {
         Player p = (Player) sender;
         if (!Rank.isPMOD(p)) return false;
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+
         if ((args.length == 0) || (args.length < 2)) {
             sender.sendMessage(ChatColor.RED + "/answer [name] [message]");
             return false;
@@ -48,8 +51,8 @@ public class CommandAnswer extends BaseCommand {
 
         PlayerManager.PlayerToggles toggle = PlayerManager.PlayerToggles.RECEIVE_MESSAGES;
 
-        if (!(boolean) DatabaseAPI.getInstance().getData(toggle.getDbField(), p.getUniqueId())) {
-            toggle.setToggleState(p, true);
+        if (!wrapper.getToggles().isReceiveMessage()) {
+            wrapper.getToggles().setReceiveMessage(true);
             sender.sendMessage(ChatColor.GRAY + "Your DND has been disabled so players can reply to your answer.");
         }
 

@@ -285,7 +285,13 @@ public class InventoryListener implements Listener {
         // Level restrictions added back on 2/2/2017
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
-            int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null){
+                event.setCancelled(true);
+                return;
+            }
+
+            int playerLevel = wrapper.getLevel();
             if (playerLevel < a.getItemTier().getRangeValues()[0]) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + "cannot" + ChatColor.RED + " equip this " +

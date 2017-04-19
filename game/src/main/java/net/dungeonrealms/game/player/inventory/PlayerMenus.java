@@ -401,8 +401,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".explorer_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".explorer_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -438,8 +438,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".social_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".social_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -475,8 +475,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".currency_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".currency_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -512,8 +512,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".combat_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".combat_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -549,8 +549,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".realm_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".realm_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -586,8 +586,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".event")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".event")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
@@ -623,8 +623,8 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".character_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+            if (achievement.getDBName().contains(".character_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
                     if (achievement.getHide()) continue;
 
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{

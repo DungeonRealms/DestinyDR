@@ -2,14 +2,11 @@ package net.dungeonrealms;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.bulk.BulkWriteResult;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOneModel;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -29,7 +26,6 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -44,8 +40,6 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
@@ -57,7 +51,6 @@ import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -75,7 +68,6 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.minecraft.server.v1_9_R2.*;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -189,36 +181,6 @@ public class GameAPI {
                 }.runTask(DungeonRealms.getInstance());
             }
         }.runTaskAsynchronously(DungeonRealms.getInstance());
-    }
-
-    /**
-     * Method for calculating how many players we are retaining.
-     *
-     * @param retentionPolicy Calculate for who joined in seconds
-     * @return Returns how many players are we actually retaining
-     */
-    public static int calculatePlayerRetention(long retentionPolicy) {
-        // GRAB ALL DOCUMENTS //
-        FindIterable<Document> all = DatabaseInstance.playerData
-                .find(Filters.gte(EnumData.FIRST_LOGIN.getKey(), (System.currentTimeMillis()) - (retentionPolicy * 1000)));
-
-        final int[] retention = {0};
-
-        // RUN CHECK BLOCK FOR EACH DOCUMENT //
-        all.forEach(new com.mongodb.Block<Document>() {
-            @Override
-            public void apply(Document document) {
-                PlayerWrapper wrapper =
-                int minsPlayed = (Integer) DatabaseAPI.getInstance().getData(EnumData.TIME_PLAYED, document);
-                int level = (Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, document);
-                int bankGems = (Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, document);
-
-                // APPLY STATIC RETENTION POLICY //
-                if (minsPlayed >= 300 && level >= 8 && bankGems > 0)
-                    retention[0]++;
-            }
-        });
-        return retention[0];
     }
 
     /**
@@ -460,12 +422,20 @@ public class GameAPI {
         Constants.log.info("Saving all players' sessions...");
 
         final long currentTime = System.currentTimeMillis();
-        ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet()
-                .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> {
-            IGNORE_QUIT_EVENT.add(uuid);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
-            GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
-        }));
+        //Use this cause its offline access essentially?
+        ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().forEach(uuid -> {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+            wrapper.saveData(false, null, false, (done) -> {
+                wrapper.setPlayingStatus(false);
+                IGNORE_QUIT_EVENT.add(uuid);
+                GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
+            });
+//            savePlayerData(uuid, false, doAfter -> {
+//                IGNORE_QUIT_EVENT.add(uuid);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
+//                GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
+//            }));
+        });
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
@@ -786,12 +756,7 @@ public class GameAPI {
         return false;
     }
 
-    /**
-     * Saves player data
-     *
-     * @param uuid
-     * @since 1.0
-     */
+    /*
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         Player player = Bukkit.getPlayer(uuid);
 
@@ -817,6 +782,7 @@ public class GameAPI {
 
             //Currency Tab?
         }
+
 
         // PLAYER ARMOR AND INVENTORY
         Inventory inv = player.getInventory();
@@ -867,7 +833,7 @@ public class GameAPI {
 
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
-    }
+    }*/
 
     public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         handleLogout(uuid, async, doAfter, true, true);
@@ -1119,12 +1085,11 @@ public class GameAPI {
             }
         }
 
-        createNewData(player);
 
         try {
             if (playerWrapper.isCombatLogged()) {
                 String lastShard = playerWrapper.getShardPlayingOn();
-                if (!DungeonRealms.getShard().getPseudoName().equals(playerWrapper.getShardPlayingOn())) {
+                if (lastShard != null && !DungeonRealms.getShard().getPseudoName().equals(lastShard)) {
                     player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
                     return;
                 }
@@ -1156,7 +1121,7 @@ public class GameAPI {
         //Prevent players entering a dungeon as they spawn.
 
         TeleportAPI.addPlayerHearthstoneCD(player.getUniqueId(), 150);
-        if(playerWrapper.isFirstTimePlaying()) {
+        if (playerWrapper.isFirstTimePlaying()) {
             playerWrapper.setFirstLogin(System.currentTimeMillis());
 //            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
@@ -1165,8 +1130,8 @@ public class GameAPI {
 //            ItemManager.giveStarter(player, true);
 
             // Fix missing journal & portal rune
-            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
+            player.getInventory().setItem(8, ItemManager.createCharacterJournal(player));
+            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(player.getUniqueId()));
 
             if (DungeonRealms.getInstance().isEventShard) {
                 PlayerManager.PlayerToggles toggle;
@@ -1174,7 +1139,8 @@ public class GameAPI {
 
                 // Set Levels
                 GameAPI.getGamePlayer(player).updateLevel(level, false, true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level, true);
+                playerWrapper.setLevel(level);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level, true);
 
                 // Enable PVP
                 toggle = PlayerManager.PlayerToggles.PVP;
@@ -1316,7 +1282,6 @@ public class GameAPI {
         // Notices
         Notice.getInstance().doLogin(player);
 
-        createNewData(player);
 
         // Newbie Protection
         //ProtectionHandler.getInstance().handleLogin(player);
@@ -1354,7 +1319,7 @@ public class GameAPI {
 
         sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
 
-        Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
+        Utils.log.info("Fetched information for uuid: " + player.getUniqueId().toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
@@ -1402,12 +1367,12 @@ public class GameAPI {
         // calculate attributes and check inventory
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             GameAPI.calculateAllAttributes(player);
-            PlayerManager.checkInventory(uuid);
+            PlayerManager.checkInventory(player.getUniqueId());
         }, 2 * 20L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                if (gp.getStats().freePoints > 0) {
+                if (playerWrapper.getPlayerStats().freePoints > 0) {
                     final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                             "To allocate click ", ChatColor.WHITE);
                     normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
@@ -1428,14 +1393,13 @@ public class GameAPI {
             Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
 
             // check vanish
-            final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, player.getUniqueId());
-            if (isVanished != null && (Boolean) isVanished) {
+            if (playerWrapper.getToggles().isVanish()) {
                 GameAPI._hiddenPlayers.add(player);
                 player.setCustomNameVisible(false);
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                 Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
-                GameAPI.sendNetworkMessage("vanish", uuid.toString(), "true");
+                GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "true");
                 player.setGameMode(GameMode.SPECTATOR);
             } else {
                 player.setGameMode(GameMode.CREATIVE);
@@ -1455,21 +1419,6 @@ public class GameAPI {
         }, 100L);
     }
 
-    /**
-     * Creates data that was not present on the original release of DR.
-     * (Prevents NPEs)
-     */
-    private static void createNewData(Player player) {
-        UUID uuid = player.getUniqueId();
-        createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
-        createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
-        createIfMissing(uuid, EnumData.TOGGLE_GLOW, true);
-    }
-
-    private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {
-        if (DatabaseAPI.getInstance().getData(data, uuid) == null)
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, setTo, true);
-    }
 
     /**
      * type used to switch shard
@@ -1495,10 +1444,13 @@ public class GameAPI {
         // check if they're still here (server failed to accept them for some reason)
         new PlayerLogoutWatchdog(player);
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
-                doAfter -> GameAPI.handleLogout(player.getUniqueId(), true,
-                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName), true, false)
-        );
+        String name = player.getName();
+        UUID uuid = player.getUniqueId();
+        PlayerWrapper.getPlayerWrapper(player.getUniqueId(), wrapper -> {
+            wrapper.setLastShardTransfer(System.currentTimeMillis());
+            //Transfer the player after logout is done being handled.
+            GameAPI.handleLogout(uuid, true, doAfter -> BungeeUtils.sendToServer(name, serverBungeeName));
+        });
     }
 
     static void backupDatabase() {
@@ -1509,7 +1461,7 @@ public class GameAPI {
                 return;
             }
             UUID uuid = player.getUniqueId();
-            savePlayerData(uuid, true, doAfter -> Utils.log.info("Backed up information for uuid: " + uuid.toString()));
+//            savePlayerData(uuid, true, doAfter -> Utils.log.info("Backed up information for uuid: " + uuid.toString()));
         }
         DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
     }
@@ -1657,36 +1609,20 @@ public class GameAPI {
     public static boolean removePortalShardsFromPlayer(Player player, int shardTier, int amount) {
         if (amount <= 0) {
             return true;
-            // Someone done fucked up and made it remove a negative amount.
-            // Probably Chase.
         }
-        EnumData dataToCheck;
-        switch (shardTier) {
-            case 1:
-                dataToCheck = EnumData.PORTAL_SHARDS_T1;
-                break;
-            case 2:
-                dataToCheck = EnumData.PORTAL_SHARDS_T2;
-                break;
-            case 3:
-                dataToCheck = EnumData.PORTAL_SHARDS_T3;
-                break;
-            case 4:
-                dataToCheck = EnumData.PORTAL_SHARDS_T4;
-                break;
-            case 5:
-                dataToCheck = EnumData.PORTAL_SHARDS_T5;
-                break;
-            default:
-                return false;
-        }
-        int playerPortalKeyShards = (int) DatabaseAPI.getInstance().getData(dataToCheck, player.getUniqueId());
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (wrapper == null) return true;
+        int playerPortalKeyShards = shardTier == 5 ? wrapper.getPortalShardsT5() : shardTier == 4 ? wrapper.getPortalShardsT4() : shardTier == 3 ? wrapper.getPortalShardsT3() : shardTier == 2 ? wrapper.getPortalShardsT2() : shardTier == 1 ? wrapper.getPortalShardsT1() : 0;
         if (playerPortalKeyShards <= 0) {
             return false;
         }
-        if (playerPortalKeyShards - amount >= 0) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, dataToCheck, (amount * -1),
-                    true);
+        if (playerPortalKeyShards >= amount) {
+            if (shardTier == 5) wrapper.setPortalShardsT5(playerPortalKeyShards - amount);
+            if (shardTier == 4) wrapper.setPortalShardsT4(playerPortalKeyShards - amount);
+            if (shardTier == 3) wrapper.setPortalShardsT3(playerPortalKeyShards - amount);
+            if (shardTier == 2) wrapper.setPortalShardsT2(playerPortalKeyShards - amount);
+            if (shardTier == 1) wrapper.setPortalShardsT1(playerPortalKeyShards - amount);
             return true;
         } else {
             return false;
@@ -1818,6 +1754,7 @@ public class GameAPI {
     public static Map<String, Integer[]> calculateAllAttributes(Player p) {
         Map<String, Integer[]> attributes = new HashMap<>();
         GamePlayer gp = GameAPI.getGamePlayer(p);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         assert gp != null;
 
         // calculate from armor and weapon, then update the gp attributes property
@@ -1827,10 +1764,10 @@ public class GameAPI {
         gp.setCurrentWeapon(getItemUID(p.getEquipment().getItemInMainHand()));
 
         // add stat bonuses from the stat menu
-        changeAttributeVal(attributes, Item.ArmorAttributeType.STRENGTH, gp.getStats().strPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.DEXTERITY, gp.getStats().dexPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.INTELLECT, gp.getStats().intPoints);
-        changeAttributeVal(attributes, Item.ArmorAttributeType.VITALITY, gp.getStats().vitPoints);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.STRENGTH, wrapper.getPlayerStats().strPoints);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.DEXTERITY, wrapper.getPlayerStats().dexPoints);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.INTELLECT, wrapper.getPlayerStats().intPoints);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.VITALITY, wrapper.getPlayerStats().vitPoints);
 
         // apply stat bonuses (str, dex, int, and vit)
         applyStatBonuses(attributes, gp);
@@ -2274,7 +2211,8 @@ public class GameAPI {
     }
 
     public static boolean isPlayerHidden(UUID uuid) {
-        if (Bukkit.getPlayer(uuid) != null) return _hiddenPlayers.contains(Bukkit.getPlayer(uuid));
+        Player player = Bukkit.getPlayer(uuid);
+        return player != null && _hiddenPlayers.contains(player);
     }
 
     public static boolean isPlayerHidden(Player player) {

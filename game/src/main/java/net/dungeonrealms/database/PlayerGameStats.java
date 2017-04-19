@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 
-public class PlayerStats implements LoadableData, SaveableData {
+public class PlayerGameStats implements LoadableData, SaveableData {
 
     @Getter
     private int characterID;
@@ -29,7 +29,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     @Setter
     private int lootOpened, duelsWon, duelsLost, oreMined, fishCaught, orbsUsed, timePlayed, successfulEnchants, failedEnchants, ecashSpent, gemsEarned, gemsSpent;
 
-    public PlayerStats(int id){
+    public PlayerGameStats(int id){
         this.characterID = id;
     }
 
@@ -63,6 +63,9 @@ public class PlayerStats implements LoadableData, SaveableData {
         this.gemsSpent = getInt(resultSet, StatColumn.GEMS_SPENT);
     }
 
+    public int getTotalMobKills(){
+        return t1MonsterKills + t2MonsterKills + t3MonsterKills + t4MonsterKills + t5MonsterKills;
+    }
     public String getUpdateStatement(){
         return String.format("UPDATE statistics SET players_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
                 "monster_kills_t1 = '%s', monster_kills_t2 = '%s', monster_kills_t3 = '%s', monster_kills_t4 = '%s', monster_kills_t5 = '%s'," +

@@ -40,7 +40,7 @@ public class CommandLookup extends BaseCommand {
             return true;
         }
 
-        SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], (uuid) -> {
+        SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
             if (uuid == null) {
                 sender.sendMessage(ChatColor.RED + args[0] + " was not found in the database.");
                 return;
@@ -53,7 +53,7 @@ public class CommandLookup extends BaseCommand {
                 sender.sendMessage(ChatColor.GREEN + "Server: " + ChatColor.AQUA + (isPlaying ? server : "Offline"));
                 sender.sendMessage(ChatColor.GREEN + "Rank: " + ChatColor.AQUA + wrapper.getRank());
                 sender.sendMessage(ChatColor.GREEN + "Level: " + ChatColor.YELLOW + wrapper.getLevel());
-                sender.sendMessage(ChatColor.GREEN + "Time Played: " + ChatColor.YELLOW + GameAPI.formatTime(1000 * 60 * wrapper.getPlayerStats().getTimePlayed()));
+                sender.sendMessage(ChatColor.GREEN + "Time Played: " + ChatColor.YELLOW + GameAPI.formatTime(1000 * 60 * wrapper.getPlayerGameStats().getTimePlayed()));
                 if (!isPlaying) {
                     long lastSeen = wrapper.getLastLogout();
                     sender.sendMessage(ChatColor.GREEN + "Last Seen: " + ChatColor.YELLOW + GameAPI.formatTime(new Date().getTime() - lastSeen));
@@ -109,18 +109,7 @@ public class CommandLookup extends BaseCommand {
         return true;
     }
 
-    private String loadInventory(UUID player, EnumData inventory) {
-        return loadInventory(player, inventory, -1);
-    }
 
-    private String loadInventory(UUID player, EnumData inventory, int size) {
-        String source = (String) DatabaseAPI.getInstance().getData(inventory, player);
-        if (source == null || source.equals("null") || source.length() == 0 || source.equals("empty"))
-            return ChatColor.LIGHT_PURPLE + "Empty";
-        if (size > 0)
-            return formatInventoryData(ItemSerialization.fromString(source, size));
-        return formatInventoryData(ItemSerialization.fromString(source));
-    }
 
     private String formatInventoryData(Inventory inv) {
         int items = 0;

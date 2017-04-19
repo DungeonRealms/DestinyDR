@@ -1,14 +1,13 @@
 package net.dungeonrealms.game.mastery;
 
-import io.netty.util.concurrent.CompleteFuture;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -19,8 +18,6 @@ import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.statistics.PlayerStatistics;
-import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -34,9 +31,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -49,9 +44,7 @@ public class GamePlayer {
 
     private boolean sharding = false;
 
-    private PlayerStats playerStats;
-    private PlayerStatistics playerStatistics;
-
+//    private PlayerStats playerStats;
     /**
      * Attribute values and their values
      */
@@ -83,8 +76,7 @@ public class GamePlayer {
 
     public GamePlayer(Player player) {
         T = player;
-        this.playerStats = new PlayerStats(player.getUniqueId());
-        this.playerStatistics = new PlayerStatistics(player.getUniqueId());
+//        this.playerStats = new PlayerStats(player.getUniqueId());
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
@@ -126,6 +118,10 @@ public class GamePlayer {
             return Tier.TIER1;
     }
 
+    public int getLevel() {
+        return PlayerWrapper.getPlayerWrapper(T.getUniqueId()).getLevel();
+    }
+
     /**
      * Checks if player is in party.
      *
@@ -149,15 +145,9 @@ public class GamePlayer {
         TIER5,
     }
 
-    /**
-     * Gets the players level
-     *
-     * @return the level
-     * @since 1.0
-     */
-    public int getLevel() {
-        return playerStats.getLevel();
-    }
+//    public int getLevel() {
+//        return playerStats.getLevel();
+//    }
 
 
     /**
@@ -280,7 +270,8 @@ public class GamePlayer {
      * @since 1.0
      */
     public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
-        int level = getLevel();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
+        int level = wrapper.getLevel();
         if (level >= 100) return;
         int experience = getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
@@ -339,13 +330,18 @@ public class GamePlayer {
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
         setPlayerEXP(0);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
+
+        wrapper.setExperience(0);
+        wrapper.setLevel(wrapper.getLevel() + 1);
+//        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
+//        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
 
         if (levelUp) { // natural level up
-            getStats().lvlUp();
+            wrapper.getPlayerStats().lvlUp(wrapper.getLevel());
 
-            if (newLevel != getLevel()) return; // not a natural level up
+            if (newLevel != wrapper.getLevel()) return; // not a natural level up
 
             T.getWorld().playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
@@ -363,12 +359,12 @@ public class GamePlayer {
             T.sendMessage("");
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + newLevel);
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + getEXPNeeded(newLevel));
-            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + wrapper.getPlayerStats().freePoints);
             Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
         } else if (levelSet) { // level was set
-            getStats().setPlayerLevel(newLevel);
-
+//            get().setPlayerLevel(newLevel);
+            wrapper.setLevel(newLevel);
             Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             T.playSound(T.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
         }
@@ -426,10 +422,9 @@ public class GamePlayer {
     /**
      * @return Player Stats
      */
-    public PlayerStats getStats() {
-        return playerStats;
-    }
-
+//    public PlayerStats getStats() {
+//        return playerStats;
+//    }
     public int getPlayerGemFind() {
         return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.GEM_FIND);
     }

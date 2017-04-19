@@ -21,6 +21,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,9 +67,9 @@ public class CommandEss extends BaseCommand {
                         return true;
                     }
 
-                    SQLDatabaseAPI.getInstance().getUUIDFromName(args[1], (uuid) -> {
+                    SQLDatabaseAPI.getInstance().getUUIDFromName(args[1], true, (id) -> {
 
-                        if (uuid == null) {
+                        if (id == null) {
                             commandSender.sendMessage(ChatColor.RED + "Failed to find a user with the name " + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ".");
                             return;
                         }
@@ -80,21 +81,8 @@ public class CommandEss extends BaseCommand {
                             commandSender.sendMessage(ChatColor.RED + "Invalid: " + args[2]);
                             return;
                         }
-//                        Document data = new Document("access", access).append("t1", 0).append("t2", 0).append("t3", 0).append("t4", 0).append("t5", 0);
-//                        Document currencyTab = new Document("currencytab", data);
-//
-//                        //Local additions so it works on this server if they are on it.
-//                        Document stored = DatabaseAPI.getInstance().PLAYERS.get(id);
-//                        if (stored != null)
-//                            stored.append("currencytab", data);
-                        //Adds them to the database and sets that document for that uuid.
-//                        MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid), new Document(EnumOperators.$SET.getUO(), currencyTab), doc -> {
-//                            Bukkit.getLogger().info("Created / editted document for " + uuid + " to " + access);
-//                            //Send update packet, hopefully works.
-//                            GameAPI.updatePlayerData(id);
-//                        }));
 
-                        Player online = Bukkit.getPlayer(uuid);
+                        Player online = Bukkit.getPlayer(id);
                         if (online != null) {
                             if (access) {
                                 online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
@@ -145,7 +133,8 @@ public class CommandEss extends BaseCommand {
                             String playerName = args[1];
                             UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
                             String petType = args[2];
-                            List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            HashSet<String> playerPets = wrapper.getPetsUnlocked();
                             String petName;
                             petName = petType;
                             String petNameFriendly = petName.toUpperCase().replace("_", " ");
@@ -187,6 +176,10 @@ public class CommandEss extends BaseCommand {
                             Player found = Bukkit.getPlayer(playerName);
                             UUID uuid = found != null && found.getDisplayName().equalsIgnoreCase(playerName) ? found.getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
                             String mountType = args[2];
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if(wrapper == null) {
+                                return false;
+                            }
                             String mountFriendly = mountType.toUpperCase().replace("_", " ");
                             if (!GameAPI.isStringMount(mountType)) {
                                 commandSender.sendMessage(ChatColor.RED + "The mount " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " does not exist.");
@@ -202,7 +195,7 @@ public class CommandEss extends BaseCommand {
                                 }
                             }
 
-                            List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
+                            HashSet<String> playerMounts = wrapper.getMountsUnlocked();
                             if (!playerMounts.isEmpty()) {
                                 if (playerMounts.contains(mountType.toUpperCase())) {
                                     commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " mount.");
@@ -236,12 +229,16 @@ public class CommandEss extends BaseCommand {
                             String trailType = args[2];
                             String trailFriendly = trailType.toUpperCase().replace("_", " ");
 
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if(wrapper == null) {
+                                return false;
+                            }
                             if (!GameAPI.isStringTrail(trailType)) {
                                 commandSender.sendMessage(ChatColor.RED + "The trail " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
 
-                            List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+                            HashSet<String> playerTrails = wrapper.getTrails();
                             if (!playerTrails.isEmpty()) {
                                 if (playerTrails.contains(trailType.toUpperCase())) {
                                     commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
@@ -313,8 +310,12 @@ public class CommandEss extends BaseCommand {
                             String rankName = args[2].toUpperCase();
                             String modifyType = args[3].toLowerCase();
                             String currentRank = Rank.getInstance().getRank(uuid);
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if(wrapper == null) {
+                                return false;
+                            }
                             int days = Integer.parseInt(args[4]) * 86400;
-                            int subscriptionLength = Integer.parseInt(DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, uuid).toString());
+                            long subscriptionLength = wrapper.getRankExpiration();
 
                             if (rankName.equalsIgnoreCase("sub") || rankName.equalsIgnoreCase("sub+")) {
                                 if (!currentRank.equalsIgnoreCase("default") && !currentRank.equalsIgnoreCase(rankName) && (rankName.equalsIgnoreCase("sub") || (rankName.equalsIgnoreCase("sub+") && !currentRank.equalsIgnoreCase("sub")))) {
@@ -333,7 +334,7 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                     return false;
                                 }
-                                int finalSubLength = subscriptionLength;
+                                long finalSubLength = subscriptionLength;
                                 GameAPI.submitAsyncCallback(() -> {
                                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, false);
                                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, finalSubLength, false);
@@ -363,9 +364,14 @@ public class CommandEss extends BaseCommand {
                             String type = args[2].toLowerCase();
                             String rankName = args[3].toUpperCase();
 
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if(wrapper == null) {
+                                return false;
+                            }
+
                             switch (type) {
                                 case "rank":
-                                    String currentRank = DatabaseAPI.getInstance().getData(EnumData.RANK, uuid).toString().toUpperCase();
+                                    String currentRank = wrapper.getRank().toUpperCase();
                                     if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
                                         if (rankName.equalsIgnoreCase("SUB++")) {
                                             if (Bukkit.getPlayer(playerName) != null) {

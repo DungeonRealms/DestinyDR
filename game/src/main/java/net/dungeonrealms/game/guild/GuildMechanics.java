@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -539,7 +540,12 @@ public class GuildMechanics {
         }
 
         // They must be level 10
-        if (((Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId()) < 10)) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null){
+            Bukkit.getLogger().info("Null wrapper!");
+            return;
+        }
+        if (wrapper.getLevel() < 10) {
             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You must be at least " + ChatColor.WHITE + "" + ChatColor.BOLD + "LEVEL 10" + ChatColor.WHITE + " to create a guild.");
             return;
         }

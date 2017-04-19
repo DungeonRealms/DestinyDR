@@ -10,6 +10,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -80,7 +81,7 @@ public class CommandSet extends BaseCommand {
                         break;
                     }
                     GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
-                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
+                    PlayerWrapper.getPlayerWrapper(p.getUniqueId(), wrapper -> wrapper.setLevel(lvl));
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE + lvl);
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                 }
@@ -315,11 +316,11 @@ public class CommandSet extends BaseCommand {
                     player.sendMessage(ChatColor.GREEN + "Finished " + args[1].toLowerCase() + "ing all achievements.");
                 } else {
                     for (Achievements.EnumAchievements playerAchievements : Achievements.EnumAchievements.values()) {
-                        if (playerAchievements.getMongoName().equalsIgnoreCase("achievement." + args[2])) {
+                        if (playerAchievements.getDBName().equalsIgnoreCase("achievement." + args[2])) {
                             if (args[1].equalsIgnoreCase("unlock")) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
                             } else {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getMongoName(), true);
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getDBName(), true);
                             }
                             player.sendMessage(ChatColor.GREEN + "Successfully " + args[1].toLowerCase() + "ed the achievement: " + args[2].toLowerCase());
                             return true;

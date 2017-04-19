@@ -12,7 +12,7 @@ public enum EnumData {
 //    LAST_LOGIN("info.lastLogin"), //Loaded
     LAST_LOGOUT("info.lastLogout"), //Loaded
 //    FREE_ECASH("info.freeEcash"), //Loaded
-    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
+//    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
     LEVEL("info.netLevel"), //Loaded
     IP_ADDRESS("info.ipAddress"), //Loaded
     IS_PLAYING("info.isPlaying"), //Loaded

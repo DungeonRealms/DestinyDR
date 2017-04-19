@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -17,6 +16,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -30,10 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +50,7 @@ public class PlayerWrapper {
     private int accountID, characterID;
 
     @Getter
-    private PlayerStats playerStats;
+    private PlayerGameStats playerGameStats;
 
     @Getter
     @Setter
@@ -96,6 +93,10 @@ public class PlayerWrapper {
     @Getter
     @Setter
     private boolean enteringRealm = false, uploadingRealm, upgradingRealm;
+
+    @Getter
+    @Setter
+    private long lastRealmReset;
 
     @Getter
     @Setter
@@ -148,10 +149,10 @@ public class PlayerWrapper {
     private HashMap<UUID, Integer> friendsList = new HashMap<>(), ignoredFriends = new HashMap<>(), pendingFriends = new HashMap<>();
 
     @Getter
-    private List<Integer> achievements = Lists.newArrayList();
+    private List<String> achievements = Lists.newArrayList();
 
     @Getter
-    private List<String> mountsUnlocked, petsUnlocked, particlesUnlocked, mountSkins, trails;
+    private HashSet<String> mountsUnlocked, petsUnlocked, particlesUnlocked, mountSkins, trails;
 
     @Getter
     @Setter
@@ -162,10 +163,7 @@ public class PlayerWrapper {
     private PlayerToggles toggles;
 
     @Getter
-    private PlayerAttributes attributes;
-
-
-//    private
+    private PlayerStats playerStats;
 
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
@@ -228,14 +226,14 @@ public class PlayerWrapper {
                 this.lastLogout = result.getLong("users.last_logout");
                 this.lastShardTransfer = result.getLong("users.last_shard_transfer");
 
-                this.playerStats = new PlayerStats(characterID);
-                this.playerStats.extractData(result);
+                this.playerGameStats = new PlayerGameStats(characterID);
+                this.playerGameStats.extractData(result);
 
                 this.toggles = new PlayerToggles();
                 this.toggles.extractData(result);
 
-                this.attributes = new PlayerAttributes();
-                this.attributes.extractData(result);
+                this.playerStats = new PlayerStats(uuid);
+                this.playerStats.extractData(result);
 
                 this.ecash = result.getInt("users.ecash");
                 this.lastFreeEcash = result.getLong("users.last_free_ecash");
@@ -251,7 +249,7 @@ public class PlayerWrapper {
                 this.shopLevel = result.getInt("characters.shop_level");
                 this.storedFoodLevel = result.getInt("characters.foodLevel");
                 this.combatLogged = result.getBoolean("characters.combatLogged");
-                //this.achievements = StringUtils.deserializeList(result.getString("achievements"));
+                this.achievements = StringUtils.deserializeList(result.getString("characters.achievements"), ",");
                 this.shopOpened = result.getBoolean("characters.shopOpened");
                 this.loggerDied = result.getBoolean("characters.loggerDied");
                 this.lastIP = result.getString("ip_addresses.ip_address");
@@ -272,13 +270,14 @@ public class PlayerWrapper {
                 this.upgradingRealm = result.getBoolean("realm.upgrading");
                 this.realmTier = result.getInt("realm.tier");
                 this.firstLogin = result.getLong("users.firstLogin");
+                this.lastRealmReset = result.getLong("realm.lastReset");
 
                 //Unlockables.
-                this.mountsUnlocked = StringUtils.deserializeList(result.getString("users.mounts"), ",");
-                this.petsUnlocked = StringUtils.deserializeList(result.getString("users.pets"), ",");
-                this.particlesUnlocked = StringUtils.deserializeList(result.getString("users.particles"), ",");
-                this.mountSkins = StringUtils.deserializeList(result.getString("users.mountSkin"), ",");
-                this.trails = StringUtils.deserializeList(result.getString("users.trails"), ",");
+                this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
+                this.petsUnlocked = StringUtils.deserializeSet(result.getString("users.pets"), ",");
+                this.particlesUnlocked = StringUtils.deserializeSet(result.getString("users.particles"), ",");
+                this.mountSkins = StringUtils.deserializeSet(result.getString("users.mountSkin"), ",");
+                this.trails = StringUtils.deserializeSet(result.getString("users.trails"), ",");
 
                 this.portalShardsT1 = result.getInt("characters.portalShardsT1");
                 this.portalShardsT2 = result.getInt("characters.portalShardsT2");
@@ -358,7 +357,7 @@ public class PlayerWrapper {
     @SneakyThrows
     private void loadLocation(ResultSet set) {
         String locString = set.getString("characters.location");
-        if(locString == null || locString.isEmpty() || locString.equalsIgnoreCase("null")) {
+        if (locString == null || locString.isEmpty() || locString.equalsIgnoreCase("null")) {
             firstTimePlaying = true;
         }
         try {
@@ -408,13 +407,13 @@ public class PlayerWrapper {
     }
 
     public void saveData(boolean async, Player player, boolean isOnline) {
-        this.saveData(async, player, isOnline,null);
+        this.saveData(async, player, isOnline, null);
     }
 
 
     public void saveData(boolean async, Player player, boolean isOnline, Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> saveData(false, player, isOnline,callback), SQL_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> saveData(false, player, isOnline, callback), SQL_EXECUTOR_SERVICE);
             return;
         }
 
@@ -424,7 +423,7 @@ public class PlayerWrapper {
                     "");
 
             statement.addBatch(getCharacterReplaceQuery(player));
-            statement.addBatch(getAttributes().getUpdateStatement());
+            statement.addBatch(getPlayerStats().getUpdateStatement());
             statement.addBatch(getPlayerStats().getUpdateStatement());
             statement.addBatch(getToggles().getUpdateStatement());
             if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
@@ -432,8 +431,8 @@ public class PlayerWrapper {
 
             statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank(), getRankExpiration()));
 
-            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm()));
-            statement.addBatch(getUsersUpdateQuery(player,isOnline));
+            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm, lastReset) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm(), getLastRealmReset()));
+            statement.addBatch(getUsersUpdateQuery(player, isOnline));
 
             statement.executeBatch();
         } catch (SQLException e) {
@@ -545,6 +544,7 @@ public class PlayerWrapper {
     public static void setWrapper(UUID uuid, PlayerWrapper wrapper) {
         playerWrappers.put(uuid, wrapper);
     }
+
 
     @SneakyThrows
     private void loadBanks(ResultSet set) {
