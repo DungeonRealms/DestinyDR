@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.loot;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -110,9 +111,10 @@ public class LootSpawner {
                 }
             }
         }
-        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-        if (gamePlayer == null) return;
-        gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+//        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+        if (wrapper == null) return;
+        wrapper.getPlayerGameStats().setLootOpened(wrapper.getPlayerGameStats().getLootOpened() + 1);
         for (int i = 0; i < 6; i++) {
             player.getWorld().playEffect(block.getLocation().add(i, 0.5, i), Effect.TILE_BREAK, 25, 12);
             player.getWorld().playEffect(block.getLocation().add(i, 0.35, i), Effect.TILE_BREAK, 25, 12);

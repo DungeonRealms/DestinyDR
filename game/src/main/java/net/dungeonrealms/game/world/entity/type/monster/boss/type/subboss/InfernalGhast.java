@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -111,7 +112,7 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
 	}
 
 	@Override
-	public void addKillStat(GamePlayer gp) {
+	public void addKillStat(PlayerWrapper gp) {
 		
 	}
 }

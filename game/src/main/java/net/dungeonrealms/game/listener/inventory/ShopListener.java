@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -412,9 +413,13 @@ public class ShopListener implements Listener {
         }
         
         if (shop.getOwner() != null) {
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(shop.getOwner());
-            if (gamePlayer != null)
-                gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(shop.getOwner());
+            if(wrapper != null)
+                wrapper.getPlayerGameStats().setGemsEarned(wrapper.getPlayerGameStats().getGemsEarned() + 1 );
+//            GamePlayer gamePlayer = GameAPI.getGamePlayer(shop.getOwner());
+//            if (gamePlayer != null)
+//                gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
             
             Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
         } else {

@@ -80,7 +80,7 @@ public class SupportMenus {
                             ChatColor.WHITE + "E-Cash: " + wrapper.getEcash(),
                             ChatColor.WHITE + "Bank Balance: " + wrapper.getGems(),
                             ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst(wrapper.getHearthstone()).replace("_", " "),
-                            ChatColor.WHITE + "Alignment: " + Utils.ucfirst(wrapper.getAlignment().name()),
+                            ChatColor.WHITE + "Alignment: " + Utils.ucfirst(wrapper.getPlayerAlignment().name()),
                             //ChatColor.WHITE + "Last Logout: " + Utils.formatTimeAgo((int) (System.currentTimeMillis() / 1000) - Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid).toString())) + " ago", @todo: Fix a bug with this.
                             ChatColor.WHITE + "Join Date: " + Utils.getDate(wrapper.getFirstLogin() * 1000)
                     });

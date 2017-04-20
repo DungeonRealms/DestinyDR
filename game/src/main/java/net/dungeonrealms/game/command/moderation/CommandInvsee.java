@@ -4,6 +4,8 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 
 import org.bukkit.Bukkit;
@@ -44,22 +46,21 @@ public class CommandInvsee extends BaseCommand {
             sender.openInventory(Bukkit.getPlayer(playerName).getInventory());
         } else {
 
-            if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
-                return true;
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+                if(uuid == null) {
+                    sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                }
+
+                        PlayerWrapper.getPlayerWrapper(uuid, true, false, (wrapper) -> {
+                            if(wrapper == null || wrapper.getPendingInventory() == null) {
+                                sender.sendMessage(ChatColor.RED + "An error occurred.");
+                                return;
+                            }
+                            sender.openInventory(wrapper.getPendingInventory());
+                            offline_inv_watchers.put(sender.getUniqueId(), uuid);
+                        });
             }
-
-            UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-            Inventory inventoryView = Bukkit.createInventory(null, 36, playerName + "'s Offline Inventory View");
-
-            String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, p_uuid);
-            if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-                ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
-                inventoryView.setContents(items);
-            }
-
-            offline_inv_watchers.put(sender.getUniqueId(), p_uuid);
-            sender.openInventory(inventoryView);
+            );
         }
         return false;
     }

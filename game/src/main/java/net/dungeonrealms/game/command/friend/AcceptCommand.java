@@ -5,6 +5,9 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -42,31 +45,38 @@ public class AcceptCommand extends BaseCommand {
 
         String name = args[0];
 
+        SQLDatabaseAPI.getInstance().getUUIDFromName(name,false, (uuid) -> {
+            if(uuid == null) {
+                player.sendMessage(ChatColor.RED + "That is not a player.");
+                return;
+            }
+            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                if(!wrapper.isPlaying()) {
+                    player.sendMessage(ChatColor.RED + "That player is not on any shards.");
+                    return;
+                }
 
-        if (!isPlayer(name)) {
-            player.sendMessage(ChatColor.RED + "That is not a player.");
-            return false;
-        }
+                if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name.toLowerCase())) {
+                    player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
+                    return;
+                }
 
-        if (!isOnline(name)) {
-            player.sendMessage(ChatColor.RED + "That player is not on any shards.");
-            return false;
-        }
+                GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
+                FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
+            });
+        });
 
 
-        if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name.toLowerCase())) {
-            player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
-            return false;
-        }
-        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-        GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-        FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
         return false;
     }
 
     private boolean isOnline(String playerName) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid)).toString());
+        boolean playing = false;
+        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        });
+
+        return false;
     }
 
     private boolean isPlayer(String player) {

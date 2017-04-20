@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -55,11 +56,19 @@ public class Support {
             return;
         }
 
-        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, doAfter -> {
-            GameAPI.updatePlayerData(uuid);
-            player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-            SupportMenus.openMainMenu(player, playerName);
+        PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            wrapper.setLevel(type.equals("set") ? amount : type.equals("remove") ? wrapper.getLevel() + (amount * -1) : wrapper.getLevel() + amount);
+            wrapper.saveData(true, null, null, (wrap) -> {
+                GameAPI.updatePlayerData(uuid);
+                player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                SupportMenus.openMainMenu(player, playerName);
+            });
         });
+//        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, doAfter -> {
+//            GameAPI.updatePlayerData(uuid);
+//            player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+//            SupportMenus.openMainMenu(player, playerName);
+//        });
     }
 
     /**

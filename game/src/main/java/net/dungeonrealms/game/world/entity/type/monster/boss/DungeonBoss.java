@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -51,7 +52,7 @@ public interface DungeonBoss extends Boss {
     
     public String[] getItems();
     
-    public void addKillStat(GamePlayer gp);
+    public void addKillStat(PlayerWrapper gp);
     
     default net.minecraft.server.v1_9_R2.Entity spawnMinion(EnumMonster monsterType, String mobName, int tier) {
     	return spawnMinion(monsterType, mobName, tier, true);

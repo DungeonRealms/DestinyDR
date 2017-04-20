@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -86,7 +87,9 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     }
 
 	@Override
-	public void addKillStat(GamePlayer gp) {
-		gp.getPlayerStatistics().setMayelKills(gp.getPlayerStatistics().getMayelKills() + 1);
+	public void addKillStat(PlayerWrapper gp) {
+        gp.getPlayerGameStats().setBossMayelKills(gp.getPlayerGameStats().getBossMayelKills() + 1);
+
+//        gp.getPlayerStatistics().setMayelKills(gp.getPlayerStatistics().getMayelKills() + 1);
 	}
 }

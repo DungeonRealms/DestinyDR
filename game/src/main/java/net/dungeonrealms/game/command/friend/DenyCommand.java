@@ -4,6 +4,8 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,33 +36,40 @@ public class DenyCommand extends BaseCommand {
             return false;
         }
 
+        PlayerWrapper hisWrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(hisWrapper == null) return false;
+
         String name = args[0];
 
 
-        if (!isPlayer(name) || !isOnline(name)) {
-            player.sendMessage(ChatColor.RED + "That is not a player, or that player is not on any shards.");
-            return false;
-        }
-        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-
-        if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name)) {
-            player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
-            return false;
-        }
+        SQLDatabaseAPI.getInstance().getUUIDFromName(name,false,(uuid) -> {
+            if(uuid == null) {
+                player.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                return;
+            }
 
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, uuid.toString(), true);
-        player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " friend request!");
+            PlayerWrapper.getPlayerWrapper(uuid,(wrapper) -> {
+                if(!wrapper.isPlaying()) {
+                    player.sendMessage(ChatColor.RED + "This player is not online!");
+                }
+
+                if(!wrapper.getPendingFriends().containsKey(uuid)) {
+                    player.sendMessage(ChatColor.RED + "You're not pending a request from that user!");
+                    return;
+                }
+
+                hisWrapper.getPendingFriends().remove(uuid);
+
+                wrapper.getPendingFriends().remove(player.getUniqueId(),hisWrapper.getAccountID());
+                wrapper.saveFriends(false, null);
+
+                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " friend request!");
+            });
+        });
+
+
         return false;
     }
 
-    private boolean isOnline(String playerName) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid));
-    }
-
-    private boolean isPlayer(String player) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return uuid.equals("") ? false : true;
-    }
 }

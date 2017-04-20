@@ -3,6 +3,7 @@ package net.dungeonrealms.game.command.menu;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
@@ -48,7 +49,10 @@ public class CommandPet extends BaseCommand {
                 return true;
             }
 
-            String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+
+            if(wrapper == null) return false;
+            String petType = wrapper.getActivePet();
             if (petType == null || petType.equals("")) {
                 player.sendMessage(ChatColor.RED + "You currently don't have an active pet. Please select one from your profile.");
                 player.closeInventory();

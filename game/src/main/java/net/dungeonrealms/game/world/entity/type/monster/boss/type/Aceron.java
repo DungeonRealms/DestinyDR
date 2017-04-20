@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
@@ -68,8 +69,7 @@ public class Aceron extends DRWitherSkeleton implements DungeonBoss {
 	}
 
 	@Override
-	public void addKillStat(GamePlayer gp) {
+	public void addKillStat(PlayerWrapper gp) {
 		// TODO Auto-generated method stub
-		
 	}
 }

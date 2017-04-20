@@ -49,7 +49,7 @@ public class CommandSend extends BaseCommand {
 			return true;
 		}
 		
-		if(toSend == null){
+		if(toSend == null) {
 			if(args.length < 3 || !args[2].equals("force")) {
 				SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
 							if(uuid == null){

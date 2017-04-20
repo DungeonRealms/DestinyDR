@@ -505,7 +505,7 @@ public class CommandAdd extends BaseCommand {
                     DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, EnumPets.BAT.getRawName(), true);
 
                     // Add all trails to the player.
-                    List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, currentProfile.getUniqueId());
+                    HashSet<String> playerTrails = wrapper.getTrails();
                     for (ParticleAPI.ParticleEffect trails : ParticleAPI.ParticleEffect.values()) {
                         if (!playerTrails.isEmpty()) {
                             if (playerTrails.contains(trails.getRawName().toUpperCase())) {
@@ -519,7 +519,7 @@ public class CommandAdd extends BaseCommand {
                     DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, ParticleAPI.ParticleEffect.CRIT.getRawName(), true);
 
                     // Add all mount skins to the player.
-                    List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, currentProfile.getUniqueId());
+                    HashSet<String> playerMountSkins = wrapper.getMountSkins();
                     for (EnumMountSkins mountSkins : EnumMountSkins.values()) {
                         if (!playerMountSkins.isEmpty()) {
                             if (playerMountSkins.contains(mountSkins.getRawName().toUpperCase())) {

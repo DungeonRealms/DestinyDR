@@ -10,12 +10,12 @@ public enum EnumData {
 //    HEALTH("info.health"), // Loaded
     FIRST_LOGIN("info.firstLogin"), //Loaded
 //    LAST_LOGIN("info.lastLogin"), //Loaded
-    LAST_LOGOUT("info.lastLogout"), //Loaded
+//    LAST_LOGOUT("info.lastLogout"), //Loaded
 //    FREE_ECASH("info.freeEcash"), //Loaded
 //    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
-    LEVEL("info.netLevel"), //Loaded
+//    LEVEL("info.netLevel"), //Loaded
     IP_ADDRESS("info.ipAddress"), //Loaded
-    IS_PLAYING("info.isPlaying"), //Loaded
+//    IS_PLAYING("info.isPlaying"), //Loaded
     IS_COMBAT_LOGGED("info.isCombatLogged"), //Loaded
     EXPERIENCE("info.experience"),//Loaded
     GEMS("info.gems"),//Loaded

@@ -3,15 +3,13 @@ package net.dungeonrealms.game.donation;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.buffs.Buff;
 import net.dungeonrealms.game.donation.buffs.LevelBuff;
 import net.dungeonrealms.game.donation.buffs.LootBuff;
 import net.dungeonrealms.game.donation.buffs.ProfessionBuff;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -82,17 +80,17 @@ public class DonationEffects implements GenericMechanic {
         // check if there are available buffs (will be null if not)
         activeLootBuff = (LootBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.activeLootBuff"), LootBuff.class);
-        final ArrayList<String> queuedLootBuffData = (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
+        final ArrayList<String> queuedLootBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.queuedLootBuffs");
         if (queuedLootBuffData != null && !queuedLootBuffData.isEmpty()) {
             for (String s : queuedLootBuffData) {
-                queuedLootBuffs.add((LootBuff)Buff.deserialize(s, LootBuff.class));
+                queuedLootBuffs.add((LootBuff) Buff.deserialize(s, LootBuff.class));
             }
         }
 
         activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
                 (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
-        final ArrayList<String> queuedProfessionBuffData =  (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
+        final ArrayList<String> queuedProfessionBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
         if (queuedProfessionBuffData != null && !queuedProfessionBuffData.isEmpty()) {
             for (String s : queuedProfessionBuffData) {
@@ -103,7 +101,7 @@ public class DonationEffects implements GenericMechanic {
 
         activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
-        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
+        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.queuedLevelBuffs");
         if (queuedLevelBuffData != null && !queuedLevelBuffData.isEmpty()) {
             for (String s : queuedLevelBuffData) {
@@ -241,8 +239,7 @@ public class DonationEffects implements GenericMechanic {
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLootBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Loot Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        }
-        else {
+        } else {
             newLootBuff.activateBuff();
         }
     }
@@ -259,8 +256,7 @@ public class DonationEffects implements GenericMechanic {
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLevelBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Level Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        }
-        else {
+        } else {
             newLevelBuff.activateBuff();
         }
     }
@@ -277,8 +273,7 @@ public class DonationEffects implements GenericMechanic {
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newProfessionBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Profession Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        }
-        else {
+        } else {
             newProfessionBuff.activateBuff();
         }
     }
@@ -347,15 +342,19 @@ public class DonationEffects implements GenericMechanic {
             return true;
             //Someone done fucked up and made it remove a negative amount. Probably Chase.
         }
-        int playerEcash = (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (wrapper == null) return false;
+
+        int playerEcash = wrapper.getEcash();
         if (playerEcash <= 0) {
             return false;
         }
         if (playerEcash - amount >= 0) {
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-            if (gamePlayer == null) return false;
-            gamePlayer.getPlayerStatistics().setEcashSpent(gamePlayer.getPlayerStatistics().getEcashSpent() + amount);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
+
+            wrapper.getPlayerGameStats().setEcashSpent(wrapper.getPlayerGameStats().getEcashSpent() + amount);
+
+            wrapper.setEcash(wrapper.getEcash() - amount);
+//            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
             return true;
         } else {
             return false;

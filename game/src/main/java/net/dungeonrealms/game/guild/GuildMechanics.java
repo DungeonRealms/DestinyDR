@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
@@ -265,7 +266,7 @@ public class GuildMechanics {
     }
 
     private String getPlayerName(UUID uuid) {
-        String name = DatabaseAPI.getInstance().getOfflineName(uuid);
+        String name = SQLDatabaseAPI.getInstance().getUsernameFromUUID(uuid);
         return Bukkit.getPlayer(uuid) != null ? ChatColor.GREEN + name : ChatColor.GRAY + name;
     }
 

@@ -8,6 +8,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -309,7 +310,7 @@ public class CombatLog implements GenericMechanic {
             }
         }
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true);
+//        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true);
 
         MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld) world).getHandle());
         combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -385,8 +386,12 @@ public class CombatLog implements GenericMechanic {
                 combatLogger.handleTimeOut();
             }
 
+            //Get characterID.
+            SQLDatabaseAPI.getInstance().getSqlQueries().add("UPDATE characters SET combatLogged = 0 WHERE character_id = '" + "';");
             GameAPI.submitAsyncCallback(() -> {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+
+                //NEEDS RECODE.
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
                 return true;
             }, null);
         }

@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -211,14 +212,14 @@ public class ScoreboardHandler implements GenericMechanic {
 
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(player1);
-            if (gamePlayer == null) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player1);
+            if (wrapper == null) {
                 continue;
             }
-            int level = gamePlayer.getStats().getLevel();
+            int level = wrapper.getLevel();
 
             Team team = getPlayerTeam(scoreboard, player1);
-            ChatColor chatColor = GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor();
+            ChatColor chatColor = wrapper.getPlayerAlignment().getAlignmentColor();
             if (Rank.isTrialGM(player1)) {
                 chatColor = ChatColor.AQUA;
             }

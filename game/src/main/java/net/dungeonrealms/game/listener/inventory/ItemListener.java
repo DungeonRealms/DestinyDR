@@ -11,6 +11,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
@@ -342,7 +343,8 @@ public class ItemListener implements Listener {
                     event.getPlayer().getInventory().remove(resetBook);
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                            GameAPI.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
+                            wrapper.getPlayerStats().unallocateAllPoints(wrapper.getLevel());
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         } else {
                             event.getPlayer().getInventory().addItem(resetBook);

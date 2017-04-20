@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -304,8 +305,9 @@ public class KarmaHandler implements GenericMechanic {
         if (GameAPI.isPlayer(leKiller)) {
             killerPlayer = (Player) leKiller;
             GamePlayer deathGP = GameAPI.getGamePlayer(player);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (deathGP != null) {
-                deathGP.getPlayerStatistics().setDeaths(deathGP.getPlayerStatistics().getDeaths() + 1);
+                wrapper.getPlayerGameStats().setDeaths(wrapper.getPlayerGameStats().getDeaths() + 1);
             }
             EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
             GamePlayer killerGP = GameAPI.getGamePlayer(killerPlayer);
@@ -313,11 +315,11 @@ public class KarmaHandler implements GenericMechanic {
                 if (killerGP.hasNewbieProtection()) {
                     ProtectionHandler.getInstance().removePlayerProtection(killerPlayer);
                 }
-                killerGP.getPlayerStatistics().setPlayerKills(killerGP.getPlayerStatistics().getPlayerKills() + 1);
+                wrapper.getPlayerGameStats().setPlayerKills(wrapper.getPlayerGameStats().getPlayerKills() + 1);
                 if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
-                    killerGP.getPlayerStatistics().setLawfulKills(killerGP.getPlayerStatistics().getLawfulKills() + 1);
+                    wrapper.getPlayerGameStats().setLawfulKills(wrapper.getPlayerGameStats().getLawfulKills() + 1);
                 } else {
-                    killerGP.getPlayerStatistics().setUnlawfulKills(killerGP.getPlayerStatistics().getUnlawfulKills() + 1);
+                    wrapper.getPlayerGameStats().setUnlawfulKills(wrapper.getPlayerGameStats().getUnlawfulKills() + 1);
                 }
             }
             EnumPlayerAlignments alignmentKiller = getPlayerRawAlignment(killerPlayer);

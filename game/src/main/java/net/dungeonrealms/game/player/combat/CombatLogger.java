@@ -33,7 +33,7 @@ public class CombatLogger {
         setRespawnLocation();
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
     }
 
     public void handleTimeOut() {
@@ -41,8 +41,8 @@ public class CombatLogger {
             loggerNPC.remove();
             DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
             CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false,
-                    true);
+//            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false,
+//                    true);
         }
     }
 

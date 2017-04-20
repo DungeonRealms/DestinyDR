@@ -402,27 +402,6 @@ public class DatabaseAPI {
         return uuidString;
     }
 
-    public String getFormattedShardName(UUID uuid) {
-        boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
-        if (!isOnline) return "None";
-        ShardInfo shard = ShardInfo.getByPseudoName((String) getData(EnumData.CURRENTSERVER, uuid));
-        return shard != null ? shard.getShardID() : "";
-    }
-
-    public String getOfflineName(UUID uuid) {
-        if (Bukkit.isPrimaryThread()) {
-            Constants.log.info("[Database] Retrieving for " + uuid.toString() + "'s name on the main thread.");
-            if (Constants.debug)
-                printTrace();
-        }
-
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) return "";
-        else {
-            return ((Document) doc.get("info")).get("username", String.class);
-        }
-    }
-
     private void printTrace() {
         StackTraceElement trace = new Exception().getStackTrace()[2];
 

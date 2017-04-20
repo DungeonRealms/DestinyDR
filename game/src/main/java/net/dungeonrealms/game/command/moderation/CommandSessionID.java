@@ -5,6 +5,8 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,19 +33,34 @@ public class CommandSessionID extends BaseCommand {
             Player player = (Player) sender;
             if (Rank.isTrialGM(player)) {
                 if (args.length == 1) {
-                    UUID uuid = null;
-                    try {
-                        uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-                    } catch (Exception ignored) {
-                    }
-                    // Check
-                    if (uuid != null) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
-                        sender.sendMessage(ChatColor.GREEN + "Fixed " + args[0] + "'s session ID.");
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
-                        return true;
-                    }
+
+                    SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
+                        if (uuid == null) {
+                            sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
+                            return;
+                        }
+
+                        Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                        if(accountID == null){
+                            sender.sendMessage(ChatColor.RED + "Account ID not found for " + uuid);
+                            return;
+                        }
+
+                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 0, accountID);
+                });
+//                    UUID uuid = null;
+//                    try {
+//                        uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
+//                    } catch (Exception ignored) {
+//                    }
+//                    // Check
+//                    if (uuid != null) {
+//                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
+//                        sender.sendMessage(ChatColor.GREEN + "Fixed " + args[0] + "'s session ID.");
+//                    } else {
+//                        sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
+//                        return true;
+//                    }
                 }
             } else {
                 sender.sendMessage(ChatColor.RED + "Command: /session <player> | Fixes a player's session ID.");

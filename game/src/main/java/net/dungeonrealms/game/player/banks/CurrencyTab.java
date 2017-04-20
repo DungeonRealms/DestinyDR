@@ -116,8 +116,9 @@ public class CurrencyTab {
         if (newAmount > 250) newAmount = 250;
 
         this.scrapStorage.put(tier, newAmount);
+
         //Save async?
-        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
+//        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
     }
 
     public void depositScrap(ScrapTier tier, int amount) {
@@ -128,8 +129,9 @@ public class CurrencyTab {
         if (newAmount > 250) newAmount = 250;
 
         this.scrapStorage.put(tier, newAmount);
+
         //Save async?
-        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
+//        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
     }
 
     public String getInventoryName() {

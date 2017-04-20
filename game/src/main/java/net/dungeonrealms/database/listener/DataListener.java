@@ -2,6 +2,9 @@ package net.dungeonrealms.database.listener;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -34,6 +37,8 @@ public class DataListener implements Listener {
         }
         wrapper.loadData(false);
 
+        //Update their username to be up2date.
+        wrapper.setUsername(event.getName());
         if(wrapper.isPlaying()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
@@ -57,12 +62,13 @@ public class DataListener implements Listener {
     }
 
     @SuppressWarnings("unused")
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(PlayerJoinEvent event) {
+        if(!event.getPlayer().isOnline())return;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
-        wrapper.loadPlayerInventory(event.getPlayer());
-        wrapper.loadPlayerArmor(event.getPlayer());
+        wrapper.loadPlayerAfterLogin(event.getPlayer());
+        SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
     }
 
     @EventHandler()

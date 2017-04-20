@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -810,13 +811,13 @@ public class ClickHandler {
                 }
                 break;
             case "Wizard":
-                GamePlayer gp = GameAPI.getGamePlayer(player);
-                if (gp.getLevel() >= 10) {
-                    if (gp.getStats().resetAmounts > 0) {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                if (wrapper.getLevel() >= 10) {
+                    if (wrapper.getPlayerStats().resetAmounts > 0) {
                         player.sendMessage(ChatColor.GREEN + "One free stat reset available. Type 'yes' or 'y' to continue.");
                         Chat.listenForMessage(player, e -> {
                             if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
-                                gp.getStats().freeResets -= 1;
+                                wrapper.getPlayerStats().freeResets -= 1;
                                 player.sendMessage(ChatColor.GREEN + "Your stats have been reset.");
                             }
                         }, p -> p.sendMessage(ChatColor.RED + "Stat reset - " + ChatColor.BOLD + "cancelled" + ChatColor.RED + "."));
@@ -1610,7 +1611,7 @@ public class ClickHandler {
                         break;
 
                     case 1: // Allow Fight
-                        gp = GameAPI.getGamePlayer(player);
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) break;
                         // invert invulnerable flag
                         gp.setInvulnerable(!gp.isInvulnerable());

@@ -103,8 +103,6 @@ public class Chat {
      * Listens for a number.
      * Cancel callback will be run if "cancel", a non-number, a number larger than the max, or a number smaller than the minimum is entered.
      *
-     * @param consumer Success Callback
-     * @param Consumer Fail Callback
      */
     public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback) {
         Chat.listenForMessage(player, (evt) -> {
@@ -152,7 +150,7 @@ public class Chat {
      * @param finalMessage
      */
 
-    private static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
+    public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
 
         PlayerWrapper sendingWrapper = PlayerWrapper.getPlayerWrapper(player);
         if(sendingWrapper == null) return;
@@ -170,7 +168,7 @@ public class Chat {
                         return;
                     }
 
-                if (!wrapper.isPlaying() || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
+                if (!wrapper.isPlaying() || wrapper.getShardPlayingOn() == null || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
                     player.sendMessage(ChatColor.RED + "That user is not currently online.");
                     return;
                 }
@@ -180,6 +178,11 @@ public class Chat {
                 boolean ignoringPlayer = wrapper.getIgnoredFriends().containsKey(uuid);
 
                 ShardInfo shard = ShardInfo.getByPseudoName(wrapper.getShardPlayingOn());
+
+                if(shard == null){
+                    player.sendMessage(ChatColor.RED + "Unable to find shard to send to: " + wrapper.getShardPlayingOn());
+                    return;
+                }
 
                 player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
                         (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +

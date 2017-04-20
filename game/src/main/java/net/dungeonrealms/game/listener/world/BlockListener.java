@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
@@ -172,11 +173,11 @@ public class BlockListener implements Listener {
                 e.getBlock().setType(Material.STONE);
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
-
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
                 if (willBreak < breakChance || pickTier > tier) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     oreToAdd++;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
+                    wrapper.getPlayerGameStats().setOrbsUsed(wrapper.getPlayerGameStats().getOrbsUsed() + 1);
                     if (rand.nextInt(100) > duraBuff) {
                         RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 2);
                     }
@@ -193,16 +194,17 @@ public class BlockListener implements Listener {
 
                 if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
                     oreToAdd++;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                    wrapper.getPlayerGameStats().setOreMined(wrapper.getPlayerGameStats().getOreMined() + 1);
+                    if (wrapper.getToggles().isDebug())
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
                 }
 
                 int tripleDrop = rand.nextInt(100) + 1;
                 if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
                     oreToAdd = oreToAdd + 2;
-                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 2);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                    wrapper.getPlayerGameStats().setOreMined(wrapper.getPlayerGameStats().getOreMined() + 2);
+
+                    if (wrapper.getToggles().isDebug())
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
                 }
 
@@ -241,7 +243,7 @@ public class BlockListener implements Listener {
 
                     if (amount > 0) {
                         p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
-                        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        if (wrapper.getToggles().isDebug())
                             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
                     }
                 }

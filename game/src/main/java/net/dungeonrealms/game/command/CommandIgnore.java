@@ -8,6 +8,8 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,50 +44,65 @@ public class CommandIgnore extends BaseCommand {
         //2.5s cooldown between ignores..
         player.setMetadata("last_ignore", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 2500));
         String name = args[0];
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-
-            if (gamePlayer == null) return;
-
-            String sUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
-
-            if (sUUID == null || sUUID.equals("")) {
-                player.sendMessage(ChatColor.RED + "Player doesnt not exist.");
+        SQLDatabaseAPI.getInstance().getUUIDFromName(name, false, (uuid) -> {
+            if (uuid == null) {
+                player.sendMessage(ChatColor.RED + "Player doesnt exist.");
                 return;
             }
 
-            UUID uuid = UUID.fromString(sUUID);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if (wrapper == null) return;
 
+            Rank.getInstance().getRank(uuid, (rank) -> {
 
-            boolean alreadyIgnored = gamePlayer.getIgnoredPlayers().contains(uuid.toString());
-
-            String playerRank = Rank.getInstance().getRank(uuid);
-            if (Rank.isAtleastPMOD(playerRank)) {
-                player.sendMessage(ChatColor.RED + "You cannot ignore that player.");
-                return;
-            }
-
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-
-                if (alreadyIgnored)
-                    gamePlayer.getIgnoredPlayers().remove(uuid.toString());
-                else
-                    gamePlayer.getIgnoredPlayers().add(uuid.toString());
-
-                //Once done then save to the database.
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IGNORED, gamePlayer.getIgnoredPlayers(), true, (result) -> {
-                    if (alreadyIgnored) {
-                        player.sendMessage(ChatColor.GREEN + "You have removed " + name + " from your ignore list.");
-                        player.sendMessage(ChatColor.GRAY + "You will now see that players private messages.");
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You have ignored " + ChatColor.RED + ChatColor.BOLD + name + ChatColor.RED + "!");
-                        player.sendMessage(ChatColor.GRAY + "You will no longer see that players private messages.");
-                    }
-                });
             });
         });
+
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//
+//            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+//
+//            if (gamePlayer == null) return;
+//
+//            String sUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
+//
+//            if (sUUID == null || sUUID.equals("")) {
+//                player.sendMessage(ChatColor.RED + "Player doesnt not exist.");
+//                return;
+//            }
+//
+//            UUID uuid = UUID.fromString(sUUID);
+//
+//
+//            boolean alreadyIgnored = gamePlayer.getIgnoredPlayers().contains(uuid.toString());
+//
+//            String playerRank = Rank.getInstance().getRank(uuid);
+//            if (Rank.isAtleastPMOD(playerRank)) {
+//                player.sendMessage(ChatColor.RED + "You cannot ignore that player.");
+//                return;
+//            }
+//
+//
+//            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//
+//                if (alreadyIgnored)
+//                    gamePlayer.getIgnoredPlayers().remove(uuid.toString());
+//                else
+//                    gamePlayer.getIgnoredPlayers().add(uuid.toString());
+//
+//                //Once done then save to the database.
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IGNORED, gamePlayer.getIgnoredPlayers(), true, (result) -> {
+//                    if (alreadyIgnored) {
+//                        player.sendMessage(ChatColor.GREEN + "You have removed " + name + " from your ignore list.");
+//                        player.sendMessage(ChatColor.GRAY + "You will now see that players private messages.");
+//                    } else {
+//                        player.sendMessage(ChatColor.RED + "You have ignored " + ChatColor.RED + ChatColor.BOLD + name + ChatColor.RED + "!");
+//                        player.sendMessage(ChatColor.GRAY + "You will no longer see that players private messages.");
+//                    }
+//                });
+//            });
+//        });
         return false;
     }
 }

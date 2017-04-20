@@ -5,7 +5,10 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,49 +39,50 @@ public class CommandWhois extends BaseCommand {
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
-            String id = DatabaseAPI.getInstance().getUUIDFromName(p_name);
-            if (id.equals("")) {
-                sender.sendMessage(ChatColor.RED + "Player " + p_name + " has never logged into DungeonRealms.");
-                return;
-            }
-            UUID uuid = UUID.fromString(id);
-            boolean isPlaying = (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid);
-            String server = DatabaseAPI.getInstance().getFormattedShardName(uuid);
+            SQLDatabaseAPI.getInstance().getUUIDFromName(p_name, false, (uuid) -> {
 
-            if (!isPlaying) {
-                sender.sendMessage(ChatColor.RED + p_name + ", currently offline.");
-            }
+                PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
 
+                    if(wrapper == null) {
+                        sender.sendMessage("Something went wrong.");
+                        return;
+                    }
 
-            Document banDoc = PunishAPI.getBanDocument(uuid);
-            if (banDoc != null) {
-                Document bansDoc = banDoc.get("bans", Document.class);
-                long banTime = bansDoc.getLong("bannedUntil");
-                String reason = bansDoc.getString("reason");
-                String by = bansDoc.getString("bannedBy");
+                    if (!wrapper.isPlaying()) {
+                        sender.sendMessage(ChatColor.RED + p_name + ", currently offline.");
+                    }
 
-                if (banTime != 0) {
-                    if (banTime == -1 || banTime > System.currentTimeMillis()) {
-                        sender.sendMessage(ChatColor.RED + p_name + " is currently banned for " + reason + " by " + by);
+                    String server = wrapper.getFormattedShardName();
 
-                        if (banTime > 0) {
-                            String whenUnbanned = PunishAPI.timeString((int) ((banTime - System.currentTimeMillis()) / 60000));
-                            sender.sendMessage(ChatColor.RED + p_name + " will be unbanned in " + whenUnbanned);
-                        } else if (banTime == -1) {
-                            sender.sendMessage(ChatColor.RED + p_name + " is never set to be unbanned.");
+                        long banTime = wrapper.getBanExpire();
+                        String reason = wrapper.getBanReason();
+                        UUID byUID = wrapper.getWhoBannedMe();
+                    if (banTime != 0) {
+                        if (banTime == -1 || banTime > System.currentTimeMillis()) {
+                            String whoBanned = SQLDatabaseAPI.getInstance().getUsernameFromUUID(byUID);
+
+                            if (banTime > 0) {
+                                String whenUnbanned = PunishAPI.timeString((int) ((banTime - System.currentTimeMillis()) / 60000));
+                                sender.sendMessage(ChatColor.RED + p_name + " will be unbanned in " + whenUnbanned);
+                                sender.sendMessage(ChatColor.RED + p_name + " is currently banned for " + reason + " by " + whoBanned);
+                            } else if (banTime == -1) {
+                                sender.sendMessage(ChatColor.RED + p_name + " is never set to be unbanned.");
+                                sender.sendMessage(ChatColor.RED + p_name + " is currently banned for " + reason + " by " + whoBanned);
+                            }
                         }
                     }
-                }
-            }
 
-            if (isPlaying) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    if (Bukkit.getPlayer(p_name) == null)
-                        sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on server " + ChatColor.UNDERLINE + server);
-                    else
-                        sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on " + ChatColor.UNDERLINE + "YOUR" + ChatColor.YELLOW + " server.");
+
+                    if (wrapper.isPlaying()) {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            if (Bukkit.getPlayer(p_name) == null)
+                                sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on server " + ChatColor.UNDERLINE + server);
+                            else
+                                sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on " + ChatColor.UNDERLINE + "YOUR" + ChatColor.YELLOW + " server.");
+                        });
+                    }
                 });
-            }
+            });
 //        });
         });
         return true;

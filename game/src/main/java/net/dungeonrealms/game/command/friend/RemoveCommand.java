@@ -4,6 +4,8 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -35,34 +37,35 @@ public class RemoveCommand extends BaseCommand {
 
         String name = args[0];
 
+        PlayerWrapper hisWrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(hisWrapper == null) return false;
 
-        if (!isPlayer(name) || !isOnline(name)) {
-            player.sendMessage(ChatColor.RED + "That is not a player, or that player is not on any shards.");
-            return false;
-        }
-        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
+        SQLDatabaseAPI.getInstance().getUUIDFromName(name, false, (uuid) -> {
+            if(uuid == null) {
+                player.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms!");
+                return;
+            }
+            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                if(!wrapper.isPlaying()) {
+                    player.sendMessage(ChatColor.RED + "This person is not online!");
+                    return;
+                }
 
-        if (!FriendHandler.getInstance().areFriends(player, uuid)) {
-            player.sendMessage(ChatColor.RED + "You're not friends with that user.");
-            return false;
-        }
+                if(hisWrapper.getFriendsList().containsKey(uuid)) {
+                    player.sendMessage(ChatColor.RED + "You are not friends with this person!");
+                    return;
+                }
 
-
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
-        player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
+                //DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
+                hisWrapper.getFriendsList().remove(uuid);
+                wrapper.getFriendsList().remove(player.getUniqueId());
+                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
+                wrapper.saveFriends(false, null);
+            });
+        });
 
 
         return false;
     }
 
-    private boolean isOnline(String playerName) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid));
-    }
-
-    private boolean isPlayer(String player) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return uuid.equals("") ? false : true;
-    }
 }

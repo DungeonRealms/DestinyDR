@@ -34,6 +34,7 @@ public class Rank {
     }
 
 
+    public static boolean isRank()
     public static boolean isRank(OfflinePlayer player, String name){
         return isRank(player, null, name);
     }

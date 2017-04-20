@@ -1,21 +1,18 @@
 package net.dungeonrealms;
 
 import com.esotericsoftware.minlog.Log;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.UpdateResult;
-
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.listener.DataListener;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
@@ -35,7 +32,8 @@ import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
-import net.dungeonrealms.game.command.test.*;
+import net.dungeonrealms.game.command.test.CommandTestDupe;
+import net.dungeonrealms.game.command.test.CommandTestRank;
 import net.dungeonrealms.game.command.toggle.*;
 import net.dungeonrealms.game.commands.quests.CommandQuestEditor;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -85,11 +83,9 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -102,6 +98,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -197,7 +194,7 @@ public class DungeonRealms extends JavaPlugin {
         setRebootTime(min + (long) (random.nextDouble() * (max - min)));
 
         Utils.log.info("DungeonRealms - Reading Shard Config");
-        
+
         Ini ini = new Ini();
         try {
             ini.load(new FileReader("shardconfig.ini"));
@@ -232,10 +229,10 @@ public class DungeonRealms extends JavaPlugin {
         shard = ShardInfo.getByShardID(shardid);
         BungeeUtils.setPlugin(this);
         BungeeUtils.fetchServers();
-        
+
         Utils.log.info("DungeonRealms - Discovered Identity as " + shard.getShardID());
         Utils.log.info("DungeonRealms - Connecting to Master Server");
-        
+
         client = new GameClient();
 
         try {
@@ -244,16 +241,25 @@ public class DungeonRealms extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         //These have to load seperately since they are part of dr-common and therefor cannot implement GenericMechanic
-        DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(bungeeName);
-        
+//        DatabaseInstance.getInstance().startInitialization(true);
+        try {
+            SQLDatabaseAPI.getInstance().init();
+        } catch (Exception e) {
+            Bukkit.getLogger().info("Unable to connect to MySQL Database.. Exception: ");
+            e.printStackTrace();
+            Bukkit.shutdown();
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+//        DatabaseAPI.getInstance().startInitialization(bungeeName);
+
         ItemGenerator.loadModifiers();
         PowerMove.registerPowerMoves();
         ItemGenerator.loadModifiers();
 
-        
+
         Utils.log.info("DungeonRealms - Loading Mechanics");
 
         mm = new MechanicManager();
@@ -284,9 +290,10 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Fishing.getInstance());
         mm.registerMechanic(TutorialIsland.getInstance());
         mm.registerMechanic(new TradeManager());
-        
+
         if (!isInstanceServer) {
-            mm.registerMechanic(Teleportation.getInstance());;
+            mm.registerMechanic(Teleportation.getInstance());
+            ;
             mm.registerMechanic(new ForceField());
             mm.registerMechanic(CrashDetector.getInstance());
             mm.registerMechanic(SpawningMechanics.getInstance());
@@ -294,7 +301,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new GraveyardMechanic());
         }
-        
+
         mm.loadMechanics();
 
         // START UPDATER TASK //
@@ -320,7 +327,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new PvEListener(), this);
         pm.registerEvents(new PacketLogger(), this);
         pm.registerEvents(new CurrencyTabListener(), this);
-        
+
         if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new BankListener(), this);
@@ -334,7 +341,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.onEnable();
             tcc.onEnable();
         }
-        
+
         Utils.log.info("DungeonRealms - Registering Commands");
 
         CommandManager cm = new CommandManager();
@@ -525,15 +532,15 @@ public class DungeonRealms extends JavaPlugin {
         Bukkit.getServer().setWhitelist(false);
 
         // FIX PLAYERS //
-        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard.getPseudoName()),
-                new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-
-        if (playerFixResult.wasAcknowledged())
-            Constants.log.info("DungeonRealms - Set " + playerFixResult.getModifiedCount() + " players' " +
-                    "statuses to offline from " +
-                    "shard " + shard);
-        else Constants.log.info("DungeonRealms - Operation failed: database error.");
-
+        try {
+            //Need to execute sync so its ready when its online.
+            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("UPDATE users SET currentShard = null, isPlaying = false WHERE currentShard = '" + shard.getPseudoName() + "';");
+            int updates = statement.executeUpdate();
+            Bukkit.getLogger().info("DungeonRealms - Set " + updates + " players' " +
+                    "statuses to offline from " + "shard " + shard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Utils.log.info("DungeonRealms - Startup Complete. Took " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
 
         try {
@@ -553,7 +560,7 @@ public class DungeonRealms extends JavaPlugin {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                GameAPI.GAMEPLAYERS.values().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
+                PlayerWrapper.getPlayerWrappers().values().forEach(gp -> gp.getPlayerGameStats().setTimePlayed(gp.getPlayerGameStats().getTimePlayed() + 1));
             }
         }, 0L, 1000);
 
@@ -623,33 +630,33 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-    	if(!isAlmostRestarting() && !CrashDetector.crashDetected) {
-    		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " failed to load.");
-    		Utils.log.info("DungeonRealms - Failed to load.");
-    		//Shutdown?
-    	} else {
-    		cm.onDisable();
-        	tcc.onDisable();
-        	if (!mm.isShutdown())
-        		mm.stopInvocation();
-        	
-        	DatabaseAPI.getInstance().stopInvocation();
-        	
-        	Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-    	}
+        if (!isAlmostRestarting() && !CrashDetector.crashDetected) {
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " failed to load.");
+            Utils.log.info("DungeonRealms - Failed to load.");
+            //Shutdown?
+        } else {
+            cm.onDisable();
+            tcc.onDisable();
+            if (!mm.isShutdown())
+                mm.stopInvocation();
+
+            DatabaseAPI.getInstance().stopInvocation();
+
+            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+        }
     }
 
     public FTPClient getFTPClient() {
         FTPClient ftpClient = new FTPClient();
 
-        try{
+        try {
             Ini ini = new Ini();
             ini.load(new FileReader("credentials.ini"));
             ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
             ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
             ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-        }catch(Exception e){
+        } catch (Exception e) {
             Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
             e.printStackTrace();
         }

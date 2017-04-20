@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.tab.Column;
@@ -24,105 +25,108 @@ public class StatisticsTabColumn extends Column {
                     new Variable("gems") {
                         @Override
                         public String getReplacement(Player player) {
-                            return Utils.format((Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()));
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getGems());
                         }
                     },
                     new Variable("ecash") {
                         @Override
                         public String getReplacement(Player player) {
-                            return Utils.format((Integer) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId()));
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getEcash());
                         }
                     },
                     new Variable("pk") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getPlayerKills());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getPlayerKills());
                         }
                     },
                     new Variable("t1") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getT1MobsKilled());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getT1MonsterKills());
                         }
                     },
                     new Variable("t2") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getT2MobsKilled());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getT2MonsterKills());
                         }
                     },
                     new Variable("t3") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getT3MobsKilled());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getT3MonsterKills());
                         }
                     },
                     new Variable("t4") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getT4MobsKilled());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getT4MonsterKills());
                         }
                     },
                     new Variable("t5") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getT5MobsKilled());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getT5MonsterKills());
                         }
                     },
                     new Variable("deaths") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getDeaths());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getDeaths());
                         }
                     },
                     new Variable("played") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-
-                            return convertMins((Integer) DatabaseAPI.getInstance().getData(EnumData.TIME_PLAYED, player.getUniqueId()));
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return convertMins(wrapper.getPlayerGameStats().getTimePlayed());
                         }
                     }
                     ,
                     new Variable("loot") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getLootChestsOpened());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getLootOpened());
                         }
                     }
                     ,
                     new Variable("mined") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getOreMined());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getOreMined());
                         }
                     }
                     ,
                     new Variable("fish") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            return Utils.format(gp.getPlayerStatistics().getFishCaught());
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
+                            return Utils.format(wrapper.getPlayerGameStats().getFishCaught());
                         }
                     }
             ));

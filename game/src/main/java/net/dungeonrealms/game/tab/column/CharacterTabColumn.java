@@ -3,6 +3,7 @@ package net.dungeonrealms.game.tab.column;
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import com.google.common.collect.Sets;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -62,10 +63,10 @@ public class CharacterTabColumn extends Column {
                     new Variable("hps") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
 
-                            return String.valueOf((HealthHandler.getInstance().getPlayerHPRegenLive(player) + gp.getStats().getHPRegen()));
+                            return String.valueOf((HealthHandler.getInstance().getPlayerHPRegenLive(player) + wrapper.getPlayerStats().getHPRegen()));
                         }
                     },
                     new Variable("dps") {

@@ -51,8 +51,6 @@ public class GamePlayer {
     private Map<String, Integer[]> attributes;
     private Map<AttributeType, Float> attributeBonusesFromStats;
 
-    @Getter
-    private ArrayList<String> ignoredPlayers = new ArrayList<>();
     private boolean attributesLoaded;
     private String currentWeapon; // used so we only reload weapon stats when we need to.
 
@@ -79,21 +77,21 @@ public class GamePlayer {
 //        this.playerStats = new PlayerStats(player.getUniqueId());
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
-        this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
+        this.playerEXP = PlayerWrapper.getPlayerWrapper(player).getExperience();
         this.isTargettable = true;
         this.isInvulnerable = false;
         this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
-
-//        CompletableFuture.
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            this.ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, player.getUniqueId());
-            if (this.ignoredPlayers == null) this.ignoredPlayers = new ArrayList<>();
-
-            if (this.ignoredPlayers.size() > 0)
-                Bukkit.getLogger().info("Loaded " + this.ignoredPlayers.size() + " Ignored players for " + player.getName());
-        });
+//
+////        CompletableFuture.
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            this.ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, player.getUniqueId());
+//            if (this.ignoredPlayers == null) this.ignoredPlayers = new ArrayList<>();
+//
+//            if (this.ignoredPlayers.size() > 0)
+//                Bukkit.getLogger().info("Loaded " + this.ignoredPlayers.size() + " Ignored players for " + player.getName());
+//        });
     }
 
     /**

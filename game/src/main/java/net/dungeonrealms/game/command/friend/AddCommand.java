@@ -5,6 +5,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,9 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by chase on 7/7/2016.
@@ -61,42 +61,32 @@ public class AddCommand extends BaseCommand {
             return false;
         }
 
+        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+            if(uuid == null) {
+                player.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                return;
+            }
 
-        if (!isPlayer(playerName)) {
-            player.sendMessage(ChatColor.RED + "There is no data for a player by that name!");
-            return false;
-        }
+            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                if(!wrapper.isPlaying()) {
+                    player.sendMessage(ChatColor.RED + "That player is not on any shard!");
+                    return;
+                }
+                if (FriendHandler.getInstance().areFriends(player, uuid)) {
+                    player.sendMessage(ChatColor.RED + "You're already friends.");
+                    return;
+                }
+                HashMap<UUID, Integer> pending = wrapper.getPendingFriends();
 
-        if (!isOnline(playerName)) {
-            player.sendMessage(ChatColor.RED + "That player is not on any shard!");
-            return false;
-        }
+                if (pending.containsKey(uuid)) {
+                    player.sendMessage(ChatColor.RED + "You've already sent this user a friend request.");
+                    return;
+                }
 
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+                FriendHandler.getInstance().sendRequestOverNetwork(player, uuid.toString());
 
-        if (FriendHandler.getInstance().areFriends(player, UUID.fromString(uuid))) {
-            player.sendMessage(ChatColor.RED + "You're already friends.");
-            return false;
-        }
-        ArrayList<String> requests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, UUID.fromString(uuid));
-
-        if (requests.contains(player.getUniqueId().toString())) {
-            player.sendMessage(ChatColor.RED + "You've already sent this user a friend request.");
-            return false;
-        }
-
-        FriendHandler.getInstance().sendRequestOverNetwork(player, uuid);
-
+            });
+        });
         return false;
-    }
-
-    private boolean isOnline(String playerName) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid));
-    }
-
-    private boolean isPlayer(String player) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return !uuid.equals("");
     }
 }

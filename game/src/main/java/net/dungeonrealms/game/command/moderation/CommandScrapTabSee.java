@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.miscellaneous.ScrapTier;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -44,29 +45,19 @@ public class CommandScrapTabSee extends BaseCommand {
                 String id = DatabaseAPI.getInstance().getUUIDFromName(name);
                 if (id != null && !id.equals("")) {
                     UUID uuid = UUID.fromString(id);
-                    Document document = DatabaseAPI.getInstance().getDocument(uuid);
-                    if (document == null) {
-                        player.sendMessage(ChatColor.RED + "No document loaded for " + name);
-                        return;
-                    }
+                    PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                        if(wrapper == null){
+                            player.sendMessage(ChatColor.RED + "No PlayerWrapper found for " + name + " (" + uuid + ")");
+                            return;
+                        }
 
-                    Document currencyDoc = (Document) document.get("currencytab");
-                    if (currencyDoc == null) {
-                        player.sendMessage(ChatColor.RED + "No currency tab in the database for " + name);
-                        return;
-                    }
-                    Bukkit.getLogger().info("Loaded currency tab: " + currencyDoc.toString());
+                        for (ScrapTier tier : ScrapTier.values()) {
+                            Integer amount = wrapper.getCurrencyTab().getScrapCount(tier);
 
-                    for (ScrapTier tier : ScrapTier.values()) {
-
-                        int found;
-
-                        Integer amount = currencyDoc.getInteger(tier.getDbData().getKey().split("\\.")[1]);
-
-                        found = amount == null ? -1 : amount;
-                        player.sendMessage(tier.getChatColor() + tier.getName() + " Scrap: " + (found == -1 ? "Not Loaded" : found));
-                    }
-                    player.sendMessage(ChatColor.RED + "Unlocked Access: " + currencyDoc.getBoolean("access"));
+                            player.sendMessage(tier.getChatColor() + tier.getName() + " Scrap: " + (amount == -1 ? "Not Loaded" : amount));
+                        }
+                        player.sendMessage(ChatColor.RED + "Unlocked Access: " + wrapper.getCurrencyTab().hasAccess);
+                    });
                 } else {
                     player.sendMessage(ChatColor.RED + "Unable to find uuid for " + name);
                 }
