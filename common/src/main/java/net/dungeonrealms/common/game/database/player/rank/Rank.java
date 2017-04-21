@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Created by Nick on 9/27/2015.
@@ -34,7 +35,9 @@ public class Rank {
     }
 
 
-    public static boolean isRank()
+//    public static boolean isRank(UUID uuid, Consumer<Rank> callback){
+//        callback.accept(rank);
+//    }
     public static boolean isRank(OfflinePlayer player, String name){
         return isRank(player, null, name);
     }

@@ -94,18 +94,18 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
         </dependency>
 
-        <!--Bukkit GameAPI-->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
+        <!--Bukkit GameAPI&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.bukkit</groupId>-->
+            <!--<artifactId>bukkit</artifactId>-->
+            <!--<version>1.9.4-R0.1-SNAPSHOT</version>-->
+            <!--<type>jar</type>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <!-- Local dependency required -->
         <dependency>

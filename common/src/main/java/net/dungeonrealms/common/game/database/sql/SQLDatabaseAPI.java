@@ -29,8 +29,6 @@ public class SQLDatabaseAPI {
     @Getter
     private SQLDatabase database;
 
-    private Map<UUID, Map<DataType, Object>> storedData = new HashMap<>();
-
     @Getter
     private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
 

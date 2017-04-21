@@ -54,9 +54,9 @@ public class CommandIgnore extends BaseCommand {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
 
-            Rank.getInstance().getRank(uuid, (rank) -> {
-
-            });
+//            Rank.getInstance().getRank(uuid, (rank) -> {
+///
+//            });
         });
 
 //        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {

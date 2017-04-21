@@ -5,6 +5,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -42,7 +44,11 @@ public class PlayerMenus {
 
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();
-        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null)return;
+
+        Map<UUID, Integer> friends = wrapper.getFriendsList();
+//        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
 
         Inventory inv = Bukkit.createInventory(null, 54, "Friends");
 
@@ -53,8 +59,8 @@ public class PlayerMenus {
 
 
         int slot = 9;
-        for (String s : friends) {
-            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(s));
+        for (Map.Entry<UUID, Integer> s : friends.entrySet()) {
+            String name = SQLDatabaseAPI.getInstance().getUsernameFromUUID(s.getKey());
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!",
                     ChatColor.GRAY + "Display Item"
@@ -62,7 +68,7 @@ public class PlayerMenus {
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("info", new NBTTagString(s));
+            tag.set("info", new NBTTagString(s.getKey().toString()));
             nmsStack.setTag(tag);
 
 
@@ -78,7 +84,10 @@ public class PlayerMenus {
 
     public static void openFriendInventory(Player player) {
         UUID uuid = player.getUniqueId();
-        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
+//        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null)return;
 
         Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 
@@ -93,10 +102,9 @@ public class PlayerMenus {
         }));
 
         int slot = 9;
-        for (String from : friendRequest) {
-            if (from.contains(","))
-                from = from.split(",")[0];
-            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
+        for (Map.Entry<UUID, Integer> from : wrapper.getPendingFriends().entrySet()) {
+            String name = SQLDatabaseAPI.getInstance().getUsernameFromUUID(from.getKey());
+//            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!",
@@ -105,7 +113,7 @@ public class PlayerMenus {
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("info", new NBTTagString(from));
+            tag.set("info", new NBTTagString(from.getKey().toString()));
             nmsStack.setTag(tag);
 
             inv.setItem(slot, CraftItemStack.asBukkitCopy(nmsStack));
