@@ -82,7 +82,9 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        int foodLevel = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_FOOD, player.getUniqueId())));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        int foodLevel = wrapper.getStoredFoodLevel();
         if (foodLevel < 0) {
             foodLevel = 0;
         }

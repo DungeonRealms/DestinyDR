@@ -61,7 +61,7 @@ public class CommandArmorsee extends BaseCommand {
                     sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                     return;
                 }
-                PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                     if(wrapper == null) {
                         return;
                     }

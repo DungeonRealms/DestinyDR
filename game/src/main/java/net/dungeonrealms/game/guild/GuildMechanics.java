@@ -330,7 +330,7 @@ public class GuildMechanics {
      * @param guildName Guild name
      */
     public void kickFromGuild(Player kicker, UUID player, String guildName) {
-        sendAlert(guildName, kicker.getName() + " has kicked " + DatabaseAPI.getInstance().getOfflineName(player) + " from the guild.");
+        sendAlert(guildName, kicker.getName() + " has kicked " + SQLDatabaseAPI.getInstance().getUsernameFromUUID(player) + " from the guild.");
         GuildDatabaseAPI.get().removeFromGuild(guildName, player);
 
         GameAPI.updatePlayerData(player);
@@ -377,7 +377,7 @@ public class GuildMechanics {
             if (isOwner) {
                 if (officers.size() > 0) {
                     UUID sucessor = officers.get(0);
-                    sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                    sendAlert(guildName, SQLDatabaseAPI.getInstance().getUsernameFromUUID(sucessor)+ " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
                     setOwner = true;
                 } else {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");

@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
@@ -496,6 +497,7 @@ public class Fishing implements GenericMechanic {
      * @param stack
      */
     public static void gainExp(ItemStack stack, Player p, int exp) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         int currentXP = nms.getTag().getInt("XP");
         int maxXP = nms.getTag().getInt("maxXP");
@@ -510,7 +512,7 @@ public class Fishing implements GenericMechanic {
         exp *= 1.3;
         currentXP += exp;
 
-        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+        if (wrapper.getToggles().isDebug()) {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + exp + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(currentXP - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stack)) + " EXP]");
             p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -1098,6 +1100,7 @@ public class Fishing implements GenericMechanic {
     }
 
     public static void applyFishBuffs(Player p, ItemStack fish) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         List<String> lore = fish.getItemMeta().getLore();
 
         for (String s : lore) {
@@ -1110,7 +1113,7 @@ public class Fishing implements GenericMechanic {
                 if (current_hp + 1 > max_hp) {
                     continue;
                 }
-                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+                if (wrapper.getToggles().isDebug()) {
                     p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + amount_to_heal + ChatColor.BOLD + " HP"
                             + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
                             + ((int) current_hp + amount_to_heal) + "/" + (int) max_hp + "HP]");

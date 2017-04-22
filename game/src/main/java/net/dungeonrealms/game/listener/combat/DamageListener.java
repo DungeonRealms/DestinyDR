@@ -993,9 +993,9 @@ public class DamageListener implements Listener {
                         armorContents.add(ItemSerialization.itemStackToBase64(itemStack));
                     }
                 }
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
             } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
             }
             if (!combatLogger.getItemsToSave().isEmpty()) {
                 Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");

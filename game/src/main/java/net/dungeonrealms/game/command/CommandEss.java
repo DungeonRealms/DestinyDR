@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
@@ -104,7 +105,8 @@ public class CommandEss extends BaseCommand {
                     });
                     return true;
                 case "hearthstone":
-                    if (args.length == 3) {
+                    commandSender.sendMessage("Disabled.");
+                    /*if (args.length == 3) {
                         try {
                             String playerName = args[1];
                             UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
@@ -118,6 +120,10 @@ public class CommandEss extends BaseCommand {
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.GREEN + ".");
                                 GameAPI.updatePlayerData(uuid);
                             });
+
+                            SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+
+                            }, QueryType.UPDATE_HEARTH_STONE.getQuery(locationName, ));
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -125,7 +131,7 @@ public class CommandEss extends BaseCommand {
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr hearthstone <player> <location>");
                         return false;
-                    }
+                    }*/
                     break;
                 case "pet":
                     if (args.length == 3) {
@@ -264,38 +270,36 @@ public class CommandEss extends BaseCommand {
                     break;
                 case "ecash":
                     if (args.length == 4) {
-                        try {
                             String playerName = args[1];
-                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-                            int amount = Math.abs(Integer.parseInt(args[3]));
+
 
                             switch (args[2]) {
-                                case "add":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, amount, true, doAfter -> {
-                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                        GameAPI.updatePlayerData(uuid);
-                                    });
-                                    break;
                                 case "set":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ECASH, amount, true, doAfter -> {
-                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
-                                        GameAPI.updatePlayerData(uuid);
-                                    });
-                                    break;
-                                case "remove":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, (amount * -1), true, doAfter -> {
-                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash from " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                        GameAPI.updatePlayerData(uuid);
+                                    SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false,(uuid) -> {
+                                        if(uuid == null) {
+                                            commandSender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                                            return;
+                                        }
+
+                                        PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                                            if(uuid == null) {
+                                                commandSender.sendMessage(ChatColor.RED + "Ingot > iFamasssxD");
+                                                return;
+                                            }
+
+                                            int amount = Math.abs(Integer.parseInt(args[3]));
+
+                                            SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+                                                commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
+                                                GameAPI.updatePlayerData(uuid);
+                                            }, QueryType.SET_ECASH.getQuery(amount, wrapper.getAccountID()));
+                                        });
                                     });
                                     break;
                                 default:
-                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: SET");
                                     return false;
                             }
-                        } catch (IllegalArgumentException ex) {
-                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
-                            return false;
-                        }
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr ecash <player> <add|set|remove> <amount>");
                         return false;

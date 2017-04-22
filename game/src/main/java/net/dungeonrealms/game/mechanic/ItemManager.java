@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -936,6 +937,8 @@ public class ItemManager {
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = StatsManager.getPlayerStats(p);
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+
         if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
             String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
@@ -945,7 +948,7 @@ public class ItemManager {
                     + "   " + stats.getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + wrapper.getEcash() + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         } else {
@@ -956,7 +959,7 @@ public class ItemManager {
                     + "   " + stats.getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p) + stats.getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + wrapper.getEcash() + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         }
@@ -992,11 +995,11 @@ public class ItemManager {
         String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
                 + ChatColor.ITALIC.toString()
                 + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment." + new_line
-                + ChatColor.DARK_GRAY.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
-                + ChatColor.GREEN.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
-                + ChatColor.AQUA.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
-                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId())
-                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
+                + ChatColor.DARK_GRAY.toString() + "Portal Shards: " + ChatColor.BLACK + wrapper.getPortalShardsT1() + "\n"
+                + ChatColor.GREEN.toString() + "Portal Shards: " + ChatColor.BLACK + wrapper.getPortalShardsT2() + "\n"
+                + ChatColor.AQUA.toString() + "Portal Shards: " + ChatColor.BLACK + wrapper.getPortalShardsT3() + "\n"
+                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + ChatColor.BLACK + wrapper.getPortalShardsT4()
+                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + ChatColor.BLACK + wrapper.getPortalShardsT5();
 
         page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
@@ -1019,7 +1022,6 @@ public class ItemManager {
         String page5_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
 
-        ArrayList<String> friendsList = FriendHandler.getInstance().getFriendsList(p.getUniqueId());
 
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);

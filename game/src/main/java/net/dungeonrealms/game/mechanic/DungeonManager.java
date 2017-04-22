@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -30,7 +31,6 @@ import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.WorldServer;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
@@ -205,13 +205,13 @@ public class DungeonManager implements GenericMechanic {
                     }
                 } else if (secondsLeft <= 1) {
                     for (Player pl : Bukkit.getServer().getWorld(worldName).getPlayers()) {
-                    	if(pl.getGameMode() == GameMode.SURVIVAL){
-                    		pl.setHealth(1);
-                        	HealthHandler.getInstance().setPlayerHPLive(pl, 1);
-                        	pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
-                        	pl.playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
-                        	pl.removePotionEffect(PotionEffectType.WITHER);
-                    	}
+                        if (pl.getGameMode() == GameMode.SURVIVAL) {
+                            pl.setHealth(1);
+                            HealthHandler.getInstance().setPlayerHPLive(pl, 1);
+                            pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
+                            pl.playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
+                            pl.removePotionEffect(PotionEffectType.WITHER);
+                        }
                     }
                     dungeon_Wither_Effect.remove(worldName);
                     continue;
@@ -276,24 +276,24 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 1h30 minutes
                 case 5400:
-                	announceTimer(dungeonObject, 90);
+                    announceTimer(dungeonObject, 90);
                     break;
                 // 1h
                 case 3600:
-                	announceTimer(dungeonObject, 60);
+                    announceTimer(dungeonObject, 60);
                     break;
                 // 30 minutes
                 case 1800:
-                	announceTimer(dungeonObject, 30);
+                    announceTimer(dungeonObject, 30);
                     break;
             }
             updateDungeonBoard(dungeonObject);
         }), 0L, 20L);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
     }
-    
-    private void announceTimer(DungeonObject dungeonObject, int minutes){
-    	Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+
+    private void announceTimer(DungeonObject dungeonObject, int minutes) {
+        Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) {
                 if (GameAPI.getGamePlayer(player).isInDungeon()) {
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
@@ -413,7 +413,7 @@ public class DungeonManager implements GenericMechanic {
         if (!DungeonRealms.getInstance().isAlmostRestarting()) {
             if (!instance_mob_spawns.containsKey(type.getDataFileName()))
                 loadDungeonMobSpawns(type.getDataFileName());
-            
+
             DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), type.getDataFileName());
             Dungeons.add(dungeonObject);
             dungeonObject.load();
@@ -542,7 +542,7 @@ public class DungeonManager implements GenericMechanic {
                 if (Bukkit.getWorld(worldName) == null) return;
                 Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
                     if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isInDungeon()) {
-                         Achievements.getInstance().giveAchievement(player.getUniqueId(), getType().getAchievement());
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), getType().getAchievement());
                         //No dungeons for next 30mins
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
                         player.teleport(TeleportLocation.CYRENNICA.getLocation());
@@ -566,11 +566,19 @@ public class DungeonManager implements GenericMechanic {
          */
         public void giveShards() {
             int shardsToGive = getType().getMinShards() + new Random().nextInt(getType().getMaxShards() - getType().getMinShards());
-            
+
             for (Player p : Bukkit.getWorld(worldName).getPlayers()) {
                 p.sendMessage(GameAPI.getTierColor(getType().getTier()) + "You have gained " + ChatColor.UNDERLINE + shardsToGive
-                		+ " Portal Shards" + GameAPI.getTierColor(getType().getTier()) + " for completing this Dungeon.");
-                DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, getType().getShardData(), shardsToGive, true);
+                        + " Portal Shards" + GameAPI.getTierColor(getType().getTier()) + " for completing this Dungeon.");
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+                if (type == DungeonType.BANDIT_TROVE) {
+                    wrapper.setPortalShardsT1(wrapper.getPortalShardsT1() + shardsToGive);
+                } else if (type == DungeonType.VARENGLADE) {
+                    wrapper.setPortalShardsT3(wrapper.getPortalShardsT3() + shardsToGive);
+                } else if (type == DungeonType.THE_INFERNAL_ABYSS) {
+                    wrapper.setPortalShardsT4(wrapper.getPortalShardsT4() + shardsToGive);
+                }
+//                DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, getType().getShardData(), shardsToGive, true);
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 teleportPlayersOut(true);
@@ -619,11 +627,11 @@ public class DungeonManager implements GenericMechanic {
             w.setKeepSpawnInMemory(false);
             w.setPVP(false);
             w.setGameRuleValue("randomTickSpeed", "0");
-            if(type == DungeonType.THE_INFERNAL_ABYSS){
-            	CraftWorld world = (CraftWorld)w;
-            	world.setEnvironment(Environment.NETHER);
-            	//CraftBukkit doesn't properly init the new environment, so NMS will throw an NPE, crashing the server without this line.
-            	world.getHandle().worldProvider.a(world.getHandle());
+            if (type == DungeonType.THE_INFERNAL_ABYSS) {
+                CraftWorld world = (CraftWorld) w;
+                world.setEnvironment(Environment.NETHER);
+                //CraftBukkit doesn't properly init the new environment, so NMS will throw an NPE, crashing the server without this line.
+                world.getHandle().worldProvider.a(world.getHandle());
             }
             Bukkit.getWorlds().add(w);
 
@@ -734,49 +742,56 @@ public class DungeonManager implements GenericMechanic {
      */
     public enum DungeonType {
         BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip",
-        		Mayel.class, "banditTrove", "T1Dungeon",
-        		ChatColor.WHITE + "" + ChatColor.BOLD + "Bandit Trove",
-        		EnumMounts.WOLF,
-        		EnumData.PORTAL_SHARDS_T1, 100, 250,
-        		1, EnumAchievements.BANDIT_TROVE,
-        		529, 55, -313,
-        		Sound.AMBIENT_CAVE, 1F, 1F),
-        
-        		
+                Mayel.class, "banditTrove", "T1Dungeon",
+                ChatColor.WHITE + "" + ChatColor.BOLD + "Bandit Trove",
+                EnumMounts.WOLF, 100, 250,
+                1, EnumAchievements.BANDIT_TROVE,
+                529, 55, -313,
+                Sound.AMBIENT_CAVE, 1F, 1F),
+
+
         VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip",
-        		Burick.class, "varenglade", "DODungeon",
-        		ChatColor.AQUA + "" + ChatColor.BOLD + "Varenglade",
-        		EnumMounts.SLIME,
-        		EnumData.PORTAL_SHARDS_T3, 100, 375, 
-        		3, EnumAchievements.VARENGLADE,
-        		-364, 60, -1,
-        		Sound.ENTITY_ENDERDRAGON_HURT, 4F, 0.5F),
-        
+                Burick.class, "varenglade", "DODungeon",
+                ChatColor.AQUA + "" + ChatColor.BOLD + "Varenglade",
+                EnumMounts.SLIME, 100, 375,
+                3, EnumAchievements.VARENGLADE,
+                -364, 60, -1,
+                Sound.ENTITY_ENDERDRAGON_HURT, 4F, 0.5F),
+
         THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip",
-        		InfernalAbyss.class, "infernalAbyss", "fireydungeon",
-        		ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Infernal Abyss",
-        		EnumMounts.SPIDER,
-        		EnumData.PORTAL_SHARDS_T4, 150, 250,
-        		4, EnumAchievements.INFERNAL_ABYSS,
-        		-54, 158, 646,
-        		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
+                InfernalAbyss.class, "infernalAbyss", "fireydungeon",
+                ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Infernal Abyss",
+                EnumMounts.SPIDER, 150, 250,
+                4, EnumAchievements.INFERNAL_ABYSS,
+                -54, 158, 646,
+                Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
 
         /**
          * WIP Dungeons, including The Depths of Aceron and The Crimson
          * Monastery.
          */
 
-        @Getter private String bossName;
-        @Getter private String location;
-        @Getter private String worldGuardName;
-        @Getter private String dungeonName;
-        @Getter private String dataFileName;
-        @Getter private EnumMounts mount;
-        @Getter private int minShards;
-        @Getter private int maxShards;
-        @Getter private EnumData shardData;
-        @Getter private int tier;
-        @Getter private EnumAchievements achievement;
+        @Getter
+        private String bossName;
+        @Getter
+        private String location;
+        @Getter
+        private String worldGuardName;
+        @Getter
+        private String dungeonName;
+        @Getter
+        private String dataFileName;
+        @Getter
+        private EnumMounts mount;
+        @Getter
+        private int minShards;
+        @Getter
+        private int maxShards;
+        //        @Getter private EnumData shardData;
+        @Getter
+        private int tier;
+        @Getter
+        private EnumAchievements achievement;
         private Class<? extends DungeonBoss> bossClass;
         private int x;
         private int y;
@@ -785,9 +800,8 @@ public class DungeonManager implements GenericMechanic {
         private float volume;
         private float pitch;
 
-        DungeonType(String bossName, String location, Class<? extends DungeonBoss> cls, String worldGuardName, String dataFileName, String dungeonName, EnumMounts mounts,
-        		EnumData shard, int min, int max, int tier, EnumAchievements ach, int x, int y, int z,
-        		Sound sound, float volume, float pitch) {
+        DungeonType(String bossName, String location, Class<? extends DungeonBoss> cls, String worldGuardName, String dataFileName, String dungeonName, EnumMounts mounts, int min, int max, int tier, EnumAchievements ach, int x, int y, int z,
+                    Sound sound, float volume, float pitch) {
             this.bossName = bossName;
             this.dungeonName = dungeonName;
             this.location = location;
@@ -796,7 +810,7 @@ public class DungeonManager implements GenericMechanic {
             this.mount = mounts;
             this.minShards = min;
             this.maxShards = max;
-            this.shardData = shard;
+//            this.shardData = shard;
             this.tier = tier;
             this.achievement = ach;
             this.x = x;
@@ -807,26 +821,26 @@ public class DungeonManager implements GenericMechanic {
             this.pitch = pitch;
             this.bossClass = cls;
         }
-        
+
         public void spawnBoss(Location loc) {
-        	spawnBoss(loc, false);
+            spawnBoss(loc, false);
         }
-        
+
         public void spawnBoss(Location loc, boolean customLocation) {
-        	try{
-        		Location toSpawn = customLocation ? loc : new Location(loc.getWorld(), x, y, z);
-        		WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
-        		Entity boss = (Entity) bossClass.getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(world);
-            	MetadataUtils.registerEntityMetadata(boss, EnumEntityType.HOSTILE_MOB, 1, 100);
-            	EntityStats.setBossRandomStats(boss, 100, getTier());
-            	boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
-            	((CraftWorld) loc.getWorld()).getHandle().addEntity(boss, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            	boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
-            	loc.getBlock().setType(Material.AIR);
-            	toSpawn.getWorld().playSound(toSpawn, this.sound, this.volume, this.pitch);
-        	}catch(Exception e){
-        		e.printStackTrace();
-        	}
+            try {
+                Location toSpawn = customLocation ? loc : new Location(loc.getWorld(), x, y, z);
+                WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
+                Entity boss = (Entity) bossClass.getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(world);
+                MetadataUtils.registerEntityMetadata(boss, EnumEntityType.HOSTILE_MOB, 1, 100);
+                EntityStats.setBossRandomStats(boss, 100, getTier());
+                boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
+                ((CraftWorld) loc.getWorld()).getHandle().addEntity(boss, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
+                loc.getBlock().setType(Material.AIR);
+                toSpawn.getWorld().playSound(toSpawn, this.sound, this.volume, this.pitch);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

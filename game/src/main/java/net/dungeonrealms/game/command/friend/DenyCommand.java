@@ -47,9 +47,7 @@ public class DenyCommand extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
                 return;
             }
-
-
-            PlayerWrapper.getPlayerWrapper(uuid,(wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if(!wrapper.isPlaying()) {
                     player.sendMessage(ChatColor.RED + "This player is not online!");
                 }

@@ -126,39 +126,6 @@ public class PlayerMenus {
 
     }
 
-    public static void openMailInventory(Player player) {
-        UUID uuid = player.getUniqueId();
-        ArrayList<String> mail = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, uuid);
-
-        Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
-
-        /*inv.setItem(8, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Tax", new String[]{
-                ChatColor.GRAY + "Tax: " + ChatColor.AQUA + "5 GEMS",
-                ChatColor.GRAY + "Display Item"
-        }));*/
-
-        int slot = 0; // @note: if we include tax, this should be slot #9.
-        for (String s : mail) {
-            String from = s.split(",")[0];
-            long unix = Long.valueOf(s.split(",")[1]);
-            String serializedItem = s.split(",")[2];
-            Date sentDate = new Date(unix * 1000);
-            ItemStack item = ItemSerialization.itemStackFromBase64(serializedItem);
-
-            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(item, new String[]{
-                    ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
-                    ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
-                    "",
-                    ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "Left-Click:" + ChatColor.GREEN + " Receive item."
-            }), s);
-            inv.setItem(slot, mailTemplateItem);
-            if (slot >= 44) break;
-            slot++;
-        }
-
-        player.openInventory(inv);
-
-    }
 
     public static void openPlayerPetMenu(Player player) {
         UUID uuid = player.getUniqueId();
@@ -169,7 +136,10 @@ public class PlayerMenus {
             return;
         }
 
-        Set<String> playerPets = new HashSet<>((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+
+        Set<String> playerPets = wrapper.getPetsUnlocked();
 
         if (Rank.isSubscriber(player))
             for (EnumPets p : EnumPets.values()) {
@@ -226,13 +196,16 @@ public class PlayerMenus {
     public static void openPlayerMountMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+
         if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
             Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
             player.openInventory(jailed);
             return;
         }
 
-        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
+        HashSet<String> playerMounts = wrapper.getMountsUnlocked();
         int count = 0;
         if (playerMounts.size() > 0) {
             for (String mount : playerMounts) {
@@ -292,7 +265,10 @@ public class PlayerMenus {
     public static void openPlayerParticleMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
-        Set<String> playerTrails = new HashSet<>((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+
+        Set<String> playerTrails = wrapper.getParticlesUnlocked();
 
         if (Rank.isSubscriber(player))
             for (ParticleAPI.ParticleEffect effect : ParticleAPI.ParticleEffect.values())
@@ -325,7 +301,10 @@ public class PlayerMenus {
     public static void openPlayerMountSkinMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
-        List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+
+        HashSet<String> playerMountSkins = wrapper.getMountSkins();
 
         if (playerMountSkins == null || playerMountSkins.size() <= 0) {
             Inventory noSkins = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mount Skins!");
@@ -402,7 +381,9 @@ public class PlayerMenus {
     public static void openExplorationAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 36, "Exploration Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -439,7 +420,9 @@ public class PlayerMenus {
     public static void openSocialAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 36, "Social Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -476,7 +459,9 @@ public class PlayerMenus {
     public static void openCurrencyAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 36, "Currency Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -513,7 +498,9 @@ public class PlayerMenus {
     public static void openCombatAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 36, "Combat Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -550,7 +537,9 @@ public class PlayerMenus {
     public static void openRealmAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Realm Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -587,7 +576,9 @@ public class PlayerMenus {
     public static void openEventAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Event Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -624,7 +615,9 @@ public class PlayerMenus {
     public static void openCharacterAchievementMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 45, "Character Achievements");
         UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        List<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -786,11 +779,13 @@ public class PlayerMenus {
      * @param player
      */
     public static void openToggleMenu(Player player) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         Inventory inv = Bukkit.createInventory(null, ((int) Math.ceil((1 + PlayerManager.PlayerToggles.values().length) / 9.0) * 9), "Toggles");
 
         int i = 0;
         for (PlayerManager.PlayerToggles playerToggles : PlayerManager.PlayerToggles.values()) {
-            boolean isToggled = (boolean) DatabaseAPI.getInstance().getData(playerToggles.getDbField(), player.getUniqueId());
+            boolean isToggled = playerToggles.getToggleState(player);
             inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{
                     ChatColor.GRAY + playerToggles.getDescription(),
                     ChatColor.GRAY + "Display Item"

@@ -55,13 +55,15 @@ public class BankListener implements Listener {
 
             e.setCancelled(true);
             Player p = e.getPlayer();
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+            if(wrapper == null) return;
             if (BankMechanics.storage.get(p.getUniqueId()).collection_bin != null) {
                 p.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                 p.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                 return;
             }
 
-            int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+            int storage_lvl = wrapper.getBankLevel();
             if (storage_lvl >= 6) {
                 p.sendMessage(ChatColor.RED + "You've reached the current Storage lvl cap!");
                 return;
@@ -82,7 +84,8 @@ public class BankListener implements Listener {
                 if (event.getMessage().equalsIgnoreCase("confirm")) {
                     boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
                     if (tookGems) {
-                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), true);
+                        wrapper.setBankLevel(storage_lvl + 1);
+//                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), true);
                         p.sendMessage("");
                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
                         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
@@ -126,6 +129,8 @@ public class BankListener implements Listener {
 
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             Player player = event.getPlayer();
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null) return;
             if (player.getOpenInventory() != null && GameAPI.isShop(player.getOpenInventory())) {
                 // Player is browsing a shop
                 event.setCancelled(true);
@@ -139,11 +144,10 @@ public class BankListener implements Listener {
                 Player p = event.getPlayer();
                 int remaining = event.getRemaining();
                 p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
+                if (wrapper.getToggles().isDebug()) {
                     p.sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
                 }
                 int gems = event.getItem().getItemStack().getAmount();
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
                 GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
                 if (gamePlayer != null)
                     wrapper.getPlayerGameStats().setGemsEarned(wrapper.getPlayerGameStats().getGemsEarned() + gems);
@@ -183,6 +187,8 @@ public class BankListener implements Listener {
     }
 
     public static void handleMoneyDeposit(InventoryClickEvent e, Player player, boolean cursor) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         ItemStack item = cursor ? e.getCursor() : e.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGemPouch(item) || BankMechanics.getInstance().isGem(item)) {
@@ -234,8 +240,9 @@ public class BankListener implements Listener {
 
                 e.setCancelled(true);
                 e.setResult(Event.Result.DENY);
-                int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
-                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                int newBalance = wrapper.getGems() + size;
+                wrapper.setGems(newBalance);
+//                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
@@ -253,6 +260,8 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBankClicked(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (e.getInventory().getTitle().equalsIgnoreCase("Bank Chest")) {
             if (e.getCursor() != null) {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
@@ -286,7 +295,7 @@ public class BankListener implements Listener {
                                     } else {
                                         ItemStack stack = BankMechanics.gem.clone();
                                         if (hasSpaceInInventory(player.getUniqueId(), number)) {
-                                            DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                            wrapper.setGems(wrapper.getGems() - number);
                                             player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                             player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
                                             player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -333,7 +342,7 @@ public class BankListener implements Listener {
                                         player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
                                     } else {
                                         player.getInventory().addItem(BankMechanics.createBankNote(number, player));
-                                        DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                        wrapper.setGems(wrapper.getGems() - number);
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -377,8 +386,8 @@ public class BankListener implements Listener {
                                     }
                                 }
                                 if (size <= 0) return;
-                                int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
-                                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                                int newBalance = wrapper.getGems() + size;
+                                wrapper.setGems(newBalance);
                                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
 
                                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
@@ -464,7 +473,7 @@ public class BankListener implements Listener {
                         } else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
                             Player p = (Player) e.getWhoClicked();
 
-                            int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+                            int storage_lvl = wrapper.getBankLevel();
                             if (storage_lvl >= 6) {
                                 p.sendMessage(ChatColor.RED + "You've reached the current Storage lvl cap!");
                                 return;
@@ -485,7 +494,8 @@ public class BankListener implements Listener {
                                 if (event.getMessage().equalsIgnoreCase("confirm")) {
                                     boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
                                     if (tookGems) {
-                                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
+                                        wrapper.setBankLevel(storage_lvl + 1);
+//                                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
                                         p.sendMessage("");
                                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
                                         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
@@ -568,8 +578,9 @@ public class BankListener implements Listener {
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
                             if (size <= 0) return;
-                            int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
-                            BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                            int newBalance = wrapper.getGems() + size;
+                            wrapper.setGems(newBalance);
+//                            BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                             BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
 
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
@@ -863,7 +874,9 @@ public class BankListener implements Listener {
      * @since 1.0
      */
     private int getPlayerGems(UUID uuid) {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return -1;
+        return wrapper.getGems();
     }
 
 }

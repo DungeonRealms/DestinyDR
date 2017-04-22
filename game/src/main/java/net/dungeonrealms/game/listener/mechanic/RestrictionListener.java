@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -740,8 +741,9 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-            if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, pDamager.getUniqueId()).toString())) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, pDamager.getUniqueId()).toString())) {
+            PlayerWrapper damagerWrapper = PlayerWrapper.getPlayerWrapper(pDamager);
+            if (!damagerWrapper.getToggles().isPvp()) {
+                if (damagerWrapper.getToggles().isDebug()) {
                     pDamager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                 }
                 event.setCancelled(true);

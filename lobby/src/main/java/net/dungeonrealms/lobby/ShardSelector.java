@@ -75,14 +75,14 @@ public class ShardSelector extends AbstractMenu {
                         player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
                     } else {
-                        try {
-                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
-                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
-                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
-                                return;
-                            }
-                        } catch (NullPointerException ignored) {
-                        }
+//                        try {
+//                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
+//                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
+//                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+//                                return;
+//                            }
+//                        } catch (NullPointerException ignored) {
+//                        }
                     }
 
                     BungeeUtils.sendToServer(player.getName(), info.getServerName());

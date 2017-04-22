@@ -58,7 +58,7 @@ public class SupportMenus {
                 if (online == null && PlayerWrapper.getPlayerWrappers().containsKey(uuid)) {
                     PlayerWrapper.getPlayerWrappers().remove(uuid);
                 }
-                PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                     //Load if doesnt exist?
 //                DatabaseAPI.getInstance().requestPlayer(uuid, false);
                     String playerRank = Rank.getInstance().getRank(uuid);

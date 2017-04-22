@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTItem;
@@ -32,6 +33,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +57,7 @@ public class MountUtils {
         return null;
     }
 
-    public static boolean hasMountPrerequisites(EnumMounts mountType, List<String> playerMounts) {
+    public static boolean hasMountPrerequisites(EnumMounts mountType, HashSet<String> playerMounts) {
         switch (mountType) {
             case TIER1_HORSE:
                 return true;
@@ -77,6 +79,8 @@ public class MountUtils {
 
     public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
         Player player = Bukkit.getPlayer(uuid);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             player.sendMessage(ChatColor.RED + "Your mount cannot be summoned in this world.");
             return;
@@ -215,8 +219,7 @@ public class MountUtils {
                 MetadataUtils.registerEntityMetadata(((CraftEntity) h).getHandle(), EnumEntityType.MOUNT, 0, 0);
                 h.setCustomNameVisible(true);
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
-                int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                int muleLevel = wrapper.getMuleLevel();
                 if (muleLevel > 3) {
                     muleLevel = 3;
                 }
@@ -231,10 +234,6 @@ public class MountUtils {
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
                 if (!inventories.containsKey(player.getUniqueId())) {
                     Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
-                    if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-                        //Make sure the inventory is as big as we need
-                        inv = ItemSerialization.fromString(invString, tier.getSize());
-                    }
                     inventories.put(uuid, inv);
                 }
             }

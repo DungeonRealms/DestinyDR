@@ -11,6 +11,7 @@ import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -84,7 +85,7 @@ public class CommandPlayerFix extends BaseCommand {
             CompletableFuture.runAsync(() -> {
                 try{
                     @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().
-                            prepareStatement("UPDATE users SET is_online = 0 WHERE currentShard = '" + shard + "';");
+                            prepareStatement(QueryType.FIX_WHOLE_SHARD.getQuery(shard));
                     int updates = statement.executeUpdate();
                     sender.sendMessage(ChatColor.RED + "Updated " + updates + " players with currentShard = " + shard);
                 }catch(Exception e){

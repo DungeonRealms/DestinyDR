@@ -3,10 +3,12 @@ package net.dungeonrealms.game.world.shops;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -32,17 +34,20 @@ import java.util.UUID;
 public class Shop {
 
     public UUID ownerUUID;
+    @Getter
+    public int characterID;
     public String ownerName;
     public Block block1;
     public Block block2;
     public Hologram hologram;
     public boolean isopen;
+    public int shopLevel = 1;
     public Inventory inventory;
     public String shopName;
     public int viewCount;
     public List<String> uniqueViewers = new ArrayList<>();
 
-    public Shop(UUID uuid, Location loc, String shopName) {
+    public Shop(UUID uuid, Location loc, int characterID, String shopName) {
         this.ownerUUID = uuid;
         this.ownerName = getOwner().getName();
         this.block1 = loc.getWorld().getBlockAt(loc);
@@ -55,7 +60,10 @@ public class Shop {
         isopen = false;
         inventory = createNewInv(ownerUUID);
         viewCount = 0;
+        this.characterID = characterID;
         this.uniqueViewers = new ArrayList<>();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        this.shopLevel = wrapper.getShopLevel();
     }
 
     private Inventory createNewInv(UUID uuid) {
@@ -87,8 +95,7 @@ public class Shop {
     }
 
     public int getInvSize() {
-        int lvl = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL, ownerUUID);
-        return 9 * lvl;
+        return 9 * this.shopLevel;
     }
 
     public Player getOwner() {
@@ -228,7 +235,7 @@ public class Shop {
         Player p = getOwner();
         if (p == null)
             return;
-        int new_tier = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL, ownerUUID) + 1;
+        int new_tier = this.shopLevel + 1;
 
         /*if (Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")) {
             if (new_tier >= 4) {
@@ -284,7 +291,10 @@ public class Shop {
      * @param new_tier
      */
     private void upgradeShop(Player p, int new_tier) {
-        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
+        //DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+        wrapper.setShopLevel(new_tier);
+
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] items = inventory.getContents();
             inventory = createNewInv(p.getUniqueId());

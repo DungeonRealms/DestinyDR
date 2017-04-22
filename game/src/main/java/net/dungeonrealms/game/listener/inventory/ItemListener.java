@@ -71,6 +71,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.glow.GlowAPI;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -112,8 +113,9 @@ public class ItemListener implements Listener {
                 	Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
                 		//Filter out players who have toggle glow off.
                 		List<Player> sendTo = GameAPI.getNearbyPlayersAsync(entity.getLocation(), 10).stream().filter(p -> {
-                            Object data = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOW, p.getUniqueId());
-                            return data != null && (boolean) data;
+                		    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+                		    if(wrapper == null) return false;
+                            return wrapper.getToggles().isGlow();
                         }).collect(Collectors.toList());
                 		//Set the item as glowing.
                 		GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), sendTo);
@@ -331,6 +333,9 @@ public class ItemListener implements Listener {
         if (event.getItem() != null) {
             Player player = event.getPlayer();
 
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null) return;
+
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
                 if (event.getItem().getAmount() > 1) {
@@ -343,7 +348,6 @@ public class ItemListener implements Listener {
                     event.getPlayer().getInventory().remove(resetBook);
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
                             wrapper.getPlayerStats().unallocateAllPoints(wrapper.getLevel());
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         } else {
@@ -411,12 +415,13 @@ public class ItemListener implements Listener {
                             player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                             return;
                         }
-                        int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+                        int invlvl = wrapper.getBankLevel();
                         if (invlvl >= 6) {
                             player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
                             return;
                         }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
+                        wrapper.setBankLevel(wrapper.getBankLevel() + 1);
+//                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
                         BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
                         if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
                             event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
@@ -885,6 +890,8 @@ public class ItemListener implements Listener {
     public void petRename(PlayerInteractEntityEvent event) {
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Player player = event.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (event.getRightClicked() instanceof Player) return;
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR)
             return;
@@ -919,15 +926,15 @@ public class ItemListener implements Listener {
 
                 String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
-                String activePet = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, true);
+                String activePet = wrapper.getActivePet();
+                wrapper.getPetsUnlocked().remove(activePet);
                 if (activePet.contains("@")) {
                     activePet = activePet.split("@")[0];
                 }
                 String newPet = activePet + "@" + checkedPetName;
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
+                wrapper.getPetsUnlocked().remove(activePet);
+                wrapper.getPetsUnlocked().add(newPet);
+                wrapper.setActivePet(newPet);
                 ChatColor prefix = ChatColor.WHITE;
                 if (Rank.isSubscriber(player)) {
                     String rank = Rank.getInstance().getRank(player.getUniqueId());
@@ -1037,6 +1044,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR)) return;
         Player player = event.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
             return;
         }
@@ -1068,14 +1077,14 @@ public class ItemListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                         return;
                     }
-                    String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+                    String mountType = tag.getString("usage").equals("mule") ? "MULE" : wrapper.getActiveMount();
                     if (mountType == null || mountType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
                         player.closeInventory();
                         return;
                     }
                     if (tag.getString("usage").equals("mule")) {
-                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                        HashSet<String> playerMounts = wrapper.getMountsUnlocked();
                         if (!playerMounts.contains("MULE")) {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
                             return;
@@ -1094,7 +1103,7 @@ public class ItemListener implements Listener {
                                             count[0]++;
                                             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
                                         } else {
-                                            MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
+                                            MountUtils.spawnMount(player.getUniqueId(), mountType, wrapper.getActiveMountSkin());
                                         }
                                     }
                                 } else {
@@ -1128,7 +1137,7 @@ public class ItemListener implements Listener {
                         EntityAPI.removePlayerPetList(player.getUniqueId());
                         return;
                     }
-                    String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
+                    String petType = wrapper.getActivePet();
                     if (petType == null || petType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
                         player.closeInventory();
@@ -1150,7 +1159,7 @@ public class ItemListener implements Listener {
                         player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                         return;
                     }
-                    String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
+                    String trailType = wrapper.getActiveTrail();
                     if (trailType == null || trailType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active trail, please enter the trails section in your profile to set one.");
                         player.closeInventory();

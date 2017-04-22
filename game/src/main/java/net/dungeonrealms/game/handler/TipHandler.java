@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -61,7 +62,11 @@ public class TipHandler implements GenericMechanic {
         if (tipToDisplay.equals("")) {
             return;
         }
-        Bukkit.getOnlinePlayers().stream().filter(player -> (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TIPS, player.getUniqueId())).forEach(player -> player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + ">>" + ChatColor.YELLOW + " TIP - " + ChatColor.GRAY + tipToDisplay));
+        Bukkit.getOnlinePlayers().stream().filter(player -> {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null) return false;
+            return wrapper.getToggles().isTips();
+        }).forEach(player -> player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + ">>" + ChatColor.YELLOW + " TIP - " + ChatColor.GRAY + tipToDisplay));
     }
 
     private String getRandomUnusedTip() {

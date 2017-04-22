@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
@@ -143,9 +144,11 @@ public class ShopMechanics implements GenericMechanic, Listener {
             Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
             if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    if(wrapper == null)return;
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
-                    Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
+                    Shop shop = new Shop(uniqueId, b.getLocation(), wrapper.getCharacterID(), Chat.getInstance().checkForBannedWords(shopName));
                     DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
                     ALLSHOPS.put(player.getName(), shop);
                     player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");

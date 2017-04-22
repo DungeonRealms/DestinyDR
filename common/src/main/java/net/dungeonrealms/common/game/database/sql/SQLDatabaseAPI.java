@@ -8,7 +8,6 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.concurrent.Query;
 import net.dungeonrealms.common.game.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,7 +29,7 @@ public class SQLDatabaseAPI {
     private SQLDatabase database;
 
     @Getter
-    private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
+    public static final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
 
     private final ScheduledExecutorService QUERY_QUEUE_THREAD = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("SQL Query Queue Thread").build());
 
@@ -48,35 +47,74 @@ public class SQLDatabaseAPI {
     }
 
 
-    public void addQuery(QueryType type, Object... values){
+    public void addQuery(QueryType type, Object... values) {
         String query = type.getQuery(values);
-        if(query != null){
+        if (query != null) {
             this.sqlQueries.add(query);
         }
     }
 
+    public void executeBatch(Consumer<Boolean> callback, String... queries) {
+        //Need to update data NOW!!!!!!!!!!!
+        CompletableFuture.runAsync(() -> {
+            try {
+                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement("");
+                for (String query : queries) {
+                    statement.addBatch(query);
+                }
+                statement.executeBatch();
+                if (callback != null)
+                    callback.accept(true);
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (callback != null)
+                callback.accept(false);
+        }, SERVER_EXECUTOR_SERVICE);
+
+    }
+
+    public void executeUpdate(Consumer<Integer> callback, String query) {
+        //Need to update data NOW!!!!!!!!!!!
+        CompletableFuture.runAsync(() -> {
+            try {
+                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+                int toReturn = statement.executeUpdate();
+                if (callback != null)
+                    callback.accept(toReturn);
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (callback != null)
+                callback.accept(-1);
+        }, SERVER_EXECUTOR_SERVICE);
+    }
+
     @Getter
     private volatile Set<String> sqlQueries = new ConcurrentSet<>();
+
     public void init() {
         this.database = new SQLDatabase("158.69.121.40", "dev", "3HCKkPc6mWr63E924C", "dungeonrealms");
 
         QUERY_QUEUE_THREAD.scheduleAtFixedRate(() -> {
             //Dont do anything.. no queries..
-            if(sqlQueries.isEmpty())return;
+            if (sqlQueries.isEmpty()) return;
 
             //Execute these random updates we want to do.
             try {
                 long start = System.currentTimeMillis();
                 @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement("");
                 int added = 0;
-                for(String query : sqlQueries){
+                for (String query : sqlQueries) {
                     statement.addBatch(query);
                     //Remove the query after its been applied to the batch.
                     sqlQueries.remove(query);
                     added++;
                 }
                 statement.executeBatch();
-                if(added > 0 && Constants.debug){
+                if (added > 0 && Constants.debug) {
                     Bukkit.getLogger().info("Executed a batch of " + added + " statements in " + (System.currentTimeMillis() - start) + "ms");
                 }
             } catch (Exception e) {
@@ -137,12 +175,13 @@ public class SQLDatabaseAPI {
         return null;
     }
 
-    public String getUsernameFromUUID(UUID uuid){
+    public String getUsernameFromUUID(UUID uuid) {
         for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
             if (uuid.equals(entry.getValue().getUuid())) return entry.getValue().getName();
         }
         return null;
     }
+
     /**
      * Thread safe method, if the uuid had to be loaded in from the database then the callback will be called asynchronously
      *

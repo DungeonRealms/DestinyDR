@@ -50,13 +50,13 @@ public class AcceptCommand extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "That is not a player.");
                 return;
             }
-            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if(!wrapper.isPlaying()) {
                     player.sendMessage(ChatColor.RED + "That player is not on any shards.");
                     return;
                 }
 
-                if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name.toLowerCase())) {
+                if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), uuid)) {
                     player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
                     return;
                 }

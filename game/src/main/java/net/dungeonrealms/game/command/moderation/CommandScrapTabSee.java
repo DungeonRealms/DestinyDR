@@ -45,7 +45,7 @@ public class CommandScrapTabSee extends BaseCommand {
                 String id = DatabaseAPI.getInstance().getUUIDFromName(name);
                 if (id != null && !id.equals("")) {
                     UUID uuid = UUID.fromString(id);
-                    PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                    PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                         if(wrapper == null){
                             player.sendMessage(ChatColor.RED + "No PlayerWrapper found for " + name + " (" + uuid + ")");
                             return;

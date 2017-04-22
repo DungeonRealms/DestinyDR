@@ -8,6 +8,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -460,7 +461,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));
             cm.registerCommand(new CommandWhois("whois", "/<command> [args]", "Get which shard a player is playing on if any."));
             cm.registerCommand(new CommandPacketLog("packetlog", "/<command> [args]", "Log all data a user sends"));
-            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
+//            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
             cm.registerCommand(new CommandHead("head", "/<command> [args]", "Spawn a player's Minecraft head."));
@@ -534,7 +535,7 @@ public class DungeonRealms extends JavaPlugin {
         // FIX PLAYERS //
         try {
             //Need to execute sync so its ready when its online.
-            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("UPDATE users SET currentShard = null, isPlaying = false WHERE currentShard = '" + shard.getPseudoName() + "';");
+            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(QueryType.FIX_ONLINE_USERS.getQuery(shard.getPseudoName()));
             int updates = statement.executeUpdate();
             Bukkit.getLogger().info("DungeonRealms - Set " + updates + " players' " +
                     "statuses to offline from " + "shard " + shard);

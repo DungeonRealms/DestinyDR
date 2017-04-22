@@ -10,6 +10,8 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -37,6 +39,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +62,8 @@ public class Lobby extends JavaPlugin implements Listener {
 
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
 
+    private SQLDatabase sqlDatabase;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -67,7 +72,15 @@ public class Lobby extends JavaPlugin implements Listener {
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
-        DatabaseInstance.getInstance().startInitialization(true);
+
+        this.sqlDatabase = new SQLDatabase(getConfig().getString("sql.hostname"), getConfig().getString("sql.username"), getConfig().getString("sql.password"), getConfig().getString("sql.database"));
+        if(!this.sqlDatabase.isConnected()){
+            Bukkit.getLogger().info("Unable to connect to MySQL database....");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        SQLDatabaseAPI.getInstance();
+//        DatabaseInstance.getInstance().startInitialization(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         ghostFactory = new GhostFactory(this);
@@ -87,6 +100,10 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
         cm.registerCommand(new CommandBuild());
+    }
+
+    @Override
+    public void onDisable() {
     }
 
     @EventHandler

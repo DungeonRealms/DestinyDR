@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.Bukkit;
@@ -365,7 +366,9 @@ public class Realm {
 	 * Returns the realm title if it exists, otherwise null.
 	 */
 	public String getTitle() {
-		String title = (String) DatabaseAPI.getInstance().getData(EnumData.REALM_TITLE, getOwner());
+		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(getOwner());
+		if(wrapper == null) return null;
+		String title = wrapper.getRealmTitle();
 		return (title == null || title.equals("")) ? null : ChatColor.GRAY + title;
 	}
 	
@@ -451,7 +454,9 @@ public class Realm {
 	 * Loads the realm from FTP.
 	 */
 	private void loadRealm(Player player, Runnable doAfter) {
-		
+
+		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+
 		// Don't load a realm that's already loaded.
 		if(isLoaded()) {
 			if (doAfter != null)
@@ -460,13 +465,13 @@ public class Realm {
 		}
 		
 		// Their realm is uploading still..
-		if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, player.getUniqueId()))) {
+		if (wrapper.isUploadingRealm()) {
             player.sendMessage(ChatColor.RED + "Your realm is being uploaded from another shard.");
             return;
         }
 
 		// Their realm is upgrading.
-        if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPGRADE, player.getUniqueId()))) {
+        if (wrapper.isUpgradingRealm()) {
             player.sendMessage(ChatColor.RED + "Your realm is upgrading on another shard.");
             return;
         }

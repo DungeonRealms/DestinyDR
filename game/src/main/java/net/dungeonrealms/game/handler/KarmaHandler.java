@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.handler;
 
+import com.comphenix.protocol.PacketType;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -202,12 +203,14 @@ public class KarmaHandler implements GenericMechanic {
         if (gamePlayer == null) {
             return;
         }
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : gamePlayer.getPlayerAlignment();
         int alignmentTime = 0;
         if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
         	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
         if (login)
-            alignmentTime = (int) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT_TIME, player.getUniqueId());
+            alignmentTime = wrapper.getAlignmentTime();
             
         if (alignmentTo == null || alignmentTo == EnumPlayerAlignments.NONE) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
@@ -269,7 +272,9 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public static String getAlignmentOnLogin(UUID uuid) {
-        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return null;
+        return wrapper.getPlayerAlignment().name;
     }
 
     /**

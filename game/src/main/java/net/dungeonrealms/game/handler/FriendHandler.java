@@ -4,6 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bson.Document;
@@ -16,6 +17,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -137,8 +140,10 @@ public class FriendHandler {
      * @param uuid
      * @return list off UUIDs as String.
      */
-    public ArrayList<String> getFriendsList(UUID uuid) {
-        return (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+    public HashMap<UUID,Integer> getFriendsList(UUID uuid) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return null;
+        return wrapper.getFriendsList();
 
     }
 
@@ -155,50 +160,24 @@ public class FriendHandler {
     public boolean areFriends(Player player, UUID uuid) {
         if (player.getUniqueId().equals(uuid)) return true;
 
-        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, player.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return false;
+        HashMap<UUID,Integer> friends = wrapper.getFriendsList();
 
-        if (friends.contains(uuid.toString())) {
+        if (friends.containsKey(uuid)) {
             return true;
         }
 
-        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
+        if(wrapper.getPendingFriends().containsKey(uuid)) return true;
 
-        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
-
-        return pendingRequests >= 1;
+        return false;
     }
 
-    /**
-     * Will check and determine if the players are friends or have a pending
-     * friend request.
-     *
-     * @param player Main player
-     * @param uuid   The other player
-     * @return
-     * @since 1.0
-     */
-    public boolean areFriends(Player player, UUID uuid, Document document) {
-        if (player.getUniqueId().equals(uuid)) return true;
 
-        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, player.getUniqueId());
-
-        if (friends.contains(uuid.toString())) {
-            return true;
-        }
-
-        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, document);
-        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
-
-        return pendingRequests >= 1;
-    }
-
-    public boolean isPendingFrom(UUID uuid, String name) {
-        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
-        String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
-        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(friendUUID)).count();
-
-        return pendingRequests >= 1;
-
+    public boolean isPendingFrom(UUID uuid, UUID other) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return false;
+        return wrapper.getPendingFriends().containsKey(other);
     }
 
     public void acceptFriend(UUID uniqueId, UUID friend, String name) {

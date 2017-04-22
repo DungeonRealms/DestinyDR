@@ -57,7 +57,7 @@ public class CommandSend extends BaseCommand {
 								return;
 							}
 
-					PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+					PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
 						if(wrapper.isPlaying()) {
 							sender.sendMessage(ChatColor.RED + "Player Not Online");
 							return;

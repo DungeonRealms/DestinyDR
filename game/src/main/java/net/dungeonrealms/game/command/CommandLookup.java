@@ -45,7 +45,7 @@ public class CommandLookup extends BaseCommand {
                 sender.sendMessage(ChatColor.RED + args[0] + " was not found in the database.");
                 return;
             }
-            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 boolean isPlaying = wrapper.isPlaying();
                 String server = wrapper.getShardPlayingOn();
 

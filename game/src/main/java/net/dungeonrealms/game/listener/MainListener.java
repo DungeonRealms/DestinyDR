@@ -116,8 +116,8 @@ public class MainListener implements Listener {
         if (DungeonRealms.getInstance().isEventShard)
             return;
 
-        if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
-            Player player = Bukkit.getPlayer(event.getVote().getUsername());
+        Player player = Bukkit.getPlayer(event.getVote().getUsername());
+        if (player != null) {
 
             // Handle the experience calculations.
             GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
@@ -143,12 +143,14 @@ public class MainListener implements Listener {
                 }
             }
 
-            // Update the database with the new E-Cash reward!
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_VOTE, System.currentTimeMillis(), true);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
+            wrapper.setEcash(wrapper.getEcash() + ecashReward);
+            wrapper.setLastVote(System.currentTimeMillis());
+
+            // Update the database with the new E-Cash reward!
             // Reward to player with their EXP increase.
-            if (GameAPI.getGamePlayer(player) == null) {
+            if (gamePlayer == null) {
                 return;
             }
             gamePlayer.addExperience(expToGive, false, true);
@@ -295,9 +297,11 @@ public class MainListener implements Listener {
         GameAPI.asyncTracker.add(player);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
-                if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                if(wrapper == null) return;
+                if (wrapper.isLoggerDied()) {
                     player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, your doppelganger was killed and alas your items are gone.");
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+                    wrapper.setLoggerDied(false);
                     ItemManager.giveStarter(player);
                 }
             }
@@ -727,6 +731,8 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {
         final Player pl = e.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+        if(wrapper == null) return;
         if (!pl.getWorld().equals(Bukkit.getWorlds().get(0))) {
             e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
             e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
@@ -816,7 +822,6 @@ public class MainListener implements Listener {
 
                 if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand())) {
                     // They get fish!
-                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl.getUniqueId());
                     ItemStack fish = Fishing.getFishDrop(spot_tier);
                     if (pl.getInventory().firstEmpty() != -1) {
                         pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
@@ -845,7 +850,7 @@ public class MainListener implements Listener {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                        if (wrapper.getToggles().isDebug()) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                         }
                         //Caught another..
@@ -869,7 +874,7 @@ public class MainListener implements Listener {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                        if (wrapper.getToggles().isDebug()) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                         }
                         wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 2);
@@ -1244,13 +1249,17 @@ public class MainListener implements Listener {
 
         Player pl = event.getPlayer();
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+
+        if(wrapper == null) return;
+
         Player trader = TradeManager.getTarget(pl);
         if (trader == null)
             return;
 
         if (GameAPI._hiddenPlayers.contains(trader) || trader.getGameMode() == GameMode.SPECTATOR) return;
 
-        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isTrialGM(pl)) {
+        if (!wrapper.getToggles().isTrade() && !Rank.isTrialGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");
             trader.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
             trader.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");

@@ -187,7 +187,8 @@ public class GamePlayer {
     }
 
     public KarmaHandler.EnumPlayerAlignments getPlayerAlignmentDB() {
-        return KarmaHandler.EnumPlayerAlignments.getByName(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, T.getUniqueId())));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return KarmaHandler.EnumPlayerAlignments.getByName(wrapper.getPlayerAlignment().name());
     }
 
     /**
@@ -205,7 +206,8 @@ public class GamePlayer {
     }
 
     public int getEcashBalance() {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, T.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return wrapper.getEcash();
     }
 
     /**
@@ -301,7 +303,7 @@ public class GamePlayer {
         } else {
             setPlayerEXP(futureExperience);
             if (displayMessage) {
-                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
+                if (wrapper.getToggles().isDebug()) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     if (expBonus > 0) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(Rank.getInstance().getRank(T.getUniqueId()).toLowerCase()) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
@@ -414,7 +416,8 @@ public class GamePlayer {
      * @return boolean
      */
     public boolean hasShopOpen() {
-        return (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, T.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return wrapper.isShopOpened();
     }
 
     /**

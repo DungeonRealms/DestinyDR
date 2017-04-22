@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
@@ -161,7 +162,7 @@ public class Chat {
                 return;
             }
 
-            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isTrialGM(player))
                     if (!wrapper.getToggles().isReceiveMessage()) {
                         player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
@@ -184,8 +185,14 @@ public class Chat {
                     return;
                 }
 
+                String guild = net.md_5.bungee.api.ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(uuid)) + "] ";
+                final String rank = wrapper.getRank().toLowerCase();
+
+
+
+
                 player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                        (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
+                        (recipientName, guild, rank, true, wrapper.getPlayerAlignment()) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
                         ChatColor.WHITE + finalMessage);
 
                 if (!ignoringPlayer) {
@@ -222,8 +229,12 @@ public class Chat {
     }
 
     public static List<Player> getRecipients(boolean tradeChat) {
-        return Bukkit.getOnlinePlayers().stream().filter((pl) ->
-                GameAPI.isPlayer(pl) && (!tradeChat || ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, pl.getUniqueId()))))
+        return Bukkit.getOnlinePlayers().stream().filter((pl) -> {
+                    PlayerWrapper wrapper =PlayerWrapper.getPlayerWrapper(pl);
+                    if(wrapper == null) return false;
+                    return GameAPI.isPlayer(pl) && (!tradeChat || wrapper.getToggles().isTradeChat());
+                }
+                )
                 .collect(Collectors.toList());
     }
 
@@ -235,6 +246,9 @@ public class Chat {
      */
     public void doChat(AsyncPlayerChatEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+
+        if(wrapper == null) return;
         String fixedMessage = checkForBannedWords(event.getMessage());
 
         if (fixedMessage.contains(".com") || fixedMessage.contains(".net") || fixedMessage.contains(".org") || fixedMessage.contains("http://") || fixedMessage.contains("www."))
@@ -258,7 +272,7 @@ public class Chat {
             return;
         }
 
-        boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
+        boolean gChat = wrapper.getToggles().isGlobalChat();
 
         if (gChat) {
             if (!checkGlobalCooldown(event.getPlayer())) {
@@ -268,7 +282,7 @@ public class Chat {
             }
             String messageType = GameChat.getGlobalType(fixedMessage);
             boolean tradeChat = messageType.equals("trade");
-            if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, event.getPlayer().getUniqueId())) {
+            if (tradeChat && !wrapper.getToggles().isTradeChat()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
                 event.setCancelled(true);
                 return;

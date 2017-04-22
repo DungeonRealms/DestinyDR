@@ -97,7 +97,7 @@ public class InventoryListener implements Listener {
         UUID target = CommandArmorsee.offline_armor_watchers.get(event.getPlayer().getUniqueId());
         if (!(event.getPlayer() instanceof Player)) return;
         Player viewer = (Player) event.getPlayer();
-        PlayerWrapper.getPlayerWrapper(target, (wrapper) -> {
+        PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {
                 viewer.sendMessage(ChatColor.RED + "This player is currently logged in! We could not save your changes!");
                 return;
@@ -120,7 +120,7 @@ public class InventoryListener implements Listener {
         if (!(event.getPlayer() instanceof Player)) return;
         if(!event.getInventory().getName().contains("Bank Storage"))return;
         Player viewer = (Player) event.getPlayer();
-        PlayerWrapper.getPlayerWrapper(target, (wrapper) -> {
+        PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {
                 viewer.sendMessage(ChatColor.RED + "This player has since logged into shard " + wrapper.getFormattedShardName() + "!");
                 return;
@@ -1341,6 +1341,8 @@ public class InventoryListener implements Listener {
         ItemStack slotItem = event.getCurrentItem();
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (!RepairAPI.isItemArmorScrap(cursorItem)) return;
         if (!RepairAPI.canItemBeRepaired(slotItem)) return;
         if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem))
@@ -1409,7 +1411,7 @@ public class InventoryListener implements Listener {
                 player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
                 player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
             }
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
             return;
@@ -1466,7 +1468,7 @@ public class InventoryListener implements Listener {
                 player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
                 player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
             }
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
         }

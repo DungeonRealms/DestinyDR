@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
@@ -256,8 +257,8 @@ public class DamageAPI {
 
             if (isHitCrit) {
                 if (isAttackerPlayer) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId
-                            ()).toString())) {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(attacker.getUniqueId());
+                    if (wrapper.getToggles().isDebug()) {
                         attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                     }
                     receiver.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
@@ -460,8 +461,9 @@ public class DamageAPI {
                     } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
                         if (GameAPI._hiddenPlayers.contains((Player) entity)) continue;
                         if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
-                            if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
-                                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(damager.getUniqueId());
+                            if (!wrapper.getToggles().isPvp()) {
+                                if (wrapper.getToggles().isDebug()) {
                                     damager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                                 }
                                 continue;
@@ -654,8 +656,8 @@ public class DamageAPI {
             }
             if (isHitCrit) {
                 if (isAttackerPlayer) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId
-                            ()).toString())) {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(attacker.getUniqueId());
+                    if (wrapper.getToggles().isDebug()) {
                         attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                     }
                     receiver.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
@@ -808,7 +810,7 @@ public class DamageAPI {
             int blockChance = defenderAttributes.get("block")[1];
             final int DODGE_ROLL = new Random().nextInt(100);
             final int BLOCK_ROLL = new Random().nextInt(100);
-            boolean toggleDebug = isAttackerPlayer ? (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()) : false;
+            boolean toggleDebug = isAttackerPlayer ? PlayerWrapper.getPlayerWrapper(attacker.getUniqueId()).getToggles().isDebug() : false;
             int accuracy = projectile == null ? attackerAttributes.get("accuracy")[1] : 0;
 
             if (DODGE_ROLL < dodgeChance - accuracy) {
@@ -1309,7 +1311,8 @@ public class DamageAPI {
      * Create a hologram that floats up and deletes itself.
      */
     public static void createDamageHologram(Player createFor, Location createAround, String display) {
-        if (createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(createFor);
+        if (createFor != null && !wrapper.getToggles().isDamageIndicators())
             return;
         double xDif = (Utils.randInt(0, 20) - 10) / 10D;
         double yDif = Utils.randInt(0, 15) / 10D;

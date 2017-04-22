@@ -410,18 +410,6 @@ public class BankMechanics implements GenericMechanic {
     /**
      * Add gems to player database
      *
-     * @param uuid
-     * @param num
-     */
-    public void addGemsToPlayerBank(UUID uuid, int num) {
-        if (num == 0)
-            return;
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, true);
-    }
-
-    /**
-     * Add gems to player database
-     *
      * @param p
      * @param num
      */

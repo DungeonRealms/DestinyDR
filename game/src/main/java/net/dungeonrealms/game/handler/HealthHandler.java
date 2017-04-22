@@ -401,6 +401,8 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void healPlayerByAmount(Player player, int amount) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         double currentHP = getPlayerHPLive(player);
         double maxHP = getPlayerMaxHPLive(player);
         if (currentHP + 1 > maxHP) {
@@ -413,7 +415,7 @@ public class HealthHandler implements GenericMechanic {
         if ((currentHP + (double) amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 double newHealth = currentHP + amount;
                 if (newHealth >= maxHP) {
                     newHealth = maxHP;
@@ -438,7 +440,7 @@ public class HealthHandler implements GenericMechanic {
             player.setHealth((int) newPlayerHP);
         }
 
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+        if (wrapper.getToggles().isDebug()) {
             double newHealth = currentHP + amount;
             if (newHealth >= maxHP) {
                 newHealth = maxHP;
@@ -585,6 +587,8 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (leAttacker instanceof Player) {
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player)leAttacker);
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
                 if (offer != null) {
@@ -602,7 +606,7 @@ public class HealthHandler implements GenericMechanic {
                         KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
                     }
                 }
-                if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
+                if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && wrapper.getToggles().isChaoticPrevention()) {
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                         player.setFireTicks(0);
                         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
@@ -621,7 +625,7 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
             }
 
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
+            if (wrapper != null && wrapper.getToggles().isDebug()) {
                 String msg = ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]";
                 leAttacker.sendMessage(msg);
                 GameAPI.runAsSpectators(leAttacker, (pl) -> pl.sendMessage(msg));
@@ -636,9 +640,10 @@ public class HealthHandler implements GenericMechanic {
                 //Check for killer from this.
                 Player killer = getKillerFromRecentDamage(player);
                 if (killer != null) {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player)leAttacker);
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                         if (KarmaHandler.getInstance().getPlayerRawAlignment(killer) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            boolean prevent = Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, killer.getUniqueId()).toString());
+                            boolean prevent = wrapper.getToggles().isChaoticPrevention();
                             if (prevent || !GameAPI.isNonPvPRegion(player.getLocation())) {
                                 player.setFireTicks(0);
                                 newHP = 1;
@@ -652,8 +657,8 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
         }
-
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (wrapper.getToggles().isDebug()) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 String msg = ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
                         + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" +
@@ -950,6 +955,7 @@ public class HealthHandler implements GenericMechanic {
                 //entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
                 Player player = (Player) attacker;
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                 if (player.hasMetadata("sprinting") && player.isSprinting()) {
                     player.setSprinting(false);
                     player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -964,7 +970,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                 }
 
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                if (wrapper.getToggles().isDebug()) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
                         ChatColor npcTierColor = GameAPI.getTierColor(entity.getMetadata("tier").get(0).asInt());

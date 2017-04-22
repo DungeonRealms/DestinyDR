@@ -5,7 +5,9 @@ import lombok.Cleanup;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.concurrent.Query;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -85,8 +87,9 @@ public class Storage {
      * @return
      */
     private int getStorageSize() {
-        int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, ownerUUID);
-        return 9 * lvl;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(ownerUUID);
+        if(wrapper == null) return 9;
+        return 9 * wrapper.getBankLevel();
     }
 
     private PlayerWrapper getPlayerWrapper() {
@@ -104,7 +107,9 @@ public class Storage {
 
         CompletableFuture.runAsync(() -> {
             try {
-                @Cleanup PreparedStatement state = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("SELECT collection_storage FROM characters WHERE character_id = '" + this.characterID + "';");
+                @Cleanup PreparedStatement state = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
+                        QueryType.SELECT_COLLECTION_BIN.getQuery(this.characterID));
+//                        "SELECT collection_storage FROM characters WHERE character_id = '" + this.characterID + "';");
                 ResultSet rs = state.executeQuery();
                 if (rs.first()) {
                     String newBin = rs.getString("users.collection_storage");
@@ -131,7 +136,7 @@ public class Storage {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-        }, SQLDatabaseAPI.getInstance().getSERVER_EXECUTOR_SERVICE());
+        }, SQLDatabaseAPI.getSERVER_EXECUTOR_SERVICE());
         //Pulling collection bin from cached doc.
 //        String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
 //        if (stringInv.length() > 1) {

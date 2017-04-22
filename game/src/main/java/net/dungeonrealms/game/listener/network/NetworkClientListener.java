@@ -10,10 +10,12 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -167,7 +169,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     UUID uuid = UUID.fromString(uuidString);
 
                                     if (Bukkit.getPlayer(uuid) != null) {
-                                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        /*Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                             ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
                                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                                 for (String s : list) {
@@ -180,7 +182,17 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                                     }
                                                 }
                                             });
-                                        });
+                                        });*/
+
+                                        PlayerWrapper personWrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                                        if(personWrapper != null) {
+                                            for(UUID friend : personWrapper.getFriendsList().keySet()) {
+                                                Player friendPlayer = Bukkit.getPlayer(friend);
+                                                if(friendPlayer == null) continue;
+                                                friendPlayer.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
+                                                friendPlayer.playSound(friendPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                            }
+                                        }
 
                                     }
                                 } else if (msg.contains("request:")) {

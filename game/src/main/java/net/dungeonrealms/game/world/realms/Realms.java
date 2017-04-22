@@ -9,10 +9,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import lombok.Getter;
 
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -91,14 +95,12 @@ public class Realms implements GenericMechanic {
             
             Arrays.stream(uploadingFolder.listFiles()).filter(file -> GameAPI.isUUID(file.getName().split(".zip")[0])).forEach(f -> {
                 UUID uuid = UUID.fromString(f.getName().split(".zip")[0]);
-                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, uuid)) {
-                    //Upload realm.
-                	Realm.uploadZippedRealm(f, uuid.toString());
-                    //Fix player data.
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
-                    GameAPI.updatePlayerData(uuid);
-                }
+                PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+                    if(wrapper.isUploadingRealm()) {
+                        wrapper.setUpgradingRealm(false);
+                        wrapper.setUploadingRealm(false);
+                    }
+                });
                 //Remove the zip file.
                 try {
                     FileUtils.forceDelete(f);
@@ -176,9 +178,9 @@ public class Realms implements GenericMechanic {
      */
     public Realm getOrCreateRealm(UUID uuid) {
     	Realm realm = getRealm(uuid);
-    	return (realm != null) ? realm : getOrCreateRealm((String)DatabaseAPI.getInstance().getData(EnumData.USERNAME, uuid), uuid);
+    	return (realm != null) ? realm : getOrCreateRealm(SQLDatabaseAPI.getInstance().getUsernameFromUUID(uuid), uuid);
     }
-    
+
     /**
      * Gets a realm, or if it isn't cached, construct one.
      */
@@ -312,7 +314,9 @@ public class Realms implements GenericMechanic {
 	 * @param uuid
 	 */
 	public static RealmTier getRealmTier(UUID uuid) {
-		return RealmTier.getByTier((Integer)DatabaseAPI.getInstance().getData(EnumData.REALM_TIER, uuid));
+	    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+	    if(wrapper == null) return null;
+		return RealmTier.getByTier(wrapper.getRealmTier());
 	}
 	
 	/**

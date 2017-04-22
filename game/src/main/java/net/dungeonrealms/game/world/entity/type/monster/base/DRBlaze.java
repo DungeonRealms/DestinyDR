@@ -122,7 +122,7 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 	@Override
 	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
+			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), this.getBukkitEntity(), killer);
 		});
 	}
 

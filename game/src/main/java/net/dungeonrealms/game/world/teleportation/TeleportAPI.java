@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.teleportation;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -158,10 +159,13 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static String getLocationFromDatabase(UUID uuid) {
-        if (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid) != null) {
-            return Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString());
-        } else {
-            return "Cyrennica";
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return "Cyrennica";
+
+        if (wrapper.getHearthstone() != null) {
+            return Utils.ucfirst(wrapper.getHearthstone());
         }
+
+        return "Cyrennica";
     }
 }

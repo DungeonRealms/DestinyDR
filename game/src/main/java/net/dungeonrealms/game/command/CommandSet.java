@@ -66,6 +66,7 @@ public class CommandSet extends BaseCommand {
             return false;
         }
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         switch (args[0]) {
             case "level":
                 if (args.length < 3) {
@@ -92,7 +93,9 @@ public class CommandSet extends BaseCommand {
                     break;
                 }
                 int gems = Integer.parseInt(args[1]);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                wrapper.setGems(gems);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
                 s.sendMessage("Gems set to " + gems);
                 break;
             case "invlevel":
@@ -101,14 +104,15 @@ public class CommandSet extends BaseCommand {
                     break;
                 }
                 int invlvl = Integer.parseInt(args[1]);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, false);
+                wrapper.setBankLevel(invlvl);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, false);
                 break;
             case "portal_keys":
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, false);
+                wrapper.setPortalShardsT1(1500);
+                wrapper.setPortalShardsT2(1500);
+                wrapper.setPortalShardsT3(1500);
+                wrapper.setPortalShardsT4(1500);
+                wrapper.setPortalShardsT5(1500);
                 break;
             case "durability":
                 if (args.length < 3) {
@@ -277,7 +281,9 @@ public class CommandSet extends BaseCommand {
                     }
                 }
 
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, false);
+                wrapper = PlayerWrapper.getPlayerWrapper(player);
+                wrapper.setEcash(ecash);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, false);
                 player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
                 break;
             case "hp":

@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -140,7 +141,9 @@ public class PvPListener implements Listener {
     private boolean checkChaoticPrevention(EntityDamageByEntityEvent event, Player damager, Player receiver, GamePlayer damagerGP, GamePlayer receiverGP, double calculatedDamage) {
         if (receiverGP.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
             if (damagerGP.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(damager);
+                if(wrapper == null) return false;
+                if (wrapper.getToggles().isChaoticPrevention()) {
                     if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
                         receiver.setFireTicks(0);
                         for (PotionEffect potionEffect : receiver.getActivePotionEffects()) {

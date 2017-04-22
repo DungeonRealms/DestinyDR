@@ -67,7 +67,7 @@ public class AddCommand extends BaseCommand {
                 return;
             }
 
-            PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if(!wrapper.isPlaying()) {
                     player.sendMessage(ChatColor.RED + "That player is not on any shard!");
                     return;

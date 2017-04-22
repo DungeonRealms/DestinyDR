@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -43,7 +45,8 @@ public class PlayerWrapper {
     @Getter
     private static Map<UUID, PlayerWrapper> playerWrappers = new ConcurrentHashMap<>();
 
-    private static final ExecutorService SQL_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("PlayerWrapper SQL Thread").build());
+//    private static final ExecutorService SQL_EXECUTOR_SERVICE =
+//            Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("PlayerWrapper SQL Thread").build());
 
     @Getter
     private UUID uuid;
@@ -60,7 +63,10 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
-    private int health, level, ecash, experience, gems;
+    private int health, level, ecash, experience;
+
+    @Getter
+    private int gems;
 
     @Getter
     @Setter
@@ -94,6 +100,7 @@ public class PlayerWrapper {
     private boolean combatLogged = false, shopOpened = false, loggerDied = false;
 
     @Getter
+    @Setter
     private String lastIP, hearthstone;
 
     @Getter
@@ -133,6 +140,7 @@ public class PlayerWrapper {
     private CurrencyTab currencyTab;
 
     @Getter
+    @Setter
     private String rank;
 
     @Getter
@@ -172,6 +180,18 @@ public class PlayerWrapper {
     @Setter
     private Long rankExpiration;
 
+    @Getter
+    @Setter
+    private String lastViewedBuild;
+
+    @Getter
+    @Setter
+    private int lastNoteSize;
+
+    @Getter
+    @Setter
+    private long lastVote;
+
 
     @Getter
     private PlayerToggles toggles;
@@ -204,7 +224,7 @@ public class PlayerWrapper {
      */
     public void loadData(boolean async, Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> loadData(false, callback), SQL_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> loadData(false, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
 
@@ -248,6 +268,11 @@ public class PlayerWrapper {
                 this.lastLogin = result.getLong("users.last_login");
                 this.lastLogout = result.getLong("users.last_logout");
                 this.lastShardTransfer = result.getLong("users.last_shard_transfer");
+
+                this.lastViewedBuild = result.getString("users.lastViewedBuild");
+                this.lastNoteSize = result.getInt("users.lastNoteSize");
+
+                this.lastVote = result.getLong("users.lastVote");
 
                 this.playerGameStats = new PlayerGameStats(characterID);
                 this.playerGameStats.extractData(result);
@@ -436,16 +461,17 @@ public class PlayerWrapper {
         CompletableFuture.runAsync(() -> {
             try {
                 @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                        "UPDATE users SET is_online = ?, currentShard = ?,  WHERE `users`.`uuid` = ?;");
-                statement.setBoolean(1, this.isPlaying);
-                statement.setString(2, this.isPlaying ? DungeonRealms.getShard().getShardID() : null);
-                statement.setString(3, uuid.toString());
+                        QueryType.SET_ONLINE_STATUS.getQuery(0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : null, uuid.toString()));
+//                        "UPDATE users SET is_online = ?, currentShard = ?,  WHERE `users`.`uuid` = ?;");
+//                statement.setBoolean(1, this.isPlaying);
+//                statement.setString(2, this.isPlaying ? DungeonRealms.getShard().getShardID() : null);
+//                statement.setString(3, uuid.toString());
 
                 statement.executeUpdate();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, SQL_EXECUTOR_SERVICE);
+        }, SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
     }
 
     public void saveData(boolean async, Player player, Boolean isOnline) {
@@ -455,7 +481,7 @@ public class PlayerWrapper {
 
     public void saveData(boolean async, Player player, Boolean isOnline, Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> saveData(false, player, isOnline, callback), SQL_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> saveData(false, player, isOnline, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
 
@@ -515,8 +541,8 @@ public class PlayerWrapper {
     private String getUsersUpdateQuery(Boolean isOnline) {
         if (isOnline == null) isOnline = isPlaying();
 
-        String toReturn = "REPLACE INTO users (account_id, uuid, username, selected_character_id, ecash, joined, last_login, last_logout, last_free_ecash, last_shard_transfer, is_online, shop_open, currentShard, currencyTab, firstLogin) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');";
-        toReturn = String.format(toReturn, getAccountID(), uuid, username, getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isShopOpened(), this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", getCurrencyTab().getSerializedScrapTab(), getFirstLogin());
+        String toReturn = "REPLACE INTO users (account_id, uuid, username, selected_character_id, ecash, joined, last_login, last_logout, last_free_ecash, last_shard_transfer, is_online, shop_open, currentShard, currencyTab, firstLogin, lastViewedBuild, lastNoteSize, lastVote) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%s');";
+        toReturn = String.format(toReturn, getAccountID(), getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isShopOpened(), this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote());
         return toReturn;
     }
 
@@ -721,16 +747,9 @@ public class PlayerWrapper {
 
         player.updateInventory();
     }
-
-    public void saveOfflineMuleInventory() {
-        CompletableFuture.runAsync(() -> {
-//            SQLDatabaseAPI.getInstance().getDatabase().
-        }, SQL_EXECUTOR_SERVICE);
-    }
-
     public void saveFriends(boolean async, Consumer<Boolean> afterSave) {
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> saveFriends(false, afterSave), SQL_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> saveFriends(false, afterSave), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
         boolean couldSave = true;
@@ -748,6 +767,10 @@ public class PlayerWrapper {
         if (afterSave != null) afterSave.accept(couldSave);
     }
 
+    public void setGems(int gems){
+        if(gems <= 0)gems = 0;
+        this.gems = gems;
+    }
     public boolean isBanned() {
         return this.banExpire >= System.currentTimeMillis();
     }

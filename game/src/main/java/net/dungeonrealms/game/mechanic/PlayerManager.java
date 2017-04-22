@@ -1,8 +1,11 @@
 package net.dungeonrealms.game.mechanic;
 
+import lombok.Getter;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerToggles;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 /**
@@ -59,27 +63,28 @@ public class PlayerManager {
     }
 
     public enum PlayerToggles {
-        DEBUG(0, EnumData.TOGGLE_DEBUG, "toggledebug", "Toggles displaying combat debug messages.", "Debug Messages"),
-        TRADE(1, EnumData.TOGGLE_TRADE, "toggletrade", "Toggles trading requests.", "Trade"),
-        TRADE_CHAT(2, EnumData.TOGGLE_TRADE_CHAT, "toggletradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
-        GLOBAL_CHAT(3, EnumData.TOGGLE_GLOBAL_CHAT, "toggleglobalchat", "Toggles talking only in global chat.", "Global Only Chat"),
-        RECEIVE_MESSAGES(4, EnumData.TOGGLE_RECEIVE_MESSAGE, "toggletells", "Toggles receiving NON-BUD /tell.", "Non-BUD Private Messages"),
-        PVP(5, EnumData.TOGGLE_PVP, "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
-        DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
-        CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
-        DAMAGE_INDICATORS(8, EnumData.TOGGLE_DAMAGE_INDICATORS, "togglefloatdamage", "Toggles floating damage values.", "Damage Indicators"),
-        ITEM_GLOW(9, EnumData.TOGGLE_GLOW, "toggleglow", "Toggles rare items glowing.", "Item Glow"),
-        TIPS(10, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
+        DEBUG(0, "debug", "toggledebug", "Toggles displaying combat debug messages.", "Debug Messages"),
+        TRADE(1, "trade", "toggletrade", "Toggles trading requests.", "Trade"),
+        TRADE_CHAT(2, "tradeChat", "toggletradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
+        GLOBAL_CHAT(3, "globalChat", "toggleglobalchat", "Toggles talking only in global chat.", "Global Only Chat"),
+        RECEIVE_MESSAGES(4, "receiveMessage", "toggletells", "Toggles receiving NON-BUD /tell.", "Non-BUD Private Messages"),
+        PVP(5, "pvp", "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
+        DUEL(6, "duel", "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
+        CHAOTIC_PREVENTION(7, "chaoticPrevention", "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
+        DAMAGE_INDICATORS(8, "damageIndicators", "togglefloatdamage", "Toggles floating damage values.", "Damage Indicators"),
+        ITEM_GLOW(9, "glow", "toggleglow", "Toggles rare items glowing.", "Item Glow"),
+        TIPS(10, "tips", "toggletips", "Toggles the receiving of informative tips", "Tip display");
 
         private int id;
-        private EnumData dbField;
+        @Getter
+        private String variableName;
         private String commandName;
         private String description;
         private String friendlyName;
 
-        PlayerToggles(int id, EnumData dbField, String commandName, String description, String friendlyName) {
+        PlayerToggles(int id, String variableName, String commandName, String description, String friendlyName) {
             this.id = id;
-            this.dbField = dbField;
+            this.variableName = variableName;
             this.commandName = commandName;
             this.description = description;
             this.friendlyName = friendlyName;
@@ -103,10 +108,6 @@ public class PlayerManager {
             return null;
         }
 
-        public EnumData getDbField() {
-            return dbField;
-        }
-
         public String getFriendlyName() {
             return friendlyName;
         }
@@ -120,8 +121,36 @@ public class PlayerManager {
         }
 
         public void setToggleState(Player player, boolean state) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, false);
-            player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + friendlyName + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
+            try {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                net.dungeonrealms.database.PlayerToggles toggle = wrapper.getToggles();
+                Class<?> clas = toggle.getClass();
+                Field variable = clas.getDeclaredField(variableName);
+                variable.setAccessible(true);
+                variable.set(toggle, !((boolean) variable.get(toggle)));
+                player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + getFriendlyName() + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean getToggleState(Player player) {
+            try {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                net.dungeonrealms.database.PlayerToggles toggle = wrapper.getToggles();
+                Class<?> clas = toggle.getClass();
+                Field variable = clas.getDeclaredField(variableName);
+                variable.setAccessible(true);
+                return (boolean) variable.get(toggle);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            return false;
         }
     }
 }
