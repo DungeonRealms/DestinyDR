@@ -1,11 +1,7 @@
 package net.dungeonrealms.game.handler;
 
-import com.comphenix.protocol.PacketType;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
@@ -20,8 +16,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 10/7/2015.
@@ -37,11 +35,11 @@ public class KarmaHandler implements GenericMechanic {
         return instance;
     }
 
-    public static HashMap<Player, EnumPlayerAlignments> PLAYER_ALIGNMENTS = new HashMap<>();
-    public static ConcurrentHashMap<Player, Integer> PLAYER_ALIGNMENT_TIMES = new ConcurrentHashMap<>();
+    //    public static HashMap<Player, EnumPlayerAlignments> PLAYER_ALIGNMENTS = new HashMap<>();
+//    public static ConcurrentHashMap<Player, Integer> PLAYER_ALIGNMENT_TIMES = new ConcurrentHashMap<>();
     public static HashMap<Player, EnumPlayerAlignments> PLAYER_LOCATIONS = new HashMap<>();
     public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
-    
+
     private static int CHAOTIC_COOLDOWN = 1200;
     private static int NEUTRAL_COOLDOWN = 120;
 
@@ -106,31 +104,51 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     private void updateAllPlayerAlignments() {
-        for (Map.Entry<Player, EnumPlayerAlignments> alignment : PLAYER_ALIGNMENTS.entrySet()) {
-            Player player = alignment.getKey();
-            if (!(PLAYER_ALIGNMENT_TIMES.containsKey(player))) {
-                continue;
-            }
-            if (!(player.getWorld().equals(Bukkit.getServer().getWorlds().get(0)))) {
-                continue;
-            }
+        PlayerWrapper.getPlayerWrappers().values().stream().filter(wrap -> wrap.getPlayer() != null && wrap.getPlayer().isOnline() && wrap.getAlignmentTime() != -1 && GameAPI.isMainWorld(wrap.getPlayer().getWorld()))
+                .forEach(wrap -> {
+                    int timeLeft = wrap.getAlignmentTime();
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        EnumPlayerAlignments currentAlignment = wrap.getPlayerAlignment();
+                        if (currentAlignment == EnumPlayerAlignments.CHAOTIC) {
+                            setPlayerAlignment(wrap.getPlayer(), EnumPlayerAlignments.NEUTRAL, currentAlignment, false);
+//                            wrap.setAlignmentTime(NEUTRAL_COOLDOWN);
+                        } else if (currentAlignment == EnumPlayerAlignments.NEUTRAL) {
+                            setPlayerAlignment(wrap.getPlayer(), EnumPlayerAlignments.LAWFUL, currentAlignment, false);
+                        }
+                    } else {
+                        wrap.setAlignmentTime(timeLeft);
+                    }
+                });
+//        for (PlayerWrapper wrapper : PlayerWrapper.getPlayerWrappers().values()) {
+//            if (wrapper.getAlignmentTime() == -1) continue;
 
-            int timeLeft = PLAYER_ALIGNMENT_TIMES.get(player);
-            timeLeft--;
 
-            if (timeLeft <= 0) {
-                EnumPlayerAlignments currentAlignment = alignment.getValue();
-                if (currentAlignment == EnumPlayerAlignments.CHAOTIC) {
-                    setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, currentAlignment, false);
-                    PLAYER_ALIGNMENT_TIMES.put(player, NEUTRAL_COOLDOWN);
-                } else if (currentAlignment == EnumPlayerAlignments.NEUTRAL) {
-                    setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL, currentAlignment, false);
-                    PLAYER_ALIGNMENT_TIMES.remove(player);
-                }
-            } else if (timeLeft > 0) {
-                PLAYER_ALIGNMENT_TIMES.put(player, timeLeft);
-            }
-        }
+//            Player player = alignment.getKey();
+//            if (!(PLAYER_ALIGNMENT_TIMES.containsKey(player))) {
+//                continue;
+//            }
+//            Player player = wrapper.getPlayer();
+//            if (!player.getWorld().equals(Bukkit.getServer().getWorlds().get(0))) {
+//                continue;
+//            }
+//
+//            int timeLeft = PLAYER_ALIGNMENT_TIMES.get(player);
+//            timeLeft--;
+//
+//            if (timeLeft <= 0) {
+//                EnumPlayerAlignments currentAlignment = alignment.getValue();
+//                if (currentAlignment == EnumPlayerAlignments.CHAOTIC) {
+//                    setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, currentAlignment, false);
+//                    PLAYER_ALIGNMENT_TIMES.put(player, NEUTRAL_COOLDOWN);
+//                } else if (currentAlignment == EnumPlayerAlignments.NEUTRAL) {
+//                    setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL, currentAlignment, false);
+//                    PLAYER_ALIGNMENT_TIMES.remove(player);
+//                }
+//            } else if (timeLeft > 0) {
+//                PLAYER_ALIGNMENT_TIMES.put(player, timeLeft);
+//            }
+//        }
     }
 
     /**
@@ -142,9 +160,9 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
-            PLAYER_ALIGNMENT_TIMES.remove(player);
-        }
+//        if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
+//            PLAYER_ALIGNMENT_TIMES.remove(player);
+//        }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, EnumPlayerAlignments.getByName(getAlignmentOnLogin(player.getUniqueId())), null, true), 20L);
     }
 
@@ -156,37 +174,22 @@ public class KarmaHandler implements GenericMechanic {
      * @param player
      * @since 1.0
      */
-    public void handleLogoutEvents(Player player) {
-        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
-            PLAYER_ALIGNMENT_TIMES.remove(player);
-    }
-    
-    public void saveToMongo(Player player){
-    	int alignmentTime = 0;
-        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
-            alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
-        if (alignmentTime > 0) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, true);
-        } else {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, true);
-        }
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, getPlayerRawAlignment(player).name, true);
-    }
+//    public void handleLogoutEvents(Player player) {
+//        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
+//            PLAYER_ALIGNMENT_TIMES.remove(player);
+//    }
 
-    /**
-     * Returns the players current alignment
-     * as a string.
-     *
-     * @param player
-     * @return String
-     * @since 1.0
-     */
-    public EnumPlayerAlignments getPlayerRawAlignment(Player player) {
-        if (PLAYER_ALIGNMENTS.containsKey(player)) {
-            return PLAYER_ALIGNMENTS.get(player);
-        }
-        return EnumPlayerAlignments.LAWFUL; //Should never happen, but safety checks.
-    }
+//    public void saveToMongo(Player player) {
+//        int alignmentTime = 0;
+//        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
+//            alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
+//        if (alignmentTime > 0) {
+//            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, true);
+//        } else {
+//            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, true);
+//        }
+//        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, getPlayerRawAlignment(player).name, true);
+//    }
 
     /**
      * Sets the alignment of a specific player
@@ -204,18 +207,14 @@ public class KarmaHandler implements GenericMechanic {
             return;
         }
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
-        EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : gamePlayer.getPlayerAlignment();
-        int alignmentTime = 0;
-        if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
-        	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
-        if (login)
-            alignmentTime = wrapper.getAlignmentTime();
-            
+        if (wrapper == null) return;
+        EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : wrapper.getPlayerAlignment();
+        int alignmentTime = wrapper.getAlignmentTime();
+
         if (alignmentTo == null || alignmentTo == EnumPlayerAlignments.NONE) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
         }
-        
+
         switch (alignmentTo) {
             case LAWFUL:
                 // Don't show alignment on player login.
@@ -255,10 +254,10 @@ public class KarmaHandler implements GenericMechanic {
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
                 break;
         }
-       
-        PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
+
+        wrapper.setAlignmentTime(alignmentTime);
         if (alignmentPlayer != alignmentTo) {
-            PLAYER_ALIGNMENTS.put(player, alignmentTo);
+//            PLAYER_ALIGNMENTS.put(player, alignmentTo);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, alignmentTo.alignmentColor, gamePlayer.getLevel());
         }
     }
@@ -273,7 +272,7 @@ public class KarmaHandler implements GenericMechanic {
      */
     public static String getAlignmentOnLogin(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return null;
+        if (wrapper == null) return null;
         return wrapper.getPlayerAlignment().name;
     }
 
@@ -311,23 +310,24 @@ public class KarmaHandler implements GenericMechanic {
             killerPlayer = (Player) leKiller;
             GamePlayer deathGP = GameAPI.getGamePlayer(player);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            PlayerWrapper killerWrapper = PlayerWrapper.getPlayerWrapper(killerPlayer);
             if (deathGP != null) {
                 wrapper.getPlayerGameStats().setDeaths(wrapper.getPlayerGameStats().getDeaths() + 1);
             }
-            EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
+            EnumPlayerAlignments alignmentPlayer = wrapper.getPlayerAlignment();
             GamePlayer killerGP = GameAPI.getGamePlayer(killerPlayer);
             if (killerGP != null) {
                 if (killerGP.hasNewbieProtection()) {
                     ProtectionHandler.getInstance().removePlayerProtection(killerPlayer);
                 }
-                wrapper.getPlayerGameStats().setPlayerKills(wrapper.getPlayerGameStats().getPlayerKills() + 1);
+                killerWrapper.getPlayerGameStats().setPlayerKills(killerWrapper.getPlayerGameStats().getPlayerKills() + 1);
                 if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
-                    wrapper.getPlayerGameStats().setLawfulKills(wrapper.getPlayerGameStats().getLawfulKills() + 1);
+                    killerWrapper.getPlayerGameStats().setLawfulKills(killerWrapper.getPlayerGameStats().getLawfulKills() + 1);
                 } else {
-                    wrapper.getPlayerGameStats().setUnlawfulKills(wrapper.getPlayerGameStats().getUnlawfulKills() + 1);
+                    killerWrapper.getPlayerGameStats().setUnlawfulKills(killerWrapper.getPlayerGameStats().getUnlawfulKills() + 1);
                 }
             }
-            EnumPlayerAlignments alignmentKiller = getPlayerRawAlignment(killerPlayer);
+            EnumPlayerAlignments alignmentKiller = killerWrapper.getPlayerAlignment();
             if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
                 setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC, alignmentKiller, false);
             } else {
@@ -344,12 +344,12 @@ public class KarmaHandler implements GenericMechanic {
      * @param player
      * @since 1.0
      */
-    public void handleAlignmentChanges(Player player) {
-        EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
+    public void handleAlignmentChanges(Player player, PlayerWrapper wrapper) {
+        EnumPlayerAlignments alignmentPlayer = wrapper.getPlayerAlignment();
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
         } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
-            PLAYER_ALIGNMENT_TIMES.put(player, NEUTRAL_COOLDOWN);
+            wrapper.setAlignmentTime(NEUTRAL_COOLDOWN);
         }
     }
 
@@ -377,11 +377,7 @@ public class KarmaHandler implements GenericMechanic {
         }
     }
 
-    public int getAlignmentTime(Player player) {
-        if (!PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
-            return 0;
-        } else {
-            return PLAYER_ALIGNMENT_TIMES.get(player);
-        }
+    public int getAlignmentTime(Player player, PlayerWrapper wrapper) {
+        return wrapper.getAlignmentTime();
     }
 }

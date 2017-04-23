@@ -156,7 +156,7 @@ public class ShopListener implements Listener {
             if (event.getRawSlot() == (shop.getInvSize() - 2)) {
                 //Delete Shop
                 event.setCancelled(true);
-                shop.deleteShop(false);
+                shop.deleteShop(false, null);
                 return;
             }
 
@@ -424,7 +424,7 @@ public class ShopListener implements Listener {
 
             Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
         } else {
-            SQLDatabaseAPI.getInstance().executeBatch((result) -> GameAPI.updatePlayerData(shop.ownerUUID),
+            SQLDatabaseAPI.getInstance().executeBatch((result) -> GameAPI.updatePlayerData(shop.ownerUUID, "gems"),
                     QueryType.INCREMENT_GEMS.getQuery(totalPrice, shop.getCharacterID()), QueryType.INCREMENT_GEMS_EARNED.getQuery(totalPrice, shop.getCharacterID()));
 
 //            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true, doAfter -> {
@@ -442,7 +442,7 @@ public class ShopListener implements Listener {
         if (itemsLeft == 0) {
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 if (shop.isopen) {
-                    shop.deleteShop(false);
+                    shop.deleteShop(false, null);
                     BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "Your shop on " +
                             DungeonRealms.getInstance().bungeeName + " has " + ChatColor.RED + ChatColor.BOLD + "SOLD OUT" + ChatColor.GREEN + " and has been removed to free space.");
                 }

@@ -66,19 +66,22 @@ public class CommandCloseShop extends BaseCommand {
         } else {
             //  A player types /closeshop
             Player player = (Player) commandSender;
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (GameAPI.isShop(player.getOpenInventory())) {
                 player.sendMessage(ChatColor.RED + "Illegal inventory session ID");
                 player.sendMessage(ChatColor.RED + "Close your shop GUI to close your shop");
                 return false;
             } else {
                 GameAPI.sendNetworkMessage("Shop", "close:" + " ," + player.getName());
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
                 player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    GameAPI.updatePlayerData(player.getUniqueId());
-                    BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
+                    //Update the collection bin..
+                    BankMechanics.getInstance().getStorage(player.getUniqueId()).update(bin -> {
+                        wrapper.setShopOpened(false);
+                        player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely.");
+                    });
                 }, 20);
-                player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely");
             }
         }
 

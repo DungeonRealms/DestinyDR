@@ -53,7 +53,7 @@ public class CommandRealmsee extends BaseCommand {
             }
             Player owner = Bukkit.getPlayer(uuid);
 
-            Realm realm = Realms.getInstance().getOrCreateRealm(uuid);
+            Realm realm = Realms.getInstance().getOrCreateRealm(uuid, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
 
             if (owner != null && owner.isOnline()) {
                 if (realm != null && realm.isOpen()) {

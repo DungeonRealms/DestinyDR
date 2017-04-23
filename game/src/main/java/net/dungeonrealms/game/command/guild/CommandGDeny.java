@@ -49,7 +49,7 @@ public class CommandGDeny extends BaseCommand {
 
             Player owner = Bukkit.getPlayer(referrer);
             BungeeUtils.sendPlayerMessage(owner.getName(), ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
-            GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)));
+            GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)), "guild");
         });
 
         return false;

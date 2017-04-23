@@ -81,7 +81,7 @@ public class CombatLog implements GenericMechanic {
      */
     public void handleCombatLog(Player player) {
         if (inPVP(player)) {
-            KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+            KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
             switch (alignments) {
                 case LAWFUL:
                     ItemStack storedItem = null;
@@ -274,7 +274,7 @@ public class CombatLog implements GenericMechanic {
         List<ItemStack> armorToDrop = new ArrayList<>();
         List<ItemStack> itemsToSave = new ArrayList<>();
         List<ItemStack> armorToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+        KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
         int lvl = GameAPI.getGamePlayer(player).getLevel();
         if (alignments == null) {
             return;

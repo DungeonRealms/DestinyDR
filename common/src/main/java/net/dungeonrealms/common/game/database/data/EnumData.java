@@ -14,30 +14,30 @@ public enum EnumData {
 //    FREE_ECASH("info.freeEcash"), //Loaded
 //    LAST_SHARD_TRANSFER("info.lastShardTransfer"), //Loaded
 //    LEVEL("info.netLevel"), //Loaded
-    IP_ADDRESS("info.ipAddress"), //Loaded
+//    IP_ADDRESS("info.ipAddress"), //Loaded
 //    IS_PLAYING("info.isPlaying"), //Loaded
 //    IS_COMBAT_LOGGED("info.isCombatLogged"), //Loaded
 //    EXPERIENCE("info.experience"),//Loaded
 //    GEMS("info.gems"),//Loaded
-    HEARTHSTONE("info.hearthstone"),//Loaded
+//    HEARTHSTONE("info.hearthstone"),//Loaded
 //    ECASH("info.ecash"),//Loaded
-    FRIENDS("info.friends"),//Loaded
+//    FRIENDS("info.friends"),//Loaded
 //    IGNORED("info.ignored"),//Loaded
-    ALIGNMENT("info.alignment"),//Loaded
-    ALIGNMENT_TIME("info.alignmentTime"),//Loaded
-    CURRENT_LOCATION("info.currentLocation"),//Loaded
-    HASSHOP("info.shopOpen"),//Loaded
-    SHOPLEVEL("info.shopLevel"),//Loaded
-    MULELEVEL("info.muleLevel"),//Loaded
-    CURRENT_FOOD("info.foodLevel"),//Loaded
-    LOGGERDIED("info.loggerdied"),//Loaded
-    ENTERINGREALM("info.enteringrealm"),//Loaded
-    CURRENTSERVER("info.current"),//Loaded
-    ACTIVE_MOUNT("info.activemount"),//Loaded
-    ACTIVE_PET("info.activepet"),//Loaded
-    ACTIVE_TRAIL("info.activetrail"),//Loaded
-    ACTIVE_MOUNT_SKIN("info.activemountskin"),//Loaded
-    QUEST_DATA("info.questData"),//Loaded
+//    ALIGNMENT("info.alignment"),//Loaded
+//    ALIGNMENT_TIME("info.alignmentTime"),//Loaded
+//    CURRENT_LOCATION("info.currentLocation"),//Loaded
+//    HASSHOP("info.shopOpen"),//Loaded
+//    SHOPLEVEL("info.shopLevel"),//Loaded
+//    MULELEVEL("info.muleLevel"),//Loaded
+//    CURRENT_FOOD("info.foodLevel"),//Loaded
+//    LOGGERDIED("info.loggerdied"),//Loaded
+//    ENTERINGREALM("info.enteringrealm"),//Loaded
+//    CURRENTSERVER("info.current"),//Loaded
+//    ACTIVE_MOUNT("info.activemount"),//Loaded
+//    ACTIVE_PET("info.activepet"),//Loaded
+//    ACTIVE_TRAIL("info.activetrail"),//Loaded
+//    ACTIVE_MOUNT_SKIN("info.activemountskin"),//Loaded
+//    QUEST_DATA("info.questData"),//Loaded
 
 //    GEMS_COUNT("info.gemsCount"),
 
@@ -55,10 +55,10 @@ public enum EnumData {
 //    CURRENCY_TAB_T4("currencytab.t4"),//Loaded
 //    CURRENCY_TAB_T5("currencytab.t5"),//Loaded
 
-    INVENTORY_COLLECTION_BIN("inventory.collection_bin"), //Loaded
-    INVENTORY_MULE("inventory.mule"), //Loaded
-    INVENTORY_STORAGE("inventory.storage"), //Loaded (this is the bank)
-    INVENTORY("inventory.player"), //Loaded
+//    INVENTORY_COLLECTION_BIN("inventory.collection_bin"), //Loaded
+//    INVENTORY_MULE("inventory.mule"), //Loaded
+//    INVENTORY_STORAGE("inventory.storage"), //Loaded (this is the bank)
+//    INVENTORY("inventory.player"), //Loaded
 //    INVENTORY_LEVEL("inventory.level"), //Loaded (this is bank size)
 //    ARMOR("inventory.armor"), //Loaded
 
@@ -66,7 +66,7 @@ public enum EnumData {
 
     GUILD_INVITATION("notices.guildInvitation"),
     FRIEND_REQUESTS("notices.friendRequest"),
-    MAILBOX("notices.mailbox"),
+//    MAILBOX("notices.mailbox"),
 //    LAST_BUILD("notices.lastBuild"),
 //    LAST_NOTES_SIZE("notices.lastBuildNotesSize"),
 //    LAST_VOTE("notices.lastVote"),
@@ -76,17 +76,17 @@ public enum EnumData {
     BANNED_REASON("punishments.bannedReason"),//Loaded
     MUTE_REASON("punishments.muteReason"),//Loaded
 
-    REALM_UPLOAD("realm.uploading"), //Loaded
-    REALM_UPGRADE("realm.upgrading"),//Loaded
-    REALM_TITLE("realm.title"),//Loaded
-    REALM_LAST_RESET("realm.lastReset"),//Loaded
-    REALM_TIER("realm.tier"),//Loaded
+//    REALM_UPLOAD("realm.uploading"), //Loaded
+//    REALM_UPGRADE("realm.upgrading"),//Loaded
+//    REALM_TITLE("realm.title"),//Loaded
+//    REALM_LAST_RESET("realm.lastReset"),//Loaded
+//    REALM_TIER("realm.tier"),//Loaded
 
-    MOUNTS("collectibles.mounts"),// Loaded
-    PETS("collectibles.pets"),// Loaded
-    BUFFS("collectibles.buffs"), //never used/
-    PARTICLES("collectibles.particles"),// Loaded
-    MOUNT_SKINS("collectibles.mountskins"),//Loaded
+//    MOUNTS("collectibles.mounts"),// Loaded
+//    PETS("collectibles.pets"),// Loaded
+//    BUFFS("collectibles.buffs"), //never used/
+//    PARTICLES("collectibles.particles"),// Loaded
+//    MOUNT_SKINS("collectibles.mountskins"),//Loaded
 
 //    TOGGLE_DEBUG("toggles.debug"),//Loaded
 //    TOGGLE_TRADE("toggles.trade"),//Loaded

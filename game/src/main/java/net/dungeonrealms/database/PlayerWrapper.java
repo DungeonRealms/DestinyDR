@@ -2,15 +2,14 @@ package net.dungeonrealms.database;
 
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -36,8 +35,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class PlayerWrapper {
@@ -202,6 +199,10 @@ public class PlayerWrapper {
     @Getter
     private Storage pendingBankStorage;
 
+    @Setter
+    @Getter
+    private Player player;
+
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
     }
@@ -209,6 +210,7 @@ public class PlayerWrapper {
     @SuppressWarnings("unused")
     public PlayerWrapper(Player player) {
         this(player.getUniqueId());
+        this.player = player;
     }
 
 
@@ -322,11 +324,7 @@ public class PlayerWrapper {
                 this.lastRealmReset = result.getLong("realm.lastReset");
 
                 //Unlockables.
-                this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
-                this.petsUnlocked = StringUtils.deserializeSet(result.getString("users.pets"), ",");
-                this.particlesUnlocked = StringUtils.deserializeSet(result.getString("users.particles"), ",");
-                this.mountSkins = StringUtils.deserializeSet(result.getString("users.mountSkin"), ",");
-                this.trails = StringUtils.deserializeSet(result.getString("users.trails"), ",");
+                this.loadUnlockables(result);
 
                 this.portalShardsT1 = result.getInt("characters.portalShardsT1");
                 this.portalShardsT2 = result.getInt("characters.portalShardsT2");
@@ -364,6 +362,14 @@ public class PlayerWrapper {
         return Bukkit.getPlayer(this.uuid);
     }
 
+
+    public void loadUnlockables(ResultSet result) throws SQLException {
+        this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
+        this.petsUnlocked = StringUtils.deserializeSet(result.getString("users.pets"), ",");
+        this.particlesUnlocked = StringUtils.deserializeSet(result.getString("users.particles"), ",");
+        this.mountSkins = StringUtils.deserializeSet(result.getString("users.mountSkin"), ",");
+        this.trails = StringUtils.deserializeSet(result.getString("users.trails"), ",");
+    }
 
     //tfw greg pays $10 for a burger from macers, 8.1 is decent on that flavor scale
     public void loadPunishment(boolean mute) {
@@ -445,7 +451,10 @@ public class PlayerWrapper {
     }
 
     private String getLocationString(Player player) {
-        return new StringBuilder().append(player.getLocation().getBlockX()).append(',').append(player.getLocation().getBlockY()).append(',').append(player.getLocation().getBlockZ()).append(',').append((int) player.getLocation().getYaw()).append(',').append((int) player.getLocation().getPitch()).toString();
+        if (!GameAPI.isMainWorld(player.getWorld())) {
+            return storedLocationString;
+        }
+        return new StringBuilder().append(player.getLocation().getX()).append(',').append(player.getLocation().getY() + 0.3).append(',').append(player.getLocation().getZ()).append(',').append(player.getLocation().getYaw()).append(',').append(player.getLocation().getPitch()).toString();
     }
 
     public String getFormattedShardName() {
@@ -474,14 +483,19 @@ public class PlayerWrapper {
         }, SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
     }
 
-    public void saveData(boolean async, Player player, Boolean isOnline) {
-        this.saveData(async, player, isOnline, null);
+    public void saveData(boolean async, Boolean isOnline) {
+        this.saveData(async, isOnline, null);
     }
 
 
-    public void saveData(boolean async, Player player, Boolean isOnline, Consumer<PlayerWrapper> callback) {
+    public void saveData(boolean async, Boolean isOnline, Consumer<PlayerWrapper> callback) {
+        if (player == null && Bukkit.isPrimaryThread()) {
+            Player toCheck = Bukkit.getPlayer(getUuid());
+            if (toCheck != null) player = toCheck;
+        }
+
         if (async && Bukkit.isPrimaryThread()) {
-            CompletableFuture.runAsync(() -> saveData(false, player, isOnline, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> saveData(false, isOnline, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
 
@@ -493,7 +507,8 @@ public class PlayerWrapper {
             statement.addBatch(getPlayerStats().getUpdateStatement());
             statement.addBatch(getToggles().getUpdateStatement());
             if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
-            statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
+            if (this.player != null)
+                statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
 
             statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank(), getRankExpiration()));
 
@@ -529,11 +544,14 @@ public class PlayerWrapper {
         String muleString = null;
         if (mule != null) muleString = ItemSerialization.toString(mule);
 
+
+        String locationString = player == null ? storedLocationString : getLocationString(player);
         String toReturn = "REPLACE INTO characters (character_id, account_id, created, level, experience, alignment, inventory_storage, armour_storage, gems, bank_storage, bank_level, " +
                 "shop_level, collection_storage, mule_storage, mule_level, health, location, activeMount, activePet, activeTrail, activeMountSkin, questData, foodLevel, combatLogged, " +
                 "shopOpened, loggerDied, currentHearthStone, alignmentTime, portalShardsT1, portalShardsT2, portalShardsT3, portalShardsT4, portalShardsT5) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');";
-        toReturn = String.format(toReturn, getCharacterID(), getAccountID(), getTimeCreated(), getLevel(), getExperience(), getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
-                getShopLevel(), collectionBinString, muleString, getMuleLevel(), getHealth(), player == null ? storedLocationString : getLocationString(player), getActiveMount(), getActiveMountSkin(), getQuestData(), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
+        toReturn = String.format(toReturn, getCharacterID(), getAccountID(), getTimeCreated(), getLevel(), getExperience(),
+                getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
+                getShopLevel(), collectionBinString, muleString, getMuleLevel(), getHealth(), locationString, getActiveMount(), getActiveMountSkin(), getQuestData(), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
                 isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5());
         return toReturn;
     }
@@ -720,6 +738,7 @@ public class PlayerWrapper {
     }
 
     public void loadPlayerAfterLogin(Player player) {
+        this.player = player;
         player.teleport(this.storedLocation);
         this.loadPlayerInventory(player);
         this.loadPlayerArmor(player);
@@ -747,6 +766,7 @@ public class PlayerWrapper {
 
         player.updateInventory();
     }
+
     public void saveFriends(boolean async, Consumer<Boolean> afterSave) {
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> saveFriends(false, afterSave), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
@@ -767,10 +787,11 @@ public class PlayerWrapper {
         if (afterSave != null) afterSave.accept(couldSave);
     }
 
-    public void setGems(int gems){
-        if(gems <= 0)gems = 0;
+    public void setGems(int gems) {
+        if (gems <= 0) gems = 0;
         this.gems = gems;
     }
+
     public boolean isBanned() {
         return this.banExpire >= System.currentTimeMillis();
     }

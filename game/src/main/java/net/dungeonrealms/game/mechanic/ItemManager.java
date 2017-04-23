@@ -2,11 +2,8 @@ package net.dungeonrealms.game.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -32,11 +29,12 @@ import net.dungeonrealms.game.world.realms.RealmTier;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.*;
-
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagList;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -248,11 +246,11 @@ public class ItemManager {
      * @since 1.0
      */
     public static ItemStack createRandomTeleportBook() {
-    	List<TeleportLocation> teleportable = new ArrayList<TeleportLocation>();
-    	for(TeleportLocation tl : TeleportLocation.values())
-    		if(tl.canBeABook())
-    			teleportable.add(tl);
-    	return createTeleportBook(teleportable.get(Utils.randInt(0, teleportable.size() - 1)));
+        List<TeleportLocation> teleportable = new ArrayList<TeleportLocation>();
+        for (TeleportLocation tl : TeleportLocation.values())
+            if (tl.canBeABook())
+                teleportable.add(tl);
+        return createTeleportBook(teleportable.get(Utils.randInt(0, teleportable.size() - 1)));
     }
 
     /**
@@ -262,12 +260,12 @@ public class ItemManager {
      * @since 1.0
      */
     public static ItemStack createTeleportBook(TeleportLocation teleportLocation) {
-    	ItemStack rawStack = new ItemStack(Material.BOOK);
+        ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation.getDisplayName());
         //TODO: Make this check chaotic, not just if it's deadpeaks?
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation.getDisplayName()
-        		+ ( teleportLocation == TeleportLocation.DEADPEAKS ? ChatColor.RED + " WARNING: CHAOTIC ZONE" : "") ));
+                + (teleportLocation == TeleportLocation.DEADPEAKS ? ChatColor.RED + " WARNING: CHAOTIC ZONE" : "")));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -322,7 +320,7 @@ public class ItemManager {
 
     public static ItemStack createRealmPortalRune(UUID uuid) {
         RealmTier realmTier = Realms.getRealmTier(uuid);
-        
+
         return new ItemBuilder().setItem(createItem(Material.NETHER_STAR, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Realm Portal Rune",
                 new String[]{ChatColor.GRAY + "Tier: " + realmTier.getTier() + "/" + RealmTier.values().length + " [" + realmTier.getDimensions() + "x" + realmTier.getDimensions() + "x" + realmTier.getDimensions() + "]"
                         , ChatColor.LIGHT_PURPLE + "Right Click: " + ChatColor.GRAY + "Open Portal",
@@ -639,13 +637,14 @@ public class ItemManager {
         }
         return null;
     }
+
     /**
      * Adds a starter kit to the player.
      *
      * @param player
      */
-    public static void giveStarter(Player player){
-    	giveStarter(player, false);
+    public static void giveStarter(Player player) {
+        giveStarter(player, false);
     }
 
     /**
@@ -666,10 +665,10 @@ public class ItemManager {
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-        
-        if(isNew)
-        	player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
-                ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+
+        if (isNew)
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+                    ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
         if (Utils.randInt(0, 1) == 1) {
             ItemStack fixedSword = ItemGenerator.getNamedItem("training_sword");
@@ -690,7 +689,7 @@ public class ItemManager {
 
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
         player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
-        
+
         GameAPI.calculateAllAttributes(player);
         HealthHandler.getInstance().updatePlayerHP(player);
     }
@@ -726,7 +725,7 @@ public class ItemManager {
         // Add T5 potions
         for (int i = 0; i < 25; i++)
             player.getInventory().addItem(ItemManager.createHealthPotion(5, false, false));
-        
+
         GameAPI.calculateAllAttributes(player);
         HealthHandler.getInstance().updatePlayerHP(player);
     }
@@ -822,8 +821,8 @@ public class ItemManager {
         nmsStack.setTag(tag);
 
         return AntiDuplication.getInstance().applyAntiDupe(
-        		GameAPI.makePermanentlyUntradeable(
-        				CraftItemStack.asBukkitCopy(nmsStack)));
+                GameAPI.makePermanentlyUntradeable(
+                        CraftItemStack.asBukkitCopy(nmsStack)));
     }
 
 
@@ -931,16 +930,17 @@ public class ItemManager {
         GamePlayer gp = GameAPI.getGamePlayer(p);
         if (gp == null)
             return stack;
-        KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+        KarmaHandler.EnumPlayerAlignments playerAlignment = wrapper.getPlayerAlignment();
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                 playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = StatsManager.getPlayerStats(p);
 
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
 
         if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
-            String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
+            String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p, wrapper));
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s.." + new_line
                     + ChatColor.BLACK.toString() + playerAlignment.description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
@@ -963,33 +963,33 @@ public class ItemManager {
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         }
-        
+
         questPage_string = ChatColor.BLACK + "" + ChatColor.BOLD + ChatColor.UNDERLINE + "  Quest Progress  \n\n";
         int quests = 0;
-        
-        if(Quests.isEnabled()){
-        	QuestPlayerData data = Quests.getInstance().playerDataMap.get(p);
-        	if(data != null){
-        		//TODO: Multi page support. (Does vanilla do this automatically?)
-        		for(Quest doing : data.getCurrentQuests()){
-        			quests++;
-        			QuestProgress qp = data.getQuestProgress(doing);
-        			
-        			questPage_string += ChatColor.BLACK + doing.getQuestName() + "> " + ChatColor.GREEN;
-        			if(qp.getCurrentStage().getPrevious() == null){
-        				questPage_string += "Start by talking to " + qp.getCurrentStage().getNPC().getName();
-        			}else{
-        				questPage_string += qp.getCurrentStage().getPrevious().getObjective().getTaskDescription(p, qp.getCurrentStage());
-        			}
-        			questPage_string += "\n\n";
-        		}
-        	}
+
+        if (Quests.isEnabled()) {
+            QuestPlayerData data = Quests.getInstance().playerDataMap.get(p);
+            if (data != null) {
+                //TODO: Multi page support. (Does vanilla do this automatically?)
+                for (Quest doing : data.getCurrentQuests()) {
+                    quests++;
+                    QuestProgress qp = data.getQuestProgress(doing);
+
+                    questPage_string += ChatColor.BLACK + doing.getQuestName() + "> " + ChatColor.GREEN;
+                    if (qp.getCurrentStage().getPrevious() == null) {
+                        questPage_string += "Start by talking to " + qp.getCurrentStage().getNPC().getName();
+                    } else {
+                        questPage_string += qp.getCurrentStage().getPrevious().getObjective().getTaskDescription(p, qp.getCurrentStage());
+                    }
+                    questPage_string += "\n\n";
+                }
+            }
         }
-        
+
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
-                + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
-                + "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + "/"
-                + gp.getEXPNeeded(gp.getLevel());
+                + "       LEVEL\n" + "          " + ChatColor.BLACK + wrapper.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
+                + "          XP" + "\n" + ChatColor.BLACK + "       " + wrapper.getExperience() + "/"
+                + gp.getEXPNeeded(wrapper.getLevel());
 
 
         String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
@@ -1025,8 +1025,8 @@ public class ItemManager {
 
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
-        if(quests > 0)
-        	pages.add(questPage_string);
+        if (quests > 0)
+            pages.add(questPage_string);
         pages.add(page2_string);
         pages.add(portalShardPage);
         pages.add(page3_string);

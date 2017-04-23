@@ -54,8 +54,6 @@ public class GamePlayer {
     private boolean attributesLoaded;
     private String currentWeapon; // used so we only reload weapon stats when we need to.
 
-    private int playerEXP;
-
     // Game Master
     private boolean isInvulnerable;
     private boolean isTargettable;
@@ -77,7 +75,6 @@ public class GamePlayer {
 //        this.playerStats = new PlayerStats(player.getUniqueId());
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
-        this.playerEXP = PlayerWrapper.getPlayerWrapper(player).getExperience();
         this.isTargettable = true;
         this.isInvulnerable = false;
         this.isStreamMode = false;
@@ -154,9 +151,9 @@ public class GamePlayer {
      * @return the experience
      * @since 1.0
      */
-    public int getExperience() {
-        return playerEXP;
-    }
+//    public int getExperience() {
+//        return playerEXP;
+//    }
 
     /**
      * Checks if the player is in a Dungeon
@@ -174,16 +171,6 @@ public class GamePlayer {
      */
     public boolean isInRealm() {
         return !T.getWorld().getName().contains("DUNGEON") && !T.getWorld().getName().contains("DUEL") && !T.getWorld().equals(Bukkit.getWorlds().get(0));
-    }
-
-    /**
-     * Gets the players current alignment.
-     *
-     * @return the alignment
-     * @since 1.0
-     */
-    public KarmaHandler.EnumPlayerAlignments getPlayerAlignment() {
-        return KarmaHandler.getInstance().getPlayerRawAlignment(T);
     }
 
     public KarmaHandler.EnumPlayerAlignments getPlayerAlignmentDB() {
@@ -273,7 +260,7 @@ public class GamePlayer {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
         int level = wrapper.getLevel();
         if (level >= 100) return;
-        int experience = getExperience();
+        int experience = wrapper.getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
@@ -301,7 +288,8 @@ public class GamePlayer {
             updateLevel(level + 1, true, false);
             addExperience(continuedExperience, isParty, displayMessage);
         } else {
-            setPlayerEXP(futureExperience);
+            wrapper.setExperience(futureExperience);
+//            setPlayerEXP(futureExperience);
             if (displayMessage) {
                 if (wrapper.getToggles().isDebug()) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
@@ -329,8 +317,6 @@ public class GamePlayer {
      * @param levelSet - if the level change is set artificially
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
-        setPlayerEXP(0);
-
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
 
         wrapper.setExperience(0);
@@ -370,7 +356,7 @@ public class GamePlayer {
         }
 
         // update scoreboard
-        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), newLevel);
+        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, wrapper.getPlayerAlignment().getAlignmentColor(), newLevel);
         switch (newLevel) {
             case 10:
                 Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_10);

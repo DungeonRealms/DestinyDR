@@ -90,7 +90,7 @@ public class BankListener implements Listener {
                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
                         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
                         p.closeInventory();
-                        BankMechanics.getInstance().getStorage(p.getUniqueId()).update();
+                        BankMechanics.getInstance().getStorage(p.getUniqueId()).update(null);
                     } else {
                         p.closeInventory();
                         p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
@@ -500,7 +500,8 @@ public class BankListener implements Listener {
                                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
                                         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
                                         p.closeInventory();
-                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(p.getUniqueId()).update(), 20L);
+                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
+                                                BankMechanics.getInstance().getStorage(p.getUniqueId()).update(null), 20L);
                                     } else {
                                         p.closeInventory();
                                         p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");

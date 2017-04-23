@@ -34,10 +34,11 @@ public class CharacterTabColumn extends Column {
                         @Override
                         public String getReplacement(Player player) {
                             GamePlayer gp = GameAPI.getGamePlayer(player);
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                             if (gp == null) return null;
-                            if (gp.getExperience() == 0) return "?";
+                            if (wrapper.getExperience() == 0) return "?";
 
-                            double exp = ((double) gp.getExperience()) / ((double) gp.getEXPNeeded(gp.getLevel()));
+                            double exp = (double) wrapper.getExperience() / (double) gp.getEXPNeeded(gp.getLevel());
                             exp *= 100;
 
                             if (gp.getLevel() == 100) return ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "MAX";
@@ -81,16 +82,16 @@ public class CharacterTabColumn extends Column {
                     new Variable("alignment") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            if (wrapper == null) return null;
 
-                            KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
+                            KarmaHandler.EnumPlayerAlignments playerAlignment = wrapper.getPlayerAlignment();
                             String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                                     playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
 
                             if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
-                                String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(player));
-                                pretty_align = pretty_align + playerAlignment.getAlignmentColor().toString() + " " + ChatColor.BOLD + time + "s..";
+                                String time = String.valueOf(wrapper.getAlignmentTime());
+                                return pretty_align + playerAlignment.getAlignmentColor().toString() + " " + ChatColor.BOLD + time + "s..";
                             }
                             return pretty_align;
                         }

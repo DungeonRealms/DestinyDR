@@ -301,12 +301,13 @@ public class GuildMechanics {
                 player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
-                GameAPI.updatePlayerData(player.getUniqueId());
+                GameAPI.updatePlayerData(player.getUniqueId(), "guild");
 
                 // guild tags in scoreboard disabled
                 GamePlayer gp = GameAPI.getGamePlayer(player);
-                if (gp != null) {
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                if (wrapper != null) {
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), wrapper.getLevel());
                 }
 
 
@@ -333,7 +334,7 @@ public class GuildMechanics {
         sendAlert(guildName, kicker.getName() + " has kicked " + SQLDatabaseAPI.getInstance().getUsernameFromUUID(player) + " from the guild.");
         GuildDatabaseAPI.get().removeFromGuild(guildName, player);
 
-        GameAPI.updatePlayerData(player);
+        GameAPI.updatePlayerData(player, "guild");
     }
 
     /**
@@ -367,8 +368,9 @@ public class GuildMechanics {
             sendAlert(guildName, player.getName() + " has left the guild.");
 
             GamePlayer gp = GameAPI.getGamePlayer(player);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (gp != null) {
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
             }
 
             boolean setOwner = false;
@@ -400,7 +402,7 @@ public class GuildMechanics {
             GuildDatabaseAPI.get().updateCache(guildName, true);
 
             GameAPI.updateGuildData(guildName);
-            GameAPI.updatePlayerData(player.getUniqueId());
+            GameAPI.updatePlayerData(player.getUniqueId(), "guild");
         }, null);
     }
 
@@ -515,11 +517,12 @@ public class GuildMechanics {
 
                         // guild tags in scoreboard disabled
                         GamePlayer gp = GameAPI.getGamePlayer(player);
+                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                         if (gp != null)
-                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                         player.getInventory().addItem(info.getCurrentBanner());
-                        GameAPI.updatePlayerData(player.getUniqueId());
+                        GameAPI.updatePlayerData(player.getUniqueId(), "guild");
 
                     });
                 }

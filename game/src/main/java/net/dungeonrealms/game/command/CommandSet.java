@@ -59,7 +59,7 @@ public class CommandSet extends BaseCommand {
             return false;
 
         // Extended Permission Check
-        String[] ignoreExtendedPermissions = new String[] { "health", "hp" };
+        String[] ignoreExtendedPermissions = new String[]{"health", "hp"};
         if (!Rank.isHeadGM(player) && !Arrays.asList(ignoreExtendedPermissions).contains(args[0])
                 && !DungeonRealms.getInstance().isGMExtendedPermissions) {
             player.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
@@ -82,7 +82,7 @@ public class CommandSet extends BaseCommand {
                         break;
                     }
                     GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
-                    PlayerWrapper.getPlayerWrapper(p.getUniqueId(), wrapper -> wrapper.setLevel(lvl));
+                    PlayerWrapper.getPlayerWrapper(p.getUniqueId(), false, true, wrapp -> wrapp.setLevel(lvl));
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE + lvl);
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                 }
@@ -93,7 +93,6 @@ public class CommandSet extends BaseCommand {
                     break;
                 }
                 int gems = Integer.parseInt(args[1]);
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                 wrapper.setGems(gems);
 //                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
                 s.sendMessage("Gems set to " + gems);
@@ -196,11 +195,13 @@ public class CommandSet extends BaseCommand {
                 }
                 playerName = args[1];
                 p = Bukkit.getPlayer(playerName);
-                DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, false);
 
-
-                if (p != null)
-                    p.sendMessage(ChatColor.GRAY + "Fixed your shop");
+                PlayerWrapper foundWrapper = PlayerWrapper.getPlayerWrapper(p);
+                if (foundWrapper != null) {
+                    foundWrapper.setShopOpened(false);
+                    if (p != null)
+                        p.sendMessage(ChatColor.GRAY + "Fixed your shop");
+                }
                 break;
             case "shoplvl":
                 if (args.length < 2) {
@@ -208,17 +209,18 @@ public class CommandSet extends BaseCommand {
                     break;
                 }
                 invlvl = Integer.parseInt(args[1]);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, false);
+                wrapper.setShopLevel(invlvl);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, false);
                 break;
             case "chaotic":
             case "neutral":
             case "lawful":
-            	Player target = null;
-            	if(args.length > 1)
-            		target = Bukkit.getPlayer(args[1]);
-            	if(target == null)
-            		target = player;
-            	
+                Player target = null;
+                if (args.length > 1)
+                    target = Bukkit.getPlayer(args[1]);
+                if (target == null)
+                    target = player;
+
                 KarmaHandler.getInstance().setPlayerAlignment(target, KarmaHandler.EnumPlayerAlignments.valueOf(args[0].toUpperCase()), null, false);
                 player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s alignment to " + args[0] + ".");
                 break;
@@ -228,8 +230,7 @@ public class CommandSet extends BaseCommand {
             case "combatoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
                     CombatLog.removeFromCombat(Bukkit.getPlayer(args[1]));
-                }
-                else {
+                } else {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
                 break;
@@ -256,13 +257,12 @@ public class CommandSet extends BaseCommand {
                 nmsStack.setTag(tag);
 
                 player.getInventory().setItemInMainHand(CraftItemStack.asBukkitCopy(nmsStack));
-                player.sendMessage((addFlag ?  ChatColor.GREEN + "Added" : ChatColor.RED + "Removed") + " item's dummy flag.");
+                player.sendMessage((addFlag ? ChatColor.GREEN + "Added" : ChatColor.RED + "Removed") + " item's dummy flag.");
                 break;
             case "pvpoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
                     CombatLog.removeFromPVP(Bukkit.getPlayer(args[1]));
-                }
-                else {
+                } else {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
                 break;

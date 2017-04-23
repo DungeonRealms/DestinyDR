@@ -6,6 +6,8 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,51 +50,51 @@ public class CommandSetRank extends BaseCommand {
             }
         }
 
+        final boolean finalIsGM = isGM;
+        final boolean finalIsHeadGM = isHeadGM;
+
         if (args.length >= 2 && Arrays.asList(ranks).contains(args[1].toUpperCase())) {
-            try {
-                UUID uuid = Bukkit.getPlayer(args[0]) != null && Bukkit.getPlayer(args[0]).getDisplayName().equalsIgnoreCase(args[0]) ? Bukkit.getPlayer(args[0]).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
                 String rank = args[1].toUpperCase();
 
-                // Check for any ranks that cannot be revoked by a GM.
-                // DEV | HEADM | GM | SUPPORT | YOUTUBE
-                if (isGM) {
-                    String currentRank = Rank.getInstance().getRank(uuid).toUpperCase();
-                    if (currentRank.equals("DEV") || currentRank.equals("HEADGM") || (currentRank.equals("GM") && !isHeadGM) || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
-                        sender.sendMessage(ChatColor.RED + "You can't change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " as they're a " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
-                        return false;
-                    }
+            SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
+                if(uuid == null) {
+                    sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms!");
+                    return;
                 }
 
-                // Always update the database with the new rank.
-                GameAPI.submitAsyncCallback(() -> {
-                    // Update the user's rank.
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, false);
 
-                    // The rank wasn't a subscription rank and therefore we should also expire their rank.
-                    // This is useful for when user's chargeback, etc.
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                    if(wrapper == null) {
+                        sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms!");
+                        return;
+                    }
+                    String currentRank = wrapper.getRank();
+                    if(finalIsGM) {
+                        if (currentRank.equals("DEV") || currentRank.equals("HEADGM") || (currentRank.equals("GM") && !finalIsHeadGM) || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
+                            sender.sendMessage(ChatColor.RED + "You can't change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " as they're a " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
+                            return;
+                        }
+                    }
+
                     if (!rank.toLowerCase().contains("sub") || rank.equalsIgnoreCase("sub++")) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true);
+                        wrapper.setRankExpiration(0L);
                     }
 
-                    // We were successful.
-                    return true;
-                }, result -> {
-                    // Only update the server rank if the user is currently logged in.
-                    if (Bukkit.getPlayer(args[0]) != null) {
-                        Player player = Bukkit.getPlayer(args[0]);
-                        Rank.getInstance().setRank(uuid, rank);
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, GameAPI.getGamePlayer(player).getLevel());
-                    }
-                    else {
-                        GameAPI.updatePlayerData(uuid);
-                    }
-                    sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");
+                    wrapper.setRank(rank);
+                    wrapper.saveData(true, null, (wrappa) -> {
+                        sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");
+                        Player other = Bukkit.getPlayer(uuid);
+                        if(other != null) {
+                            Rank.getInstance().setRank(uuid, rank);
+                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(other, ChatColor.WHITE, GameAPI.getGamePlayer(other).getLevel());
+                        } else {
+                            GameAPI.updatePlayerData(uuid, "rank");
+                        }
+                    });
+
+
                 });
-
-            } catch (IllegalArgumentException ex) {
-                // This exception is thrown if the UUID doesn't exist in the database.
-                sender.sendMessage(ChatColor.RED + "Invalid player name: " + args[0] + "!");
-            }
+            });
 
         } else {
             sender.sendMessage(ChatColor.RED + "Invalid usage: /setrank <name> <rank>");

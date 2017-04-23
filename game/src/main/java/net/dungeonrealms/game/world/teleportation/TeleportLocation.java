@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.teleportation;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -74,10 +75,11 @@ public enum TeleportLocation {
 	}
 	
 	public boolean canTeleportTo(Player player){
-		if (GameAPI.getGamePlayer(player) == null)
+		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+		if (wrapper == null)
             return false;
         
-        if (GameAPI.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+        if (wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC)
             return true;
         
         return this == TeleportLocation.DEADPEAKS;

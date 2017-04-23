@@ -57,23 +57,6 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     /**
-     * Handles players logging out,
-     * removes metadata from the player
-     *
-     * @param player
-     * @since 1.0
-     */
-    public void handleLogoutEvents(Player player) {
-        if (player.hasMetadata("starving")) {
-            player.removeMetadata("starving", DungeonRealms.getInstance());
-        }
-        if (player.hasMetadata("sprinting")) {
-            player.removeMetadata("sprinting", DungeonRealms.getInstance());
-        }
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), true);
-    }
-
-    /**
      * Handles players logging in,
      * adds metadata to the player if
      * applicable (no food level).

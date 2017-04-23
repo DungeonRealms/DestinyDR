@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listener.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -10,16 +9,17 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -31,7 +31,7 @@ import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
 import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
-
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -41,8 +41,11 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -51,6 +54,22 @@ import java.util.UUID;
 public class NetworkClientListener extends Listener implements GenericMechanic {
 
     static NetworkClientListener instance = null;
+
+    private Map<String, Field> cachedPlayerWrapperFields = new HashMap<>();
+
+    public Field getField(String s) {
+        Field field = cachedPlayerWrapperFields.get(s);
+        if (field == null) {
+            try {
+                field = PlayerWrapper.class.getDeclaredField(s);
+                field.setAccessible(true);
+                this.cachedPlayerWrapperFields.put(s, field);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+        return field;
+    }
 
     public static NetworkClientListener getInstance() {
         if (instance == null) {
@@ -108,15 +127,54 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         UUID uuid = UUID.fromString(in.readUTF());
                         Player player1 = Bukkit.getPlayer(uuid);
 
+                        String updateField = in.readUTF();
                         if (player1 != null) {
-                            DatabaseAPI.getInstance().requestPlayer(uuid, true, () -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                if (GameAPI.getGamePlayer(player1) != null)
-                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor(), GameAPI.getGamePlayer(player1).getLevel());
-                            }));
+
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player1);
+                            if (updateField.equals("mute")) {
+                                wrapper.loadPunishment(true);
+                            } else if (updateField.equals("unlockables")) {
+                                //Reload their collection bin data...
+                                SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_UNLOCKABLES.getQuery(wrapper.getAccountID()), rs -> {
+                                    if (rs == null) {
+                                        Bukkit.getLogger().info("Unable to get result set on unlockable upgrade, account ID: " + wrapper.getAccountID());
+                                        return;
+                                    }
+                                    try {
+                                        if (rs.first())
+                                            wrapper.loadUnlockables(rs);
+                                        Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } else {
+                                UpdateType type = UpdateType.getFromName(updateField);
+                                if (type != null) {
+                                    //Pull this data..
+                                    SQLDatabaseAPI.getInstance().executeQuery(type.getQuery(wrapper), rs -> {
+                                        if (rs == null)
+                                            return;
+                                        try {
+                                            if (rs.first()) {
+                                                Object obj = rs.getObject(type.getColumnName());
+                                                Field field = getField(type.getFieldName());
+                                                field.set(wrapper, obj);
+                                            }
+                                        } catch (SQLException | IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                }
+                            }
+//                            DatabaseAPI.getInstance().requestPlayer(uuid, true, () -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//                                if (GameAPI.getGamePlayer(player1) != null)
+//                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor(), GameAPI.getGamePlayer(player1).getLevel());
+//                            }));
                         }
                         return;
                     case "IGN_GMMessage":
-                    	//This GMMessage will only show in-game and skip being show in discord.
+                        //This GMMessage will only show in-game and skip being show in discord.
                     case "GMMessage": {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {
@@ -185,10 +243,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                         });*/
 
                                         PlayerWrapper personWrapper = PlayerWrapper.getPlayerWrapper(uuid);
-                                        if(personWrapper != null) {
-                                            for(UUID friend : personWrapper.getFriendsList().keySet()) {
+                                        if (personWrapper != null) {
+                                            for (UUID friend : personWrapper.getFriendsList().keySet()) {
                                                 Player friendPlayer = Bukkit.getPlayer(friend);
-                                                if(friendPlayer == null) continue;
+                                                if (friendPlayer == null) continue;
                                                 friendPlayer.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
                                                 friendPlayer.playSound(friendPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                                             }
@@ -197,16 +255,22 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     }
                                 } else if (msg.contains("request:")) {
                                     String[] content = msg.split(",");
-                                    String senderUuid = content[1];
+//                                    String senderUuid = content[1];
+                                    UUID senderUUID = UUID.fromString(content[1]);
                                     String senderName = content[2];
                                     String friendUUID = content[3];
+                                    int accountID = content.length == 5 && StringUtils.isNumeric(content[4]) ? Integer.parseInt(content[4]) : SQLDatabaseAPI.getInstance().getAccountIdFromUUID(senderUUID);
                                     UUID uuid = UUID.fromString(friendUUID);
+                                    Player friend = Bukkit.getPlayer(uuid);
+                                    if (friend != null) {
+//                                        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUESTS, senderUuid, true);
 
-                                    if (Bukkit.getPlayer(uuid) != null) {
-                                        Player friend = Bukkit.getPlayer(uuid);
-                                        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUESTS, senderUuid, true);
-                                        friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " sent you a friend request.");
-                                        friend.sendMessage(ChatColor.GREEN + "Use /accept (player) to accept.");
+                                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(friend);
+                                        if(wrapper != null) {
+                                            wrapper.getPendingFriends().put(senderUUID, accountID);
+                                            friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " sent you a friend request.");
+                                            friend.sendMessage(ChatColor.GREEN + "Use /accept (player) to accept.");
+                                        }
 
                                     }
                                 } else if (msg.contains("accept:")) {
@@ -214,19 +278,40 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     String senderUuid = content[1];
                                     String senderName = content[2];
                                     String friendUUID = content[3];
-                                    UUID uuid = UUID.fromString(friendUUID);
 
-                                    if (Bukkit.getPlayer(uuid) != null) {
-                                        Player friend = Bukkit.getPlayer(uuid);
-                                        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, senderUuid, true);
-                                        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, senderUuid, true);
+                                    UUID senderUUID = UUID.fromString(senderUuid);
+                                    UUID uuid = UUID.fromString(friendUUID);
+                                    int friendID = content.length == 3 && StringUtils.isNumeric(content[4]) ? Integer.parseInt(content[4]) : SQLDatabaseAPI.getInstance().getAccountIdFromUUID(senderUUID);
+                                    Player friend = Bukkit.getPlayer(uuid);
+                                    if (friend != null) {
+                                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                                        wrapper.getFriendsList().put(senderUUID, friendID);
+                                        wrapper.getPendingFriends().remove(senderUUID);
                                         friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " accepted your friend request.");
                                     }
 
+                                } else if (msg.contains("removeFriend:")) {
+                                    String[] content = msg.split(":");
+                                    if (content.length == 4) {
+                                        String playerToFindID = content[3];
+                                        UUID uuid = UUID.fromString(playerToFindID);
+                                        Player pl = Bukkit.getPlayer(uuid);
+                                        if (pl != null) {
+                                            //Remove friend..
+                                            UUID whoRemoved = UUID.fromString(content[1]);
+                                            String name = content[2];
+                                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+                                            if (wrapper != null && wrapper.getFriendsList().containsKey(whoRemoved)) {
+                                                //Remove them..
+                                                wrapper.getFriendsList().remove(whoRemoved);
+                                                if (wrapper.getPendingFriends().remove(whoRemoved) == null)
+                                                    pl.sendMessage(ChatColor.RED + name + " has removed you from their friends list.");
+                                            }
+                                        }
+                                    }
                                 }
-
-                                return;
                             }
+                            return;
                             case "PrivateMessage": {
                                 String fromPlayer = in.readUTF();
                                 String playerName = in.readUTF();
@@ -238,7 +323,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                         gp.setLastMessager(fromPlayer);
                                     }
                                     player.sendMessage(msg);
-                                    GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD +"(AS " + player.getName() + ") " + msg));
+                                    GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "(AS " + player.getName() + ") " + msg));
                                 }
                                 break;
                             }
@@ -249,7 +334,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     String playerName = content[1];
                                     Shop shop = ShopMechanics.getShop(playerName);
                                     if (shop != null) {
-                                        shop.deleteShop(false);
+                                        shop.deleteShop(false, null);
                                         BungeeUtils.sendPlayerMessage(playerName, ChatColor.YELLOW + "Shop found and removed.");
                                     }
                                 }

@@ -559,11 +559,13 @@ public class MainListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) {
             return;
         }
-        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             return;
         }
 
@@ -578,7 +580,7 @@ public class MainListener implements Listener {
                 player.getVehicle().eject();
 
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
-            if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+            if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
             else
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your PvP tagged status.");
@@ -587,7 +589,7 @@ public class MainListener implements Listener {
         if (GameAPI.isInSafeRegion(event.getTo()) || GameAPI.isNonPvPRegion(event.getTo())) {
             event.setCancelled(true);
             player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
-            if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+            if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
             else
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones while PvP tagged.");

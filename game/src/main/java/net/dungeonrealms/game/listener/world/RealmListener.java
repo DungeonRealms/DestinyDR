@@ -6,6 +6,8 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
 import net.dungeonrealms.common.game.util.Cooldown;
@@ -205,9 +207,11 @@ public class RealmListener implements Listener {
                     realm.removeRealm(true);
                 }
 
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true, doAfter -> {
-                    GameAPI.updatePlayerData(uuid);
-                });
+
+                SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(uuid, "upgradingRealm"),
+                        QueryType.SET_REALM_UPGRADE.getQuery(0, realm.getAccountID()));
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true,
+//                        doAfter -> GameAPI.updatePlayerData(uuid, "realm"));
 
                 Realms.getInstance().getProcessingBlocks().remove(uuid);
                 realm.setUpgradeProgress(0);
@@ -408,7 +412,7 @@ public class RealmListener implements Listener {
             property.setValue(true);
             property.setAcknowledgeExpiration(true);
         } else if (tag.getString("orb").equalsIgnoreCase("peace")) {
-            GamePlayer gp = GameAPI.getGamePlayer(p);
+            PlayerWrapper gp = PlayerWrapper.getPlayerWrapper(p);
 
             if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " use an orb of peace while chaotic.");
@@ -883,7 +887,10 @@ public class RealmListener implements Listener {
                 return;
 
             // Saves their location so they don't spawn in the realm if they logout.
-            DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
+//            DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
+            wrapper.setStoredLocation(event.getFrom());
+            wrapper.setStoredLocationString(GameAPI.locationToString(event.getFrom()));
             // Teleports them inside the realm.
             event.setTo(realm.getWorld().getSpawnLocation().clone().add(0, 2, 0));
 
@@ -997,13 +1004,13 @@ public class RealmListener implements Listener {
 
             //Open the player's realm.
             if (event.getClickedBlock() != null) {
-                realm = Realms.getInstance().getOrCreateRealm(event.getPlayer());
+                realm = Realms.getInstance().getOrCreateRealm(event.getPlayer(), wrapper.getAccountID());
                 realm.openPortal(p, event.getClickedBlock().getLocation());
             }
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 
-            if ((event.hasBlock() && event.getClickedBlock().getType() == Material.PORTAL) || event.getPlayer().isSneaking())
+            if (event.hasBlock() && event.getClickedBlock().getType() == Material.PORTAL || p.isSneaking())
                 return;
 
             if (!Realms.getInstance().isInRealm(event.getPlayer())) {

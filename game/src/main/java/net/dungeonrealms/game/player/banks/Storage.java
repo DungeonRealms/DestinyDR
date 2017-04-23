@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 import lombok.Cleanup;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.concurrent.Query;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -23,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -88,7 +86,7 @@ public class Storage {
      */
     private int getStorageSize() {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(ownerUUID);
-        if(wrapper == null) return 9;
+        if (wrapper == null) return 9;
         return 9 * wrapper.getBankLevel();
     }
 
@@ -99,21 +97,17 @@ public class Storage {
     /**
      * Used to update inventory size when upgraded.
      */
-    public void update() {
+    public void update(Consumer<Inventory> callback) {
         Inventory inventory = getNewStorage();
         if (inv != null)
             inventory.setContents(inv.getContents());
         this.inv = inventory;
 
-        CompletableFuture.runAsync(() -> {
+        SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_COLLECTION_BIN.getQuery(this.characterID), rs -> {
             try {
-                @Cleanup PreparedStatement state = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                        QueryType.SELECT_COLLECTION_BIN.getQuery(this.characterID));
-//                        "SELECT collection_storage FROM characters WHERE character_id = '" + this.characterID + "';");
-                ResultSet rs = state.executeQuery();
-                if (rs.first()) {
+                if(rs.first()){
                     String newBin = rs.getString("users.collection_storage");
-                    if (newBin != null && newBin.length() > 1) {
+                    if (newBin != null && newBin.length() > 1 && !newBin.equals("null")) {
                         //We have some collection bin data..
                         Inventory inv = ItemSerialization.fromString(newBin);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -129,14 +123,20 @@ public class Storage {
                             }
 
                             this.collection_bin = inv;
-                            SQLDatabaseAPI.getInstance().getSqlQueries().add("UPDATE characters SET collection_storage WHERE character_id = '" + this.characterID + "';");
+                            SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
+                            if(callback != null)
+                                callback.accept(this.collection_bin);
                         });
+                    } else {
+                        this.collection_bin = null;
                     }
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }, SQLDatabaseAPI.getSERVER_EXECUTOR_SERVICE());
+            if(callback != null)
+                callback.accept(this.collection_bin);
+        });
         //Pulling collection bin from cached doc.
 //        String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
 //        if (stringInv.length() > 1) {

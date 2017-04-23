@@ -13,6 +13,8 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -66,7 +68,10 @@ public class Realm {
 
 	@Getter //The UUID of the owner of this realm.
 	private UUID owner;
-	
+
+	@Getter
+	private int accountID;
+
 	@Getter //The owner's username.
 	private String name;
 	
@@ -101,8 +106,9 @@ public class Realm {
 	
 	private RealmTier tier;
 	
-	public Realm(UUID owner, String name) {
+	public Realm(UUID owner, int accountID, String name) {
 		this.owner = owner;
+		this.accountID  = accountID;
 		this.name = name;
 		
 		// MUST BE ADDED IN THIS ORDER //
@@ -314,9 +320,11 @@ public class Realm {
         
         // Set data.
         setState(RealmState.UPGRADING);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, newTier.getTier(), true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true);
-        
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        wrapper.setRealmTier(newTier.getTier());
+        wrapper.setUpgradingRealm(true);
+
+
         Realms.getInstance().upgradeRealmBlocks(this, newTier);
         
         updateRune();
@@ -347,21 +355,9 @@ public class Realm {
         hologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + getName());
         hologram.insertTextLine(1, isChaotic() ? ChatColor.RED + "Chaotic" : ChatColor.AQUA + "Peaceful");
     }
-	
-	/**
-	 * Sets the title of this realm.
-	 */
-	public void setTitle(String newTitle) {
-		setTitle(getOwner(), newTitle);
-	}
-	
-	/**
-	 * Sets the title of this realm.
-	 */
-	public static void setTitle(UUID owner, String title) {
-		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.REALM_TITLE, title, true);
-	}
-	
+
+
+
 	/**
 	 * Returns the realm title if it exists, otherwise null.
 	 */
@@ -378,9 +374,10 @@ public class Realm {
 	public void resetRealm(Player player) {
         // Close realm / remove players.
        	removePortal(ChatColor.RED + player.getName() + " is resetting this realm...");
+
+       	PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         
-        //Update Mongo
-        DatabaseAPI.getInstance().update(getOwner(), EnumOperators.$SET, EnumData.REALM_LAST_RESET, System.currentTimeMillis(), true);
+        wrapper.setLastRealmReset(System.currentTimeMillis());
         setState(RealmState.RESETTING);
 
         // UNLOAD WORLD
@@ -392,9 +389,9 @@ public class Realm {
 			e.printStackTrace();
 		}
         
-        setTitle("");
+        wrapper.setRealmTitle("");
 		setState(RealmState.CLOSED);
-		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
+		wrapper.setRealmTier(1);
 		
 		if(isOwner(player)) {
 			Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
@@ -632,8 +629,13 @@ public class Realm {
         	if(deleteWorld)
         		Utils.log.info("[REALM] Deleting " + getName() + "'s realm locally.");
 
-            DatabaseAPI.getInstance().update(getOwner(), EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
-            GameAPI.updatePlayerData(getOwner());
+        	PlayerWrapper.getPlayerWrapper(getOwner(), false, true, (wrapper) -> {
+        		if(wrapper == null) return;
+        		wrapper.setUploadingRealm(false);
+        		//Done uploading realm.
+				SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), "realm"),
+						QueryType.SET_REALM_UPLOADING.getQuery());
+			});
 
             setState(RealmState.CLOSED);
             Realms.getInstance().getRealmMap().remove(getOwner());

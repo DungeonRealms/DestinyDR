@@ -6,9 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -39,18 +37,15 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -58,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -76,11 +72,10 @@ public class ClickHandler {
     public void doClick(InventoryClickEvent event) {
         String name = event.getInventory().getName();
         Player player = (Player) event.getWhoClicked();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
         int slot = event.getRawSlot();
         if (slot == -999) return;
-
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (wrapper == null) return;
         /*
         Animal Tamer NPC
          */
@@ -100,9 +95,9 @@ public class ClickHandler {
                         EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
                         if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
                             if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
+                                wrapper.getMountsUnlocked().add(mount.getRawName());
                                 if (mount != EnumMounts.MULE) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
+                                    wrapper.setActiveMount(mount.getRawName());
                                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
                                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mount")) {
                                         player.getInventory().addItem(ItemManager.getPlayerMountItem());
@@ -218,7 +213,7 @@ public class ClickHandler {
                         } else {
                             if (TeleportLocation.valueOf(nmsStack.getTag().getString("hearthstoneLocation").toUpperCase()).canSetHearthstone(player)) {
                                 if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
+                                    wrapper.setHearthstone(nmsStack.getTag().getString("hearthstoneLocation"));
                                     player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
                                     player.closeInventory();
                                     return;
@@ -261,14 +256,14 @@ public class ClickHandler {
                         tradeWindow.setItem(slot, tradeWindow.getItem(slot));
                         player.setItemOnCursor(event.getCursor());
                         player.updateInventory();
-                    } else if (!(event.isShiftClick())) {
-                        if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                    } else if (!event.isShiftClick()) {
+                        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
                             event.setCancelled(true);
                             ItemStack slotItem = tradeWindow.getItem(slot);
                             tradeWindow.setItem(slot, new ItemStack(Material.AIR));
                             event.setCursor(slotItem);
                             player.updateInventory();
-                        } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null)) {
+                        } else if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null) {
                             if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("subType"))) {
                                 event.setCancelled(true);
                                 player.updateInventory();
@@ -519,7 +514,7 @@ public class ClickHandler {
                 } else {*/
                 if (event.getCurrentItem() != null) {
                     ItemStack clickedItem = event.getCurrentItem();
-                    MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
+//                    MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
                 }
                 //}
                 break;
@@ -568,7 +563,7 @@ public class ClickHandler {
                             petName = nmsStack.getTag().getString("petName");
                         }
                         String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, toStore, true);
+                        wrapper.setActivePet(toStore);
                         PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), petName);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -605,9 +600,9 @@ public class ClickHandler {
                             String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
                             String newPet = petType + "@" + checkedPetName;
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
+                            wrapper.getPetsUnlocked().remove(petType);
+                            wrapper.getPetsUnlocked().remove(petType + "@" + finalPetName);
+                            wrapper.getPetsUnlocked().add(newPet);
 
                             player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
@@ -661,7 +656,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), true);
+                    wrapper.setActiveMount(nmsStack.getTag().getString("mountType"));
                     player.sendMessage(ChatColor.GREEN + "Your mount is currently being summoned into this world...");
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
@@ -676,19 +671,15 @@ public class ClickHandler {
                                         } else {
                                             MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"), wrapper.getActiveMountSkin());
                                         }
-                                    }
-                                } else {
-                                    if (!cancelled[0]) {
+                                    } else if (!cancelled[0]) {
                                         cancelled[0] = true;
                                         count[0] = 0;
                                         player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                    } else if (!cancelled[0]) {
+                                        cancelled[0] = true;
+                                        count[0] = 0;
+                                        player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
                                     }
-                                }
-                            } else {
-                                if (!cancelled[0]) {
-                                    cancelled[0] = true;
-                                    count[0] = 0;
-                                    player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
                                 }
                             }
                         }
@@ -718,7 +709,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType"), true);
+                    wrapper.setActiveTrail(nmsStack.getTag().getString("playerTrailType"));
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                     player.sendMessage(ChatColor.GREEN + "The " + ChatColor.BOLD + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName().toLowerCase() + ChatColor.GREEN + " trail has been activated.");
                 }
@@ -831,49 +822,50 @@ public class ClickHandler {
                 break;
             case "Toggles":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
 
 
                 ItemStack item = event.getCurrentItem();
                 String itemName = item.getItemMeta().getDisplayName().toLowerCase();
-                if(itemName == null || !itemName.contains("toggle")) {
+                if (itemName == null || !itemName.contains("toggle")) {
                     return;
                 }
 
-                if(itemName.contains("toggledebug")) {
+                if (itemName.contains("toggledebug")) {
                     wrapper.getToggles().setDebug(!wrapper.getToggles().isDebug());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggletrade")) {
+                } else if (itemName.contains("toggletrade")) {
                     wrapper.getToggles().setTrade(!wrapper.getToggles().isTrade());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggletradechat")) {
+                } else if (itemName.contains("toggletradechat")) {
                     wrapper.getToggles().setTradeChat(wrapper.getToggles().isTradeChat());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggleglobalchat")) {
+                } else if (itemName.contains("toggleglobalchat")) {
                     wrapper.getToggles().setGlobalChat(!wrapper.getToggles().isGlobalChat());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggletells")) {
+                } else if (itemName.contains("toggletells")) {
                     wrapper.getToggles().setReceiveMessage(!wrapper.getToggles().isReceiveMessage());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("togglepvp")) {
+                } else if (itemName.contains("togglepvp")) {
                     wrapper.getToggles().setPvp(!wrapper.getToggles().isPvp());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggleduel")) {
+                } else if (itemName.contains("toggleduel")) {
                     wrapper.getToggles().setDuel(!wrapper.getToggles().isDuel());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("togglechaos")) {
+                } else if (itemName.contains("togglechaos")) {
                     wrapper.getToggles().setChaoticPrevention(!wrapper.getToggles().isChaoticPrevention());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("togglefloatdamage")) {
+                } else if (itemName.contains("togglefloatdamage")) {
                     wrapper.getToggles().setDamageIndicators(!wrapper.getToggles().isDamageIndicators());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggleglow")) {
+                } else if (itemName.contains("toggleglow")) {
                     wrapper.getToggles().setGlow(!wrapper.getToggles().isGlow());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("toggletips")) {
+                } else if (itemName.contains("toggletips")) {
                     wrapper.getToggles().setTips(!wrapper.getToggles().isTips());
                     PlayerMenus.openToggleMenu(player);
-                } else if(itemName.contains("back")) {
+                } else if (itemName.contains("back")) {
                     PlayerMenus.openPlayerProfileMenu(player);
                 }
 
@@ -893,7 +885,7 @@ public class ClickHandler {
                 int price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
                     if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                         ItemStack copy = ShopListener.removePriceLore(stack.clone());
+                        ItemStack copy = ShopListener.removePriceLore(stack.clone());
                         player.getInventory().addItem(AntiDuplication.getInstance().applyAntiDupe(copy));
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
@@ -953,7 +945,8 @@ public class ClickHandler {
                     } else {
                         player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed.");
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true);
+
+                    wrapper.setActiveMountSkin("");
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
@@ -973,7 +966,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType"), true);
+                    wrapper.setActiveMountSkin(nmsStack.getTag().getString("skinType"));
                     player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed. Please re-summon your mount.");
                 }
                 break;
@@ -1160,7 +1153,7 @@ public class ClickHandler {
                 // Always update the database with the new rank.
 
                 PlayerWrapper.getPlayerWrapper(uuid, false, true, (newWrapper) -> {
-                    if(newWrapper == null) {
+                    if (newWrapper == null) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Failed to update players rank!");
                         return;
                     }
@@ -1168,12 +1161,12 @@ public class ClickHandler {
                     Player other = Bukkit.getPlayer(uuid);
 
                     newWrapper.setRank(newRank);
-                    newWrapper.saveData(false,other, true);
+                    newWrapper.saveData(false, true);
 
-                    if(other != null) {
+                    if (other != null) {
                         Rank.getInstance().setRank(uuid, newRank);
                     } else {
-                        GameAPI.updatePlayerData(uuid);
+                        GameAPI.updatePlayerData(uuid, "rank");
                     }
 
                     player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
@@ -1452,16 +1445,16 @@ public class ClickHandler {
 
                 if (hearthstoneLocation != null) {
                     final String finalLocation = hearthstoneLocation;
-                    PlayerWrapper.getPlayerWrapper(uuid,false,true, (otherWrapper) -> {
-                        if(otherWrapper == null) {
+                    PlayerWrapper.getPlayerWrapper(uuid, false, true, (otherWrapper) -> {
+                        if (otherWrapper == null) {
                             player.sendMessage(ChatColor.RED + "Something went wrong!!");
                             return;
                         }
 
                         otherWrapper.setHearthstone(finalLocation.toUpperCase());
-                        otherWrapper.saveData(true, null, null, (someWrapper) -> {
+                        otherWrapper.saveData(true, null, (someWrapper) -> {
                             player.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(finalLocation).replace("_", " ") + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
+                            GameAPI.updatePlayerData(uuid, "hearthstone");
                             SupportMenus.openMainMenu(player, playerName);
                         });
                     });
@@ -1509,6 +1502,13 @@ public class ClickHandler {
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
 
+                String trailName = tag.getString("trail").toUpperCase();
+                if (!GameAPI.isStringTrail(trailName)) {
+                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
+                    return;
+                }
+                ParticleAPI.ParticleEffect supportEffect = ParticleAPI.ParticleEffect.getByName(trailName);
+
                 if (slot == 4) {
                     SupportMenus.openCosmeticsMenu(player, playerName, uuid);
                     return;
@@ -1517,33 +1517,37 @@ public class ClickHandler {
                     return;
                 }
 
-                String trailName = tag.getString("trail").toUpperCase();
-                if (!GameAPI.isStringTrail(trailName)) {
-                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
-                    return;
-                }
-                ParticleAPI.ParticleEffect supportEffect = ParticleAPI.ParticleEffect.getByName(trailName);
-
-                HashSet<String> playerTrails = wrapper.getTrails();
-                boolean supportTrailLocked = false;
-                if (!playerTrails.isEmpty()) {
-                    if (playerTrails.contains(trailName)) {
-                        supportTrailLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true, doAfter -> {
-                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
-                        });
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (otherWrapper) -> {
+                    if(otherWrapper == null) {
+                        player.sendMessage(ChatColor.RED + "Could not load player data!");
+                        return;
                     }
-                }
 
-                if (!supportTrailLocked)
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailName,
-                            true, doAfter -> {
-                                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                GameAPI.updatePlayerData(uuid);
+                    HashSet<String> playerTrails = otherWrapper.getTrails();
+                    boolean supportTrailLocked = false;
+                    if (!playerTrails.isEmpty()) {
+                        if (playerTrails.contains(trailName)) {
+                            supportTrailLocked = true;
+                            otherWrapper.getTrails().remove(trailName);
+                            otherWrapper.saveData(true, null, (wappa) -> {
+                                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid, "trails");
                             });
+                        }
+                    }
 
-                SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                    if (!supportTrailLocked)
+                        otherWrapper.getTrails().add(trailName);
+                        otherWrapper.saveData(true, null, (wappa) -> {
+                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            GameAPI.updatePlayerData(uuid, "trails");
+                        });
+
+                    SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+
+                });
+
+
                 break;
             case "Support Tools (Mounts)":
                 event.setCancelled(true);
@@ -1575,49 +1579,60 @@ public class ClickHandler {
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
+
                 uuid = UUID.fromString(tag.getString("uuid"));
 
-                // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
-
-                if (slot == 4) {
-                    SupportMenus.openCosmeticsMenu(player, playerName, uuid);
-                    return;
-                } else if (!tag.hasKey("pet")) {
-                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [1]");
-                    return;
-                }
-
-                String petName = tag.getString("pet").toUpperCase();
-                if (!GameAPI.isStringPet(petName)) {
-                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
-                    return;
-                }
-                EnumPets supportPets = EnumPets.getByName(petName);
-
-                HashSet<String> playerSupportPets = wrapper.getPetsUnlocked();
-                boolean supportPetLocked = false;
-                if (!playerSupportPets.isEmpty()) {
-                    if (playerSupportPets.contains(petName)) {
-                        supportPetLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true, doAfter -> {
-                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
-                        });
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (otherWrapper) -> {
+                    if(otherWrapper == null) {
+                        player.sendMessage(ChatColor.RED + "Something went wrong loading the data!");
+                        return;
                     }
-                }
 
-                if (!supportPetLocked)
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true, doAfter -> {
-                        player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                        GameAPI.updatePlayerData(uuid);
+
+                    if (slot == 4) {
+                        SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                        return;
+                    } else if (!tag.hasKey("pet")) {
+                        player.sendMessage(ChatColor.RED + "Something went wrong while building the menu!");
+                        return;
+                    }
+
+                    String petName = tag.getString("pet").toUpperCase();
+                    if (!GameAPI.isStringPet(petName)) {
+                        player.sendMessage(ChatColor.RED + "Something went wrong while building the menu! 2");
+                        return;
+                    }
+                    EnumPets supportPets = EnumPets.getByName(petName);
+
+                    HashSet<String> playerSupportPets = otherWrapper.getPetsUnlocked();
+                    boolean supportPetLocked = false;
+                    if (!playerSupportPets.isEmpty()) {
+                        if (playerSupportPets.contains(petName)) {
+                            supportPetLocked = true;
+                        }
+                    }
+
+                    final boolean supPetLocked = supportPetLocked;
+
+                    if(supportPetLocked)otherWrapper.getPetsUnlocked().remove(petName);
+                    else otherWrapper.getPetsUnlocked().add(petName);
+
+                    otherWrapper.saveData(true, null, (wrappa) -> {
+                        if(supPetLocked)player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        else player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        GameAPI.updatePlayerData(uuid, "pets");
                     });
 
-                SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                    SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+
+                });
+
                 break;
             case "Game Master Toggles":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
 
                 switch (slot) {
                     case 0: // Vanish
@@ -1717,7 +1732,8 @@ public class ClickHandler {
                 break;
             case "Head Game Master Toggles":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
 
                 switch (slot) {
                     case 0: // Game Master Extended Permissions
@@ -1736,7 +1752,8 @@ public class ClickHandler {
                 break;
             case "E-Cash Pets":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
                 if (slot == 0) {
                     NPCMenus.openECashPurchaseMenu(player);
                     return;
@@ -1762,8 +1779,8 @@ public class ClickHandler {
                 }
                 int eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
+                    wrapper.getPetsUnlocked().add(petType);
+                    wrapper.setActivePet(petType);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {
                         player.getInventory().addItem(ItemManager.getPlayerPetItem());
@@ -1775,7 +1792,8 @@ public class ClickHandler {
                 break;
             case "E-Cash Effects":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
                 if (slot == 0) {
                     NPCMenus.openECashPurchaseMenu(player);
                     return;
@@ -1799,8 +1817,8 @@ public class ClickHandler {
                 }
                 eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
+                    wrapper.getParticlesUnlocked().add(effectType);
+                    wrapper.setActiveTrail(effectType);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "trail")) {
                         player.getInventory().addItem(ItemManager.getPlayerTrailItem());
@@ -1812,7 +1830,8 @@ public class ClickHandler {
                 break;
             case "E-Cash Skins":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
                 if (slot == 0) {
                     NPCMenus.openECashPurchaseMenu(player);
                     return;
@@ -1840,8 +1859,8 @@ public class ClickHandler {
                 }
                 eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true);
+                    wrapper.getMountSkins().add(skinType);
+                    wrapper.setActiveMountSkin(skinType);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin.");
                     player.closeInventory();
                 } else {
@@ -1850,7 +1869,8 @@ public class ClickHandler {
                 break;
             case "E-Cash Miscellaneous":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
                 if (slot == 0) {
                     NPCMenus.openECashPurchaseMenu(player);
                     return;

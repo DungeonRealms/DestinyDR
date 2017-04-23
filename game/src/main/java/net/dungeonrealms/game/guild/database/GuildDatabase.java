@@ -372,7 +372,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public void setGuild(UUID uuid, String guildName) {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true, doAfter -> {
-            GameAPI.updatePlayerData(uuid);
+            GameAPI.updatePlayerData(uuid, "guild");
             GameAPI.updateGuildData(guildName);
         });
     }

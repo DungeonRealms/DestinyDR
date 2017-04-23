@@ -2,6 +2,7 @@ package net.dungeonrealms.common.game.database.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 public class SQLDatabase {
 
@@ -16,7 +17,7 @@ public class SQLDatabase {
         this.username = username;
         this.password = password;
         this.database = database;
-        this.url = "jdbc:mysql://" + host + ":3306/" + database + "?autoReconnect=true";
+        this.url = "jdbc:mysql://" + host + ":3306/" + database;
     }
 
     protected static Connection connection;
@@ -39,7 +40,15 @@ public class SQLDatabase {
                     connection.close();
                 }
             }
-            connection = DriverManager.getConnection(url, username, password);
+
+            //Create the properties so we can get everything in order.
+            Properties props = new Properties();
+            props.setProperty("password", this.password);
+            props.setProperty("user", this.username);
+            props.setProperty("autoReconnect", "true");
+            props.setProperty("continueBatchOnError", "true");
+            props.setProperty("rewriteBatchStatements", "true");
+            connection = DriverManager.getConnection(url, props);
         } catch (Exception e) {
             e.printStackTrace();
         }

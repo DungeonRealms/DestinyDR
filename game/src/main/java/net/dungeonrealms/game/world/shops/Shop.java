@@ -4,10 +4,10 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
@@ -24,6 +24,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -108,7 +109,8 @@ public class Shop {
      *
      * @since 1.0
      */
-    public void deleteShop(boolean shutDown) {
+    @SneakyThrows
+    public void deleteShop(boolean shutDown, PreparedStatement saveStatement) {
         // Remove the actual game gui
         ShopMechanics.ALLSHOPS.remove(ownerName);
         // Remove blocks
@@ -126,10 +128,13 @@ public class Shop {
         Lists.newArrayList(inventory.getViewers()).forEach(HumanEntity::closeInventory);
         uniqueViewers.clear();
 
-        saveCollectionBin(shutDown);
+        saveCollectionBin(shutDown, owner, saveStatement);
 
         if (shutDown) {
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
+            if (saveStatement != null) {
+                saveStatement.addBatch(QueryType.SET_HASSHOP.getQuery(false, this.characterID));
+            }
+//            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
         } else {
             if (owner != null) {
@@ -138,14 +143,19 @@ public class Shop {
                     BankMechanics.shopPricing.remove(owner.getName());
                 }
             }
-            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));
+
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, false, this.characterID);
+//            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true)
+//            });
         }
     }
 
     /**
      * save to collection
      */
-    private void saveCollectionBin(boolean shutDown) {
+    @SneakyThrows
+    private void saveCollectionBin(boolean shutDown, Player player, PreparedStatement state) {
         Inventory inv = Bukkit.createInventory(null, inventory.getSize(), "Collection Bin");
         int count = 0;
         for (ItemStack stack : inventory) {
@@ -158,7 +168,7 @@ public class Shop {
             }
         }
         if (count > 0) {
-            Player player = Bukkit.getPlayer(ownerUUID);
+//            Player player = Bukkit.getPlayer(ownerUUID);
             if (player != null)
                 player.sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
 
@@ -168,10 +178,13 @@ public class Shop {
 
             String invToString = ItemSerialization.toString(inv);
             //Only save on shutdown / logout, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
+
             if (shutDown)
-                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
+                state.addBatch(QueryType.UPDATE_COLLECTION_BIN.getQuery(invToString, this.characterID));
+//                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
+//            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
         }
     }
 

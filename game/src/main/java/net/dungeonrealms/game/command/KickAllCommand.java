@@ -23,7 +23,11 @@ public class KickAllCommand extends BaseCommand {
         }
 
         sender.sendMessage(ChatColor.RED + "Kicking all players..");
-        ShopMechanics.deleteAllShops(true);
+        try {
+            ShopMechanics.deleteAllShops(true).executeBatch();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         GameAPI.logoutAllPlayers();
         return true;
     }

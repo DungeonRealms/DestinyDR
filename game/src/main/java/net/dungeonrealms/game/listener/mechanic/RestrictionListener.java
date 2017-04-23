@@ -3,12 +3,9 @@ package net.dungeonrealms.game.listener.mechanic;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
@@ -26,7 +23,6 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -68,9 +64,9 @@ public class RestrictionListener implements Listener {
             if (event.getEntity().getShooter() != null) {
                 if (event.getEntity().getShooter() instanceof Player) {
                     Player player = (Player) event.getEntity().getShooter();
-                    if (GameAPI.getGamePlayer(player) != null) {
-                        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-                        if (gamePlayer.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || gamePlayer.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrapper != null) {
+                        if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
                             event.setCancelled(true);
                             player.sendMessage(ChatColor.RED + "You cannot use a potion whilst " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " or " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "NEUTRAL");
                         }

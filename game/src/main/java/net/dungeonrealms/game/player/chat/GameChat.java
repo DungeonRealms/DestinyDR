@@ -150,7 +150,7 @@ public final class GameChat {
             case "pmod":
             case "hiddenmod":
             default:
-                String alignmentName = GameAPI.getGamePlayer(player).getPlayerAlignment().name();
+                String alignmentName = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment().name();
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }

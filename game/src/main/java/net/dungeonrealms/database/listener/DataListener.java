@@ -62,19 +62,22 @@ public class DataListener implements Listener {
     }
 
     @SuppressWarnings("unused")
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerJoinEvent event) {
         if(!event.getPlayer().isOnline())return;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
         wrapper.loadPlayerAfterLogin(event.getPlayer());
+        //Overwrite whatever we have in there.
         SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
     }
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
+        //We need to remove this instance of the player after they have left the server.. Keep that object for some more use tho.
+        wrapper.setPlayer(null);
 //        wrapper.saveData(true, event.getPlayer(), true, (newWrapper) -> newWrapper.setPlayingStatus(false));
     }
 }

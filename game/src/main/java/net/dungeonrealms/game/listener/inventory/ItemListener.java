@@ -422,7 +422,7 @@ public class ItemListener implements Listener {
                         }
                         wrapper.setBankLevel(wrapper.getBankLevel() + 1);
 //                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
-                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
+                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update(null);
                         if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
                             event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         } else {

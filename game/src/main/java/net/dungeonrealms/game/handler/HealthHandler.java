@@ -115,23 +115,23 @@ public class HealthHandler implements GenericMechanic {
         }, 21); // 1 sec
     }
 
-    /**
-     * Handles players logging out,
-     * removes potion effects and
-     * updates database for web usage.
-     *
-     * @param player
-     * @since 1.0
-     */
-    public void handleLogoutEvents(Player player) {
-        PlayerWrapper.getPlayerWrapper(player).setHealth(getPlayerHPLive(player));
-//        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), true);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-                player.removePotionEffect(potionEffect.getType());
-            }
-        });
-    }
+//    /**
+//     * Handles players logging out,
+//     * removes potion effects and
+//     * updates database for web usage.
+//     *
+//     * @param player
+//     * @since 1.0
+//     */
+//    public void handleLogoutEvents(Player player) {
+//        PlayerWrapper.getPlayerWrapper(player).setHealth(getPlayerHPLive(player));
+////        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), true);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+//                player.removePotionEffect(potionEffect.getType());
+//            }
+//        });
+//    }
 
     //private void updatePlayerHPBars() {
     //    Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
@@ -179,13 +179,14 @@ public class HealthHandler implements GenericMechanic {
         boolean spectating = player.getGameMode() == GameMode.SPECTATOR && player.getSpectatorTarget() instanceof Player;
         Player spect = spectating ? (Player) player.getSpectatorTarget() : null;
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(spect != null ? spect : player);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(spect != null ? spect : player);
         if (gamePlayer == null || !gamePlayer.isAttributesLoaded()) {
             return;
         }
 
         if (spect != null)
-            hp = getPlayerHPLive(player);
+            hp = getPlayerHPLive(spect);
 
         double maxHP = spectating ? getPlayerMaxHPLive(spect) : getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
@@ -193,7 +194,7 @@ public class HealthHandler implements GenericMechanic {
             healthPercentage = 1.0;
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
-        int playerLevel = gamePlayer.getLevel();
+        int playerLevel = wrapper.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.WHITE.toString() + " - ";
         String playerHPInfo;
@@ -208,7 +209,7 @@ public class HealthHandler implements GenericMechanic {
             color = BossBarAPI.Color.RED;
             playerHPInfo = hp != maxHP ? ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP : ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + (int) maxHP;
         }
-        double exp = ((double) gamePlayer.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
+        double exp = ((double) wrapper.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
         exp *= 100;
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "XP " + ChatColor.LIGHT_PURPLE + (int) exp + "%";
         if (playerLevel == 100) {
@@ -603,11 +604,12 @@ public class HealthHandler implements GenericMechanic {
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
                 if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK && !isReflectedDamage) {
                     if (!(leAttacker.hasMetadata("duel_cooldown") && leAttacker.getMetadata("duel_cooldown").size() > 0 && leAttacker.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
-                        KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                        KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker, wrapper);
                     }
                 }
                 if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && wrapper.getToggles().isChaoticPrevention()) {
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                    PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrap.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                         player.setFireTicks(0);
                         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                             player.removePotionEffect(potionEffect.getType());
@@ -640,9 +642,10 @@ public class HealthHandler implements GenericMechanic {
                 //Check for killer from this.
                 Player killer = getKillerFromRecentDamage(player);
                 if (killer != null) {
-                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player)leAttacker);
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                        if (KarmaHandler.getInstance().getPlayerRawAlignment(killer) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(killer);
+                    PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrap.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                        if (wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                             boolean prevent = wrapper.getToggles().isChaoticPrevention();
                             if (prevent || !GameAPI.isNonPvPRegion(player.getLocation())) {
                                 player.setFireTicks(0);

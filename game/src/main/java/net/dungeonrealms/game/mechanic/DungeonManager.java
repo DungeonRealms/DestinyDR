@@ -669,7 +669,9 @@ public class DungeonManager implements GenericMechanic {
                     if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                         locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    wrapper.setStoredLocationString(locationAsString);
+//                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
                     player.teleport(w.getSpawnLocation());
                     player.setFallDistance(0F);
                     player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");

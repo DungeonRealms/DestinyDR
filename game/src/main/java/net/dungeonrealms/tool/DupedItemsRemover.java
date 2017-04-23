@@ -66,8 +66,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 // PLAYER INVENTORY
                 String playerInv = invDoc.get("player", String.class);
                 if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(playerInv, 36), EnumData
-                            .INVENTORY, uuid, name);
+                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(playerInv, 36), name);
                 }
                 // ARMOR
                 List<String> playerArmor = (ArrayList<String>) invDoc.get("armor");
@@ -85,8 +84,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 // STORAGE
                 String storage = invDoc.get("storage", String.class);
                 if (storage != null && storage.length() > 0 && !storage.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(storage), EnumData
-                            .INVENTORY_STORAGE, uuid, name);
+                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(storage), name);
                 }
 
                 // MULE
@@ -101,14 +99,14 @@ public class DupedItemsRemover implements GenericMechanic {
                     muleInv = ItemSerialization.fromString(invString, tier.getSize());
                 }
                 if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
-                    dupedItemsFound += addGearUIDSAndCheckDupes(muleInv, EnumData.INVENTORY_MULE, uuid, name);
+                    dupedItemsFound += addGearUIDSAndCheckDupes(muleInv, name);
 
                 // COLLECTION BIN
                 String bin = invDoc.get("collection_bin", String.class);
                 if (bin != null && bin.length() > 0 && !bin.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(bin), EnumData
-                            .INVENTORY_COLLECTION_BIN, uuid, name);
+                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(bin), name);
                 }
+
 
                 System.out.println("Single player took " + String.valueOf(System.currentTimeMillis() - currTime) +
                         "ms");
@@ -148,7 +146,7 @@ public class DupedItemsRemover implements GenericMechanic {
         }
     }
 
-    private static int addGearUIDSAndCheckDupes(Inventory inv, EnumData data, UUID uuid, String name) {
+    private static int addGearUIDSAndCheckDupes(Inventory inv, String name) {
         int dupedItemsFound = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null || i.getType() == Material.AIR) continue;

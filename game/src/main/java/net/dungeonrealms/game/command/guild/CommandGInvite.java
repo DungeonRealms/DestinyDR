@@ -95,7 +95,7 @@ public class CommandGInvite extends BaseCommand {
             BungeeUtils.sendPlayerMessage(p_name, "");
             BungeeUtils.sendPlayerMessage(p_name, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
             BungeeUtils.sendPlayerMessage(p_name, "");
-            GameAPI.updatePlayerData(p_uuid);
+            GameAPI.updatePlayerData(p_uuid, "guild");
         });
 
         return false;

@@ -19,13 +19,9 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/**
- * Created by Nick on 9/27/2015.
- */
 public class Rank {
 
     static Rank instance = null;
-    volatile static HashMap<UUID, String> PLAYER_RANKS = new HashMap<>();
 
     public static Rank getInstance() {
         if (instance == null) {
@@ -38,48 +34,7 @@ public class Rank {
 //    public static boolean isRank(UUID uuid, Consumer<Rank> callback){
 //        callback.accept(rank);
 //    }
-    public static boolean isRank(OfflinePlayer player, String name){
-        return isRank(player, null, name);
-    }
 
-    /**
-     * Less query intensive rank check
-     *
-     * @param player
-     * @return boolean
-     */
-    public static boolean isRank(OfflinePlayer player, Document document, String name) {
-        String rank;
-
-        if(document == null)
-            rank = Rank.getInstance().getRank(player.getUniqueId());
-        else
-            rank = Rank.getInstance().getRank(document);
-
-        switch (name) {
-            case "dev":
-                return rank.equalsIgnoreCase("dev") && Arrays.asList(Constants.DEVELOPERS).contains(player.getName());
-
-            case "gm":
-                return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
-
-            case "support":
-                return rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("dev");
-
-            case "pmod":
-                return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
-
-            case "youtube":
-                return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
-
-            case "subscriber":
-            case "sub":
-                return rank != null && !rank.equalsIgnoreCase("default");
-
-            default:
-                return rank != null && rank.equalsIgnoreCase("default");
-        }
-    }
 
 
     /**
@@ -312,14 +267,4 @@ public class Rank {
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
     }
 
-    /**
-     * Listens in the DatabaseDriver class when the players
-     * data is first returned to assign the proper
-     * rank to the player!
-     *
-     * @param uuid
-     */
-    public void doGet(UUID uuid) {
-        PLAYER_RANKS.put(uuid, (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid));
-    }
 }

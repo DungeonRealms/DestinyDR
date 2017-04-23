@@ -29,15 +29,28 @@ public class SQLDatabaseAPI {
     private SQLDatabase database;
 
     @Getter
-    public static final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
+    public static final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newFixedThreadPool(3, new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
 
-    private final ScheduledExecutorService QUERY_QUEUE_THREAD = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("SQL Query Queue Thread").build());
+    private final ScheduledExecutorService QUERY_QUEUE_THREAD = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder().setNameFormat("SQL Query Queue Thread").build());
 
     private Cache<String, UUID> cachedNames = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 
+    private Runnable saveRunnable;
+
     @Getter
     private Map<Integer, UUIDName> accountIdNames = new HashMap<>();
+
+    public void shutdown() {
+        SERVER_EXECUTOR_SERVICE.shutdown();
+
+        this.QUERY_QUEUE_THREAD.execute(() -> {
+            if (this.sqlQueries.size() > 0)
+                System.out.println("Executing " + sqlQueries.size() + " Queries before shutting down threads..");
+            this.saveRunnable.run();
+            this.QUERY_QUEUE_THREAD.shutdown();
+        });
+    }
 
     public static SQLDatabaseAPI getInstance() {
         if (instance == null) {
@@ -52,6 +65,19 @@ public class SQLDatabaseAPI {
         if (query != null) {
             this.sqlQueries.add(query);
         }
+    }
+
+    public void executeQuery(String query, @NonNull Consumer<ResultSet> callback) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+                ResultSet rs = statement.executeQuery();
+                callback.accept(rs);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            callback.accept(null);
+        }, SERVER_EXECUTOR_SERVICE);
     }
 
     public void executeBatch(Consumer<Boolean> callback, String... queries) {
@@ -76,20 +102,26 @@ public class SQLDatabaseAPI {
     }
 
     public void executeUpdate(Consumer<Integer> callback, String query) {
+        executeUpdate(callback, query, true);
+    }
+
+    public void executeUpdate(Consumer<Integer> callback, String query, boolean async) {
         //Need to update data NOW!!!!!!!!!!!
-        CompletableFuture.runAsync(() -> {
-            try {
-                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
-                int toReturn = statement.executeUpdate();
-                if (callback != null)
-                    callback.accept(toReturn);
-                return;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (async && Bukkit.isPrimaryThread()) {
+            CompletableFuture.runAsync(() -> executeUpdate(callback, query, false), SERVER_EXECUTOR_SERVICE);
+            return;
+        }
+        try {
+            @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+            int toReturn = statement.executeUpdate();
             if (callback != null)
-                callback.accept(-1);
-        }, SERVER_EXECUTOR_SERVICE);
+                callback.accept(toReturn);
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (callback != null)
+            callback.accept(-1);
     }
 
     @Getter
@@ -98,10 +130,9 @@ public class SQLDatabaseAPI {
     public void init() {
         this.database = new SQLDatabase("158.69.121.40", "dev", "3HCKkPc6mWr63E924C", "dungeonrealms");
 
-        QUERY_QUEUE_THREAD.scheduleAtFixedRate(() -> {
+        this.saveRunnable = () -> {
             //Dont do anything.. no queries..
             if (sqlQueries.isEmpty()) return;
-
             //Execute these random updates we want to do.
             try {
                 long start = System.currentTimeMillis();
@@ -120,8 +151,8 @@ public class SQLDatabaseAPI {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //Every tick try to process a batch of the lot..
-        }, 50, 50, TimeUnit.MILLISECONDS);
+        };
+        QUERY_QUEUE_THREAD.scheduleAtFixedRate(this.saveRunnable, 50, 50, TimeUnit.MILLISECONDS);
 
         //Load all account names in so that we do NOT need to call on the SQL database every time we want to resolve an ID to a name or uuid..
         CompletableFuture.runAsync(() -> {
@@ -136,6 +167,7 @@ public class SQLDatabaseAPI {
                         String name = rs.getString("users.username");
                         UUID uuid = UUID.fromString(rs.getString("users.uuid"));
                         this.accountIdNames.put(id, new UUIDName(uuid, name));
+                        this.cachedNames.put(name, uuid);
                     } catch (Exception e) {
                         Bukkit.getLogger().info("Problem loading id " + rs.getString("users.username") + " from database!");
                         e.printStackTrace();

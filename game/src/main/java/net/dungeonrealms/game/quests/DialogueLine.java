@@ -2,6 +2,7 @@ package net.dungeonrealms.game.quests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 
@@ -74,11 +75,9 @@ public class DialogueLine implements ISaveable {
 	 */
 	public void doDialogue(Player player, QuestProgress qp, QuestStage stage){
 		QuestNPC talkingTo = stage.getNPC();
-		int itemsFree = 0;
-		for(int i = 0; i < player.getInventory().getSize(); i++)
-			if(player.getInventory().getItem(i) == null || player.getInventory().getItem(i).getType() == Material.AIR)
-				itemsFree++;
-		
+		int itemsFree = (int) IntStream.range(0, player.getInventory().getSize()).filter(i ->
+				player.getInventory().getItem(i) == null || player.getInventory().getItem(i).getType() == Material.AIR).count();
+
 		if(itemsFree < this.giveItems.size()){
 			player.sendMessage(ChatColor.RED + "You must free up some inventory space before talking.");
 			return;
@@ -102,11 +101,10 @@ public class DialogueLine implements ISaveable {
 				for(int i = 0; i < qp.getCurrentLine() + 1; i++)
 					if(stage.getDialogue().get(i).getText() != null)
 						current++;
-				if(talkingTo != null){
+				if(talkingTo != null)
 					player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "(" + current + "/" + stage.getTextCount() + ") " + ChatColor.AQUA + talkingTo.getName() + ": " + ChatColor.YELLOW + message);
-				}else{
+				else
 					player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "(" + current + "/" + stage.getTextCount() + ") " + ChatColor.GREEN + message);
-				}
 			}
 		}
 		

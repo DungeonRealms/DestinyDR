@@ -93,7 +93,7 @@ public class CommandMute extends BaseCommand {
         }
 
         // Apply the mute against the user.
-        PunishAPI.mute(p_uuid, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid));
+        PunishAPI.mute(p_uuid, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid, "mute"));
 
         //
         String punishmentLength = ChatColor.RED + PunishAPI.timeString((int) (duration / 60));

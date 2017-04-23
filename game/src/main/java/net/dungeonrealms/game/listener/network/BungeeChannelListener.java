@@ -4,6 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -70,15 +72,29 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                 if (subChannel.equals("IP")) {
                     String address = in.readUTF();
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-                    DatabaseAPI.getInstance().retrieveDocumentFromAddress(address, existingDoc -> {
-                        if (existingDoc != null) {
-                            UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                            if (PunishAPI.isBanned(uuid))
-                                PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                    SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_BANNED_IPS.getQuery(address), rs -> {
+                        try {
+                            if (rs != null && rs.first()) {
+                                long expiration = rs.getLong("expiration");
+                                if(expiration > System.currentTimeMillis()){
+                                    //Still bnaned???
+                                    PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     });
+//                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
+//                    DatabaseAPI.getInstance().retrieveDocumentFromAddress(address, existingDoc -> {
+//                        if (existingDoc != null) {
+//                            UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
+//
+//                            if (PunishAPI.isBanned(uuid))
+//                                PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+//                        }
+//                    });
                     return;
                 }
 

@@ -1,13 +1,15 @@
 package net.dungeonrealms.game.handler;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,9 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -54,8 +54,20 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                wrapper.getFriendsList().remove(friend);
+
+                PlayerWrapper friendWrap = PlayerWrapper.getPlayerWrapper(friend);
+                if (friendWrap != null) {
+                    friendWrap.getFriendsList().remove(player.getUniqueId());
+                }
+
+
+                SQLDatabaseAPI.getInstance().executeBatch(updated -> {
+
+                });
+//                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
                 player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friends list!");
                 PlayerMenus.openFriendInventory(player);
 
@@ -88,16 +100,16 @@ public class FriendHandler {
             case LEFT:
                 //Add Friend
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
                 String name = itemStack.getItemMeta().getDisplayName().split("'")[0];
                 player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
 
-                UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-                GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-                FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
+                GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + friend.toString() + "," + PlayerWrapper.getPlayerWrapper(player).getAccountID());
 
-                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                acceptFriend(wrapper, friend, name);
+//                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
         }
     }
@@ -130,8 +142,8 @@ public class FriendHandler {
     /**
      * Send a friend request over network, NO CHECKS.
      */
-    public void sendRequestOverNetwork(Player player, String uuid) {
-        GameAPI.sendNetworkMessage("Friends", "request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
+    public void sendRequestOverNetwork(Player player, String uuid, int accountID) {
+        GameAPI.sendNetworkMessage("Friends", "request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid + "," + accountID);
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
     }
 
@@ -140,9 +152,9 @@ public class FriendHandler {
      * @param uuid
      * @return list off UUIDs as String.
      */
-    public HashMap<UUID,Integer> getFriendsList(UUID uuid) {
+    public HashMap<UUID, Integer> getFriendsList(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return null;
+        if (wrapper == null) return null;
         return wrapper.getFriendsList();
 
     }
@@ -161,31 +173,42 @@ public class FriendHandler {
         if (player.getUniqueId().equals(uuid)) return true;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return false;
-        HashMap<UUID,Integer> friends = wrapper.getFriendsList();
+        if (wrapper == null) return false;
+        HashMap<UUID, Integer> friends = wrapper.getFriendsList();
 
         if (friends.containsKey(uuid)) {
             return true;
         }
 
-        if(wrapper.getPendingFriends().containsKey(uuid)) return true;
+        if (wrapper.getPendingFriends().containsKey(uuid)) return true;
 
         return false;
     }
 
 
-    public boolean isPendingFrom(UUID uuid, UUID other) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return false;
+    public boolean isPendingFrom(PlayerWrapper wrapper, UUID other) {
         return wrapper.getPendingFriends().containsKey(other);
     }
 
-    public void acceptFriend(UUID uniqueId, UUID friend, String name) {
+    public void acceptFriend(PlayerWrapper wrapper, UUID friend, String name) {
 
-        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, friend.toString(), true);
+        int friendID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(friend);
+        wrapper.getPendingFriends().remove(friend);
+        wrapper.getFriendsList().put(friend, friendID);
 
-        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
-        Bukkit.getPlayer(uniqueId).sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+        PlayerWrapper pWrap = PlayerWrapper.getPlayerWrapper(friend);
+        if (pWrap != null) {
+            //Register this?
+            pWrap.getFriendsList().put(wrapper.getUuid(), wrapper.getAccountID());
+        }
+        SQLDatabaseAPI.getInstance().executeBatch(rs -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                () -> wrapper.getPlayer().sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD +
+                        ChatColor.UNDERLINE + name + ChatColor.GREEN + ".")),
+                QueryType.INSERT_FRIENDS.getQuery(wrapper.getAccountID(), friendID, "friends", "friends"),
+                QueryType.INSERT_FRIENDS.getQuery(friendID, wrapper.getAccountID(), "friends", "friends"));
+        //DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, friend.toString(), true);
+//        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
+//        wrapper.getPlayer().sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
 
     }
 }

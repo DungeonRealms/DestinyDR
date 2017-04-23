@@ -46,7 +46,7 @@ public class CommandResetRealm extends BaseCommand {
             return true;
         }
 
-        Realm realm = Realms.getInstance().getOrCreateRealm(player);
+        Realm realm = Realms.getInstance().getOrCreateRealm(player, wrapper.getAccountID());
         
         if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
         	player.sendMessage(realm.getState().getStatusMessage());

@@ -4,8 +4,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.FriendHandler;
@@ -16,12 +14,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by chase on 7/7/2016.
  */
-public class AcceptCommand extends BaseCommand {
+public class AcceptCommand extends BaseCommand implements CooldownCommand {
 
     public AcceptCommand(String command, String usage, String description, List<String> aliases) {
         super(command, usage, description, aliases);
@@ -44,28 +41,32 @@ public class AcceptCommand extends BaseCommand {
         }
 
         String name = args[0];
-
-        SQLDatabaseAPI.getInstance().getUUIDFromName(name,false, (uuid) -> {
-            if(uuid == null) {
-                player.sendMessage(ChatColor.RED + "That is not a player.");
+        if(checkCooldown(player))return true;
+        PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper(player);
+        SQLDatabaseAPI.getInstance().getUUIDFromName(name, false, uuid -> {
+            if (uuid == null) {
+                player.sendMessage(ChatColor.RED + "That is not a valid player.");
                 return;
             }
             PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                if(!wrapper.isPlaying()) {
-                    player.sendMessage(ChatColor.RED + "That player is not on any shards.");
-                    return;
-                }
-
-                if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), uuid)) {
+                if (!FriendHandler.getInstance().isPendingFrom(wrap, uuid)) {
                     player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
                     return;
                 }
+                //SendUUID, senderName, friendUUID
+//                if(!wrapper.isPlaying()) {
+//                    player.sendMessage(ChatColor.RED + "That player is not on any shards.");
+//                    return;
+//                }
 
-                GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-                FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
+                //Online somewhere?
+                if (wrapper.isPlaying() && wrapper.getShardPlayingOn() != null) {
+                    GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() +
+                            "," + player.getName() + "," + uuid.toString() + "," + wrap.getAccountID());
+                }
+                FriendHandler.getInstance().acceptFriend(wrap, uuid, name);
             });
         });
-
 
         return false;
     }
@@ -84,4 +85,8 @@ public class AcceptCommand extends BaseCommand {
         return uuid.equals("") ? false : true;
     }
 
+    @Override
+    public String getName() {
+        return "accept";
+    }
 }

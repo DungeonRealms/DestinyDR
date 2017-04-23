@@ -1,9 +1,6 @@
 package net.dungeonrealms.game.player.support;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import org.bukkit.ChatColor;
@@ -35,8 +32,8 @@ public class Support {
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setEcash(type.equals("set") ? amount : type.equals("remove") ? wrapper.getEcash() + (amount * -1) : wrapper.getEcash() + amount);
-            wrapper.saveData(true, null, null, (wrapp) -> {
-                GameAPI.updatePlayerData(uuid);
+            wrapper.saveData(true, null, (wrapp) -> {
+                GameAPI.updatePlayerData(uuid, "ecash");
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -60,8 +57,8 @@ public class Support {
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setLevel(type.equals("set") ? amount : type.equals("remove") ? wrapper.getLevel() + (amount * -1) : wrapper.getLevel() + amount);
-            wrapper.saveData(true, null, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid);
+            wrapper.saveData(true, null, (wrap) -> {
+                GameAPI.updatePlayerData(uuid, "level");
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -86,8 +83,8 @@ public class Support {
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setExperience(type.equals("set") ? amount : type.equals("remove") ? wrapper.getExperience() + (amount * -1) : wrapper.getExperience() + amount);
-            wrapper.saveData(true, null, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid);
+            wrapper.saveData(true, null, (wrap) -> {
+                GameAPI.updatePlayerData(uuid, "experience");
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -106,8 +103,8 @@ public class Support {
     public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setGems(type.equals("set") ? amount : type.equals("remove") ? (amount * -1) : amount);
-            wrapper.saveData(true, null, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid);
+            wrapper.saveData(true, null, (wrap) -> {
+                GameAPI.updatePlayerData(uuid, "gems");
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -123,8 +120,8 @@ public class Support {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setRank(playerRank);
             wrapper.setRankExpiration(type.equalsIgnoreCase("set") ? amount : wrapper.getRankExpiration() + amount);
-            wrapper.saveData(true, null, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid);
+            wrapper.saveData(true, null, wrap -> {
+                GameAPI.updatePlayerData(uuid, "rank");
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + " " + playerRank + " DAYS" + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });

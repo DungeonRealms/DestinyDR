@@ -23,12 +23,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
  * Created by iFamasssxD on 4/19/2017.
  */
-public class FriendsCommand extends BaseCommand {
+public class FriendsCommand extends BaseCommand implements CooldownCommand {
 
     public FriendsCommand(String command, String usage, String description, List<String> aliases) {
         super(command, usage, description, aliases);
@@ -39,8 +40,14 @@ public class FriendsCommand extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
 
+        if (checkCooldown(player)) return true;
         getFriendsBook(player, (book) -> GameAPI.openBook(player, book));
         return false;
+    }
+
+    @Override
+    public long getCooldown() {
+        return TimeUnit.SECONDS.toMillis(10);
     }
 
     private static String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
@@ -75,7 +82,7 @@ public class FriendsCommand extends BaseCommand {
                 }
                 int count = 0;
                 String nextLine = "\n";
-                String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "    Friends List    " + new_line);
+                String friendsPage_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "    Friends List    " + new_line;
                 try {
                     @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(query);
                     ResultSet rs = statement.executeQuery();
@@ -94,7 +101,7 @@ public class FriendsCommand extends BaseCommand {
                         if (name.length() >= 15)
                             name = name.substring(0, 15);
                         friendsPage_string += (online ? ChatColor.GREEN + ChatColor.BOLD.toString() + "O" : ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + " " + name + nextLine;
-                        friendsPage_string += (online ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine : ChatColor.BLACK + "Last On: " + time);
+                        friendsPage_string += online ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine : ChatColor.BLACK + "Last On: " + time;
 
 
                         count++;
@@ -102,7 +109,7 @@ public class FriendsCommand extends BaseCommand {
                         if (count == 5 || count == friends.size()) {
                             count = 0;
                             pages.add(friendsPage_string);
-                            friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+                            friendsPage_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line;
                             if (count == friends.size())
                                 break;
                         }
@@ -117,5 +124,10 @@ public class FriendsCommand extends BaseCommand {
                 }
             }, ForkJoinPool.commonPool());
         }
+    }
+
+    @Override
+    public String getName() {
+        return "friend";
     }
 }

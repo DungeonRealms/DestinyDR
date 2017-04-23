@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realm;
 
@@ -26,6 +27,7 @@ public class CommandRealm extends BaseCommand {
         }
 
         Player player = (Player) sender;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
         if (args.length == 0) {
             player.sendMessage(usage);
@@ -47,7 +49,7 @@ public class CommandRealm extends BaseCommand {
         player.sendMessage(ChatColor.GRAY + "\"" + fixedTitle + "\"");
         player.sendMessage("");
 
-        Realm.setTitle(player.getUniqueId(), fixedTitle);
+        wrapper.setRealmTitle(fixedTitle);
         return true;
     }
 }

@@ -4,9 +4,8 @@ import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.*;
@@ -83,8 +82,28 @@ public class InventoryListener implements Listener {
         if (event.getInventory().getName().contains("'s Offline Inventory View")) {
             UUID target = CommandInvsee.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
+            Player viewer = (Player) event.getPlayer();
             String inventory = ItemSerialization.toString(event.getInventory());
-            DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
+            PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
+                if (wrapper == null) {
+                    viewer.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
+                    return;
+                }
+
+                if (wrapper.isPlaying()) {
+                    viewer.sendMessage(ChatColor.RED + "This player is currently logged in! Your change has not been made!");
+                    return;
+                }
+
+                wrapper.setPendingInventoryString(inventory);
+                wrapper.saveData(true, null, (wrappa) -> {
+                    if (wrappa != null) {
+                        viewer.sendMessage(ChatColor.GREEN + "Sucessfully saved " + ChatColor.YELLOW + wrappa.getUsername() + "'s " + ChatColor.GREEN + " inventory!");
+                    } else {
+                        viewer.sendMessage(ChatColor.RED + "Could not save your changes! An error occurred");
+                    }
+                });
+            });
         }
 
         CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
@@ -105,7 +124,7 @@ public class InventoryListener implements Listener {
 
             String toSave = wrapper.getEquipmentString(event.getInventory());
             wrapper.setPendingArmorString(toSave);
-            wrapper.saveData(true, null, false);
+            wrapper.saveData(true, null, null);
         });
 
         CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
@@ -115,10 +134,10 @@ public class InventoryListener implements Listener {
     public void onBankSeeClose(InventoryCloseEvent event) {
         UUID target = CommandBanksee.offline_bank_watchers.get(event.getPlayer().getUniqueId());
 
-        if(target == null)return;
+        if (target == null) return;
 
         if (!(event.getPlayer() instanceof Player)) return;
-        if(!event.getInventory().getName().contains("Bank Storage"))return;
+        if (!event.getInventory().getName().contains("Bank Storage")) return;
         Player viewer = (Player) event.getPlayer();
         PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {
@@ -221,6 +240,11 @@ public class InventoryListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         StringBuilder msg = new StringBuilder();
+        if (DungeonRealms.getInstance().isAlmostRestarting()) {
+            player.sendMessage(ChatColor.RED + "You cannot interact with inventories while the shard is rebooting.");
+            event.setCancelled(true);
+            return;
+        }
         GameAPI.runAsSpectators(player, (spectator) -> {
 
             if (msg.length() == 0) {
@@ -467,6 +491,7 @@ public class InventoryListener implements Listener {
     public void onInventoryClosed(InventoryCloseEvent event) {
         if (GameAPI.isShop(event.getInventory())) return;
         Player p = (Player) event.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             //Not loaded yet?
@@ -476,7 +501,6 @@ public class InventoryListener implements Listener {
             }
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
-//        } else if (event.getInventory().getTitle().startsWith(p.getName()) || event.getInventory().getTitle().endsWith(p.getName())) {
             Trade t = TradeManager.getTrade(p.getUniqueId());
             if (t != null)
                 if (!t.p1Ready || !t.p2Ready) {
@@ -503,8 +527,11 @@ public class InventoryListener implements Listener {
                     i++;
             if (i == 0) {
                 //storage.clearCollectionBin();
-                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
                 storage.collection_bin = null;
+                wrapper.saveData(true, null, (wrappa) -> {
+                    if (wrappa == null)
+                        Constants.log.info("Something went wrong while clearing " + wrapper.getUsername() + "'s Collection Bin");
+                });
             }
         }
     }
@@ -1342,7 +1369,7 @@ public class InventoryListener implements Listener {
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         if (!RepairAPI.isItemArmorScrap(cursorItem)) return;
         if (!RepairAPI.canItemBeRepaired(slotItem)) return;
         if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem))
@@ -1709,10 +1736,12 @@ public class InventoryListener implements Listener {
                             }
                             pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
 
-                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true, true, null);
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+                            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_MULELEVEL, newTier.getTier(), wrapper.getAccountID());
+//                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true, true, null);
 
-                            if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
-                                Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
+                            Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
+                            if (inv != null) {
                                 //Close all people viewing this inventory.
                                 Lists.newArrayList(inv.getViewers()).forEach(HumanEntity::closeInventory);
 

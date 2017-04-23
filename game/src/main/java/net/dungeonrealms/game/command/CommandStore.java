@@ -6,7 +6,6 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
@@ -214,6 +213,8 @@ public class CommandStore extends BaseCommand {
     }
 
     private boolean sendItem(UUID playerUUID, ItemStack itemStack) {
-        return MailHandler.getInstance().sendMailRaw("The Dungeon Realms Team", playerUUID, itemStack);
+        return false;
+        //TODO: FIX
+//        return MailHandler.getInstance().sendMailRaw("The Dungeon Realms Team", playerUUID, itemStack);
     }
 }

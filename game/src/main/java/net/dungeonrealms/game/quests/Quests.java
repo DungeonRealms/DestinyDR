@@ -159,13 +159,8 @@ public class Quests implements GenericMechanic {
 	public static Quests getInstance(){
 		return INSTANCE;
 	}
-	
-	public void savePlayerToMongo(Player player){
-		if(this.playerDataMap.containsKey(player))
-			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.QUEST_DATA,
-					this.playerDataMap.get(player).toJSON().toString(), true);
-	}
-	
+
+
 	public void handleLogoutEvents(Player player){
 		this.playerDataMap.remove(player);
 	}

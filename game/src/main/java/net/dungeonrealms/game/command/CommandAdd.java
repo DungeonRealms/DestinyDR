@@ -3,9 +3,6 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
@@ -466,15 +463,15 @@ public class CommandAdd extends BaseCommand {
                         if (Bukkit.getPlayer(args[1]) != null && Bukkit.getPlayer(args[1]).getDisplayName().equalsIgnoreCase(args[1])) {
                             currentProfile = Bukkit.getPlayer(args[1]);
                         } else {
-                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline.");
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline or on another shard.");
                             return false;
                         }
                     }
 
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(currentProfile);
 
-                    if(wrapper == null) {
-                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline.");
+                    if (wrapper == null) {
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline or not on this shard.");
                         return false;
                     }
 
@@ -498,11 +495,11 @@ public class CommandAdd extends BaseCommand {
                             }
                             if (hasPet) continue;
                         }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getRawName(), true);
+                        wrapper.getPetsUnlocked().add(pets.getRawName());
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, EnumPets.BAT.getRawName(), true);
+                    wrapper.setActivePet(EnumPets.BAT.getRawName());
 
                     // Add all trails to the player.
                     HashSet<String> playerTrails = wrapper.getTrails();
@@ -512,11 +509,12 @@ public class CommandAdd extends BaseCommand {
                                 continue;
                             }
                         }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, trails.getRawName(), true);
+                        wrapper.getTrails().add(trails.getRawName());
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(trails.getRawName()) + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, ParticleAPI.ParticleEffect.CRIT.getRawName(), true);
+                    wrapper.setActiveTrail(ParticleAPI.ParticleEffect.CRIT.getRawName());
+
 
                     // Add all mount skins to the player.
                     HashSet<String> playerMountSkins = wrapper.getMountSkins();
@@ -526,11 +524,13 @@ public class CommandAdd extends BaseCommand {
                                 continue;
                             }
                         }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, mountSkins.getRawName(), true);
+
+                        wrapper.getMountSkins().add(mountSkins.getRawName());
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(mountSkins.getRawName()) + ChatColor.GREEN + " mount skin to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, EnumMountSkins.SKELETON_HORSE.getRawName(), true);
+
+                    wrapper.setActiveMountSkin(EnumMountSkins.SKELETON_HORSE.getRawName());
 
                     player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + " has received everything.");
                     break;

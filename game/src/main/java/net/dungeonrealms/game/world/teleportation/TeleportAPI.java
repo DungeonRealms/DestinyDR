@@ -50,7 +50,7 @@ public class TeleportAPI {
             return false;
         }
 
-        if (GameAPI.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+        if (PlayerWrapper.getPlayerWrapper(player.getUniqueId()).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are currently Chaotic.");
             return false;
         }
