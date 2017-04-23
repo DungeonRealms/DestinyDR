@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class NMSUtils {
 
-    public void registerEntity(String name, int id, Class<? extends EntityInsentient> nmsClass,
+    public static void registerEntity(String name, int id, Class<? extends EntityInsentient> nmsClass,
                                Class<? extends EntityInsentient> customClass) {
         try {
 
@@ -50,6 +50,7 @@ public class NMSUtils {
                                 for (BiomeBase.BiomeMeta meta : metaList) {
                                     Field clazz = BiomeBase.BiomeMeta.class.getDeclaredFields()[0];
                                     if (clazz.get(meta).equals(nmsClass)) {
+                                    	System.out.println("Registered " + customClass.getSimpleName() + "'s biome.");
                                         clazz.set(meta, customClass);
                                     }
                                 }

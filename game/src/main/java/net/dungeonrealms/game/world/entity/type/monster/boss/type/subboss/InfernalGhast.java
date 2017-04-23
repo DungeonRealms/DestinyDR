@@ -1,28 +1,20 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 
-import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRGhast;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 
-import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Chase on Oct 21, 2015

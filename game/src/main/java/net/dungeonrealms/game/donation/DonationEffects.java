@@ -13,21 +13,16 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entity.type.pet.Creeper;
 import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mongodb.BasicDBList;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -46,8 +41,6 @@ public class DonationEffects implements GenericMechanic {
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
     public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
-    @Getter
-    public Set<Creeper> fireWorkCreepers = new CopyOnWriteArraySet<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
@@ -65,7 +58,6 @@ public class DonationEffects implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::handleCreeperFireworks, 40L, 100L);
         
         // Load buffs from the DB.
         for (EnumBuff buffType : EnumBuff.values()) {
@@ -144,22 +136,6 @@ public class DonationEffects implements GenericMechanic {
      */
     public boolean hasBuff(EnumBuff buffType) {
     	return !buffMap.get(buffType).isEmpty();
-    }
-
-    private void handleCreeperFireworks() {
-        if (fireWorkCreepers.isEmpty()) return;
-        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.BLUE, Color.RED, Color.WHITE).withFade(Color.BLUE, Color.RED, Color.WHITE).with(FireworkEffect.Type.STAR).trail(true).build();
-        for (Creeper creeper : fireWorkCreepers) {
-            if (!creeper.isAlive()) {
-                fireWorkCreepers.remove(creeper);
-                continue;
-            }
-            Firework fw = (Firework) creeper.getBukkitEntity().getWorld().spawnEntity(creeper.getBukkitEntity().getLocation(), EntityType.FIREWORK);
-            FireworkMeta fwm = fw.getFireworkMeta();
-            fwm.addEffect(effect);
-            fwm.setPower(1); // 0.5 seconds
-            fw.setFireworkMeta(fwm);
-        }
     }
 
     public void spawnPlayerParticleEffects(Location location) {

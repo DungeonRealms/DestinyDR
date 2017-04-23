@@ -12,21 +12,18 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Burick;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Mayel;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -40,7 +37,6 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
@@ -56,14 +52,8 @@ import java.util.zip.ZipFile;
  */
 public class DungeonManager implements GenericMechanic {
 
-    static DungeonManager instance = null;
-
-    public static DungeonManager getInstance() {
-        if (instance == null) {
-            instance = new DungeonManager();
-        }
-        return instance;
-    }
+	@Getter
+    static DungeonManager instance = new DungeonManager();
 
     @Getter
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
@@ -156,21 +146,8 @@ public class DungeonManager implements GenericMechanic {
                     location.getBlock().setType(Material.FIRE);
                 }
                 if (new Random().nextInt(20) == 0) {
-                    net.minecraft.server.v1_9_R2.World world = entity.getWorld();
-                    net.minecraft.server.v1_9_R2.Entity toSpawn = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
-                    int level = Utils.getRandomFromTier(3, "low");
-                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-                    EntityStats.createDungeonMob(toSpawn, level, 3);
-                    SpawningMechanics.rollElement(toSpawn, EnumMonster.MagmaCube);
-                    if (toSpawn == null) {
-                        return; //WTF?? UH OH BOYS WE GOT ISSUES
-                    }
-                    toSpawn.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno");
-                    toSpawn.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno"));
-                    Location toSpawnLoc = new Location(world.getWorld(), location.getX(), location.getY() + 2, location.getZ());
-                    entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
-                    world.addEntity(toSpawn, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                    entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
+                	Location toSpawnLoc = new Location(entity.getBukkitEntity().getWorld(), location.getX(), location.getY() + 2, location.getZ());
+                	EntityAPI.spawnCustomMonster(toSpawnLoc, EnumMonster.MagmaCube, Utils.getRandomFromTier(3, "low"), 3, null);
                 }
             }
         }, 0L, 5L);
@@ -818,8 +795,7 @@ public class DungeonManager implements GenericMechanic {
         		Location toSpawn = customLocation ? loc : new Location(loc.getWorld(), x, y, z);
         		WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
         		Entity boss = (Entity) bossClass.getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(world);
-            	MetadataUtils.registerEntityMetadata(boss, EnumEntityType.HOSTILE_MOB, 1, 100);
-            	EntityStats.setBossRandomStats(boss, 100, getTier());
+            	EntityAPI.registerBoss(boss.getBukkitEntity(), 100, getTier());
             	boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             	((CraftWorld) loc.getWorld()).getHandle().addEntity(boss, CreatureSpawnEvent.SpawnReason.CUSTOM);
             	boss.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);

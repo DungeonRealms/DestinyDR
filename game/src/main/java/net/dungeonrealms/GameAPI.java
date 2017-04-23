@@ -564,29 +564,6 @@ public class GameAPI {
         return world != null && player.getLocation().getWorld().equals(world);
     }
 
-
-    public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, ElementalAttribute ea) {
-        ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), ea.name()));
-        String name = ent.getCustomName();
-        String[] splitName = name.split(" ", 2);
-        
-        if (ea == ElementalAttribute.PURE || splitName.length == 1)
-        	name = ea.getColor() + ea.getPrefix() + " " + name;
-        else
-        	name = ea.getColor() + splitName[0] + " " + ea.getPrefix() + " " + splitName[1];
-        
-        ent.setCustomName(name.trim());
-        ent.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), name.trim()));
-    }
-
-    public static boolean isMobElemental(LivingEntity ent) {
-        return ent.hasMetadata("element");
-    }
-
-    public static ElementalAttribute getMobElement(LivingEntity ent) {
-        return ElementalAttribute.valueOf(ent.getMetadata("element").get(0).asString());
-    }
-
     /**
      * Gets the WorldGuard plugin.
      *
@@ -1591,7 +1568,6 @@ public class GameAPI {
         if (amount <= 0)
             return true;
         
-        
         EnumData dataToCheck = ShardTier.getByTier(shardTier).getShardData();
         int playerPortalKeyShards = (int) DatabaseAPI.getInstance().getData(dataToCheck, player.getUniqueId());
         if (playerPortalKeyShards <= 0)
@@ -1605,9 +1581,11 @@ public class GameAPI {
         }
     }
     
-    public static void calculateAllAttributes(LivingEntity ent, AttributeList attributes) {
-        ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
+    public static void calculateAllAttributes(LivingEntity ent) {
+    	AttributeList attributes = EntityAPI.getMonster(ent).getAttributes();
+    	ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
+    	int tier = EntityAPI.getTier(ent);
         // check if we have a skull
         int intTier = ent.getMetadata("tier").get(0).asInt();
         Item.ItemTier tier = Item.ItemTier.getByTier(intTier);
@@ -1628,30 +1606,7 @@ public class GameAPI {
         NBTTagCompound tag = nms.getTag();
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
     }
-
-    /**
-     * Spawn our Entity at Location
-     * <p>
-     * Use SpawningMechanics.getMob for Entity
-     * lvlRange = "high" or "low"
-     *
-     * @param location
-     * @param entity
-     * @param tier
-     * @param lvlRange
-     */
-    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
-        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
-        int level = Utils.getRandomFromTier(tier, "low");
-        EntityStats.setMonsterRandomStats(entity, level, tier);
-        String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-        entity.setCustomName(lvlName + ChatColor.RESET + customName);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-        world.addEntity(entity, SpawnReason.CUSTOM);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-    }
-
+    
     public static boolean isPlayerHidden(UUID uuid) {
         if (Bukkit.getPlayer(uuid) != null) return _hiddenPlayers.contains(Bukkit.getPlayer(uuid));
         final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, uuid);
@@ -1786,8 +1741,16 @@ public class GameAPI {
     }
     
     public static boolean isMainWorld(World world) {
-		return world.equals(Bukkit.getWorlds().get(0));
+		return world.equals(getMainWorld());
 	}
+    
+    public static boolean isMainWorld(Block block) {
+    	return isMainWorld(block.getWorld());
+    }
+    
+    public static boolean isMainWorld(Entity ent) {
+    	return isMainWorld(ent.getWorld());
+    }
 
 	public static boolean isMainWorld(Location location) {
 		return isMainWorld(location.getWorld());
@@ -1921,6 +1884,14 @@ public class GameAPI {
 				e.setLeggings(stack);
 				break;
 		}
+	}
+	
+	/**
+	 * Return the main world.
+	 * @return
+	 */
+	public static World getMainWorld() {
+		return Bukkit.getWorlds().get(0);
 	}
 
 	public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {

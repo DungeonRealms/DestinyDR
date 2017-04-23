@@ -35,7 +35,7 @@ public class ItemMuleMount extends FunctionalItem {
 		
 		Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
         if (muleTier == null) {
-            player.sendMessage(ChatColor.RED + "No mule data found.");
+            player.sendMessage(ChatColor.RED + "Creating mule data...");
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
             muleTier = 1;
         }

@@ -3,20 +3,14 @@ package net.dungeonrealms.game.world.teleportation;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -40,7 +34,7 @@ public class TeleportAPI {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
             return false;
         }
-        if (TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
+        if (TutorialIsland.onTutorialIsland(player.getLocation())) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
             return false;
         }

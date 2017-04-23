@@ -28,7 +28,7 @@ import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.type.mounts.Horse;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
@@ -187,8 +187,8 @@ public class DamageAPI {
         		}
         	}
                 
-        } else if (GameAPI.isMobElemental(attacker.getEntity())) {
-        	applyDebuff(defender.getEntity(), GameAPI.getMobElement(attacker.getEntity()), weaponTier);
+        } else if (EntityAPI.isElemental(attacker.getEntity())) {
+        	applyDebuff(defender.getEntity(), EntityAPI.getElement(attacker.getEntity()), weaponTier);
         }
 
         //  CRIT CHANCE  //
@@ -479,8 +479,8 @@ public class DamageAPI {
     			if (ea.getResist() != null)
     				armorResistance += defender.getAttributes().getAttribute(ea.getResist()).getValue();
     		}
-    	} else if (GameAPI.isMobElemental(attacker.getEntity())) {
-			ElementalAttribute ea = GameAPI.getMobElement(attacker.getEntity());
+    	} else if (EntityAPI.isElemental(attacker.getEntity())) {
+			ElementalAttribute ea = EntityAPI.getElement(attacker.getEntity());
 			
 			if (ea == ElementalAttribute.PURE) {
 				totalArmor = 0;
@@ -633,7 +633,8 @@ public class DamageAPI {
         ent.setVelocity(unitVector.multiply(speed));
     }
 
-    public static void newKnockbackEntity(Player p, Entity ent, double speed) {
+    @SuppressWarnings("deprecation")
+	public static void newKnockbackEntity(Player p, Entity ent, double speed) {
         if (ent instanceof Horse) {
             return;
         }

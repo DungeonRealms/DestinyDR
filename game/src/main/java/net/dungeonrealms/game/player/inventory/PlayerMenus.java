@@ -165,7 +165,7 @@ public class PlayerMenus {
 
         if (Rank.isSubscriber(player))
             for (EnumPets p : EnumPets.values())
-                if (p != EnumPets.BABY_HORSE)
+                if (!p.isFrame())
                 	playerPets.add(p.getName());
 
 
@@ -243,15 +243,9 @@ public class PlayerMenus {
         ItemStack itemStack;
         String mountType = null;
 
-        if (playerMounts.contains(EnumMounts.TIER4_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER4_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER3_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER2_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER1_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER1_HORSE.getRawName();
-        }
+        for (EnumMounts mount : EnumMounts.values())
+        	if (playerMounts.contains(mount.name()))
+        		mountType = mount.name();
 
         if (mountType == null) {
             Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");

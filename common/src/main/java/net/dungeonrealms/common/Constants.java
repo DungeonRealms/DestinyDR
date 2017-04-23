@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/7/2016
  */
-
 public class Constants {
 
     public static Logger log = Logger.getLogger("DungeonRealms");

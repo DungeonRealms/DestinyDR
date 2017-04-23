@@ -44,7 +44,7 @@ public class ShopAnimalTamer extends ShopMenu {
 		List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
 		EnumMounts mount = (item.getSoldItem() instanceof ItemMountSelector) ? ((ItemMountSelector) item.getSoldItem()).getTier().getMount() : EnumMounts.MULE;
 		
-		String rawName = mount.getRawName();
+		String rawName = mount.name();
         
 		if (playerMounts.contains(rawName)) {
             player.sendMessage(ChatColor.RED + "You already own this mount!");
@@ -56,10 +56,10 @@ public class ShopAnimalTamer extends ShopMenu {
 			return false;
 		}
 		
-		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
+		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.name(), true);
         
 		if (mount != EnumMounts.MULE) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.name(), true);
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
             CraftingMenu.addMountItem(player);
         } else {

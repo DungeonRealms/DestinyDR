@@ -15,6 +15,7 @@ import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
@@ -62,9 +63,9 @@ public interface DRMonster {
     	setSkullTexture();
     	
     	//  SET CUSTOM NAME  //
-    	String customName = getEnum().getPrefix() + " " + getEnum().name + " " + getEnum().getSuffix() + " ";
+    	String customName = getEnum().getPrefix() + " " + getEnum().getName() + " " + getEnum().getSuffix() + " ";
         getNMS().setCustomName(customName);
-        getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        Metadata.CUSTOM_NAME.set(getBukkitEntity(), customName);
         getBukkitEntity().setCustomNameVisible(true);
         
         //  SET NMS DATA  //
@@ -277,7 +278,7 @@ public interface DRMonster {
     }
     
     default void calculateAttributes() {
-    	GameAPI.calculateAllAttributes((LivingEntity) getBukkitEntity(), getAttributes());
+    	GameAPI.calculateAllAttributes((LivingEntity) getBukkitEntity());
     }
 
 }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -23,20 +22,22 @@ public class MountData {
     @Getter
     float speed;
 
-    private String speedPercent;
+    private int speedPercent;
 
     @Getter
     List<String> lore = Lists.newArrayList(ChatColor.GRAY + ChatColor.ITALIC.toString() + "A Mystical being, ready to ride into battle.");
 
-
-    public MountData(String name, ChatColor nameColor, float speed, String speedPercent, List<String> lore) {
+    public MountData(String name, ChatColor nameColor, float speed, int speedPercent, String... lore) {
         this.name = name;
         this.nameColor = nameColor;
         this.speed = speed;
 
         this.speedPercent = speedPercent;
-        if (lore != null)
-            this.lore = lore;
+        if (lore != null && lore.length > 0) {
+        	this.lore.clear();
+        	for (String s : lore)
+        		this.lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + s);
+        }
 
     }
 
@@ -44,7 +45,7 @@ public class MountData {
 
         List<String> lore = Lists.newArrayList();
 
-        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + speedPercent);
+        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + speedPercent + "%");
 
         lore.add("");
         lore.addAll(getLore());

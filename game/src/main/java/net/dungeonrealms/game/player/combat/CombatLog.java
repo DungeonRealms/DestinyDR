@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.player.combat;
 
-
-import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -18,21 +15,16 @@ import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -173,15 +165,9 @@ public class CombatLog implements GenericMechanic {
             Knock player off of horse, if they're tagged in combat.
              */
             if (player.getVehicle() != null) {
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-                    player.eject();
-                    mount.getBukkitEntity().remove();
-                    EntityAPI.removePlayerMountList(player.getUniqueId());
-                } else {
-                    player.eject();
-                    player.getVehicle().remove();
-                }
+            	MountUtils.removeMount(player);
+            	if (player.getVehicle() != null)
+            		player.getVehicle().remove();
                 player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
             }
         }
@@ -233,15 +219,9 @@ public class CombatLog implements GenericMechanic {
             Knock player off of horse, if they're tagged in combat.
              */
             if (player.getVehicle() != null) {
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-                    player.eject();
-                    mount.getBukkitEntity().remove();
-                    EntityAPI.removePlayerMountList(player.getUniqueId());
-                } else {
-                    player.eject();
+            	MountUtils.removeMount(player);
+            	if (player.getVehicle() != null)
                     player.getVehicle().remove();
-                }
                 player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
             }
 
@@ -324,7 +304,7 @@ public class CombatLog implements GenericMechanic {
         combatNPC.getEquipment().setItemInOffHand(player.getEquipment().getItemInOffHand());
         combatNPC.setCustomName(ChatColor.AQUA + "[Lvl. " + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
-        MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
+        MetadataUtils.registerEntityMetadata(combatNPC, EnumEntityType.HOSTILE_MOB, 4, lvl);
         HealthHandler.setMonsterHP(combatNPC, HealthHandler.getPlayerHP(player));
         combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getPlayerMaxHP(player)));
         combatNPC.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));

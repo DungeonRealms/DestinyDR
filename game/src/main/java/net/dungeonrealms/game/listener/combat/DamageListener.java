@@ -86,32 +86,6 @@ import java.util.stream.Collectors;
 public class DamageListener implements Listener {
 
     /**
-     * This event listens for EnderCrystal explosions.
-     * Which are buffs.. with the correct nbt at least.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onBuffExplode(EntityExplodeEvent event) {
-        if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        event.blockList().clear();
-        event.setYield(0.0F);
-        event.setCancelled(true);
-        if (EnumEntityType.BUFF.isType(event.getEntity())) {
-            event.setCancelled(true);
-            event.blockList().clear();
-            List<Player> toBuff = new ArrayList<>();
-            for (Entity entity : event.getEntity().getNearbyEntities(8D, 8D, 8D)) {
-                if (!GameAPI.isPlayer(entity)) continue;
-                toBuff.add((Player) entity);
-            }
-            BuffUtils.handleBuffEffects(event.getEntity(), toBuff);
-        }
-    }
-
-    /**
      * Cancel World Guard PVP flag if players are dueling.
      *
      * @param event

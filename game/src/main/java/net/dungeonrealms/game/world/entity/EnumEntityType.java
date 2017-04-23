@@ -1,33 +1,39 @@
 package net.dungeonrealms.game.world.entity;
 
+import lombok.Getter;
+import net.dungeonrealms.game.mastery.MetadataUtils.EnumMetaValue;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+
 import org.bukkit.entity.Entity;
 
-import lombok.Getter;
-
 /**
- * Created by Kieran on 9/18/2015.
+ * EnumEntityType - Defines the type of a custom entity.
+ * 
+ * Redone on April 20th, 2017.
+ * @author Kneesnap
  */
-public enum EnumEntityType {
+public enum EnumEntityType implements EnumMetaValue {
 
-	PET("PET", "pet"),
-	MOUNT("MOUNT", "mount"),
-	FRIENDLY_MOB("FRIENDLY_MOB", "friendly"),
-	HOSTILE_MOB("HOSTILE_MOB", "hostile"),
-	BUFF("BUFF", "buff");
+	PET,
+	MOUNT,
+	MULE,
+	FRIENDLY_MOB(true),
+	HOSTILE_MOB(true),
+	BUFF,
+	SPAWNER(true);
 
-	@Getter private String rawName;
-	@Getter private String typeName;
+	@Getter private boolean combat;
 	
-	EnumEntityType(String rawName, String typeName) {
-		this.rawName = rawName;
-		this.typeName = typeName;
+	EnumEntityType() {
+		this(false);
 	}
-
-	public int getId() {
-		return ordinal();
+	
+	EnumEntityType(boolean combat) {
+		this.combat = true;
 	}
 	
 	public boolean isType(Entity ent) {
-		return ent.hasMetadata("type") && ent.getMetadata("type").get(0).asString().equals(getTypeName());
+		EnumEntityType type = Metadata.ENTITY_TYPE.getEnum(ent);
+		return type == this;
 	}
 }

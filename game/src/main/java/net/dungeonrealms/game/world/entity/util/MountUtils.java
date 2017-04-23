@@ -1,257 +1,199 @@
 package net.dungeonrealms.game.world.entity.util;
 
-import net.dungeonrealms.DungeonRealms;
+import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.NBTItem;
+import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.mounts.*;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.mounts.JumpingMount;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.EntityHuman;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.entity.Horse.Color;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by Kieran on 9/18/2015.
+ * MountUtils - Handles basic mount utilities
+ * 
+ * Created April 22nd, 2017.
+ * @author Kneesnap
  */
 public class MountUtils {
 
     public static ConcurrentHashMap<UUID, Inventory> inventories = new ConcurrentHashMap<>();
-
-    public static String getPercentSpeed(float value) {
-        if (value == .20F)
-            return "120%";
-        else if (value == .218F)
-            return "140%";
-        else if (value == .23F)
-            return "170%";
-        else if (value == .245F)
-            return "200%";
-        return null;
-    }
+    
+    @Getter
+    private static Map<Player, Entity> mounts = new HashMap<>();
 
     public static boolean hasMountPrerequisites(EnumMounts mountType, List<String> playerMounts) {
-        switch (mountType) {
-            case TIER1_HORSE:
-                return true;
-            case TIER2_HORSE:
-                return !playerMounts.isEmpty() && playerMounts.contains(EnumMounts.TIER1_HORSE.getRawName());
-            case TIER3_HORSE:
-                return !playerMounts.isEmpty() && playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName());
-            case TIER4_HORSE:
-                return !playerMounts.isEmpty() && playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName());
-            default:
-                return true;
-        }
+    	if (mountType == EnumMounts.TIER1_HORSE || !mountType.name().contains("HORSE"))
+    		return true;
+    	
+    	return !playerMounts.isEmpty() && playerMounts.contains(EnumMounts.getById(mountType.getId() - 1).name());
     }
 
-    public static boolean isMount(ItemStack i) {
-        NBTItem nbtItem = new NBTItem(i);
-        return CraftItemStack.asNMSCopy(i).hasTag() && nbtItem.hasKey("mountType");
-    }
-
-    public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            player.sendMessage(ChatColor.RED + "Your mount cannot be summoned in this world.");
-            return;
-        }
-        World world = ((CraftWorld) player.getWorld()).getHandle();
-
-        //Temp code
-        if (mountType.equals("ENDERDRAGON")) {
-            EnderDragon mountEnderDragon = new EnderDragon(world, player.getUniqueId(), EnumEntityType.MOUNT);
-            mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-            world.addEntity(mountEnderDragon, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-            mountEnderDragon.getBukkitEntity().setPassenger(player);
-            player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 1F);
-            player.sendMessage("Mount Spawned!");
-            EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnderDragon);
-            mountEnderDragon.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
-            player.closeInventory();
-            return;
-        }
-        EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
-        if (!GameAPI.isStringMount(mountType) && enumMounts == null) {
-            player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [MountType]");
-            return;
-        }
-        int horseType = 0;
-        if (mountSkin != null && GameAPI.isStringMountSkin(mountSkin)) {
-            switch (EnumMountSkins.getByName(mountSkin.toUpperCase())) {
-                case SKELETON_HORSE:
-                    horseType = 4;
-                    break;
-                case ZOMBIE_HORSE:
-                    horseType = 3;
-                    break;
-                default:
-                    break;
-            }
-        }
-        org.bukkit.entity.Horse.Color color = Rank.isDev(player) ? org.bukkit.entity.Horse.Color.WHITE : org.bukkit.entity.Horse.Color.BROWN;
-
-        Entity mountEnt = null;
-        switch (enumMounts) {
-            case WOLF:
-                mountEnt = new WolfMount(world, player.getUniqueId(), enumMounts);
-                break;
-            case SPIDER:
-                mountEnt = new SpiderMount(world, player.getUniqueId(), enumMounts);
-                break;
-            case SLIME:
-                mountEnt = new SlimeMount(world, player.getUniqueId(), enumMounts);
-                break;
-            case TIER1_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.20D, player.getUniqueId(), EnumEntityType.MOUNT);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                mountHorse.getBukkitEntity().setPassenger(player);
-                mountHorse.setCustomName(player.getName());
-                mountHorse.setCustomNameVisible(true);
-                org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.setColor(color);
-                HorseInventory horseInventory = horse.getInventory();
-                horseInventory.setSaddle(new ItemStack(Material.SADDLE));
-                horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
-                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
-                player.closeInventory();
-                break;
-            }
-            case TIER2_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.21D, player.getUniqueId(), EnumEntityType.MOUNT);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                mountHorse.getBukkitEntity().setPassenger(player);
-                mountHorse.setCustomName(player.getName());
-                mountHorse.setCustomNameVisible(true);
-                org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                horse.setColor(color);
-                HorseInventory horseInventory = horse.getInventory();
-                horseInventory.setSaddle(new ItemStack(Material.SADDLE));
-                horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
-                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
-                player.closeInventory();
-                break;
-            }
-            case TIER3_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.22D, player.getUniqueId(), EnumEntityType.MOUNT);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                mountHorse.getBukkitEntity().setPassenger(player);
-                mountHorse.setCustomName(player.getName());
-                mountHorse.setCustomNameVisible(true);
-                org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
-                horse.setColor(color);
-                HorseInventory horseInventory = horse.getInventory();
-                horseInventory.setSaddle(new ItemStack(Material.SADDLE));
-                horseInventory.setArmor(new ItemStack(Material.DIAMOND_BARDING));
-                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
-                player.closeInventory();
-                break;
-            }
-            case TIER4_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.23D, player.getUniqueId(), EnumEntityType.MOUNT);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                mountHorse.getBukkitEntity().setPassenger(player);
-                mountHorse.setCustomName(player.getName());
-                mountHorse.setCustomNameVisible(true);
-                org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
-                horse.setColor(color);
-                HorseInventory horseInventory = horse.getInventory();
-                horseInventory.setSaddle(new ItemStack(Material.SADDLE));
-                horseInventory.setArmor(new ItemStack(Material.GOLD_BARDING));
-                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
-                player.closeInventory();
-                break;
-            }
-            case MULE: {
-                org.bukkit.entity.Horse h = (org.bukkit.entity.Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
-                h.setAdult();
-                h.setAgeLock(true);
-                h.setVariant(org.bukkit.entity.Horse.Variant.MULE);
-                h.setCarryingChest(true);
-                h.setTamed(true);
-                h.setOwner(player);
-                h.setColor(org.bukkit.entity.Horse.Color.BROWN);
-                MetadataUtils.registerEntityMetadata(((CraftEntity) h).getHandle(), EnumEntityType.MOUNT, 0, 0);
-                h.setCustomNameVisible(true);
-                h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
-                int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-                if (muleLevel > 3) {
-                    muleLevel = 3;
-                }
-                MuleTier tier = MuleTier.getByTier(muleLevel);
-                if (tier == null) {
-                    return;
-                }
-                h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
-                player.closeInventory();
-                player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
-                PetUtils.makePet(((CraftLivingEntity) h).getHandle(), player.getUniqueId(), 1.8D, EnumPets.BABY_HORSE);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
-                if (!inventories.containsKey(player.getUniqueId())) {
-                    Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
-                    if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-                        //Make sure the inventory is as big as we need
-                        inv = ItemSerialization.fromString(invString, tier.getSize());
-                    }
-                    inventories.put(uuid, inv);
-                }
-            }
-        }
-        if (mountEnt != null) {
-            mountEnt.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-            world.addEntity(mountEnt, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            mountEnt.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-            mountEnt.getBukkitEntity().setPassenger(player);
-            mountEnt.setCustomName(player.getName());
-            mountEnt.setCustomNameVisible(true);
-            mountEnt.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
-            mountEnt.getBukkitEntity().setMetadata("mount", new FixedMetadataValue(DungeonRealms.getInstance(), enumMounts.name()));
-            mountEnt.getBukkitEntity().setMetadata("owner", new FixedMetadataValue(DungeonRealms.getInstance(), uuid));
+    public static void spawnMount(Player player, EnumMounts mount, EnumMountSkins skin) {
+    	if (!GameAPI.isMainWorld(player.getLocation())) {
+    		player.sendMessage(ChatColor.RED + "Your mount is too scared by foreign land to step foot here.");
+    		return;
+    	}
+    	
+    	if (mount == EnumMounts.MULE) {
+    		// Create Entity
+    		Horse mule = player.getWorld().spawn(player.getLocation(), Horse.class);
+    		mule.setAdult();
+    		mule.setAgeLock(true);
+    		mule.setVariant(Variant.MULE);
+    		mule.setCarryingChest(true);
+    		mule.setTamed(true);
+    		mule.setOwner(player);
+    		mule.setColor(Color.BROWN);
+    		MetadataUtils.registerEntityMetadata(mule, EnumEntityType.MULE);
+    		
+    		// Create Inventory.
+    		String inv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
+    		int muleLevel = Math.min((int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId()), MuleTier.values().length);
+    		MuleTier tier = MuleTier.getByTier(muleLevel);
+    		
+    		mule.setCustomName(tier.getColor() + player.getName() + "'s " + tier.getName());
+    		mule.setCustomNameVisible(true);
+    		player.closeInventory();
+    		player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
+    		PetUtils.givePetAI(mule, player, EnumPets.STORAGE_MULE);
+    		getMounts().put(player, mule);
+    		
+    		if (!inventories.containsKey(player.getUniqueId())) {
+    			Inventory inventory = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
+    			if (inv != null && !inv.equals("") && !inv.equals("empty") && !inv.equals("null"))
+    				inventory = ItemSerialization.fromString(inv, tier.getSize());
+    			inventories.put(player.getUniqueId(), inventory);
+    		}
+    		
+    		return;
+    	}
+    	
+    	Horse.Color color = Rank.isDev(player) ? Horse.Color.WHITE : Horse.Color.BROWN;
+    	
+    	Entity mountEnt = mount.create(player, skin);
+    	
+    	if (mountEnt instanceof Horse) {
+    		Horse horse = (Horse) mountEnt;
+        	horse.setColor(color);
+        	HorseInventory horseInventory = horse.getInventory();
+        	HorseTier tier = HorseTier.getByMount(mount);
+        	if (tier.getTier() > 1)
+        		horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, tier.getTier() - 1));
+        	horseInventory.setSaddle(new ItemStack(Material.SADDLE));
+        	horseInventory.setArmor(new ItemStack(tier.getArmor()));
+        	player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
+    	}
+    	
+    	if (mountEnt != null) {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
-            EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnt);
+            getMounts().put(player, mountEnt);
             player.closeInventory();
         }
+    	
+    	return;
+    }
+    
+    /**
+     * Handles custom mount tick logic.
+     */
+    public static boolean handleMountLogic(EntityLiving mount, Player owner) {
+    	if (!mount.isVehicle() || mount.passengers.isEmpty() || !(mount.passengers.get(0) instanceof EntityHuman)) {
+    		removeMount(owner);
+    		return false;
+    	}
+    	
+    	// Sync where the mount is looking with where the player is looking.
+    	EntityHuman rider = (EntityHuman) mount.passengers.get(0);
+    	mount.lastYaw = mount.yaw = rider.yaw;
+    	mount.pitch = rider.pitch * 0.5F;
+    	mount.yaw = mount.yaw % 360;
+    	mount.pitch = mount.pitch % 360;
+    	mount.aP = mount.aN = mount.yaw; // Set head rotation yaw.
+    	
+    	
+    	float sideMotion = rider.be * 0.5F; // Set the side motion to be the player's strafe motion.
+    	float forwardMotion = rider.bf; // Set forward motion to be the player's move forward motion.
+    	if (forwardMotion < 0.0)
+    		forwardMotion *= 0.25F;
+    	
+    	// Handle jumping.
+        try {
+            Field jump = EntityLiving.class.getDeclaredField("bd");
+            
+            if (jump != null && mount.onGround) { //Is someone jumping and still on the ground?
+            	jump.setAccessible(true);
+            	
+            	if (jump.getBoolean(mount) && mount instanceof JumpingMount)
+            		((JumpingMount)mount).customJump(); //Entity has jumped.
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        mount.P = 1; // Set step height.
+        mount.aR = mount.cl() * 0.1F; //Set jump movement factor to the land movement factor / 10
+        
+        mount.l((float) mount.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue()); // Set the land movement factor to the movement speed.
+        
+        // Handle vanilla movement.
+        // We have to call the superclass method otherwise we'll deadlock.
+        // Since there isn't anything like mount.super.g(sideMotion, forwardMotion);
+        // We gotta use reflection or an interface all mounts implement. this sadly is cleaner.
+        try {
+        	Method m = mount.getClass().getSuperclass().getDeclaredMethod("g", Float.class, Float.class);
+        	m.invoke(mount, sideMotion, forwardMotion);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        return true;
+    }
+    
+    public static boolean hasActiveMount(Player p) {
+    	return getMounts().containsKey(p);
+    }
+    
+    public static void removeMount(Player p) {
+    	if (!hasActiveMount(p))
+    		return;
+    	Entity mount = getMounts().get(p);
+    	if (mount.getPassenger() == p)
+    		p.eject();
+    	mount.remove();
+    	//TODO: Save?
+    	getMounts().remove(p);
     }
 }

@@ -13,7 +13,6 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.EntityInsentient;

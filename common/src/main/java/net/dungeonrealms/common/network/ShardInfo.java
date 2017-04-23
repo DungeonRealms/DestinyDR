@@ -10,7 +10,6 @@ import java.util.Optional;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/12/2016
  */
-
 @NoArgsConstructor
 public enum ShardInfo implements Serializable {
 

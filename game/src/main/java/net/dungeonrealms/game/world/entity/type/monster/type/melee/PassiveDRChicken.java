@@ -21,10 +21,6 @@ public class PassiveDRChicken extends EntityChicken implements DRMonster {
     protected void r() {
         this.targetSelector.a(0, new PathfinderPassiveMeleeAttack(this, 1.2D, true));
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
-//        this.goalSelector.a(1, new PathfinderGoalPanic(this, 1.4D));a
-//        this.goalSelector.a(2, new PathfinderGoalBreed(this, 1.0D));
-//        this.goalSelector.a(3, new PathfinderGoalTempt(this, 1.0D, false, bE));
-//        this.goalSelector.a(4, new PathfinderGoalFollowParent(this, 1.1D));
         this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 0.9D));
         this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 6.0F));
         this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));

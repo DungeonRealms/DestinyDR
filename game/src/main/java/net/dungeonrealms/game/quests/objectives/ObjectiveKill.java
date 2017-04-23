@@ -64,9 +64,9 @@ public class ObjectiveKill implements QuestObjective {
 			}
 			//Have they killed any?
 			if(killed > 0)
-				return "Kill " + (this.amount - killed) + " more " + this.monsterType.name + ((this.amount - killed) > 1 ? "s" : "") + "!";
+				return "Kill " + (this.amount - killed) + " more " + this.monsterType.getName() + ((this.amount - killed) > 1 ? "s" : "") + "!";
 		}
-		return "Kill " + this.amount + " " + this.monsterType.name + (this.amount > 1 ? "s" : "");
+		return "Kill " + this.amount + " " + this.monsterType.getName() + (this.amount > 1 ? "s" : "");
 	}
 	
 	public void setEntityType(EnumMonster monster, int tier){
@@ -110,10 +110,10 @@ public class ObjectiveKill implements QuestObjective {
 		progress.activateActionBar();
 		if(count == this.amount){
 			killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2, 2);
-			killer.sendMessage(ChatColor.YELLOW + "You have killed enough " + this.monsterType.name + "s.");
+			killer.sendMessage(ChatColor.YELLOW + "You have killed enough " + this.monsterType.getName() + "s.");
 		}else if(count < this.amount){
 			killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 2, 2);
-			killer.sendMessage(ChatColor.YELLOW + "Killed " + count + "/" + this.amount + " " + this.monsterType.name + ( count > 1 ? "s" : "") + ".");
+			killer.sendMessage(ChatColor.YELLOW + "Killed " + count + "/" + this.amount + " " + this.monsterType.getName() + ( count > 1 ? "s" : "") + ".");
 		}
 		
 		Quests.getInstance().updateActionBar(killer);
@@ -137,7 +137,7 @@ public class ObjectiveKill implements QuestObjective {
 			
 			this.setEntityType(monster.getEnum(), monster.getTier());
 			this.selectors.remove(evt.getPlayer());
-			evt.getPlayer().sendMessage(ChatColor.GREEN + "Entity Type updated to Tier " + this.tier + " " + this.monsterType.name);
+			evt.getPlayer().sendMessage(ChatColor.GREEN + "Entity Type updated to Tier " + this.tier + " " + this.monsterType.getName());
 		}
 	}
 
@@ -211,7 +211,7 @@ public class ObjectiveKill implements QuestObjective {
 		@Override
 		public void createGUI(){
 			
-			this.setSlot(0, Material.EGG, ChatColor.RED + "Entity Type", new String[] {"Set the Entity to be killed", "Current Entity: " + ChatColor.RED + this.objective.monsterType.name}, (evt) -> {
+			this.setSlot(0, Material.EGG, ChatColor.RED + "Entity Type", new String[] {"Set the Entity to be killed", "Current Entity: " + ChatColor.RED + this.objective.monsterType.getName()}, (evt) -> {
 				player.sendMessage(ChatColor.GREEN + "Please right click the entity type you'd like to select.");
 				this.objective.selectors.add(player);
 				player.closeInventory();

@@ -1,0 +1,7 @@
+name: DungeonRealms
+main: net.dungeonrealms.DungeonRealms
+version: 5.0-SNAPSHOT
+authors: [apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle, Necrone_]
+website: http://www.dungeonrealms.net
+depend: [WorldGuard, BossBarAPI, ProtocolLib, BungeeTabListPlus]
+description: The new and improved DungeonRealms!

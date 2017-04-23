@@ -4,11 +4,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -66,16 +65,8 @@ public class CommandJail extends BaseCommand {
         player.teleport(new Location(Bukkit.getWorlds().get(0), -225, 81, 403));
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
 
-        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(player.getUniqueId());
-        }
-        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(player.getUniqueId());
-        }
+        PetUtils.removePet(player);
+        MountUtils.removeMount(player);
         
         Realm realm = Realms.getInstance().getRealm(player);
         if(realm != null)

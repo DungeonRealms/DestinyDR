@@ -13,7 +13,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.Infern
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.*;
 import net.minecraft.server.v1_9_R2.*;
@@ -47,7 +47,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         DungeonManager.getInstance().getFireUnderEntity().add(this);
         ghast = new InfernalGhast(this);
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
-        EntityStats.setBossRandomStats(this.ghast, 100, 4);
+        EntityAPI.registerBoss(this.ghast.getBukkitEntity(), 100, 4);
         ItemArmor am = new ItemArmor();
         am.setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.UNIQUE);
         ghast.setArmor(am.generateArmorSet(),

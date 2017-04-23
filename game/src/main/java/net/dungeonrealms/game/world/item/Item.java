@@ -635,6 +635,13 @@ public class Item {
     		this.damageCauses = causes;
     	}
     	
+    	public static ElementalAttribute getByName(String name) {
+    		for (ElementalAttribute ea : values())
+    			if (ea.name().equalsIgnoreCase(name))
+    				return ea;
+    		return null;
+    	}
+    	
     	public static ElementalAttribute getByAttribute(AttributeType type) {
     		for (ElementalAttribute ea : values())
     			if(ea.getAttack() == type || ea.getResist() == type)

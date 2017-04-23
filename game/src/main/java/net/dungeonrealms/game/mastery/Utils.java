@@ -143,59 +143,12 @@ public class Utils {
 
 
     public static int getRandomFromTier(int tier, String lvlRange) {
-        Random r = new Random();
-        int Low = 1;
-        int High = 10;
-        int R;
-        //TODO: Remove the +2 from every level when we implement high/low properly
-        switch (tier) {
-            case 1:
-                Low = 1;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 5;
-                High = 10;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 5;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 2:
-                Low = 10;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 15;
-                High = 20;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 15;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 3:
-                Low = 20;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 25;
-                High = 30;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 25;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 4:
-                Low = 30;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 35;
-                High = 40;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 35;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 5:
-                Low = 40;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 45;
-                High = 100;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 95;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-        }
-        return 1;
+        int lowBase = (tier - 1) * 10;
+        int highBase = tier == 5 ? 90 : lowBase;
+        
+        int low = lvlRange.equalsIgnoreCase("high") ? lowBase + 5 : Math.max(lowBase, 1);
+        int high = lvlRange.equalsIgnoreCase("low") ? highBase + 5 : highBase + 10;
+        return Utils.randInt(low + 2, high + 2);
     }
 
     private final static int CENTER_PX = 154;

@@ -3,8 +3,6 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -27,8 +25,6 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
         super(world, 4, EnumMonster.LordsGuard);
         
         this.setOnFire(Integer.MAX_VALUE);
-        int level = 30;
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, 4, level);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "The Infernal Lords Guard");
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(65);
     }

@@ -139,7 +139,7 @@ public abstract class ItemGear extends ItemGeneric {
 		
 		getItem().setDurability((short) ((100 - getDurabilityPercent()) * getItem().getType().getMaxDurability()));
 		if(getEnchantCount() > 3)
-			EnchantmentAPI.addGlow(getItem());
+			setGlowing(true);
 		super.updateItem();
 	}
 	

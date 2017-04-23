@@ -11,6 +11,7 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -54,6 +55,9 @@ public abstract class ItemGeneric extends PersistentItem {
 	
 	private long soulboundTrade = 0;
 	private List<String> soulboundAllowedTraders;
+	
+	@Getter
+	private boolean glowing;
 	
 	@Getter
 	private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
@@ -133,6 +137,11 @@ public abstract class ItemGeneric extends PersistentItem {
 		return this;
 	}
 	
+	public ItemGeneric setGlowing(boolean b) {
+		this.glowing = b;
+		return this;
+	}
+	
 	@Override
 	protected void loadItem() {
 		if (dataMap == null)
@@ -153,6 +162,7 @@ public abstract class ItemGeneric extends PersistentItem {
 		
 		setPrice(getTagInt("price"));
 		setShowPrice(getTagBool("showPrice"));
+		setGlowing(EnchantmentAPI.isGlowing(getItem()));
 	}
 	
 	/**
@@ -206,6 +216,9 @@ public abstract class ItemGeneric extends PersistentItem {
 				addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
 			}
 		}
+		
+		if (isGlowing())
+			EnchantmentAPI.addGlow(getItem());
 		
 		saveMeta();
 		resetLore = true;

@@ -208,14 +208,18 @@ public class HealthHandler implements GenericMechanic {
     	return styles[styles.length - 1];
     }
 
+    /**
+     * Set the max HP of an entity.
+     */
+    public static void setMaxHP(Entity e, int maxHP) {
+    	e.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
+    }
 
     /**
      * Sets a player's HP.
      */
     public static void setPlayerHP(Player player, int hp) {
-        if (player.hasMetadata("maxHP") && hp > player.getMetadata("maxHP").get(0).asInt())
-            hp = getPlayerMaxHP(player);
-        setEntityHP(player, hp);
+        setEntityHP(player, Math.min(hp, getMaxHP(player)));
     }
 
     /**
@@ -267,10 +271,14 @@ public class HealthHandler implements GenericMechanic {
      * Gets a monster's max HP.
      */
     public static int getMonsterMaxHP(LivingEntity ent) {
-    	return getEntityMaxHP(ent);
+    	return getMaxHP(ent);
     }
     
-    private static int getEntityMaxHP(LivingEntity entity) {
+    public static int getMaxHP(Entity e) {
+    	return getEntityMaxHP(e);
+    }
+    
+    private static int getEntityMaxHP(Entity entity) {
     	return entity.hasMetadata("maxHP") ? entity.getMetadata("maxHP").get(0).asInt() : 100;
     }
 

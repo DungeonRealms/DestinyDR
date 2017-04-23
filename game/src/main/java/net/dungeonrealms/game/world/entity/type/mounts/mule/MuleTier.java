@@ -1,9 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.mounts.mule;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 
 import org.bukkit.ChatColor;
 
