@@ -145,6 +145,11 @@ public class ShopMechanics implements GenericMechanic, Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
+                    if(Chat.containsIllegal(shopName)){
+                        player.sendMessage(ChatColor.RED + "Shop name contains illegal characters.");
+                        return;
+                    }
+
                     Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
                     DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
                     ALLSHOPS.put(player.getName(), shop);

@@ -45,6 +45,11 @@ public class CommandLocalChat extends BaseCommand {
         }
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
+
+        if(Chat.containsIllegal(chatMessage.toString())){
+            sender.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+            return true;
+        }
         Player player = (Player) sender;
 
         if (finalChat.contains(".com") || finalChat.contains(".net") || finalChat.contains(".org") || finalChat.contains("http://") || finalChat.contains("www."))

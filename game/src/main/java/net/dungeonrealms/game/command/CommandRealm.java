@@ -40,6 +40,10 @@ public class CommandRealm extends BaseCommand {
             return true;
         }
 
+        if(Chat.containsIllegal(newTitle.toString())){
+            sender.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+            return true;
+        }
         String fixedTitle = Chat.getInstance().checkForBannedWords(newTitle.toString());
 
         player.sendMessage("");

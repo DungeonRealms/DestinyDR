@@ -44,6 +44,10 @@ public class TabbedChatListener implements Listener {
 
         player.closeInventory(); // Closes the chat after it grabs it!
 
+        if(Chat.containsIllegal(e.getChatMessage())){
+            player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
+            return;
+        }
         String finalChat = Chat.getInstance().checkForBannedWords(e.getChatMessage());
 
         StringBuilder prefix = new StringBuilder();

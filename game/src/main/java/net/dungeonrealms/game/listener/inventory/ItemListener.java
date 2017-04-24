@@ -389,6 +389,11 @@ public class ItemListener implements Listener {
                             }
                         }
 
+                        if(Chat.containsIllegal(msg)){
+                            event.getPlayer().sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+                            return;
+                        }
+
                         final String fixedMessage = Chat.getInstance().checkForBannedWords(msg);
 
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -913,6 +918,11 @@ public class ItemListener implements Listener {
 
                 if (inputName.contains("@")) {
                     inputName = inputName.replaceAll("@", "_");
+                }
+
+                if(Chat.containsIllegal(inputName)){
+                    player.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+                    return;
                 }
 
                 String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);

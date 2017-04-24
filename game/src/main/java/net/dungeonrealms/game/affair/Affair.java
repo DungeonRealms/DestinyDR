@@ -16,12 +16,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -144,6 +138,11 @@ public class Affair implements GenericMechanic {
         {
             everyone.add(party.getOwner());
             everyone.addAll(party.getMembers());
+        }
+
+        if (Chat.containsIllegal(message)) {
+            player.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+            return;
         }
         String finalChat = Chat.getInstance().checkForBannedWords(message);
 

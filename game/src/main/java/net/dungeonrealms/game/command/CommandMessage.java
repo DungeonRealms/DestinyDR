@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.player.chat.Chat;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,6 +44,12 @@ public class CommandMessage extends BaseCommand {
         if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PM_DEV);
         }
+
+        if(Chat.containsIllegal(message)){
+            player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
+            return true;
+        }
+
         String finalMessage = message;
 
         Chat.sendPrivateMessage(player, playerName, finalMessage.trim());

@@ -52,6 +52,11 @@ public class CommandReply extends BaseCommand {
             msg += " " + args[i];
         }
 
+        if(Chat.containsIllegal(msg)){
+            player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
+            return true;
+        }
+
         Chat.sendPrivateMessage(player, gp.getLastMessager(), msg);
 
         return true;

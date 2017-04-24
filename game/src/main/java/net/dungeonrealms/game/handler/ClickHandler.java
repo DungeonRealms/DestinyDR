@@ -601,6 +601,11 @@ public class ClickHandler {
                                 inputName = inputName.replaceAll("@", "_");
                             }
 
+                            if(Chat.containsIllegal(inputName)){
+                                player.sendMessage(ChatColor.RED + "Your pet name contains illegal characters.");
+                                return;
+                            }
+
                             String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
                             String newPet = petType + "@" + checkedPetName;

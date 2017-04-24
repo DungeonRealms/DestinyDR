@@ -1005,6 +1005,7 @@ public class GameAPI {
 
         for (int i = 0; i < players.length; i++) {
             final Player player = players[i];
+            player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
             final boolean sub = Rank.isSubscriber(player);
 
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");

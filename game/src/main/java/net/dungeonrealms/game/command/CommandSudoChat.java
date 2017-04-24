@@ -47,9 +47,14 @@ public class CommandSudoChat extends BaseCommand {
         StringBuilder message = new StringBuilder(args[2]);
         for (int arg = 3; arg < args.length; arg++) message.append(" ").append(args[arg]);
 
+        if(Chat.containsIllegal(message.toString())){
+            sender.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
+            return true;
+        }
 
         switch (args[1]) {
             case "global":
+
                 String finalChat = Chat.getInstance().checkForBannedWords(message.toString());
 
                 StringBuilder prefix = new StringBuilder();

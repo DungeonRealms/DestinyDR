@@ -232,6 +232,13 @@ public class Chat {
      */
     public void doChat(AsyncPlayerChatEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
+
+        if (Chat.containsIllegal(event.getMessage())) {
+            event.setCancelled(true);
+            event.setMessage("");
+            event.getPlayer().sendMessage(ChatColor.RED + "Message contains illegal characters.");
+            return;
+        }
         String fixedMessage = checkForBannedWords(event.getMessage());
 
         if (fixedMessage.contains(".com") || fixedMessage.contains(".net") || fixedMessage.contains(".org") || fixedMessage.contains("http://") || fixedMessage.contains("www."))
@@ -356,6 +363,7 @@ public class Chat {
         String result = msg;
         result = result.replace("ð", "");
 
+
         for (String word : bannedWords) result = replaceOperation(result, word);
 
         StringTokenizer st = new StringTokenizer(result);
@@ -416,6 +424,11 @@ public class Chat {
         return replace.replaceAll("(?i)" + sb.toString(), " " + search).trim();
     }
 
+    public static boolean containsIllegal(String s) {
+        //return s.matches("\\p{L}+") || s.matches("\\w+");
+        //Probably have an array of allowed characters aswell.
+        return !s.replace(" ", "").matches("[\\w\\Q!\"#$%&'()*çáéíóúâêôãõàüñ¿¡+,-./:;<=>?@[\\]^_`{|}~\\E]+");
+    }
 
     public static boolean checkGlobalCooldown(Player player) {
         if (Rank.isPMOD(player) || Rank.isSubscriber(player)) return true;
