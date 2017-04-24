@@ -219,9 +219,9 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             case "PrivateMessage": {
                                 String fromPlayer = in.readUTF();
                                 String playerName = in.readUTF();
-                                String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                                 Player player = Bukkit.getPlayer(playerName);
                                 if (player != null) {
+                                    String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                                     GamePlayer gp = GameAPI.getGamePlayer(player);
                                     if (gp != null) {
                                         gp.setLastMessager(fromPlayer);

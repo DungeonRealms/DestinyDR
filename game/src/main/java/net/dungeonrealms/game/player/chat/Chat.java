@@ -354,6 +354,7 @@ public class Chat {
 
     public String checkForBannedWords(String msg) {
         String result = msg;
+        result = result.replace("ð", "");
 
         for (String word : bannedWords) result = replaceOperation(result, word);
 
