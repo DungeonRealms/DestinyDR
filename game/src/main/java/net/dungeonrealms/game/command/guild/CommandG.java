@@ -2,6 +2,8 @@ package net.dungeonrealms.game.command.guild;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +24,9 @@ public class CommandG extends BaseCommand {
 
         Player player = (Player) sender;
 
-        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
+        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+
+        if (wrapper == null) {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "GUILD CHAT.");
             player.sendMessage(ChatColor.GRAY + "Use /gl (or tab) to speak in global.");
             return true;

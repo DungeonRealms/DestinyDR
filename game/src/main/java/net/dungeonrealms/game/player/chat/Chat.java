@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -185,7 +186,8 @@ public class Chat {
                     return;
                 }
 
-                String guild = net.md_5.bungee.api.ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(uuid)) + "] ";
+                GuildWrapper foundGuild = GuildDatabase.getAPI().getGuildWrapper(wrapper.getGuildID());
+                String guild = foundGuild != null ? net.md_5.bungee.api.ChatColor.WHITE + "[" + foundGuild.getTag() + "] " : "";
                 final String rank = wrapper.getRank().toLowerCase();
 
 

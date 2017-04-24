@@ -50,7 +50,6 @@ public class GuildDatabase {
     }
 
     public GuildWrapper getPlayersGuildWrapper(int accountID) {
-        //Cancer..
         return cached_guilds.values().stream().filter(Objects::nonNull).filter(wrapper -> wrapper.getMembers().containsKey(accountID)).findFirst().orElse(null);
     }
 

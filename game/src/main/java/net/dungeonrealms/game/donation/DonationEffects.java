@@ -74,6 +74,7 @@ public class DonationEffects implements GenericMechanic {
     }
 
     private static String buffDelimeter = "@#$%";
+
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
@@ -92,9 +93,9 @@ public class DonationEffects implements GenericMechanic {
                     this.activeProfessionBuff = (ProfessionBuff) Buff.deserialize(rs.getString("activeProfessionBuff"), ProfessionBuff.class);
                     this.queuedProfessionBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedProfessionBuffs"), buffDelimeter), ProfessionBuff.class);
 
-                    this.activeLevelBuff = (LevelBuff)Buff.deserialize(rs.getString("activeLevelBuff"), LevelBuff.class);
-                    this.queuedProfessionBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLevelBuffs"), buffDelimeter), LevelBuff.class);
-                }else{
+                    this.activeLevelBuff = (LevelBuff) Buff.deserialize(rs.getString("activeLevelBuff"), LevelBuff.class);
+                    this.queuedLevelBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLevelBuffs"), buffDelimeter), LevelBuff.class);
+                } else {
                     //No table there?
                 }
             } catch (Exception e) {
@@ -176,23 +177,33 @@ public class DonationEffects implements GenericMechanic {
     }
 
 
-    public void updateLootBuff(String lootColumnName, String value){
+    public List<String> serializeQueuedBuffs(Queue<Buff> buffs){
+        StringBuilder builder = new StringBuilder();
+        for(Buff buff : buffs){
+
+        }
+    }
+    public void updateLootBuff(String lootColumnName, String value) {
         SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
             Bukkit.getLogger().info("SET " + lootColumnName + " to " + value + " for loot buff.");
         }, "UPDATE buffs SET " + lootColumnName + " = " + (value == null ? null : "'" + value + "'") + ";");
     }
+
     @Override
     public void stopInvocation() {
         // update database of active buffs (queued buffs should already be there)
         if (this.activeLootBuff != null)
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
+            updateLootBuff("activeLootBuff", activeLootBuff.serialize());
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+//                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
         if (this.activeProfessionBuff != null)
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeProfessionBuff", activeProfessionBuff.serialize(), true);
+            updateLootBuff("activeProfessionBuff", activeProfessionBuff.serialize());
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+//                    "buffs.activeProfessionBuff", activeProfessionBuff.serialize(), true);
         if (this.activeLevelBuff != null)
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeLevelBuff", activeLevelBuff.serialize(), true);
+            updateLootBuff("activeLevelBuff", activeLevelBuff.serialize());
+//        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+//                    "buffs.activeLevelBuff", activeLevelBuff.serialize(), true);
     }
 
     private void handleCreeperFireworks() {
@@ -275,6 +286,7 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeLootBuff != null) {
             // queue a new buff
             this.queuedLootBuffs.add(newLootBuff);
+            updateLootBuff("queuedLootBuffs", );
             DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
                     "buffs.queuedLootBuffs", newLootBuff.serialize(), true);
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLootBuff.getActivatingPlayer() + ChatColor

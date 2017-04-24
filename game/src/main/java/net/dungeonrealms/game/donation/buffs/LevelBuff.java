@@ -48,7 +48,7 @@ public class LevelBuff extends Buff {
 
         if (nextBuff != null) {
             //So its just clearing the queue after it gets 1 or?
-            
+
             DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
                     "buffs.queuedLevelBuffs", -1, true);
 

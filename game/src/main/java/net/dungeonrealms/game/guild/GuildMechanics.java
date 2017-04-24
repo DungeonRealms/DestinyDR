@@ -29,9 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/2/2016
- */
 
 public class GuildMechanics {
     private static GuildMechanics instance = null;
@@ -51,6 +48,9 @@ public class GuildMechanics {
 
 
     public void doLogin(Player player) {
+        SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guild_members` WHERE `account_id` = '" + SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()) + "';", (set) -> {
+            if(set == null) return;
+        });
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 

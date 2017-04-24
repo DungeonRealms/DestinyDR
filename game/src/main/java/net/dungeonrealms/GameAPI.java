@@ -13,13 +13,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
@@ -386,7 +386,6 @@ public class GameAPI {
             DungeonRealms.getInstance().mm.stopInvocation();
 
             AsyncUtils.pool.shutdown();
-            SQLDatabaseAPI.getInstance().shutdown();
 //            DatabaseInstance.mongoClient.close();
             Bukkit.shutdown();
         }, restartTime);
