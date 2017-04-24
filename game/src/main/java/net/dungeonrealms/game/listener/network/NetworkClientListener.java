@@ -222,10 +222,6 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 Player player = Bukkit.getPlayer(playerName);
                                 if (player != null) {
                                     String message = in.readUTF();
-                                    if(Chat.containsIllegal(message)){
-                                        player.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
-                                        return;
-                                    }
                                     String msg = Chat.getInstance().checkForBannedWords(message);
                                     GamePlayer gp = GameAPI.getGamePlayer(player);
                                     if (gp != null) {
