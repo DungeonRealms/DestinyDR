@@ -5,6 +5,8 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.buffs.Buff;
 import net.dungeonrealms.game.donation.buffs.LevelBuff;
@@ -26,6 +28,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -70,6 +73,7 @@ public class DonationEffects implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
+    private static String buffDelimeter = "@#$%";
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
@@ -77,52 +81,75 @@ public class DonationEffects implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::handleCreeperFireworks, 40L, 100L);
 
-        // check if there are available buffs (will be null if not)
-        activeLootBuff = (LootBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
-                .getInstance().bungeeName, "buffs.activeLootBuff"), LootBuff.class);
-        final ArrayList<String> queuedLootBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-                .getInstance().bungeeName, "buffs.queuedLootBuffs");
-        if (queuedLootBuffData != null && !queuedLootBuffData.isEmpty()) {
-            for (String s : queuedLootBuffData) {
-                queuedLootBuffs.add((LootBuff) Buff.deserialize(s, LootBuff.class));
-            }
-        }
+        //Pull the loot buff column we have stored.. should only be 1.
+        SQLDatabaseAPI.getInstance().executeQuery("SELECT * FROM buffs LIMIT 1;", rs -> {
+            try {
+                if (rs.first()) {
+                    //Found buff row.
+                    this.activeLootBuff = (LootBuff) Buff.deserialize(rs.getString("activeLootBuff"), LootBuff.class);
+                    this.queuedLootBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLootBuffs"), buffDelimeter), LootBuff.class);
 
-        activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
-                (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
-        final ArrayList<String> queuedProfessionBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-                .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
-        if (queuedProfessionBuffData != null && !queuedProfessionBuffData.isEmpty()) {
-            for (String s : queuedProfessionBuffData) {
-                queuedProfessionBuffs.add((ProfessionBuff) Buff.deserialize(s, ProfessionBuff.class));
-            }
-        }
+                    this.activeProfessionBuff = (ProfessionBuff) Buff.deserialize(rs.getString("activeProfessionBuff"), ProfessionBuff.class);
+                    this.queuedProfessionBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedProfessionBuffs"), buffDelimeter), ProfessionBuff.class);
 
-
-        activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
-                .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
-        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-                .getInstance().bungeeName, "buffs.queuedLevelBuffs");
-        if (queuedLevelBuffData != null && !queuedLevelBuffData.isEmpty()) {
-            for (String s : queuedLevelBuffData) {
-                queuedLevelBuffs.add((LevelBuff) Buff.deserialize(s, LevelBuff.class));
+                    this.activeLevelBuff = (LevelBuff)Buff.deserialize(rs.getString("activeLevelBuff"), LevelBuff.class);
+                    this.queuedProfessionBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLevelBuffs"), buffDelimeter), LevelBuff.class);
+                }else{
+                    //No table there?
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
+        });
+//        // check if there are available buffs (will be null if not)
+//        activeLootBuff = (LootBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
+//                .getInstance().bungeeName, "buffs.activeLootBuff"), LootBuff.class);
+//        final ArrayList<String> queuedLootBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
+//                .getInstance().bungeeName, "buffs.queuedLootBuffs");
+//        if (queuedLootBuffData != null && !queuedLootBuffData.isEmpty()) {
+//            for (String s : queuedLootBuffData) {
+//                queuedLootBuffs.add((LootBuff) Buff.deserialize(s, LootBuff.class));
+//            }
+//        }
+//
+//        activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
+//                (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
+//        final ArrayList<String> queuedProfessionBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
+//                .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
+//        if (queuedProfessionBuffData != null && !queuedProfessionBuffData.isEmpty()) {
+//            for (String s : queuedProfessionBuffData) {
+//                queuedProfessionBuffs.add((ProfessionBuff) Buff.deserialize(s, ProfessionBuff.class));
+//            }
+//        }
+//
+//
+//        activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
+//                .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
+//        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
+//                .getInstance().bungeeName, "buffs.queuedLevelBuffs");
+//        if (queuedLevelBuffData != null && !queuedLevelBuffData.isEmpty()) {
+//            for (String s : queuedLevelBuffData) {
+//                queuedLevelBuffs.add((LevelBuff) Buff.deserialize(s, LevelBuff.class));
+//            }
+//        }
 
         // expired while we were offline, RIP
         if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeLootBuff", "", true);
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeLootBuff", "", true);
+            updateLootBuff("activeLootBuff", null);
             activeLootBuff.deactivateBuff();
         }
         if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeProfessionBuff", "", true);
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeProfessionBuff", "", true);
+            updateLootBuff("activeProfessionBuff", null);
             activeProfessionBuff.deactivateBuff();
         }
         if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeLevelBuff", "", true);
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeLevelBuff", "", true);
+            updateLootBuff("activeLevelBuff", null);
             activeLevelBuff.deactivateBuff();
         }
 
@@ -140,6 +167,20 @@ public class DonationEffects implements GenericMechanic {
         }
     }
 
+    public <T extends Buff> Queue<T> deserialize(List<String> list, Class<T> clazz) {
+        Queue<T> buff = new LinkedList<>();
+        if (list != null && !list.isEmpty()) {
+            return list.stream().map(s -> (T) Buff.deserialize(s, clazz)).collect(Collectors.toCollection(LinkedList::new));
+        }
+        return null;
+    }
+
+
+    public void updateLootBuff(String lootColumnName, String value){
+        SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
+            Bukkit.getLogger().info("SET " + lootColumnName + " to " + value + " for loot buff.");
+        }, "UPDATE buffs SET " + lootColumnName + " = " + (value == null ? null : "'" + value + "'") + ";");
+    }
     @Override
     public void stopInvocation() {
         // update database of active buffs (queued buffs should already be there)

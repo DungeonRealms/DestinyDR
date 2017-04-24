@@ -47,8 +47,11 @@ public class LevelBuff extends Buff {
                 + "+" + bonusAmount + "% Global Character Level XP Rates" + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
+            //So its just clearing the queue after it gets 1 or?
+            
             DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
                     "buffs.queuedLevelBuffs", -1, true);
+
             nextBuff.activateBuff();
         } else {
             de.getInstance().setActiveLevelBuff(null);
