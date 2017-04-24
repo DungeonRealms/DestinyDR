@@ -1,15 +1,12 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -21,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Nick on 10/31/2015.

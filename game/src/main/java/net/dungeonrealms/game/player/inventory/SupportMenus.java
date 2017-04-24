@@ -2,7 +2,7 @@ package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.player.rank.Subscription;
+import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
@@ -19,7 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Brad on 16/06/2016.
@@ -62,7 +64,8 @@ public class SupportMenus {
                     //Load if doesnt exist?
 //                DatabaseAPI.getInstance().requestPlayer(uuid, false);
                     String playerRank = Rank.getInstance().getRank(uuid);
-                    if (!Rank.isDev(player) && (playerRank.equalsIgnoreCase("gm") || playerRank.equalsIgnoreCase("dev"))) {
+                    Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
+                    if (!Rank.isDev(player) && (rank == Rank.PlayerRank.GM || rank == Rank.PlayerRank.DEV)) {
                         player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
                         return;
                     }
@@ -72,9 +75,9 @@ public class SupportMenus {
                     Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
                     item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid.toString() + ")", new String[]{
-                            ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank) +
+                            ChatColor.WHITE + "Rank: " + Rank.PlayerRank.getFromInternalName(playerRank).getPrefix() +
                                     (playerRank.equalsIgnoreCase("sub") || playerRank.equalsIgnoreCase("sub+") ?
-                                            ChatColor.WHITE + " (" + Subscription.getInstance().checkSubscription(uuid) + " days remaining)" : ""),
+                                            ChatColor.WHITE + " (" + Subscription.getInstance().checkSubscription(uuid, wrapper.getRankExpiration()) + " days remaining)" : ""),
                             ChatColor.WHITE + "Level: " + wrapper.getLevel(),
                             ChatColor.WHITE + "Experience: " + wrapper.getExperience(),
                             ChatColor.WHITE + "E-Cash: " + wrapper.getEcash(),
@@ -90,7 +93,7 @@ public class SupportMenus {
                     if (!playerName.equalsIgnoreCase(player.getDisplayName())) {
                         item = editItem(new ItemStack(Material.DIAMOND), ChatColor.GOLD + "Rank Manager", new String[]{
                                 ChatColor.WHITE + "Modify the rank of " + playerName + ".",
-                                ChatColor.WHITE + "Current rank: " + Rank.rankFromPrefix(playerRank)
+                                ChatColor.WHITE + "Current rank: " + rank.getPrefix()
                         });
                     } else {
                         item = editItem(new ItemStack(Material.BARRIER), ChatColor.RED + "Rank Manager", new String[]{
@@ -161,30 +164,30 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GRAY.getData()), Rank.rankFromPrefix("default"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GRAY.getData()), Rank.PlayerRank.DEFAULT.getPrefix(), new String[]{
                 ChatColor.WHITE + "Set user rank to: Default"
         });
         inv.setItem(20, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), Rank.rankFromPrefix("sub"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), Rank.PlayerRank.SUB.getPrefix(), new String[]{
                 ChatColor.WHITE + "Set user rank to: Subscriber",
                 ChatColor.WHITE + "User will have access to the subscriber server."
         });
         inv.setItem(21, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), Rank.rankFromPrefix("sub+"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), Rank.PlayerRank.SUB_PLUS.getPrefix(), new String[]{
                 ChatColor.WHITE + "Set user rank to: Subscriber+",
                 ChatColor.WHITE + "User will have access to the subscriber server."
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()), Rank.rankFromPrefix("sub++"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()), Rank.PlayerRank.SUB_PLUS_PLUS.getPrefix(), new String[]{
                 ChatColor.WHITE + "Set user rank to: Subscriber++",
                 ChatColor.WHITE + "User will have access to the subscriber server."
         });
         inv.setItem(23, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.WHITE.getData()), Rank.rankFromPrefix("pmod"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.WHITE.getData()), Rank.PlayerRank.PMOD.getPrefix(), new String[]{
                 ChatColor.WHITE + "Set user rank to: Player Moderator",
                 ChatColor.WHITE + "User will have access to the subscriber server.",
                 ChatColor.WHITE + "User will have access to limited moderation tools."
@@ -193,20 +196,20 @@ public class SupportMenus {
 
         // Ranks that can only be applied by developers.
         if (Rank.isDev(player)) {
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()), Rank.rankFromPrefix("builder"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()), Rank.PlayerRank.BUILDER.getPrefix(), new String[]{
                     ChatColor.WHITE + "Set user rank to: Builder",
                     ChatColor.WHITE + "User will have identical permissions as a Subscriber."
             });
             inv.setItem(29, applySupportItemTags(item, playerName, uuid));
 
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), Rank.rankFromPrefix("youtube"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), Rank.PlayerRank.YOUTUBER.getPrefix(), new String[]{
                     ChatColor.WHITE + "Set user rank to: YouTuber",
                     ChatColor.WHITE + "User will have identical permissions as a Subscriber.",
                     ChatColor.WHITE + "User will have access to a special 'YouTube' server."
             });
             inv.setItem(30, applySupportItemTags(item, playerName, uuid));
 
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), Rank.rankFromPrefix("support"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), Rank.PlayerRank.SUPPORT.getPrefix(), new String[]{
                     ChatColor.WHITE + "Set user rank to: Support Agent",
                     ChatColor.WHITE + "User will " + ChatColor.BOLD + "NOT" + ChatColor.WHITE + " have access to moderation tools.",
                     ChatColor.WHITE + "User will have access to a special command set.",
@@ -214,7 +217,7 @@ public class SupportMenus {
             });
             inv.setItem(32, applySupportItemTags(item, playerName, uuid));
 
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIGHT_BLUE.getData()), Rank.rankFromPrefix("gm"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIGHT_BLUE.getData()), Rank.PlayerRank.GM.getPrefix(), new String[]{
                     ChatColor.WHITE + "Set user rank to: Game Master",
                     ChatColor.WHITE + "User will " + ChatColor.BOLD + "NOT" + ChatColor.WHITE + " have access to support tools.",
                     ChatColor.WHITE + "User will have access to almost all commands.",
@@ -374,7 +377,7 @@ public class SupportMenus {
     public static void openHearthstoneMenu(Player player, String playerName, UUID uuid) {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null)return;
+        if (wrapper == null) return;
 
         ItemStack item;
         Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Hearthstone)");
@@ -512,7 +515,7 @@ public class SupportMenus {
 
     public static void openPetsMenu(Player player, String playerName, UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null)return;
+        if (wrapper == null) return;
         ItemStack item;
         Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Pets)");
 

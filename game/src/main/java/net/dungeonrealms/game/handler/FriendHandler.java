@@ -88,14 +88,19 @@ public class FriendHandler {
             return;
         NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
         UUID friend = UUID.fromString(tag.getString("info").split(",")[0]);
-
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         switch (type) {
             case RIGHT:
-                //Remove Pending request
-                player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
-                player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
-                PlayerMenus.openFriendInventory(player);
+                if(wrapper.getPendingFriends().containsKey(friend)) {
+                    //Remove Pending request
+                    player.closeInventory();
+//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
+                    wrapper.getPendingFriends().remove(friend);
+                    player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
+                    PlayerMenus.openFriendInventory(player);
+                }else{
+                    player.sendMessage(ChatColor.RED + "That player has not sent you a friend request!");
+                }
                 break;
             case LEFT:
                 //Add Friend
@@ -107,7 +112,6 @@ public class FriendHandler {
 
                 GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + friend.toString() + "," + PlayerWrapper.getPlayerWrapper(player).getAccountID());
 
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                 acceptFriend(wrapper, friend, name);
 //                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
@@ -121,7 +125,7 @@ public class FriendHandler {
      * @param friend Wanting to add.
      * @since 1.0
      */
-    public void sendRequest(Player player, Player friend) {
+    public void sendRequest(Player player, int accountID, Player friend) {
         if (player.getDisplayName().equalsIgnoreCase(friend.getDisplayName())) {
             player.sendMessage(ChatColor.RED + "You cannot add yourself.");
             return;
@@ -131,7 +135,9 @@ public class FriendHandler {
             return;
         }
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUESTS, player.getUniqueId().toString(), true);
+        PlayerWrapper friendWrapper = PlayerWrapper.getPlayerWrapper(friend.getUniqueId());
+        friendWrapper.getPendingFriends().put(player.getUniqueId(), accountID);
+//        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUESTS, player.getUniqueId().toString(), true);
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
 
         friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + player.getName() + ChatColor.GREEN + " sent you a friend request.");

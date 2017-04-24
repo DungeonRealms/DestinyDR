@@ -1,19 +1,15 @@
 package net.dungeonrealms.game.listener.network;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -21,7 +17,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Created by Nick on 10/12/2015.
@@ -79,7 +74,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                                 long expiration = rs.getLong("expiration");
                                 if(expiration > System.currentTimeMillis()){
                                     //Still bnaned???
-                                    PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                                    PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "Ban evading", null);
                                 }
                             }
                         } catch (Exception e) {

@@ -3,11 +3,8 @@ package net.dungeonrealms.game.handler;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.DamageTracker;
@@ -755,7 +752,7 @@ public class HealthHandler implements GenericMechanic {
     public boolean handlePlayerDeath(Player player, LivingEntity leAttacker) {
     	Chat.listenForMessage(player, null, null);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
-        
+
         if (DungeonRealms.getInstance().isEventShard) {
             if (Rank.isTrialGM(player)) {
                 player.sendMessage(ChatColor.GOLD + "Death has acknowledged your identity and chosen to spare your life.");
@@ -763,11 +760,11 @@ public class HealthHandler implements GenericMechanic {
                 Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                     if(player.isOnline())
                         player.kickPlayer(ChatColor.RED + "You have been eliminated from this event.");
-                    PunishAPI.ban(player.getUniqueId(), player.getName(), "Event Controller", -1, "You have been eliminated", null);
+                    PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "You have been eliminated", null);
                 }, 5);
             }
     	}
-    
+
         if (player.hasMetadata("last_death_time")) {
             if (System.currentTimeMillis() - player.getMetadata("last_death_time").get(0).asLong() > 100) {
                 String killerName = "";

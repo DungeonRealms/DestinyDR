@@ -77,7 +77,7 @@ public class CommandSetRank extends BaseCommand {
                     }
 
                     if (!rank.toLowerCase().contains("sub") || rank.equalsIgnoreCase("sub++")) {
-                        wrapper.setRankExpiration(0L);
+                        wrapper.setRankExpiration(0);
                     }
 
                     wrapper.setRank(rank);

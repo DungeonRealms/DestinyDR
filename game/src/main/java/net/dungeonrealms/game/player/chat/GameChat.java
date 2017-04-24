@@ -6,9 +6,11 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.inventory.GUI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -56,12 +58,14 @@ public final class GameChat {
         StringBuilder message = new StringBuilder();
         String r = Rank.getInstance().getRank(player.getUniqueId());
 
-        String clanTag = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
-            clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-        }
-
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        String clanTag = "";
+
+        //Use the ID cause its faster.
+        GuildWrapper guild = GuildDatabase.getAPI().getGuildWrapper(wrapper.getGuildID());
+        if (guild != null) {
+            clanTag = guild.getTag();
+        }
 
         // We're using global chat, append global prefix.
         boolean gChat = isGlobal || wrapper.getToggles().isGlobalChat();
@@ -192,9 +196,11 @@ public final class GameChat {
      */
     public static String getFormattedName(Player player) {
         String guild = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId()))
-            guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(player
-                    .getUniqueId())) + "] ";
+        GuildWrapper foundGuild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+
+        if (foundGuild != null)
+            guild = ChatColor.WHITE + "[" + foundGuild.getTag() + "] ";
+
         final String rank = Rank.getInstance().getRank(player.getUniqueId());
         return guild + getRankPrefix(rank) + getName(player, rank, true);
     }

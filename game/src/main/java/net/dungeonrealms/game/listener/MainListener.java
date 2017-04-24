@@ -4,11 +4,8 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -21,7 +18,6 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -275,6 +271,7 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+        player.removeMetadata("saved", DungeonRealms.getInstance());
 //
 //        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
 //            player.kickPlayer(ChatColor.RED + "Unable to load your character.");
@@ -392,7 +389,7 @@ public class MainListener implements Listener {
             event.allow();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
@@ -429,9 +426,16 @@ public class MainListener implements Listener {
             if (offer != null)
                 offer.handleLogOut(player);
         }
+
         player.updateInventory();
         // Good to go lads
-        GameAPI.handleLogout(player.getUniqueId(), true, null);
+
+
+        //So only remove tehm from the list on logout..
+        GameAPI.handleLogout(player.getUniqueId(), true, savedData -> {
+            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+            GameAPI.GAMEPLAYERS.remove(player.getName());
+        }, false);
     }
 
     /**

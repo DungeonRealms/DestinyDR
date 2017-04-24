@@ -2,7 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.command.Command;

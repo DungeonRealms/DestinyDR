@@ -3,8 +3,6 @@ package net.dungeonrealms.game.player.inventory;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;

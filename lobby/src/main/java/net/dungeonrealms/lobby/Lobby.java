@@ -6,13 +6,10 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -39,16 +36,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 7/11/2016
- */
 public class Lobby extends JavaPlugin implements Listener {
 
     @Getter
@@ -64,17 +57,18 @@ public class Lobby extends JavaPlugin implements Listener {
 
     private SQLDatabase sqlDatabase;
 
+
     @Override
     public void onEnable() {
         instance = this;
-        AsyncUtils.threadCount = Runtime.getRuntime().availableProcessors();
+        AsyncUtils.threadCount = 2;
         AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
 
         this.sqlDatabase = new SQLDatabase(getConfig().getString("sql.hostname"), getConfig().getString("sql.username"), getConfig().getString("sql.password"), getConfig().getString("sql.database"));
-        if(!this.sqlDatabase.isConnected()){
+        if (!this.sqlDatabase.isConnected()) {
             Bukkit.getLogger().info("Unable to connect to MySQL database....");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -104,6 +98,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+
     }
 
     @EventHandler
@@ -128,17 +123,30 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
-        if (PunishAPI.isBanned(event.getUniqueId())) {
-            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.setKickMessage(bannedMessage);
+        SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_BANS.getQuery(event.getUniqueId().toString()), false, rs -> {
+            try {
+                if (rs.first()) {
+                    long expiration = rs.getLong("expiration");
+                    if (expiration == 0 && !rs.getBoolean("quashed") || System.currentTimeMillis() < expiration) {
+                        //Banned...
+                        String bannedMessage = rs.getString("reason");
+                        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                        event.setKickMessage(bannedMessage);
+                        return;
+                    }
+                }
 
-            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
-            return;
-        }
-
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+                // REQUEST PLAYER'S DATA ASYNC //
+                SQLDatabaseAPI.getInstance().createDataForPlayer(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress(), account_id -> {
+                    //No new account_id..
+                    if (account_id == null) return;
+                    Bukkit.getLogger().info("Sending network packet to register user " + event.getName() + " with new account_id = " + account_id);
+                    client.sendNetworkMessage("CreateAccount", event.getUniqueId().toString(), event.getName(), account_id + "");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
@@ -148,7 +156,8 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
 
-            String rankColor = Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName();
+            Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(player.getUniqueId());
+            String rankColor = rank.getChatColor() + player.getName();
             player.setPlayerListName(rankColor);
             player.setDisplayName(rankColor);
             player.setCustomName(rankColor);
@@ -163,7 +172,7 @@ public class Lobby extends JavaPlugin implements Listener {
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
 
-            if(Rank.isPMOD(player)){
+            if (Rank.isPMOD(player)) {
 //                Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
 //
 //                    String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
@@ -181,8 +190,8 @@ public class Lobby extends JavaPlugin implements Listener {
 //                        player.sendMessage(messagePrefix + "Please login with /pin <pin>");
 //                    }
 //                });
-
-            }else{
+                this.allowLogin(player, false);
+            } else {
                 this.allowLogin(player, false);
             }
         });
@@ -192,9 +201,9 @@ public class Lobby extends JavaPlugin implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(), () -> {
-            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
-            }
+//            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+//                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
+//            }
             this.allowedStaff.remove(event.getPlayer().getUniqueId());
         }, 1L);
     }
@@ -250,11 +259,15 @@ public class Lobby extends JavaPlugin implements Listener {
 
             e.setCancelled(true);
 
-            if(!Lobby.getInstance().isLoggedIn(p)){
+            if (!Lobby.getInstance().isLoggedIn(p)) {
                 p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can use this.");
                 return;
             }
 
+            if (SQLDatabaseAPI.getInstance().getPendingPlayerCreations().contains(p.getUniqueId())) {
+                p.sendMessage(ChatColor.RED + "Please wait while we create your player data for the first time...");
+                return;
+            }
             new ShardSelector(p).open(p);
 
         }
@@ -293,8 +306,8 @@ public class Lobby extends JavaPlugin implements Listener {
         return false;
     }
 
-    public void allowLogin(Player player, boolean addToList){
-        if(addToList && !this.allowedStaff.contains(player.getUniqueId()))
+    public void allowLogin(Player player, boolean addToList) {
+        if (addToList && !this.allowedStaff.contains(player.getUniqueId()))
             this.allowedStaff.add(player.getUniqueId());
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -303,7 +316,7 @@ public class Lobby extends JavaPlugin implements Listener {
         getClient().sendTCP(out.toByteArray());
     }
 
-    public boolean isLoggedIn(Player player){
+    public boolean isLoggedIn(Player player) {
         return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }

@@ -25,7 +25,7 @@ public class CommandSetPin extends BaseCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Player player = Bukkit.getPlayer(sender.getName());
 		if(player == null || !Rank.isPMOD(player)) return false;
-		Object currentCode = DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId());
+		Object currentCode = null;
 		
 		if(currentCode == null){
 			//If there is no current pin.
@@ -60,8 +60,8 @@ public class CommandSetPin extends BaseCommand {
 		} else {
 			sendMessage(player, "Your PIN has been set!", ChatColor.GREEN);
 		}
-
-		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGIN_PIN, newCode, true);
+//
+//		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGIN_PIN, newCode, true);
 		return true;
 	}
 

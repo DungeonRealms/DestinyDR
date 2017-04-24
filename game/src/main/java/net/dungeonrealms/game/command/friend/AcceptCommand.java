@@ -80,11 +80,6 @@ public class AcceptCommand extends BaseCommand implements CooldownCommand {
         return false;
     }
 
-    private boolean isPlayer(String player) {
-        String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return uuid.equals("") ? false : true;
-    }
-
     @Override
     public String getName() {
         return "accept";

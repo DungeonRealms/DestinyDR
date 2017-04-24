@@ -4,7 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,10 +49,10 @@ public class CommandWhois extends BaseCommand {
 
                 long banTime = wrapper.getBanExpire();
                 String reason = wrapper.getBanReason();
-                UUID byUID = wrapper.getWhoBannedMe();
+                int byUID = wrapper.getWhoBannedMeID();
                 if (banTime != 0) {
                     if (banTime == -1 || banTime > System.currentTimeMillis()) {
-                        String whoBanned = SQLDatabaseAPI.getInstance().getUsernameFromUUID(byUID);
+                        String whoBanned = SQLDatabaseAPI.getInstance().getUsernameFromAccountID(byUID);
 
                         if (banTime > 0) {
                             String whenUnbanned = PunishAPI.timeString((int) ((banTime - System.currentTimeMillis()) / 60000));

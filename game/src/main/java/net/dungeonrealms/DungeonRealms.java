@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
@@ -254,6 +254,8 @@ public class DungeonRealms extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        //Load rank data..
+        Rank.getInstance().loadRankData();
 //        DatabaseAPI.getInstance().startInitialization(bungeeName);
 
         ItemGenerator.loadModifiers();
@@ -641,7 +643,8 @@ public class DungeonRealms extends JavaPlugin {
             if (!mm.isShutdown())
                 mm.stopInvocation();
 
-            DatabaseAPI.getInstance().stopInvocation();
+            SQLDatabaseAPI.getInstance().shutdown();
+//            DatabaseAPI.getInstance().stopInvocation();
 
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         }

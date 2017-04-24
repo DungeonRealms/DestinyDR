@@ -2,11 +2,8 @@ package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -19,9 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**

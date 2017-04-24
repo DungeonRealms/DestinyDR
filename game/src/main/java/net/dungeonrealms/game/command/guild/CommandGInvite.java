@@ -6,10 +6,13 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import org.bson.Document;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,6 +37,7 @@ public class CommandGInvite extends BaseCommand {
 
         Player player = (Player) sender;
 
+        GuildWrapper guild = GuildDatabase.getAPI().getGuildWrapper()
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/ginvite.");
             return true;
@@ -61,6 +65,15 @@ public class CommandGInvite extends BaseCommand {
             return true;
         }
 
+        SQLDatabaseAPI.getInstance().getUUIDFromName(p_name, false, uuid -> {
+            if(uuid == null){
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
+                return;
+            }
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
+                if()
+            });
+        });
         if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
             return true;
@@ -81,11 +94,15 @@ public class CommandGInvite extends BaseCommand {
             return true;
         }
 
-        Document invitation = new Document();
 
-        invitation.put("guild", guildName);
-        invitation.put("referrer", sender.getName());
-        invitation.put("time", System.currentTimeMillis());
+        SQLDatabaseAPI.getInstance().executeUpdate((updated) -> {
+
+        }, QueryType.GUILD_INVITE.getQuery());
+//        Document invitation = new Document();
+//
+//        invitation.put("guild", guildName);
+//        invitation.put("referrer", sender.getName());
+//        invitation.put("time", System.currentTimeMillis());
 
 
         DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.GUILD_INVITATION, invitation, true, doAfter -> {

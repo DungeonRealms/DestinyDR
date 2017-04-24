@@ -41,11 +41,11 @@ public enum EnumData {
 
 //    GEMS_COUNT("info.gemsCount"),
 
-    ACHIEVEMENTS("collectibles.achievements"),//No idea how we are going to do this one. Started to look into it but didn't really see
+//    ACHIEVEMENTS("collectibles.achievements"),//No idea how we are going to do this one. Started to look into it but didn't really see
 
     LOGIN_PIN("rank.loginCode"), //Not taking this over. This will be replaced with 2FA.
-    RANK("rank.rank"), // Loaded
-    RANK_SUB_EXPIRATION("rank.expiration_date"), // Loaded
+//    RANK("rank.rank"), // Loaded
+//    RANK_SUB_EXPIRATION("rank.expiration_date"), // Loaded
 
     //Converted to CurrencyTab in PlayerWrapper.
 //    CURRENCY_TAB_ACCESS("currencytab.access"),//Loaded
@@ -64,17 +64,17 @@ public enum EnumData {
 
     GUILD("info.guild"),
 
-    GUILD_INVITATION("notices.guildInvitation"),
-    FRIEND_REQUESTS("notices.friendRequest"),
+    GUILD_INVITATION("notices.guildInvitation");
+//    FRIEND_REQUESTS("notices.friendRequest"),
 //    MAILBOX("notices.mailbox"),
 //    LAST_BUILD("notices.lastBuild"),
 //    LAST_NOTES_SIZE("notices.lastBuildNotesSize"),
 //    LAST_VOTE("notices.lastVote"),
 
 //    BANNED_TIME("punishments.banned"), //Loaded
-    MUTE_TIME("punishments.muted"), //Loaded
-    BANNED_REASON("punishments.bannedReason"),//Loaded
-    MUTE_REASON("punishments.muteReason"),//Loaded
+//    MUTE_TIME("punishments.muted"), //Loaded
+//    BANNED_REASON("punishments.bannedReason"),//Loaded
+//    MUTE_REASON("punishments.muteReason"),//Loaded
 
 //    REALM_UPLOAD("realm.uploading"), //Loaded
 //    REALM_UPGRADE("realm.upgrading"),//Loaded
@@ -139,19 +139,19 @@ public enum EnumData {
     Player Attributes
      */
     //Adds Armor, Block Chance, Axe Damage and Polearm Damage
-    STRENGTH("attributes.strength"), //Loaded
+//    STRENGTH("attributes.strength"), //Loaded
     //Add DPS%, Dodge Chance, Armor Penetration and Bow Damage
-    DEXTERITY("attributes.dexterity"),//Loaded
+//    DEXTERITY("attributes.dexterity"),//Loaded
     //Adds Energy Regeneration, elemental damage, critical hit chance and staff damamge.
-    INTELLECT("attributes.intellect"),//Loaded
+//    INTELLECT("attributes.intellect"),//Loaded
     //Adds Health, hp regen, elemental resistance, and sword damage.
-    VITALITY("attributes.vitality"),//Loaded
+//    VITALITY("attributes.vitality"),//Loaded
 
-    RESETS("attributes.resets"),//Loaded
+//    RESETS("attributes.resets"),//Loaded
 
-    FREERESETS("attributes.freeresets"),//Loaded
+//    FREERESETS("attributes.freeresets"),//Loaded
 
-    BUFFER_POINTS("attributes.bufferPoints");//Loaded
+//    BUFFER_POINTS("attributes.bufferPoints");//Loaded
 
 
     private String key;

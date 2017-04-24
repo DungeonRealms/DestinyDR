@@ -3,6 +3,7 @@ package net.dungeonrealms.common.game.database.sql;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.sun.xml.internal.fastinfoset.algorithm.HexadecimalEncodingAlgorithm;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -14,10 +15,8 @@ import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -60,6 +59,65 @@ public class SQLDatabaseAPI {
     }
 
 
+    @Getter
+    public Set<UUID> pendingPlayerCreations = new HashSet<>();
+
+    private DecimalFormat format = new DecimalFormat("#,###");
+    /**
+     * Returns the account_id created in the callback.
+     *
+     * @param uuid
+     * @param username
+     * @param createdCallback
+     */
+    public void createDataForPlayer(UUID uuid, String username, String ipAddress, Consumer<Integer> createdCallback) {
+        SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
+            //It didnt exist, so we can just create everything and grab the newly created account id.
+            if (updates != null && updates > 0) {
+                pendingPlayerCreations.add(uuid);
+                long start = System.currentTimeMillis();
+                SQLDatabaseAPI.getInstance().executeQuery(String.format("SELECT account_id FROM users WHERE uuid = '%s';", uuid.toString()), false, rs -> {
+                    try {
+                        if (rs.first()) {
+                            int accountID = rs.getInt("account_id");
+
+                            //Accept this so we can get that callback going..
+                            createdCallback.accept(accountID);
+                            SQLDatabaseAPI.getInstance().executeUpdate(rowsAffected -> {
+                                if (rowsAffected > 0) {
+                                    //We created it!!!
+                                    SQLDatabaseAPI.getInstance().executeQuery("SELECT character_id FROM characters WHERE account_id = '%s';", false, charResult -> {
+                                        try {
+                                            int character_id = charResult.getInt("character_id");
+                                            SQLDatabaseAPI.getInstance().executeBatch(completed -> {
+                                                        pendingPlayerCreations.remove(uuid);
+                                                        Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
+                                                    },
+                                                    String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
+                                                    String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
+                                                    String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
+                                                    String.format("INSERT INTO realms(account_id) VALUES ('%s');", character_id),
+                                                    String.format("INSERT INTO statistics(character_id) VALUES ('%s');", character_id),
+                                                    String.format("INSERT INTO ip_address(account_id) VALUES ('%s');", ipAddress));
+                                            Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                }
+                            }, String.format("INSERT IGNORE INTO characters(account_id) VALUES ('%s');", accountID));
+
+                            Bukkit.getLogger().info("Created new account ID for " + username + " (" + uuid.toString() + ")");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }, String.format("INSERT IGNORE INTO users(uuid, username) VALUES ('%s', '%s');", uuid.toString(), username), false);
+    }
+
+
     public void addQuery(QueryType type, Object... values) {
         String query = type.getQuery(values);
         if (query != null) {
@@ -67,17 +125,25 @@ public class SQLDatabaseAPI {
         }
     }
 
+
+    public void executeQuery(String query, boolean async, @NonNull Consumer<ResultSet> callback) {
+        if (async) {
+            CompletableFuture.runAsync(() -> executeQuery(query, async, callback), SERVER_EXECUTOR_SERVICE);
+            return;
+        }
+        try {
+            @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            callback.accept(rs);
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        callback.accept(null);
+    }
+
     public void executeQuery(String query, @NonNull Consumer<ResultSet> callback) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
-                ResultSet rs = statement.executeQuery();
-                callback.accept(rs);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            callback.accept(null);
-        }, SERVER_EXECUTOR_SERVICE);
+        executeQuery(query, true, callback);
     }
 
     public void executeBatch(Consumer<Boolean> callback, String... queries) {
@@ -278,7 +344,7 @@ public class SQLDatabaseAPI {
     public void loadData(UUID uuid) {
         CompletableFuture.runAsync(() -> {
             try {
-                //Essentially make it pull
+//Essentially make it pull
                 @Cleanup PreparedStatement statement = this.getDatabase().getConnection().prepareStatement("SELECT * FROM characters LEFT JOIN attributes");
             } catch (Exception e) {
                 e.printStackTrace();

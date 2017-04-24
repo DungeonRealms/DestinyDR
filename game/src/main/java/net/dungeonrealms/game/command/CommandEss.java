@@ -3,9 +3,6 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -299,7 +296,7 @@ public class CommandEss extends BaseCommand {
                                 String currentRank = wrapper.getRank();
 
                                 int days = Integer.parseInt(args[4]) * 86400;
-                                long subscriptionLength = wrapper.getRankExpiration();
+                                int subscriptionLength = wrapper.getRankExpiration();
 
                                 if (rankName.equalsIgnoreCase("sub") || rankName.equalsIgnoreCase("sub+")) {
                                     if (!currentRank.equalsIgnoreCase("default") && !currentRank.equalsIgnoreCase(rankName) && (rankName.equalsIgnoreCase("sub") || (rankName.equalsIgnoreCase("sub+") && !currentRank.equalsIgnoreCase("sub")))) {
@@ -318,7 +315,7 @@ public class CommandEss extends BaseCommand {
                                         commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                         return;
                                     }
-                                    long finalSubLength = subscriptionLength;
+                                    int finalSubLength = subscriptionLength;
                                     wrapper.setRank(rankName);
                                     wrapper.setRankExpiration(finalSubLength);
                                     wrapper.saveData(true, null, (wrappa) -> {
@@ -341,42 +338,19 @@ public class CommandEss extends BaseCommand {
                     if (args.length >= 4) {
                         try {
                             String playerName = args[1];
-                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            UUID uuid;
                             String type = args[2].toLowerCase();
                             String rankName = args[3].toUpperCase();
-
-                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-                            if (wrapper == null) {
-                                return false;
+                            Player online = Bukkit.getPlayer(playerName);
+                            if (online != null) {
+                                uuid = online.getUniqueId();
+                            } else {
+                                SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, id -> {
+                                    setRank(commandSender, id, playerName, type, rankName);
+                                });
+                                return true;
                             }
-
-                            switch (type) {
-                                case "rank":
-                                    String currentRank = wrapper.getRank().toUpperCase();
-                                    if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
-                                        if (rankName.equalsIgnoreCase("SUB++")) {
-                                            if (Bukkit.getPlayer(playerName) != null) {
-                                                Rank.getInstance().setRank(uuid, rankName);
-                                            } else {
-                                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true, doAfter -> {
-                                                    GameAPI.updatePlayerData(uuid, "rank");
-                                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rankName + ChatColor.GREEN + ".");
-                                                });
-                                            }
-                                        } else {
-                                            commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
-                                            return false;
-                                        }
-                                    } else {
-                                        commandSender.sendMessage(ChatColor.RED + "Failed to update the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + " because they're " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
-                                        return false;
-                                    }
-                                    break;
-
-                                default:
-                                    commandSender.sendMessage(ChatColor.RED + "Invalid purchase type: " + type + ".");
-                                    return false;
-                            }
+                            setRank(commandSender, uuid, type, playerName, rankName);
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -387,7 +361,7 @@ public class CommandEss extends BaseCommand {
                     }
                     break;
                 case "resetmule":
-                    PlayerWrapper.getPlayerWrapper((Player)commandSender).setMuleLevel(1);
+                    PlayerWrapper.getPlayerWrapper((Player) commandSender).setMuleLevel(1);
                     commandSender.sendMessage(ChatColor.GREEN + "Your mule level has been reset.");
                     break;
                 case "buff":
@@ -434,6 +408,36 @@ public class CommandEss extends BaseCommand {
             }
         } else {
             commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr <command> [args]");
+        }
+        return true;
+    }
+
+    public boolean setRank(CommandSender commandSender, UUID uuid, String playerName, String type, String rankName) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if (wrapper == null) {
+            return false;
+        }
+
+        switch (type) {
+            case "rank":
+                String currentRank = wrapper.getRank().toUpperCase();
+                if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
+                    if (rankName.equalsIgnoreCase("SUB++")) {
+                        Rank.getInstance().setRank(uuid, rankName);
+                        GameAPI.updatePlayerData(uuid, "rank");
+                    } else {
+                        commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
+                        return false;
+                    }
+                } else {
+                    commandSender.sendMessage(ChatColor.RED + "Failed to update the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + " because they're " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
+                    return false;
+                }
+                break;
+
+            default:
+                commandSender.sendMessage(ChatColor.RED + "Invalid purchase type: " + type + ".");
+                return false;
         }
         return true;
     }

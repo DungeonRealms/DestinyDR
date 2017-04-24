@@ -63,7 +63,7 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
                 return false;
             }
 
-            FriendHandler.getInstance().sendRequest(player, friend);
+            FriendHandler.getInstance().sendRequest(player, PlayerWrapper.getPlayerWrapper(player).getAccountID(), friend);
             return false;
         }
 

@@ -1,11 +1,10 @@
 package net.dungeonrealms.common.game.database.player.rank;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-
-import org.bson.Document;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -16,8 +15,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class Rank {
 
@@ -26,6 +25,7 @@ public class Rank {
     public static Rank getInstance() {
         if (instance == null) {
             instance = new Rank();
+            instance.loadRankData();
         }
         return instance;
     }
@@ -36,6 +36,32 @@ public class Rank {
 //    }
 
 
+    @Getter
+    private Map<UUID, PlayerRank> cachedRanks = new HashMap<>();
+
+    public void loadRankData() {
+        SQLDatabaseAPI.getInstance().executeQuery("SELECT users.account_id, rank, users.uuid FROM ranks LEFT JOIN users ON `ranks`.`account_id` = `users`.`account_id` WHERE rank != 'DEFAULT';", rs -> {
+            try {
+                long start = System.currentTimeMillis();
+                while (rs.next()) {
+                    int accountID = rs.getInt("account_id");
+                    String uuidString = rs.getString("uuid");
+                    if (uuidString == null || uuidString.isEmpty()) {
+                        System.out.println("Unable to get UUID string from " + accountID);
+                        continue;
+                    }
+                    UUID uuid = UUID.fromString("");
+
+                    PlayerRank rank = PlayerRank.getFromInternalName(rs.getString("rank"));
+                    if (rank == null) continue;
+                    this.cachedRanks.put(uuid, rank);
+                }
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loaded " + ChatColor.GREEN + this.cachedRanks.size() + ChatColor.AQUA + " Ranks into memory in " + (System.currentTimeMillis() - start) + "ms");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     /**
      * Returns true if user has the rank "dev".
@@ -50,11 +76,11 @@ public class Rank {
     }
 
     public static boolean isDev(CommandSender commandSender) {
-        return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer)commandSender)));
+        return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer) commandSender)));
     }
 
-    public static boolean isDev(Player player){//This is for legacy purposes.
-        return isDev((OfflinePlayer)player);
+    public static boolean isDev(Player player) {//This is for legacy purposes.
+        return isDev((OfflinePlayer) player);
     }
 
     /**
@@ -90,13 +116,14 @@ public class Rank {
         return rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
-    public static boolean isGMRank(String rank){
+    public static boolean isGMRank(String rank) {
         return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
-    public static boolean isTrialGMRank(String rank){
+    public static boolean isTrialGMRank(String rank) {
         return rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
+
     /**
      * Returns true if the user has the rank "dev" or "support".
      *
@@ -119,9 +146,10 @@ public class Rank {
         return isAtleastPMOD(rank);
     }
 
-    public static boolean isAtleastPMOD(String rank){
+    public static boolean isAtleastPMOD(String rank) {
         return rank.equalsIgnoreCase("hiddenmod") || rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
+
     /**
      * Returns true if the user has the rank "dev", "gm", "pmod" or "youtube".
      *
@@ -159,43 +187,50 @@ public class Rank {
         return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+") && !rank.equalsIgnoreCase("hiddenmod");
     }
 
-    public static String rankFromPrefix(String prefix) {
-        switch (prefix.toLowerCase()) {
-            case "dev":
-                return ChatColor.DARK_AQUA + "Developer";
-            case "headgm":
-                return ChatColor.AQUA + "Head Game Master";
-            case "gm":
-                return ChatColor.AQUA + "Game Master";
-            case "trialgm":
-                return ChatColor.AQUA + "Trial Game Master";
-            case "pmod":
-                return ChatColor.WHITE + "Player Moderator";
-            case "hiddenmod":
-                return ChatColor.GREEN + "Hidden Player Moderator";
-            case "support":
-                return ChatColor.BLUE + "Support Agent";
-            case "youtube":
-                return ChatColor.RED + "YouTuber";
-            case "builder":
-                return ChatColor.DARK_GREEN + "Builder";
-            case "sub++":
-                return ChatColor.YELLOW + "Subscriber++";
-            case "sub+":
-                return ChatColor.GOLD + "Subscriber+";
-            case "sub":
-                return ChatColor.GREEN + "Subscriber";
-            case "default":
-                return ChatColor.GRAY + "Default";
-        }
+    /**
+     * Gets the players rank.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public String getRank(UUID uuid) {
+        PlayerRank rank = this.cachedRanks.get(uuid);
 
-        // Could not find rank.
-        return null;
+        return (rank == null ? "default" : rank.getInternalName()).toUpperCase();
     }
 
-    public static ChatColor colorFromRank(String prefix) {
-        switch (prefix.toLowerCase()) {
-            case "dev":
+    public PlayerRank getPlayerRank(UUID uuid){
+        PlayerRank rank = this.cachedRanks.get(uuid);
+        if(rank == null)return PlayerRank.DEFAULT;
+        return rank;
+    }
+
+    /**
+     * Sets a players rank.
+     *
+     * @param uuid
+     * @param sRank
+     * @since 1.0
+     */
+    public void setRank(UUID uuid, String sRank) {
+        PlayerRank rank = PlayerRank.getFromInternalName(sRank);
+        if (rank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
+        Player player = Bukkit.getPlayer(uuid);
+
+        this.cachedRanks.put(uuid, rank);
+        SQLDatabaseAPI.getInstance().executeQuery(QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)), (set) -> {
+            if (player != null) {
+                player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+            }
+        });
+
+    }
+
+
+    /*
+     case "dev":
                 return ChatColor.AQUA;
             case "headgm":
             case "gm":
@@ -219,52 +254,41 @@ public class Rank {
             case "default":
                 return ChatColor.GRAY;
         }
-
-        // Could not find rank.
-        return ChatColor.GRAY;
-    }
-
-    /**
-     * Gets the players rank.
-     *
-     * @param uuid
-     * @return
-     * @since 1.0
      */
-    public String getRank(UUID uuid) {
-        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
-        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
+
+    @AllArgsConstructor
+    public enum PlayerRank {
+        DEFAULT(0, "default", ChatColor.GRAY, ChatColor.GRAY + "Default"),
+        SUB(1, "sub", ChatColor.GREEN, ChatColor.GREEN + "Subscriber"),
+        SUB_PLUS(2, "sub+", ChatColor.GOLD, ChatColor.GOLD + "Subscriber+"),
+        SUB_PLUS_PLUS(3, "sub++", ChatColor.YELLOW, ChatColor.YELLOW + "Subscriber++"),
+        BUILDER(4, "builder", ChatColor.DARK_GREEN, ChatColor.DARK_GREEN + "Builder"),
+        YOUTUBER(5, "youtube", ChatColor.RED, ChatColor.RED + "YouTuber"),
+        SUPPORT(6, "support", ChatColor.BLUE, ChatColor.BLUE + "Support Agent"),
+        PMOD(7, "pmod", ChatColor.WHITE, ChatColor.WHITE + "Player Moderator"),
+        TRIALGM(8, "trialgm", ChatColor.AQUA, ChatColor.AQUA + "Trial Game Master"),
+        GM(9, "gm", ChatColor.AQUA, ChatColor.AQUA + "Game Master"),
+        HEADGM(10, "headgm", ChatColor.AQUA, ChatColor.AQUA + "Head Game Master"),
+        DEV(11, "dev", ChatColor.AQUA, ChatColor.DARK_AQUA + "Developer");
+
+
+        @Getter int rank;
+
+        @Getter
+        private String internalName;
+
+        @Getter
+        private ChatColor chatColor;
+
+        @Getter
+        private String prefix;
+
+
+        public boolean isAtleast(PlayerRank rank){
+            return getRank() >= rank.getRank();
+        }
+        public static PlayerRank getFromInternalName(String name) {
+            return Arrays.stream(values()).filter(rank -> rank.getInternalName().equals(name.toLowerCase())).findFirst().orElse(null);
+        }
     }
-
-    /**
-     * Gets the players rank.
-     *
-     * @param doc
-     * @return
-     * @since 1.0
-     */
-    public String getRank(Document doc) {
-        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, doc);
-        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
-    }
-
-    /**
-     * Sets a players rank.
-     *
-     * @param uuid
-     * @param sRank
-     * @since 1.0
-     */
-    public void setRank(UUID uuid, String sRank) {
-        String newRank = Rank.rankFromPrefix(sRank);
-
-        if (newRank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
-
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
-        Player player = Bukkit.getPlayer(uuid);
-
-        player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-    }
-
 }

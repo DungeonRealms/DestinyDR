@@ -12,9 +12,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/2/2016
- */
 
 public class CommandGAccept extends BaseCommand {
 

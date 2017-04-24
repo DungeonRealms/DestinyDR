@@ -1,15 +1,11 @@
 package net.dungeonrealms.game.handler;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -116,68 +112,61 @@ public class ScoreboardHandler implements GenericMechanic {
     public void setPlayerHeadScoreboard(Player player, final ChatColor chatColor, int playerLevel) {
         Affair affair = Affair.getInstance();
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        ChatColor color = chatColor;
+//            String rank = Rank.getInstance().getRank(player.getUniqueId());
+        Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(player.getUniqueId());
+        //Only need to check if GM one time..
+        if (rank.isAtleast(Rank.PlayerRank.TRIALGM)) {
+            color = ChatColor.AQUA;
+        }
 
-            ChatColor color = chatColor;
-            String rank = Rank.getInstance().getRank(player.getUniqueId());
-            //Only need to check if GM one time..
-            if (Rank.isTrialGMRank(rank)) {
-                color = ChatColor.AQUA;
+        String guild = "";
+
+        GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+        if (guildWrapper != null) {
+            String clanTag = guildWrapper.getTag();
+            guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
+        }
+
+        //Async please thanks.
+        //Do this once.
+        player.setPlayerListName(rank.getChatColor() + player.getName());
+        for (Player player1 : Bukkit.getOnlinePlayers()) {
+
+            //Party support.
+            if (affair.isInParty(player1)) {
+                //Dont update them each indiviually.
+                continue;
             }
 
-            String guild = "";
-            if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
-                String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-                guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
+            //The player1 team on their scoreboard.
+            Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
+            team.setPrefix(guild + color);
+            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+            if (!team.hasEntry(player.getName())) {
+                team.addEntry(player.getName());
             }
+        }
 
-            //Async please thanks.
-            ChatColor rankColor = Rank.colorFromRank(rank);
-
-            //Final cause threading is fun.
-            final String guildName = guild;
-            final ChatColor newColor = color;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                //Do this once.
-                player.setPlayerListName(rankColor + player.getName());
-                for (Player player1 : Bukkit.getOnlinePlayers()) {
-
-                    //Party support.
-                    if (affair.isInParty(player1)) {
-                        //Dont update them each indiviually.
-                        continue;
-                    }
-
-                    //The player1 team on their scoreboard.
-                    Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
-                    team.setPrefix(guildName + newColor);
-                    team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-                    if (!team.hasEntry(player.getName())) {
-                        team.addEntry(player.getName());
-                    }
-                }
-
-                for (Party party : affair._parties) {
-                    //Update the party scoreboards with this persons new level.
+        for (Party party : affair._parties) {
+            //Update the party scoreboards with this persons new level.
 //                updateCurrentPlayerLevel(player, party.getPartyScoreboard());
-                    Scoreboard scoreboard = party.getPartyScoreboard();
-                    Team team = getPlayerTeam(scoreboard, player);
-                    team.setPrefix(guildName + newColor);
-                    team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-                    if (!team.hasEntry(player.getName())) {
-                        team.addEntry(player.getName());
-                    }
-                }
+            Scoreboard scoreboard = party.getPartyScoreboard();
+            Team team = getPlayerTeam(scoreboard, player);
+            team.setPrefix(guild + color);
+            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+            if (!team.hasEntry(player.getName())) {
+                team.addEntry(player.getName());
+            }
+        }
 
-                Team team = getPlayerTeam(mainScoreboard, player);
-                team.setPrefix(guildName + newColor);
-                team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-                if (!team.hasEntry(player.getName())) {
-                    team.addEntry(player.getName());
-                }
-            });
+        Team team = getPlayerTeam(mainScoreboard, player);
+        team.setPrefix(guild + color);
+        team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+        if (!team.hasEntry(player.getName())) {
+            team.addEntry(player.getName());
+        }
 
-        });
     }
 
    /* public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
@@ -224,13 +213,17 @@ public class ScoreboardHandler implements GenericMechanic {
                 chatColor = ChatColor.AQUA;
             }
             String guild = "";
-            if (!GuildDatabase.getAPI().isGuildNull(player1.getUniqueId())) {
-                String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
+            GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player1.getUniqueId());
+            if (guildWrapper != null) {
+                String clanTag = guildWrapper.getTag();
+//                GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
                 guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
             }
             team.setPrefix(guild + chatColor);
             team.setSuffix(ChatColor.AQUA + " [Lvl. " + level + "]");
-            player1.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player1.getUniqueId())) + player1.getName());
+
+            Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(player1.getUniqueId());
+            player1.setPlayerListName(rank.getChatColor() + player1.getName());
             if (!team.hasEntry(player1.getName())) {
                 team.addEntry(player1.getName());
             }

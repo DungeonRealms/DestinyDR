@@ -3,7 +3,6 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -35,11 +34,6 @@ public class CommandRealmWipe extends BaseCommand {
 
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + usage);
-            return true;
-        }
-
-        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + args[0] + ChatColor.RED + " does not exist in our database.");
             return true;
         }
 

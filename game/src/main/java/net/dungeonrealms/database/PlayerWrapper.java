@@ -1,7 +1,6 @@
 package net.dungeonrealms.database;
 
 
-import com.google.common.collect.Lists;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +12,8 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.util.TimeUtil;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -50,6 +51,10 @@ public class PlayerWrapper {
 
     @Getter
     private int accountID, characterID;
+
+    @Getter
+    @Setter
+    private int guildID;
 
     @Getter
     private PlayerGameStats playerGameStats;
@@ -154,7 +159,7 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
-    private UUID whoBannedMe, whoMutedMe;
+    private Integer whoBannedMeID, whoMutedMeID;
 
     @Getter
     @Setter
@@ -164,7 +169,7 @@ public class PlayerWrapper {
     private HashMap<UUID, Integer> friendsList = new HashMap<>(), ignoredFriends = new HashMap<>(), pendingFriends = new HashMap<>();
 
     @Getter
-    private List<String> achievements = Lists.newArrayList();
+    private Set<String> achievements = new HashSet<>();
 
     @Getter
     private HashSet<String> mountsUnlocked, petsUnlocked, particlesUnlocked, mountSkins, trails;
@@ -175,7 +180,7 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
-    private Long rankExpiration;
+    private Integer rankExpiration;
 
     @Getter
     @Setter
@@ -266,6 +271,8 @@ public class PlayerWrapper {
                 this.loadMuleInventory(result);
                 this.loadLocation(result);
 
+                this.guildID = result.getInt("guilds.guild_id");
+
 
                 this.lastLogin = result.getLong("users.last_login");
                 this.lastLogout = result.getLong("users.last_logout");
@@ -299,7 +306,7 @@ public class PlayerWrapper {
                 this.shopLevel = result.getInt("characters.shop_level");
                 this.storedFoodLevel = result.getInt("characters.foodLevel");
                 this.combatLogged = result.getBoolean("characters.combatLogged");
-                this.achievements = StringUtils.deserializeList(result.getString("characters.achievements"), ",");
+                this.achievements = StringUtils.deserializeSet(result.getString("characters.achievements"), ",");
                 this.shopOpened = result.getBoolean("characters.shopOpened");
                 this.loggerDied = result.getBoolean("characters.loggerDied");
                 //We need to get the most updated last_used variable when pulling this..
@@ -310,7 +317,7 @@ public class PlayerWrapper {
 
                 this.currencyTab = new CurrencyTab(this.uuid).deserializeCurrencyTab(result.getString("users.currencyTab"));
                 this.rank = result.getString("ranks.rank");
-                this.rankExpiration = result.getLong("ranks.expiration");
+                this.rankExpiration = result.getInt("ranks.expiration");
 
                 this.realmTitle = result.getString("realm.title");
                 this.realmDescription = result.getString("realm.description");
@@ -333,9 +340,6 @@ public class PlayerWrapper {
                 this.portalShardsT5 = result.getInt("characters.portalShardsT5");
 
                 this.timeCreated = result.getLong("characters.created");
-
-                this.loadPunishment(true);
-
 
                 this.loadFriends();
 
@@ -372,27 +376,26 @@ public class PlayerWrapper {
     }
 
     //tfw greg pays $10 for a burger from macers, 8.1 is decent on that flavor scale
-    public void loadPunishment(boolean mute) {
-        try {
-            //Not too sure if this query is correct for what I am trying to do. Can not test atm because we have no data in the database. If it doesn't work I will fix it.
-            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                    "SELECT type, issued, expiration, punisher_id, quashed, reason, `users.uuid` AS `punisherUUID` FROM `punishments` JOIN `users` ON `users`.`account_id` = `punishments`.`punisher_id` WHERE `account_id` = ? AND `type` = " + (mute ? "mute" : "ban") + " ORDER BY expiration LIMIT 1");//Grab the oldest expiration time.
-            statement.setInt(1, this.accountID);
-
-            ResultSet result = statement.getResultSet();
-            if (mute) {
-                this.muteExpire = result.getLong("expiration");
-                this.muteReason = result.getString("reason");
-                this.whoMutedMe = UUID.fromString(result.getString("punisherUUID"));
-            } else {
-                this.banExpire = result.getLong("expiration");
-                this.banReason = result.getString("reason");
-                this.whoBannedMe = UUID.fromString(result.getString("punisherUUID"));
+    public void loadPunishment(boolean async, Consumer<Long> muteLoadedCallback) {
+        SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALL_PUNISHMENTS.getQuery(this.accountID), async, result -> {
+            try {
+                while (result.next()) {
+                    if (result.getString("type").equals("mute")) {
+                        this.muteExpire = result.getLong("expiration");
+                        this.muteReason = result.getString("reason");
+                        this.whoMutedMeID = result.getInt("punisher_id");
+                        if(muteLoadedCallback != null)
+                            muteLoadedCallback.accept(this.muteExpire);
+                    } else {
+                        this.banExpire = result.getLong("expiration");
+                        this.banReason = result.getString("reason");
+                        this.whoBannedMeID = result.getInt("punisher_id");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        });
     }
 
     private void loadFriends() throws SQLException {
@@ -801,11 +804,11 @@ public class PlayerWrapper {
     }
 
     public String getTimeWhenBanExpires() {
-        return "TODO Ban expire time Roflobsters";
+        return TimeUtil.formatDifference((this.banExpire - System.currentTimeMillis()) / 1_000);
     }
 
     public String getTimeWhenMuteExpires() {
-        return "TODO Mute expire time Roflobsters";
+        return TimeUtil.formatDifference((this.muteExpire - System.currentTimeMillis()) / 1_000);
     }
 
 

@@ -485,7 +485,7 @@ public class ClickHandler {
                     Chat.listenForMessage(player, chat -> {
                         Player target = Bukkit.getPlayer(chat.getMessage());
                         if (target != null) {
-                            FriendHandler.getInstance().sendRequest(player, target);
+                            FriendHandler.getInstance().sendRequest(player, wrapper.getAccountID(), target);
                             player.sendMessage(ChatColor.GREEN + "Friend request sent to " + ChatColor.BOLD + target.getName() + ChatColor.GREEN + ".");
                         } else {
                             player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");

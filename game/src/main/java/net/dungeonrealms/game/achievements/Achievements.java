@@ -2,6 +2,9 @@ package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import org.bukkit.Bukkit;
@@ -77,8 +80,10 @@ public class Achievements {
 
         // Why wouldnt this be async?
         //DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getDBName(), true);
-        if (Bukkit.getPlayer(uuid) == null) return;
+        wrapper.getAchievements().add(achievement.getDBName());
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, StringUtils.serializeList(wrapper.getAchievements(), ","), wrapper.getCharacterID());
         Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
         player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");
         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0]);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);

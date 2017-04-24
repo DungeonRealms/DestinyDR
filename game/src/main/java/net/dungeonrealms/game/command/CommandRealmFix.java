@@ -36,20 +36,13 @@ public class CommandRealmFix extends BaseCommand {
             return true;
         }
 
-        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + args[0] + ChatColor.RED + " does not exist, have they played Dungeon Realms?");
-            return true;
-        }
-
-        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-
         SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, uuid -> {
             if (uuid == null) {
                 sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
                 return;
             }
 
-            PlayerWrapper.getPlayerWrapper(p_uuid, false, true, wrapper -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
                 if (wrapper == null) {
                     sender.sendMessage(ChatColor.RED + "Could not load player data!");
                     return;
@@ -61,7 +54,7 @@ public class CommandRealmFix extends BaseCommand {
                 SQLDatabaseAPI.getInstance().executeUpdate(results -> {
                     sender.sendMessage(ChatColor.GREEN + "Successfully fixed " + args[0] + "'s realm.");
                     //Update their realm status..
-                    GameAPI.updatePlayerData(p_uuid, "realm");
+                    GameAPI.updatePlayerData(uuid, "realm");
                 }, QueryType.SET_REALM_INFO.getQuery(0, 0, wrapper.getRealmTier(), wrapper.getAccountID()));
             });
 

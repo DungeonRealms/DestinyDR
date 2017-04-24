@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mongodb.bulk.BulkWriteResult;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -13,12 +12,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.player.rank.Subscription;
+import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -841,8 +837,8 @@ public class GameAPI {
         return true;
     }*/
 
-    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
-        handleLogout(uuid, async, doAfter, true, true);
+    public static void handleLogout(UUID uuid, boolean async, Consumer<Boolean> doAfter) {
+        handleLogout(uuid, async, doAfter, true);
     }
 
     /**
@@ -853,24 +849,33 @@ public class GameAPI {
      *              different method.
      * @since 1.0
      */
-    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter, boolean save, boolean remove) {
+    public static void handleLogout(UUID uuid, boolean async, Consumer<Boolean> doAfter, boolean remove) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
+
+        if(player.hasMetadata("saved")){
+            //Already saved... just call callback so it can remove them..
+            doAfter.accept(false);
+            Bukkit.getLogger().info("No re-saving " + player.getName() + " because they have already been saved.");
+            return;
+        }
 
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if (wrapper == null) return;
+        if (wrapper == null) {
+            Bukkit.getLogger().info("null player wrapper for " + player.getName());
+            return;
+        }
+
         // Fix invalid session IDs
 //        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
         wrapper.setHealth(HealthHandler.getInstance().getPlayerHPLive(player));
         wrapper.setStoredFoodLevel(player.getFoodLevel());
-//        HealthHandler.getInstance().handleLogoutEvents(player);
-//        EnergyHandler.getInstance().handleLogoutEvents(player);
         Realms.getInstance().handleLogout(player);
         Chat.listenForMessage(player, null, null);
 
@@ -880,6 +885,7 @@ public class GameAPI {
                 if (DungeonManager.getInstance().isDungeonItem(stack))
                     player.getInventory().remove(stack);
 
+        player.setMetadata("saved", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
         wrapper.setLastLogout(System.currentTimeMillis());
         wrapper.saveData(async, true, wrap -> {
             wrapper.setPlayingStatus(false);
@@ -926,82 +932,14 @@ public class GameAPI {
 
             DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
             if (remove) {
-                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
+                PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
                 GAMEPLAYERS.remove(player.getName());
             }
             Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
 
             if (doAfter != null)
-                doAfter.accept(null);
+                doAfter.accept(true);
         });
-
-        // save player data
-//        savePlayerData(uuid, async, doAfterSave -> {
-//            //IMPORTANT: Anything put after here runs AFTER data is synced with mongo.
-//            List<UpdateOneModel<Document>> operations = new ArrayList<>();
-//            Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
-//
-//            for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
-//                tracker.removeDamager(player);
-//            }
-//
-//            if (GameAPI._hiddenPlayers.contains(player))
-//                GameAPI._hiddenPlayers.remove(player);
-//
-//            if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-//                Utils.log.info(player.getUniqueId() + " has already been saved.");
-//                return;
-//            }
-//
-//            MountUtils.inventories.remove(uuid);
-//            operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.LAST_LOGOUT.getKey(), System.currentTimeMillis()))));
-//            KarmaHandler.getInstance().handleLogoutEvents(player);
-//            Quests.getInstance().handleLogoutEvents(player);
-//            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-//                ScoreboardHandler.getInstance().removePlayerScoreboard(player);
-//            });
-//
-//            if (EntityAPI.hasPetOut(uuid)) {
-//                net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(uuid);
-//                pet.dead = true;
-//                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(pet)) {
-//                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(pet);
-//                }
-//                EntityAPI.removePlayerPetList(uuid);
-//            }
-//
-//            if (EntityAPI.hasMountOut(uuid)) {
-//                net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(uuid);
-//                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(mount)) {
-//                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(mount);
-//                }
-//                if (mount.isAlive()) { // Safety check
-//                    if (mount.passengers != null) {
-//                        mount.passengers.forEach(passenger -> passenger = null);
-//                    }
-//                    mount.dead = true;
-//                }
-//                EntityAPI.removePlayerMountList(uuid);
-//            }
-//
-//            if (Affair.getInstance().isInParty(player)) {
-//                Affair.getInstance().removeMember(player, false);
-//            }
-//
-//            operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IS_PLAYING.getKey(), false))));
-//
-//            DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfterAfterUpdate -> {
-//                DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-//                if (remove) {
-//                    DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
-//                    GAMEPLAYERS.remove(player.getName());
-//                }
-//                Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
-//
-//                if (doAfter != null)
-//                    doAfter.accept(doAfterSave);
-//            });
-//        });
     }
 
     /**
@@ -1033,6 +971,8 @@ public class GameAPI {
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.setInvulnerable(true);
                 player.setNoDamageTicks(10);
+                //Dont allow sharding when we are starting to transfer them..
+                player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
                 player.closeInventory();
                 player.setCanPickupItems(false);
 
@@ -1046,7 +986,6 @@ public class GameAPI {
                 }
 
                 if (DungeonRealms.getInstance().isDrStopAll) {
-
                     // SEND THEM TO THE LOBBY NORMALLY INSTEAD //
                     BungeeUtils.sendToServer(player.getName(), "Lobby");
                     return;
@@ -1063,7 +1002,7 @@ public class GameAPI {
 //                    }
                     // Move
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
-                });
+                }, false);
 
             }, (i + 1) * 4);
         }
@@ -1173,7 +1112,7 @@ public class GameAPI {
 
         // Essentials
         //Subscription.getInstance().handleJoin(player);
-        Rank.getInstance().setRank(player.getUniqueId(), playerWrapper.getRank());
+        //Rank.getInstance().setRank(player.getUniqueId(), playerWrapper.getRank());
 
         // Scoreboard Safety
 
@@ -1284,7 +1223,7 @@ public class GameAPI {
         KarmaHandler.getInstance().handleLoginEvents(player);
 
         // Subscription
-        Subscription.getInstance().handleLogin(player);
+        Subscription.getInstance().handleLogin(player, playerWrapper);
 
         // Guilds
         GuildMechanics.getInstance().doLogin(player);
@@ -1454,20 +1393,18 @@ public class GameAPI {
 
         String name = player.getName();
         UUID uuid = player.getUniqueId();
-        PlayerWrapper.getPlayerWrapper(player.getUniqueId(), wrapper -> {
-            wrapper.setLastShardTransfer(System.currentTimeMillis());
-            //Transfer the player after logout is done being handled.
-            GameAPI.handleLogout(uuid, true, doAfter -> BungeeUtils.sendToServer(name, serverBungeeName));
-        });
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        wrapper.setLastShardTransfer(System.currentTimeMillis());
+        GameAPI.handleLogout(uuid, true, doAfter -> BungeeUtils.sendToServer(name, serverBungeeName), false);
     }
 
     static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;
         DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-                return;
-            }
+//            if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+//                return;
+//            }
             UUID uuid = player.getUniqueId();
 //            savePlayerData(uuid, true, doAfter -> Utils.log.info("Backed up information for uuid: " + uuid.toString()));
         }
@@ -2263,7 +2200,7 @@ public class GameAPI {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
-        }), true, false);
+        }), false);
     }
 
     /**

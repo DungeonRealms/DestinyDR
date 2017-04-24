@@ -379,7 +379,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -418,7 +418,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -457,7 +457,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -496,7 +496,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -535,7 +535,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -574,7 +574,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
@@ -613,7 +613,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return;
-        List<String> playerAchievements = wrapper.getAchievements();
+        Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
         noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);

@@ -10,8 +10,13 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -34,7 +39,6 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -225,8 +229,14 @@ public class CommandSet extends BaseCommand {
                 player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s alignment to " + args[0] + ".");
                 break;
             case "g":
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
-                break;
+                GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+                if(guildWrapper == null) {
+                    player.sendMessage(ChatColor.RED + "You are not in a guild!");
+                    break;
+                }
+                guildWrapper.removePlayer(player.getUniqueId());
+                wrapper.setGuildID(0);
+            break;
             case "combatoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
                     CombatLog.removeFromCombat(Bukkit.getPlayer(args[1]));
@@ -317,7 +327,8 @@ public class CommandSet extends BaseCommand {
                             Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
                         }
                     } else {
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACHIEVEMENTS, new ArrayList<String>(), true);
+                        wrapper.getAchievements().clear();
+                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, null, wrapper.getAccountID());
                     }
                     player.sendMessage(ChatColor.GREEN + "Finished " + args[1].toLowerCase() + "ing all achievements.");
                 } else {
@@ -326,7 +337,9 @@ public class CommandSet extends BaseCommand {
                             if (args[1].equalsIgnoreCase("unlock")) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
                             } else {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getDBName(), true);
+                                wrapper.getAchievements().remove(playerAchievements.getDBName());
+                                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, StringUtils.serializeList(wrapper.getAchievements(), ","), wrapper.getAccountID());
+//                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getDBName(), true);
                             }
                             player.sendMessage(ChatColor.GREEN + "Successfully " + args[1].toLowerCase() + "ed the achievement: " + args[2].toLowerCase());
                             return true;

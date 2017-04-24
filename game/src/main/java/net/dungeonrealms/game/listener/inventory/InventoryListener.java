@@ -1552,7 +1552,7 @@ public class InventoryListener implements Listener {
                 stats.freePoints = stats.tempFreePoints;
                 stats.reset = false;
                 stats.resetTemp();
-                stats.updateDatabase(false);
+//                stats.updateDatabase(false);
                 p.closeInventory();
             }
         }

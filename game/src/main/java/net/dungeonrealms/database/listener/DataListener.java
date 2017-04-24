@@ -24,7 +24,7 @@ public class DataListener implements Listener {
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerWrapper wrapper = new PlayerWrapper(event.getUniqueId());
         PlayerWrapper.setWrapper(event.getUniqueId(), wrapper);
-        wrapper.loadPunishment(false);
+        wrapper.loadPunishment(false, null);
 
         if(wrapper.isBanned()) {
             //This will never get called. It will catch them in the lobby instead.
@@ -58,7 +58,7 @@ public class DataListener implements Listener {
         DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
 
         // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+//        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
     @SuppressWarnings("unused")

@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.LoadableData;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.SaveableData;
@@ -314,18 +315,21 @@ public class PlayerStats implements LoadableData, SaveableData {
      * Called to sync database with players server stats
      */
 
-    public void updateDatabase(boolean logout) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(playerUUID);
-        if (wrapper == null) return;
-//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
-    }
+//    public void updateDatabase(boolean logout) {
+//        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(playerUUID);
+//        if (wrapper == null) return;
+//
+////        SQLDatabaseAPI.getInstance().executeUpdate(updates -> ,
+////                "UPDATE attributes SET po");
+////        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
+//    }
 
     /**
      * Resets temp stats
@@ -350,7 +354,7 @@ public class PlayerStats implements LoadableData, SaveableData {
         this.dexPoints = 0;
         this.strPoints = 0;
         this.vitPoints = 0;
-        updateDatabase(false);
+//        updateDatabase(false);
         // recalculate player attributes
 //        GamePlayer gp = GameAPI.getGamePlayer(Bukkit.getPlayer(playerUUID));
         GameAPI.calculateAllAttributes(Bukkit.getPlayer(playerUUID));
@@ -359,7 +363,7 @@ public class PlayerStats implements LoadableData, SaveableData {
 
     public void addReset() {
         resetAmounts++;
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
     }
 
     @Override

@@ -1,8 +1,12 @@
-package net.dungeonrealms.common.game.database.player.rank;
+package net.dungeonrealms.database.rank;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -31,24 +35,14 @@ public class Subscription {
      * Is used in the startTimer class that checks all players on
      * the server and their subscription time.
      *
-     * @deprecated
-     * @param player
-     * @since 1.0
-     */
-    public int checkSubscription(Player player) {
-        return checkSubscription(player.getUniqueId());
-    }
-
-    /**
-     * Is used in the startTimer class that checks all players on
-     * the server and their subscription time.
-     *
      * @param uuid
+     *
      */
-    public int checkSubscription(UUID uuid) {
-        if (Rank.getInstance().getRank(uuid).equalsIgnoreCase("sub") || Rank.getInstance().getRank(uuid).equalsIgnoreCase("sub+")) {
+    public int checkSubscription(UUID uuid, int expiration) {
+        Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
+        if (rank == Rank.PlayerRank.SUB || rank == Rank.PlayerRank.SUB_PLUS) {
             int currentTime = (int) (System.currentTimeMillis() / 1000);
-            int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, uuid);
+            int endTime = expiration;
             int timeRemaining = (currentTime == 0 || endTime == 0 ? 0 : (endTime - currentTime));
             return (int) (timeRemaining <= 0 ? 0 : Math.ceil(timeRemaining / 86400.0));
         }
@@ -62,20 +56,22 @@ public class Subscription {
      * @param player
      * @since 1.0
      */
-    public void handleLogin(Player player) {
-        int subLength = checkSubscription(player);
+    public void handleLogin(Player player, PlayerWrapper wrapper) {
+        int subLength = checkSubscription(player.getUniqueId(), wrapper.getRankExpiration());
         if (subLength > 0) {
             showSubscriptionExpiry(player, subLength);
         } else if (subLength == 0) {
-            expireSubscription(player);
+            expireSubscription(player, wrapper);
         } else if (subLength == -1 && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub++")) {
             showSubscriptionExpiry(player, -1);
         }
     }
 
-    public void expireSubscription(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true);
+    public void expireSubscription(Player player, PlayerWrapper wrapper) {
+        wrapper.setRank("default");
+        wrapper.setRankExpiration(0);
+        Rank.getInstance().getCachedRanks().put(player.getUniqueId(), Rank.PlayerRank.DEFAULT);
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_RANK, wrapper.getAccountID());
         player.sendMessage(ChatColor.RED + "Your subscription has expired!");
     }
 

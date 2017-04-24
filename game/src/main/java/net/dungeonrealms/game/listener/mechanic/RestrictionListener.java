@@ -7,7 +7,6 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;

@@ -3,7 +3,8 @@ package net.dungeonrealms.game.command.punish;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.Utils;
 
@@ -92,8 +93,9 @@ public class CommandMute extends BaseCommand {
             reasonString = reason.toString();
         }
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p_uuid);
         // Apply the mute against the user.
-        PunishAPI.mute(p_uuid, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid, "mute"));
+        PunishAPI.mute(wrapper, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid, "mute"));
 
         //
         String punishmentLength = ChatColor.RED + PunishAPI.timeString((int) (duration / 60));
