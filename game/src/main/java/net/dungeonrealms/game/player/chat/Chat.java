@@ -2,8 +2,6 @@ package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -189,10 +187,6 @@ public class Chat {
                 GuildWrapper foundGuild = GuildDatabase.getAPI().getGuildWrapper(wrapper.getGuildID());
                 String guild = foundGuild != null ? net.md_5.bungee.api.ChatColor.WHITE + "[" + foundGuild.getTag() + "] " : "";
                 final String rank = wrapper.getRank().toLowerCase();
-
-
-
-
                 player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
                         (recipientName, guild, rank, true, wrapper.getPlayerAlignment()) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
                         ChatColor.WHITE + finalMessage);

@@ -1,17 +1,14 @@
 package net.dungeonrealms.game.command.guild;
 
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
@@ -29,25 +26,26 @@ public class CommandGPromote extends BaseCommand {
 
         Player player = (Player) sender;
 
-        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gpromote <player>.");
-            return true;
-        }
-
-
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
+        GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(playerWrapper.getGuildID());
         if (args.length == 0) {
             player.sendMessage(usage);
             return true;
         }
 
-
-        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-
-        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
-            player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gpromote <player>.");
+        if (wrapper == null) {
+            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gpromote <player>.");
             return true;
         }
+
+//        String guildName =
+//        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+//        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
+
+//        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
+//            player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gpromote <player>.");
+//            return true;
+//        }
 
         String p_name = args[0];
 
@@ -56,39 +54,39 @@ public class CommandGPromote extends BaseCommand {
             return true;
         }
 
-        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
-            return true;
-        }
+//        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
+//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
+//            return true;
+//        }
 
         Player p = Bukkit.getPlayer(p_name);
-        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
+//        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 
-        if (!GuildDatabaseAPI.get().getGuildOf(p_uuid).equals(guildName)) {
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
-            return true;
-        }
+//        if (!GuildDatabaseAPI.get().getGuildOf(p_uuid).equals(guildName)) {
+//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
+//            return true;
+//        }
 
-        if (GuildDatabaseAPI.get().isOfficer(p_uuid, guildName)) {
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " has already been promoted.");
-            return true;
-        }
+//        if (GuildDatabaseAPI.get().isOfficer(p_uuid, guildName)) {
+//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " has already been promoted.");
+//            return true;
+//        }
 
-        if (GuildDatabaseAPI.get().isOwner(p_uuid, guildName)) {
-            player.sendMessage(ChatColor.RED + "You can't promote the owner of a guild.");
-            return true;
-        }
+//        if (GuildDatabaseAPI.get().isOwner(p_uuid, guildName)) {
+//            player.sendMessage(ChatColor.RED + "You can't promote the owner of a guild.");
+//            return true;
+//        }
 
-        GuildDatabaseAPI.get().promotePlayer(guildName, p_uuid);
-        GameAPI.updateGuildData(guildName);
+//        GuildDatabaseAPI.get().promotePlayer(guildName, p_uuid);
+//        GameAPI.updateGuildData(guildName);
 
-        player.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
-        GuildMechanics.getInstance().sendAlert(guildName, ChatColor.GREEN + " " + p_name + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
+//        player.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
+//        GuildMechanics.getInstance().sendAlert(guildName, ChatColor.GREEN + " " + p_name + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
 
 
         if (p != null) {
             p.sendMessage("");
-            p.sendMessage(ChatColor.DARK_AQUA + "You have been " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.DARK_AQUA + " in " + displayName);
+//            p.sendMessage(ChatColor.DARK_AQUA + "You have been " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.DARK_AQUA + " in " + displayName);
             p.sendMessage("");
         } else {
             //TODO: SEND PROMOTE PACKET

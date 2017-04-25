@@ -55,25 +55,24 @@ public class Lobby extends JavaPlugin implements Listener {
 
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
 
-    private SQLDatabase sqlDatabase;
-
-
     @Override
     public void onEnable() {
         instance = this;
-        AsyncUtils.threadCount = 2;
-        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
+        //Dont need these in the lobby?
+//        AsyncUtils.threadCount = 2;
+//        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
 
-        this.sqlDatabase = new SQLDatabase(getConfig().getString("sql.hostname"), getConfig().getString("sql.username"), getConfig().getString("sql.password"), getConfig().getString("sql.database"));
-        if (!this.sqlDatabase.isConnected()) {
+        SQLDatabaseAPI.getInstance().init();
+//        this.sqlDatabase = new SQLDatabase(getConfig().getString("sql.hostname"), getConfig().getString("sql.username"), getConfig().getString("sql.password"), getConfig().getString("sql.database"));
+        if (!SQLDatabaseAPI.getInstance().getDatabase().isConnected()) {
             Bukkit.getLogger().info("Unable to connect to MySQL database....");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        SQLDatabaseAPI.getInstance();
+        Bukkit.getLogger().info("Connected to MySQL Database!");
 //        DatabaseInstance.getInstance().startInitialization(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -98,7 +97,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-
+        SQLDatabaseAPI.getInstance().shutdown();
     }
 
     @EventHandler

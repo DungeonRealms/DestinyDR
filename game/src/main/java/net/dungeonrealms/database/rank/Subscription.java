@@ -1,8 +1,5 @@
 package net.dungeonrealms.database.rank;
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -71,7 +68,7 @@ public class Subscription {
         wrapper.setRank("default");
         wrapper.setRankExpiration(0);
         Rank.getInstance().getCachedRanks().put(player.getUniqueId(), Rank.PlayerRank.DEFAULT);
-        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_RANK, wrapper.getAccountID());
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_RANK, "DEFAULT", wrapper.getAccountID());
         player.sendMessage(ChatColor.RED + "Your subscription has expired!");
     }
 

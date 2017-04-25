@@ -299,15 +299,15 @@ public class ItemListener implements Listener {
         p.getInventory().setItemInMainHand(p.getInventory().getHelmet());
         p.getInventory().setHelmet(banner);
 
-        GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
-            if (exists && GuildDatabaseAPI.get().getGuildOf(p.getUniqueId()).equals(guildName)) {
-                Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.GUILD_REPESENT);
-                String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
-
-                if (!motd.isEmpty())
-                    p.sendMessage(ChatColor.GRAY + "\"" + ChatColor.AQUA + motd + ChatColor.GRAY + "\"");
-            }
-        });
+//        GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
+//            if (exists && GuildDatabaseAPI.get().getGuildOf(p.getUniqueId()).equals(guildName)) {
+//                Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.GUILD_REPESENT);
+//                String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+//
+//                if (!motd.isEmpty())
+//                    p.sendMessage(ChatColor.GRAY + "\"" + ChatColor.AQUA + motd + ChatColor.GRAY + "\"");
+//            }
+//        });
 
         event.setCancelled(true);
     }

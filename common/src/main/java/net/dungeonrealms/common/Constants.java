@@ -28,10 +28,11 @@ public class Constants {
     public static String MASTER_SERVER_IP;
 
     // BACKEND SERVER SERVER PORT //
-    public static int MASTER_SERVER_PORT = 22964;
+    public static int MASTER_SERVER_PORT = 22965;
 
-    public static int NET_READ_BUFFER_SIZE = 16384;
+//    public static int NET_READ_BUFFER_SIZE = 16384;
 
+    public static int NET_READ_BUFFER_SIZE = 32768;
     public static int NET_WRITE_BUFFER_SIZE = 32768;
 
     // BUILD NUMBER //
@@ -46,9 +47,11 @@ public class Constants {
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;
-        MASTER_SERVER_IP = "158.69.23.169";
-        MASTER_SERVER_PORT = 22964;
-        NET_READ_BUFFER_SIZE = 16384;
+        MASTER_SERVER_IP = "158.69.121.40";
+//        com.esotericsoftware.kryonet.KryoNetException: Unable to read object larger than read buffer: 318768141
+        MASTER_SERVER_PORT = 22965;
+        //NET_READ_BUFFER_SIZE = 16384;
+        NET_READ_BUFFER_SIZE = 32768;
         NET_WRITE_BUFFER_SIZE = 32768;
         BUILD_NUMBER = "#0";
     }

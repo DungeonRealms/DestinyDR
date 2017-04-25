@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -33,7 +33,7 @@ public class CommandStuck extends BaseCommand {
 
         sender.sendMessage(ChatColor.GREEN + "Checking your status ...");
 
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+        if (!PlayerWrapper.getPlayerWrappers().containsKey(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "Seems one of the issues is we failed to retrieve your data from the database! Please rejoin!");
             return true;
         }

@@ -1,5 +1,7 @@
 package net.dungeonrealms.common.game.database.sql;
 
+import org.bukkit.Bukkit;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -16,11 +18,12 @@ public class SQLDatabase {
     public SQLDatabase(String host, String username, String password, String database) {
         this.username = username;
         this.password = password;
+        this.host = host;
         this.database = database;
         this.url = "jdbc:mysql://" + host + ":3306/" + database;
     }
 
-    protected static Connection connection;
+    protected Connection connection;
 
     public boolean isConnected() {
         try {
@@ -45,10 +48,15 @@ public class SQLDatabase {
             Properties props = new Properties();
             props.setProperty("password", this.password);
             props.setProperty("user", this.username);
+            props.setProperty("database", this.database);
+//            props.setProperty("connectTimeout", "3000");
             props.setProperty("autoReconnect", "true");
             props.setProperty("continueBatchOnError", "true");
             props.setProperty("rewriteBatchStatements", "true");
-            connection = DriverManager.getConnection(url, props);
+            Bukkit.getLogger().info("Going to grab new connection with " + props.get("user") + " Pass: " + props.get("password") + " Database: " + props.get("database"));
+//            connection = DriverManager.getConnection(url, props);
+            connection = DriverManager.getConnection(url, username, password);
+            Bukkit.getLogger().info("Connection created..");
         } catch (Exception e) {
             e.printStackTrace();
         }

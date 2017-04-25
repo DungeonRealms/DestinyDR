@@ -1,11 +1,15 @@
 package net.dungeonrealms.game.command.guild;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.game.guild.GuildMember;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,27 +35,32 @@ public class CommandGDeny extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
-        Document guildInvitation = (Document) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
-
-        if (guildInvitation == null) {
+        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+        if(wrapper == null) {
             player.sendMessage(ChatColor.RED + "No pending guild invitation.");
             return true;
         }
 
-        String guildName = guildInvitation.getString("guild");
-        String guildDisplayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-        String referrer = guildInvitation.getString("referrer");
+        GuildMember member = wrapper.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true, doAfter -> {
-            player.sendMessage("");
-            player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.RED + "s guild.");
+        if(member == null) {
+            player.sendMessage(ChatColor.RED + "You do not have a pending guild invitation!");
+            Constants.log.info("A person did /g deny. We found their guildwrapper but they were not in the guild!");
+            return true;
+        }
 
-            Player owner = Bukkit.getPlayer(referrer);
-            BungeeUtils.sendPlayerMessage(owner.getName(), ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
-            GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)), "guild");
-        });
+        if(member.isAccepted()) {
+            player.sendMessage(ChatColor.RED + "You are already in the guild! Do /g leave");
+            return true;
+        }
 
-        return false;
+        player.sendMessage("");
+        player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + wrapper.getName() + "'" + ChatColor.RED + "s guild.");
+
+        wrapper.sendGuildMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.", false,GuildMember.GuildRanks.OFFICER);
+        GameAPI.sendNetworkMessage("Guild", "deny", String.valueOf(wrapper.getGuildID()), String.valueOf(member.getAccountID()));
+
+        return true;
     }
 
 }

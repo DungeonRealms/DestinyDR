@@ -1,12 +1,8 @@
 package net.dungeonrealms.game.player.duel;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

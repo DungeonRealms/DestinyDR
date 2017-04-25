@@ -3,9 +3,6 @@ package net.dungeonrealms.game.world.shops;
 import lombok.Cleanup;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -105,7 +102,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
     }
 
     public static PreparedStatement deleteAllShops(boolean shutDown) throws SQLException {
-        @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
+        PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
         for (Shop shop : ALLSHOPS.values())
             shop.deleteShop(shutDown, statement);
         ALLSHOPS.clear();

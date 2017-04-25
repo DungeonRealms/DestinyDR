@@ -241,7 +241,7 @@ public class PlayerWrapper {
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
                     "SELECT * FROM `users` LEFT JOIN `ranks` ON `users`.`account_id` = `ranks`.`account_id` " +
                             "LEFT JOIN `toggles` ON `users`.`account_id` = `toggles`.`account_id` " +
-                            "LEFT JOIN `ip_addresses` ON `users`.`account_id` = `ip_addresses.account_id` " +
+                            "LEFT JOIN `ip_addresses` ON `users`.`account_id` = `ip_addresses`.`account_id` " +
                             "LEFT JOIN `mail` ON `users`.`account_id` = `mail`.`account_id` " +
                             "LEFT JOIN `guild_members` ON `users`.`account_id` = `guild_members`.`account_id` " +
                             "LEFT JOIN `guilds` ON `guild_members`.`guild_id` = `guilds`.`guild_id` " +
@@ -252,7 +252,7 @@ public class PlayerWrapper {
                             "WHERE `users`.`uuid` = ?;");
             statement.setString(1, uuid.toString());
 
-            ResultSet result = statement.getResultSet();
+            ResultSet result = statement.executeQuery();
             if (result.first()) {
                 this.accountID = result.getInt("users.account_id");
                 this.username = result.getString("users.username");
@@ -367,6 +367,7 @@ public class PlayerWrapper {
     }
 
 
+
     public void loadUnlockables(ResultSet result) throws SQLException {
         this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
         this.petsUnlocked = StringUtils.deserializeSet(result.getString("users.pets"), ",");
@@ -401,15 +402,12 @@ public class PlayerWrapper {
     private void loadFriends() throws SQLException {
         //Not too sure if this query is correct for what I am trying to do. Can not test atm because we have no data in the database. If it doesn't work I will fix it.
         @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                "SELECT friend_id, status, users.uuid AS `friendUUID` FROM `friends` JOIN `users` ON `users`.`account_id` = `friends`.`friend_id` WHERE `friends`.`account_id` = ?;");
+                "SELECT friend_id, status FROM friends WHERE account_id = ?;");
         statement.setInt(1, this.accountID);
-
-        ResultSet result = statement.getResultSet();
-
+        ResultSet result = statement.executeQuery();
         while (result.next()) {
             int friendId = result.getInt("friends.friend_id");
             String status = result.getString("friends.status");
-//            String friendUUID = result.getString("friendUUID");
             UUID friendUUID = SQLDatabaseAPI.getInstance().getUUIDFromAccountID(friendId);
             if (friendUUID == null) {
                 Bukkit.getLogger().info("Unable to get friend UUID for ID " + friendId + " for " + this.username);
@@ -492,40 +490,57 @@ public class PlayerWrapper {
 
 
     public void saveData(boolean async, Boolean isOnline, Consumer<PlayerWrapper> callback) {
-        if (player == null && Bukkit.isPrimaryThread()) {
-            Player toCheck = Bukkit.getPlayer(getUuid());
-            if (toCheck != null) player = toCheck;
-        }
-
+        System.out.println("Save data debug 1! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> saveData(false, isOnline, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
 
+        System.out.println("Save data debug 2! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
+
+
         try {
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
 
+            System.out.println("Save data debug 3! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getCharacterReplaceQuery(player));
+            System.out.println("Save data debug 4! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getPlayerStats().getUpdateStatement());
+            System.out.println("Save data debug 5! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getPlayerStats().getUpdateStatement());
+            System.out.println("Save data debug 6! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getToggles().getUpdateStatement());
+            System.out.println("Save data debug 7! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
-            if (this.player != null)
+            System.out.println("Save data debug 8! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
+            if (this.player != null) {
+                System.out.println("Save data debug 9! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
                 statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
 
+            }
+            System.out.println("Save data debug 10! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank(), getRankExpiration()));
 
+            System.out.println("Save data debug 11! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm, lastReset) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm(), getLastRealmReset()));
+            System.out.println("Save data debug 12! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getUsersUpdateQuery(isOnline));
+            System.out.println("Save data debug 13! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
 
+            long start = System.currentTimeMillis();
+            Bukkit.getLogger().info("Preparing to execute batch..");
             statement.executeBatch();
-        } catch (SQLException e) {
+            Bukkit.getLogger().info("Batch executed in " + (System.currentTimeMillis() - start));
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-        if (callback != null)
+        System.out.println("Save data debug 14! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
+        if (callback != null) {
+            System.out.println("Save data debug 15! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             callback.accept(this);
+        }
     }
 
 
@@ -536,7 +551,7 @@ public class PlayerWrapper {
             bankStorage = pendingBankStorage;
 
         String collectionBinString = null;
-        if (bankStorage != null) collectionBinString = ItemSerialization.toString(bankStorage.collection_bin);
+        if (bankStorage != null && bankStorage.collection_bin != null) collectionBinString = ItemSerialization.toString(bankStorage.collection_bin);
 
         String bankString = bankStorage != null && bankStorage.inv != null ? ItemSerialization.toString(bankStorage.inv) : null;
 
@@ -662,6 +677,10 @@ public class PlayerWrapper {
     private void loadBanks(ResultSet set) {
         setBankLevel(set.getInt("characters.bank_level"));
         String serializedStorage = set.getString("characters.bank_storage");
+        if(serializedStorage == null){
+            this.pendingBankStorage = new Storage(uuid, this.accountID);
+            return;
+        }
 
         //Auto set the inventory size based off level? min 9, max 54
         Inventory inv = ItemSerialization.fromString(serializedStorage, Math.max(9, Math.min(54, getBankLevel() * 9)));
@@ -674,7 +693,7 @@ public class PlayerWrapper {
     @SneakyThrows
     private void loadCollectionBin(ResultSet set, Storage storage) {
         String stringInv = set.getString("characters.collection_storage");
-        if (stringInv.length() > 1) {
+        if (stringInv != null && stringInv.length() > 1) {
             Inventory inv = ItemSerialization.fromString(stringInv);
             if (inv == null) return;
             for (ItemStack item : inv.getContents())
@@ -713,7 +732,7 @@ public class PlayerWrapper {
         MuleTier tier = MuleTier.getByTier(muleLevel);
         if (tier != null) {
             this.pendingMuleInventory = Bukkit.createInventory(null, tier.getSize(), "Mule Storage");
-            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+            if (invString != null && !invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
                 //Make sure the inventory is as big as we need
                 this.pendingMuleInventory = ItemSerialization.fromString(invString, tier.getSize());
             }
@@ -722,10 +741,11 @@ public class PlayerWrapper {
 
     private String getEquipmentString(Player player) {
         Inventory toSave = Bukkit.createInventory(null, 9);
-        for (int index = 0; index < 5; index++) {
+        for (int index = 0; index < 4; index++) {
             ItemStack equipment = player.getEquipment().getArmorContents()[index];
             toSave.getContents()[index] = equipment;
         }
+        toSave.getContents()[4] = player.getInventory().getItemInOffHand();
 
         return ItemSerialization.toString(toSave);
     }
@@ -761,11 +781,13 @@ public class PlayerWrapper {
 
     public void loadPlayerArmor(Player player) {
         if (pendingArmor == null) return;
-        for (int index = 0; index < 5; index++) {
+        for (int index = 0; index < 4; index++) {
             //We are doing 5 for the new shield slot.
             ItemStack current = pendingArmor.getContents()[index];
             player.getEquipment().getArmorContents()[index] = current;
         }
+
+        player.getInventory().setItemInOffHand(pendingArmor.getContents()[4]);
 
         player.updateInventory();
     }

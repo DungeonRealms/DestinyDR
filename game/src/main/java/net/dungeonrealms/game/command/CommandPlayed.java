@@ -2,8 +2,6 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 
 import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;

@@ -83,7 +83,9 @@ public class AchievementManager implements GenericMechanic, Listener {
         }
         int playerBankGems = wrapper.getGems();
         BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
-        if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
+
+
+        if (wrapper.getGuildID() != 0) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
             //TODO: Check if they are Officer when type is implemented.
         }

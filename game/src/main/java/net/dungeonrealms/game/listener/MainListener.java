@@ -286,7 +286,7 @@ public class MainListener implements Listener {
             GameAPI.handleLogin(player);
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
+//            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
             e.printStackTrace();
             return;
         }

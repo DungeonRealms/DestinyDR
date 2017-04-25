@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.donation.buffs;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.Utils;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -15,7 +12,8 @@ import org.bukkit.ChatColor;
 public class ProfessionBuff extends Buff {
 
     // empty constructor is needed for generic instantiation during deserialization
-    public ProfessionBuff() {}
+    public ProfessionBuff() {
+    }
 
     public ProfessionBuff(int duration, float bonusAmount, String activatingPlayer, String fromServer) {
         this.duration = duration;
@@ -34,8 +32,7 @@ public class ProfessionBuff extends Buff {
                         + " for " + formattedTime + " by using 'Global Profession Buff' from the store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveProfessionBuff(this);
-        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                "buffs.activeProfessionBuff", this.serialize(), true);
+        DonationEffects.getInstance().updateLootBuff("activeProfessionBuff", this.serialize());
     }
 
     @Override
@@ -47,13 +44,12 @@ public class ProfessionBuff extends Buff {
                 + "+" + bonusAmount + "% Global Profession Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
-                    "buffs.queuedProfessionBuffs", -1, true);
+
+            de.updateLootBuff("queuedProfessionBuffs", de.serializeQueuedBuffs(de.getQueuedProfessionBuffs()));
             nextBuff.activateBuff();
         } else {
-            de.getInstance().setActiveProfessionBuff(null);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeProfessionBuff", "", true);
+            de.setActiveProfessionBuff(null);
+            de.updateLootBuff("activeProfessionBuff", null);
         }
     }
 

@@ -50,7 +50,7 @@ public class Rank {
                         System.out.println("Unable to get UUID string from " + accountID);
                         continue;
                     }
-                    UUID uuid = UUID.fromString("");
+                    UUID uuid = UUID.fromString(uuidString);
 
                     PlayerRank rank = PlayerRank.getFromInternalName(rs.getString("rank"));
                     if (rank == null) continue;
@@ -219,12 +219,12 @@ public class Rank {
         Player player = Bukkit.getPlayer(uuid);
 
         this.cachedRanks.put(uuid, rank);
-        SQLDatabaseAPI.getInstance().executeQuery(QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)), (set) -> {
+        SQLDatabaseAPI.getInstance().executeUpdate(set -> {
             if (player != null) {
                 player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
             }
-        });
+        }, QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)));
 
     }
 

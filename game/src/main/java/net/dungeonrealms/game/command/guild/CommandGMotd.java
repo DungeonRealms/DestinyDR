@@ -4,6 +4,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,24 +27,23 @@ public class CommandGMotd extends BaseCommand {
 
         Player player = (Player) sender;
 
-        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
+        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+        if(wrapper == null){
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to view " + ChatColor.BOLD + "/gmotd.");
             return true;
         }
-        
-        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+        String guildName = wrapper.getName();
 
         if (args.length == 0) {
-            GuildMechanics.getInstance().showMotd(player, guildName);
+            GuildMechanics.getInstance().showMotd(player, guildName, wrapper.getMotd());
             return true;
         }
 
         if (args.length >= 1) {
-            if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
+            if(!wrapper.isOwner(player.getUniqueId()) && !Rank.isGM(player)){
                 player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gmotd <motd>.");
                 return true;
             }
-
             StringBuilder newMotd = new StringBuilder(args[0]);
             for (int arg = 1; arg < args.length; arg++) newMotd.append(" ").append(args[arg]);
 
@@ -51,11 +52,13 @@ public class CommandGMotd extends BaseCommand {
                 return true;
             }
 
-            GuildDatabaseAPI.get().setMotdOf(guildName, newMotd.toString());
-            GameAPI.updateGuildData(guildName);
+            wrapper.setMotd(newMotd.toString());
+//            GuildDatabaseAPI.get().setMotdOf(guildName, newMotd.toString());
+//            GameAPI.updateGuildData(guildName);
+            GameAPI.sendNetworkMessage("Guilds", "setmotd", wrapper.getGuildID() + "", player.getName(), newMotd.toString());
 
             player.sendMessage(ChatColor.GRAY + "You have updated the guild " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + "MOTD" + ChatColor.GRAY + " to:");
-            GuildMechanics.getInstance().showMotd(player, guildName);
+            GuildMechanics.getInstance().showMotd(player, guildName, wrapper.getMotd());
             return true;
         }
         return false;

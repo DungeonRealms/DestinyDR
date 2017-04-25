@@ -10,7 +10,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
 
     @Getter
     @Setter
-    private boolean debug, trade, tradeChat, globalChat, receiveMessage, pvp, duel, chaoticPrevention, soundTrack, tips, glow, damageIndicators, vanish;
+    private boolean debug, trade, tradeChat, globalChat, receiveMessage, pvp, duel, chaoticPrevention, soundTrack, tips, glow, damageIndicators, vanish, isGuildChatOnly;
 
     @SneakyThrows
     public void extractData(ResultSet set) {
@@ -27,6 +27,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
         glow = set.getBoolean("toggles.glowEnabled");
         damageIndicators = set.getBoolean("toggles.dmgIndicators");
         vanish = set.getBoolean("toggles.vanish");
+        isGuildChatOnly = false; //This does not save or load. Doesnt need to
     }
 
     public String getUpdateStatement() {

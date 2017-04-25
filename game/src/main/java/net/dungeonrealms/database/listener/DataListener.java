@@ -1,8 +1,6 @@
 package net.dungeonrealms.database.listener;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.database.PlayerWrapper;

@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
+import lombok.Cleanup;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -99,6 +100,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -359,7 +361,8 @@ public class GameAPI {
         try {
             Bukkit.getLogger().info("Saving all shops sync...");
             long start = System.currentTimeMillis();
-            ShopMechanics.deleteAllShops(true).executeBatch();
+            @Cleanup PreparedStatement statement = ShopMechanics.deleteAllShops(true);
+            statement.executeBatch();
             Bukkit.getLogger().info("Saved all shops in " + (System.currentTimeMillis() - start) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
@@ -378,9 +381,10 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
             //Do sync..
+            long start = System.currentTimeMillis();
             SQLDatabaseAPI.getInstance().executeUpdate(done ->
-                            Bukkit.getLogger().info("Set " + done + " players with shard " + DungeonRealms.getInstance().bungeeName + " to offline."),
-                    QueryType.FIX_WHOLE_SHARD.getQuery(DungeonRealms.getShard().getPseudoName()), false);
+                    Bukkit.getLogger().info("Set " + done + " players with shard " + DungeonRealms.getInstance().bungeeName + " to offline in " + (System.currentTimeMillis() - start) + "ms"),
+            QueryType.FIX_WHOLE_SHARD.getQuery(DungeonRealms.getShard().getPseudoName()), false);
 //            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
 //                    Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
             DungeonRealms.getInstance().mm.stopInvocation();
@@ -422,8 +426,9 @@ public class GameAPI {
 
         try {
             Constants.log.info("Attempting to save all shops on crash...");
-            int[] shopsSaved = ShopMechanics.deleteAllShops(true).executeBatch();
-
+            int[] shopsSaved = null;
+            @Cleanup PreparedStatement statement = ShopMechanics.deleteAllShops(true);
+            statement.executeBatch();
             int affected = Arrays.stream(shopsSaved).sum();
             Constants.log.info("Managed to save " + affected + " shops..");
         } catch (SQLException e) {
@@ -853,7 +858,7 @@ public class GameAPI {
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
 
-        if(player.hasMetadata("saved")){
+        if (player.hasMetadata("saved")) {
             //Already saved... just call callback so it can remove them..
             doAfter.accept(false);
             Bukkit.getLogger().info("No re-saving " + player.getName() + " because they have already been saved.");
@@ -886,7 +891,9 @@ public class GameAPI {
 
         player.setMetadata("saved", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
         wrapper.setLastLogout(System.currentTimeMillis());
-        wrapper.saveData(async, true, wrap -> {
+        System.out.println("Starting the save data!");
+        wrapper.saveData(async, false, wrap -> {
+            System.out.println("Save data callback!");
             wrapper.setPlayingStatus(false);
             for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
                 tracker.removeDamager(player);

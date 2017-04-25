@@ -3,7 +3,6 @@ package net.dungeonrealms.common.game.database.sql;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.sun.xml.internal.fastinfoset.algorithm.HexadecimalEncodingAlgorithm;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -41,13 +40,18 @@ public class SQLDatabaseAPI {
     private Map<Integer, UUIDName> accountIdNames = new HashMap<>();
 
     public void shutdown() {
+        Bukkit.getLogger().info("Shutting down SQL Server Executor Thread...");
         SERVER_EXECUTOR_SERVICE.shutdown();
+        Bukkit.getLogger().info("SQL Server Executor Thread shutdown.");
 
+        long start = System.currentTimeMillis();
+        Bukkit.getLogger().info("Shutting SQL Server Query Executor Thread with " + this.sqlQueries.size() + " Queries remaining.");
         this.QUERY_QUEUE_THREAD.execute(() -> {
             if (this.sqlQueries.size() > 0)
                 System.out.println("Executing " + sqlQueries.size() + " Queries before shutting down threads..");
             this.saveRunnable.run();
             this.QUERY_QUEUE_THREAD.shutdown();
+            Constants.log.info("Shut down SQL Query Thread, took " + (System.currentTimeMillis() - start) + "ms to finish queries.");
         });
     }
 
@@ -63,6 +67,7 @@ public class SQLDatabaseAPI {
     public Set<UUID> pendingPlayerCreations = new HashSet<>();
 
     private DecimalFormat format = new DecimalFormat("#,###");
+
     /**
      * Returns the account_id created in the callback.
      *
@@ -86,26 +91,30 @@ public class SQLDatabaseAPI {
                             SQLDatabaseAPI.getInstance().executeUpdate(rowsAffected -> {
                                 if (rowsAffected > 0) {
                                     //We created it!!!
-                                    SQLDatabaseAPI.getInstance().executeQuery("SELECT character_id FROM characters WHERE account_id = '%s';", false, charResult -> {
+                                    SQLDatabaseAPI.getInstance().executeQuery("SELECT character_id FROM characters WHERE account_id = '" + accountID + "';", false, charResult -> {
                                         try {
-                                            int character_id = charResult.getInt("character_id");
-                                            SQLDatabaseAPI.getInstance().executeBatch(completed -> {
-                                                        pendingPlayerCreations.remove(uuid);
-                                                        Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
-                                                    },
-                                                    String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
-                                                    String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
-                                                    String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
-                                                    String.format("INSERT INTO realms(account_id) VALUES ('%s');", character_id),
-                                                    String.format("INSERT INTO statistics(character_id) VALUES ('%s');", character_id),
-                                                    String.format("INSERT INTO ip_address(account_id) VALUES ('%s');", ipAddress));
-                                            Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
+                                            if (charResult.first()) {
+                                                int character_id = charResult.getInt("character_id");
+                                                Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
+                                                SQLDatabaseAPI.getInstance().executeBatch(completed -> {
+                                                            pendingPlayerCreations.remove(uuid);
+                                                            Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
+                                                        },
+                                                        String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
+                                                        String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
+                                                        String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
+                                                        String.format("INSERT INTO realm(character_id) VALUES ('%s');", character_id),
+                                                        String.format("INSERT INTO statistics(character_id) VALUES ('%s');", character_id),
+                                                        String.format("INSERT INTO ip_addresses(account_id, ip_address, last_used) VALUES ('%s', '%s', '%s');", accountID, ipAddress, System.currentTimeMillis()));
+                                            } else {
+                                                Bukkit.getLogger().info("Null resultSet for " + username);
+                                            }
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     });
                                 }
-                            }, String.format("INSERT IGNORE INTO characters(account_id) VALUES ('%s');", accountID));
+                            }, String.format("INSERT IGNORE INTO characters(account_id, created) VALUES ('%s', '%s');", accountID, System.currentTimeMillis()));
 
                             Bukkit.getLogger().info("Created new account ID for " + username + " (" + uuid.toString() + ")");
                         }
@@ -114,7 +123,7 @@ public class SQLDatabaseAPI {
                     }
                 });
             }
-        }, String.format("INSERT IGNORE INTO users(uuid, username) VALUES ('%s', '%s');", uuid.toString(), username), false);
+        }, String.format("INSERT IGNORE INTO users(uuid, username, joined, last_login) VALUES ('%s', '%s', '%s', '%s');", uuid.toString(), username, System.currentTimeMillis(), System.currentTimeMillis()), false);
     }
 
 
@@ -128,9 +137,10 @@ public class SQLDatabaseAPI {
 
     public void executeQuery(String query, boolean async, @NonNull Consumer<ResultSet> callback) {
         if (async) {
-            CompletableFuture.runAsync(() -> executeQuery(query, async, callback), SERVER_EXECUTOR_SERVICE);
+            CompletableFuture.runAsync(() -> executeQuery(query, false, callback), SERVER_EXECUTOR_SERVICE);
             return;
         }
+        System.out.println("Attempting to execute query: " + query);
         try {
             @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
             ResultSet rs = statement.executeQuery();
@@ -194,7 +204,9 @@ public class SQLDatabaseAPI {
     private volatile Set<String> sqlQueries = new ConcurrentSet<>();
 
     public void init() {
-        this.database = new SQLDatabase("158.69.121.40", "dev", "3HCKkPc6mWr63E924C", "dungeonrealms");
+        Bukkit.getLogger().info("Attempting to connect to MySQL database...");
+        this.database = new SQLDatabase("158.69.121.40", "root", "N963GSvR2xwM9D5S5b4934HfDH", "dungeonrealms");
+//        this.database = new SQLDatabase("127.0.0.1", "dev", "3HCKkPc6mWr63E924C", "dungeonrealms");
 
         this.saveRunnable = () -> {
             //Dont do anything.. no queries..
@@ -244,7 +256,7 @@ public class SQLDatabaseAPI {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }, SERVER_EXECUTOR_SERVICE);
     }
 
 
@@ -260,6 +272,7 @@ public class SQLDatabaseAPI {
         return name.getName();
     }
 
+
     /**
      * Returns null if the ID for the given UUID was unable to be found.
      *
@@ -269,6 +282,13 @@ public class SQLDatabaseAPI {
     public Integer getAccountIdFromUUID(UUID uuid) {
         for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
             if (uuid.equals(entry.getValue().getUuid())) return entry.getKey();
+        }
+        return null;
+    }
+
+    public String getNameFromUUID(UUID uuid) {
+        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
+            if (uuid.equals(entry.getValue().getUuid())) return entry.getValue().getName();
         }
         return null;
     }

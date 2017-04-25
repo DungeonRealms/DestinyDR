@@ -30,67 +30,68 @@ public class GuildTabColumn extends Column {
                 variablesToRegister.add(new Variable("guild." + cursor) {
                     @Override
                     public String getReplacement(Player player) {
-                        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-                            switch (cursor) {
-                                case 0:
-                                    return ChatColor.GRAY.toString() + "Please visit the Guild";
-                                case 1:
-                                    return ChatColor.GRAY.toString() + "Registrar to start a guild!";
+//                        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
+//                            switch (cursor) {
+//                                case 0:
+//                                    return ChatColor.GRAY.toString() + "Please visit the Guild";
+//                                case 1:
+//                                    return ChatColor.GRAY.toString() + "Registrar to start a guild!";
+//
+//                            }
+//                            return "";
+//                        } else {
+//                            if (!GuildDatabase.getAPI().isGuildCached(GuildDatabaseAPI.get().getGuildOf(player.getUniqueId())))
+//                                return "";
+//                        }
 
-                            }
-                            return "";
-                        } else {
-                            if (!GuildDatabase.getAPI().isGuildCached(GuildDatabaseAPI.get().getGuildOf(player.getUniqueId())))
-                                return "";
-                        }
-
-                        List<String> guildMembers = new CopyOnWriteArrayList<>();
-
-                        String guild = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-
-                        new ArrayList<>(GuildDatabaseAPI.get().getAllOfGuild(guild)).stream()
-                                .filter(uuid -> !player.getUniqueId().equals(uuid))
-                                .forEach(uuid -> {
-                                    String playerName = null;
-                                    ShardInfo shard = null;
-
-                                    if (Bukkit.getPlayer(uuid) == null) {
-                                        Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
-                                        if (!curInfo.isPresent()) return;
-
-                                        PlayerToken playerInfo = curInfo.get().a();
-                                        if (playerInfo == null) return;
-
-                                        playerName = playerInfo.getName();
-                                        shard = curInfo.get().b();
-
-                                    } else {
-                                        shard = DungeonRealms.getShard();
-                                        playerName = Bukkit.getPlayer(uuid).getName();
-                                    }
-
-                                    String prefix = "";
-
-                                    if (GuildDatabaseAPI.get().isOwner(uuid, guild))
-                                        prefix += ChatColor.DARK_AQUA + "♛ " + ChatColor.GRAY;
-                                    else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
-                                        prefix += ChatColor.DARK_AQUA + "* " + ChatColor.GRAY;
-
-                                    guildMembers.add(getFormat(prefix + playerName, shard));
-                                });
-
-                        if (guildMembers.isEmpty()) if (cursor == 0)
-                            return ChatColor.RED + "No guild members online!";
-                        else return "";
-
-                        try {
-                            if (guildMembers.get(cursor) == null)
-                                return "";
-                        } catch (Exception ignored) {
-                            return "";
-                        }
-
-                        return guildMembers.get(cursor);
+//                        List<String> guildMembers = new CopyOnWriteArrayList<>();
+//
+//                        String guild = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+//
+//                        new ArrayList<>(GuildDatabaseAPI.get().getAllOfGuild(guild)).stream()
+//                                .filter(uuid -> !player.getUniqueId().equals(uuid))
+//                                .forEach(uuid -> {
+//                                    String playerName = null;
+//                                    ShardInfo shard = null;
+//
+//                                    if (Bukkit.getPlayer(uuid) == null) {
+//                                        Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+//                                        if (!curInfo.isPresent()) return;
+//
+//                                        PlayerToken playerInfo = curInfo.get().a();
+//                                        if (playerInfo == null) return;
+//
+//                                        playerName = playerInfo.getName();
+//                                        shard = curInfo.get().b();
+//
+//                                    } else {
+//                                        shard = DungeonRealms.getShard();
+//                                        playerName = Bukkit.getPlayer(uuid).getName();
+//                                    }
+//
+//                                    String prefix = "";
+//
+//                                    if (GuildDatabaseAPI.get().isOwner(uuid, guild))
+//                                        prefix += ChatColor.DARK_AQUA + "♛ " + ChatColor.GRAY;
+//                                    else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
+//                                        prefix += ChatColor.DARK_AQUA + "* " + ChatColor.GRAY;
+//
+//                                    guildMembers.add(getFormat(prefix + playerName, shard));
+//                                });
+//
+//                        if (guildMembers.isEmpty()) if (cursor == 0)
+//                            return ChatColor.RED + "No guild members online!";
+//                        else return "";
+//
+//                        try {
+//                            if (guildMembers.get(cursor) == null)
+//                                return "";
+//                        } catch (Exception ignored) {
+//                            return "";
+//                        }
+//
+//                        return guildMembers.get(cursor);
+                        return "BRANDON PLS FIX!!!";
                     }
                 });
             }

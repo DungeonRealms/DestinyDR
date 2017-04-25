@@ -72,18 +72,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.inventivetalent.npclib</groupId>
       <artifactId>api</artifactId>
       <version>1.8.6</version>
@@ -112,22 +100,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib-API</artifactId>
-      <version>RELEASE</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>cglib-nodep</artifactId>
-          <groupId>cglib</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>BukkitExecutors</artifactId>
-          <groupId>com.comphenix.executors</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
       <version>6.1</version>
@@ -136,6 +108,10 @@
         <exclusion>
           <artifactId>bukkit-classloader-check</artifactId>
           <groupId>com.sk89q.spigot</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bukkit</artifactId>
+          <groupId>org.bukkit</groupId>
         </exclusion>
         <exclusion>
           <artifactId>commandbook</artifactId>
@@ -176,6 +152,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>net.citizensnpcs</groupId>
       <artifactId>Citizens2</artifactId>
       <version>1.0.0</version>
@@ -202,6 +185,13 @@
       <version>2.4.1</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/BossBarAPI_v2.4.1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.comphenix.protocol</groupId>
+      <artifactId>ProtocolLib</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com</groupId>

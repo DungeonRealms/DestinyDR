@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.donation.buffs;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.Utils;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -34,8 +31,9 @@ public class LevelBuff extends Buff {
                         + " for " + formattedTime + " by using 'Global Level EXP Buff' from the store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveLevelBuff(this);
-        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                "buffs.activeLevelBuff", this.serialize(), true);
+        DonationEffects.getInstance().updateLootBuff("activeLevelBuff", this.serialize());
+//        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+//                "buffs.activeLevelBuff", this.serialize(), true);
     }
 
     @Override
@@ -49,14 +47,11 @@ public class LevelBuff extends Buff {
         if (nextBuff != null) {
             //So its just clearing the queue after it gets 1 or?
 
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
-                    "buffs.queuedLevelBuffs", -1, true);
-
+            de.updateLootBuff("queuedLevelBuffs", de.serializeQueuedBuffs(de.getQueuedLevelBuffs()));
             nextBuff.activateBuff();
         } else {
-            de.getInstance().setActiveLevelBuff(null);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeLevelBuff", "", true);
+            de.setActiveLevelBuff(null);
+            de.updateLootBuff("activeLevelBuff", null);
         }
     }
 }

@@ -3,8 +3,6 @@ package net.dungeonrealms.game.donation;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -95,8 +93,10 @@ public class DonationEffects implements GenericMechanic {
 
                     this.activeLevelBuff = (LevelBuff) Buff.deserialize(rs.getString("activeLevelBuff"), LevelBuff.class);
                     this.queuedLevelBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLevelBuffs"), buffDelimeter), LevelBuff.class);
+                    Bukkit.getLogger().info("Found loot buffs!");
                 } else {
                     //No table there?
+                    Bukkit.getLogger().info("Unable to find any loot buff in table...");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -177,12 +177,21 @@ public class DonationEffects implements GenericMechanic {
     }
 
 
-    public List<String> serializeQueuedBuffs(Queue<Buff> buffs){
-        StringBuilder builder = new StringBuilder();
-        for(Buff buff : buffs){
+    public String serializeQueuedBuffs(Queue<? extends Buff> buffs) {
+        if (buffs == null || buffs.isEmpty()) return null;
 
+        StringBuilder builder = new StringBuilder();
+        for (Buff buff : buffs) {
+            builder.append(buff.serialize()).append(buffDelimeter);
         }
+
+        String retr = builder.toString();
+        if (retr.endsWith(buffDelimeter)) {
+            return retr.substring(0, retr.length() - buffDelimeter.length());
+        }
+        return retr;
     }
+
     public void updateLootBuff(String lootColumnName, String value) {
         SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
             Bukkit.getLogger().info("SET " + lootColumnName + " to " + value + " for loot buff.");
@@ -194,16 +203,10 @@ public class DonationEffects implements GenericMechanic {
         // update database of active buffs (queued buffs should already be there)
         if (this.activeLootBuff != null)
             updateLootBuff("activeLootBuff", activeLootBuff.serialize());
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-//                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
         if (this.activeProfessionBuff != null)
             updateLootBuff("activeProfessionBuff", activeProfessionBuff.serialize());
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-//                    "buffs.activeProfessionBuff", activeProfessionBuff.serialize(), true);
         if (this.activeLevelBuff != null)
             updateLootBuff("activeLevelBuff", activeLevelBuff.serialize());
-//        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-//                    "buffs.activeLevelBuff", activeLevelBuff.serialize(), true);
     }
 
     private void handleCreeperFireworks() {
@@ -286,9 +289,7 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeLootBuff != null) {
             // queue a new buff
             this.queuedLootBuffs.add(newLootBuff);
-            updateLootBuff("queuedLootBuffs", );
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
-                    "buffs.queuedLootBuffs", newLootBuff.serialize(), true);
+            updateLootBuff("queuedLootBuffs", serializeQueuedBuffs(this.queuedLootBuffs));
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLootBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Loot Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
@@ -304,8 +305,7 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeLevelBuff != null) {
             // queue a new buff
             this.queuedLevelBuffs.add(newLevelBuff);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
-                    "buffs.queuedLevelBuffs", newLevelBuff.serialize(), true);
+            updateLootBuff("queuedLevelBuffs", serializeQueuedBuffs(this.queuedLevelBuffs));
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLevelBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Level Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
@@ -321,8 +321,9 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeProfessionBuff != null) {
             // queue a new buff
             this.queuedProfessionBuffs.add(newProfessionBuff);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
-                    "buffs.queuedProfessionBuffs", newProfessionBuff.serialize(), true);
+            updateLootBuff("queuedProfessionBuffs", serializeQueuedBuffs(this.queuedProfessionBuffs));
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
+//                    "buffs.queuedProfessionBuffs", newProfessionBuff.serialize(), true);
             Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newProfessionBuff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a Global Profession Buff set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));

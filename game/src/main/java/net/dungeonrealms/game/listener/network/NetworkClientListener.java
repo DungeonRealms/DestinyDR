@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Listener;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -18,6 +19,9 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.guild.GuildMember;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -122,11 +126,12 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 case "CreateAccount":
                     UUID newUUID = UUID.fromString(in.readUTF());
                     String username = in.readUTF();
-                    Integer accountID = Integer.parseInt(username);
+                    Integer accountID = Integer.parseInt(in.readUTF());
                     SQLDatabaseAPI.getInstance().getAccountIdNames().put(accountID, new UUIDName(newUUID, username));
                     System.out.println("Registered user " + username + " with accountID: " + accountID);
                     break;
                 case "Update": {
+                    if(DungeonRealms.getInstance().isAlmostRestarting())return;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         try {
                             UUID uuid = UUID.fromString(in.readUTF());
@@ -488,32 +493,119 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
         if (command == null || command.isEmpty() || stream == null) return;
         try {
 
-            if (command.contains("message:")) {
-                String[] commandArray = command.split(":");
-                String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
-
-                String guildName = stream.readUTF();
+            if (command.equals("message")) {
+                int guildID = Integer.parseInt(stream.readUTF());
                 String msg = stream.readUTF();
+                String rankStr = stream.readUTF();
+                GuildMember.GuildRanks rank = GuildMember.GuildRanks.getRankFromName(rankStr);
 
-                if (GuildDatabaseAPI.get().isGuildCached(guildName))
-                    GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
-            } else if (command.equals("message")) {
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper != null)
+                    wrapper.sendGuildMessage(msg, true, rank);
+            } else if (command.equals("setmotd")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                String whoSet = stream.readUTF();
+                String newMOTD = stream.readUTF();
+
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper != null) {
+                    wrapper.setMotd(newMOTD);
+                    wrapper.sendGuildMessage(ChatColor.GRAY + whoSet + " has updated the guild " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + "MOTD" + ChatColor.GRAY + " to:", true);
+                    wrapper.sendGuildMessage(GuildMechanics.getInstance().getFormatted(wrapper.getTag(), wrapper.getMotd()), true);
+                }
+            } else if (command.equals("invite")) {
+
+                int guildID = Integer.parseInt(stream.readUTF());
                 String guildName = stream.readUTF();
-                String msg = stream.readUTF();
+                String username = stream.readUTF();
+                int accountID = Integer.parseInt(stream.readUTF());
+                String inviter = stream.readUTF();
 
-                if (GuildDatabaseAPI.get().isGuildCached(guildName))
-                    GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
-            } else if (command.equals("update")) {
-                String guildName = stream.readUTF();
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper != null) {
+                    GuildMember member = new GuildMember(accountID, guildID);
+                    member.setAccepted(false);
+                    member.setWhenJoined(System.currentTimeMillis());
+                    wrapper.getMembers().put(accountID, member);
+                }
+                Player online = Bukkit.getPlayer(username);
 
-                if (GuildDatabaseAPI.get().isGuildCached(guildName))
-                    GuildDatabaseAPI.get().updateCache(guildName, true);
+                String inviteMessage = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + inviter + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA +
+                        guildName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline";
+                if (online != null) {
+                    PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(online);
+                    playerWrapper.setGuildID(guildID);
+                    if (wrapper == null) {
+                        //Load guild since it doesnt exist...
+                        GuildWrapper newWrapper = new GuildWrapper(guildID);
+                        wrapper = newWrapper;
+                        wrapper.loadData(true, loaded -> {
+                            if (loaded == null || !loaded) {
+                                Bukkit.getLogger().info("Unable to load offline guild for " + guildName + "(" + guildID + ")");
+                                return;
+                            }
+                            GuildDatabase.getAPI().cached_guilds.put(guildID, newWrapper);
+                            online.sendMessage("");
+                            online.sendMessage(inviteMessage);
+                            online.sendMessage("");
+                        });
+                    } else {
+                        //Added and shit.. send message..
+                        online.sendMessage("");
+                        online.sendMessage(inviteMessage);
+                        online.sendMessage("");
+                    }
+                }
+            } else if (command.equals("accept")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdAccepting = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember pending = wrapper.getMembers().get(accountIdAccepting);
+                if (pending == null) {
+                    Constants.log.info("Could not find pending guild invitation for " + accountIdAccepting + " for the guild " + wrapper.getName());
+                    return;
+                }
+                pending.setAccepted(true);
+                wrapper.sendGuildMessage(ChatColor.WHITE + pending.getPlayerName() + ChatColor.AQUA + " has just joined your guild!");
+            } else if (command.equals("deny")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdDenying = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember pending = wrapper.getMembers().get(accountIdDenying);
+                if (pending == null) {
+                    Constants.log.info("Could not find pending guild invitation for " + accountIdDenying + " for the guild " + wrapper.getName());
+                    return;
+                }
+                wrapper.getMembers().remove(accountIdDenying);
+            } else if (command.equals("kick")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdKicking = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember kicking = wrapper.getMembers().get(accountIdKicking);
+                if (kicking == null) {
+                    Constants.log.info("Could not find pending guild invitation for " + accountIdKicking + " for the guild " + wrapper.getName());
+                    return;
+                }
+                wrapper.getMembers().remove(accountIdKicking);
+            } else if (command.equals("demote")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdDemoted = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember member = wrapper.getMembers().get(accountIdDemoted);
+                if (member == null) {
+                    Constants.log.info("Could not find pending guild invitation for " + accountIdDemoted + " for the guild " + wrapper.getName());
+                    return;
+                }
+                member.setRank(GuildMember.GuildRanks.MEMBER);
+            } else {
+                throw new IllegalArgumentException("UNHANDLED GUILD NETWORK MESSAGE: " + command);
             }
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
 }

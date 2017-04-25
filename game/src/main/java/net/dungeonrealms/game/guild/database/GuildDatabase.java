@@ -8,6 +8,7 @@ import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -41,7 +42,6 @@ public class GuildDatabase {
                 return;
             }
         }
-
         wrapper.loadData(async, callback);
     }
 
@@ -51,6 +51,12 @@ public class GuildDatabase {
 
     public GuildWrapper getPlayersGuildWrapper(int accountID) {
         return cached_guilds.values().stream().filter(Objects::nonNull).filter(wrapper -> wrapper.getMembers().containsKey(accountID)).findFirst().orElse(null);
+    }
+
+    public boolean areInSameGuild(Player player, Player player2) {
+        GuildWrapper guild = getPlayersGuildWrapper(player.getUniqueId());
+        if (guild != null && guild.isMember(player2.getUniqueId())) return true;
+        return false;
     }
 
     public GuildWrapper getGuildWrapper(String guildName) {
@@ -112,9 +118,14 @@ public class GuildDatabase {
     @SneakyThrows
     public void doesGuildNameExist(String guildName, Consumer<Boolean> action) {
         SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guilds` WHERE UPPER(`name`) = UPPER('" + guildName + "');", (set) -> {
-            if (set == null) action.accept(null);
-            if (set.isFirst()) action.accept(true);
-            else action.accept(false);
+            try {
+                if (set == null) action.accept(null);
+                if (set.isFirst()) action.accept(true);
+                else action.accept(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                action.accept(null);
+            }
         });
     }
 
@@ -122,9 +133,14 @@ public class GuildDatabase {
     @SneakyThrows
     public void doesTagExist(String tag, Consumer<Boolean> action) {
         SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guilds` WHERE UPPER(`tag`) = UPPER('" + tag + "');", (set) -> {
-            if (set == null) action.accept(null);
-            if (set.isFirst()) action.accept(true);
-            else action.accept(false);
+            try {
+                if (set == null) action.accept(null);
+                if (set.isFirst()) action.accept(true);
+                else action.accept(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                action.accept(null);
+            }
         });
     }
 

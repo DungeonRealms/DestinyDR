@@ -1,21 +1,14 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.KarmaHandler;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.player.inventory.GUI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Created by Nick on 11/18/2015.

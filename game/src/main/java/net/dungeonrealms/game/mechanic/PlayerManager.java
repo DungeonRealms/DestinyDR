@@ -1,10 +1,6 @@
 package net.dungeonrealms.game.mechanic;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.database.PlayerToggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;

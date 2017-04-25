@@ -69,8 +69,8 @@ public class PlayerGameStats implements LoadableData, SaveableData {
     public String getUpdateStatement(){
         return String.format("UPDATE statistics SET players_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
                 "monster_kills_t1 = '%s', monster_kills_t2 = '%s', monster_kills_t3 = '%s', monster_kills_t4 = '%s', monster_kills_t5 = '%s'," +
-                "boss_kills_mayel = '%s', boss_kills_burick = '%s', boss_kills_infernalAbyss = '%s', loot_opened = '%s', duels_won = '%s', duels_lost = '%s', ore_mined = '%s'," +
-                "fish_caught = '%s', orbs_used = '%s', time_played = '%s', successful_enchants = '%s', failed_enchants = '%s', ecash_spent = '%s', gems_earned = '%s', gems_spent = '%s' " +
+                "boss_kills_mayel = '%s', boss_kills_burick = '%s', boss_kills_infernal_abyss = '%s', loot_opened = '%s', duels_won = '%s', duels_lost = '%s', ore_mined = '%s'," +
+                "fish_caught = '%s', orbs_used = '%s', time_played = '%s', enchants_succeeded = '%s', enchants_failed = '%s', ecash_spent = '%s', gems_earned = '%s', gems_spent = '%s' " +
                 "WHERE character_id = '%s';",
                 getPlayerKills(), getLawfulKills(), getUnlawfulKills(), getDeaths(),
                 getT1MonsterKills(), getT2MonsterKills(), getT3MonsterKills(), getT4MonsterKills(), getT5MonsterKills(),
@@ -97,7 +97,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         T5_MOB_KILLS("monster_kills_t5"),
         BOSS_KILLS_MAYEL("boss_kills_mayel"),
         BOSS_KILLS_BURICK("boss_kills_burick"),
-        BOSS_KILLS_INFERNALABYSS("boss_kills_infernalAbyss"),
+        BOSS_KILLS_INFERNALABYSS("boss_kills_infernal_abyss"),
         LOOT_OPENED("loot_opened"),
         DUELS_WON("duels_won"),
         DUELS_LOST("duels_lost"),
@@ -105,8 +105,8 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         FISH_CAUGHT("fish_caught"),
         ORBS_USED("orbs_used"),
         TIME_PLAYED("time_played"),
-        SUCCESSFUL_ENCHANTS("successful_enchants"),
-        FAILED_ENCHANTS("failed_enchants"),
+        SUCCESSFUL_ENCHANTS("enchants_succeeded"),
+        FAILED_ENCHANTS("enchants_failed"),
         ECASH_SPENT("ecash_spent"),
         GEMS_EARNED("gems_earned"),
         GEMS_SPENT("gems_spent");

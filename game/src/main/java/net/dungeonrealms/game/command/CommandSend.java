@@ -1,24 +1,17 @@
 package net.dungeonrealms.game.command;
 
-import java.util.UUID;
-
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Allows GM+ to send players to any shard (Useful for sending alts to US-0)

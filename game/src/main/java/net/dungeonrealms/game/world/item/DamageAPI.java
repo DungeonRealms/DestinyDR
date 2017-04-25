@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -469,7 +470,7 @@ public class DamageAPI {
                                 continue;
                             }
 
-                            if (GuildDatabaseAPI.get().areInSameGuild(damager.getUniqueId(), entity.getUniqueId())) {
+                            if (GuildDatabase.getAPI().areInSameGuild(damager, (Player) entity)) {
                                 continue;
                             }
                         }
@@ -480,8 +481,8 @@ public class DamageAPI {
                     }
                 }
             }
-            if(hitCounter > 0) {
-                if(hitCounter > 2)hitCounter--;
+            if (hitCounter > 0) {
+                if (hitCounter > 2) hitCounter--;
 
                 float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(attackerWeapon);
 

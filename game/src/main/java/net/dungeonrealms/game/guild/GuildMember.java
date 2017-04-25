@@ -4,20 +4,12 @@ package net.dungeonrealms.game.guild;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.StringUtils;
-import net.dungeonrealms.database.PlayerGameStats;
-import net.dungeonrealms.database.PlayerToggles;
-import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.player.banks.CurrencyTab;
-import net.dungeonrealms.game.player.stats.PlayerStats;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -45,11 +37,19 @@ public class GuildMember {
     @Setter
     private boolean accepted;
 
+    private UUID cachedUUID;
+
     public GuildMember(int accountID, int guildID) {
         this.accountID = accountID;
         this.guildID = guildID;
     }
 
+    public UUID getUUID() {
+        if (this.cachedUUID == null) {
+            this.cachedUUID = SQLDatabaseAPI.getInstance().getUUIDFromAccountID(this.accountID);
+        }
+        return this.cachedUUID;
+    }
 
     public void saveData(boolean async, Consumer<Boolean> callback) {
 
@@ -76,29 +76,43 @@ public class GuildMember {
         return String.format(original, this.getRank().getName(), this.getWhenJoined(), this.isAccepted(), this.getGuildID(), this.getAccountID());
     }
 
+    public String getPlayerName() {
+        return SQLDatabaseAPI.getInstance().getUsernameFromAccountID(this.accountID);
+    }
+
 
     public enum GuildRanks {
 
-        MEMBER("member"),
-        OFFICER("officer"),
-        OWNER("owner");
+        MEMBER("member", 3),
+        OFFICER("officer",2),
+        OWNER("owner",1);
 
         private String name;
+        private int order;
 
-        GuildRanks(String name) {
+        GuildRanks(String name, int order) {
+
             this.name = name;
+            this.order = order;
         }
 
         public String getName() {
             return this.name;
         }
+        public int getOrder() { return this.order; }
 
         public static GuildRanks getRankFromName(String name) {
-            for(GuildRanks rank : GuildRanks.values()) {
-                if(rank.getName().equalsIgnoreCase(name)) return rank;
+            for (GuildRanks rank : GuildRanks.values()) {
+                if (rank.getName().equalsIgnoreCase(name)) return rank;
             }
 
             return null;
+        }
+
+        public boolean isThisRankOrHigher(GuildRanks other) {
+            if(other == null) return false;
+            if(this.getOrder() > other.getOrder()) return false;
+            return true;
         }
 
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import lombok.Cleanup;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -8,6 +9,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.sql.PreparedStatement;
 
 public class KickAllCommand extends BaseCommand {
 
@@ -24,7 +27,8 @@ public class KickAllCommand extends BaseCommand {
 
         sender.sendMessage(ChatColor.RED + "Kicking all players..");
         try {
-            ShopMechanics.deleteAllShops(true).executeBatch();
+            @Cleanup PreparedStatement statement = ShopMechanics.deleteAllShops(true);
+            statement.executeBatch();
         } catch (Exception e) {
             e.printStackTrace();
         }

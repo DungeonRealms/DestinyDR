@@ -249,22 +249,22 @@ public class NPCMenus {
         ItemStack orbOfPeace = ShopMechanics.addPrice(ItemManager.createOrbofPeace(false), 100);
         ItemStack orbOfFlight = ShopMechanics.addPrice(ItemManager.createOrbofFlight(false), 500);
 
-        if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-            String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-            ItemStack item = GameAPI.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
-            ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
+//        if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
+//            String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+//            ItemStack item = GameAPI.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
+//            ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
+//
+//            inv.setItem(0, guildBanner);
+//            inv.setItem(1, orbOfFlight);
+//            inv.setItem(2, orbOfPeace);
 
-            inv.setItem(0, guildBanner);
-            inv.setItem(1, orbOfFlight);
-            inv.setItem(2, orbOfPeace);
 
-
-        } else {
+//        } else {
 
             inv.setItem(0, orbOfFlight);
             inv.setItem(1, orbOfPeace);
 
-        }
+//        }
 
         for (int i = 0; i < inv.getContents().length; i++) {
             ItemStack item = inv.getContents()[i];

@@ -68,7 +68,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                     String address = in.readUTF();
 
 
-                    SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_BANNED_IPS.getQuery(address), rs -> {
+                    SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_IP_BANS.getQuery(address), rs -> {
                         try {
                             if (rs != null && rs.first()) {
                                 long expiration = rs.getLong("expiration");

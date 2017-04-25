@@ -255,7 +255,7 @@ public class DungeonRealms extends JavaPlugin {
             return;
         }
         //Load rank data..
-        Rank.getInstance().loadRankData();
+        Rank.getInstance();
 //        DatabaseAPI.getInstance().startInitialization(bungeeName);
 
         ItemGenerator.loadModifiers();
@@ -278,7 +278,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(KarmaHandler.getInstance());
         mm.registerMechanic(BankMechanics.getInstance());
         mm.registerMechanic(BungeeChannelListener.getInstance());
-        mm.registerMechanic(NetworkClientListener.getInstance());
+//        mm.registerMechanic(NetworkClientListener.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new ShopMechanics());
         mm.registerMechanic(new EntityMechanics());
@@ -634,7 +634,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         if (!isAlmostRestarting() && !CrashDetector.crashDetected) {
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " failed to load.");
+//            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " failed to load.");
             Utils.log.info("DungeonRealms - Failed to load.");
             //Shutdown?
         } else {

@@ -4,16 +4,20 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -42,19 +46,19 @@ public class GuildWrapper {
 
     private void modifyRank(UUID uuid, GuildMember.GuildRanks toSet) {
         GuildMember member = members.get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
-        if(member == null) return;
+        if (member == null) return;
         member.setRank(toSet);
     }
 
     public GuildMember.GuildRanks getRank(UUID uuid) {
         GuildMember member = getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
-        if(member == null) return null;
+        if (member == null) return null;
         return member.getRank();
     }
 
     public boolean removePlayer(UUID player) {
         int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player);
-        if(getMembers().remove(accountID) != null) return true;
+        if (getMembers().remove(accountID) != null) return true;
         return false;
 
     }
@@ -161,10 +165,9 @@ public class GuildWrapper {
         statement.executeUpdate();
 
         SQLDatabaseAPI.getInstance().executeQuery("SELECT guild_id FROM guild WHERE `name` = '" + this.getName() + "' AND `displayname` = '" + this.getDisplayName() + "' AND `tag` = '" + getTag() + "' AND `motd` = '" + getMotd() + "' AND `banner` = '" + banner + "';", false, rs -> {
-            int guildID = rs.getInt("guild_id");
-            this.setGuildID(guildID);
             try {
-
+                int guildID = rs.getInt("guild_id");
+                this.setGuildID(guildID);
                 @Cleanup PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT IGNORE INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE");
                 GuildMember ownerMember = members.values().stream().findFirst().get();
                 statement2.setInt(1, ownerMember.getAccountID());
@@ -183,6 +186,54 @@ public class GuildWrapper {
 
         if (callback != null)
             callback.accept(-1);
+    }
+
+    public void sendGuildMessage(String message, boolean thisShard, GuildMember.GuildRanks rank) {
+        for (GuildMember member : getMembers().values()) {
+            if(!rank.isThisRankOrHigher(member.getRank())) continue;
+            Player player = Bukkit.getPlayer(member.getUUID());
+            if (player != null) {
+                player.sendMessage(message);
+            }
+        }
+
+        if(!thisShard){
+            //Send network message..
+            GameAPI.sendNetworkMessage("Guilds", "message", String.valueOf(this.getGuildID()),message, rank.getName());
+        }
+    }
+
+    public void sendGuildMessage(String message, boolean thisShard) {
+        this.sendGuildMessage(message, thisShard, GuildMember.GuildRanks.MEMBER);
+    }
+
+    public void sendGuildMessage(String message) {
+        this.sendGuildMessage(message, false);
+    }
+
+    public int getNumberOfGuildMembersOnThisShard() {
+        return (int) getMembers().keySet().stream().mapToInt(memberID -> memberID).mapToObj(memberID -> SQLDatabaseAPI.getInstance().getUUIDFromAccountID(memberID)).filter(Objects::nonNull).map(Bukkit::getPlayer).filter(Objects::nonNull).count();
+    }
+
+    public GuildMember getOwner() {
+        return getMembers().values().stream().filter(Objects::nonNull).filter(member -> member.getRank().equals(GuildMember.GuildRanks.OWNER)).findFirst().orElse(null);
+
+    }
+
+    public String getNamesForInfo(GuildMember.GuildRanks rank) {
+        StringBuilder toReturn = new StringBuilder("");
+        for (GuildMember member : getMembers().values()) {
+            if (member.getRank().equals(rank)) {
+                boolean isOnline = Bukkit.getPlayer(SQLDatabaseAPI.getInstance().getUsernameFromAccountID(member.getAccountID())) != null;
+                ChatColor color = isOnline ? ChatColor.GREEN : ChatColor.GRAY;
+                toReturn.append(color.toString());
+                toReturn.append(member.getPlayerName());
+                toReturn.append(',');
+            }
+        }
+
+        if (toReturn.toString().isEmpty()) return "None";
+        return toReturn.toString().substring(0, toReturn.length() - 1);
     }
 
 

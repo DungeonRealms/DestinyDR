@@ -2,6 +2,8 @@ package net.dungeonrealms.game.world.realms;
 
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 
+import java.util.Arrays;
+
 public enum RealmTier {
 	
 	TIER_1(0, 16),
@@ -31,7 +33,7 @@ public enum RealmTier {
 	}
 	
 	public static RealmTier getByTier(int tier) {
-		return values()[tier - 1];
+		return Arrays.stream(values()).filter(realm -> realm.getTier() == tier).findFirst().orElse(RealmTier.TIER_1);
 	}
 	
 	/**

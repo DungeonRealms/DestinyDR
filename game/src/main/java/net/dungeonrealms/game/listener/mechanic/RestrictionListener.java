@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -767,8 +768,7 @@ public class RestrictionListener implements Listener {
                 pReceiver.updateInventory();
                 return;
             }
-
-            if (GuildDatabaseAPI.get().areInSameGuild(pDamager.getUniqueId(), pReceiver.getUniqueId())) {
+            if (GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();

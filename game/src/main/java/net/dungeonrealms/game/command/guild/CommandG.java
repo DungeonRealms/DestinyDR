@@ -32,7 +32,9 @@ public class CommandG extends BaseCommand {
             return true;
         }
 
-        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+
+        String guildName = wrapper.getName();
+//        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
 
         if (args.length == 0) {
             GuildMechanics.getInstance().toggleGuildChat(player);
@@ -42,7 +44,8 @@ public class CommandG extends BaseCommand {
         StringBuilder msg = new StringBuilder(args[0]);
         for (int arg = 1; arg < args.length; arg++) msg.append(" ").append(args[arg]);
 
-        GuildMechanics.getInstance().sendChat(guildName, player, msg.toString());
+        wrapper.sendGuildMessage(msg.toString(), false);
+//        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg.toString());
         return false;
     }
 }
