@@ -72,56 +72,16 @@ public class GuildDatabase {
         return cached_guilds.get(guildID);
     }
 
-    public void removeFromCache(String guildName) {
-        GuildWrapper wrapper = getGuildWrapper(guildName);
-        if (wrapper == null) return;
-        cached_guilds.remove(wrapper);
-    }
-
-    public boolean isGuildCached(String guildName) {
-        for (GuildWrapper wrapper : cached_guilds.values()) {
-            if (wrapper == null) continue;
-            if (wrapper.getName().equalsIgnoreCase(guildName)) return true;
-        }
-
-        return false;
-    }
-
-
-    public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
-
-
-        GuildWrapper wrapper = new GuildWrapper(-1);
-        wrapper.setDisplayName(displayName);
-        wrapper.setName(guildName);
-        wrapper.setTag(tag);
-        wrapper.setBanner(banner);
-
-        GuildMember ownerMember = new GuildMember(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(owner), -1);
-        ownerMember.setWhenJoined(System.currentTimeMillis());
-        ownerMember.setAccepted(true);
-        ownerMember.setRank(GuildMember.GuildRanks.OWNER);
-        wrapper.getMembers().put(ownerMember.getAccountID(), ownerMember);
-
-        wrapper.insertIntoDatabase(true, newGuildID -> {
-            ownerMember.setGuildID(newGuildID);
-            cached_guilds.put(newGuildID, wrapper);
-        });
-
-        Utils.log.warning("New guild created: " + guildName);
-
-        if (callback != null)
-            callback.accept(true);
-    }
-
-
     @SneakyThrows
-    public void doesGuildNameExist(String guildName, Consumer<Boolean> action) {
+    public void doesGuildNameExist(String guildName, Consumer<Integer> action) {
         SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guilds` WHERE UPPER(`name`) = UPPER('" + guildName + "');", (set) -> {
             try {
                 if (set == null) action.accept(null);
-                if (set.isFirst()) action.accept(true);
-                else action.accept(false);
+                if (set.isFirst()) {
+                    int guildID = set.getInt("guild_id");
+                    action.accept(guildID);
+                }
+                else action.accept(-1);
             } catch (Exception e) {
                 e.printStackTrace();
                 action.accept(null);
@@ -131,12 +91,15 @@ public class GuildDatabase {
 
 
     @SneakyThrows
-    public void doesTagExist(String tag, Consumer<Boolean> action) {
+    public void doesTagExist(String tag, Consumer<Integer> action) {
         SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guilds` WHERE UPPER(`tag`) = UPPER('" + tag + "');", (set) -> {
             try {
                 if (set == null) action.accept(null);
-                if (set.isFirst()) action.accept(true);
-                else action.accept(false);
+                if (set.isFirst()) {
+                    int guildID = set.getInt("guild_id");
+                    if(action != null)action.accept(guildID);
+                }
+                else action.accept(-1);
             } catch (Exception e) {
                 e.printStackTrace();
                 action.accept(null);

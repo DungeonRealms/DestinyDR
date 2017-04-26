@@ -563,7 +563,7 @@ public class DungeonRealms extends JavaPlugin {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                PlayerWrapper.getPlayerWrappers().values().forEach(gp -> gp.getPlayerGameStats().setTimePlayed(gp.getPlayerGameStats().getTimePlayed() + 1));
+                PlayerWrapper.getPlayerWrappers().values().stream().filter(wrap -> wrap.getPlayerGameStats() != null).forEach(gp -> gp.getPlayerGameStats().setTimePlayed(gp.getPlayerGameStats().getTimePlayed() + 1));
             }
         }, 0L, 1000);
 

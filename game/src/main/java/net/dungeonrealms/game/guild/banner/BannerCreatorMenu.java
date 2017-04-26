@@ -26,11 +26,11 @@ import java.util.Collections;
 public class BannerCreatorMenu extends AbstractMenu {
 
 
-    public BannerCreatorMenu(Player player, GuildCreateToken info) {
+    public BannerCreatorMenu(Player player, String guildName, String guildTag, String displayName, ItemStack banner) {
         super(DungeonRealms.getInstance(), "Create a banner for your guild!", 45, player.getUniqueId());
         setDestroyOnExit(true);
 
-        final ItemStack currentBanner = info.getCurrentBanner();
+        final ItemStack currentBanner = banner == null ? new ItemStack(Material.BANNER, 1, (byte) 15) : banner;
         BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta();
 
 
@@ -44,7 +44,7 @@ public class BannerCreatorMenu extends AbstractMenu {
         GUIButton setBaseColor = new GUIButton(Material.INK_SACK, (byte) 1) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-                new ColorSelectorMenu(event.getWhoClicked(), BannerCreatorMenu.this, null).open(event.getWhoClicked());
+                new ColorSelectorMenu(event.getWhoClicked(), BannerCreatorMenu.this, null, guildName, guildTag, displayName, currentBanner).open(event.getWhoClicked());
             }
         };
 
@@ -55,7 +55,7 @@ public class BannerCreatorMenu extends AbstractMenu {
         GUIButton addPattern = new GUIButton(Material.WORKBENCH) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-                new PatternSelectorMenu(event.getWhoClicked()).open(event.getWhoClicked());
+                new PatternSelectorMenu(event.getWhoClicked(),guildName, guildTag, displayName, currentBanner).open(event.getWhoClicked());
             }
         };
 
@@ -84,7 +84,7 @@ public class BannerCreatorMenu extends AbstractMenu {
         GUIButton createBanner = new GUIButton(Material.INK_SACK, (byte) 10) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-                GuildMechanics.getInstance().createGuild(player, info);
+                GuildMechanics.getInstance().createGuild(player, guildName, guildTag, displayName, currentBanner);
             }
         };
 

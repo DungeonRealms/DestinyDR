@@ -12,6 +12,11 @@ public class PlayerToggles implements LoadableData, SaveableData {
     @Setter
     private boolean debug, trade, tradeChat, globalChat, receiveMessage, pvp, duel, chaoticPrevention, soundTrack, tips, glow, damageIndicators, vanish, isGuildChatOnly;
 
+    private int accountID;
+    public PlayerToggles(int accountID){
+        this.accountID = accountID;
+    }
+
     @SneakyThrows
     public void extractData(ResultSet set) {
         debug = set.getBoolean("toggles.debug_enabled");
@@ -34,7 +39,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
         return String.format("UPDATE toggles SET debug_enabled = '%s', trading_enabled = '%s', trade_chat_enabled = '%s', default_global_chat = '%s', " +
                         "pms_enabled = '%s', pvp_enabled = '%s', dueling_enabled = '%s', chaotic_prevention_enabled = '%s', sound_enabled = '%s'," +
                         "tips_enabled = '%s', glowEnabled = '%s', dmgIndicators = '%s', vanish = '%s' " +
-                        "WHERE character_id = '%s';",
-                debug, trade, tradeChat, globalChat, receiveMessage, pvp, duel, chaoticPrevention, soundTrack, tips, glow, damageIndicators, vanish);
+                        "WHERE account_id = '%s';",
+              debug ? 1 : 0, trade ? 1: 0, tradeChat ? 1 : 0, globalChat ? 1 : 0, receiveMessage ? 1 : 0, pvp ? 1 : 0, duel ? 1 : 0, chaoticPrevention ? 1 : 0, soundTrack ? 1 : 0, tips ? 1 : 0, glow ? 1 : 0, damageIndicators ? 1 : 0, vanish ? 1 : 0, this.accountID);
     }
 }

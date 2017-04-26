@@ -173,7 +173,7 @@ public class DonationEffects implements GenericMechanic {
         if (list != null && !list.isEmpty()) {
             return list.stream().map(s -> (T) Buff.deserialize(s, clazz)).collect(Collectors.toCollection(LinkedList::new));
         }
-        return null;
+        return new LinkedList<>();
     }
 
 

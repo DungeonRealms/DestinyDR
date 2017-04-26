@@ -100,6 +100,7 @@ public class SQLDatabaseAPI {
                                                             pendingPlayerCreations.remove(uuid);
                                                             Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
                                                         },
+                                                        String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';" , character_id, accountID),
                                                         String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
                                                         String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
                                                         String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
@@ -220,6 +221,9 @@ public class SQLDatabaseAPI {
                     statement.addBatch(query);
                     //Remove the query after its been applied to the batch.
                     sqlQueries.remove(query);
+                    if (Constants.debug) {
+                        Constants.log.info("Adding query: " + query);
+                    }
                     added++;
                 }
                 statement.executeBatch();
@@ -339,7 +343,7 @@ public class SQLDatabaseAPI {
             //Pull from DB?
             CompletableFuture.runAsync(() -> {
                 try {
-                    @Cleanup PreparedStatement statement = this.getDatabase().getConnection().prepareStatement("SELECT uuid FROM users WHERE username = ? ORDER BY users.lastLogout DESC LIMIT 1;");
+                    @Cleanup PreparedStatement statement = this.getDatabase().getConnection().prepareStatement("SELECT uuid FROM users WHERE username = ? ORDER BY users.last_logout DESC LIMIT 1;");
                     statement.setString(1, name);
                     ResultSet rs = statement.executeQuery();
                     if (rs.first()) {

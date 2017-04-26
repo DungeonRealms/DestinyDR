@@ -20,6 +20,7 @@ public enum QueryType {
     SET_RANK("UPDATE ranks SET rank = '%s' WHERE account_id = '%s';"),
     GUILD_INVITE("INSERT INTO guilds(account_id, guild_id, rank, joined, accepted) VALUES ('%s', '%s', '%s', '%s', '%s');"),
     INCREMENT_GEMS("UPDATE characters SET gems = gems + %s WHERE character_id = '%s';"),
+    SET_GEMS("UPDATE characters SET gems = %s WHERE character_id = '%s';"),
     INCREMENT_GEMS_EARNED("UPDATE statistics SET gems_earned = gems_earned + '%s' WHERE character_id = '%s';"),
     UNBAN_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'ban';"),
     UNMUTE_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'mute';"),

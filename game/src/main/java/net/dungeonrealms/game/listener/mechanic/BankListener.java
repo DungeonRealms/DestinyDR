@@ -5,6 +5,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
@@ -243,6 +245,7 @@ public class BankListener implements Listener {
                 wrapper.setGems(newBalance);
 //                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
+                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), newBalance);
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                 player.updateInventory();
@@ -295,6 +298,7 @@ public class BankListener implements Listener {
                                         ItemStack stack = BankMechanics.gem.clone();
                                         if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                             wrapper.setGems(wrapper.getGems() - number);
+                                            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), wrapper.getGems());
                                             player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                             player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
                                             player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -342,6 +346,7 @@ public class BankListener implements Listener {
                                     } else {
                                         player.getInventory().addItem(BankMechanics.createBankNote(number, player));
                                         wrapper.setGems(wrapper.getGems() - number);
+                                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), wrapper.getGems());
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -847,7 +852,7 @@ public class BankListener implements Listener {
         nms.getTag().setString("type", "bank");
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
 
-        ItemStack item = new ItemBuilder().setName(ChatColor.RED.toString() + ChatColor.BOLD + "COLLECTION BIN")
+        ItemStack item = new ItemBuilder().setItem(new ItemStack(Material.CHEST)).setName(ChatColor.RED.toString() + ChatColor.BOLD + "COLLECTION BIN")
                 .setLore(Lists.newArrayList(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() +
                         ChatColor.BOLD + "COLLECTION BIN")).setNBTString("type", "collection").build();
 

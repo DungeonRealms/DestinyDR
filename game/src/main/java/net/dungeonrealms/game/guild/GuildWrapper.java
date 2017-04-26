@@ -8,9 +8,12 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,13 +38,25 @@ public class GuildWrapper {
 
     @Getter
     @Setter
-    private String name, displayName, tag, motd, banner;
+    private String name, displayName, tag;
+
+    @Setter
+    private String motd = "Default MOTD";
 
     @Getter
     private HashMap<Integer, GuildMember> members = new HashMap<>();
 
+    @Getter
+    @Setter
+    private ItemStack banner = new ItemStack(Material.BANNER, 1, (byte) 15);
+
     public GuildWrapper(int guildID) {
         this.guildID = guildID;
+    }
+
+    public String getMotd() {
+        if(this.motd == null) return "Default MOTD";
+        return this.motd;
     }
 
     private void modifyRank(UUID uuid, GuildMember.GuildRanks toSet) {
@@ -97,7 +112,7 @@ public class GuildWrapper {
                 this.setDisplayName(result.getString("displayname"));
                 this.setTag(result.getString("tag"));
                 this.setMotd(result.getString("motd"));
-                this.setBanner(result.getString("banner"));
+                this.setBannerFromString(result.getString("banner"));
 
             }
 
@@ -156,28 +171,30 @@ public class GuildWrapper {
             return;
         }
 
-        @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT IGNORE INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
+        @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
         statement.setString(1, this.getName());
         statement.setString(2, this.getDisplayName());
         statement.setString(3, this.getTag());
         statement.setString(4, this.getMotd());
-        statement.setString(5, this.getBanner());
+        statement.setString(5, this.getBannerString());
         statement.executeUpdate();
 
-        SQLDatabaseAPI.getInstance().executeQuery("SELECT guild_id FROM guild WHERE `name` = '" + this.getName() + "' AND `displayname` = '" + this.getDisplayName() + "' AND `tag` = '" + getTag() + "' AND `motd` = '" + getMotd() + "' AND `banner` = '" + banner + "';", false, rs -> {
+        SQLDatabaseAPI.getInstance().executeQuery("SELECT guild_id FROM guilds WHERE `name` = '" + this.getName() + "' AND `displayname` = '" + this.getDisplayName() + "' AND `tag` = '" + getTag() + "' AND `motd` = '" + getMotd() + "' AND `banner` = '" + getBannerString() + "';", false, rs -> {
             try {
-                int guildID = rs.getInt("guild_id");
-                this.setGuildID(guildID);
-                @Cleanup PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT IGNORE INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE");
-                GuildMember ownerMember = members.values().stream().findFirst().get();
-                statement2.setInt(1, ownerMember.getAccountID());
-                statement2.setInt(2, getGuildID());
-                statement2.setString(3, ownerMember.getRank().getName());
-                statement2.setLong(4, ownerMember.getWhenJoined());
-                statement2.setBoolean(5, ownerMember.isAccepted());
-                statement2.executeUpdate();
+                if(rs.first()) {
+                    int guildID = rs.getInt("guild_id");
+                    this.setGuildID(guildID);
+                    @Cleanup PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?);");
+                    GuildMember ownerMember = members.values().stream().findFirst().get();
+                    statement2.setInt(1, ownerMember.getAccountID());
+                    statement2.setInt(2, getGuildID());
+                    statement2.setString(3, ownerMember.getRank().getName());
+                    statement2.setLong(4, ownerMember.getWhenJoined());
+                    statement2.setBoolean(5, ownerMember.isAccepted());
+                    statement2.executeUpdate();
 
-                callback.accept(guildID);
+                    callback.accept(guildID);
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -234,6 +251,25 @@ public class GuildWrapper {
 
         if (toReturn.toString().isEmpty()) return "None";
         return toReturn.toString().substring(0, toReturn.length() - 1);
+    }
+
+    private String getBannerString() {
+        if(banner == null)banner = new ItemStack(Material.BANNER, 1, (byte) 15);
+        return ItemSerialization.itemStackToBase64(banner);
+    }
+
+    private void setBannerFromString(String banner) {
+        if(banner == null || banner.isEmpty()) {
+            this.banner = new ItemStack(Material.BANNER, 1, (byte) 15);
+            return;
+        }
+
+        try {
+            this.banner = ItemSerialization.itemStackFromBase64(banner);
+        } catch(Exception e) {
+            e.printStackTrace();
+            this.banner = new ItemStack(Material.BANNER, 1, (byte) 15);
+        }
     }
 
 

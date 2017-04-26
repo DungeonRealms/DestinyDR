@@ -24,7 +24,7 @@ import java.util.Collections;
 
 public class ColorSelectorMenu extends AbstractMenu {
 
-    public ColorSelectorMenu(Player player, AbstractMenu from, Object input) {
+    public ColorSelectorMenu(Player player, AbstractMenu from, Object input, String guildName, String guildTag, String guildDisplayName, ItemStack banner) {
         super(DungeonRealms.getInstance(), "Select a color", 18, player.getUniqueId());
         setDestroyOnExit(true);
 
@@ -41,7 +41,7 @@ public class ColorSelectorMenu extends AbstractMenu {
                     else if (from instanceof BannerCreatorMenu) bannerMeta.setBaseColor(dye);
                     currentBanner.setItemMeta(bannerMeta);
 
-                    GuildMechanics.getInstance().openGuildBannerCreator(event.getWhoClicked());
+                    GuildMechanics.getInstance().openGuildBannerCreator(event.getWhoClicked(),guildName, guildTag, guildDisplayName, banner);
                 }
             };
             button.setDisplayName(ColorConverter.dyeToChat(dye) + WordUtils.capitalizeFully(dye.name().replace("_", " ")));

@@ -8,12 +8,12 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.util.TimeUtil;
-import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -141,7 +141,6 @@ public class PlayerWrapper {
     @Getter
     private CurrencyTab currencyTab;
 
-    @Getter
     @Setter
     private String rank;
 
@@ -210,6 +209,7 @@ public class PlayerWrapper {
 
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
+
     }
 
     @SuppressWarnings("unused")
@@ -255,6 +255,7 @@ public class PlayerWrapper {
             ResultSet result = statement.executeQuery();
             if (result.first()) {
                 this.accountID = result.getInt("users.account_id");
+                this.toggles = new PlayerToggles(this.accountID);
                 this.username = result.getString("users.username");
                 this.isPlaying = result.getBoolean("users.is_online");
                 this.shardPlayingOn = result.getString("users.currentShard");
@@ -286,7 +287,6 @@ public class PlayerWrapper {
                 this.playerGameStats = new PlayerGameStats(characterID);
                 this.playerGameStats.extractData(result);
 
-                this.toggles = new PlayerToggles();
                 this.toggles.extractData(result);
 
                 this.playerStats = new PlayerStats(uuid);
@@ -360,6 +360,13 @@ public class PlayerWrapper {
 
         if (callback != null)
             callback.accept(null);
+
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 1, accountID);
+    }
+    
+    public String getRank() {
+        if(rank == null) return "DEFAULT";
+        return rank;
     }
 
     public Player getPlayer() {
@@ -434,9 +441,9 @@ public class PlayerWrapper {
         if (!firstTimePlaying) {
             try {
                 String[] locArray = storedLocationString.split(",");
-                double x = Integer.parseInt(locArray[0]);
-                double y = Integer.parseInt(locArray[1]);
-                double z = Integer.parseInt(locArray[2]);
+                double x = Double.parseDouble(locArray[0]);
+                double y = Double.parseDouble(locArray[1]);
+                double z = Double.parseDouble(locArray[2]);
                 float yaw = Float.parseFloat(locArray[3]);
                 float pitch = Float.parseFloat(locArray[4]);
                 //Success.
@@ -490,42 +497,29 @@ public class PlayerWrapper {
 
 
     public void saveData(boolean async, Boolean isOnline, Consumer<PlayerWrapper> callback) {
-        System.out.println("Save data debug 1! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> saveData(false, isOnline, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
 
-        System.out.println("Save data debug 2! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
 
 
         try {
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
 
-            System.out.println("Save data debug 3! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getCharacterReplaceQuery(player));
-            System.out.println("Save data debug 4! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getPlayerStats().getUpdateStatement());
-            System.out.println("Save data debug 5! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getPlayerStats().getUpdateStatement());
-            System.out.println("Save data debug 6! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             statement.addBatch(getToggles().getUpdateStatement());
-            System.out.println("Save data debug 7! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
-            System.out.println("Save data debug 8! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             if (this.player != null) {
-                System.out.println("Save data debug 9! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
                 statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
-
             }
-            System.out.println("Save data debug 10! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
-            statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank(), getRankExpiration()));
+            statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank().toUpperCase(), getRankExpiration()));
 
-            System.out.println("Save data debug 11! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
-            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm, lastReset) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm(), getLastRealmReset()));
-            System.out.println("Save data debug 12! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
+            statement.addBatch(String.format("UPDATE realm SET title = '%s', description = '%s', uploading = '%s', upgrading = '%s', tier = '%s', enteringRealm = '%s', lastReset = '%s' WHERE character_id = '%s';", getRealmTitle(), getRealmDescription(), isUploadingRealm() ? 1 : 0, isUpgradingRealm() ? 1 : 0, getRealmTier(), isEnteringRealm() ? 1 : 0, getLastRealmReset(), getCharacterID()));
+//            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm, lastReset) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm() ? 1 : 0, isUpgradingRealm() ? 1 : 0, getRealmTier(), isEnteringRealm() ? 1 : 0, getLastRealmReset()));
             statement.addBatch(getUsersUpdateQuery(isOnline));
-            System.out.println("Save data debug 13! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
 
             long start = System.currentTimeMillis();
             Bukkit.getLogger().info("Preparing to execute batch..");
@@ -536,9 +530,8 @@ public class PlayerWrapper {
         }
 
 
-        System.out.println("Save data debug 14! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
         if (callback != null) {
-            System.out.println("Save data debug 15! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
+            //System.out.println("Save data debug 15! isAsync: " + async + " isOnline: " + isOnline + " hasCallback: " + (callback != null));
             callback.accept(this);
         }
     }
@@ -564,21 +557,28 @@ public class PlayerWrapper {
 
 
         String locationString = player == null ? storedLocationString : getLocationString(player);
-        String toReturn = "REPLACE INTO characters (character_id, account_id, created, level, experience, alignment, inventory_storage, armour_storage, gems, bank_storage, bank_level, " +
-                "shop_level, collection_storage, mule_storage, mule_level, health, location, activeMount, activePet, activeTrail, activeMountSkin, questData, foodLevel, combatLogged, " +
-                "shopOpened, loggerDied, currentHearthStone, alignmentTime, portalShardsT1, portalShardsT2, portalShardsT3, portalShardsT4, portalShardsT5) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');";
-        toReturn = String.format(toReturn, getCharacterID(), getAccountID(), getTimeCreated(), getLevel(), getExperience(),
-                getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
-                getShopLevel(), collectionBinString, muleString, getMuleLevel(), getHealth(), locationString, getActiveMount(), getActiveMountSkin(), getQuestData(), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
-                isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5());
+        String toReturn = "UPDATE characters SET created = '%s', level = '%s', experience = '%s', alignment = '%s', inventory_storage = '%s', armour_storage = '%s', gems = '%s', bank_storage = '%s', bank_level = '%s', " +
+                "shop_level = '%s', mule_storage = '%s', mule_level = '%s', health = '%s', location = '%s', " +
+                "activeMount = %s, activePet = %s, activeTrail = %s, activeMountSkin = %s, questData = %s, collection_storage = %s," +
+                " foodLevel = '%s', combatLogged = '%s', shopOpened = '%s', loggerDied = '%s', currentHearthStone = '%s', alignmentTime = '%s', portalShardsT1 = '%s', portalShardsT2 = '%s', portalShardsT3 = '%s', portalShardsT4 = '%s', portalShardsT5 = '%s' WHERE `character_id` = '%s';";//9
+        //33 total
+        toReturn = String.format(toReturn, getTimeCreated(), getLevel(), getExperience(), getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
+                getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
+                quote(getActiveMount()), quote(getActivePet()), quote(getActiveTrail()), quote(getActiveMountSkin()),
+                quote(getQuestData()), quote(collectionBinString), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged() ? 1 : 0,
+                isShopOpened() ? 1 : 0, isLoggerDied() ? 1 : 0, getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5(),getCharacterID());
         return toReturn;
     }
 
+    private String quote(String string){
+        if(string == null)return null;
+        return "'" + string + "'";
+    }
     private String getUsersUpdateQuery(Boolean isOnline) {
         if (isOnline == null) isOnline = isPlaying();
 
-        String toReturn = "REPLACE INTO users (account_id, uuid, username, selected_character_id, ecash, joined, last_login, last_logout, last_free_ecash, last_shard_transfer, is_online, shop_open, currentShard, currencyTab, firstLogin, lastViewedBuild, lastNoteSize, lastVote) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%s');";
-        toReturn = String.format(toReturn, getAccountID(), getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isShopOpened(), this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote());
+        String toReturn = "UPDATE users SET uuid = '%s', username = '%s', selected_character_id = '%s', ecash = '%s', joined = '%s', last_login = '%s', last_logout = '%s', last_free_ecash = '%s', last_shard_transfer = '%s', is_online = '%s', currentShard = '%s', currencyTab = '%s', firstLogin = '%s', lastViewedBuild = '%s', lastNoteSize = '%s', lastVote = '%s' WHERE account_id = '%s'";
+        toReturn = String.format(toReturn, getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", this.currencyTab == null ? null : getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(),getAccountID());
         return toReturn;
     }
 
