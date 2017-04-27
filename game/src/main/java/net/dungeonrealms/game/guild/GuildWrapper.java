@@ -6,8 +6,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,7 +38,10 @@ public class GuildWrapper {
 
     @Getter
     @Setter
-    private String name, displayName, tag;
+    private String name, tag;
+
+    @Setter
+    private String displayName;
 
     @Setter
     private String motd = "Default MOTD";
@@ -55,7 +58,7 @@ public class GuildWrapper {
     }
 
     public String getMotd() {
-        if(this.motd == null) return "Default MOTD";
+        if (this.motd == null || this.motd.isEmpty()) return "Default MOTD";
         return this.motd;
     }
 
@@ -82,6 +85,11 @@ public class GuildWrapper {
         return members.containsKey(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
     }
 
+    public String getDisplayName() {
+        if (displayName == null || displayName.isEmpty()) return name;
+        return displayName;
+    }
+
     public boolean isOwner(UUID uuid) {
         GuildMember member = getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
         return member != null && member.getRank().equals(GuildMember.GuildRanks.OWNER);
@@ -102,10 +110,10 @@ public class GuildWrapper {
 
             final long start = System.currentTimeMillis();
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                    "SELECT * FROM `guilds` WHERE `guild_id` = ?;");
+                    "SELECT name, displayname, tag, motd, banner FROM `guilds` WHERE `guild_id` = ?;");
             statement.setInt(1, guildID);
 
-            ResultSet result = statement.getResultSet();
+            ResultSet result = statement.executeQuery();
             if (result.first()) {
 
                 this.setName(result.getString("name"));
@@ -117,10 +125,10 @@ public class GuildWrapper {
             }
 
             @Cleanup PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                    "SELECT * FROM `guild_members` WHERE `guild_id` = ?;");
+                    "SELECT account_id, rank, accepted, joined FROM `guild_members` WHERE `guild_id` = ?;");
             statement2.setInt(1, guildID);
 
-            ResultSet result2 = statement.getResultSet();
+            ResultSet result2 = statement2.executeQuery();
             while (result2.next()) {
 
                 int accountID = result2.getInt("account_id");
@@ -131,10 +139,6 @@ public class GuildWrapper {
                 newMember.setAccepted(result2.getBoolean("accepted"));
                 newMember.setWhenJoined(result2.getLong("joined"));
                 members.put(accountID, newMember);
-
-                if (Constants.debug)
-                    Bukkit.getLogger().info("Loaded " + this.getName() + "'s [" + getTag() + "] Guild data in " + (System.currentTimeMillis() - start) + "ms.");
-
             }
 
             if (Constants.debug)
@@ -159,9 +163,9 @@ public class GuildWrapper {
             return;
         }
 
-        SQLDatabaseAPI.getInstance().executeQuery("UPDATE guilds SET name = '%s', displayname = '%s', tag = '%s', motd = '%s', banner = '%s';", (set) -> {
+        SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
             callback.accept(true);
-        });
+        },"UPDATE guilds SET name = '" + getName() + "', displayname = '" + getDisplayName() + "', tag = '" + getTag() + "', motd = '" + getMotd() + "', banner = '" + getBannerString() + "';");
     }
 
     @SneakyThrows
@@ -171,52 +175,54 @@ public class GuildWrapper {
             return;
         }
 
-        @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
+        PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
         statement.setString(1, this.getName());
         statement.setString(2, this.getDisplayName());
         statement.setString(3, this.getTag());
         statement.setString(4, this.getMotd());
         statement.setString(5, this.getBannerString());
         statement.executeUpdate();
+        statement.close();
 
         SQLDatabaseAPI.getInstance().executeQuery("SELECT guild_id FROM guilds WHERE `name` = '" + this.getName() + "' AND `displayname` = '" + this.getDisplayName() + "' AND `tag` = '" + getTag() + "' AND `motd` = '" + getMotd() + "' AND `banner` = '" + getBannerString() + "';", false, rs -> {
             try {
-                if(rs.first()) {
+                if (rs.first()) {
                     int guildID = rs.getInt("guild_id");
-                    this.setGuildID(guildID);
-                    @Cleanup PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?);");
+                    setGuildID(guildID);
+                    PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?);");
                     GuildMember ownerMember = members.values().stream().findFirst().get();
                     statement2.setInt(1, ownerMember.getAccountID());
-                    statement2.setInt(2, getGuildID());
+                    statement2.setInt(2, guildID);
                     statement2.setString(3, ownerMember.getRank().getName());
                     statement2.setLong(4, ownerMember.getWhenJoined());
                     statement2.setBoolean(5, ownerMember.isAccepted());
                     statement2.executeUpdate();
 
+                    statement2.close();
                     callback.accept(guildID);
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                if (callback != null)
+                    callback.accept(-1);
             }
         });
 
 
-        if (callback != null)
-            callback.accept(-1);
     }
 
     public void sendGuildMessage(String message, boolean thisShard, GuildMember.GuildRanks rank) {
         for (GuildMember member : getMembers().values()) {
-            if(!rank.isThisRankOrHigher(member.getRank())) continue;
+            if (!rank.isThisRankOrHigher(member.getRank())) continue;
             Player player = Bukkit.getPlayer(member.getUUID());
             if (player != null) {
                 player.sendMessage(message);
             }
         }
 
-        if(!thisShard){
+        if (!thisShard) {
             //Send network message..
-            GameAPI.sendNetworkMessage("Guilds", "message", String.valueOf(this.getGuildID()),message, rank.getName());
+            GameAPI.sendNetworkMessage("Guilds", "message", String.valueOf(this.getGuildID()), message, rank.getName());
         }
     }
 
@@ -229,7 +235,7 @@ public class GuildWrapper {
     }
 
     public int getNumberOfGuildMembersOnThisShard() {
-        return (int) getMembers().keySet().stream().mapToInt(memberID -> memberID).mapToObj(memberID -> SQLDatabaseAPI.getInstance().getUUIDFromAccountID(memberID)).filter(Objects::nonNull).map(Bukkit::getPlayer).filter(Objects::nonNull).count();
+        return (int) getMembers().values().stream().map(GuildMember::getUUID).filter(Objects::nonNull).map(Bukkit::getPlayer).filter(Objects::nonNull).count();
     }
 
     public GuildMember getOwner() {
@@ -254,19 +260,19 @@ public class GuildWrapper {
     }
 
     private String getBannerString() {
-        if(banner == null)banner = new ItemStack(Material.BANNER, 1, (byte) 15);
+        if (banner == null) banner = new ItemStack(Material.BANNER, 1, (byte) 15);
         return ItemSerialization.itemStackToBase64(banner);
     }
 
     private void setBannerFromString(String banner) {
-        if(banner == null || banner.isEmpty()) {
+        if (banner == null || banner.isEmpty()) {
             this.banner = new ItemStack(Material.BANNER, 1, (byte) 15);
             return;
         }
 
         try {
             this.banner = ItemSerialization.itemStackFromBase64(banner);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             this.banner = new ItemStack(Material.BANNER, 1, (byte) 15);
         }

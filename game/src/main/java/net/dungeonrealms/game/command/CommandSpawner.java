@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -20,7 +21,7 @@ import java.util.WeakHashMap;
 public class CommandSpawner extends BaseCommand {
 
     public CommandSpawner() {
-        super("spawner", "/command", "Spawner command");
+        super("spawner", "/command", "Spawner command", "", Lists.newArrayList("mobspawner", "spawners"));
     }
 
     public static Map<Location, MobSpawner> shownMobSpawners = new WeakHashMap<>();

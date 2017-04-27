@@ -82,6 +82,7 @@ public class GuildDatabase {
                     action.accept(guildID);
                 }
                 else action.accept(-1);
+                set.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 action.accept(null);
@@ -94,12 +95,17 @@ public class GuildDatabase {
     public void doesTagExist(String tag, Consumer<Integer> action) {
         SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guilds` WHERE UPPER(`tag`) = UPPER('" + tag + "');", (set) -> {
             try {
-                if (set == null) action.accept(null);
+                if (set == null) {
+                    action.accept(null);
+                    return;
+                }
                 if (set.isFirst()) {
                     int guildID = set.getInt("guild_id");
                     if(action != null)action.accept(guildID);
                 }
                 else action.accept(-1);
+
+                set.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 action.accept(null);

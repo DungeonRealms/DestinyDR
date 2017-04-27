@@ -131,6 +131,7 @@ public class Lobby extends JavaPlugin implements Listener {
                         String bannedMessage = rs.getString("reason");
                         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
                         event.setKickMessage(bannedMessage);
+                        rs.close();
                         return;
                     }
                 }

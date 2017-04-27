@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.player.banks;
 
 import com.google.common.collect.Lists;
-import lombok.Cleanup;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -16,10 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -105,11 +101,12 @@ public class Storage {
 
         SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_COLLECTION_BIN.getQuery(this.characterID), rs -> {
             try {
-                if(rs.first()){
-                    String newBin = rs.getString("users.collection_storage");
+                if (rs.first()) {
+                    String newBin = rs.getString("characters.collection_storage");
                     if (newBin != null && newBin.length() > 1 && !newBin.equals("null")) {
                         //We have some collection bin data..
                         Inventory inv = ItemSerialization.fromString(newBin);
+                        Bukkit.getLogger().info("Loading " + newBin + " for " + this.characterID);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                             Player p = Bukkit.getPlayer(ownerUUID);
                             if (p != null)
@@ -124,9 +121,10 @@ public class Storage {
 
                             this.collection_bin = inv;
                             SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
-                            if(callback != null)
+                            if (callback != null)
                                 callback.accept(this.collection_bin);
                         });
+                        return;
                     } else {
                         this.collection_bin = null;
                     }
@@ -134,7 +132,7 @@ public class Storage {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(callback != null)
+            if (callback != null)
                 callback.accept(this.collection_bin);
         });
         //Pulling collection bin from cached doc.

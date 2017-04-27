@@ -74,8 +74,8 @@ public class CommandGInvite extends BaseCommand {
                     player.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() +
                             ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " to join your guild.");
                     //Send network message to invite them..
-                    GameAPI.sendNetworkMessage("Guilds", "invite", guild.getGuildID() + "", guild.getDisplayName(), wrapper.getAccountID() + "", player.getName());
-                }, QueryType.GUILD_INVITE.getQuery(wrapper.getAccountID(), guild.getGuildID(), "MEMBER", System.currentTimeMillis(), 0));
+                    GameAPI.sendNetworkMessage("Guilds", "invite", String.valueOf(guild.getGuildID()), guild.getDisplayName(), p_name, String.valueOf(wrapper.getAccountID()), player.getName());
+                }, QueryType.GUILD_INVITE.getQuery(foundPlayer.getAccountID(), guild.getGuildID(), "MEMBER", System.currentTimeMillis(), 0));
             });
         });
         return false;

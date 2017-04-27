@@ -633,7 +633,7 @@ public class Realm {
         		wrapper.setUploadingRealm(false);
         		//Done uploading realm.
 				SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), "realm"),
-						QueryType.SET_REALM_UPLOADING.getQuery());
+						QueryType.SET_REALM_UPLOADING.getQuery(0, wrapper.getCharacterID()));
 			});
 
             setState(RealmState.CLOSED);

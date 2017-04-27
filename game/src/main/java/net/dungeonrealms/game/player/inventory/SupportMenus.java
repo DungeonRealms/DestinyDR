@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -524,16 +526,10 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        Set<String> unlockedPlayerPets = wrapper.getPetsUnlocked();
+        Map<EnumPets, PetData> unlockedPlayerPets = wrapper.getPetsUnlocked();
         int i = 18;
         for (EnumPets petType : EnumPets.values()) {
-            boolean hasUnlockedPet = false;
-            for (String unlockedPets : unlockedPlayerPets) {
-                if (unlockedPets.equalsIgnoreCase(petType.getRawName())) {
-                    hasUnlockedPet = true;
-                    break;
-                }
-            }
+            boolean hasUnlockedPet = unlockedPlayerPets.containsKey(petType);
 
             item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
                     ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."

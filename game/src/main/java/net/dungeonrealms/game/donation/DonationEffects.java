@@ -98,6 +98,39 @@ public class DonationEffects implements GenericMechanic {
                     //No table there?
                     Bukkit.getLogger().info("Unable to find any loot buff in table...");
                 }
+
+                rs.close();
+                if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeLootBuff", "", true);
+                    updateLootBuff("activeLootBuff", null);
+                    activeLootBuff.deactivateBuff();
+                }
+                if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeProfessionBuff", "", true);
+                    updateLootBuff("activeProfessionBuff", null);
+                    activeProfessionBuff.deactivateBuff();
+                }
+                if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
+//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+//                    "buffs.activeLevelBuff", "", true);
+                    updateLootBuff("activeLevelBuff", null);
+                    activeLevelBuff.deactivateBuff();
+                }
+
+                if (activeLootBuff != null) {
+                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLootBuff.deactivateBuff(), (
+                            (activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+                }
+                if (activeLevelBuff != null) {
+                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLevelBuff.deactivateBuff(), (
+                            (activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+                }
+                if (activeProfessionBuff != null) {
+                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeProfessionBuff.deactivateBuff(), (
+                            (activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -135,37 +168,6 @@ public class DonationEffects implements GenericMechanic {
 //        }
 
         // expired while we were offline, RIP
-        if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeLootBuff", "", true);
-            updateLootBuff("activeLootBuff", null);
-            activeLootBuff.deactivateBuff();
-        }
-        if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeProfessionBuff", "", true);
-            updateLootBuff("activeProfessionBuff", null);
-            activeProfessionBuff.deactivateBuff();
-        }
-        if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeLevelBuff", "", true);
-            updateLootBuff("activeLevelBuff", null);
-            activeLevelBuff.deactivateBuff();
-        }
-
-        if (activeLootBuff != null) {
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLootBuff.deactivateBuff(), (
-                    (activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-        }
-        if (activeLevelBuff != null) {
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLevelBuff.deactivateBuff(), (
-                    (activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-        }
-        if (activeProfessionBuff != null) {
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeProfessionBuff.deactivateBuff(), (
-                    (activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-        }
     }
 
     public <T extends Buff> Queue<T> deserialize(List<String> list, Class<T> clazz) {

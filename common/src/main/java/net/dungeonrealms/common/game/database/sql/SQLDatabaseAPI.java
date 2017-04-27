@@ -100,7 +100,7 @@ public class SQLDatabaseAPI {
                                                             pendingPlayerCreations.remove(uuid);
                                                             Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
                                                         },
-                                                        String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';" , character_id, accountID),
+                                                        String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", character_id, accountID),
                                                         String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
                                                         String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
                                                         String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
@@ -189,16 +189,18 @@ public class SQLDatabaseAPI {
             return;
         }
         try {
-            @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+            PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
             int toReturn = statement.executeUpdate();
             if (callback != null)
                 callback.accept(toReturn);
-            return;
+
+            //Just manually close statement?
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
+            if (callback != null)
+                callback.accept(-1);
         }
-        if (callback != null)
-            callback.accept(-1);
     }
 
     @Getter
@@ -215,7 +217,7 @@ public class SQLDatabaseAPI {
             //Execute these random updates we want to do.
             try {
                 long start = System.currentTimeMillis();
-                @Cleanup PreparedStatement statement = getDatabase().getConnection().prepareStatement("");
+                PreparedStatement statement = getDatabase().getConnection().prepareStatement("");
                 int added = 0;
                 for (String query : sqlQueries) {
                     statement.addBatch(query);
@@ -230,6 +232,7 @@ public class SQLDatabaseAPI {
                 if (added > 0 && Constants.debug) {
                     Bukkit.getLogger().info("Executed a batch of " + added + " statements in " + (System.currentTimeMillis() - start) + "ms");
                 }
+                statement.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

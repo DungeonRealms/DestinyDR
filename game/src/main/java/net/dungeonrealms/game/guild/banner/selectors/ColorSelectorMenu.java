@@ -33,7 +33,7 @@ public class ColorSelectorMenu extends AbstractMenu {
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     event.getWhoClicked().closeInventory();
-                    ItemStack currentBanner = GuildMechanics.getInstance().grabCurrentCreateInfo(player).getCurrentBanner();
+                    ItemStack currentBanner = banner;
                     BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta();
 
                     if (from instanceof PatternSelectorMenu && input instanceof PatternType)

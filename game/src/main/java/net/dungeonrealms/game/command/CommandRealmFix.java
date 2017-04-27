@@ -52,7 +52,7 @@ public class CommandRealmFix extends BaseCommand {
                     sender.sendMessage(ChatColor.GREEN + "Successfully fixed " + args[0] + "'s realm.");
                     //Update their realm status..
                     GameAPI.updatePlayerData(uuid, "realm");
-                }, QueryType.SET_REALM_INFO.getQuery(0, 0, wrapper.getRealmTier(), wrapper.getAccountID()));
+                }, QueryType.SET_REALM_INFO.getQuery(0, 0, wrapper.getRealmTier(), wrapper.getCharacterID()));
             });
 
         });

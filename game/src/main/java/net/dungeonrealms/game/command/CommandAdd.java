@@ -20,6 +20,7 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -477,25 +478,17 @@ public class CommandAdd extends BaseCommand {
 
 
                     // Add all pets to the player.
-                    Set<String> playerPets = wrapper.getPetsUnlocked();
+                    Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
                     for (EnumPets pets : EnumPets.values()) {
                         if (pets == EnumPets.BABY_HORSE) {
                             continue;
                         }
                         if (!playerPets.isEmpty()) {
-                            if (playerPets.contains(pets.getRawName().toUpperCase())) {
+                            if (playerPets.containsKey(pets)) {
                                 continue;
                             }
-                            boolean hasPet = false;
-                            for (String playerPet : playerPets) {
-                                if (playerPet.contains("@") && playerPet.split("@")[0].equals(pets.getRawName())) {
-                                    hasPet = true;
-                                    break;
-                                }
-                            }
-                            if (hasPet) continue;
                         }
-                        wrapper.getPetsUnlocked().add(pets.getRawName());
+                        wrapper.getPetsUnlocked().put(pets, new PetData(null));
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 

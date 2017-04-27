@@ -44,30 +44,44 @@ public class GuildMechanics {
 
     @SneakyThrows
     public void doLogin(Player player) {
+        System.out.println("Do login debug");
         PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
         if (playerWrapper == null) return;
+        System.out.println("Do login debug 2");
 
         if (playerWrapper.getGuildID() >= 1) {
+            System.out.println("Do login debug 3");
             GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
             if (wrapper == null) { //His guilds wrapper is null so we need to load it in.
-                SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guild_members` WHERE `account_id` = '" + SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()) + "';", (set) -> {
+                System.out.println("Do login debug 4");
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId());
+                System.out.println("The account id: " + accountID);
+                SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guild_members` WHERE `account_id` = '" + accountID + "';", (set) -> {
                     try {
+                        System.out.println("Do login debug 5");
                         if (set == null) return;
-                        if (set.isFirst()) {
+                        System.out.println("Do login debug 6");
+                        if (set.first()) {
+                            System.out.println("Do login debug 7");
                             int guildID = set.getInt("guild_id");
                             GuildWrapper newWrapper = new GuildWrapper(guildID);
                             GuildDatabase.getAPI().updateCache(newWrapper, true, (loaded) -> {
-                                if (loaded == null || loaded == false) return; //Couldnt load
+                                System.out.println("Do login debug 8");
+                                if (loaded == null || !loaded) return; //Couldnt load
+                                System.out.println("Do login debug 9: " + guildID);
                                 GuildDatabase.getAPI().cached_guilds.put(guildID, newWrapper);
+                                player.sendMessage("Loaded the guild with guild id: " + guildID);
                                 sendAlertFilter(newWrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
                                 showMotd(player, newWrapper.getTag(), newWrapper.getMotd());
                             });
                         }
+                        set.close();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 });
             } else {
+                System.out.println("Do login debug 10");
                 sendAlertFilter(wrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
                 showMotd(player, wrapper.getTag(), wrapper.getMotd());
 
@@ -96,10 +110,13 @@ public class GuildMechanics {
 
         GuildMember member = guild.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
         member.saveData(true, null);
-        if (guild.getNumberOfGuildMembersOnThisShard() <= 0) guild.saveData(true, (bool) -> {
-            if (guild.getNumberOfGuildMembersOnThisShard() > 0) return;
-            GuildDatabase.getAPI().cached_guilds.remove(guild.getGuildID());
-        });
+        System.out.println("The number of guildies: " + guild.getNumberOfGuildMembersOnThisShard());
+        if (guild.getNumberOfGuildMembersOnThisShard() <= 1) {
+            guild.saveData(true, (bool) -> {
+                if (guild.getNumberOfGuildMembersOnThisShard() > 1) return;
+                GuildDatabase.getAPI().cached_guilds.remove(guild.getGuildID());
+            });
+        }
     }
 
 
@@ -285,11 +302,13 @@ public class GuildMechanics {
 
 
     public void createGuild(Player player, String guildName, String guildTag, String guildDisplayName, ItemStack banner) {
-        Integer playerAccountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId());
-        if(playerAccountID == null) {
-            Constants.log.info("Could not load players account id on banner creation for the player: " + player.getName());
+        PlayerWrapper hisPlayerWrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(hisPlayerWrapper == null) {
+            Constants.log.info("Could not load players wrapper on guild creation creation for the player: " + player.getName());
             return;
         }
+        int playerAccountID = hisPlayerWrapper.getAccountID();
+
 
         // Confirmation stage
         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, thank you. Let me show you a quick summary of your guild.");
@@ -355,6 +374,7 @@ public class GuildMechanics {
                                 newWrapper.getMembers().put(playerAccountID, member);
                                 newWrapper.insertIntoDatabase(true, (newID) -> {
                                     if (newID == null) return;
+                                    hisPlayerWrapper.setGuildID(newID);
                                     member.setGuildID(newID);
                                     newWrapper.setGuildID(newID);
                                     GuildDatabase.getAPI().cached_guilds.put(newID, newWrapper);

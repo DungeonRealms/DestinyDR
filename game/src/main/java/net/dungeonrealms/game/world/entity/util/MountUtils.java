@@ -141,7 +141,7 @@ public class MountUtils {
                 horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
-                horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
+//                horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
                 player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();

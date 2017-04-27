@@ -17,9 +17,9 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveOpenProfile;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +41,7 @@ public class PlayerMenus {
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null)return;
+        if (wrapper == null) return;
 
         Map<UUID, Integer> friends = wrapper.getFriendsList();
 //        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
@@ -83,7 +83,7 @@ public class PlayerMenus {
 //        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null)return;
+        if (wrapper == null) return;
 
         Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 
@@ -133,16 +133,17 @@ public class PlayerMenus {
         }
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
-        Set<String> playerPets = wrapper.getPetsUnlocked();
+        Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
 
         if (Rank.isSubscriber(player))
             for (EnumPets p : EnumPets.values()) {
                 if (p == EnumPets.BABY_HORSE)
                     continue;
-
-                playerPets.add(p.getRawName());
+                if (playerPets.containsKey(p)) continue;
+                playerPets.put(p, new PetData(null));
+//                playerPets.add(p.getRawName());
             }
 
 
@@ -156,36 +157,21 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
 
-        for (String pet : playerPets) {
-            String petType;
-            String petName;
-            if (pet.contains("@")) {
-                petType = pet.split("@")[0];
-                petName = pet.split("@")[1];
-            } else {
-                petType = pet;
-                petName = EnumPets.getByName(petType).getDisplayName();
-            }
-            EnumPets pets = EnumPets.getByName(petType);
-            if (pets == null) {
-                //UH OH BOYZ. HOW'D THAT GET HERE? SOMEONE EDITED MONGO WRONGLY
-                continue;
-            }
+        playerPets.forEach((pets, data) -> {
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("petType", new NBTTagString(petType));
-            tag.set("petName", new NBTTagString(petName));
+            tag.set("petType", new NBTTagString(pets.getRawName()));
+            tag.set("petName", new NBTTagString(data.getPetName() != null ? data.getPetName() : pets.getDisplayName()));
             nmsStack.setTag(tag);
-            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), pets.getDisplayName(), new String[]{
+            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
                     ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
                     ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
                     "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + petName,
+                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (data.getPetName() != null ? data.getPetName() : pets.getDisplayName()),
                     ChatColor.GRAY + "Display Item"
             }));
-        }
-
+        });
         player.openInventory(inv);
     }
 
@@ -193,7 +179,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
         if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
             Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
@@ -262,7 +248,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
         Set<String> playerTrails = wrapper.getParticlesUnlocked();
 
@@ -298,7 +284,7 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
         HashSet<String> playerMountSkins = wrapper.getMountSkins();
 
@@ -378,7 +364,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 36, "Exploration Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -417,7 +403,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 36, "Social Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -456,7 +442,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 36, "Currency Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -495,7 +481,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 36, "Combat Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -534,7 +520,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Realm Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -573,7 +559,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Event Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -612,7 +598,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 45, "Character Achievements");
         UUID uuid = player.getUniqueId();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Set<String> playerAchievements = wrapper.getAchievements();
 
         boolean noAchievements;
@@ -730,7 +716,7 @@ public class PlayerMenus {
         }));
 
         player.openInventory(inv);
-        
+
         Quests.getInstance().triggerObjective(player, ObjectiveOpenProfile.class);
     }
 
@@ -776,7 +762,7 @@ public class PlayerMenus {
      */
     public static void openToggleMenu(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         Inventory inv = Bukkit.createInventory(null, ((int) Math.ceil((1 + PlayerManager.PlayerToggles.values().length) / 9.0) * 9), "Toggles");
 
         int i = 0;

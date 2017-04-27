@@ -245,7 +245,7 @@ public class BankListener implements Listener {
                 wrapper.setGems(newBalance);
 //                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
-                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), newBalance);
+                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, newBalance, wrapper.getCharacterID());
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                 player.updateInventory();
@@ -298,7 +298,7 @@ public class BankListener implements Listener {
                                         ItemStack stack = BankMechanics.gem.clone();
                                         if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                             wrapper.setGems(wrapper.getGems() - number);
-                                            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), wrapper.getGems());
+                                            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getGems(), wrapper.getCharacterID());
                                             player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                             player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
                                             player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -346,7 +346,7 @@ public class BankListener implements Listener {
                                     } else {
                                         player.getInventory().addItem(BankMechanics.createBankNote(number, player));
                                         wrapper.setGems(wrapper.getGems() - number);
-                                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getCharacterID(), wrapper.getGems());
+                                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getGems(),  wrapper.getCharacterID());
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -392,8 +392,8 @@ public class BankListener implements Listener {
                                 if (size <= 0) return;
                                 int newBalance = wrapper.getGems() + size;
                                 wrapper.setGems(newBalance);
+                                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, newBalance, wrapper.getCharacterID());
                                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
-
                                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
 
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
@@ -587,7 +587,7 @@ public class BankListener implements Listener {
                             wrapper.setGems(newBalance);
 //                            BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                             BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
-
+                            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, newBalance, wrapper.getCharacterID());
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
 
                             ItemStack bankItem = new ItemStack(Material.EMERALD);

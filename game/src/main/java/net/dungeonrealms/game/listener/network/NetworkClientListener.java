@@ -131,7 +131,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     System.out.println("Registered user " + username + " with accountID: " + accountID);
                     break;
                 case "Update": {
-                    if(DungeonRealms.getInstance().isAlmostRestarting())return;
+                    if (DungeonRealms.getInstance().isAlmostRestarting()) return;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         try {
                             UUID uuid = UUID.fromString(in.readUTF());
@@ -164,6 +164,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                             if (rs.first())
                                                 wrapper.loadUnlockables(rs);
                                             Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
+
+                                            rs.close();
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -191,6 +193,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                                         }
                                                     }
                                                 }
+                                                rs.close();
                                             } catch (SQLException | IllegalAccessException e) {
                                                 e.printStackTrace();
                                             }

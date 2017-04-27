@@ -10,6 +10,8 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -125,7 +127,7 @@ public class CommandEss extends BaseCommand {
                                     return;
                                 }
                                 wrapper.setActivePet(petType.toUpperCase());
-                                wrapper.getPetsUnlocked().add(petType.toUpperCase());
+                                wrapper.getPetsUnlocked().put(EnumPets.getByName(petType), new PetData(null));
                                 wrapper.saveData(true, null, (wrappa) -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, "unlockables");

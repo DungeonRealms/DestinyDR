@@ -2,10 +2,7 @@ package net.dungeonrealms.game.handler;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -32,6 +29,7 @@ import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -48,11 +46,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -561,8 +555,8 @@ public class ClickHandler {
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
                         }
-                        String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
-                        wrapper.setActivePet(toStore);
+//                        String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
+                        wrapper.setActivePet(nmsStack.getTag().getString("petType"));
                         PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), petName);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -572,6 +566,11 @@ public class ClickHandler {
                             return;
                         }
                         String petType = nmsStack.getTag().getString("petType");
+                        EnumPets pet = EnumPets.getByName(petType);
+                        if (pet == null) {
+                            player.sendMessage(ChatColor.RED + "Invalid pet!");
+                            return;
+                        }
                         String petName = "";
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
@@ -595,13 +594,10 @@ public class ClickHandler {
                             if (inputName.contains("@")) {
                                 inputName = inputName.replaceAll("@", "_");
                             }
-
                             String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
-
-                            String newPet = petType + "@" + checkedPetName;
-                            wrapper.getPetsUnlocked().remove(petType);
-                            wrapper.getPetsUnlocked().remove(petType + "@" + finalPetName);
-                            wrapper.getPetsUnlocked().add(newPet);
+//                            wrapper.getPetsUnlocked().remove(petType);
+//                            wrapper.getPetsUnlocked().remove(petType + "@" + finalPetName);
+                            wrapper.getPetsUnlocked().put(pet, new PetData(checkedPetName));
 
                             player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
@@ -1517,7 +1513,7 @@ public class ClickHandler {
                 }
 
                 PlayerWrapper.getPlayerWrapper(uuid, false, true, (otherWrapper) -> {
-                    if(otherWrapper == null) {
+                    if (otherWrapper == null) {
                         player.sendMessage(ChatColor.RED + "Could not load player data!");
                         return;
                     }
@@ -1537,10 +1533,10 @@ public class ClickHandler {
 
                     if (!supportTrailLocked)
                         otherWrapper.getTrails().add(trailName);
-                        otherWrapper.saveData(true, null, (wappa) -> {
-                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid, "trails");
-                        });
+                    otherWrapper.saveData(true, null, (wappa) -> {
+                        player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        GameAPI.updatePlayerData(uuid, "trails");
+                    });
 
                     SupportMenus.openCosmeticsMenu(player, playerName, uuid);
 
@@ -1583,7 +1579,7 @@ public class ClickHandler {
 
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
                 PlayerWrapper.getPlayerWrapper(uuid, false, true, (otherWrapper) -> {
-                    if(otherWrapper == null) {
+                    if (otherWrapper == null) {
                         player.sendMessage(ChatColor.RED + "Something went wrong loading the data!");
                         return;
                     }
@@ -1604,22 +1600,25 @@ public class ClickHandler {
                     }
                     EnumPets supportPets = EnumPets.getByName(petName);
 
-                    HashSet<String> playerSupportPets = otherWrapper.getPetsUnlocked();
+                    Map<EnumPets, PetData> playerSupportPets = otherWrapper.getPetsUnlocked();
                     boolean supportPetLocked = false;
                     if (!playerSupportPets.isEmpty()) {
-                        if (playerSupportPets.contains(petName)) {
+                        if (playerSupportPets.containsKey(supportPets)) {
                             supportPetLocked = true;
                         }
                     }
 
                     final boolean supPetLocked = supportPetLocked;
 
-                    if(supportPetLocked)otherWrapper.getPetsUnlocked().remove(petName);
-                    else otherWrapper.getPetsUnlocked().add(petName);
+                    if (supportPetLocked) {
+                        otherWrapper.getPetsUnlocked().remove(supportPets);
+                    } else otherWrapper.getPetsUnlocked().put(supportPets, new PetData(null));
 
                     otherWrapper.saveData(true, null, (wrappa) -> {
-                        if(supPetLocked)player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                        else player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        if (supPetLocked)
+                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        else
+                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                         GameAPI.updatePlayerData(uuid, "pets");
                     });
 
@@ -1763,22 +1762,20 @@ public class ClickHandler {
                 if (!nmsStack.getTag().hasKey("petType")) return;
                 if (!nmsStack.getTag().hasKey("eCash")) return;
                 String petType = nmsStack.getTag().getString("petType");
-                HashSet<String> playerPets = wrapper.getPetsUnlocked();
+                Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
                 EnumPets pets = EnumPets.getByName(petType);
                 if (pets == null) {
                     return;
                 }
                 if (!playerPets.isEmpty()) {
-                    for (String pet : playerPets) {
-                        if (pet.contains(petType.toUpperCase())) {
-                            player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + pets.getDisplayName() + ChatColor.RED + " pet.");
-                            return;
-                        }
+                    if (playerPets.containsKey(pets)) {
+                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + pets.getDisplayName() + ChatColor.RED + " pet.");
+                        return;
                     }
                 }
                 int eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    wrapper.getPetsUnlocked().add(petType);
+                    wrapper.getPetsUnlocked().put(pets, new PetData(null));
                     wrapper.setActivePet(petType);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {

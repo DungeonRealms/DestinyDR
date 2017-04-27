@@ -29,6 +29,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenJournal;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -917,15 +918,21 @@ public class ItemListener implements Listener {
 
                 String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
-                String activePet = wrapper.getActivePet();
-                wrapper.getPetsUnlocked().remove(activePet);
-                if (activePet.contains("@")) {
-                    activePet = activePet.split("@")[0];
-                }
-                String newPet = activePet + "@" + checkedPetName;
-                wrapper.getPetsUnlocked().remove(activePet);
-                wrapper.getPetsUnlocked().add(newPet);
-                wrapper.setActivePet(newPet);
+                EnumPets petType = EnumPets.getById(pet.getBukkitEntity().getType().getTypeId());
+                if(petType == null)return;
+
+                wrapper.getPetsUnlocked().put(petType, new PetData(checkedPetName));
+
+//                String activePet = wrapper.getActivePet();
+//                wrapper.getPetsUnlocked().remove(activePet);
+//                if (activePet.contains("@")) {
+//                    activePet = activePet.split("@")[0];
+//                }
+//                String newPet = activePet + "@" + checkedPetName;
+//
+//                wrapper.getPetsUnlocked().remove(activePet);
+//                wrapper.getPetsUnlocked().add(newPet);
+//                wrapper.setActivePet(newPet);
                 ChatColor prefix = ChatColor.WHITE;
                 if (Rank.isSubscriber(player)) {
                     String rank = Rank.getInstance().getRank(player.getUniqueId());

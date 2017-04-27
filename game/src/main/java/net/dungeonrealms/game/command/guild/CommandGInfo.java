@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 
-public class CommandGInfo extends BaseCommand implements CooldownCommand{
+public class CommandGInfo extends BaseCommand implements CooldownCommand {
 
     public CommandGInfo(String command, String usage, String description) {
         super(command, usage, description);
@@ -33,7 +33,7 @@ public class CommandGInfo extends BaseCommand implements CooldownCommand{
         UUID target = player.getUniqueId();
 
 
-        if(checkCooldown(player))return false;
+        if (checkCooldown(player)) return false;
 //        if (cooldown.contains(player.getUniqueId())) {
 //            player.sendMessage(ChatColor.RED + "You must wait 30 seconds to use " + ChatColor.BOLD + "GUILD INFO.");
 //            return true;
@@ -45,15 +45,17 @@ public class CommandGInfo extends BaseCommand implements CooldownCommand{
             checking = Bukkit.getPlayer(args[0]);
         }
 
-        if(checking == null) {
+        if (checking == null) {
             player.sendMessage(ChatColor.RED + "This player must be online on the same shard as you!");
             return false;
         }
 
         GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(checking.getUniqueId());
-        if(guildWrapper == null) {
-            if(player != checking)player.sendMessage(ChatColor.RED + "This player is not in a guild!");
-            else player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "GUILD INFO.");
+        if (guildWrapper == null) {
+            if (!player.equals(checking))
+                player.sendMessage(ChatColor.RED + "This player is not in a guild!");
+            else
+                player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "GUILD INFO.");
             return false;
         }
 

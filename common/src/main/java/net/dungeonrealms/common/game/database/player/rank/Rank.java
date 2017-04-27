@@ -56,6 +56,8 @@ public class Rank {
                     if (rank == null) continue;
                     this.cachedRanks.put(uuid, rank);
                 }
+
+                rs.close();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loaded " + ChatColor.GREEN + this.cachedRanks.size() + ChatColor.AQUA + " Ranks into memory in " + (System.currentTimeMillis() - start) + "ms");
             } catch (Exception e) {
                 e.printStackTrace();

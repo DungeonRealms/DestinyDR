@@ -50,6 +50,8 @@ public class Shop {
 
     public Shop(UUID uuid, Location loc, int characterID, String shopName) {
         this.ownerUUID = uuid;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        this.shopLevel = wrapper.getShopLevel();
         this.ownerName = getOwner().getName();
         this.block1 = loc.getWorld().getBlockAt(loc);
         this.block2 = loc.getWorld().getBlockAt(loc.add(1, 0, 0));
@@ -63,8 +65,6 @@ public class Shop {
         viewCount = 0;
         this.characterID = characterID;
         this.uniqueViewers = new ArrayList<>();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        this.shopLevel = wrapper.getShopLevel();
     }
 
     private Inventory createNewInv(UUID uuid) {
@@ -132,7 +132,7 @@ public class Shop {
 
         if (shutDown) {
             if (saveStatement != null) {
-                saveStatement.addBatch(QueryType.SET_HASSHOP.getQuery(false, this.characterID));
+                saveStatement.addBatch(QueryType.SET_HASSHOP.getQuery(0, this.characterID));
             }
 //            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
@@ -143,11 +143,18 @@ public class Shop {
                     BankMechanics.shopPricing.remove(owner.getName());
                 }
             }
-
-            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, false, this.characterID);
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, 0, this.characterID);
 //            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 //                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true)
 //            });
+        }
+
+        if (owner != null) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(owner);
+            if (wrapper != null) {
+                //Shop closed.
+                wrapper.setShopOpened(false);
+            }
         }
     }
 
@@ -172,20 +179,26 @@ public class Shop {
             if (player != null)
                 player.sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
 
-            Storage storage = BankMechanics.getInstance().getStorage(ownerUUID);
-            if (storage != null)
-                storage.collection_bin = inv;
-
             String invToString = ItemSerialization.toString(inv);
             //Only save on shutdown / logout, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
 
             if (shutDown)
                 state.addBatch(QueryType.UPDATE_COLLECTION_BIN.getQuery(invToString, this.characterID));
+            else if (state == null) {
+                //Just need to save collection bin?
+                SQLDatabaseAPI.getInstance().executeUpdate(callback -> {
+                    Bukkit.getLogger().info("Setting collection_storage to " + invToString + " for " + this.characterID);
+                }, QueryType.UPDATE_COLLECTION_BIN.getQuery(invToString, this.characterID));
+            }
 //                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {
             SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
 //            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
         }
+
+        Storage storage = BankMechanics.getInstance().getStorage(ownerUUID);
+        if (storage != null)
+            storage.collection_bin = inv;
     }
 
     /**
@@ -249,7 +262,6 @@ public class Shop {
         if (p == null)
             return;
         int new_tier = this.shopLevel + 1;
-
         /*if (Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")) {
             if (new_tier >= 4) {
                 //Click to view shop!
@@ -307,6 +319,7 @@ public class Shop {
         //DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         wrapper.setShopLevel(new_tier);
+        this.shopLevel = new_tier;
 
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] items = inventory.getContents();

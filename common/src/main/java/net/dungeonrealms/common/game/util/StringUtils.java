@@ -18,6 +18,16 @@ public class StringUtils {
         return retr;
     }
 
+    public static String serializeList(Set<String> string, String delimeter, boolean addQuotes){
+        if(addQuotes) {
+            String str = serializeList(string, delimeter);
+            if (str == null || str.isEmpty()) return null;
+
+            return "'" + str + "'";
+        }
+        return serializeList(string, delimeter);
+    }
+
     public static String serializeList(Set<String> string, String delimeter){
         if(string == null || string.isEmpty())return null;
         StringBuilder builder = new StringBuilder();
@@ -25,6 +35,8 @@ public class StringUtils {
 
         return builder.toString();
     }
+
+
     public static HashSet<String> deserializeSet(String string, String delimeter){
         HashSet<String> retr = new HashSet<>();
         if(string == null)return retr;

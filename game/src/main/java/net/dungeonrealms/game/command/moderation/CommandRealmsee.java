@@ -51,23 +51,23 @@ public class CommandRealmsee extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "Player not found in database.");
                 return;
             }
+
             Player owner = Bukkit.getPlayer(uuid);
 
-            Realm realm = Realms.getInstance().getOrCreateRealm(uuid, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                if (wrapper.isPlaying()) {
+                    player.sendMessage(ChatColor.RED + "This user is online on another shard. Changes to their realm may not save.");
+                }
 
-            if (owner != null && owner.isOnline()) {
+                Realm realm = Realms.getInstance().getOrCreateRealm(uuid, wrapper.getCharacterID());
                 if (realm != null && realm.isOpen()) {
                     sender.sendMessage(ChatColor.RED + "This user is on this shard and their realm is open already.");
+                    return;
                 }
-            } else
-                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                    if (wrapper.isPlaying()) {
-                        player.sendMessage(ChatColor.RED + "This user is online on another shard. Changes to their realm may not save.");
-                    }
-                });
+                if (realm != null)
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> realm.openPortal(player, block.getLocation()));
+            });
 
-            if (realm != null)
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> realm.openPortal(player, block.getLocation()));
         });
         return true;
     }

@@ -50,7 +50,7 @@ public class CommandRealmWipe extends BaseCommand {
                     return;
                 }
 
-                Realm realm = Realms.getInstance().getOrCreateRealm(uuid, wrapper.getAccountID());
+                Realm realm = Realms.getInstance().getOrCreateRealm(uuid, wrapper.getCharacterID());
                 if (realm == null) {
                     sender.sendMessage(ChatColor.RED + "Could not load realm!");
                     return;
@@ -68,7 +68,7 @@ public class CommandRealmWipe extends BaseCommand {
                     SQLDatabaseAPI.getInstance().executeUpdate(i -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
                         GameAPI.updatePlayerData(uuid, "realm");
-                    }), QueryType.SET_REALM_INFO.getQuery(0, 0, 1, wrapper.getAccountID()));
+                    }), QueryType.SET_REALM_INFO.getQuery(0, 0, 1, realm.getAccountID()));
                 });
 
             });

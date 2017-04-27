@@ -110,6 +110,10 @@
           <groupId>com.sk89q.spigot</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>bukkit</artifactId>
+          <groupId>org.bukkit</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>commandbook</artifactId>
           <groupId>com.sk89q</groupId>
         </exclusion>

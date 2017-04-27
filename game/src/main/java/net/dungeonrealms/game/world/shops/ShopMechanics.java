@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.shops;
 import lombok.Cleanup;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -147,6 +148,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     b.setType(Material.CHEST);
                     Shop shop = new Shop(uniqueId, b.getLocation(), wrapper.getCharacterID(), Chat.getInstance().checkForBannedWords(shopName));
                     wrapper.setShopOpened(true);
+                    SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, 1, wrapper.getCharacterID());
 //                    DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
                     ALLSHOPS.put(player.getName(), shop);
                     player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");

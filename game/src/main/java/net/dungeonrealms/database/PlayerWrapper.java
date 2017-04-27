@@ -21,6 +21,8 @@ import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import org.bukkit.Bukkit;
@@ -171,7 +173,11 @@ public class PlayerWrapper {
     private Set<String> achievements = new HashSet<>();
 
     @Getter
-    private HashSet<String> mountsUnlocked, petsUnlocked, particlesUnlocked, mountSkins, trails;
+    private HashSet<String> mountsUnlocked, particlesUnlocked, mountSkins, trails;
+
+    @Getter
+    private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
+
 
     @Getter
     @Setter
@@ -273,6 +279,7 @@ public class PlayerWrapper {
                 this.loadLocation(result);
 
                 this.guildID = result.getInt("guilds.guild_id");
+                System.out.println("The guildID: " + guildID);
 
 
                 this.lastLogin = result.getLong("users.last_login");
@@ -299,9 +306,10 @@ public class PlayerWrapper {
 
                 //String activeMount, activePet, activeTrail, activeMountSkin;
                 this.activeMount = result.getString("characters.activeMount");
-                this.activePet = result.getString("characters.activeMount");
-                this.activeTrail = result.getString("characters.activeMount");
-                this.activeMountSkin = result.getString("characters.activeMount");
+                this.activePet = result.getString("characters.activePet");
+                this.activeTrail = result.getString("characters.activeTrail");
+                this.activeMountSkin = result.getString("characters.activeMountSkin");
+
                 this.questData = result.getString("characters.questData");
                 this.shopLevel = result.getInt("characters.shop_level");
                 this.storedFoodLevel = result.getInt("characters.foodLevel");
@@ -361,11 +369,15 @@ public class PlayerWrapper {
         if (callback != null)
             callback.accept(null);
 
-        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 1, accountID);
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 1, DungeonRealms.getShard().getPseudoName(), accountID);
     }
-    
+
+    public Rank.PlayerRank getPlayerRank() {
+        return Rank.PlayerRank.getFromInternalName(getRank());
+    }
+
     public String getRank() {
-        if(rank == null) return "DEFAULT";
+        if (rank == null) return "DEFAULT";
         return rank;
     }
 
@@ -374,13 +386,41 @@ public class PlayerWrapper {
     }
 
 
-
     public void loadUnlockables(ResultSet result) throws SQLException {
         this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
-        this.petsUnlocked = StringUtils.deserializeSet(result.getString("users.pets"), ",");
         this.particlesUnlocked = StringUtils.deserializeSet(result.getString("users.particles"), ",");
         this.mountSkins = StringUtils.deserializeSet(result.getString("users.mountSkin"), ",");
         this.trails = StringUtils.deserializeSet(result.getString("users.trails"), ",");
+        List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
+        if (list != null) {
+            for (String str : list) {
+                String type;
+                String name = null;
+                if (str.contains("@")) {
+                    type = str.split("@")[0];
+                    name = str.split("@")[1];
+                } else {
+                    type = str;
+                }
+
+                EnumPets pets = EnumPets.getByName(type);
+                if (pets == null) {
+                    Bukkit.getLogger().info("Invalid pet type: " + str + " for " + getUsername());
+                    continue;
+                }
+
+                this.petsUnlocked.put(pets, new PetData(name));
+            }
+        }
+    }
+
+    public String getSerializePetString() {
+        if (this.petsUnlocked.isEmpty()) return null;
+        StringBuilder builder = new StringBuilder();
+
+        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getRawName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "").append(","));
+
+        return builder.toString();
     }
 
     //tfw greg pays $10 for a burger from macers, 8.1 is decent on that flavor scale
@@ -392,7 +432,7 @@ public class PlayerWrapper {
                         this.muteExpire = result.getLong("expiration");
                         this.muteReason = result.getString("reason");
                         this.whoMutedMeID = result.getInt("punisher_id");
-                        if(muteLoadedCallback != null)
+                        if (muteLoadedCallback != null)
                             muteLoadedCallback.accept(this.muteExpire);
                     } else {
                         this.banExpire = result.getLong("expiration");
@@ -400,6 +440,8 @@ public class PlayerWrapper {
                         this.whoBannedMeID = result.getInt("punisher_id");
                     }
                 }
+                result.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -475,20 +517,23 @@ public class PlayerWrapper {
         if (playing == this.isPlaying) return;
         this.isPlaying = playing;
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                        QueryType.SET_ONLINE_STATUS.getQuery(0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : null, uuid.toString()));
-//                        "UPDATE users SET is_online = ?, currentShard = ?,  WHERE `users`.`uuid` = ?;");
-//                statement.setBoolean(1, this.isPlaying);
-//                statement.setString(2, this.isPlaying ? DungeonRealms.getShard().getShardID() : null);
-//                statement.setString(3, uuid.toString());
-
-                statement.executeUpdate();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
+        SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
+            //Set...
+        }, QueryType.SET_ONLINE_STATUS.getQuery(this.isPlaying ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : null, accountID));
+//        CompletableFuture.runAsync(() -> {
+//            try {
+//                PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
+//                        QueryType.SET_ONLINE_STATUS.getQuery(0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : null, uuid.toString()));
+////                        "UPDATE users SET is_online = ?, currentShard = ?,  WHERE `users`.`uuid` = ?;");
+////                statement.setBoolean(1, this.isPlaying);
+////                statement.setString(2, this.isPlaying ? DungeonRealms.getShard().getShardID() : null);
+////                statement.setString(3, uuid.toString());
+//                statement.executeUpdate();
+//                statement.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }, SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
     }
 
     public void saveData(boolean async, Boolean isOnline) {
@@ -503,15 +548,13 @@ public class PlayerWrapper {
         }
 
 
-
         try {
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
 
             statement.addBatch(getCharacterReplaceQuery(player));
             statement.addBatch(getPlayerStats().getUpdateStatement());
-            statement.addBatch(getPlayerStats().getUpdateStatement());
             statement.addBatch(getToggles().getUpdateStatement());
-            if (hasFriendData()) statement.addBatch(getFriendUpdateQuery());
+            if (hasFriendData()) getFriendUpdateQuery(statement);
             if (this.player != null) {
                 statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
             }
@@ -544,7 +587,8 @@ public class PlayerWrapper {
             bankStorage = pendingBankStorage;
 
         String collectionBinString = null;
-        if (bankStorage != null && bankStorage.collection_bin != null) collectionBinString = ItemSerialization.toString(bankStorage.collection_bin);
+        if (bankStorage != null && bankStorage.collection_bin != null)
+            collectionBinString = ItemSerialization.toString(bankStorage.collection_bin);
 
         String bankString = bankStorage != null && bankStorage.inv != null ? ItemSerialization.toString(bankStorage.inv) : null;
 
@@ -566,62 +610,71 @@ public class PlayerWrapper {
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
                 quote(getActiveMount()), quote(getActivePet()), quote(getActiveTrail()), quote(getActiveMountSkin()),
                 quote(getQuestData()), quote(collectionBinString), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged() ? 1 : 0,
-                isShopOpened() ? 1 : 0, isLoggerDied() ? 1 : 0, getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5(),getCharacterID());
+                isShopOpened() ? 1 : 0, isLoggerDied() ? 1 : 0, getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5(), getCharacterID());
         return toReturn;
     }
 
-    private String quote(String string){
-        if(string == null)return null;
+    private String quote(String string) {
+        if (string == null) return null;
         return "'" + string + "'";
     }
+
     private String getUsersUpdateQuery(Boolean isOnline) {
         if (isOnline == null) isOnline = isPlaying();
 
-        String toReturn = "UPDATE users SET uuid = '%s', username = '%s', selected_character_id = '%s', ecash = '%s', joined = '%s', last_login = '%s', last_logout = '%s', last_free_ecash = '%s', last_shard_transfer = '%s', is_online = '%s', currentShard = '%s', currencyTab = '%s', firstLogin = '%s', lastViewedBuild = '%s', lastNoteSize = '%s', lastVote = '%s' WHERE account_id = '%s'";
-        toReturn = String.format(toReturn, getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", this.currencyTab == null ? null : getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(),getAccountID());
+        String toReturn = "UPDATE users SET uuid = '%s', username = '%s', selected_character_id = '%s', ecash = '%s', joined = '%s', last_login = '%s', last_logout = '%s', last_free_ecash = '%s', last_shard_transfer = '%s', is_online = '%s', currentShard = '%s', currencyTab = '%s', firstLogin = '%s', lastViewedBuild = '%s', lastNoteSize = '%s', lastVote = '%s', " +
+                "mounts = %s, pets = %s, particles = %s, mountSkin = %s, trails = %s WHERE account_id = '%s'";
+        toReturn = String.format(toReturn, getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", this.currencyTab == null ? null : getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(),
+                StringUtils.serializeList(getMountsUnlocked(), ",", true), quote(getSerializePetString()), StringUtils.serializeList(getParticlesUnlocked(), ",", true), StringUtils.serializeList(getMountSkins(), ",", true), StringUtils.serializeList(getTrails(), ",", true), getAccountID());
         return toReturn;
     }
 
-    private String getFriendUpdateQuery() {
-        StringBuilder toReturn = new StringBuilder("REPLACE INTO friends (account_id, friend_id, status) VALUES ");
-        boolean isFirstValues = true;
+    @SneakyThrows
+    private boolean getFriendUpdateQuery(PreparedStatement statement) {
+        if (friendsList.size() == 0 && ignoredFriends.size() == 0 && pendingFriends.size() == 0) return false;
+
+        StringBuilder builder = new StringBuilder("");
+//        StringBuilder toReturn = new StringBuilder("REPLACE INTO friends (account_id, friend_id, status) VALUES ");
         for (int friendID : friendsList.values()) {
-            if (!isFirstValues) toReturn.append(", ");
-            toReturn.append('(');
-            toReturn.append(getAccountID());
-            toReturn.append(',');
-            toReturn.append(friendID);
-            toReturn.append(',');
-            toReturn.append("friends");
-            toReturn.append(')');
-            isFirstValues = false;
+            statement.addBatch(QueryType.INSERT_FRIENDS.getQuery(getAccountID(), friendID, "friends", "friends"));
+//            if (!isFirstValues) toReturn.append(", ");
+//            toReturn.append('(');
+//            toReturn.append(getAccountID());
+//            toReturn.append(',');
+//            toReturn.append(friendID);
+//            toReturn.append(',');
+//            toReturn.append("friends");
+//            toReturn.append(')');
+//            isFirstValues = false;
         }
 
         for (int friendID : ignoredFriends.values()) {
-            if (!isFirstValues) toReturn.append(", ");
-            toReturn.append('(');
-            toReturn.append(getAccountID());
-            toReturn.append(',');
-            toReturn.append(friendID);
-            toReturn.append(',');
-            toReturn.append("blocked");
-            toReturn.append(')');
-            isFirstValues = false;
+            statement.addBatch(QueryType.INSERT_FRIENDS.getQuery(getAccountID(), friendID, "blocked", "blocked"));
+//            if (!isFirstValues) toReturn.append(", ");
+//            toReturn.append('(');
+//            toReturn.append(getAccountID());
+//            toReturn.append(',');
+//            toReturn.append(friendID);
+//            toReturn.append(',');
+//            toReturn.append("blocked");
+//            toReturn.append(')');
+//            isFirstValues = false;
         }
 
         for (int friendID : pendingFriends.values()) {
-            if (!isFirstValues) toReturn.append(", ");
-            toReturn.append('(');
-            toReturn.append(getAccountID());
-            toReturn.append(',');
-            toReturn.append(friendID);
-            toReturn.append(',');
-            toReturn.append("pending");
-            toReturn.append(')');
-            isFirstValues = false;
+            statement.addBatch(QueryType.INSERT_FRIENDS.getQuery(getAccountID(), friendID, "pending", "pending"));
+//            if (!isFirstValues) toReturn.append(", ");
+//            toReturn.append('(');
+//            toReturn.append(getAccountID());
+//            toReturn.append(',');
+//            toReturn.append(friendID);
+//            toReturn.append(',');
+//            toReturn.append("pending");
+//            toReturn.append(')');
+//            isFirstValues = false;
         }
 
-        return toReturn.toString();
+        return true;
     }
 
     private boolean hasFriendData() {
@@ -677,14 +730,14 @@ public class PlayerWrapper {
     private void loadBanks(ResultSet set) {
         setBankLevel(set.getInt("characters.bank_level"));
         String serializedStorage = set.getString("characters.bank_storage");
-        if(serializedStorage == null){
-            this.pendingBankStorage = new Storage(uuid, this.accountID);
+        if (serializedStorage == null) {
+            this.pendingBankStorage = new Storage(uuid, this.characterID);
             return;
         }
 
         //Auto set the inventory size based off level? min 9, max 54
         Inventory inv = ItemSerialization.fromString(serializedStorage, Math.max(9, Math.min(54, getBankLevel() * 9)));
-        this.pendingBankStorage = new Storage(uuid, inv, this.accountID);
+        this.pendingBankStorage = new Storage(uuid, inv, this.characterID);
         loadCollectionBin(set, this.pendingBankStorage);
 
 //        BankMechanics.storage.put(uuid, storageTemp);
@@ -743,10 +796,15 @@ public class PlayerWrapper {
         Inventory toSave = Bukkit.createInventory(null, 9);
         for (int index = 0; index < 4; index++) {
             ItemStack equipment = player.getEquipment().getArmorContents()[index];
-            toSave.getContents()[index] = equipment;
+//            toSave.getContents()[index] = equipment;
+            toSave.setItem(index, equipment);
+            System.out.println("String: " + (equipment == null ? null : equipment.toString()));
         }
-        toSave.getContents()[4] = player.getInventory().getItemInOffHand();
 
+        toSave.setItem(4, player.getInventory().getItemInOffHand());
+//        toSave.getContents()[4] = player.getInventory().getItemInOffHand();
+
+//        Bukkit.getLogger().info("Equipment: " + );
         return ItemSerialization.toString(toSave);
     }
 
@@ -771,6 +829,8 @@ public class PlayerWrapper {
         //Actually apply this on login.
         if (this.pendingMuleInventory != null)
             MountUtils.inventories.put(uuid, pendingMuleInventory);
+
+        Bukkit.getLogger().info("Loaded post login data for " + player.getName());
     }
 
     public void loadPlayerInventory(Player player) {
@@ -781,29 +841,51 @@ public class PlayerWrapper {
 
     public void loadPlayerArmor(Player player) {
         if (pendingArmor == null) return;
+        ItemStack[] items = new ItemStack[4];
         for (int index = 0; index < 4; index++) {
             //We are doing 5 for the new shield slot.
             ItemStack current = pendingArmor.getContents()[index];
-            player.getEquipment().getArmorContents()[index] = current;
-        }
 
+            items[index] = current;
+            Bukkit.getLogger().info("Loading armor for index " + index + " for " + player.getName() + " Item: " + (current == null ? null : current));
+//            player.getEquipment().getArmorContents()[index] = current;
+        }
+        player.getEquipment().setArmorContents(items);
         player.getInventory().setItemInOffHand(pendingArmor.getContents()[4]);
 
         player.updateInventory();
     }
 
+    /**
+     * FRIENDS STUFF
+     **/
+
+    public void ignorePlayer(UUID uuidToIgnore, boolean alreadyIgnored) {
+        if (alreadyIgnored) {
+            this.ignoredFriends.remove(uuidToIgnore);
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_FRIENDS, this.accountID, accountID, "blocked", "blocked");
+        } else {
+            int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuidToIgnore);
+            this.pendingFriends.remove(uuidToIgnore);
+            this.ignoredFriends.put(uuidToIgnore, accountID);
+            this.friendsList.remove(uuidToIgnore);
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_FRIENDS, this.accountID, accountID, "blocked", "blocked");
+
+        }
+    }
+
     public void saveFriends(boolean async, Consumer<Boolean> afterSave) {
+        if (friendsList.size() == 0 && ignoredFriends.size() == 0 && pendingFriends.size() == 0) return;
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> saveFriends(false, afterSave), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
         }
+
         boolean couldSave = true;
         try {
-            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
-                    getFriendUpdateQuery());
-
-            statement.executeUpdate();
-
+            @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
+            getFriendUpdateQuery(statement);
+            statement.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
             couldSave = false;

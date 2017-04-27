@@ -72,8 +72,8 @@ public class GuildMember {
     }
 
     public String getUpdateQuery() {
-        String original = "UPDATE guild_members SET rank = '%s', joined = '%s', accepted = '%s', guild_id = '%s' WHERE account_id = '%s';";
-        return String.format(original, this.getRank().getName(), this.getWhenJoined(), this.isAccepted(), this.getGuildID(), this.getAccountID());
+        String original = "UPDATE guild_members SET rank = '%s', joined = '%s', accepted = '%s' WHERE account_id = '%s';";
+        return String.format(original, this.getRank().getName(), this.getWhenJoined(), this.isAccepted() ? 1 : 0, this.getAccountID());
     }
 
     public String getPlayerName() {

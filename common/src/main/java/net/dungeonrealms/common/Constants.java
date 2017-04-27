@@ -10,7 +10,7 @@ public class Constants {
 
     public static Logger log = Logger.getLogger("DungeonRealms");
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public static String[] DEVELOPERS = new String[]{""};
 
@@ -40,7 +40,6 @@ public class Constants {
 
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
-        debug = false;
         DEVELOPERS = new String[]{"Bradez1571", "Kneesnap", "iFamasssxD", "Ingot"};
         MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";

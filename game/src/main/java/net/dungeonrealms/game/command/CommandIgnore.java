@@ -3,15 +3,17 @@ package net.dungeonrealms.game.command;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.command.friend.CooldownCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public class CommandIgnore extends BaseCommand {
+public class CommandIgnore extends BaseCommand implements CooldownCommand {
     public CommandIgnore() {
         super("ignore", "/<command>", "Ignore a players messages.", Lists.newArrayList("block"));
     }
@@ -21,6 +23,8 @@ public class CommandIgnore extends BaseCommand {
         if (!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
+
+        if (checkCooldown(player)) return true;
 
         if (args.length != 1) {
             player.sendMessage(ChatColor.RED + "Invalid command usage: /ignore <player>");
@@ -38,16 +42,49 @@ public class CommandIgnore extends BaseCommand {
 
         SQLDatabaseAPI.getInstance().getUUIDFromName(name, false, (uuid) -> {
             if (uuid == null) {
-                player.sendMessage(ChatColor.RED + "Player doesnt exist.");
+                player.sendMessage(ChatColor.RED + "That player has never played on Dungeon Realms.");
                 return;
             }
 
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
 
-//            Rank.getInstance().getRank(uuid, (rank) -> {
-///
+            Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
+            if (rank != null && rank.isAtleast(Rank.PlayerRank.PMOD)) {
+                player.sendMessage(ChatColor.RED + "You cannot ignore that player.");
+                return;
+            }
+
+
+            boolean alreadyIgnored = wrapper.getIgnoredFriends().containsKey(uuid);
+            if (alreadyIgnored) {
+                player.sendMessage(ChatColor.GREEN + "You have removed " + name + " from your ignore list.");
+                player.sendMessage(ChatColor.GRAY + "You will now see that players private messages.");
+                wrapper.ignorePlayer(uuid, alreadyIgnored);
+            } else {
+                player.sendMessage(ChatColor.RED + "You have ignored " + ChatColor.RED + ChatColor.BOLD + name + ChatColor.RED + "!");
+                player.sendMessage(ChatColor.GRAY + "You will no longer see that players private messages.");
+                wrapper.ignorePlayer(uuid, alreadyIgnored);
+            }
+            //Ignored.
+//            wrapper.ignorePlayer(uuid);
+//            wrapper.getIgnoredFriends().put(uuid, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
+//            wrapper.getFriendsList().remove(uuid);
+//            wrapper.getPendingFriends().remove(uuid);
+//            PlayerWrapper.getPlayerWrapper(uuid, false, true, wrap -> {
+//                if (wrap == null) {
+//                    player.sendMessage(ChatColor.RED + "Unable to load that player.");
+//                    return;
+//                }
+//                if (wrap.getPlayerRank().isAtleast(Rank.PlayerRank.PMOD)) {
+//                    player.sendMessage(ChatColor.RED + "You cannot ignore that player!");
+//                    return;
+//                }
+//
+//
 //            });
+
+
         });
 
 //        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -95,5 +132,10 @@ public class CommandIgnore extends BaseCommand {
 //            });
 //        });
         return false;
+    }
+
+    @Override
+    public String getName() {
+        return "ignore";
     }
 }

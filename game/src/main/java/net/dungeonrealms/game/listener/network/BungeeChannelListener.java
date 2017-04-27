@@ -3,10 +3,10 @@ package net.dungeonrealms.game.listener.network;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -72,11 +72,13 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                         try {
                             if (rs != null && rs.first()) {
                                 long expiration = rs.getLong("expiration");
-                                if(expiration > System.currentTimeMillis()){
+                                if (expiration > System.currentTimeMillis()) {
                                     //Still bnaned???
                                     PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "Ban evading", null);
                                 }
                             }
+                            if (rs != null)
+                                rs.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

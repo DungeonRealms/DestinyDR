@@ -93,7 +93,7 @@ public class CommandGKick extends BaseCommand {
 
             player.sendMessage(ChatColor.GREEN + "Attemtping to kick " + p_name + " from your guild...");
 
-            SQLDatabaseAPI.getInstance().executeQuery("DELETE FROM guild_members WHERE account_id = " + accountID.intValue(), true, (set) -> {
+            SQLDatabaseAPI.getInstance().executeUpdate((set) -> {
                 if(set != null) {
                     player.sendMessage(ChatColor.RED + "An error occured while trying to kick " + p_name);
                     return;
@@ -108,7 +108,7 @@ public class CommandGKick extends BaseCommand {
                     p.sendMessage(ChatColor.RED + "You have been " + ChatColor.UNDERLINE + "kicked" + ChatColor.RED + " from " + kickerWrapper.getDisplayName());
                     p.sendMessage("");
                 }
-            });
+            }, "DELETE FROM guild_members WHERE account_id = " + accountID.intValue());
 
         });
 
