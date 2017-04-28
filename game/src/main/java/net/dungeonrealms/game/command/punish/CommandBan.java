@@ -47,8 +47,6 @@ public class CommandBan extends BaseCommand {
             return true;
         }
 
-        Player player = (Player) sender;
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         UUIDFetcher.getUUID(args[0], p_uuid -> {
             if (p_uuid == null) {
                 sender.sendMessage(ChatColor.RED + args[0] + " is not a player, have they changed their name recently?");
@@ -80,7 +78,7 @@ public class CommandBan extends BaseCommand {
                 return;
             }
 
-            if(duration == -1)duration = 0;
+            if (duration == -1) duration = 0;
 
             final long finalDuration = duration;
             PunishAPI.isBanned(p_uuid, banned -> {
@@ -92,7 +90,7 @@ public class CommandBan extends BaseCommand {
                     if (!Rank.isTrialGM((Player) sender) && Rank.isPMOD((Player) sender)) {
 
 
-                        if (finalDuration > 1209600L) {
+                        if (finalDuration > 1209_600L) {
                             sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
                             return;
                         }
@@ -144,7 +142,9 @@ public class CommandBan extends BaseCommand {
                     CombatLog.removeFromCombat(online);
                     CombatLog.removeFromPVP(online);
                 }
-                PunishAPI.ban(p_uuid, p_name, wrapper.getAccountID(), finalDuration, reasonString + " [" + sender.getName() + "]", null);
+                int accountID = sender instanceof Player ? PlayerWrapper.getPlayerWrapper((Player) sender).getAccountID() : 0;
+//                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                PunishAPI.ban(p_uuid, p_name, accountID, finalDuration, reasonString + " [" + sender.getName() + "]", null);
             });
         });
 

@@ -4,10 +4,12 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.game.listener.network.NetworkClientListener;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,11 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -43,7 +41,6 @@ public class GuildWrapper {
     @Setter
     private String displayName;
 
-    @Setter
     private String motd = "Default MOTD";
 
     @Getter
@@ -62,10 +59,18 @@ public class GuildWrapper {
         return this.motd;
     }
 
-    private void modifyRank(UUID uuid, GuildMember.GuildRanks toSet) {
-        GuildMember member = members.get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
-        if (member == null) return;
-        member.setRank(toSet);
+    public void setMotd(String newMotd) {
+        this.motd = newMotd.replace("'","");
+    }
+
+
+    public Map<Integer, GuildMember> getMembersNoPending() {
+        Map<Integer, GuildMember> toReturn = new HashMap<>();
+        this.members.forEach((id, member) -> {
+            if (member.isAccepted()) toReturn.put(id, member);
+        });
+
+        return toReturn;
     }
 
     public GuildMember.GuildRanks getRank(UUID uuid) {
@@ -76,9 +81,21 @@ public class GuildWrapper {
 
     public boolean removePlayer(UUID player) {
         int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player);
-        if (getMembers().remove(accountID) != null) return true;
-        return false;
+        return removePlayer(accountID);
+    }
 
+    public boolean removePlayer(int accountID) {
+        if (getMembers().remove(accountID) != null) {
+            if (getNumberOfGuildMembersOnThisShard() <= 0) {
+                saveData(true, (bool) -> {
+                    if (getNumberOfGuildMembersOnThisShard() > 0) return;
+                    System.out.println("Removing from guild: " + accountID);
+                    GuildDatabase.getAPI().cached_guilds.remove(getGuildID());
+                });
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean isMember(UUID uuid) {
@@ -88,6 +105,10 @@ public class GuildWrapper {
     public String getDisplayName() {
         if (displayName == null || displayName.isEmpty()) return name;
         return displayName;
+    }
+
+    public GuildMember getMember(UUID uuid) {
+        return members.values().stream().filter(mem -> uuid.equals(mem.getUUID())).findFirst().orElse(null);
     }
 
     public boolean isOwner(UUID uuid) {
@@ -165,7 +186,7 @@ public class GuildWrapper {
 
         SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
             callback.accept(true);
-        },"UPDATE guilds SET name = '" + getName() + "', displayname = '" + getDisplayName() + "', tag = '" + getTag() + "', motd = '" + getMotd() + "', banner = '" + getBannerString() + "';");
+        }, "UPDATE guilds SET name = '" + getName() + "', displayname = '" + getDisplayName() + "', tag = '" + getTag() + "', motd = '" + getMotd() + "', banner = '" + getBannerString() + "' WHERE `guild_id` = '" + getGuildID() + "';");
     }
 
     @SneakyThrows
@@ -213,7 +234,10 @@ public class GuildWrapper {
 
     public void sendGuildMessage(String message, boolean thisShard, GuildMember.GuildRanks rank) {
         for (GuildMember member : getMembers().values()) {
-            if (!rank.isThisRankOrHigher(member.getRank())) continue;
+            if (!member.isAccepted()) continue;
+            if (!member.getRank().isThisRankOrHigher(rank)) {
+                continue;
+            }
             Player player = Bukkit.getPlayer(member.getUUID());
             if (player != null) {
                 player.sendMessage(message);
@@ -222,7 +246,7 @@ public class GuildWrapper {
 
         if (!thisShard) {
             //Send network message..
-            GameAPI.sendNetworkMessage("Guilds", "message", String.valueOf(this.getGuildID()), message, rank.getName());
+            GameAPI.sendNetworkMessage("Guilds", "message", DungeonRealms.getShard().getPseudoName(), String.valueOf(this.getGuildID()), message, rank.getName());
         }
     }
 
@@ -238,6 +262,19 @@ public class GuildWrapper {
         return (int) getMembers().values().stream().map(GuildMember::getUUID).filter(Objects::nonNull).map(Bukkit::getPlayer).filter(Objects::nonNull).count();
     }
 
+    public void promotePlayer(Player promoter, String name, GuildMember member) {
+        if (member == null) {
+            Bukkit.getLogger().info("Unable to find guild member with id: " + member.getAccountID());
+            return;
+        }
+
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GUILD_RANK, "OFFICER", member.getAccountID());
+        member.setRank(GuildMember.GuildRanks.OFFICER);
+        promoter.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
+        sendGuildMessage(ChatColor.GREEN + " " + promoter.getName() + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".", false);
+        GameAPI.sendNetworkMessage("Guilds", "setrank", String.valueOf(getGuildID()), member.getAccountID() + "", GuildMember.GuildRanks.OFFICER.getOrder() + "");
+    }
+
     public GuildMember getOwner() {
         return getMembers().values().stream().filter(Objects::nonNull).filter(member -> member.getRank().equals(GuildMember.GuildRanks.OWNER)).findFirst().orElse(null);
 
@@ -246,6 +283,8 @@ public class GuildWrapper {
     public String getNamesForInfo(GuildMember.GuildRanks rank) {
         StringBuilder toReturn = new StringBuilder("");
         for (GuildMember member : getMembers().values()) {
+            if (member == null) continue;
+            if (!member.isAccepted()) continue;
             if (member.getRank().equals(rank)) {
                 boolean isOnline = Bukkit.getPlayer(SQLDatabaseAPI.getInstance().getUsernameFromAccountID(member.getAccountID())) != null;
                 ChatColor color = isOnline ? ChatColor.GREEN : ChatColor.GRAY;

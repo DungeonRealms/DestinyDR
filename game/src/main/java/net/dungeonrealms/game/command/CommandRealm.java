@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realm;
@@ -42,7 +43,7 @@ public class CommandRealm extends BaseCommand {
             return true;
         }
 
-        String fixedTitle = Chat.getInstance().checkForBannedWords(newTitle.toString());
+        String fixedTitle = SQLDatabaseAPI.filterSQLInjection(Chat.getInstance().checkForBannedWords(newTitle.toString()));
 
         player.sendMessage("");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "                       " + "* REALM TITLE SET *");

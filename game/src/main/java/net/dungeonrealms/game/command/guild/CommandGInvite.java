@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -74,7 +75,11 @@ public class CommandGInvite extends BaseCommand {
                     player.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() +
                             ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " to join your guild.");
                     //Send network message to invite them..
-                    GameAPI.sendNetworkMessage("Guilds", "invite", String.valueOf(guild.getGuildID()), guild.getDisplayName(), p_name, String.valueOf(wrapper.getAccountID()), player.getName());
+                    GuildMember member = new GuildMember(foundPlayer.getAccountID(), guild.getGuildID());
+                    member.setAccepted(false);
+                    member.setWhenJoined(System.currentTimeMillis());
+                    guild.getMembers().put(foundPlayer.getAccountID(), member);
+                    GameAPI.sendNetworkMessage("Guilds", "invite", DungeonRealms.getShard().getPseudoName(),String.valueOf(guild.getGuildID()), guild.getDisplayName(), p_name, String.valueOf(foundPlayer.getAccountID()), player.getName());
                 }, QueryType.GUILD_INVITE.getQuery(foundPlayer.getAccountID(), guild.getGuildID(), "MEMBER", System.currentTimeMillis(), 0));
             });
         });

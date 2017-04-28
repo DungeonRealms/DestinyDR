@@ -3,8 +3,6 @@ package net.dungeonrealms.game.listener.mechanic;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -57,7 +55,7 @@ public class BankListener implements Listener {
             e.setCancelled(true);
             Player p = e.getPlayer();
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
-            if(wrapper == null) return;
+            if (wrapper == null) return;
             if (BankMechanics.storage.get(p.getUniqueId()).collection_bin != null) {
                 p.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                 p.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
@@ -131,7 +129,7 @@ public class BankListener implements Listener {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             Player player = event.getPlayer();
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-            if(wrapper == null) return;
+            if (wrapper == null) return;
             if (player.getOpenInventory() != null && GameAPI.isShop(player.getOpenInventory())) {
                 // Player is browsing a shop
                 event.setCancelled(true);
@@ -189,7 +187,7 @@ public class BankListener implements Listener {
 
     public static void handleMoneyDeposit(InventoryClickEvent e, Player player, boolean cursor) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         ItemStack item = cursor ? e.getCursor() : e.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGemPouch(item) || BankMechanics.getInstance().isGem(item)) {
@@ -263,7 +261,7 @@ public class BankListener implements Listener {
     public void onBankClicked(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         if (e.getInventory().getTitle().equalsIgnoreCase("Bank Chest")) {
             if (e.getCursor() != null) {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
@@ -296,7 +294,7 @@ public class BankListener implements Listener {
                                         player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
                                     } else {
                                         ItemStack stack = BankMechanics.gem.clone();
-                                        if (hasSpaceInInventory(player.getUniqueId(), number)) {
+                                        if (hasSpaceInInventory(player, number)) {
                                             wrapper.setGems(wrapper.getGems() - number);
                                             SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getGems(), wrapper.getCharacterID());
                                             player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
@@ -346,7 +344,7 @@ public class BankListener implements Listener {
                                     } else {
                                         player.getInventory().addItem(BankMechanics.createBankNote(number, player));
                                         wrapper.setGems(wrapper.getGems() - number);
-                                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getGems(),  wrapper.getCharacterID());
+                                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, wrapper.getGems(), wrapper.getCharacterID());
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
@@ -761,27 +759,27 @@ public class BankListener implements Listener {
      * @param Gems_worth being added
      * @since 1.0
      */
-    private boolean hasSpaceInInventory(UUID uuid, int Gems_worth) {
+    private boolean hasSpaceInInventory(Player player, int Gems_worth) {
         if (Gems_worth > 64) {
-            int space_needed = Math.round(Gems_worth / 64) + 1;
+            int space_needed = (int) (Math.round(Gems_worth / 64D) + 1);
             int count = 0;
-            ItemStack[] contents = Bukkit.getPlayer(uuid).getInventory().getContents();
-            for (ItemStack content : contents) {
+            for (ItemStack content : player.getInventory().getStorageContents()) {
                 if (content == null || content.getType() == Material.AIR) {
                     count++;
                 }
             }
             int empty_slots = count;
 
+            Bukkit.getLogger().info("Empty Slots: " + empty_slots + " NEeded: " + space_needed);
             if (space_needed > empty_slots) {
-                Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED
+                player.sendMessage(ChatColor.RED
                         + "You do not have enough space in your inventory to withdraw " + Gems_worth + " GEM(s).");
-                Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + space_needed + " slots");
+                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + space_needed + " slots");
                 return false;
             } else
                 return true;
         }
-        return Bukkit.getPlayer(uuid).getInventory().firstEmpty() != -1;
+        return player.getInventory().firstEmpty() != -1;
     }
 
     /**
@@ -880,7 +878,7 @@ public class BankListener implements Listener {
      */
     private int getPlayerGems(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return -1;
+        if (wrapper == null) return -1;
         return wrapper.getGems();
     }
 

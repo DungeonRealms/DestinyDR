@@ -7,10 +7,12 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.guild.token.GuildCreateToken;
-import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.Bukkit;
@@ -44,34 +46,25 @@ public class GuildMechanics {
 
     @SneakyThrows
     public void doLogin(Player player) {
-        System.out.println("Do login debug");
         PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
         if (playerWrapper == null) return;
-        System.out.println("Do login debug 2");
 
         if (playerWrapper.getGuildID() >= 1) {
-            System.out.println("Do login debug 3");
             GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
             if (wrapper == null) { //His guilds wrapper is null so we need to load it in.
-                System.out.println("Do login debug 4");
                 Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId());
-                System.out.println("The account id: " + accountID);
                 SQLDatabaseAPI.getInstance().executeQuery("SELECT `guild_id` FROM `guild_members` WHERE `account_id` = '" + accountID + "';", (set) -> {
                     try {
-                        System.out.println("Do login debug 5");
                         if (set == null) return;
-                        System.out.println("Do login debug 6");
                         if (set.first()) {
-                            System.out.println("Do login debug 7");
                             int guildID = set.getInt("guild_id");
                             GuildWrapper newWrapper = new GuildWrapper(guildID);
                             GuildDatabase.getAPI().updateCache(newWrapper, true, (loaded) -> {
-                                System.out.println("Do login debug 8");
                                 if (loaded == null || !loaded) return; //Couldnt load
-                                System.out.println("Do login debug 9: " + guildID);
                                 GuildDatabase.getAPI().cached_guilds.put(guildID, newWrapper);
-                                player.sendMessage("Loaded the guild with guild id: " + guildID);
-                                sendAlertFilter(newWrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
+                                GuildMember member = newWrapper.getMembers().get(playerWrapper.getAccountID());
+                                if (member != null && member.isAccepted())
+                                    sendAlertFilter(newWrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
                                 showMotd(player, newWrapper.getTag(), newWrapper.getMotd());
                             });
                         }
@@ -81,9 +74,11 @@ public class GuildMechanics {
                     }
                 });
             } else {
-                System.out.println("Do login debug 10");
-                sendAlertFilter(wrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
-                showMotd(player, wrapper.getTag(), wrapper.getMotd());
+                GuildMember member = wrapper.getMembers().get(playerWrapper.getAccountID());
+                if (member != null && member.isAccepted()) {
+                    sendAlertFilter(wrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
+                    showMotd(player, wrapper.getTag(), wrapper.getMotd());
+                }
 
             }
         }
@@ -91,8 +86,18 @@ public class GuildMechanics {
 
     public void doChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled()) return;
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
         GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(event.getPlayer().getUniqueId());
-        if (wrapper == null) return;
+        if (playerWrapper == null) return;
+        if (wrapper == null) {
+            if (playerWrapper.getToggles().isGuildChatOnly()) {
+                playerWrapper.getToggles().setGuildChatOnly(false);
+            }
+            return;
+        }
+        GuildMember member = wrapper.getMembers().get(playerWrapper.getAccountID());
+        if (member == null || !member.isAccepted()) return;
+        if (!playerWrapper.getToggles().isGuildChatOnly()) return;
 
         String message = event.getMessage();
 
@@ -103,14 +108,14 @@ public class GuildMechanics {
     public void doLogout(Player player) {
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
         if (guild == null) return;
+        GuildMember member = guild.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
+        if (member == null) return;
         String tag = guild.getTag();
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        guild.sendGuildMessage(format + player.getName() + " has left your shard.");
+        if (member.isAccepted()) guild.sendGuildMessage(format + player.getName() + " has left your shard.");
 
-        GuildMember member = guild.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
         member.saveData(true, null);
-        System.out.println("The number of guildies: " + guild.getNumberOfGuildMembersOnThisShard());
         if (guild.getNumberOfGuildMembersOnThisShard() <= 1) {
             guild.saveData(true, (bool) -> {
                 if (guild.getNumberOfGuildMembersOnThisShard() > 1) return;
@@ -144,7 +149,6 @@ public class GuildMechanics {
     public void sendAlertFilter(GuildWrapper guild, String message) {
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + guild.getTag() + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
         guild.sendGuildMessage(format + message);
-//        GameAPI.sendNetworkMessage("Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
 
@@ -158,7 +162,7 @@ public class GuildMechanics {
         String tag = wrapper.getTag();
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        GameAPI.sendNetworkMessage("Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        GameAPI.sendNetworkMessage("Guilds", "message", DungeonRealms.getShard().getPseudoName(), guildName, format.concat(message));
     }
 
     public void showMotd(Player player, String tag, String motd) {
@@ -303,7 +307,7 @@ public class GuildMechanics {
 
     public void createGuild(Player player, String guildName, String guildTag, String guildDisplayName, ItemStack banner) {
         PlayerWrapper hisPlayerWrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(hisPlayerWrapper == null) {
+        if (hisPlayerWrapper == null) {
             Constants.log.info("Could not load players wrapper on guild creation creation for the player: " + player.getName());
             return;
         }
@@ -349,36 +353,54 @@ public class GuildMechanics {
 
 
                     GuildDatabase.getAPI().doesGuildNameExist(guildName, guildIDChecking -> {
-                        if(guildIDChecking == null || guildIDChecking >= 0) {
-                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this name already exists!" + guildIDChecking);
+                        if (guildIDChecking == null || guildIDChecking >= 0) {
+                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this name already exists!");
                             return;
                         }
                         GuildDatabase.getAPI().doesTagExist(guildTag, guildIDCheck -> {
-                            if(guildIDCheck == null || guildIDCheck >= 0) {
-                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this tag already exists!" + guildIDCheck);
+                            if (guildIDCheck == null || guildIDCheck >= 0) {
+                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this tag already exists!");
                                 return;
                             }
 
 
-                                GuildWrapper newWrapper = new GuildWrapper(-1);
+                            GuildWrapper newWrapper = new GuildWrapper(-1);
 
-                                newWrapper.setName(guildName);
-                                newWrapper.setTag(guildTag);
-                                newWrapper.setDisplayName(guildDisplayName);
-                                newWrapper.setBanner(banner);
+                            newWrapper.setName(guildName);
+                            newWrapper.setTag(guildTag);
+                            newWrapper.setDisplayName(guildDisplayName);
+                            newWrapper.setBanner(banner);
 
-                                GuildMember member = new GuildMember(playerAccountID, -1);
-                                member.setAccepted(true);
-                                member.setRank(GuildMember.GuildRanks.OWNER);
-                                member.setWhenJoined(System.currentTimeMillis());
-                                newWrapper.getMembers().put(playerAccountID, member);
-                                newWrapper.insertIntoDatabase(true, (newID) -> {
-                                    if (newID == null) return;
-                                    hisPlayerWrapper.setGuildID(newID);
-                                    member.setGuildID(newID);
-                                    newWrapper.setGuildID(newID);
-                                    GuildDatabase.getAPI().cached_guilds.put(newID, newWrapper);
-                                });
+                            GuildMember member = new GuildMember(playerAccountID, -1);
+                            member.setAccepted(true);
+                            member.setRank(GuildMember.GuildRanks.OWNER);
+                            member.setWhenJoined(System.currentTimeMillis());
+                            newWrapper.getMembers().put(playerAccountID, member);
+                            newWrapper.insertIntoDatabase(true, (newID) -> {
+                                if (newID == null) return;
+                                hisPlayerWrapper.setGuildID(newID);
+                                member.setGuildID(newID);
+                                newWrapper.setGuildID(newID);
+                                GuildDatabase.getAPI().cached_guilds.put(newID, newWrapper);
+                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this tag already exists!");
+
+
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
+
+                                player.sendMessage("");
+                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + newWrapper.getDisplayName() + "' guild!");
+                                player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
+                                BankMechanics.getInstance().takeGemsFromInventory(5000, player);
+
+                                // guild tags in scoreboard disabled
+                                GamePlayer gp = GameAPI.getGamePlayer(player);
+                                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                                if (gp != null)
+                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+
+                                player.getInventory().addItem(newWrapper.getBanner().clone());
+
+                            });
                         });
 
                     });
@@ -558,7 +580,7 @@ public class GuildMechanics {
                                                 if (guildIDChecking == null) return;
                                                 if (guildTagIdChecking < 0) {
 
-                                                    openGuildBannerCreator(player,guildName,tag,guildDisplayName,null);
+                                                    openGuildBannerCreator(player, guildName, tag, guildDisplayName, null);
 
 
 //                                                    info.setGuildName(guildName);

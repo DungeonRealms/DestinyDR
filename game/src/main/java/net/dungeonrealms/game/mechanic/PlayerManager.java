@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanic;
 
 import lombok.Getter;
+import net.dungeonrealms.database.PlayerToggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -12,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -116,32 +119,48 @@ public class PlayerManager {
             return commandName;
         }
 
+        private static Map<String, Field> cachedFields = new HashMap<>();
+
+        private Field getField(String name) {
+            Field cached = cachedFields.get(name);
+            if (cached != null) return cached;
+
+            try {
+                //bert..
+                Field field = net.dungeonrealms.database.PlayerToggles.class.getDeclaredField(variableName);
+                field.setAccessible(true);
+                cachedFields.put(name, field);
+                return field;
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        public void toggle(PlayerWrapper wrapper){
+            boolean currentState = getToggleState(wrapper);
+            setToggleState(wrapper.getPlayer(), !currentState);
+        }
+
         public void setToggleState(Player player, boolean state) {
             try {
                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                 net.dungeonrealms.database.PlayerToggles toggle = wrapper.getToggles();
-                Class<?> clas = toggle.getClass();
-                Field variable = clas.getDeclaredField(variableName);
-                variable.setAccessible(true);
+                Field variable = getField(variableName);
+                if(variable == null)return;
                 variable.set(toggle, !((boolean) variable.get(toggle)));
                 player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + getFriendlyName() + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
 
-        public boolean getToggleState(Player player) {
+        public boolean getToggleState(PlayerWrapper player) {
             try {
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                net.dungeonrealms.database.PlayerToggles toggle = wrapper.getToggles();
-                Class<?> clas = toggle.getClass();
-                Field variable = clas.getDeclaredField(variableName);
-                variable.setAccessible(true);
+                net.dungeonrealms.database.PlayerToggles toggle = player.getToggles();
+                Field variable = getField(variableName);
+                if(variable == null)return false;
                 return (boolean) variable.get(toggle);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

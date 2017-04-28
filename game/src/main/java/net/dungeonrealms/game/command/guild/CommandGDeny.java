@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
@@ -56,9 +57,11 @@ public class CommandGDeny extends BaseCommand {
 
         player.sendMessage("");
         player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + wrapper.getName() + "'" + ChatColor.RED + "s guild.");
-
-        wrapper.sendGuildMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.", false,GuildMember.GuildRanks.OFFICER);
-        GameAPI.sendNetworkMessage("Guild", "deny", String.valueOf(wrapper.getGuildID()), String.valueOf(member.getAccountID()));
+        wrapper.removePlayer(player.getUniqueId());
+        SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+            wrapper.sendGuildMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.", false,GuildMember.GuildRanks.OFFICER);
+            GameAPI.sendNetworkMessage("Guilds", "deny", DungeonRealms.getShard().getPseudoName(),String.valueOf(wrapper.getGuildID()), String.valueOf(member.getAccountID()));
+        }, String.format("DELETE FROM guild_members WHERE account_id = '%s';", member.getAccountID()), true);
 
         return true;
     }

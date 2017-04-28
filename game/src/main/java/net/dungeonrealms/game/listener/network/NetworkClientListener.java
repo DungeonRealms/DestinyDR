@@ -181,8 +181,11 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                                 if (rs.first()) {
                                                     Object obj = rs.getObject(type.getColumnName());
                                                     Field field = getField(type.getFieldName());
-                                                    field.set(wrapper, obj);
-
+                                                    if (type == UpdateType.GEMS) {
+                                                        wrapper.setGems((int) obj);
+                                                    } else {
+                                                        field.set(wrapper, obj);
+                                                    }
                                                     if (type == UpdateType.RANK) {
                                                         //Need to update cache..
                                                         Rank.PlayerRank foundRank = Rank.PlayerRank.getFromInternalName(wrapper.getRank());
@@ -192,6 +195,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                                             player1.playSound(player1.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                                                         }
                                                     }
+                                                    Bukkit.getLogger().info("Updating " + type.getFieldName() + " to " + obj + " for " + wrapper.getUsername());
                                                 }
                                                 rs.close();
                                             } catch (SQLException | IllegalAccessException e) {
@@ -354,13 +358,19 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                         case "PrivateMessage": {
                             String fromPlayer = in.readUTF();
+                            UUID uuid = UUID.fromString(in.readUTF());
                             String playerName = in.readUTF();
                             String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                             Player player = Bukkit.getPlayer(playerName);
                             if (player != null) {
+                                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                                 GamePlayer gp = GameAPI.getGamePlayer(player);
                                 if (gp != null) {
                                     gp.setLastMessager(fromPlayer);
+                                }
+
+                                if (wrapper != null && wrapper.getIgnoredFriends().containsKey(uuid)) {
+                                    return;
                                 }
                                 player.sendMessage(msg);
                                 GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "(AS " + player.getName() + ") " + msg));
@@ -496,6 +506,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
         if (command == null || command.isEmpty() || stream == null) return;
         try {
 
+            String shard = stream.readUTF();
+            if (DungeonRealms.getShard().getPseudoName().equals(shard))
+                return; //We dont want to receive the messages on the same shard we sent them.
+
             if (command.equals("message")) {
                 int guildID = Integer.parseInt(stream.readUTF());
                 String msg = stream.readUTF();
@@ -528,6 +542,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 if (wrapper != null) {
                     GuildMember member = new GuildMember(accountID, guildID);
                     member.setAccepted(false);
+                    member.setRank(GuildMember.GuildRanks.MEMBER);
                     member.setWhenJoined(System.currentTimeMillis());
                     wrapper.getMembers().put(accountID, member);
                 }
@@ -570,7 +585,6 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     return;
                 }
                 pending.setAccepted(true);
-                wrapper.sendGuildMessage(ChatColor.WHITE + pending.getPlayerName() + ChatColor.AQUA + " has just joined your guild!");
             } else if (command.equals("deny")) {
                 int guildID = Integer.parseInt(stream.readUTF());
                 int accountIdDenying = Integer.parseInt(stream.readUTF());
@@ -589,7 +603,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 if (wrapper == null) return;
                 GuildMember kicking = wrapper.getMembers().get(accountIdKicking);
                 if (kicking == null) {
-                    Constants.log.info("Could not find pending guild invitation for " + accountIdKicking + " for the guild " + wrapper.getName());
+                    Constants.log.info("Could not find guild member on kick for " + accountIdKicking + " for the guild " + wrapper.getName());
+                    return;
+                }
+                wrapper.getMembers().remove(accountIdKicking);
+            } else if (command.equals("leave")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdKicking = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember kicking = wrapper.getMembers().get(accountIdKicking);
+                if (kicking == null) {
+                    Constants.log.info("Could not find guild member on leave for " + accountIdKicking + " for the guild " + wrapper.getName());
                     return;
                 }
                 wrapper.getMembers().remove(accountIdKicking);
@@ -600,10 +625,30 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 if (wrapper == null) return;
                 GuildMember member = wrapper.getMembers().get(accountIdDemoted);
                 if (member == null) {
-                    Constants.log.info("Could not find pending guild invitation for " + accountIdDemoted + " for the guild " + wrapper.getName());
+                    Constants.log.info("Could not find guild member on demote for " + accountIdDemoted + " for the guild " + wrapper.getName());
                     return;
                 }
                 member.setRank(GuildMember.GuildRanks.MEMBER);
+            }else if(command.equals("setrank")){
+                int guildID = Integer.parseInt(stream.readUTF());
+                int accountIdDemoted = Integer.parseInt(stream.readUTF());
+                int newRankID = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                GuildMember member = wrapper.getMembers().get(accountIdDemoted);
+                if (member == null) {
+                    Constants.log.info("Could not guild member for " + accountIdDemoted + " for the guild " + wrapper.getName());
+                    return;
+                }
+                GuildMember.GuildRanks ranks = GuildMember.GuildRanks.getFromIndex(newRankID);
+                Bukkit.getLogger().info("Setting Guild Member rank to " + ranks.name() + " for " + newRankID);
+                member.setRank(ranks);
+            } else if(command.equals("disband")) {
+                int guildID = Integer.parseInt(stream.readUTF());
+                GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
+                if (wrapper == null) return;
+                wrapper.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
+                GuildDatabase.getAPI().cached_guilds.remove(wrapper.getGuildID());
             } else {
                 throw new IllegalArgumentException("UNHANDLED GUILD NETWORK MESSAGE: " + command);
             }

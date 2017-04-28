@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -48,14 +50,15 @@ public class CommandGMotd extends BaseCommand {
             for (int arg = 1; arg < args.length; arg++) newMotd.append(" ").append(args[arg]);
 
             if (newMotd.toString().contains("$")) {
-                player.sendMessage(ChatColor.RED + "MOTD contains illegal character '$'.");
+                player.sendMessage(ChatColor.RED + "MOTD contains illegal characters.");
                 return true;
             }
 
-            wrapper.setMotd(newMotd.toString());
+            String motd = SQLDatabaseAPI.filterSQLInjection(newMotd.toString());
+            wrapper.setMotd(motd);
 //            GuildDatabaseAPI.get().setMotdOf(guildName, newMotd.toString());
 //            GameAPI.updateGuildData(guildName);
-            GameAPI.sendNetworkMessage("Guilds", "setmotd", wrapper.getGuildID() + "", player.getName(), newMotd.toString());
+            GameAPI.sendNetworkMessage("Guilds", "setmotd", DungeonRealms.getShard().getPseudoName(),wrapper.getGuildID() + "", player.getName(), motd);
 
             player.sendMessage(ChatColor.GRAY + "You have updated the guild " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + "MOTD" + ChatColor.GRAY + " to:");
             GuildMechanics.getInstance().showMotd(player, guildName, wrapper.getMotd());

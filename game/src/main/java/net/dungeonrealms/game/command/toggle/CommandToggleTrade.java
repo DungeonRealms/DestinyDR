@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command.toggle;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,8 +25,8 @@ public class CommandToggleTrade extends BaseCommand {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return false;
 
-        wrapper.getToggles().setTrade(!wrapper.getToggles().isTrade());
-
+//        wrapper.getToggles().setTrade(!wrapper.getToggles().isTrade());
+        PlayerManager.PlayerToggles.TRADE.toggle(wrapper);
         return true;
     }
 

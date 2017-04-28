@@ -44,12 +44,12 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
             return false;
         }
 
-        if(checkCooldown(player))return true;
+        if (checkCooldown(player)) return true;
         //wait 10 seconds between trying to lookup db..
         player.setMetadata("addcmd_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10)));
 
         String playerName = args[0];
-
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
         Player friend = Bukkit.getPlayer(playerName);
         if (friend != null) {
 
@@ -63,7 +63,17 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
                 return false;
             }
 
-            FriendHandler.getInstance().sendRequest(player, PlayerWrapper.getPlayerWrapper(player).getAccountID(), friend);
+            PlayerWrapper friendWrapper = PlayerWrapper.getPlayerWrapper(friend);
+            if (friendWrapper.getIgnoredFriends().containsKey(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You cannot send " + friendWrapper.getUsername() + " a friend request because they have blocked you.");
+                return true;
+            }
+            if (playerWrapper.getIgnoredFriends().containsKey(friend.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You have " + playerName + " blocked.");
+                player.sendMessage(ChatColor.GRAY + "Use '/block " + playerName + "' to unblock them.");
+                return true;
+            }
+            FriendHandler.getInstance().sendRequest(player, playerWrapper.getAccountID(), friend);
             return false;
         }
 
@@ -73,11 +83,22 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
                 return;
             }
 
+            if (playerWrapper.getIgnoredFriends().containsKey(uuid)) {
+                player.sendMessage(ChatColor.RED + "You have " + playerName + " blocked.");
+                player.sendMessage(ChatColor.GRAY + "Use '/block " + playerName + "' to unblock them.");
+                return;
+            }
             PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if (!wrapper.isPlaying()) {
                     player.sendMessage(ChatColor.RED + "That player is not on any shard!");
                     return;
                 }
+
+                if (wrapper.getIgnoredFriends().containsKey(player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You cannot send " + wrapper.getUsername() + " a friend request because they have blocked you.");
+                    return;
+                }
+
                 if (FriendHandler.getInstance().areFriends(player, uuid)) {
                     player.sendMessage(ChatColor.RED + "You're already friends.");
                     return;

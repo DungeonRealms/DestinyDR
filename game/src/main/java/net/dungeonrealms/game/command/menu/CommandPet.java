@@ -51,22 +51,16 @@ public class CommandPet extends BaseCommand {
 
             if(wrapper == null) return false;
             String petType = wrapper.getActivePet();
-            if (petType == null || petType.equals("")) {
+            EnumPets pets = EnumPets.getByName(petType);
+            if (petType == null || petType.equals("") || pets == null) {
                 player.sendMessage(ChatColor.RED + "You currently don't have an active pet. Please select one from your profile.");
                 player.closeInventory();
                 return true;
             }
-            String petName;
-            String petToSummon;
-            if (petType.contains("@")) {
-                petToSummon = petType.split("@")[0];
-                petName = petType.split("@")[1];
-            } else {
-                petToSummon = petType;
-                petName = EnumPets.getByName(petToSummon).getDisplayName();
-            }
+
+            String petName = wrapper.getPetName(pets);
             player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
-            PetUtils.spawnPet(player.getUniqueId(), petToSummon, petName);
+            PetUtils.spawnPet(player.getUniqueId(), petType, petName);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {

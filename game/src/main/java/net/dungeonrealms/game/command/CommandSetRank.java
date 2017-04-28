@@ -80,7 +80,11 @@ public class CommandSetRank extends BaseCommand {
                     wrapper.setRank(rank);
 
                     Player other = Bukkit.getPlayer(uuid);
-                    Rank.getInstance().setRank(uuid, rank);
+                    Rank.getInstance().setRank(uuid, rank, done -> {
+                        if (other == null) {
+                            GameAPI.updatePlayerData(uuid, "rank");
+                        }
+                    });
                     if (other != null) {
                         ScoreboardHandler.getInstance().setPlayerHeadScoreboard(other, ChatColor.WHITE, GameAPI.getGamePlayer(other).getLevel());
                         return;

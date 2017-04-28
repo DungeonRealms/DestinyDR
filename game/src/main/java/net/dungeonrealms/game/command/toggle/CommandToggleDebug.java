@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command.toggle;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +27,8 @@ public class CommandToggleDebug extends BaseCommand {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return false;
 
-        wrapper.getToggles().setDebug(!wrapper.getToggles().isDebug());
+        PlayerManager.PlayerToggles.DEBUG.toggle(wrapper);
+//        wrapper.getToggles().setDebug(!wrapper.getToggles().isDebug());
 
         return true;
     }

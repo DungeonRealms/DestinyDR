@@ -85,13 +85,13 @@ public class CommandEss extends BaseCommand {
                                 online.sendMessage(ChatColor.GREEN + "You now have access to the Scrap Tab!");
                             }
 
-                            PlayerWrapper.getPlayerWrapper(online.getUniqueId(), (wrapper) -> {
-
+                            PlayerWrapper.getPlayerWrapper(online.getUniqueId(), false, true, (wrapper) -> {
                                 CurrencyTab tab = wrapper.getCurrencyTab();
                                 if (tab != null) {
                                     tab.hasAccess = access;
                                 } else if (access) {
                                     tab = new CurrencyTab(online.getUniqueId());
+                                    tab.hasAccess = true;
                                     wrapper.setCurrencyTab(tab);
                                 }
                                 commandSender.sendMessage(ChatColor.RED + "Scrap tab set to " + access + " for " + args[1]);
@@ -425,8 +425,7 @@ public class CommandEss extends BaseCommand {
                 String currentRank = wrapper.getRank().toUpperCase();
                 if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
                     if (rankName.equalsIgnoreCase("SUB++")) {
-                        Rank.getInstance().setRank(uuid, rankName);
-                        GameAPI.updatePlayerData(uuid, "rank");
+                        Rank.getInstance().setRank(uuid, rankName, done -> GameAPI.updatePlayerData(uuid, "rank"));
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
                         return false;

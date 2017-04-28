@@ -1,12 +1,13 @@
 package net.dungeonrealms.game.command.guild;
 
-import com.avaje.ebean.SqlQuery;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -15,8 +16,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class CommandGKick extends BaseCommand {
 
@@ -29,8 +28,12 @@ public class CommandGKick extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
+        PlayerWrapper kickerPlayerWrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(kickerPlayerWrapper == null) {
+            player.sendMessage("An error occured while loading your data.");
+        }
 
-        GuildWrapper kickerWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+        GuildWrapper kickerWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(kickerPlayerWrapper.getAccountID());
         if (kickerWrapper == null) {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gkick.");
             return true;
@@ -43,7 +46,7 @@ public class CommandGKick extends BaseCommand {
 
 
 
-        GuildMember kickerMember = kickerWrapper.getMembers().get(player);
+        GuildMember kickerMember = kickerWrapper.getMembers().get(kickerPlayerWrapper.getAccountID());
 
 
 
@@ -89,26 +92,27 @@ public class CommandGKick extends BaseCommand {
                 return;
             }
 
-            kickerWrapper.getMembers().remove(accountID);
+            kickerWrapper.removePlayer(accountID);
 
             player.sendMessage(ChatColor.GREEN + "Attemtping to kick " + p_name + " from your guild...");
 
             SQLDatabaseAPI.getInstance().executeUpdate((set) -> {
-                if(set != null) {
+                if(set == null) {
                     player.sendMessage(ChatColor.RED + "An error occured while trying to kick " + p_name);
                     return;
                 }
 
                 player.sendMessage(ChatColor.GREEN + "You have successfully kicked " + p_name + " from your guild!");
 
-                kickerWrapper.sendGuildMessage(ChatColor.YELLOW + p_name + ChatColor.RED + " has just been kicked from your guild!");
 
+                kickerWrapper.sendGuildMessage(ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " has just been" + ChatColor.UNDERLINE + " kicked from your guild!");
+                GameAPI.sendNetworkMessage("Guilds", "kick", DungeonRealms.getShard().getPseudoName(), String.valueOf(kickerWrapper.getGuildID()), String.valueOf(accountID));
                 if (p != null) {
                     p.sendMessage("");
                     p.sendMessage(ChatColor.RED + "You have been " + ChatColor.UNDERLINE + "kicked" + ChatColor.RED + " from " + kickerWrapper.getDisplayName());
                     p.sendMessage("");
                 }
-            }, "DELETE FROM guild_members WHERE account_id = " + accountID.intValue());
+            }, QueryType.DELETE_GUILD_MEMBER.getQuery(accountID.intValue()));
 
         });
 

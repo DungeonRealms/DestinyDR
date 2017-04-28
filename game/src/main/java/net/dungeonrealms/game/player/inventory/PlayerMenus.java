@@ -767,7 +767,7 @@ public class PlayerMenus {
 
         int i = 0;
         for (PlayerManager.PlayerToggles playerToggles : PlayerManager.PlayerToggles.values()) {
-            boolean isToggled = playerToggles.getToggleState(player);
+            boolean isToggled = playerToggles.getToggleState(wrapper);
             inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{
                     ChatColor.GRAY + playerToggles.getDescription(),
                     ChatColor.GRAY + "Display Item"

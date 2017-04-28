@@ -409,7 +409,8 @@ public class ShopListener implements Listener {
             BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + item.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + player.getName());
         }
 
-        if (shop.getOwner() != null) {
+        Player onlineOwner = shop.getOwner();
+        if (onlineOwner != null) {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(shop.getOwner());
             if (wrapper != null) {
                 wrapper.setGems(wrapper.getGems() + totalPrice);

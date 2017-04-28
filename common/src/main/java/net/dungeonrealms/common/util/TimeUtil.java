@@ -6,7 +6,7 @@ public class TimeUtil {
 
 	public static String formatDifference(long time) {
 		if (time == 0) {
-			return "Never";
+			return "0s";
 		}
 
 		long day = TimeUnit.SECONDS.toDays(time);

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.handler;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -594,7 +595,7 @@ public class ClickHandler {
                             if (inputName.contains("@")) {
                                 inputName = inputName.replaceAll("@", "_");
                             }
-                            String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
+                            String checkedPetName = SQLDatabaseAPI.filterSQLInjection(Chat.getInstance().checkForBannedWords(inputName));
 //                            wrapper.getPetsUnlocked().remove(petType);
 //                            wrapper.getPetsUnlocked().remove(petType + "@" + finalPetName);
                             wrapper.getPetsUnlocked().put(pet, new PetData(checkedPetName));
@@ -1156,13 +1157,13 @@ public class ClickHandler {
                     Player other = Bukkit.getPlayer(uuid);
 
                     newWrapper.setRank(newRank);
-                    newWrapper.saveData(false, true);
-
-                    if (other != null) {
-                        Rank.getInstance().setRank(uuid, newRank);
-                    } else {
-                        GameAPI.updatePlayerData(uuid, "rank");
-                    }
+//                    newWrapper.saveData(false, true);
+                    Rank.getInstance().setRank(uuid, newRank, done -> {
+                        if(other == null){
+                            //Not online.. update rank elsewhere.
+                            GameAPI.updatePlayerData(uuid, "rank");
+                        }
+                    });
 
                     player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
                     SupportMenus.openMainMenu(player, playerName);

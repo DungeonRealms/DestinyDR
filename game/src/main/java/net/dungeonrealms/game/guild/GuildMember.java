@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -42,6 +43,8 @@ public class GuildMember {
     public GuildMember(int accountID, int guildID) {
         this.accountID = accountID;
         this.guildID = guildID;
+        this.rank = GuildRanks.MEMBER;
+        this.whenJoined = System.currentTimeMillis();
     }
 
     public UUID getUUID() {
@@ -76,6 +79,7 @@ public class GuildMember {
         return String.format(original, this.getRank().getName(), this.getWhenJoined(), this.isAccepted() ? 1 : 0, this.getAccountID());
     }
 
+
     public String getPlayerName() {
         return SQLDatabaseAPI.getInstance().getUsernameFromAccountID(this.accountID);
     }
@@ -83,9 +87,11 @@ public class GuildMember {
 
     public enum GuildRanks {
 
-        MEMBER("member", 3),
+
+
+        MEMBER("member", 1),
         OFFICER("officer",2),
-        OWNER("owner",1);
+        OWNER("owner",3);
 
         private String name;
         private int order;
@@ -109,9 +115,15 @@ public class GuildMember {
             return null;
         }
 
+        public static GuildRanks getFromIndex(int index){
+            for(GuildRanks ranks : values()){
+                if(ranks.getOrder() == index)return ranks;
+            }
+            return GuildRanks.MEMBER;
+        }
         public boolean isThisRankOrHigher(GuildRanks other) {
             if(other == null) return false;
-            if(this.getOrder() > other.getOrder()) return false;
+            if(this.getOrder() < other.getOrder()) return false;
             return true;
         }
 

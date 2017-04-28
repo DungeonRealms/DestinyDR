@@ -35,12 +35,14 @@ public class PunishAPI {
         else
             kick(playerName, ChatColor.RED + "You are banned until " + timeString((int) (duration / 60)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
 
+
+        SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Updated " + uuid.toString() + "'s Ban to the database.."), QueryType.INSERT_BAN.getQuery(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid), "ban", System.currentTimeMillis(), duration != 0 ? System.currentTimeMillis() + duration * 1000 : duration, punisherID, reason.isEmpty() ? "N/A" : reason, 0));
+
         PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
             //Update if online for some reason?
             wrapper.setWhoBannedMeID(punisherID);
             wrapper.setBanExpire(duration);
             wrapper.setBanReason(reason);
-            SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Updated " + uuid.toString() + "'s Ban to the database.."), QueryType.INSERT_BAN.getQuery(wrapper.getAccountID(), "ban", System.currentTimeMillis(), duration != 0 ? System.currentTimeMillis() + duration * 1000 : duration, punisherID, reason, 0));
         });
     }
 

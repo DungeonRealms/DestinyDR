@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command.toggle;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,8 +25,8 @@ public class CommandToggleChaos extends BaseCommand {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null) return false;
 
-        wrapper.getToggles().setChaoticPrevention(!wrapper.getToggles().isChaoticPrevention());
-
+//        wrapper.getToggles().setChaoticPrevention(!wrapper.getToggles().isChaoticPrevention());
+        PlayerManager.PlayerToggles.CHAOTIC_PREVENTION.toggle(wrapper);
         return true;
     }
 

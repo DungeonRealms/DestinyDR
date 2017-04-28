@@ -58,9 +58,9 @@ public class CommandGAccept extends BaseCommand {
         member.setAccepted(true);
         player.sendMessage(ChatColor.DARK_AQUA + "You have joined '" + ChatColor.BOLD + guild.getDisplayName() + "'" + ChatColor.DARK_AQUA + ".");
         player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
-        guild.sendGuildMessage(player.getName() + ChatColor.GRAY.toString() + " has " +
+        guild.sendGuildMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY.toString() + " has " +
                 ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild.");
-        GameAPI.sendNetworkMessage("Guild", "accept", String.valueOf(guild.getGuildID()), String.valueOf(member.getAccountID()));
+        GameAPI.sendNetworkMessage("Guilds", "accept", DungeonRealms.getShard().getPseudoName(),String.valueOf(guild.getGuildID()), String.valueOf(member.getAccountID()));
         return false;
     }
 

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class Rank {
 
@@ -215,7 +216,7 @@ public class Rank {
      * @param sRank
      * @since 1.0
      */
-    public void setRank(UUID uuid, String sRank) {
+    public void setRank(UUID uuid, String sRank, Consumer<Void> callback) {
         PlayerRank rank = PlayerRank.getFromInternalName(sRank);
         if (rank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
         Player player = Bukkit.getPlayer(uuid);
@@ -226,6 +227,8 @@ public class Rank {
                 player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
             }
+            if(callback != null)
+                callback.accept(null);
         }, QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)));
 
     }

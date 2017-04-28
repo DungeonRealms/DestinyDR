@@ -59,7 +59,7 @@ public class MasterServerListener extends Listener {
                         		friendlyName = "XP";
                         		break;
                         }
-                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
+//                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
                         break;
             	}
             } catch(Exception e) {

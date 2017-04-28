@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -916,11 +917,12 @@ public class ItemListener implements Listener {
                     inputName = inputName.replaceAll("@", "_");
                 }
 
-                String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
+                String checkedPetName = SQLDatabaseAPI.filterSQLInjection(Chat.getInstance().checkForBannedWords(inputName));
 
                 EnumPets petType = EnumPets.getById(pet.getBukkitEntity().getType().getTypeId());
                 if(petType == null)return;
 
+                wrapper.setActivePet(petType.getRawName());
                 wrapper.getPetsUnlocked().put(petType, new PetData(checkedPetName));
 
 //                String activePet = wrapper.getActivePet();
@@ -1141,14 +1143,9 @@ public class ItemListener implements Listener {
                         player.closeInventory();
                         return;
                     }
-                    String petName;
-                    if (petType.contains("@")) {
-                        petName = petType.split("@")[1];
-                        petType = petType.split("@")[0];
-                    } else {
-                        petName = EnumPets.getByName(petType).getDisplayName();
-                    }
-                    PetUtils.spawnPet(player.getUniqueId(), petType, petName);
+                    EnumPets pets = EnumPets.getByName(petType);
+                    if(pets == null)return;
+                    PetUtils.spawnPet(player.getUniqueId(), petType, wrapper.getPetName(pets));
                     player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
                     break;
                 case "trail":

@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.command.guild;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bukkit.Bukkit;
@@ -59,6 +61,32 @@ public class CommandGPromote extends BaseCommand {
 //            return true;
 //        }
 
+        SQLDatabaseAPI.getInstance().getUUIDFromName(p_name, false, uuid -> {
+            if (uuid == null) {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
+                return;
+            }
+
+            if (wrapper.isMember(uuid)) {
+                //Is already a member..
+                if (wrapper.isOwner(uuid)) {
+                    player.sendMessage(ChatColor.RED + "You can't promote the owner of a guild.");
+                    return;
+                }
+
+                if (wrapper.getRank(uuid).isThisRankOrHigher(GuildMember.GuildRanks.OFFICER)) {
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " has already been promoted.");
+                    return;
+                }
+
+                wrapper.promotePlayer(player, player.getName(), wrapper.getMember(uuid));
+            } else {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
+                return;
+            }
+
+
+        });
         Player p = Bukkit.getPlayer(p_name);
 //        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 

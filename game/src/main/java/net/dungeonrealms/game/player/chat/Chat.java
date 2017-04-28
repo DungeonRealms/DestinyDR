@@ -160,23 +160,23 @@ public class Chat {
                 player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
                 return;
             }
-
-            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
                 if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isTrialGM(player))
                     if (!wrapper.getToggles().isReceiveMessage()) {
                         player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                         return;
                     }
 
-                if (!wrapper.isPlaying() || wrapper.getShardPlayingOn() == null || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
+                if (!wrapper.isPlaying() || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
                     player.sendMessage(ChatColor.RED + "That user is not currently online.");
                     return;
                 }
 
+                //The recipient is ignoring the player, not themselves.
+                boolean ignoringPlayer = wrapper.getIgnoredFriends().containsKey(player.getUniqueId());
+//                wrapper.getig
 
-
-                boolean ignoringPlayer = wrapper.getIgnoredFriends().containsKey(uuid);
-
+                System.out.println("Ignored: " + ignoringPlayer + " " + wrapper.getIgnoredFriends().size());
                 ShardInfo shard = ShardInfo.getByPseudoName(wrapper.getShardPlayingOn());
 
                 if(shard == null){
@@ -192,7 +192,7 @@ public class Chat {
                         ChatColor.WHITE + finalMessage);
 
                 if (!ignoringPlayer) {
-                    GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
+                    GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), player.getUniqueId().toString(), recipientName, (ChatColor.GRAY.toString() +
                             ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
                             .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
                             finalMessage));

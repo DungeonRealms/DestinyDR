@@ -16,6 +16,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -159,15 +160,20 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
 
-            String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
-            lore.add(ChatColor.GRAY + "Load: " + data[1]);
+            try {
+                String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
+                lore.add(ChatColor.GRAY + "Load: " + data[1]);
 
-            lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+                lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            if (data.length >= 3)
-                lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
+                if (data.length >= 3)
+                    lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
-            button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
+                button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
+            } catch (Exception e) {
+                Bukkit.getLogger().info("Error parsing MOTD: " + info.getMotd1() + " MOTD2: " + info.getMotd2() + " from " + info.getServerName());
+                e.printStackTrace();
+            }
             button.setLore(lore);
 
 //            button.setSlot(slot);
@@ -296,7 +302,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                 return;
             }
         }
-
 
 
         player.openInventory(inventory);

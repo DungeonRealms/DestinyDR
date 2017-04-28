@@ -190,6 +190,10 @@ public class SQLDatabaseAPI {
         }
         try {
             PreparedStatement statement = getDatabase().getConnection().prepareStatement(query);
+
+            if (Constants.debug)
+                Constants.log.info("Updating database with query: " + query);
+
             int toReturn = statement.executeUpdate();
             if (callback != null)
                 callback.accept(toReturn);
@@ -221,6 +225,8 @@ public class SQLDatabaseAPI {
                 int added = 0;
                 for (String query : sqlQueries) {
                     statement.addBatch(query);
+//                    if(Constants.debug)
+//                        Constants.log.info("Adding");
                     //Remove the query after its been applied to the batch.
                     sqlQueries.remove(query);
                     if (Constants.debug) {
@@ -368,14 +374,7 @@ public class SQLDatabaseAPI {
         }
     }
 
-    public void loadData(UUID uuid) {
-        CompletableFuture.runAsync(() -> {
-            try {
-//Essentially make it pull
-                @Cleanup PreparedStatement statement = this.getDatabase().getConnection().prepareStatement("SELECT * FROM characters LEFT JOIN attributes");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, SERVER_EXECUTOR_SERVICE);
+    public static String filterSQLInjection(String string){
+        return string.replaceAll("'", "").replace("\"", "");
     }
 }

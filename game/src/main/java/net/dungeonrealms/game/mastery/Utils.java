@@ -119,6 +119,7 @@ public class Utils {
      * @return
      */
     public static String getFormattedShardName(String name) {
+        if(name.equals("test"))return "Development";
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 

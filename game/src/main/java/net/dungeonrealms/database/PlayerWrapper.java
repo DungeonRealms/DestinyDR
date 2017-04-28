@@ -1,6 +1,7 @@
 package net.dungeonrealms.database;
 
 
+import com.mysql.jdbc.StatementImpl;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -386,6 +387,12 @@ public class PlayerWrapper {
     }
 
 
+    public String getPetName(EnumPets pets) {
+        PetData petData = this.petsUnlocked.get(pets);
+        if (petData != null && petData.getPetName() != null) return petData.getPetName();
+        return pets.getDisplayName();
+    }
+
     public void loadUnlockables(ResultSet result) throws SQLException {
         this.mountsUnlocked = StringUtils.deserializeSet(result.getString("users.mounts"), ",");
         this.particlesUnlocked = StringUtils.deserializeSet(result.getString("users.particles"), ",");
@@ -552,20 +559,22 @@ public class PlayerWrapper {
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
 
             statement.addBatch(getCharacterReplaceQuery(player));
-            statement.addBatch(getPlayerStats().getUpdateStatement());
+            //User query.
+            statement.addBatch(getUsersUpdateQuery(isOnline));
+            String playerStats = getPlayerStats().getUpdateStatement();
+            statement.addBatch(playerStats);
+            Bukkit.getLogger().info("Player Stats: " + playerStats);
             statement.addBatch(getToggles().getUpdateStatement());
             if (hasFriendData()) getFriendUpdateQuery(statement);
             if (this.player != null) {
                 statement.addBatch(String.format("REPLACE INTO ip_addresses (account_id, ip_address, last_used) VALUES ('%s', '%s', '%s')", getAccountID(), player.getAddress().getAddress().getHostAddress(), System.currentTimeMillis()));
             }
             statement.addBatch(String.format("REPLACE INTO ranks (account_id, rank, expiration) VALUES ('%s', '%s', '%s')", getAccountID(), getRank().toUpperCase(), getRankExpiration()));
-
-            statement.addBatch(String.format("UPDATE realm SET title = '%s', description = '%s', uploading = '%s', upgrading = '%s', tier = '%s', enteringRealm = '%s', lastReset = '%s' WHERE character_id = '%s';", getRealmTitle(), getRealmDescription(), isUploadingRealm() ? 1 : 0, isUpgradingRealm() ? 1 : 0, getRealmTier(), isEnteringRealm() ? 1 : 0, getLastRealmReset(), getCharacterID()));
-//            statement.addBatch(String.format("REPLACE INTO realm (character_id, title, description, uploading, upgrading, tier, enteringRealm, lastReset) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", getCharacterID(), getRealmTitle(), getRealmDescription(), isUploadingRealm() ? 1 : 0, isUpgradingRealm() ? 1 : 0, getRealmTier(), isEnteringRealm() ? 1 : 0, getLastRealmReset()));
-            statement.addBatch(getUsersUpdateQuery(isOnline));
+            //Realm info
+            statement.addBatch(QueryType.UPDATE_REALM.getQuery(getRealmTitle(), getRealmDescription(), isUploadingRealm() ? 1 : 0, isUpgradingRealm() ? 1 : 0, getRealmTier(), isEnteringRealm() ? 1 : 0, getLastRealmReset(), getCharacterID()));
 
             long start = System.currentTimeMillis();
-            Bukkit.getLogger().info("Preparing to execute batch..");
+            Bukkit.getLogger().info("Preparing to execute batch: " + toString(((StatementImpl) statement).getBatchedArgs()));
             statement.executeBatch();
             Bukkit.getLogger().info("Batch executed in " + (System.currentTimeMillis() - start));
         } catch (Exception e) {
@@ -579,6 +588,13 @@ public class PlayerWrapper {
         }
     }
 
+    private String toString(List<Object> objects) {
+        StringBuilder builder = new StringBuilder();
+        for (Object object : objects) {
+            builder.append(object != null ? object.toString() : "null").append(", ");
+        }
+        return builder.toString();
+    }
 
     private String getCharacterReplaceQuery(Player player) {
         Storage bankStorage = BankMechanics.getInstance().getStorage(uuid);
@@ -601,18 +617,14 @@ public class PlayerWrapper {
 
 
         String locationString = player == null ? storedLocationString : getLocationString(player);
-        String toReturn = "UPDATE characters SET created = '%s', level = '%s', experience = '%s', alignment = '%s', inventory_storage = '%s', armour_storage = '%s', gems = '%s', bank_storage = '%s', bank_level = '%s', " +
-                "shop_level = '%s', mule_storage = '%s', mule_level = '%s', health = '%s', location = '%s', " +
-                "activeMount = %s, activePet = %s, activeTrail = %s, activeMountSkin = %s, questData = %s, collection_storage = %s," +
-                " foodLevel = '%s', combatLogged = '%s', shopOpened = '%s', loggerDied = '%s', currentHearthStone = '%s', alignmentTime = '%s', portalShardsT1 = '%s', portalShardsT2 = '%s', portalShardsT3 = '%s', portalShardsT4 = '%s', portalShardsT5 = '%s' WHERE `character_id` = '%s';";//9
         //33 total
-        toReturn = String.format(toReturn, getTimeCreated(), getLevel(), getExperience(), getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
+        return QueryType.CHARACTER_UPDATE.getQuery(getTimeCreated(), getLevel(), getExperience(), getPlayerAlignment().name(), player == null ? this.pendingInventoryString : ItemSerialization.toString(player.getInventory()), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
                 quote(getActiveMount()), quote(getActivePet()), quote(getActiveTrail()), quote(getActiveMountSkin()),
                 quote(getQuestData()), quote(collectionBinString), player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged() ? 1 : 0,
                 isShopOpened() ? 1 : 0, isLoggerDied() ? 1 : 0, getHearthstone(), getAlignmentTime(), getPortalShardsT1(), getPortalShardsT2(), getPortalShardsT3(), getPortalShardsT4(), getPortalShardsT5(), getCharacterID());
-        return toReturn;
     }
+
 
     private String quote(String string) {
         if (string == null) return null;
@@ -622,11 +634,8 @@ public class PlayerWrapper {
     private String getUsersUpdateQuery(Boolean isOnline) {
         if (isOnline == null) isOnline = isPlaying();
 
-        String toReturn = "UPDATE users SET uuid = '%s', username = '%s', selected_character_id = '%s', ecash = '%s', joined = '%s', last_login = '%s', last_logout = '%s', last_free_ecash = '%s', last_shard_transfer = '%s', is_online = '%s', currentShard = '%s', currencyTab = '%s', firstLogin = '%s', lastViewedBuild = '%s', lastNoteSize = '%s', lastVote = '%s', " +
-                "mounts = %s, pets = %s, particles = %s, mountSkin = %s, trails = %s WHERE account_id = '%s'";
-        toReturn = String.format(toReturn, getUuid(), getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", this.currencyTab == null ? null : getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(),
+        return QueryType.USER_UPDATE.getQuery(getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(), getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline ? 1 : 0, this.isPlaying ? DungeonRealms.getShard().getPseudoName() : "null", this.currencyTab == null ? null : getCurrencyTab().getSerializedScrapTab(), getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(),
                 StringUtils.serializeList(getMountsUnlocked(), ",", true), quote(getSerializePetString()), StringUtils.serializeList(getParticlesUnlocked(), ",", true), StringUtils.serializeList(getMountSkins(), ",", true), StringUtils.serializeList(getTrails(), ",", true), getAccountID());
-        return toReturn;
     }
 
     @SneakyThrows
@@ -706,9 +715,10 @@ public class PlayerWrapper {
         //Load offline playerwrapper..
         wrapper = new PlayerWrapper(uuid);
         //Store that shit..
-        if (storeWrapper)
+        if (storeWrapper) {
+            Bukkit.getLogger().info("Storing player wrapper for " + uuid.toString());
             PlayerWrapper.setWrapper(uuid, wrapper);
-
+        }
         Bukkit.getLogger().info("Loading " + uuid.toString() + "'s offline wrapper.");
         wrapper.loadData(true, hadToLoadCallback);
     }
@@ -793,29 +803,40 @@ public class PlayerWrapper {
     }
 
     private String getEquipmentString(Player player) {
+
+        int itemsSaved = 0;
         Inventory toSave = Bukkit.createInventory(null, 9);
         for (int index = 0; index < 4; index++) {
             ItemStack equipment = player.getEquipment().getArmorContents()[index];
 //            toSave.getContents()[index] = equipment;
             toSave.setItem(index, equipment);
-            System.out.println("String: " + (equipment == null ? null : equipment.toString()));
+            if (equipment != null && equipment.getType() != Material.AIR) {
+                itemsSaved++;
+            }
         }
+
+        if (player.getInventory().getItemInOffHand() != null && player.getInventory().getItemInOffHand().getType() != Material.AIR)
+            itemsSaved++;
 
         toSave.setItem(4, player.getInventory().getItemInOffHand());
 //        toSave.getContents()[4] = player.getInventory().getItemInOffHand();
 
 //        Bukkit.getLogger().info("Equipment: " + );
-        return ItemSerialization.toString(toSave);
+        return itemsSaved == 0 ? null : ItemSerialization.toString(toSave);
     }
 
     public String getEquipmentString(Inventory inv) {
+        int itemsSaved = 0;
         Inventory toSave = Bukkit.createInventory(null, 9);
         for (int index = 0; index < 5; index++) {
             ItemStack equipment = inv.getContents()[index];
             toSave.getContents()[index] = equipment;
+            if (equipment != null && equipment.getType() != Material.AIR) {
+                itemsSaved++;
+            }
         }
 
-        return ItemSerialization.toString(toSave);
+        return itemsSaved == 0 ? null : ItemSerialization.toString(toSave);
     }
 
     public void loadPlayerAfterLogin(Player player) {
@@ -830,7 +851,6 @@ public class PlayerWrapper {
         if (this.pendingMuleInventory != null)
             MountUtils.inventories.put(uuid, pendingMuleInventory);
 
-        Bukkit.getLogger().info("Loaded post login data for " + player.getName());
     }
 
     public void loadPlayerInventory(Player player) {
@@ -847,8 +867,6 @@ public class PlayerWrapper {
             ItemStack current = pendingArmor.getContents()[index];
 
             items[index] = current;
-            Bukkit.getLogger().info("Loading armor for index " + index + " for " + player.getName() + " Item: " + (current == null ? null : current));
-//            player.getEquipment().getArmorContents()[index] = current;
         }
         player.getEquipment().setArmorContents(items);
         player.getInventory().setItemInOffHand(pendingArmor.getContents()[4]);
@@ -861,11 +879,11 @@ public class PlayerWrapper {
      **/
 
     public void ignorePlayer(UUID uuidToIgnore, boolean alreadyIgnored) {
+        int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuidToIgnore);
         if (alreadyIgnored) {
             this.ignoredFriends.remove(uuidToIgnore);
             SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_FRIENDS, this.accountID, accountID, "blocked", "blocked");
         } else {
-            int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuidToIgnore);
             this.pendingFriends.remove(uuidToIgnore);
             this.ignoredFriends.put(uuidToIgnore, accountID);
             this.friendsList.remove(uuidToIgnore);
@@ -900,11 +918,11 @@ public class PlayerWrapper {
     }
 
     public boolean isBanned() {
-        return this.banExpire >= System.currentTimeMillis();
+        return this.banExpire >= System.currentTimeMillis() || this.banExpire == 0;
     }
 
     public boolean isMuted() {
-        return this.muteExpire >= System.currentTimeMillis();
+        return this.muteExpire >= System.currentTimeMillis() || this.muteExpire == 0;
     }
 
     public String getTimeWhenBanExpires() {

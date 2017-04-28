@@ -8,11 +8,10 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 public class Lobby extends JavaPlugin implements Listener {
 
@@ -129,8 +127,13 @@ public class Lobby extends JavaPlugin implements Listener {
                     if (expiration == 0 && !rs.getBoolean("quashed") || System.currentTimeMillis() < expiration) {
                         //Banned...
                         String bannedMessage = rs.getString("reason");
-                        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-                        event.setKickMessage(bannedMessage);
+//                        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+//                        event.setKickMessage(bannedMessage);
+                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                ChatColor.RED.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.RED.toString()
+                                        + " is banned. Your ban expires in " + ChatColor.UNDERLINE.toString() +
+                                        (expiration <= 0 ? "NEVER" : TimeUtil.formatDifference((expiration - System.currentTimeMillis()) / 1000))
+                                        + "." + "\n\n" + ChatColor.RED.toString() + "You were banned for:\n" + ChatColor.UNDERLINE.toString() + bannedMessage);
                         rs.close();
                         return;
                     }

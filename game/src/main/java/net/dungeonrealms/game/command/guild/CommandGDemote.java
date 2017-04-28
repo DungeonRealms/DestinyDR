@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -83,7 +84,7 @@ public class CommandGDemote extends BaseCommand {
             guildMember.setRank(GuildMember.GuildRanks.MEMBER);
 
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
-            GameAPI.sendNetworkMessage("Guild", "demote", String.valueOf(gWrapper.getGuildID()), String.valueOf(guildMember.getAccountID()));
+            GameAPI.sendNetworkMessage("Guilds", "demote", DungeonRealms.getShard().getPseudoName(),String.valueOf(gWrapper.getGuildID()), String.valueOf(guildMember.getAccountID()));
             gWrapper.sendGuildMessage(ChatColor.RED + " " + p_name + " has been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
 
             if (p != null) {
