@@ -1,26 +1,34 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
+import net.dungeonrealms.game.mechanic.dungeons.BossType;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
-import org.bukkit.*;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Oct 19, 2015
+ * Heavily simplified by Kneesnap.
  */
 public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 
@@ -61,13 +69,13 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
     public void onBossAttack(EntityDamageByEntityEvent event) {
         if (!spawnedMobs.isEmpty())
             for (Entity entity : spawnedMobs)
-                if (!entity.isAlive())
+                if (entity.isDead())
                     spawnedMobs.remove(entity);
         
         LivingEntity en = (LivingEntity) event.getEntity();
         if (spawnedMobs.isEmpty()) {
             if (!canAddsRespawn && !hasMessaged) {
-            	this.say("Face me, pathetic creatures!");
+            	say("Face me, pathetic creatures!");
                 hasMessaged = true;
             }
             if (en.hasPotionEffect(PotionEffectType.INVISIBILITY))
@@ -113,26 +121,14 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
     }
 
     @Override
-    public EnumDungeonBoss getEnumBoss() {
-        return EnumDungeonBoss.Burick;
+    public BossType getBossType() {
+        return BossType.Burick;
     }
 
     private void spawnWave() {
-        int waveType = random.nextInt(3);
-        switch (waveType) {
-            case 0:
-                for (int i = 0; i < 4; i++)
-                    spawnedMobs.add(spawnMinion(EnumMonster.Monk, "Burick's Protector", 2));
-                break;
-            case 1:
-                for (int i = 0; i <= 4; i++)
-                	spawnedMobs.add(spawnMinion(EnumMonster.Acolyte, "Burick's Acolyte", 3));
-                break;
-            case 2:
-                for (int i = 0; i <= 6; i++)
-                	spawnedMobs.add(spawnMinion(EnumMonster.Skeleton, "Burick's Sacrifice", 2));
-                break;
-        }
+    	MinionType type = MinionType.getRandom();
+    	for (int i = 0; i < type.getGroupSize(); i++)
+    		spawnedMobs.add(spawnMinion(type.getMonster(), type.getName(), type.getTier()));
     }
     
     public int getGemDrop(){
@@ -146,5 +142,24 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 	@Override
 	public void addKillStat(GamePlayer gp) {
 		gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getBurickKills() + 1);
+	}
+	
+	@AllArgsConstructor
+	private enum MinionType {
+		PROTECTOR(EnumMonster.Monk, 2, 4),
+		ACOLYTE(EnumMonster.Acolyte, 3, 4),
+		SACRIFICE(EnumMonster.Skeleton, 2, 6);
+		
+		@Getter private EnumMonster monster;
+		@Getter private int tier;
+		@Getter private int groupSize;
+		
+		public String getName() {
+			return "Burick's " + Utils.capitalize(name());
+		}
+		
+		public static MinionType getRandom() {
+			return values()[new Random().nextInt(values().length)];
+		}
 	}
 }

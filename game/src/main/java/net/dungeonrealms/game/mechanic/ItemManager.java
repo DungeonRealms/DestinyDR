@@ -15,6 +15,7 @@ import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
@@ -28,12 +29,12 @@ import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -246,9 +247,13 @@ public class ItemManager {
         return stack;
     }
     
+    public static void whitelistItemDrop(Player player, Location drop, ItemStack item) {
+    	whitelistItemDrop(player, drop.getWorld().dropItem(drop.clone().add(0, 1, 0), item));
+    }
+    
     public static void whitelistItemDrop(Player player, org.bukkit.entity.Item item) {
-        if (player == null) return;
-        item.setMetadata("whitelist", new FixedMetadataValue(DungeonRealms.getInstance(), player.getName()));
+        if (player != null)
+        	Metadata.WHITELIST.set(item, player.getName());
     }
 	
 	/**
@@ -282,6 +287,10 @@ public class ItemManager {
 		VanillaItem vanilla = new VanillaItem(item);
 		vanilla.setUntradeable(true);
 		return vanilla.generateItem();
+	}
+	
+	public static boolean isDungeonItem(ItemStack item) {
+		return get(item).isDungeon();
 	}
 	
 	/**
@@ -324,7 +333,7 @@ public class ItemManager {
 		return new Random().nextBoolean() ? new ItemWeapon() : new ItemArmor();
 	}
 
-	public static ItemStack createItem(Material mat, String name, String[] lore) {
+	public static ItemStack createItem(Material mat, String name, String... lore) {
 		ItemStack stack = new ItemStack(mat);
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(name);

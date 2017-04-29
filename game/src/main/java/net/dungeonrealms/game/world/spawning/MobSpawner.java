@@ -88,6 +88,9 @@ public abstract class MobSpawner {
     @Getter
     private ArmorStand armorStand;
     
+    @Getter @Setter
+    private boolean dungeon;
+    
     public MobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
     	setCustomName(name);
     	setMonsterType(type);
@@ -218,7 +221,7 @@ public abstract class MobSpawner {
     
     protected boolean canSpawnMobs() {
     	setCounter(getCounter() + 1);
-    	return isFirstSpawn() || getCounter() >= getRespawnDelay();
+    	return isFirstSpawn() || getCounter() >= getRespawnDelay() || isDungeon();
     }
 
     public abstract void init();
@@ -264,6 +267,8 @@ public abstract class MobSpawner {
     	} else {
     		entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
     	}
+    	if (isDungeon())
+    		EntityAPI.makeDungeonMob(entity, level, getTier());
     	getSpawnedMonsters().add(entity);
     	return entity;
     }

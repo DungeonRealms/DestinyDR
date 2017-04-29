@@ -8,11 +8,11 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.mounts.JumpingMount;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.minecraft.server.v1_9_R2.EntityHuman;
 import net.minecraft.server.v1_9_R2.EntityLiving;
@@ -175,6 +175,7 @@ public class MountUtils {
         // We gotta use reflection or an interface all mounts implement. this sadly is cleaner.
         try {
         	Method m = mount.getClass().getSuperclass().getDeclaredMethod("g", Float.class, Float.class);
+        	m.setAccessible(true);
         	m.invoke(mount, sideMotion, forwardMotion);
         } catch (Exception e) {
         	e.printStackTrace();

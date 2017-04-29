@@ -11,7 +11,7 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.md_5.bungee.api.ChatColor;
 

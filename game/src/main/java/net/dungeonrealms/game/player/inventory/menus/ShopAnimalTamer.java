@@ -17,10 +17,10 @@ import net.dungeonrealms.game.item.items.core.ShopItem.ShopItemClick;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemMountSelector;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 
 public class ShopAnimalTamer extends ShopMenu {

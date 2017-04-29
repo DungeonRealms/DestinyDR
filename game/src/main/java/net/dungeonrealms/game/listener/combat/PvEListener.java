@@ -18,7 +18,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
+import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.item.DamageAPI;

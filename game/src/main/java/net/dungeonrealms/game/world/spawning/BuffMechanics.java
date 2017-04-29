@@ -7,6 +7,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -76,7 +77,8 @@ public class BuffMechanics implements GenericMechanic, Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
-        if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
+        if (DungeonManager.isDungeon(event.getEntity()))
+        	return;
         
         event.blockList().clear();
         event.setYield(0.0F);

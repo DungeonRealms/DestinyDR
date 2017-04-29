@@ -60,8 +60,6 @@ import lombok.Setter;
  * @author Kneesnap
  */
 public class Realm {
-	
-	private static File ROOT = new File(System.getProperty("user.dir"));
 
 	@Getter //The UUID of the owner of this realm.
 	private UUID owner;
@@ -775,7 +773,7 @@ public class Realm {
 	 * Gets the world data folder location
 	 */
 	public String getWorldFolder() {
-		return ROOT.getAbsolutePath() + "/" + owner.toString() + "/";
+		return GameAPI.getRoot().getAbsolutePath() + "/" + owner.toString() + "/";
 	}
 	
 	/**

@@ -3,26 +3,26 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.dungeons.BossType;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
-import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Created by Chase on Oct 21, 2015
+ * Infernal Lords Guard SubBoss.
+ * 
+ * Redone on April 28th, 2017.
+ * @author Kneesnap
  */
-public class InfernalLordsGuard extends MeleeWitherSkeleton {
+public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBoss {
 
-    public boolean died = false;
-
-    public InfernalLordsGuard(World world, int tier) {
-        super(world, 4, EnumMonster.LordsGuard);
+    public InfernalLordsGuard(World world) {
+        super(world);
         
         this.setOnFire(Integer.MAX_VALUE);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "The Infernal Lords Guard");
@@ -39,12 +39,13 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
     public void setGear() {
     	super.setGear();
     	ItemArmor am = new ItemArmor();
-        am.setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.COMMON);
-        ((LivingEntity)getBukkitEntity()).getEquipment().setArmorContents(am.generateArmorSet());
+        am.setTier(4).setRarity(ItemRarity.COMMON);
+        getBukkit().getEquipment().setArmorContents(am.generateArmorSet());
     }
 
 
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     protected void r() {
         this.goalSelector.a(1, new PathfinderGoalFloat(this));
         this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.2D, 20));
@@ -54,10 +55,33 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
-    @Override
-    public void onMonsterDeath(Player killer) {
-        for (Player p : this.getBukkitEntity().getWorld().getPlayers())
-            p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I have failed you...");
-        super.onMonsterDeath(null);
-    }
+
+	@Override
+	public BossType getBossType() {
+		return BossType.LordsGuard;
+	}
+
+
+	@Override
+	public int getGemDrop() {
+		return 0;
+	}
+
+
+	@Override
+	public int getXPDrop() {
+		return 0;
+	}
+
+
+	@Override
+	public String[] getItems() {
+		return null;
+	}
+
+
+	@Override
+	public void addKillStat(GamePlayer gp) {
+		
+	}
 }

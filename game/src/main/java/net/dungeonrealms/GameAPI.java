@@ -40,8 +40,9 @@ import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.functional.ItemPlayerJournal;
 import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
-import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
@@ -58,7 +59,6 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -1915,5 +1915,19 @@ public class GameAPI {
 				normal.sendToPlayer(gp.getPlayer());
 			});
 		}
+	}
+	
+	public static String getDataFolder() {
+		return DungeonRealms.getInstance().getDataFolder().getPath();
+	}
+	
+	public static File getRoot() {
+		return new File(System.getProperty("user.dir"));
+	}
+	
+	public static void mkDir(String s) {
+		File f = new File(DungeonRealms.getInstance().getDataFolder() + File.separator + Utils.sanitizeFileName(s));
+		if (!f.exists() || !f.isDirectory())
+			f.mkdirs();
 	}
 }

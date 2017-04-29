@@ -66,7 +66,6 @@ public class Realms implements GenericMechanic {
 
         // INITIALIZE WORK FOLDERS
         File pluginFolder = DungeonRealms.getInstance().getDataFolder();
-        File rootFolder = new File(System.getProperty("user.dir"));
         File uploadingFolder = new File(pluginFolder, "/realms/uploading");
         try {
             FileUtils.forceMkdir(new File(pluginFolder, "/realms/downloaded"));
@@ -77,14 +76,7 @@ public class Realms implements GenericMechanic {
         }
 
         Utils.log.info("[REALMS] - Fixing cached realms.");
-
-        Arrays.stream(rootFolder.listFiles()).filter(file -> GameAPI.isUUID(file.getName())).forEach(f -> {
-            try {
-                FileUtils.forceDelete(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        Utils.removeFiles(GameAPI.getRoot(), f -> GameAPI.isUUID(f.getName()));
 
         Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
             Utils.log.info("[REALMS] - Uploading " + uploadingFolder.listFiles().length + " cached realms.");
@@ -297,9 +289,9 @@ public class Realms implements GenericMechanic {
     
 	@Override
 	public void stopInvocation() {
-		Utils.log.info("[REALM] Uploading all realms.");
+		Utils.log.info("[Realms] Uploading all realms.");
         removeAllRealms(false);
-        Utils.log.info("[REALM] All realms uploaded.");
+        Utils.log.info("[Realms] All realms uploaded.");
 	}
 	
 	@Override

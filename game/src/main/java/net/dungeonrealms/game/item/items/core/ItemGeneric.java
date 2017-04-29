@@ -107,6 +107,15 @@ public abstract class ItemGeneric extends PersistentItem {
 		return getSData(ItemData.EVENT);
 	}
 	
+	public boolean isDungeon() {
+		return getSData(ItemData.DUNGEON);
+	}
+	
+	public ItemGeneric setDungeon(boolean dungeon) {
+		setData(ItemData.DUNGEON, dungeon);
+		return this;
+	}
+	
 	public ItemGeneric setPermUntradeable(boolean perm) {
 		setData(ItemData.PUNTRADEABLE, perm);
 		return this;
@@ -133,7 +142,8 @@ public abstract class ItemGeneric extends PersistentItem {
 	}
 
 	protected ItemGeneric setType(ItemType type) {
-		this.itemType = type;
+		if (type != null)
+			this.itemType = type;
 		return this;
 	}
 	
@@ -300,6 +310,7 @@ public abstract class ItemGeneric extends PersistentItem {
 		PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
 		EVENT(ChatColor.RED + "Event Item"),
 		MENU(ChatColor.GRAY + "Display Item"),
+		DUNGEON(ChatColor.RED + "Dungeon Item"),
 		UNDROPPABLE(null);
 		
 		@Getter

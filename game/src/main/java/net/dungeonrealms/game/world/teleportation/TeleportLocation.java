@@ -113,4 +113,8 @@ public enum TeleportLocation {
     			teleportable.add(tl);
     	return teleportable.get(Utils.randInt(0, teleportable.size() - 1));
 	}
+	
+	public String getDBString() {
+		return x + "," + y + "," + z + "," + yaw + "," + pitch;
+	}
 }

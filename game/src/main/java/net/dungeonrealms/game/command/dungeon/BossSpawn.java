@@ -3,8 +3,8 @@ package net.dungeonrealms.game.command.dungeon;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.mechanic.DungeonManager;
-import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager.DungeonType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

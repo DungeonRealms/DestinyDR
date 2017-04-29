@@ -17,7 +17,7 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 
 public class ItemMuleMount extends FunctionalItem {
 

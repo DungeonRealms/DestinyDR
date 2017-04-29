@@ -11,10 +11,10 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bson.Document;

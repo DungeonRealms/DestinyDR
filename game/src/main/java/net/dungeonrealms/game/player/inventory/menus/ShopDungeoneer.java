@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 
 import net.dungeonrealms.game.item.items.functional.ItemMuleUpgrade;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 
 public class ShopDungeoneer extends ShopMenu {

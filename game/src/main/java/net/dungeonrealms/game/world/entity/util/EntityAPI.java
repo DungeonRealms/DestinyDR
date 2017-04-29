@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -20,6 +21,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityLiving;
 import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -45,14 +47,13 @@ public class EntityAPI {
 
     public static Random random = new Random();
     
-    public static void registerMonster(Entity entity, int level, int tier) {
-    	registerMonster(entity, level, tier, null, null);
-    }
-    
     public static Entity spawnElite(Location loc, EnumNamedElite elite, int level) {
     	return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), level, null, false);
     }
     
+    /**
+     * Creates an elite without spawning it into the world.
+     */
     public static net.minecraft.server.v1_9_R2.Entity createElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name, boolean dungeon) {
     	EntityLiving entity = (EntityLiving) createEntity(elite != null ? elite.getEntity() : monster.getCustomEntity());
     	
@@ -90,15 +91,17 @@ public class EntityAPI {
             }
     	}
     	
-    	registerMonster(entity.getBukkitEntity(), level, tier, armor, weapon);
+    	registerMonster(entity.getBukkitEntity(), level, tier, armor, weapon, name != null ? name : monster.getName());
     	
     	Metadata.ELITE.set(entity.getBukkitEntity(), true);
-    	String cName = GameAPI.getTierColor(tier) + "" + ChatColor.BOLD + (name != null ? name : monster.getName());
-        Metadata.CUSTOM_NAME.set(entity.getBukkitEntity(), cName);
-        entity.setCustomName(cName);
+        if (elite != null)
+        	Metadata.NAMED_ELITE.set(entity.getBukkitEntity(), elite);
         return entity;
     }
     
+    /**
+     * Spawns an elite into the world.
+     */
     public static Entity spawnElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name, boolean dungeon) {
     	net.minecraft.server.v1_9_R2.Entity e = createElite(loc, elite, monster, tier, level, name, dungeon);
     	e.getWorld().addEntity(e);
@@ -114,27 +117,19 @@ public class EntityAPI {
     	return spawnCustomMonster(loc, monster, level, tier, weaponType, null);
     }
     
+    /**
+     * Creates a custom monster and returns the NMS entity without spawning it into the world.
+     */
     public static net.minecraft.server.v1_9_R2.Entity createCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
     	net.minecraft.server.v1_9_R2.Entity entity = createEntity(monster.getCustomEntity());
     	
-    	// Generate Weapon.
-    	ItemWeapon weapon = new ItemWeapon();
-    	if (weaponType != null)
-    		weapon.setType(weaponType);
-    	weapon.setTier(tier);
-    	
-    	if (entity instanceof LivingEntity)
-    		GameAPI.setItem((LivingEntity)entity, EquipmentSlot.HAND, weapon.generateItem());
-    	
     	// Non friendly.
     	if (!monster.isFriendly()) {
-    		EntityAPI.registerMonster(entity.getBukkitEntity(), level, tier);
+    		EntityAPI.registerMonster((Entity) entity.getBukkitEntity(), level, tier, (ItemArmor) new ItemArmor().setTier(tier), (ItemWeapon) new ItemWeapon().setType(weaponType), customName);
     		
     		// Register Element.
     		if (new Random().nextInt(100) < monster.getElementalChance())
     			setMobElement(entity.getBukkitEntity(), monster.getRandomElement());
-    		
-    		setName(entity.getBukkitEntity(), monster, tier, level, customName);
     	}
     	
     	if (monster.isPassive())
@@ -142,6 +137,9 @@ public class EntityAPI {
     	return entity;
     }
     
+    /**
+     * Spawns a custom monster.
+     */
     public static Entity spawnCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
     	net.minecraft.server.v1_9_R2.Entity e = createCustomMonster(loc, monster, level, tier, weaponType, customName);
     	e.getWorld().addEntity(e);
@@ -149,11 +147,40 @@ public class EntityAPI {
     	return e.getBukkitEntity();
     }
     
-    private static void setName(Entity entity, EnumMonster monster, int tier, int level, String customName) {
-    	String mobName = Metadata.CUSTOM_NAME.has(entity) ? Metadata.CUSTOM_NAME.get(entity).asString() : monster.getName();
-		String finalName = GameAPI.getTierColor(tier) + (customName != null ? ChatColor.BOLD + customName : mobName);
-		entity.setCustomName(ChatColor.AQUA + "[Lvl. " + level + "] " + finalName);
-		Metadata.CUSTOM_NAME.set(entity, finalName);
+    /**
+     * Updates the entity's display name to its friendly display name.
+     */
+    public static void updateName(Entity entity) {
+    	if (!Metadata.CUSTOM_NAME.has(entity)) {
+    		// They don't have a custom name set.
+    		Bukkit.getLogger().warning(entity.getName() + " has no custom name!");
+    		return;
+    	}
+    	
+    	String prefix = "";
+    	String name = Metadata.CUSTOM_NAME.get(entity).asString();
+    	
+    	// Apply elemental name.
+    	if (isElemental(entity)) {
+    		ElementalAttribute ea = getElement(entity);
+    		String[] splitName = name.split(" ", 2);
+    		
+    		boolean shortName = ea == ElementalAttribute.PURE || splitName.length == 1;
+    		String ePrefix = shortName ? splitName[0] + " " : "";
+    		String eSuffix = shortName ? name : splitName[1];
+    		name = ea.getColor() + ePrefix + ea.getPrefix() + " " + eSuffix;
+    	}
+    	
+    	// Apply boss.
+    	if (isBoss(entity))
+    		prefix = ChatColor.RED + "" + ChatColor.BOLD;
+    	
+    	// Apply elite.
+    	if (Metadata.ELITE.get(entity).asBoolean())
+    		prefix = ChatColor.BOLD + "";
+    	
+    	entity.setCustomName(prefix + name);
+    	entity.setCustomNameVisible(true);
     }
     
     public static boolean isElemental(Entity e) {
@@ -166,16 +193,11 @@ public class EntityAPI {
     
     public static void setMobElement(Entity entity, ElementalAttribute ea) {
     	Metadata.ELEMENT.set(entity, ea);
-        String name = entity.getCustomName();
-        String[] splitName = name.split(" ", 2);
-        
-        if (ea == ElementalAttribute.PURE || splitName.length == 1)
-        	name = ea.getColor() + ea.getPrefix() + " " + name;
-        else
-        	name = ea.getColor() + splitName[0] + " " + ea.getPrefix() + " " + splitName[1];
-        
-        entity.setCustomName(name);
-        Metadata.CUSTOM_NAME.set(entity, name);
+        updateName(entity);
+    }
+    
+    public static void registerMonster(Entity entity, int level, int tier) {
+    	registerMonster(entity, level, tier, null, null, null);
     }
      
     /**
@@ -184,7 +206,7 @@ public class EntityAPI {
      * 
      * Formerly: setMonsterRandomStats
      */
-    public static void registerMonster(Entity entity, int level, int tier, ItemArmor armorSet, ItemWeapon weapon) {
+    public static void registerMonster(Entity entity, int level, int tier, ItemArmor armorSet, ItemWeapon weapon, String name) {
     	MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
     	
     	LivingEntity le = (LivingEntity) entity;
@@ -197,24 +219,27 @@ public class EntityAPI {
         
         if (weapon != null)
         	le.getEquipment().setItemInMainHand(weapon.generateItem());
+        
+        if (name != null)
+        	Metadata.CUSTOM_NAME.set(entity, name);
     }
 
     /**
      * Setup the supplied entity as a dungeon mob.
      */
-    public static void makeDungeonMob(Entity entity, EnumMonster monster, int level, int tier) {
+    public static void makeDungeonMob(Entity entity, int level, int tier) {
+    	Metadata.DUNGEON.set(entity, true);
         registerMonster(entity, level, tier, (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE),
-        		(ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE));
-        setName(entity, monster, tier, level, null);
+        		(ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE), null);
     }
     
     /**
      * Setup the supplied entity as a dungeon boss.
      */
-    public static void registerBoss(Entity entity, int level, int tier) {
-    	LivingEntity le = (LivingEntity) entity;
-    	registerMonster(entity, level, tier);
-    	Metadata.BOSS.set(entity, true);
+    public static void registerBoss(DungeonBoss boss, int level, int tier) {
+    	LivingEntity le = boss.getBukkit();
+    	Metadata.BOSS.set(le, boss.getBossType().name());
+    	registerMonster(le, level, tier);
     	
     	for (ItemStack item : le.getEquipment().getArmorContents())
     		if (item != null && item.getType() != Material.AIR)
@@ -245,14 +270,14 @@ public class EntityAPI {
      * Is this entity a boss?
      */
     public static boolean isBoss(Entity ent) {
-    	return ent.hasMetadata("boss") && ent.getMetadata("boss").get(0).asBoolean();
+    	return Metadata.BOSS.has(ent);
     }
     
     /**
      * Get an entity's level.
      */
     public static int getLevel(Entity ent) {
-    	return ent.hasMetadata("level") ? ent.getMetadata("level").get(0).asInt() : 1;
+    	return Metadata.LEVEL.get(ent).asInt();
     }
     
     /**

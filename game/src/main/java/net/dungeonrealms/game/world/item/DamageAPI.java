@@ -26,7 +26,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
+import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;

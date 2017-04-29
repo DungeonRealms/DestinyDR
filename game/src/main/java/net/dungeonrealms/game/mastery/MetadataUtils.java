@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
@@ -40,12 +41,16 @@ public class MetadataUtils<T> {
 		// Entity
 		CUSTOM_NAME("Error"),
 		DUNGEON(false),
+		NAMED_ELITE(EnumNamedElite.class),
 		ELITE(false),
 		BOSS(false),
 		LEVEL(1),
 		ENTITY_TYPE(EnumEntityType.class),
 		ELEMENT(ElementalAttribute.class),
 		PASSIVE(false),
+		
+		// Items
+		WHITELIST(""),
 		
 		// Mounts
 		MOUNT(EnumMounts.class),

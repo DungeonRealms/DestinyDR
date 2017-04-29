@@ -11,7 +11,7 @@ import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;

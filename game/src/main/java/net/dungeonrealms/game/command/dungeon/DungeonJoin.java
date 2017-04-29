@@ -5,7 +5,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
-import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;

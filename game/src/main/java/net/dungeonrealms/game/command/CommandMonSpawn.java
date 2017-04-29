@@ -5,7 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.InfernalEndermen;
@@ -15,6 +15,7 @@ import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;

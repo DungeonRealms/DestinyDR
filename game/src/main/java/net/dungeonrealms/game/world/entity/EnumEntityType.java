@@ -17,6 +17,7 @@ public enum EnumEntityType implements EnumMetaValue {
 	PET,
 	MOUNT,
 	MULE,
+	COMBATLOG_NPC,
 	FRIENDLY_MOB(true),
 	HOSTILE_MOB(true),
 	BUFF,

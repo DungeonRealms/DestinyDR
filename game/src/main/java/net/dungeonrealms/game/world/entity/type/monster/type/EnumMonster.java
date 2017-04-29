@@ -48,7 +48,6 @@ public enum EnumMonster {
     // Pirates
     Pirate(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Pirate", null, SkullTextures.PIRATE),
     RangedPirate(l(CustomEntityType.BOW_SKELETON), "Ranged Pirate", null, SkullTextures.PIRATE, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), l("")),
-    MayelPirate(l(CustomEntityType.STAFF_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Pirate", null, SkullTextures.PIRATE, l("Mayel"), l("")),
     
     Naga(l(CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_SKELETON, CustomEntityType.MELEE_SKELETON), "Naga", null, SkullTextures.NAGA, l("Weak"), l("Shaman", "Mage"), 25, ElementalAttribute.ICE),
     Tripoli(l(CustomEntityType.MELEE_ZOMBIE), "Tripoli", ItemType.AXE, SkullTextures.TRIPOLI_SOLDIER, l(""), l("Soldier", "Commander"), 3, ElementalAttribute.FIRE),
@@ -82,11 +81,11 @@ public enum EnumMonster {
     Acolyte(l(CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_SKELETON, CustomEntityType.MELEE_SKELETON), "Acolyte", null, SkullTextures.MONK, 20, ElementalAttribute.FIRE),
     
     // Dungeon
+    MayelPirate(l(CustomEntityType.STAFF_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Pirate", null, SkullTextures.PIRATE, l("Mayel"), l("")),
     Enderman(l(CustomEntityType.MELEE_ENDERMAN), "Apparition", ItemType.SWORD, 15, ElementalAttribute.PURE),
     SpawnOfInferno(l(CustomEntityType.DR_MAGMA), "Spawn of Inferno", null, 10, ElementalAttribute.FIRE),
 	Demon(l(CustomEntityType.DR_SILVERFISH), "Greater Abyssal Demon", ItemType.SWORD),
 	InfernalEndermen(l(CustomEntityType.INFERNAL_ENDERMAN), "Endermen", null, 20, ElementalAttribute.FIRE),
-	LordsGuard(l(CustomEntityType.INFERNAL_GUARD), "Lords Guard", null, l("Infernal"), 80, ElementalAttribute.FIRE),
     
     // Vanilla NonHostiles
 	PassiveChicken(l(CustomEntityType.PASSIVE_CHICKEN), "Quillen", ItemType.SWORD),

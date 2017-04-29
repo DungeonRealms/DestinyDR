@@ -19,6 +19,8 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -34,13 +36,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -48,6 +48,13 @@ import java.util.*;
  * Created by Chase on Oct 21, 2015
  */
 public interface DRMonster {
+	
+	public static final TeleportLocation[][] TELEPORT_DROPS = new TeleportLocation[][] {
+				{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD},
+				{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI},
+				{TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD},
+				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
+				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}};
 
     default void onMonsterAttack(Player p) {
     	
@@ -65,8 +72,8 @@ public interface DRMonster {
     	//  SET CUSTOM NAME  //
     	String customName = getEnum().getPrefix() + " " + getEnum().getName() + " " + getEnum().getSuffix() + " ";
         getNMS().setCustomName(customName);
-        Metadata.CUSTOM_NAME.set(getBukkitEntity(), customName);
-        getBukkitEntity().setCustomNameVisible(true);
+        Metadata.CUSTOM_NAME.set(getBukkit(), customName);
+        getBukkit().setCustomNameVisible(true);
         
         //  SET NMS DATA  //
         setupNMS();
@@ -80,40 +87,26 @@ public interface DRMonster {
     }
     
     default void setGear() {
-    	int tier = getTier();
-    	ItemStack[] armor = GameAPI.getTierArmor(tier);
-		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+    	ItemStack[] armor = GameAPI.getTierArmor(getTier());
 		Random random = new Random();
-		boolean forcePlace = tier >= 3;
+		boolean forcePlace = false;
+		EntityEquipment e = getBukkit().getEquipment();
 		
-		int chance = 6 + tier;
-		//  SET BOOTS  //
-		if (forcePlace || random.nextInt(10) <= chance) {
-			livingEntity.getEquipment().setBoots(armor[0]);
-			getNMS().setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
-		} else {
-			forcePlace = true;
+		int chance = 6 + getTier();
+		
+		ItemStack[] entityArmor = e.getArmorContents();
+		for (int i = 0; i <= 2; i++) { //Chestplate, boots, leggings. No helmet.
+			if (forcePlace || getTier() >= 3 || random.nextInt(10) <= chance) {
+				entityArmor[i] = armor[i];
+				
+				if (i == 1) //Reset force place for low tiers at leggings.
+					forcePlace = false;
+			} else {
+				forcePlace = true;
+			}
 		}
-		
-		//  SET LEGGINGS  //
-		if (forcePlace || random.nextInt(10) <= chance) {
-			livingEntity.getEquipment().setLeggings(armor[1]);
-			getNMS().setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
-			forcePlace = tier >= 3;
-		} else {
-			forcePlace = true;
-		}
-		
-		//  SET CHESTPLATE  //
-		if (forcePlace || random.nextInt(10) <= chance) {
-			livingEntity.getEquipment().setChestplate(armor[2]);
-			getNMS().setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
-		}
-		
-		//  SET WEAPON  //
-		ItemStack weapon = getWeapon();
-		getNMS().setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-		livingEntity.getEquipment().setItemInMainHand(weapon);
+		e.setArmorContents(entityArmor);
+		e.setItemInMainHand(getWeapon());
 		
     }
 
@@ -123,7 +116,9 @@ public interface DRMonster {
 
     AttributeList getAttributes();
     
-    CraftEntity getBukkitEntity();
+    default LivingEntity getBukkit() {
+    	return (LivingEntity) ((net.minecraft.server.v1_9_R2.Entity)this).getBukkitEntity();
+    }
     
     default ItemStack getWeapon() {
     	return makeItem(new ItemWeaponMelee());
@@ -136,32 +131,32 @@ public interface DRMonster {
     default void setSkullTexture() {
     	if(getEnum() != null && getEnum().getSkullItem() != null) {
     		ItemStack helmet = getEnum().getSkullItem();
-    		((LivingEntity)getBukkitEntity()).getEquipment().setHelmet(helmet);
+    		getBukkit().getEquipment().setHelmet(helmet);
     		getNMS().setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(helmet));
     	}
     }
     
     default void setTier(int tier) {
-    	getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+    	Metadata.TIER.set(getBukkit(), tier);
     }
     
     default int getTier(){
-    	return getBukkitEntity().getMetadata("tier").get(0).asInt();
+    	return Metadata.TIER.get(getBukkit()).asInt();
     }
 
     default void checkItemDrop(Player killer) {
-    	Entity ent = getBukkitEntity();
+    	LivingEntity ent = getBukkit();
     	
     	//No normal drops in dungeons.
-        if (ent.getWorld().getName().contains("DUNGEON"))
+        if (DungeonManager.isDungeon(ent))
             return;
         
         //Boss will handle this.
-        if (ent.hasMetadata("boss"))
+        if (Metadata.BOSS.has(ent))
             return;
         
         //combat log npcs have special drop mechanics
-        if (ent.hasMetadata("combatlog"))
+        if (EnumEntityType.COMBATLOG_NPC.isType(ent))
             return;
         
         int tier = getTier();
@@ -179,10 +174,11 @@ public interface DRMonster {
         int gemRoll = random.nextInt(100);
         DropRate dr = DropRate.getRate(tier);
         int gemChance = dr.getMobGemChance();
-        int chance = ent.hasMetadata("elite") ? dr.getEliteDropChance() : dr.getNormalDropChance();
+        boolean elite = Metadata.ELITE.has(ent);
+        int chance = elite ? dr.getEliteDropChance() : dr.getNormalDropChance();
         
         // If it's a named elite, bring the drop chances down.
-        if (ent.hasMetadata("namedElite"))
+        if (Metadata.NAMED_ELITE.has(ent))
             chance /= 3;
 
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LOOT))
@@ -195,7 +191,7 @@ public interface DRMonster {
 
             double gemsDropped = Utils.randInt(dr.getGemDropMin(), dr.getGemDropMax());
             gemsDropped *= gemFind;
-            if (ent.hasMetadata("elite"))
+            if (elite)
             	gemsDropped *= 1.5;
             
             while (gemsDropped > 0) {
@@ -213,7 +209,7 @@ public interface DRMonster {
             if (stack != null && stack.getType() != Material.AIR && stack.getType() != Material.SKULL && stack.getType() != Material.SKULL_ITEM)
             	toDrop.add(stack);
         
-        if (!ent.hasMetadata("elite"))
+        if (!elite)
         	toDrop.add(new ItemArmor(ItemType.HELMET).setTier(ItemTier.getByTier(getTier())).generateItem());
         
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
@@ -234,28 +230,14 @@ public interface DRMonster {
             if (drop != null && drop.getType() != Material.AIR) {
             	ItemGear gear = (ItemGear)PersistentItem.constructItem(drop);
             	gear.damageItem(null, Utils.randInt(0, ItemGear.MAX_DURABILITY - (int)(ItemGear.MAX_DURABILITY / 7.5)));
-                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gear.generateItem()));
+                ItemManager.whitelistItemDrop(killer, loc, gear.generateItem());
             }
         }
         
-        int scrollDrop = random.nextInt(100);
-        int scrollDropChance = dr.getTeleportBookChance();
-        
-        if (scrollDropChance >= scrollDrop) {
-            TeleportLocation[][] locations = new TeleportLocation[][] {
-            		{TeleportLocation.CYRENNICA},
-            		{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD},
-            		{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI},
-            		{TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD},
-            		{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
-            		{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}
-            };
-            
-            ItemStack teleport = new ItemTeleportBook(locations[tier][random.nextInt(locations[tier].length)]).generateItem();
-            
-            if (teleport != null)
-                ItemManager.whitelistItemDrop(killer, ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport));
-        }
+        // Drop teleport book.
+        if (dr.getTeleportBookChance() >= random.nextInt(100))
+            ItemManager.whitelistItemDrop(killer, ent.getLocation(), new ItemTeleportBook(
+            		TELEPORT_DROPS[tier][random.nextInt(TELEPORT_DROPS[tier].length)]).generateItem());
         
         /*if (weapon.getType() == Material.BOW) {
             int arrowRoll = random.nextInt(99);
@@ -274,11 +256,11 @@ public interface DRMonster {
     }
     
     default ItemStack getHeld() {
-    	return ((LivingEntity)this.getBukkitEntity()).getEquipment().getItemInMainHand();
+    	return getBukkit().getEquipment().getItemInMainHand();
     }
     
     default void calculateAttributes() {
-    	GameAPI.calculateAllAttributes((LivingEntity) getBukkitEntity());
+    	GameAPI.calculateAllAttributes(getBukkit());
     }
 
 }

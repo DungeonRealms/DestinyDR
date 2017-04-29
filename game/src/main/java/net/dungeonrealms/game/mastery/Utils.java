@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
-import net.minecraft.server.v1_9_R2.Item;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,13 +16,14 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.BlockIterator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -97,10 +98,7 @@ public class Utils {
     }
 
     public static int randInt(int min, int max) {
-
-        Random rand = new Random();
-
-        return rand.nextInt((max - min) + 1) + min;
+        return new Random().nextInt((max - min) + 1) + min;
     }
 
     public static boolean isInt(String s) {
@@ -120,17 +118,6 @@ public class Utils {
      */
     public static String getFormattedShardName(String name) {
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
-    }
-
-    public static void setMaxStackSize(Item item, int i) {
-        try {
-
-            Field field = Item.class.getDeclaredField("maxStackSize");
-            field.setAccessible(true);
-            field.setInt(item, i);
-
-        } catch (Exception ignored) {
-        }
     }
 
     public static <T> Set<T> findDuplicates(Collection<T> list) {
@@ -245,43 +232,6 @@ public class Utils {
         }
     }
 
-    /**
-     * Convert seconds into a human readable format.
-     *
-     * @param seconds
-     * @return seconds.
-     */
-    public static String formatTimeAgo(int seconds) {
-        if (seconds == 0) return "0 seconds"; // @note: 0 seconds is a special case.
-
-        String date = "";
-
-        String[] unitNames = {"week", "day", "hour", "minute", "second"};
-        int[] unitValues = {604800, 86400, 3600, 60, 1};
-
-        // Loop through all of the units.
-        for (int i = 0; i < unitNames.length; i++) {
-            int quot = seconds / unitValues[i];
-            if (quot > 0) {
-                date += quot + " " + unitNames[i] + (Math.abs(quot) > 1 ? "s" : "") + ", ";
-                seconds -= (quot * unitValues[i]);
-            }
-        }
-
-        // Return the date, substring -2 to remove the trailing ", ".
-        return date.substring(0, date.length() - 2);
-    }
-
-    /**
-     * Convert milliseconds into a human readable format.
-     *
-     * @param milliseconds
-     * @return String
-     */
-    public static String formatTimeAgo(Long milliseconds) {
-        return formatTimeAgo((int) (milliseconds / 1000));
-    }
-
     public static String getDate(Long milliseconds) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC-0"));
@@ -296,5 +246,20 @@ public class Utils {
     public static String sanitizeFileName(String fileName) {
     	return fileName.replaceAll("[^a-zA-Z0-9\\._]+", "_");
     }
-
+    
+    public static void removeFile(File file) {
+    	try {
+			FileUtils.forceDelete(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Bukkit.getLogger().warning("Failed to delete " + file.getName());
+		}
+    }
+    
+    /**
+     * Force deletes folders / files that meet certain parameters.
+     */
+    public static void removeFiles(File root, Predicate<? super File> cb) {
+    	Arrays.stream(root.listFiles()).filter(cb).forEach(Utils::removeFile);
+    }
 }

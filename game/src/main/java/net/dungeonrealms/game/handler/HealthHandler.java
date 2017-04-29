@@ -690,10 +690,8 @@ public class HealthHandler implements GenericMechanic {
                 }
             }, 1L);
             
-            if (EntityMechanics.MONSTER_LAST_ATTACK.containsKey(defender))
-                EntityMechanics.MONSTER_LAST_ATTACK.remove(defender);
-            if (EntityMechanics.MONSTERS_LEASHED.contains(defender))
-                EntityMechanics.MONSTERS_LEASHED.remove(defender);
+            EntityMechanics.MONSTER_LAST_ATTACK.remove(defender);
+            EntityMechanics.MONSTERS_LEASHED.remove(defender);
             
             return;
         }

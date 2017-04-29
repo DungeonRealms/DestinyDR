@@ -5,8 +5,8 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
+import net.dungeonrealms.game.mechanic.dungeons.BossType;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -17,7 +17,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
- * Created by Chase on Oct 18, 2015
+ * Mayel - The Bandit Trove's boss.
+ * 
+ * Redone on April 28th, 2017.
+ * @author Kneesnap
  */
 public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
 
@@ -75,8 +78,8 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     }
 
     @Override
-    public EnumDungeonBoss getEnumBoss() {
-        return EnumDungeonBoss.Mayel;
+    public BossType getBossType() {
+        return BossType.Mayel;
     }
 
 	@Override

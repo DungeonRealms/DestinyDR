@@ -5,7 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
+import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
 

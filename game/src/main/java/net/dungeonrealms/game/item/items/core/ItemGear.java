@@ -10,7 +10,6 @@ import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;

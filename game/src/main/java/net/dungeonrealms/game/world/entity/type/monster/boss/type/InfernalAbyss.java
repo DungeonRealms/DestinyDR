@@ -1,21 +1,16 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.dungeons.BossType;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item.*;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
 
@@ -25,33 +20,28 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 
 /**
- * Created by Chase on Oct 21, 2015
+ * InfernalAbyss Boss
+ * 
+ * Redone on April 28th, 2017.
+ * @author Kneesnap
  */
 public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     public InfernalGhast ghast;
+    public boolean finalForm = false;
 
     public InfernalAbyss(World world) {
         super(world);
-        this.createEntity(50);
+        createEntity(50);
         this.fireProof = true;
-        this.persistent = true;
-        DungeonManager.getInstance().getFireUnderEntity().add(this);
-        ghast = new InfernalGhast(this);
+        
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
-        EntityAPI.registerBoss(this.ghast.getBukkitEntity(), 100, 4);
-        ItemArmor am = new ItemArmor();
-        am.setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.UNIQUE);
-        ghast.setArmor(am.generateArmorSet(),
-                new ItemArmor().setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.UNIQUE).generateItem());
     }
 
     public String[] getItems() {
@@ -59,25 +49,25 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     }
 
     @Override
-    public EnumDungeonBoss getEnumBoss() {
-        return EnumDungeonBoss.InfernalAbyss;
+    public BossType getBossType() {
+        return BossType.InfernalAbyss;
     }
-
-    private boolean hasFiredGhast = false;
-    public boolean finalForm = false;
 
     public void doFinalForm(double hp) {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), (int) hp));
+        HealthHandler.setMaxHP(getBukkit(), (int) hp);
         HealthHandler.setMonsterHP(livingEntity, (int) hp);
+        
         livingEntity.setMaximumNoDamageTicks(0);
         livingEntity.setNoDamageTicks(0);
         livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
+        
         finalForm = true;
+        
         DamageAPI.setDamageBonus(livingEntity, 50);
         say("You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
-        for (Player pl : livingEntity.getWorld().getPlayers()) {
-            pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
+        getDungeon().announce(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
+        for (Player pl : getDungeon().getAllPlayers()) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
         }
@@ -87,8 +77,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     }
 
     @Override
-    public void onBossDeath() {
-    	for (Player pl : getBukkitEntity().getWorld().getPlayers()) {
+    public void onBossDeath(Player player) {
+    	for (Player pl : getDungeon().getAllPlayers()) {
             pushAwayPlayer(getBukkitEntity(), pl, 3.5F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
@@ -129,42 +119,38 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
                 p_attacker.playSound(p_attacker.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 1F, 1F);
             }
         }
-        if (hasFiredGhast) {
-            if (!this.ghast.isAlive()) {
-                if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-                    en.removePotionEffect(PotionEffectType.INVISIBILITY);
-                }
-                if (DamageAPI.isInvulnerable(en)) {
-                    DamageAPI.removeInvulnerable(en);
-                }
-            }
+        
+        boolean spawnedGhast = getDungeon().hasSpawned(BossType.InfernalGhast);
+        
+        if (spawnedGhast && !this.ghast.isAlive()) {
+        	if (en.hasPotionEffect(PotionEffectType.INVISIBILITY))
+        		en.removePotionEffect(PotionEffectType.INVISIBILITY);
+        	
+        	if (DamageAPI.isInvulnerable(en))
+        		DamageAPI.removeInvulnerable(en);
         }
 
         double halfHP = HealthHandler.getMonsterMaxHP(en) * 0.5;
-        if (HealthHandler.getMonsterHP(en) <= halfHP && !hasFiredGhast) {
+        if (HealthHandler.getMonsterHP(en) <= halfHP && !spawnedGhast) {
             say("Behold, the powers of the inferno.");
-            ghast.setLocation(this.locX, this.locY + 7, this.locZ, 1, 1);
-            ghast.init(HealthHandler.getMonsterHP(en));
-            this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
-            ghast.init(HealthHandler.getMonsterHP(en));
+            
+            ghast = (InfernalGhast) getDungeon().spawnBoss(BossType.InfernalGhast);
+            ghast.init(HealthHandler.getMaxHP(getBukkit()));
+            
             say("The inferno will devour you!");
-            for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
-                pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
-                pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
-            }
-            DamageAPI.setArmorBonus(ghast.getBukkitEntity(), 50);
-            hasFiredGhast = true;
+            getDungeon().announce(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
+            for (Player pl : this.getBukkitEntity().getWorld().getPlayers())
+            	pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
+            
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
             DamageAPI.setInvulnerable(en);
             DamageAPI.setArmorBonus(en, 50);
         }
 
-        if (hasFiredGhast)
-            if (this.ghast.isAlive())
-                return;
+        if (spawnedGhast && this.ghast.isAlive())
+        	return;
         
-        if (random.nextInt(15) == 1) {
+        if (random.nextInt(15) == 0) {
             Location hit_loc = this.getBukkitEntity().getLocation();
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, hit_loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
             

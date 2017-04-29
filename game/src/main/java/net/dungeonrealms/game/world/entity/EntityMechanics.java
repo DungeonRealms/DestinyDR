@@ -7,21 +7,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
-import net.dungeonrealms.game.world.entity.type.monster.base.*;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.Burick;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.Mayel;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.game.world.entity.type.mounts.*;
 import net.dungeonrealms.game.world.entity.type.pet.*;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -37,6 +23,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
@@ -50,7 +37,7 @@ public class EntityMechanics implements GenericMechanic {
 
 	@Getter
     private static EntityMechanics instance = new EntityMechanics();
-    ;
+    
     public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
     public static CopyOnWriteArrayList<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 
@@ -59,7 +46,6 @@ public class EntityMechanics implements GenericMechanic {
         return EnumPriority.POPE;
     }
 
-    @SuppressWarnings("deprecation")
 	@Override
     public void startInitialization() {
     	
@@ -183,69 +169,57 @@ public class EntityMechanics implements GenericMechanic {
         player.setVelocity(velocity);
     }
 
+    /**
+     * Handles general restrictions on entities.
+     * Could be named better.
+     */
     private void checkForLeashedMobs() {
-        if (!MONSTERS_LEASHED.isEmpty()) {
-            for (LivingEntity entity : MONSTERS_LEASHED) {
-                if (entity == null) {
-                    Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
-                    continue;
-                }
-                if (entity.isDead()) {
-                    MONSTERS_LEASHED.remove(entity);
-                    if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-                        MONSTER_LAST_ATTACK.remove(entity);
-                    }
-                    entity.remove();
-                    continue;
-                }
-                if (Metadata.DUNGEON.get(entity).asBoolean() || Metadata.BOSS.get(entity).asBoolean()) {
-                    MONSTERS_LEASHED.remove(entity);
-                    if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-                        MONSTER_LAST_ATTACK.remove(entity);
-                    }
-                    continue;
-                }
-                if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-                    if (MONSTER_LAST_ATTACK.get(entity) == 11) {
-                        EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity) entity).getHandle();
-                        if (entityInsentient != null && entityInsentient.getGoalTarget() != null) {
-                            Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
-                            if (loc.getWorld() == entity.getWorld() && loc.distance(entity.getLocation()) >= 2 && loc.distance(entity.getLocation()) <= 6) {
-                                if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().getBlockY() != entity.getLocation().getBlockY()) {
-                                    ((CraftEntity) entity).getHandle().setLocation(loc.getX(), loc.getY() + 1, loc.getZ(), loc.getYaw(), loc.getPitch());
-                                    MONSTER_LAST_ATTACK.put(entity, 15);
-                                }
-                            }
-                        }
-                    } else if (MONSTER_LAST_ATTACK.get(entity) == 10) {
-                        if (Metadata.ELITE.get(entity).asBoolean()) {
-                            if (entity.hasMetadata("namedElite")) {
-                                entity.setCustomName(entity.getMetadata("namedElite").get(0).asString().trim());
-                            } else if (entity.hasMetadata("customname")) {
-                                entity.setCustomName(entity.getMetadata("customname").get(0).asString().trim());
-                            }
-                        } else {
-                            String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
-                            if (entity.hasMetadata("customname")) {
-                                entity.setCustomName(lvlName + entity.getMetadata("customname").get(0).asString());
-                            }
-                        }
-                        entity.setCustomNameVisible(true);
-                    } else if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
-                        MONSTERS_LEASHED.remove(entity);
-                        MONSTER_LAST_ATTACK.remove(entity);
-                        tryToReturnMobToBase(((CraftEntity) entity).getHandle());
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            ((EntityInsentient) ((CraftEntity) entity).getHandle()).setGoalTarget(null, EntityTargetEvent.TargetReason.CUSTOM, true);
-                        }, 220L);
-                        continue;
-                    }
-                    MONSTER_LAST_ATTACK.put(entity, (MONSTER_LAST_ATTACK.get(entity) - 1));
-                } else {
-                    MONSTER_LAST_ATTACK.put(entity, 15);
-                }
-            }
-        }
+    	for (LivingEntity entity : MONSTERS_LEASHED) {
+    		if (entity == null) {
+    			Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
+    			continue;
+    		}
+    		if (entity.isDead() || Metadata.DUNGEON.get(entity).asBoolean() || Metadata.BOSS.get(entity).asBoolean()) {
+    			MONSTERS_LEASHED.remove(entity);
+    			MONSTER_LAST_ATTACK.remove(entity);
+    			if (entity.isDead()) //Remove the entity if it's dead...
+    				entity.remove();
+    			continue;
+    		}
+    		if (!MONSTER_LAST_ATTACK.containsKey(entity)) {
+    			MONSTER_LAST_ATTACK.put(entity, 15);
+    			continue;
+    		}
+    		
+    		int lastAttack = MONSTER_LAST_ATTACK.get(entity);
+    		EntityInsentient ei = (EntityInsentient) ((CraftEntity)entity).getHandle();
+    		
+    		if (lastAttack == 11) {
+    			// Teleport back to spawnpoint if too far away.
+    			Location target = ei.getGoalTarget().getBukkitEntity().getLocation();
+    			if (target != null && target.getWorld() == entity.getWorld()) {
+    				double distance = target.distance(entity.getLocation());
+    				
+    				// If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
+    				if (distance >= 2 && distance <= 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
+    					entity.teleport(target);
+    					MONSTER_LAST_ATTACK.put(entity, 15);
+    				}
+    			}
+    		} else if (lastAttack == 10) {
+    			// Update entity name.
+    			EntityAPI.updateName(entity);
+    		} else if (lastAttack <= 0){
+    			// Remove.
+    			MONSTERS_LEASHED.remove(entity);
+    			MONSTER_LAST_ATTACK.remove(entity);
+    			tryToReturnMobToBase(((CraftEntity) entity).getHandle());
+    			// Reset goal.
+    			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
+    		}
+    		
+    		MONSTER_LAST_ATTACK.put(entity, lastAttack - 1);
+    	}
     }
 
     private void tryToReturnMobToBase(Entity entity) {
@@ -311,7 +285,7 @@ public class EntityMechanics implements GenericMechanic {
 
         formatted = formatted + cc + ChatColor.BOLD.toString() + "║";
         
-        return elite || boss ? formatted : ChatColor.AQUA + "[Lvl. " + EntityAPI.getLevel(ent) + "]";
+        return formatted;
     }
 }
 
