@@ -130,6 +130,20 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     SQLDatabaseAPI.getInstance().getAccountIdNames().put(accountID, new UUIDName(newUUID, username));
                     System.out.println("Registered user " + username + " with accountID: " + accountID);
                     break;
+                case "WipePlayer":
+                    int idToWipe = Integer.parseInt(in.readUTF());
+                    if (idToWipe <= 0) return;
+                    UUID uuidToWipe = UUID.fromString(in.readUTF());
+//                    if(SQLDatabaseAPI.getInstance().getAccountIdNames().containsKey())
+                    UUIDName removed = SQLDatabaseAPI.getInstance().getAccountIdNames().remove(idToWipe);
+                    if (removed != null) {
+                        Constants.log.info("Received WipePlayer packet for " + idToWipe + " (" + uuidToWipe + ")");
+                    }
+                    PlayerWrapper foundWrapper = PlayerWrapper.getPlayerWrapper(uuidToWipe);
+                    if(foundWrapper != null){
+                        PlayerWrapper.getPlayerWrappers().remove(uuidToWipe);
+                    }
+                    break;
                 case "Update": {
                     if (DungeonRealms.getInstance().isAlmostRestarting()) return;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -606,14 +620,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     Constants.log.info("Could not find guild member on kick for " + accountIdKicking + " for the guild " + wrapper.getName());
                     return;
                 }
+                PlayerWrapper kickingPlayerWrapper = PlayerWrapper.getPlayerWrapper(kicking.getUUID());
+                if(kickingPlayerWrapper != null) {
+                    kickingPlayerWrapper.setGuildID(0);
+                }
                 wrapper.getMembers().remove(accountIdKicking);
             } else if (command.equals("leave")) {
                 int guildID = Integer.parseInt(stream.readUTF());
                 int accountIdKicking = Integer.parseInt(stream.readUTF());
                 GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
                 if (wrapper == null) return;
-                GuildMember kicking = wrapper.getMembers().get(accountIdKicking);
-                if (kicking == null) {
+                GuildMember leaving = wrapper.getMembers().get(accountIdKicking);
+                if (leaving == null) {
                     Constants.log.info("Could not find guild member on leave for " + accountIdKicking + " for the guild " + wrapper.getName());
                     return;
                 }
@@ -629,7 +647,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     return;
                 }
                 member.setRank(GuildMember.GuildRanks.MEMBER);
-            }else if(command.equals("setrank")){
+            } else if (command.equals("setrank")) {
                 int guildID = Integer.parseInt(stream.readUTF());
                 int accountIdDemoted = Integer.parseInt(stream.readUTF());
                 int newRankID = Integer.parseInt(stream.readUTF());
@@ -643,11 +661,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 GuildMember.GuildRanks ranks = GuildMember.GuildRanks.getFromIndex(newRankID);
                 Bukkit.getLogger().info("Setting Guild Member rank to " + ranks.name() + " for " + newRankID);
                 member.setRank(ranks);
-            } else if(command.equals("disband")) {
+            } else if (command.equals("disband")) {
                 int guildID = Integer.parseInt(stream.readUTF());
                 GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
                 if (wrapper == null) return;
                 wrapper.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
+                for(GuildMember member : wrapper.getMembers().values()) {
+                    if(member == null) continue;
+                    PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(member.getUUID());
+                    if(playerWrapper != null) {
+                        playerWrapper.setGuildID(0);
+                    }
+                }
                 GuildDatabase.getAPI().cached_guilds.remove(wrapper.getGuildID());
             } else {
                 throw new IllegalArgumentException("UNHANDLED GUILD NETWORK MESSAGE: " + command);

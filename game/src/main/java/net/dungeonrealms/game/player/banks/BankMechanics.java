@@ -24,9 +24,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Created by Chase on Sep 18, 2015
- */
 public class BankMechanics implements GenericMechanic {
 
     public static ItemStack gem;
@@ -71,7 +68,7 @@ public class BankMechanics implements GenericMechanic {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                                 "To allocate click ", ChatColor.WHITE);
-                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
                         normal.addText(ChatColor.GREEN + "*");
                         normal.sendToPlayer(online);
                     });

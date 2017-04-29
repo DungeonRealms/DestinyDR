@@ -2,6 +2,7 @@ package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import com.google.common.collect.Sets;
+import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.tab.Column;
@@ -133,6 +134,8 @@ public class StatisticsTabColumn extends Column {
     }
 
     private String convertMins(int mins) {
-        return ChatColor.YELLOW.toString() + mins / 24 / 60 + ChatColor.BOLD + "d " + ChatColor.YELLOW + mins / 60 % 24 + ChatColor.BOLD + "h " + ChatColor.YELLOW + mins % 60 + ChatColor.BOLD + "m";
+//        TimeUtil.formatDifference(mins * 60);
+        return TimeUtil.formatDifference(mins, ChatColor.YELLOW, ChatColor.BOLD);
+//        return ChatColor.YELLOW.toString() + mins / 24 / 60 + ChatColor.BOLD + "d " + ChatColor.YELLOW + mins / 60 % 24 + ChatColor.BOLD + "h " + ChatColor.YELLOW + mins % 60 + ChatColor.BOLD + "m";
     }
 }

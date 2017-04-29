@@ -65,6 +65,7 @@ public class DataListener implements Listener {
         if(!event.getPlayer().isOnline())return;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
         if(wrapper == null) return;
+        wrapper.setLastLogin(System.currentTimeMillis());
         wrapper.loadPlayerAfterLogin(event.getPlayer());
         //Overwrite whatever we have in there.
         SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));

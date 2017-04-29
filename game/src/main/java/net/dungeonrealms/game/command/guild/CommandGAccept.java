@@ -55,6 +55,7 @@ public class CommandGAccept extends BaseCommand {
             return false;
         }
 
+            wrapper.setGuildID(guild.getGuildID());
         member.setAccepted(true);
         player.sendMessage(ChatColor.DARK_AQUA + "You have joined '" + ChatColor.BOLD + guild.getDisplayName() + "'" + ChatColor.DARK_AQUA + ".");
         player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");

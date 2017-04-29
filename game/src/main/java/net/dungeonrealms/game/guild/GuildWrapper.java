@@ -264,15 +264,15 @@ public class GuildWrapper {
 
     public void promotePlayer(Player promoter, String name, GuildMember member) {
         if (member == null) {
-            Bukkit.getLogger().info("Unable to find guild member with id: " + member.getAccountID());
+            Bukkit.getLogger().info("Unable to find guild member with name: " + name);
             return;
         }
 
         SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GUILD_RANK, "OFFICER", member.getAccountID());
         member.setRank(GuildMember.GuildRanks.OFFICER);
         promoter.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
-        sendGuildMessage(ChatColor.GREEN + " " + promoter.getName() + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".", false);
-        GameAPI.sendNetworkMessage("Guilds", "setrank", String.valueOf(getGuildID()), member.getAccountID() + "", GuildMember.GuildRanks.OFFICER.getOrder() + "");
+        sendGuildMessage(ChatColor.GREEN + " " + name + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".", false);
+        GameAPI.sendNetworkMessage("Guilds", "setrank", DungeonRealms.getShard().getPseudoName(),String.valueOf(getGuildID()), member.getAccountID() + "", GuildMember.GuildRanks.OFFICER.getOrder() + "");
     }
 
     public GuildMember getOwner() {

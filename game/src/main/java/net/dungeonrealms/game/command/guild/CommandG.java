@@ -61,7 +61,7 @@ public class CommandG extends BaseCommand {
         if(!member.isAccepted()) return true;
 
         String tag = wrapper.getTag();
-        String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + player.getName() + ": " + ChatColor.GRAY;
+        String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + player.getName() + ":" + ChatColor.GRAY;
         StringBuilder msg = new StringBuilder(format);
         for (int arg = 0; arg < args.length; arg++) msg.append(" ").append(args[arg]);
         wrapper.sendGuildMessage(msg.toString(), false);

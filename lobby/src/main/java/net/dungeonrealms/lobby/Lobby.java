@@ -320,6 +320,7 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
     public boolean isLoggedIn(Player player) {
-        return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
+        return true;
+        //return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }

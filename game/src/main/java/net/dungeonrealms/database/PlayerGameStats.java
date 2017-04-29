@@ -67,7 +67,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         return t1MonsterKills + t2MonsterKills + t3MonsterKills + t4MonsterKills + t5MonsterKills;
     }
     public String getUpdateStatement(){
-        return String.format("UPDATE statistics SET players_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
+        return String.format("UPDATE statistics SET player_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
                 "monster_kills_t1 = '%s', monster_kills_t2 = '%s', monster_kills_t3 = '%s', monster_kills_t4 = '%s', monster_kills_t5 = '%s'," +
                 "boss_kills_mayel = '%s', boss_kills_burick = '%s', boss_kills_infernal_abyss = '%s', loot_opened = '%s', duels_won = '%s', duels_lost = '%s', ore_mined = '%s'," +
                 "fish_caught = '%s', orbs_used = '%s', time_played = '%s', enchants_succeeded = '%s', enchants_failed = '%s', ecash_spent = '%s', gems_earned = '%s', gems_spent = '%s' " +

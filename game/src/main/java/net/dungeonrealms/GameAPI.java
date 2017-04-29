@@ -1330,7 +1330,7 @@ public class GameAPI {
                 if (playerWrapper.getPlayerStats().freePoints > 0) {
                     final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                             "To allocate click ", ChatColor.WHITE);
-                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
                     normal.addText(ChatColor.GREEN + "*");
                     normal.sendToPlayer(gp.getPlayer());
                 }

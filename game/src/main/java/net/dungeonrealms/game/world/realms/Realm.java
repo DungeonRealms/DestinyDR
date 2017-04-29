@@ -55,7 +55,8 @@ public class Realm {
     private UUID owner;
 
     @Getter
-    private int accountID;
+    private int characterID;
+
 
     @Getter //The owner's username.
     private String name;
@@ -91,9 +92,9 @@ public class Realm {
 
     private RealmTier tier;
 
-    public Realm(UUID owner, int accountID, String name) {
+    public Realm(UUID owner, int characterID, String name) {
         this.owner = owner;
-        this.accountID = accountID;
+        this.characterID = characterID;
         this.name = name;
 
         // MUST BE ADDED IN THIS ORDER //
@@ -395,7 +396,6 @@ public class Realm {
         }
 
         FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();
-        ;
 
         try {
             Utils.log.info("[REALM] Removing " + getName() + "'s realm: " + (ftpClient.deleteFile("/realms/" + getOwner().toString() + ".zip") ? "SUCCESS" : "FAILURE"));
@@ -514,7 +514,6 @@ public class Realm {
      * Downloads a realm from FTP
      */
     private boolean downloadRealm() throws IOException, ZipException {
-
         // Realms are stored locally on the master shard.
         if (DungeonRealms.getInstance().isMasterShard) {
             File realm = new File(getSaveFilePath());
@@ -531,22 +530,25 @@ public class Realm {
         File tempLocation = new File(getSaveFilePath());
 
         try {
-            Utils.log.info("[REALM] Downloading " + getName() + "'s realm.");
+            Utils.log.info("[REALM] Downloading " + getName() + "'s realm. " + characterID);
 
             fos = new FileOutputStream(tempLocation);
 
-            if (ftpClient.retrieveFile("/realms/" + getOwner().toString() + ".zip", fos)) {
+            if (ftpClient.retrieveFile("/realms/" + String.valueOf(characterID) + ".zip", fos)) {
 
                 // Extract the realm we just downloaded.
                 ZipFile zipFile = new ZipFile(tempLocation);
                 zipFile.extractAll(getWorldFolder());
-                Utils.log.info("[REALM] Downloaded and extracted " + getName() + "'s realm.");
+                Utils.log.info("[REALM] Downloaded and extracted " + getName() + "'s realm. " + characterID);
 
                 return true;
             }
 
             return false;
-        } finally {
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             if (fos != null) fos.close();
             FileUtils.forceDelete(tempLocation);
 
@@ -555,6 +557,7 @@ public class Realm {
                 ftpClient.disconnect();
             }
         }
+        return false;
     }
 
     /**
@@ -628,7 +631,7 @@ public class Realm {
             }
 
             SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), "realm"),
-                    QueryType.SET_REALM_UPLOADING.getQuery(0, accountID));
+                    QueryType.SET_REALM_UPLOADING.getQuery(0, characterID));
 
             setState(RealmState.CLOSED);
             Realms.getInstance().getRealmMap().remove(getOwner());
@@ -759,7 +762,7 @@ public class Realm {
             if (inputStream != null)
                 inputStream.close();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -770,7 +773,7 @@ public class Realm {
         if (DungeonRealms.getInstance().isMasterShard)
             return;
         Utils.log.info("[REALM] Started uploading " + getName() + "'s realm.");
-        uploadZippedRealm(new File(getSaveFilePath()), getOwner().toString());
+        uploadZippedRealm(new File(getSaveFilePath()), String.valueOf(characterID));
     }
 
     /**
@@ -784,7 +787,7 @@ public class Realm {
      * Get the file location to zip this realm to.
      */
     public String getSaveFilePath() {
-        return DungeonRealms.getInstance().getDataFolder().getAbsolutePath() + "/realms/" + (DungeonRealms.getInstance().isMasterShard ? "downloaded" : "uploading") + "/" + owner.toString() + ".zip";
+        return DungeonRealms.getInstance().getDataFolder().getAbsolutePath() + "/realms/" + (DungeonRealms.getInstance().isMasterShard ? "downloaded" : "uploading") + "/" + this.characterID + ".zip";
     }
 
     /**

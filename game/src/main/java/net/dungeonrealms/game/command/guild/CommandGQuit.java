@@ -74,8 +74,16 @@ public class CommandGQuit extends BaseCommand {
                             return;
                         }
 
+                        playerWrapper.setGuildID(0);
                         wrapper.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
                         GuildDatabase.getAPI().cached_guilds.remove(wrapper.getGuildID());
+                        for(GuildMember memberWrap : wrapper.getMembers().values()) {
+                            if(memberWrap == null) continue;
+                            PlayerWrapper memberWrapper = PlayerWrapper.getPlayerWrapper(memberWrap.getUUID());
+                            if(memberWrapper != null) {
+                                memberWrapper.setGuildID(0);
+                            }
+                        }
                         GameAPI.sendNetworkMessage("Guilds", "disband", String.valueOf(wrapper.getGuildID()));
                     }, QueryType.DELETE_GUILD.getQuery(wrapper.getGuildID()), true);
                 } else {
@@ -84,6 +92,7 @@ public class CommandGQuit extends BaseCommand {
                             player.sendMessage(ChatColor.RED + "Something went wrong when trying to disband your guild");
                             return;
                         }
+                        playerWrapper.setGuildID(0);
                         player.sendMessage(ChatColor.RED + "You have left your guild!");
                         wrapper.removePlayer(playerWrapper.getAccountID());
                         wrapper.sendGuildMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY + " has left your guild!");

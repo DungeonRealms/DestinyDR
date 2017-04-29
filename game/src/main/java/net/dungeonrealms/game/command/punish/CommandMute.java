@@ -3,6 +3,8 @@ package net.dungeonrealms.game.command.punish;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
@@ -39,6 +41,7 @@ public class CommandMute extends BaseCommand {
             return true;
         }
 
+        int senderID = sender instanceof Player ? PlayerWrapper.getPlayerWrapper((Player)sender).getAccountID() : 0;
 
         String p_name = args[0];
 
@@ -75,7 +78,7 @@ public class CommandMute extends BaseCommand {
         }
 
         if (isNull)
-            duration = Integer.getInteger(args[1]);
+            duration = Integer.parseInt(args[1]);
 
         if (duration < 0) {
             sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
@@ -101,6 +104,7 @@ public class CommandMute extends BaseCommand {
         String punishmentLength = ChatColor.RED + PunishAPI.timeString((int) (duration / 60));
         String friendlyReason = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
 
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_MUTE, wrapper.getAccountID(), "mute", System.currentTimeMillis(), System.currentTimeMillis() + duration * 1000, senderID, reasonString);
         // Distribute the appropriate messages.
         sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + ".");
         p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");

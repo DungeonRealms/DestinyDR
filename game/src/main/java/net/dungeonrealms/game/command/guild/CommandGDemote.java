@@ -85,13 +85,7 @@ public class CommandGDemote extends BaseCommand {
 
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
             GameAPI.sendNetworkMessage("Guilds", "demote", DungeonRealms.getShard().getPseudoName(),String.valueOf(gWrapper.getGuildID()), String.valueOf(guildMember.getAccountID()));
-            gWrapper.sendGuildMessage(ChatColor.RED + " " + p_name + " has been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
-
-            if (p != null) {
-                p.sendMessage("");
-                p.sendMessage(ChatColor.RED + "You have been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER" + ChatColor.RED + " in " + gWrapper.getDisplayName());
-                p.sendMessage("");
-            }
+            gWrapper.sendGuildMessage(ChatColor.RED + p_name + " has been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
 
         });
 

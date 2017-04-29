@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
@@ -63,9 +64,10 @@ public class GuildMechanics {
                                 if (loaded == null || !loaded) return; //Couldnt load
                                 GuildDatabase.getAPI().cached_guilds.put(guildID, newWrapper);
                                 GuildMember member = newWrapper.getMembers().get(playerWrapper.getAccountID());
-                                if (member != null && member.isAccepted())
+                                if (member != null && member.isAccepted()) {
                                     sendAlertFilter(newWrapper, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
-                                showMotd(player, newWrapper.getTag(), newWrapper.getMotd());
+                                    showMotd(player, newWrapper.getTag(), newWrapper.getMotd());
+                                }
                             });
                         }
                         set.close();
@@ -99,9 +101,11 @@ public class GuildMechanics {
         if (member == null || !member.isAccepted()) return;
         if (!playerWrapper.getToggles().isGuildChatOnly()) return;
 
+        String tag = wrapper.getTag();
+        String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + event.getPlayer().getName() + ": " + ChatColor.GRAY;
         String message = event.getMessage();
 
-        wrapper.sendGuildMessage(message, false);
+        wrapper.sendGuildMessage(format + message, false);
         event.setCancelled(true);
     }
 
@@ -113,7 +117,7 @@ public class GuildMechanics {
         String tag = guild.getTag();
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        if (member.isAccepted()) guild.sendGuildMessage(format + player.getName() + " has left your shard.");
+        if (member.isAccepted()) guild.sendGuildMessage(format + player.getName() + " has left your shard.", true);
 
         member.saveData(true, null);
         if (guild.getNumberOfGuildMembersOnThisShard() <= 1) {

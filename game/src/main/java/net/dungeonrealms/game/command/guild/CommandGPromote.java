@@ -40,26 +40,12 @@ public class CommandGPromote extends BaseCommand {
             return true;
         }
 
-//        String guildName =
-//        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-//        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-
-//        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
-//            player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gpromote <player>.");
-//            return true;
-//        }
-
         String p_name = args[0];
 
         if (p_name.equalsIgnoreCase(player.getName())) {
             player.sendMessage(ChatColor.RED + "You cannot promote yourself.");
             return true;
         }
-
-//        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
-//            return true;
-//        }
 
         SQLDatabaseAPI.getInstance().getUUIDFromName(p_name, false, uuid -> {
             if (uuid == null) {
@@ -70,7 +56,7 @@ public class CommandGPromote extends BaseCommand {
             if (wrapper.isMember(uuid)) {
                 //Is already a member..
                 if (wrapper.isOwner(uuid)) {
-                    player.sendMessage(ChatColor.RED + "You can't promote the owner of a guild.");
+                    player.sendMessage(ChatColor.RED + "You can't promote the owner of the guild!");
                     return;
                 }
 
@@ -79,46 +65,12 @@ public class CommandGPromote extends BaseCommand {
                     return;
                 }
 
-                wrapper.promotePlayer(player, player.getName(), wrapper.getMember(uuid));
+                wrapper.promotePlayer(player, p_name, wrapper.getMember(uuid));
             } else {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
                 return;
             }
-
-
         });
-        Player p = Bukkit.getPlayer(p_name);
-//        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-
-//        if (!GuildDatabaseAPI.get().getGuildOf(p_uuid).equals(guildName)) {
-//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
-//            return true;
-//        }
-
-//        if (GuildDatabaseAPI.get().isOfficer(p_uuid, guildName)) {
-//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " has already been promoted.");
-//            return true;
-//        }
-
-//        if (GuildDatabaseAPI.get().isOwner(p_uuid, guildName)) {
-//            player.sendMessage(ChatColor.RED + "You can't promote the owner of a guild.");
-//            return true;
-//        }
-
-//        GuildDatabaseAPI.get().promotePlayer(guildName, p_uuid);
-//        GameAPI.updateGuildData(guildName);
-
-//        player.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
-//        GuildMechanics.getInstance().sendAlert(guildName, ChatColor.GREEN + " " + p_name + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
-
-
-        if (p != null) {
-            p.sendMessage("");
-//            p.sendMessage(ChatColor.DARK_AQUA + "You have been " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.DARK_AQUA + " in " + displayName);
-            p.sendMessage("");
-        } else {
-            //TODO: SEND PROMOTE PACKET
-        }
 
         return false;
     }

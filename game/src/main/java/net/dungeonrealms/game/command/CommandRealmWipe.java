@@ -68,7 +68,7 @@ public class CommandRealmWipe extends BaseCommand {
                     SQLDatabaseAPI.getInstance().executeUpdate(i -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
                         GameAPI.updatePlayerData(uuid, "realm");
-                    }), QueryType.SET_REALM_INFO.getQuery(0, 0, 1, realm.getAccountID()));
+                    }), QueryType.SET_REALM_INFO.getQuery(0, 0, 1, realm.getCharacterID()));
                 });
 
             });

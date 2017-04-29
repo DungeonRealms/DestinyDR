@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -36,9 +37,15 @@ public class CommandGDeny extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
         GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
         if(wrapper == null) {
             player.sendMessage(ChatColor.RED + "No pending guild invitation.");
+            return true;
+        }
+
+        if(playerWrapper == null) {
+            player.sendMessage(ChatColor.RED + "An error occurred.");
             return true;
         }
 
@@ -55,6 +62,7 @@ public class CommandGDeny extends BaseCommand {
             return true;
         }
 
+        playerWrapper.setGuildID(0);
         player.sendMessage("");
         player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + wrapper.getName() + "'" + ChatColor.RED + "s guild.");
         wrapper.removePlayer(player.getUniqueId());

@@ -22,7 +22,6 @@ public class PunishAPI {
      *
      * @param uuid             UUID
      * @param playerName       Target
-     * @param sourceThatBanned
      * @param duration         Set as 0 for permanent ban
      * @param reason           Leave empty for no reason
      */
@@ -49,7 +48,6 @@ public class PunishAPI {
     /**
      * Method to mute players (only works for currently online players)
      *
-     * @param uuid     UUID
      * @param duration Set as 0 for permanent ban
      * @param reason   Leave empty for no reason
      */
@@ -70,7 +68,7 @@ public class PunishAPI {
     public static String getMutedMessage(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
 
-        return ChatColor.RED + "You will be unmuted in " + wrapper.getTimeWhenMuteExpires() + (wrapper.getMuteReason() != null ? ", Mute reason: " + wrapper.getMuteReason() : "");
+        return ChatColor.RED.toString() + ChatColor.BOLD + "(!) " + ChatColor.RED + "You will be unmuted in " + wrapper.getTimeWhenMuteExpires() + (wrapper.getMuteReason() != null ? ", Mute reason: " + wrapper.getMuteReason() : "");
     }
 
     /**
@@ -81,7 +79,10 @@ public class PunishAPI {
     public static void unban(UUID uuid) {
         if (uuid == null) return;
 
-        PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Unbanned " + wrapper.getUsername() + "..."), QueryType.UNBAN_PLAYER.getQuery(wrapper.getAccountID())));
+        int accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+        PlayerWrapper.getPlayerWrapper(uuid, false, false,
+                wrapper -> SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Unbanned " + wrapper.getUsername() + "... CACHED: " + accountID),
+                QueryType.UNBAN_PLAYER.getQuery(wrapper.getAccountID())));
     }
 
     /**

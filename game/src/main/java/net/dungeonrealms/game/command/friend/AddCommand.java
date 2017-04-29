@@ -44,6 +44,7 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
             return false;
         }
 
+
         if (checkCooldown(player)) return true;
         //wait 10 seconds between trying to lookup db..
         player.setMetadata("addcmd_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10)));
@@ -51,6 +52,10 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
         String playerName = args[0];
         PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
         Player friend = Bukkit.getPlayer(playerName);
+        if (playerName.equalsIgnoreCase(player.getName())) {
+            player.sendMessage(ChatColor.RED + "You can not add yourself as a friend!");
+            return false;
+        }
         if (friend != null) {
 
             if (GameAPI._hiddenPlayers.contains(friend)) {

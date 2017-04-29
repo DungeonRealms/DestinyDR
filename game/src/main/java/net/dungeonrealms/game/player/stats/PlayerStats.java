@@ -22,6 +22,9 @@ import java.util.UUID;
  * Created by Chase on Nov 2, 2015
  */
 public class PlayerStats implements LoadableData, SaveableData {
+
+
+    private int characterID;
     public int freePoints;
     public int strPoints;
     public int tempstrPoints = 0;
@@ -38,7 +41,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     public int resetAmounts;
     public boolean reset = true;
 
-    public PlayerStats(UUID playerUUID) {
+    public PlayerStats(UUID playerUUID, int characterID) {
         this.playerUUID = playerUUID;
         this.freePoints = 6;
         this.tempFreePoints = 0;
@@ -376,12 +379,10 @@ public class PlayerStats implements LoadableData, SaveableData {
 
     @Override
     public String getUpdateStatement() {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(playerUUID);
-        if(wrapper == null)return null;
         return String.format("UPDATE attributes SET strength = '%s', dexterity = '%s', intellect = '%s', vitality = '%s', " +
                 "resets_available = '%s',  points_available = '%s', freeResets = '%s' WHERE character_id = '%s';",
                 strPoints, dexPoints, intPoints, vitPoints,
-                resetAmounts, freePoints, freeResets, wrapper.getCharacterID());
+                resetAmounts, freePoints, freeResets, this.characterID);
     }
 
 }

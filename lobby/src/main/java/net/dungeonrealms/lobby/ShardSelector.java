@@ -9,6 +9,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,11 +31,11 @@ public class ShardSelector extends AbstractMenu {
 
         Collections.sort(servers, (o1, o2) -> {
 
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
             if (!o1.getServerName().contains("us"))
                 return -1;
+
+            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
+            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
 
             return o1num - o2num;
         });
@@ -99,14 +100,19 @@ public class ShardSelector extends AbstractMenu {
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
 
-            String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
-            lore.add(ChatColor.GRAY + "Load: " + data[1]);
+            try {
+                String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
+                lore.add(ChatColor.GRAY + "Load: " + data[1]);
 
-            lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+                lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            if (data.length >= 3)
-                lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
+                if (data.length >= 3)
+                    lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
+            } catch(Exception e){
+                Bukkit.getLogger().info("Problem parsing " + info.getServerName());
+                e.printStackTrace();
+            }
             button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
             button.setLore(lore);
 

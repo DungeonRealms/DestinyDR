@@ -205,7 +205,7 @@ public class RealmListener implements Listener {
 
 
                 SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(uuid, "upgradingRealm"),
-                        QueryType.SET_REALM_UPGRADE.getQuery(0, realm.getAccountID()));
+                        QueryType.SET_REALM_UPGRADE.getQuery(0, realm.getCharacterID()));
 //                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true,
 //                        doAfter -> GameAPI.updatePlayerData(uuid, "realm"));
 
@@ -1000,7 +1000,7 @@ public class RealmListener implements Listener {
 
             //Open the player's realm.
             if (event.getClickedBlock() != null) {
-                realm = Realms.getInstance().getOrCreateRealm(event.getPlayer(), wrapper.getAccountID());
+                realm = Realms.getInstance().getOrCreateRealm(event.getPlayer(), wrapper.getCharacterID());
                 realm.openPortal(p, event.getClickedBlock().getLocation());
             }
             event.setCancelled(true);

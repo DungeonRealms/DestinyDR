@@ -65,7 +65,7 @@ public class CommandGraveyard extends BaseCommand {
                         sender.sendMessage(ChatColor.RED + "Listing " + grave.getGraveyards().size() + " Graveyards: ");
                         for (Graveyard yard : grave.getGraveyards()) {
                             JSONMessage message = new JSONMessage("", ChatColor.GREEN);
-                            message.addRunCommand(ChatColor.GREEN + yard.getName() + " - " + Utils.getStringFromLocation(yard.getLocation(), true), ChatColor.GREEN, "/tp " + yard.getLocation().getBlockX() + " " + yard.getLocation().getBlockY() + " " + yard.getLocation().getBlockZ());
+                            message.addRunCommand(ChatColor.GREEN + yard.getName() + " - " + Utils.getStringFromLocation(yard.getLocation(), true), ChatColor.GREEN, "/tp " + yard.getLocation().getBlockX() + " " + yard.getLocation().getBlockY() + " " + yard.getLocation().getBlockZ(), "Teleport here.");
                             message.sendToPlayer(player);
                         }
 

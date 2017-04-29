@@ -27,7 +27,7 @@ public class SQLDatabaseAPI {
     private SQLDatabase database;
 
     @Getter
-    public static final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newFixedThreadPool(3, new ThreadFactoryBuilder().setNameFormat("UUID Thread").build());
+    public static final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder().setNameFormat("SQL Data Thread").build());
 
     private final ScheduledExecutorService QUERY_QUEUE_THREAD = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder().setNameFormat("SQL Query Queue Thread").build());
 
@@ -76,55 +76,99 @@ public class SQLDatabaseAPI {
      * @param createdCallback
      */
     public void createDataForPlayer(UUID uuid, String username, String ipAddress, Consumer<Integer> createdCallback) {
-        SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
-            //It didnt exist, so we can just create everything and grab the newly created account id.
-            if (updates != null && updates > 0) {
-                pendingPlayerCreations.add(uuid);
-                long start = System.currentTimeMillis();
-                SQLDatabaseAPI.getInstance().executeQuery(String.format("SELECT account_id FROM users WHERE uuid = '%s';", uuid.toString()), false, rs -> {
-                    try {
-                        if (rs.first()) {
-                            int accountID = rs.getInt("account_id");
 
-                            //Accept this so we can get that callback going..
-                            createdCallback.accept(accountID);
-                            SQLDatabaseAPI.getInstance().executeUpdate(rowsAffected -> {
-                                if (rowsAffected > 0) {
-                                    //We created it!!!
-                                    SQLDatabaseAPI.getInstance().executeQuery("SELECT character_id FROM characters WHERE account_id = '" + accountID + "';", false, charResult -> {
-                                        try {
-                                            if (charResult.first()) {
-                                                int character_id = charResult.getInt("character_id");
-                                                Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
-                                                SQLDatabaseAPI.getInstance().executeBatch(completed -> {
-                                                            pendingPlayerCreations.remove(uuid);
-                                                            Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
-                                                        },
-                                                        String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", character_id, accountID),
-                                                        String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
-                                                        String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
-                                                        String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
-                                                        String.format("INSERT INTO realm(character_id) VALUES ('%s');", character_id),
-                                                        String.format("INSERT INTO statistics(character_id) VALUES ('%s');", character_id),
-                                                        String.format("INSERT INTO ip_addresses(account_id, ip_address, last_used) VALUES ('%s', '%s', '%s');", accountID, ipAddress, System.currentTimeMillis()));
-                                            } else {
-                                                Bukkit.getLogger().info("Null resultSet for " + username);
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
+        SQLDatabaseAPI.getInstance().executeQuery("SELECT account_id, selected_character_id FROM users WHERE users.uuid = '" + uuid + "';", false, rs -> {
+            try {
+                if (rs.first()) {
+                    //Data exists.
+                    int charID = rs.getInt("selected_character_id");
+                    if (charID == 0) {
+                        long started = System.currentTimeMillis();
+                        pendingPlayerCreations.add(uuid);
+                        int accountID = rs.getInt("account_id");
+                        //NO USERRRRR????????
+                        Constants.log.info("No SELECTED character_id for " + accountID);
+
+                        SQLDatabaseAPI.getInstance().executeUpdate(complete -> {
+                            SQLDatabaseAPI.getInstance().executeQuery(String.format("SELECT character_id FROM characters WHERE account_id = '%s' ORDER BY created DESC LIMIT 1;", accountID), false, results -> {
+                                try {
+                                    if(results.first()) {
+                                        int newCharID = results.getInt("character_id");
+                                        SQLDatabaseAPI.getInstance().executeBatch(completed -> {
+                                                    pendingPlayerCreations.remove(uuid);
+                                                    Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - started) + "ms");
+                                                },
+                                                String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", newCharID, accountID),
+                                                String.format("INSERT IGNORE INTO attributes(character_id) VALUES ('%s');", newCharID),
+                                                String.format("INSERT IGNORE INTO ranks(account_id) VALUES ('%s');", accountID),
+                                                String.format("INSERT IGNORE INTO toggles(account_id) VALUES ('%s');", accountID),
+                                                String.format("INSERT IGNORE INTO realm(character_id) VALUES ('%s');", newCharID),
+                                                String.format("INSERT IGNORE INTO statistics(character_id) VALUES ('%s');", newCharID));
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            }, String.format("INSERT IGNORE INTO characters(account_id, created) VALUES ('%s', '%s');", accountID, System.currentTimeMillis()));
-
-                            Bukkit.getLogger().info("Created new account ID for " + username + " (" + uuid.toString() + ")");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                            });
+                        }, String.format("INSERT IGNORE INTO characters(account_id, created) VALUES ('%s', '%s');", accountID, System.currentTimeMillis()), false);
                     }
-                });
+                } else {
+                    //No user... CREATE NEW??????
+                    SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
+                        //It didnt exist, so we can just create everything and grab the newly created account id.
+                        if (updates != null && updates > 0) {
+                            pendingPlayerCreations.add(uuid);
+                            long start = System.currentTimeMillis();
+                            SQLDatabaseAPI.getInstance().executeQuery(String.format("SELECT account_id FROM users WHERE uuid = '%s';", uuid.toString()), false, results -> {
+                                try {
+                                    if (results.first()) {
+                                        int accountID = results.getInt("account_id");
+
+                                        //Accept this so we can get that callback going..
+                                        createdCallback.accept(accountID);
+                                        SQLDatabaseAPI.getInstance().executeUpdate(rowsAffected -> {
+                                            if (rowsAffected > 0) {
+                                                //We created it!!!
+                                                SQLDatabaseAPI.getInstance().executeQuery("SELECT character_id FROM characters WHERE account_id = '" + accountID + "';", false, charResult -> {
+                                                    try {
+                                                        if (charResult.first()) {
+                                                            int character_id = charResult.getInt("character_id");
+                                                            Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
+                                                            SQLDatabaseAPI.getInstance().executeBatch(completed -> {
+                                                                        pendingPlayerCreations.remove(uuid);
+                                                                        Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
+                                                                    },
+                                                                    String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", character_id, accountID),
+                                                                    String.format("INSERT INTO attributes(character_id) VALUES ('%s');", character_id),
+                                                                    String.format("INSERT INTO ranks(account_id) VALUES ('%s');", accountID),
+                                                                    String.format("INSERT INTO toggles(account_id) VALUES ('%s');", accountID),
+                                                                    String.format("INSERT INTO realm(character_id) VALUES ('%s');", character_id),
+                                                                    String.format("INSERT INTO statistics(character_id) VALUES ('%s');", character_id),
+                                                                    String.format("INSERT INTO ip_addresses(account_id, ip_address, last_used) VALUES ('%s', '%s', '%s');", accountID, ipAddress, System.currentTimeMillis()));
+                                                        } else {
+                                                            Bukkit.getLogger().info("Null resultSet for " + username);
+                                                        }
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                });
+                                            }
+                                        }, String.format("INSERT IGNORE INTO characters(account_id, created) VALUES ('%s', '%s');", accountID, System.currentTimeMillis()));
+
+                                        Bukkit.getLogger().info("Created new account ID for " + username + " (" + uuid.toString() + ")");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    }, String.format("INSERT IGNORE INTO users(uuid, username, joined, last_login) VALUES ('%s', '%s', '%s', '%s');", uuid.toString(), username, System.currentTimeMillis(), System.currentTimeMillis()), false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }, String.format("INSERT IGNORE INTO users(uuid, username, joined, last_login) VALUES ('%s', '%s', '%s', '%s');", uuid.toString(), username, System.currentTimeMillis(), System.currentTimeMillis()), false);
+        });
+
+
     }
 
 
@@ -259,6 +303,7 @@ public class SQLDatabaseAPI {
                         UUID uuid = UUID.fromString(rs.getString("users.uuid"));
                         this.accountIdNames.put(id, new UUIDName(uuid, name));
                         this.cachedNames.put(name, uuid);
+                        Bukkit.getLogger().info("Loaded id " + id + " for " + name);
                     } catch (Exception e) {
                         Bukkit.getLogger().info("Problem loading id " + rs.getString("users.username") + " from database!");
                         e.printStackTrace();
@@ -349,11 +394,12 @@ public class SQLDatabaseAPI {
                 return;
             }
         } else {
+
             //Pull from DB?
             CompletableFuture.runAsync(() -> {
                 try {
                     @Cleanup PreparedStatement statement = this.getDatabase().getConnection().prepareStatement("SELECT uuid FROM users WHERE username = ? ORDER BY users.last_logout DESC LIMIT 1;");
-                    statement.setString(1, name);
+                    statement.setString(1, SQLDatabaseAPI.filterSQLInjection(name));
                     ResultSet rs = statement.executeQuery();
                     if (rs.first()) {
                         UUID found = UUID.fromString(rs.getString("uuid"));
@@ -374,7 +420,7 @@ public class SQLDatabaseAPI {
         }
     }
 
-    public static String filterSQLInjection(String string){
+    public static String filterSQLInjection(String string) {
         return string.replaceAll("'", "").replace("\"", "");
     }
 }

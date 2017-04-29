@@ -154,28 +154,28 @@ public class Realms implements GenericMechanic {
     /**
      * Gets a realm, or if it isn't cached, construct one.
      */
-    public Realm getOrCreateRealm(Player player, int accountID) {
-        return getOrCreateRealm(player.getName(), accountID, player.getUniqueId());
+    public Realm getOrCreateRealm(Player player, int characterID) {
+        return getOrCreateRealm(player.getName(), characterID, player.getUniqueId());
     }
 
     /**
      * Gets a realm, or if it isn't cached, construct one.
      */
-    public Realm getOrCreateRealm(UUID uuid, int accountID) {
+    public Realm getOrCreateRealm(UUID uuid, int characterID) {
         Realm realm = getRealm(uuid);
-        return (realm != null) ? realm : getOrCreateRealm(SQLDatabaseAPI.getInstance().getUsernameFromUUID(uuid), accountID, uuid);
+        return (realm != null) ? realm : getOrCreateRealm(SQLDatabaseAPI.getInstance().getUsernameFromUUID(uuid), characterID, uuid);
     }
 
     /**
      * Gets a realm, or if it isn't cached, construct one.
      */
-    public Realm getOrCreateRealm(String name, int accountId, UUID uuid) {
+    public Realm getOrCreateRealm(String name, int characterID, UUID uuid) {
         Realm realm = getRealm(uuid);
         if (realm != null)
             return realm;
 
         //Create a new realm object.
-        realm = new Realm(uuid, accountId, name);
+        realm = new Realm(uuid, characterID, name);
         getRealmMap().put(uuid, realm);
         return realm;
     }

@@ -33,6 +33,24 @@ public class CommandPet extends BaseCommand {
         }
 
         Player player = (Player) sender;
+        if(player.getName().equalsIgnoreCase("ingot") || player.getName().equals("iFamasssxD")) {
+            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (entity.isAlive()) {
+                    entity.getBukkitEntity().remove();
+                }
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                }
+                player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
+                EntityAPI.removePlayerPetList(player.getUniqueId());
+                return true;
+            }
+
+            PetUtils.spawnPet(player.getUniqueId(), "BETA_ZOMBIE", "Testing");
+            return true;
+
+        }
         if (args.length == 0) {
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());

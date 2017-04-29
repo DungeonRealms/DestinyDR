@@ -5,6 +5,7 @@ import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.base.*;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Burick;
@@ -128,6 +129,7 @@ public class EntityMechanics implements GenericMechanic {
         // Pets
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
+        nmsUtils.registerEntity("PetBetaZombie", 54, EntityZombie.class, BetaZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);
         nmsUtils.registerEntity("PetWolf", 95, EntityWolf.class, Wolf.class);
         nmsUtils.registerEntity("PetChicken", 93, EntityChicken.class, Chicken.class);

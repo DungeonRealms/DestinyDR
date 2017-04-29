@@ -36,9 +36,16 @@ public class CommandIgnore extends BaseCommand implements CooldownCommand {
             player.sendMessage(ChatColor.RED + "Please wait before using this command again.");
             return true;
         }
+
+
         //2.5s cooldown between ignores..
         player.setMetadata("last_ignore", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 2500));
         String name = args[0];
+
+        if (name.equalsIgnoreCase(player.getName())) {
+            player.sendMessage(ChatColor.RED + "You can not add yourself as a friend!");
+            return false;
+        }
 
         SQLDatabaseAPI.getInstance().getUUIDFromName(name, false, (uuid) -> {
             if (uuid == null) {
