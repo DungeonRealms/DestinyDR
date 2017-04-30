@@ -579,60 +579,8 @@ public class BlockListener implements Listener {
     }
 
     /**
-     * Handling Shops being Right clicked.
-     *
-     * @param e
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerRightClickChest(PlayerInteractEvent e) {
-        Block block = e.getClickedBlock();
-        if (block == null) return;
-        if (block.getType() != Material.CHEST) return;
-        if (GameAPI.isUUID(block.getWorld().getName())) return;
-        LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
-        if (loot == null) {
-            e.setCancelled(true);
-            return;
-        }
-        Collection<Entity> list = GameAPI.getNearbyMonsters(loot.location, 10);
-        if (list.isEmpty()) {
-            Action actionType = e.getAction();
-            switch (actionType) {
-                case RIGHT_CLICK_BLOCK:
-                    e.setCancelled(true);
-                    e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
-                    e.getPlayer().openInventory(loot.inv);
-                    LootManager.getOpenChests().put(e.getPlayer().getName(), loot.inv);
-                    Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
-                    break;
-                case LEFT_CLICK_BLOCK:
-                    e.setCancelled(true);
-                    for (ItemStack stack : loot.inv.getContents()) {
-                        if (stack == null) {
-                            continue;
-                        }
-                        loot.inv.remove(stack);
-                        if (stack.getType() != Material.AIR) {
-                            e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
-                        }
-                    }
-                    loot.update(e.getPlayer());
-                    break;
-            }
-        } else {
-            e.getPlayer().sendMessage(ChatColor.RED + "It is " + org.bukkit.ChatColor.BOLD + "NOT" + org.bukkit.ChatColor.RESET + org.bukkit.ChatColor.RED + " safe to open that right now");
-            e.getPlayer().sendMessage(ChatColor.GRAY + "Eliminate the monsters in the area first.");
-            e.setCancelled(true);
-        }
-    }
-
-    /**
      * Removes snow that snowmen pets
      * create after 3 seconds.
-     *
-     * @param event
-     * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void snowmanMakeSnow(EntityBlockFormEvent event) {
@@ -654,21 +602,6 @@ public class BlockListener implements Listener {
     public void onBlockPhysicsChange(BlockPhysicsEvent event) {
         if (event.getBlock().getType() == Material.PORTAL && event.getChangedType() == Material.AIR) {
             event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerCloseLootChest(InventoryCloseEvent event) {
-        if (LootManager.getOpenChests().containsKey(event.getPlayer().getName())) {
-            Inventory inventory = LootManager.getOpenChests().get(event.getPlayer().getName());
-            if (inventory.equals(event.getInventory())) {
-                LootManager.LOOT_SPAWNERS.forEach(lootSpawner1 -> {
-                    if (lootSpawner1.inv.equals(inventory)) {
-                        lootSpawner1.update((Player) event.getPlayer());
-                        LootManager.getOpenChests().remove(event.getPlayer().getName());
-                    }
-                });
-            }
         }
     }
 }

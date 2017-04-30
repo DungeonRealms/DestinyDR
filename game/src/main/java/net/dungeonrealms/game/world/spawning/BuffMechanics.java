@@ -104,9 +104,8 @@ public class BuffMechanics implements GenericMechanic, Listener {
         } else {
         	double heal = Utils.randInt(0, 99) < 20 ? 100 : 50;
         	message += "Instant Health (" + heal + "%)";
-        	// Heal the receivers.
         	for (Player player : toBuff)
-        		HealthHandler.setPlayerHP(player, (int) ((heal / 100D) * HealthHandler.getMaxHP(player) + HealthHandler.getPlayerHP(player)));
+        		HealthHandler.heal(player, (int) ((heal / 100D) * HealthHandler.getHPPercent(player)));
         }
         
         // Message receivers.

@@ -64,6 +64,8 @@ public class DungeonManager implements GenericMechanic {
         // Spawns dungeon mobs every few half a second.
     	Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
     		for (Dungeon d : getDungeons()) {
+    			
+    			// Spawns in normal mob spawns.
     			for (MobSpawner spawner : d.getSpawns()) {
     				spawner.getLocation().setWorld(d.getWorld());
     				if (!GameAPI.arePlayersNearby(spawner.getLocation(), 50))
@@ -75,6 +77,12 @@ public class DungeonManager implements GenericMechanic {
     				});
     				d.getSpawns().remove(spawner);
     			}
+    			
+    			// Automatically spawns in bosses, if needed.
+    			// Don't automatically spawn final bosses or special bosses.
+    			// Since they're have spawn triggers.
+    			BossType.getFor(d.getType()).stream().filter(b -> !b.isFinalBoss() && !b.isSpecial() && !d.hasSpawned(b)
+    					&& GameAPI.arePlayersNearby(b.getLocation(d.getWorld()), 50)).forEach(d::spawnBoss);
     		}
     	}, 0L, 10L);
 
@@ -143,6 +151,13 @@ public class DungeonManager implements GenericMechanic {
      */
     public static boolean isDungeon(World w) {
     	return w.getName().contains("DUNGEON") && getDungeon(w) != null;
+    }
+    
+    /**
+     * Is this world a dungeon of the specified type?
+     */
+    public static boolean isDungeon(World w, DungeonType type) {
+    	return isDungeon(w) && getDungeon(w).getType() == type;
     }
     
     /**

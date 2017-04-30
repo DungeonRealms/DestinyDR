@@ -14,12 +14,10 @@ public class ItemRealmChest extends FunctionalItem {
 
 	public ItemRealmChest(ItemStack item) {
 		super(item);
-		setAntiDupe(false);
 	}
 	
 	public ItemRealmChest() {
 		super(ItemType.REALM_CHEST);
-		setAntiDupe(false);
 	}
 
 	@Override

@@ -49,6 +49,10 @@ public class MetadataUtils<T> {
 		ELEMENT(ElementalAttribute.class),
 		PASSIVE(false),
 		
+		CURRENT_HP(50),
+		MAX_HP(50),
+		HP_REGEN(5),
+		
 		// Items
 		WHITELIST(""),
 		

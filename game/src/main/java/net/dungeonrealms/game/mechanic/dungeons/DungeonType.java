@@ -11,8 +11,10 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.InfernalAbyss.InfernalListener;
+import net.dungeonrealms.game.mechanic.dungeons.Varenglade.VarengladeListener;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -32,18 +34,18 @@ public enum DungeonType {
     BANDIT_TROVE("Bandit Trove", "banditTrove",
     		BanditTrove.class, null, BossType.Mayel,
     		"banditTrove", "T1Dungeon", EnumMounts.WOLF,
-    		1, 100, 250, EnumAchievements.BANDIT_TROVE),
+    		1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
     
     		
     VARENGLADE("Varenglade", "varenglade",
-    		Varenglade.class, null, BossType.Burick,
+    		Varenglade.class, VarengladeListener.class, BossType.Burick,
     		"varenglade", "DODungeon", EnumMounts.SLIME,
-    		3, 100, 375, EnumAchievements.VARENGLADE),
+    		3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE),
     
     THE_INFERNAL_ABYSS("Infernal Abyss", "theInfernalAbyss",
     		InfernalAbyss.class,  InfernalListener.class, BossType.InfernalAbyss,
     		"infernalAbyss", "fireydungeon", EnumMounts.SPIDER,
-    		4, 150, 250, EnumAchievements.INFERNAL_ABYSS);
+    		4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS);
 
     private String name;
     private String path;
@@ -56,7 +58,17 @@ public enum DungeonType {
     private int tier;
     private int minShards;
     private int maxShards;
+    private int minGems;
+    private int maxGems;
+    private int XP;
     private EnumAchievements achievement;
+    
+    /**
+     * Gets a random number of gems in the allowed range.
+     */
+    public int getGems() {
+    	return Utils.randInt(minGems, maxGems);
+    }
     
     /**
      * Returns the name of the dungeon with color applied.

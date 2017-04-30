@@ -37,6 +37,10 @@ public class PotionItem extends FunctionalItem {
 	@Getter @Setter
 	private boolean fromShop;
 	
+	public PotionItem(int potionTier) {
+		this(PotionTier.getById(potionTier));
+	}
+	
 	public PotionItem(PotionTier tier) {
 		super(ItemType.POTION);
 		setTier(tier);
@@ -88,10 +92,10 @@ public class PotionItem extends FunctionalItem {
 
 	@Override
 	public void onClick(ItemClickEvent evt) {
-		if (HealthHandler.getPlayerHP(evt.getPlayer()) < HealthHandler.getPlayerMaxHP(evt.getPlayer())) {
+		if (HealthHandler.getHP(evt.getPlayer()) < HealthHandler.getMaxHP(evt.getPlayer())) {
 			evt.setUsed(true);
 			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
-			HealthHandler.healPlayer(evt.getPlayer(), getHealAmount());
+			HealthHandler.heal(evt.getPlayer(), getHealAmount());
 		} else {
 			evt.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
 		}

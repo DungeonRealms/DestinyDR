@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
@@ -261,6 +262,26 @@ public interface DRMonster {
     
     default void calculateAttributes() {
     	GameAPI.calculateAllAttributes(getBukkit());
+    }
+    
+    default int getHP() {
+    	return HealthHandler.getHP(getBukkit());
+    }
+    
+    default void setHP(int hp) {
+    	HealthHandler.setHP(getBukkit(), hp);
+    }
+    
+    default int getMaxHP() {
+    	return HealthHandler.getMaxHP(getBukkit());
+    }
+    
+    default void setMaxHP(int max) {
+    	HealthHandler.setMaxHP(getBukkit(), max);
+    }
+    
+    default double getPercentHP() {
+    	return HealthHandler.getHPPercent(getBukkit());
     }
 
 }

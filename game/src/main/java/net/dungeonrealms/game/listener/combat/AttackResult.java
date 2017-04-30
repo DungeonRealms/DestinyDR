@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -17,7 +16,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 
@@ -128,7 +127,7 @@ public class AttackResult {
 	}
 	
 	private void loadAttributeFromMeta() {
-		if(!hasProjectile())
+		if(!hasProjectile() || getAttacker().getEntity() == null)
 			return;
 		
 		AttributeList attributes = new AttributeList();
@@ -155,18 +154,7 @@ public class AttackResult {
 		
 		public CombatEntity(LivingEntity le) {
 			this.entity = le;
-			
-			if (le == null) {
-				attributes = new AttributeList();
-				return;
-			}
-			
-			if(isPlayer()) {
-				attributes = GameAPI.getGamePlayer(getPlayer()).getAttributes();
-			} else if (((CraftLivingEntity)getEntity()).getHandle() instanceof DRMonster) {
-	    		attributes = ((DRMonster) ((CraftLivingEntity)getEntity()).getHandle()).getAttributes();
-			}
-			
+			setAttributes(le != null ? EntityAPI.getAttributes(le) : new AttributeList());
 		}
 		
 		public boolean isPlayer() {

@@ -50,43 +50,12 @@ public class DungeonListener implements Listener {
 	//TODO: Bosses (Not final or special) automatically spawn.
 	//TODO: Port the rest.
 	//TODO: Last touches on item recode. (The RNG values in the format.)
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void T3Death(EntityDeathEvent event) {
-        if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
-        if (event.getEntity() instanceof Player) return;
-        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) == null) return;
-        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE)
-            return;
-        DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
-        if (dungeonObject.keysDropped <= 10 && !dungeonObject.hasBossSpawned) {
-            if (event.getEntity().hasMetadata("customname")) {
-                String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
-                if (name.equalsIgnoreCase("The Priest")) {
-                    ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.LIGHT_PURPLE + "A mystical key", new String[]{
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "One of four mysterious keys.", ChatColor.RED + "Dungeon Item"});
-                    key.setAmount(2);
-                    if (event.getEntity().getKiller() != null) {
-                        event.getEntity().getKiller().getInventory().addItem(key);
-                    } else {
-                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, 2, 0), key);
-                    }
-                    dungeonObject.keysDropped = dungeonObject.keysDropped + 2;
-                    return;
-                }
-            }
-            if (new Random().nextInt(20) <= 14) {
-                ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.LIGHT_PURPLE + "A mystical key", new String[]{
-                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "One of four mysterious keys.", ChatColor.RED + "Dungeon Item"});
-                if (event.getEntity().getKiller() != null) {
-                    event.getEntity().getKiller().getInventory().addItem(key);
-                } else {
-                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, 2, 0), key);
-                }
-                dungeonObject.keysDropped = dungeonObject.keysDropped + 1;
-            }
-        }
-    }
+	//TODO: Make sure all the dungeon drops work with the new system.
+	//TODO: Finish item recode testing.
+	//TODO: Mob nametag stuff.
+	
+	//TODO: Write a .item converter.
+	//TODO: Write a .loot converter.
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void T4Death(EntityDeathEvent event) {

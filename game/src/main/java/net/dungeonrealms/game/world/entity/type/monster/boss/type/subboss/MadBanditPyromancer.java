@@ -22,7 +22,7 @@ public class MadBanditPyromancer extends DRWitherSkeleton implements DungeonBoss
 	
 	@Override
 	public void onBossDeath(Player killer) {
-		//TODO: The map will need to be editted to use new items.
+		//TODO: The map will need to be edited to use new items.
 		ItemStack key = ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", ChatColor.ITALIC + "A strange substance that animates objects.");
         VanillaItem vi = new VanillaItem(key);
         vi.setDungeon(true);
@@ -32,16 +32,6 @@ public class MadBanditPyromancer extends DRWitherSkeleton implements DungeonBoss
 	@Override
 	public BossType getBossType() {
 		return BossType.Pyromancer;
-	}
-
-	@Override
-	public int getGemDrop() {
-		return 0;
-	}
-
-	@Override
-	public int getXPDrop() {
-		return 0;
 	}
 
 	@Override

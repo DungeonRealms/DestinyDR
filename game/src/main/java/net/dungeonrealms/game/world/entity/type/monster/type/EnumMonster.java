@@ -6,8 +6,7 @@ import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entity.type.monster.base.*;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.*;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.*;
@@ -236,6 +235,8 @@ public enum EnumMonster {
         DR_GHAST(DRGhast.class, 56),
         
         //  DUNGEON  //
+        BANDIT_PYRO(MadBanditPyromancer.class, EntitySkeleton.class, 51),
+        VARENGLADE_PRIEST(VarengladePriest.class, EntitySkeleton.class, 51),
         INFERNAL_GHAST(InfernalGhast.class, EntityGhast.class, 56),
         INFERNAL_ENDERMAN(InfernalEndermen.class, EntityEnderman.class, 58),
         INFERNAL_GUARD(InfernalLordsGuard.class, EntitySkeleton.class, 51),

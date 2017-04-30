@@ -11,22 +11,20 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.Infern
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.*;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 
 /**
  * InfernalAbyss Boss
+ * 
+ * TODO: Test, verify infernal rides the ghast.
  * 
  * Redone on April 28th, 2017.
  * @author Kneesnap
@@ -34,7 +32,7 @@ import org.bukkit.potion.PotionEffectType;
 public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     public InfernalGhast ghast;
-    public boolean finalForm = false;
+    public boolean finalForm;
 
     public InfernalAbyss(World world) {
         super(world);
@@ -53,36 +51,29 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         return BossType.InfernalAbyss;
     }
 
-    public void doFinalForm(double hp) {
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        HealthHandler.setMaxHP(getBukkit(), (int) hp);
-        HealthHandler.setMonsterHP(livingEntity, (int) hp);
+    public void doFinalForm(int hp) {
+        HealthHandler.initHP(getBukkit(), hp);
         
-        livingEntity.setMaximumNoDamageTicks(0);
-        livingEntity.setNoDamageTicks(0);
-        livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
+        getBukkit().setMaximumNoDamageTicks(0);
+        getBukkit().setNoDamageTicks(0);
         
         finalForm = true;
         
-        DamageAPI.setDamageBonus(livingEntity, 50);
+        DamageAPI.setDamageBonus(getBukkit(), 50);
         say("You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
         getDungeon().announce(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
-        for (Player pl : getDungeon().getAllPlayers()) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
-        }
+        playSound(Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
+        playSound(Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
         
         for (int i = 0; i < 4; i++)
-        	this.spawnMinion(EnumMonster.MagmaCube, "Demonic Spawn of Inferno", 3, false);
+        	spawnMinion(EnumMonster.MagmaCube, "Demonic Spawn of Inferno", 3, false);
     }
 
     @Override
     public void onBossDeath(Player player) {
-    	for (Player pl : getDungeon().getAllPlayers()) {
-            pushAwayPlayer(getBukkitEntity(), pl, 3.5F);
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
-            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
-        }
+    	getDungeon().getPlayers().forEach(p -> pushAwayPlayer(p, 3.5F));
+    	playSound(Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
+    	playSound(Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
     }
 
     @Override
@@ -96,82 +87,54 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             proj.setVelocity(proj.getVelocity().multiply(1.25));
     }
 
-    private void pushAwayPlayer(Entity entity, Player p, double speed) {
-        org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
-        double e_y = entity.getLocation().getY();
-        double p_y = p.getLocation().getY();
-
+    private void pushAwayPlayer(Player p, double speed) {
+        org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(getBukkit().getLocation().toVector()).normalize();
         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
-
-        if ((p_y - 1) <= e_y || m == Material.AIR) {
+        
+        if (p.getLocation().getY() - 1 <= getBukkit().getLocation().getY() || m == Material.AIR)
             EntityMechanics.setVelocity(p, unitVector.multiply(speed));
-        }
     }
-
+    
     @Override
-    public void onBossAttack(EntityDamageByEntityEvent event) {
-        LivingEntity en = (LivingEntity) event.getEntity();
-        if (event.getDamager() instanceof Player) {
-            Player p_attacker = (Player) event.getDamager();
-            if (p_attacker.getLocation().distanceSquared(en.getLocation()) <= 16) {
-                pushAwayPlayer(en, p_attacker, 2F);
-                p_attacker.setFireTicks(80);
-                p_attacker.playSound(p_attacker.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 1F, 1F);
-            }
-        }
+    public void onBossAttacked(Player attacker) {
+    	//if player.
+    	if (attacker.getLocation().distanceSquared(getBukkit().getLocation()) <= 16) {
+    		pushAwayPlayer(attacker, 2F);
+    		attacker.setFireTicks(80);
+    		attacker.playSound(getBukkit().getLocation(), Sound.BLOCK_FIRE_AMBIENT, 1F, 1F);
+    	}
+    	
+    	boolean spawnedGhast = getDungeon().hasSpawned(BossType.InfernalGhast);
+    	
+    	if (spawnedGhast && !this.ghast.isAlive())
+    		setVulnerable(true);
         
-        boolean spawnedGhast = getDungeon().hasSpawned(BossType.InfernalGhast);
-        
-        if (spawnedGhast && !this.ghast.isAlive()) {
-        	if (en.hasPotionEffect(PotionEffectType.INVISIBILITY))
-        		en.removePotionEffect(PotionEffectType.INVISIBILITY);
-        	
-        	if (DamageAPI.isInvulnerable(en))
-        		DamageAPI.removeInvulnerable(en);
-        }
-
-        double halfHP = HealthHandler.getMonsterMaxHP(en) * 0.5;
-        if (HealthHandler.getMonsterHP(en) <= halfHP && !spawnedGhast) {
-            say("Behold, the powers of the inferno.");
-            
-            ghast = (InfernalGhast) getDungeon().spawnBoss(BossType.InfernalGhast);
-            ghast.init(HealthHandler.getMaxHP(getBukkit()));
-            
+    	if (getPercentHP() <= 0.5D && !spawnedGhast) {
+    		// Summons the ghast.
+    		say("Behond, the powers of the inferno!");
+    		ghast = (InfernalGhast) getDungeon().spawnBoss(BossType.InfernalGhast, getBukkit().getLocation().clone().add(0, 7, 0));
+    		ghast.init();
             say("The inferno will devour you!");
-            getDungeon().announce(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
-            for (Player pl : this.getBukkitEntity().getWorld().getPlayers())
-            	pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
-            
-            en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-            DamageAPI.setInvulnerable(en);
-            DamageAPI.setArmorBonus(en, 50);
-        }
-
-        if (spawnedGhast && this.ghast.isAlive())
-        	return;
-        
-        if (random.nextInt(15) == 0) {
-            Location hit_loc = this.getBukkitEntity().getLocation();
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, hit_loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
-            
-            //  SPAWN MINIONS  //
-            int minionType = random.nextInt(2);
+            //playSound(Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
+            setVulnerable(false);
+    	}
+    	
+    	if (spawnedGhast && !ghast.isAlive())
+    		return;
+    	
+    	if (random.nextInt(15) == 0) {
+    		Location loc = getBukkit().getLocation();
+    		ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+    		
+    		// Spawn minions
+    		int minionType = random.nextInt(2);
             EnumMonster monsterType = finalForm ? EnumMonster.Silverfish : EnumMonster.MagmaCube;
             String name = finalForm ? "Abyssal Demon" : "Demonic Spawn of Inferno";
             if(minionType == 1)
             	name = (finalForm ? "Greater" : "Demonic") + " " + name;
             spawnMinion(monsterType, name, 3 + minionType, false);
-        }
+    	}
     }
-    
-    public int getGemDrop(){
-    	return random.nextInt(2000) + 10000;
-    } 
-
-	@Override
-	public int getXPDrop() {
-		return 50000;
-	}
 
 	@Override
 	public void addKillStat(GamePlayer gp) {

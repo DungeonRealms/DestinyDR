@@ -27,7 +27,6 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.PowerMove;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
@@ -56,7 +55,6 @@ import java.util.Random;
 /**
  * Created by Kieran on 9/21/2015.
  */
-//TODO: Maybe move some of this into AttackResult.
 public class DamageAPI {
 
     private static HashMap<Player, HashMap<Hologram, Integer>> DAMAGE_HOLOGRAMS = new HashMap<Player, HashMap<Hologram, Integer>>();
@@ -154,9 +152,8 @@ public class DamageAPI {
         damage += ((double)attacker.getAttributes().getAttribute(vsEntity).getValue() / 100) * damage;
         
         //  EXECUTE ATTACK HOOK  //
-        if (defender.isPlayer() && EnumEntityType.HOSTILE_MOB.isType(attacker.getEntity()))
-        	if (((CraftLivingEntity) attacker.getEntity()).getHandle() instanceof DRMonster)
-        		((DRMonster) ((CraftLivingEntity) attacker.getEntity()).getHandle()).onMonsterAttack(defender.getPlayer());
+        if (defender.isPlayer() && EnumEntityType.HOSTILE_MOB.isType(attacker.getEntity()) && EntityAPI.isMonster(attacker.getEntity()))
+        	EntityAPI.getMonster(attacker.getEntity()).onMonsterAttack(defender.getPlayer());
         
         //  DPS  //
         damage += damage * ((double)attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100);
@@ -201,7 +198,7 @@ public class DamageAPI {
         //  LIFESTEAL  //
         if (attacker.isPlayer() && attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL)) {
         	double lifeToHeal = ((double)attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() / 100) * damage;
-        	HealthHandler.healPlayer(attacker.getPlayer(), (int)lifeToHeal + 1);
+        	HealthHandler.heal(attacker.getPlayer(), (int)lifeToHeal + 1);
         }
         
         //  STRENGTH BUFF  //
@@ -536,6 +533,7 @@ public class DamageAPI {
     	return fireStaffProjectile(attacker, staff.getAttributes(), staff);
     }
 
+    //TODO: Modularize.
     public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
         double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
 
@@ -733,9 +731,9 @@ public class DamageAPI {
         hologram.appendTextLine(display);
         hologram.getVisibilityManager().setVisibleByDefault(true);
 
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0));
-        }, 0, 1l);
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> 
+            hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0)), 0, 1l);
+        
         if (!DAMAGE_HOLOGRAMS.containsKey(createFor))
             DAMAGE_HOLOGRAMS.put(createFor, new HashMap<Hologram, Integer>());
 
@@ -745,7 +743,7 @@ public class DamageAPI {
             removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
-                () -> removeDamageHologram(createFor, hologram), 20l);
+                () -> removeDamageHologram(createFor, hologram), 20L);
     }
 
     private static void removeDamageHologram(Player player, Hologram hologram) {

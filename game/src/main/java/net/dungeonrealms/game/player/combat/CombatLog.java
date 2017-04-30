@@ -157,9 +157,7 @@ public class CombatLog implements GenericMechanic {
     public static void addToPVP(Player player) {
         if (!inPVP(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             PVP_COMBAT.put(player, 10);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
 
             /*
             Knock player off of horse, if they're tagged in combat.
@@ -183,9 +181,7 @@ public class CombatLog implements GenericMechanic {
             PVP_COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
         }
     }
 
@@ -211,10 +207,8 @@ public class CombatLog implements GenericMechanic {
     public static void addToCombat(Player player) {
         if (!isInCombat(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             COMBAT.put(player, 10);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
-            }
-
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
+            
             /*
             Knock player off of horse, if they're tagged in combat.
              */
@@ -233,9 +227,7 @@ public class CombatLog implements GenericMechanic {
             COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
         }
     }
 
@@ -305,8 +297,8 @@ public class CombatLog implements GenericMechanic {
         combatNPC.setCustomName(ChatColor.AQUA + "[Lvl. " + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(combatNPC, EnumEntityType.HOSTILE_MOB, 4, lvl);
-        HealthHandler.setMonsterHP(combatNPC, HealthHandler.getPlayerHP(player));
-        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getPlayerMaxHP(player)));
+        HealthHandler.setHP(combatNPC, HealthHandler.getHP(player));
+        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMaxHP(player)));
         combatNPC.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         combatNPC.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), player.getUniqueId().toString()));
         combatLogger.setArmorToDrop(armorToDrop);
@@ -355,16 +347,13 @@ public class CombatLog implements GenericMechanic {
 
     }
 
-    /**
-     * @param uuid
-     */
     public static void checkCombatLog(UUID uuid) {
         if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
             CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
             if (combatLogger.getLoggerNPC().isDead()) {
                 combatLogger.handleNPCDeath();
             } else {
-                HealthHandler.setPlayerHP(Bukkit.getPlayer(uuid), HealthHandler.getMonsterHP(combatLogger.getLoggerNPC()));
+                HealthHandler.setHP(Bukkit.getPlayer(uuid), HealthHandler.getHP(combatLogger.getLoggerNPC()));
                 combatLogger.handleTimeOut();
             }
 

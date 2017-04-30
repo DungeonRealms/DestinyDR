@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -14,7 +13,7 @@ import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.entity.Player;
 
 /**
  * Mayel - The Bandit Trove's boss.
@@ -24,13 +23,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
  */
 public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
 
-	private boolean canSpawn = false;
+	// Are mobs not allowed to spawn due to a cooldown?
+	private boolean cooldown = false;
 	
     public Mayel(World world) {
         super(world);
-        this.setSize(0.7F, 2.4F);
         this.fireProof = true;
-        createEntity(100);
     }
     
     public String[] getItems(){
@@ -44,37 +42,28 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     public void a(EntityLiving entityliving, float f) {
         DamageAPI.fireBowProjectile((LivingEntity) getBukkitEntity(), new ItemWeaponBow(getHeld()));
     }
-
+    
     @Override
-    public void onBossAttack(EntityDamageByEntityEvent event) {
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        if (canSpawnMobs(livingEntity)) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = false, 100L);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, getBukkitEntity().getLocation(), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
-            for (int i = 0; i < 4; i++)
-                spawnMinion(EnumMonster.MayelPirate, "Mayel's Crew", 1);
-            say("Come to my call, brothers!");
-        }
+    public void onBossAttacked(Player player) {
+    	if (!canSpawnMobs())
+    		return;
+    	
+    	// Spawn minions.
+    	ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, getBukkitEntity().getLocation(), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+        for (int i = 0; i < 4; i++)
+            spawnMinion(EnumMonster.MayelPirate, "Mayel's Crew", 1);
+        say("Come to my call, brothers!");
     }
     
-    public int getXPDrop(){
-    	return 5000;
-    }
-    
-    public int getGemDrop(){
-    	return random.nextInt(250 - 100) + 100;
-    }
-    
-    private boolean canSpawnMobs(LivingEntity livingEntity) {
-        int maxHP = HealthHandler.getMonsterMaxHP(livingEntity);
-        int currentHP = HealthHandler.getMonsterHP(livingEntity);
-        
-        if (currentHP <= maxHP * 0.8 && !canSpawn) {
-        	canSpawn = true;
-        	return true;
-        }
-        
-        return false;
+    private boolean canSpawnMobs() {
+    	boolean temp = cooldown;
+    	
+    	if (!cooldown) {
+    		cooldown = true;
+    		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> cooldown = false, 100L);
+    	}
+    	
+        return getPercentHP() <= 0.8D && !temp;
     }
 
     @Override

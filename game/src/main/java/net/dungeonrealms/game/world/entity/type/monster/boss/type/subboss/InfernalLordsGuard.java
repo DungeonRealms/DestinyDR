@@ -10,7 +10,6 @@ import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSk
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.minecraft.server.v1_9_R2.*;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -25,7 +24,6 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
         super(world);
         
         this.setOnFire(Integer.MAX_VALUE);
-        this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "The Infernal Lords Guard");
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(65);
     }
 
@@ -58,21 +56,8 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
 
 	@Override
 	public BossType getBossType() {
-		return BossType.LordsGuard;
+		return BossType.InfernalGuard;
 	}
-
-
-	@Override
-	public int getGemDrop() {
-		return 0;
-	}
-
-
-	@Override
-	public int getXPDrop() {
-		return 0;
-	}
-
 
 	@Override
 	public String[] getItems() {

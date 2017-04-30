@@ -25,7 +25,6 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
@@ -186,7 +185,7 @@ public abstract class Dungeon {
             livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
         }
 		
-		int gemDrop = boss.getGemDrop();
+		int gemDrop = getType().getGems();
         int groupSize = (int) getPlayers().size();
 
         int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
@@ -206,7 +205,7 @@ public abstract class Dungeon {
 
                	ItemStack bankNote = new ItemGemNote(boss.getBossType().getName(), perPlayerDrop).generateItem();
                 GameAPI.giveOrDropItem(player, bankNote);
-                GameAPI.getGamePlayer(player).addExperience(boss.getXPDrop(), false, true);
+                GameAPI.getGamePlayer(player).addExperience(getType().getXP(), false, true);
             }
             
             final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
@@ -377,7 +376,7 @@ public abstract class Dungeon {
 				try {
 					Bukkit.getLogger().info("Saving " + getType().getName() + " from " + getWorld().getName());
 					GameAPI.createZipFile(getWorld().getName() + "/", getType().getZipFile().getPath());
-					GameAPI.sendNetworkMessage("GMMessage", ChatColor.GREEN + "Saved modified '" + "' dungeon on {SERVER}" + ChatColor.GREEN + ".");
+					GameAPI.sendNetworkMessage("GMMessage", ChatColor.GREEN + "Saved modified '" + getType().getName() + "' dungeon on {SERVER}" + ChatColor.GREEN + ".");
 				} catch (Exception e) {
 					e.printStackTrace();
 					Bukkit.getLogger().warning("Failed to save editted dungeon " + getType().getName() + ".");
@@ -399,23 +398,34 @@ public abstract class Dungeon {
 	}
 	
 	/**
-	 * Spawns a boss.
+	 * Spawns a dungeon boss.
+	 * Should only be called on non-special mobs.
+	 * Spawns at the mobs defined location.
+	 * @return
 	 */
 	public DungeonBoss spawnBoss(BossType type) {
+		assert !type.isSpecial();
+		return spawnBoss(type, type.getLocation(getWorld()));
+	}
+	
+	/**
+	 * Spawns the specified dungeon boss type at the given location.
+	 */
+	public DungeonBoss spawnBoss(BossType type, Location loc) {
 		// We've already spawned this boss.
 		if (hasSpawned(type))
 			return null;
 		
 		DungeonBoss boss = null;
-		Location loc = type.getLocation(getWorld());
 		
 		try {
 			net.minecraft.server.v1_9_R2.World w = ((CraftWorld)getWorld()).getHandle();
-			net.minecraft.server.v1_9_R2.Entity e = type.getMonster().getClazz().getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(w);
+			net.minecraft.server.v1_9_R2.EntityInsentient e = type.getMonster().getClazz().getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(w);
 			w.addEntity(e);
 			Entity ent = e.getBukkitEntity();
 			ent.teleport(loc);
 			boss = (DungeonBoss) e;
+			boss.createEntity(100);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Bukkit.getLogger().warning("Failed to construct " + type.getName() + ".");
@@ -423,7 +433,6 @@ public abstract class Dungeon {
 		}
 		
 		getSpawnedBosses().add(type);
-		EntityAPI.registerBoss(boss, 100, getType().getTier());
 		if (type.getSound() != null)
 			getWorld().playSound(loc, type.getSound(), type.getVolume(), type.getPitch());
 		

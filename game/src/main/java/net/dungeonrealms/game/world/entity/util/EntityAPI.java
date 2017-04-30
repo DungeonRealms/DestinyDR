@@ -6,6 +6,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -29,6 +30,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -210,9 +212,8 @@ public class EntityAPI {
     	MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
     	
     	LivingEntity le = (LivingEntity) entity;
-        int maxHp = HealthHandler.getMonsterMaxHPOnSpawn(le);
-        HealthHandler.setMaxHP(entity, maxHp);
-        HealthHandler.setMonsterHP(le, maxHp);
+        HealthHandler.calculateHP(le);
+        HealthHandler.setHP(le, HealthHandler.getMaxHP(le));
         
         if (armorSet != null)
         	le.getEquipment().setArmorContents(armorSet.generateArmorSet());
@@ -267,6 +268,20 @@ public class EntityAPI {
     }
     
     /**
+     * Gets this mob tier.
+     */
+    public static int getTier(Entity entity) {
+		return Metadata.TIER.get(entity).asInt();
+	}
+    
+    /**
+     * Is this an elite?
+     */
+    public static boolean isElite(Entity ent) {
+    	return Metadata.ELITE.has(ent);
+    }
+    
+    /**
      * Is this entity a boss?
      */
     public static boolean isBoss(Entity ent) {
@@ -278,6 +293,28 @@ public class EntityAPI {
      */
     public static int getLevel(Entity ent) {
     	return Metadata.LEVEL.get(ent).asInt();
+    }
+    
+    /**
+     * Is this a DR Monster?
+     */
+    public static boolean isMonster(Entity monster) {
+    	return ((CraftEntity)monster).getHandle() instanceof DRMonster;
+    }
+    
+    /**
+     * Gets attributes of the specified entity.
+     */
+    public static AttributeList getAttributes(Entity e) {
+    	if (GameAPI.isPlayer(e)) {
+    		return GameAPI.getGamePlayer((Player) e).getAttributes();
+    	} else if (isMonster(e)) {
+    		return getMonster(e).getAttributes();
+    	}
+    	
+    	Utils.printTrace();
+    	Bukkit.getLogger().warning("Could not get attributes from " + e.getName() + "!");
+    	return new AttributeList();
     }
     
     /**

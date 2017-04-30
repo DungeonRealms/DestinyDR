@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 
 import org.bukkit.*;
@@ -15,7 +16,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * DungeonBoss - Contains utilities that dungeon bosses should implement.
+ * Has to be an interface since classes cannot extend multiple classes (On a different hierarchy.)
+ * 
+ * 
  * Redone in April 2017.
  * @author Kneesnap
  */
@@ -31,20 +35,26 @@ public interface DungeonBoss extends DRMonster {
 	
 	BossType getBossType();
 	
-	public int getGemDrop();
+	public String[] getItems(); //TODO: Item System
 	
-	public int getXPDrop();
+	public void addKillStat(GamePlayer gp); //TODO: Modularize once stats are modular.
 	
-	public String[] getItems();
-	
-	public void addKillStat(GamePlayer gp);
-	
+	/**
+	 * Calls when the boss dies.
+	 */
 	default void onBossDeath(Player player) {
 		
 	}
 	
-	default void onBossAttack(EntityDamageByEntityEvent event) {
+	/**
+	 * Called when the boss is damaged by a player.
+	 */
+	default void onBossAttacked(Player attacker) {
 		
+	}
+	
+	default void playSound(Sound s, float volume, float pitch) {
+		getDungeon().getWorld().playSound(getBukkit().getLocation(), s, volume, pitch);
 	}
 	
 	//  OVERRIDDEN STUFF  //
@@ -110,20 +120,43 @@ public interface DungeonBoss extends DRMonster {
 	}
 	
 	default void say(String msg) {
+		if (msg == null || msg.length() == 0)
+			return;
 		getDungeon().announce(ChatColor.RED + getBossType().getName() + "> " + ChatColor.RESET + msg);
 	}	
 	
 	default void createEntity(int level){
-		if(getItems() != null)
+		//TODO: Integrate item system.
+		if(getItems() != null) {
 			setArmor();
+		} else {
+			setGear();
+		}
+		
 		if(this instanceof DRWitherSkeleton){
 			DRWitherSkeleton monster = (DRWitherSkeleton)this;
 			monster.setSkeletonType(1);
 			monster.setSize(0.7F, 2.4F);
 		}
+		
 		getBukkit().setRemoveWhenFarAway(false);
 		EntityAPI.registerBoss(this, 100, getTier());
         say(getBossType().getGreeting());
+	}
+	
+	default void setVulnerable(boolean b) {
+		if (isVulnerable() == b)
+			return;
+		
+		if (b) {
+			DamageAPI.removeInvulnerable(getBukkit());
+		} else {
+			DamageAPI.setInvulnerable(getBukkit());
+		}
+	}
+	
+	default boolean isVulnerable() {
+		return !DamageAPI.isInvulnerable(getBukkit());
 	}
     
 	default List<Block> getNearbyBlocks(Location loc, int maxradius) {

@@ -91,7 +91,7 @@ public class InfernalAbyss extends Dungeon {
 								left + "s" + ChatColor.RED + " left until the inferno consumes you.");
 					} else if (left <= 1) {
 						p.removePotionEffect(PotionEffectType.WITHER);
-						HealthHandler.setPlayerHP(p, 1);
+						HealthHandler.setHP(p, 1);
 						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
 						p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
 					}

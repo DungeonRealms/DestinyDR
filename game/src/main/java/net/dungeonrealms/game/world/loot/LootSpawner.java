@@ -1,23 +1,20 @@
 package net.dungeonrealms.game.world.loot;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
-import net.dungeonrealms.game.item.items.functional.ItemGemNote;
-import net.dungeonrealms.game.item.items.functional.ItemOrb;
-import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.loot.types.LootType;
 
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -26,92 +23,102 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * Created by Chase on Oct 9, 2015
+ * LootSpawner - Spawns loot chests around the map.
+ * 
+ * Redone on April 29th, 2017.
+ * @author Kneesnap
  */
+@Getter
 public class LootSpawner {
+	
+	private Location location;
+	private int tickDelay;
+	private Inventory inventory = Bukkit.createInventory(null, 27, "Loot");
+	private String lootTable;
+	
+	public LootSpawner(Location loc, int tickDelay, String loot) {
+		this.location = loc;
+		this.tickDelay = tickDelay;
+		this.lootTable = loot;
+		setContents();
+	}
+	
+	public boolean isBroken() {
+		return getLocation().getBlock().getType() != Material.CHEST && getInventory().getContents().length == 0;
+	}
+	
+	/**
+	 * Sets the loot in the chest based on tier.
+	 */
+	private void setContents() {
+		getLocation().getBlock().setType(Material.CHEST);
+		HashMap<ItemStack, Integer> loot = LootManager.getLoot().get(getLootTable());
+		
+		int count = 0;
+		for (ItemStack stack : loot.keySet()) {
+			if (stack == null)
+				continue;
+			// Should we spawn this item?
+			if (loot.get(stack) < new Random().nextInt(100))
+				continue;
+			
+			ItemGeneric item = (ItemGeneric)PersistentItem.constructItem(stack);
+			item.removeEpoch();
+			addToRandomSlot(item.generateItem());
+			count++;
+		}
+		
+		// No items generated :S better try again.
+		if (count == 0)
+			setContents();
+	}
+	
+	private void addToRandomSlot(ItemStack item) {
+		if (getInventory().firstEmpty() == -1)
+			return;
+		
+		int slot = Utils.randInt(0, getInventory().getContents().length - 1);
+		
+		ItemStack s = getInventory().getItem(slot);
+		// This slot is occupied.
+		if (s != null && s.getType() != Material.AIR) {
+			addToRandomSlot(item);
+			return;
+		}
+		
+		getInventory().setItem(slot, item);
+	}
 
-    public long delay = 100;
-    public Location location;
-    public Block block;
-    public Inventory inv;
-    public boolean broken;
-    public LootType lootType;
-
-    public LootSpawner(Block chest, long delay, LootType lootType) {
-        this.location = chest.getLocation();
-        this.delay = delay;
-        this.lootType = lootType;
-        block = chest;
-        block.setType(Material.CHEST);
-        inv = Bukkit.createInventory(null, 27, "Loot");
-        setContents();
-        broken = false;
-    }
-
-    /**
-     * Sets the loot in the chest based on tier.
-     */
-    private void setContents() {
-        HashMap<ItemStack, Double> loot = lootType.getLoot();
-        if (loot.isEmpty()) {
-            Utils.log.info("LOOT EMPTY RETURNNING...");
-            return;
-        }
-        int count = 0;
-        for (ItemStack stack : loot.keySet()) {
-            if (loot == null || !loot.containsKey(stack))
-                continue;
-            double spawn_chance = loot.get(stack);
-            double do_i_spawn = new Random().nextInt(1000);
-            if (spawn_chance < 1) {
-                spawn_chance = 1;
-            }
-//			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
-            if (spawn_chance >= do_i_spawn) {
-                if (stack.getType() == Material.IRON_SWORD || stack.getType() == Material.AIR)
-                    continue;
-                ItemGeneric item = (ItemGeneric)PersistentItem.constructItem(stack);
-                
-                if (item.isAntiDupe())
-                	item.removeEpoch();
-                stack = item.generateItem();
-                
-                count++;
-                inv.addItem(stack);
-            }
-        }
-
-        if (count == 0) {
-            setContents();
-//			inv.addItem(ItemManager.createHealthPotion(1, false, false));
-        }
-
-    }
-
-    /**
-     * Checking if the inventory is empty, then break the chest.
-     */
-    public void update(Player player) {
-        if (inv.getContents().length > 0)
-            for (ItemStack stack : inv.getContents())
-                if (stack != null && stack.getType() != Material.AIR)
-                        return;
+	/**
+	 * Attempt to break this loot spawner.
+	 */
+	public void attemptBreak(Player player) {
+		if (getInventory().getContents().length > 0)
+			for (ItemStack stack : getInventory().getContents())
+				if (stack != null && stack.getType() != Material.AIR)
+					return;
+		
+		World world = getLocation().getWorld();
+		
+		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+		gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
+		
+		for (int i = 0; i < 6; i++)
+			for (double yOffset = 0.2; yOffset <= 0.5; yOffset += 0.15)
+        		world.playEffect(getLocation().clone().add(i, yOffset, i), Effect.TILE_BREAK, 25, 12);
         
-        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-        if (gamePlayer == null) return;
-        gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
-        for (int i = 0; i < 6; i++)
-        	for (double yOffset = 0.2; yOffset <= 0.5; yOffset += 0.15)
-        		player.getWorld().playEffect(block.getLocation().add(i, yOffset, i), Effect.TILE_BREAK, 25, 12);
-        
-        player.playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
-        block.getDrops().clear();
-        block.setType(Material.AIR);
-        broken = true;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            setContents();
-            block.setType(Material.CHEST);
-        }, (long) (1200 + delay + (delay * LootManager.getDelayMultiplier())));
-    }
-
+		world.playSound(getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
+		getLocation().getBlock().getDrops().clear();
+		getLocation().getBlock().setType(Material.AIR);
+		
+		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::setContents,
+			(long) (getTickDelay() + (getTickDelay() * LootManager.getDelayMultiplier())));
+	}
+	
+	/**
+	 * Draws enchantment particles around it.
+	 */
+	public void showParticles() {
+		getLocation().getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, getLocation(), 20, .2D, .2D, .2D);
+	}
 }

@@ -14,6 +14,7 @@ import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.listener.combat.DamageType;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -24,10 +25,9 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 
 import org.bukkit.*;
@@ -64,9 +64,9 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
-            Bukkit.getServer().getOnlinePlayers().stream().forEach(this::updatePlayerOverheadHP);
-        }, 0L, 20L);
+        Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> 
+            Bukkit.getServer().getOnlinePlayers().forEach(this::updatePlayerOverheadHP)
+        , 0L, 20L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
 
     }
@@ -77,28 +77,19 @@ public class HealthHandler implements GenericMechanic {
     }
 
     /**
-     * Handles players logging in,
-     * sets their metadata to
-     * their correct HP values.
-     *
-     * @param player
-     * @since 1.0
+     * Calculates the player's max HP from gear, and 
+     * TODO: Calculate attributes from armor first?
      */
     public void handleLoginEvents(Player player) {
         player.setMetadata("loggingIn", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
         
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	GamePlayer gp = GameAPI.getGamePlayer(player);
-            setPlayerMaxHP(player, gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue() + 50);
+        	// Recalculate from armor, etc.
+            updatePlayerHP(player);
+            
+            // Loads current HP from DB.
             int hp = Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId()).toString());
-
-            // 1 <= HP <= Max HP
-            hp = Math.min(getPlayerMaxHP(player), hp);
-            hp = Math.max(1, hp);
-            setPlayerHP(player, hp);
-
-            int hpRegen = gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5;
-            setPlayerHPRegen(player, hpRegen);
+            setHP(player, hp);
             
             //  MARK PLAYER AS DONE.  //
             player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -110,44 +101,93 @@ public class HealthHandler implements GenericMechanic {
      * Handles players logging out,
      * removes potion effects and
      * updates database for web usage.
-     *
-     * @param player
-     * @since 1.0
      */
     public void handleLogoutEvents(Player player) {
     	player.getActivePotionEffects().clear();
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHP(player), true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getHP(player), true);
     }
-
+    
     /**
-     * Returns the players current HP
-     *
-     * @param player
-     * @return int
-     * @since 1.0
+     * Sets both maxHP and current HP to this value.
      */
-    public static int getPlayerHP(Player player) {
-    	return player.hasMetadata("currentHP") ? player.getMetadata("currentHP").get(0).asInt() : 50;
+    public static void initHP(Entity e, int hp) {
+    	setMaxHP(e, hp);
+    	setHP(e, hp);
     }
-
+    
     /**
-     * Returns the monsters current HP
-     *
-     * @param entity
-     * @return int
-     * @since 1.0
+     * Set the max HP of an entity.
      */
-    public static int getMonsterHP(LivingEntity entity) {
-    	return entity.hasMetadata("currentHP") ? entity.getMetadata("currentHP").get(0).asInt() : 100;
+    public static void setMaxHP(Entity e, int maxHP) {
+    	Metadata.MAX_HP.set(e, maxHP);
+    	setHP(e, Math.min(getHP(e), maxHP)); // Cap the entities HP at the max HP limit.
+    }
+    
+    /**
+     * Sets an entities HP.
+     */
+    public static void setHP(Entity e, int currentHP) {
+    	Metadata.CURRENT_HP.set(e, Math.min(currentHP, getMaxHP(e)));
+    	
+    	if (!(e instanceof LivingEntity))
+    		return;
+    	LivingEntity le = (LivingEntity) e;
+    	
+    	//  SET VANILLA HEALTH  //
+        double vanillaMax = le.getMaxHealth();
+        double vanillaHealth = getHPPercent(e) * vanillaMax;
+        
+        // 1 <= Health <= maxHealth
+        if (vanillaHealth > vanillaMax - (1 / vanillaMax)) // If we're less than half a heart from max health, set it to max.
+        	vanillaHealth = vanillaMax;
+        
+        le.setHealth(Math.max(1, vanillaHealth));
+    }
+    
+    /**
+     * Gets an entities current HP.
+     */
+    public static int getHP(Entity e) {
+    	return Metadata.CURRENT_HP.get(e).asInt();
+    }
+    
+    /**
+     * Gets an entities Max HP.
+     */
+    public static int getMaxHP(Entity e) {
+    	if (!Metadata.MAX_HP.has(e) && e instanceof LivingEntity)
+    		calculateHP((LivingEntity) e);
+    	return Metadata.MAX_HP.get(e).asInt();
+    }
+    
+    /**
+     * Gets the HP percentage in decimal form (95% = .95)
+     */
+    public static double getHPPercent(Entity e) {
+    	return getMaxHP(e) == 0 ? 0D : getHP(e) / (double) getMaxHP(e);
+    }
+    
+    /**
+     * Set player HP/s regen.
+     */
+    public static void setRegen(Player player, int regen) {
+    	Metadata.HP_REGEN.set(player, regen);
+    }
+    
+    /**
+     * Gets a player's HP/s regen.
+     * Calculates if not present.
+     */
+    public static int getRegen(Player player) {
+    	if (!Metadata.HP_REGEN.has(player) && GameAPI.getGamePlayer(player) != null)
+    		Metadata.HP_REGEN.set(player, GameAPI.getGamePlayer(player).getAttributes()
+    				.getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5);
+    	return Metadata.HP_REGEN.get(player).asInt();
     }
 
     /**
      * Sets the players HP bar
      * Called in "updatePlayerHPBars"
-     *
-     * @param player
-     * @param hp
-     * @since 1.0
      */
     private void updatePlayerOverheadHP(Player player) {
         Player showData = player;
@@ -159,11 +199,10 @@ public class HealthHandler implements GenericMechanic {
         if (gamePlayer == null || !gamePlayer.isAttributesLoaded())
             return;
         
-        int currentHP = getPlayerHP(showData);
-        double maxHP = getPlayerMaxHP(showData);
+        int currentHP = getHP(showData);
+        double maxHP = getMaxHP(showData);
         
-        double healthPercentage = Math.min((double) currentHP / maxHP, 1D);
-        float healthToDisplay = (float) (healthPercentage * 100.F);
+        float healthPercent = (float) (100.0F * getHPPercent(showData));
         
         //  GENERATE LEVEL STRING  //
         int playerLevel = gamePlayer.getLevel();
@@ -182,7 +221,7 @@ public class HealthHandler implements GenericMechanic {
         		+ (currentHP != maxHP ? ChatColor.BOLD + " / " + hpColor + (int)maxHP : "");
         
         //  GENERATE XP STRING  //
-        double exp = ((double) gamePlayer.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
+        double exp = (double) gamePlayer.getExperience() / (double) gamePlayer.getEXPNeeded(playerLevel);
         exp *= 100;
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "XP " + ChatColor.LIGHT_PURPLE + (int) exp + "%";
         if (playerLevel == 100)
@@ -190,7 +229,7 @@ public class HealthHandler implements GenericMechanic {
         
         //  DISPLAY THE BAR  //
         BossBarAPI.removeAllBars(player);
-        BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), BossBarAPI.Color.valueOf(hpColor.name()), getStyle(maxHP), healthToDisplay);
+        BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), BossBarAPI.Color.valueOf(hpColor.name()), getStyle(maxHP), healthPercent);
         
         //  UPDATE HP FOR OTHER PLAYERS  //
         int finalHp = currentHP;
@@ -209,96 +248,15 @@ public class HealthHandler implements GenericMechanic {
     }
 
     /**
-     * Set the max HP of an entity.
-     */
-    public static void setMaxHP(Entity e, int maxHP) {
-    	e.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
-    }
-
-    /**
-     * Sets a player's HP.
-     */
-    public static void setPlayerHP(Player player, int hp) {
-        setEntityHP(player, Math.min(hp, getMaxHP(player)));
-    }
-
-    /**
-     * Sets an monster's HP.
-     */
-    public static void setMonsterHP(LivingEntity monster, int hp) {
-    	setEntityHP(monster, hp);
-    }
-    
-    private static void setEntityHP(LivingEntity entity, int hp) {
-        entity.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
-        
-        //  SET VANILLA HEALTH  //
-        double vanillaMax = entity.getMaxHealth();
-        double vanillaHealth = (hp / Math.max(1, getMonsterMaxHP(entity))) * vanillaMax;
-        vanillaHealth = Math.min(vanillaHealth, vanillaMax - (1 / vanillaMax));
-        vanillaHealth = Math.max(1, vanillaHealth);
-        entity.setHealth((int)vanillaHealth);
-    }
-
-    /**
-     * Returns the entities max HP
-     * Called on login (calculates it from items
-     * in their inventory)
-     * Pretty expensive check.
-     *
-     * @param entity
-     * @return int
-     * @since 1.0
-     */
-    public static int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-        return calculateMaxHPFromItems(entity);
-    }
-
-    /**
-     * Return a player's maximum HP. Calculates if not set.
-     */
-    public static int getPlayerMaxHP(Player player) {
-        if (player.hasMetadata("maxHP")) {
-            return player.getMetadata("maxHP").get(0).asInt();
-        } else {
-        	int maxHP = calculateMaxHPFromItems(player);
-            player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
-            return maxHP;
-        }
-    }
-
-    /**
-     * Gets a monster's max HP.
-     */
-    public static int getMonsterMaxHP(LivingEntity ent) {
-    	return getMaxHP(ent);
-    }
-    
-    public static int getMaxHP(Entity e) {
-    	return getEntityMaxHP(e);
-    }
-    
-    private static int getEntityMaxHP(Entity entity) {
-    	return entity.hasMetadata("maxHP") ? entity.getMetadata("maxHP").get(0).asInt() : 100;
-    }
-
-    /**
      * Reloads the player HP from armor.
      * Called after a death or whenever a related inventory click occurs.
      */
     public static void updatePlayerHP(Player player) {
-        setPlayerMaxHP(player, calculateMaxHPFromItems(player));
-        GamePlayer gp = GameAPI.getGamePlayer(player);
-        setPlayerHPRegen(player, gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5);
-        if (getPlayerHP(player) > getPlayerMaxHP(player))
-            setPlayerHP(player, getPlayerMaxHP(player));
-    }
-
-    /**
-    * Sets a player's maximum HP.
-    */
-    public static void setPlayerMaxHP(Player player, int maxHP) {
-        player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
+    	calculateHP(player);
+        
+        // Recalculates HP regen.
+        Metadata.HP_REGEN.remove(player);
+        getRegen(player);
     }
 
     /**
@@ -311,7 +269,7 @@ public class HealthHandler implements GenericMechanic {
             if (CombatLog.isInCombat(player) || CombatLog.inPVP(player) || player.hasMetadata("lastDamageTaken") && (System.currentTimeMillis() - player.getMetadata("lastDamageTaken").get(0).asLong()) < 10_000L)
                 continue;
                 
-            if (getPlayerHP(player) <= 0 && player.getHealth() <= 0)
+            if (getHP(player) <= 0 && player.getHealth() <= 0)
                 continue;
             
             if (player.hasMetadata("starving"))
@@ -320,32 +278,45 @@ public class HealthHandler implements GenericMechanic {
             if (GameAPI.getGamePlayer(player) == null || !GameAPI.getGamePlayer(player).isAttributesLoaded())
                 continue;
             
-            healPlayer(player, getPlayerHPRegen(player));
+            heal(player, getRegen(player));
         }
     }
-
-    /**
-     * Heals the specified player.
-     */
-    public static void healPlayer(Player player, int healAmount) {
-    	double currentHP = getPlayerHP(player);
-        double maxHP = getPlayerMaxHP(player);
-        if (currentHP >= maxHP)
-        	return;
-        
-        double newHealth = Math.min(currentHP + healAmount, maxHP);
-
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString()))
-            player.sendMessage(ChatColor.GREEN + "        +" + healAmount + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + (int) newHealth + "/" + (int) maxHP + "HP]");
-
-        setPlayerHP(player, (int) Math.min(getMonsterHP(player) + healAmount, getEntityMaxHP(player)));
+    
+    public static void heal(Entity e, int amount) {
+    	int currentHP = getHP(e);
+    	int maxHP = getMaxHP(e);
+    	if (currentHP >= maxHP || amount <= 0)
+    		return; // Don't bother
+    	setHP(e, currentHP + amount);
+    	
+    	// Show message to players only.
+    	if (!(e instanceof Player))
+    		return;
+    	
+    	int newHP = getHP(e);
+    	if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, e.getUniqueId()).toString()))
+            e.sendMessage(ChatColor.GREEN + "        +" + (newHP - currentHP) + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+    	
     }
-
     /**
-     * Heals the specified Monster.
+     * Damages an entity.
+     * Does not perform certain calculations.
      */
-    public static void healMonster(LivingEntity entity, int healAmount) {
-    	setMonsterHP(entity, (int) Math.min(getMonsterHP(entity) + healAmount, getEntityMaxHP(entity)));
+    public static void damageEntity(Entity e, int dmg) {
+    	AttackResult ar = new AttackResult((LivingEntity) e, null);
+    	ar.setDamage(dmg);
+    	damageEntity(ar);
+    }
+    
+    /**
+     * Damages an entity.
+     */
+    public static void damageEntity(AttackResult res) {
+    	if(res.getDefender().isPlayer()) {
+    		damagePlayer(res);
+    	} else {
+    		damageMonster(res);
+    	}
     }
 
     public static void damagePlayer(AttackResult res) {
@@ -375,7 +346,7 @@ public class HealthHandler implements GenericMechanic {
             damage = 1;
         }
         
-        double currentHP = getPlayerHP(player);
+        double currentHP = getHP(player);
         double newHP = currentHP - damage;
 
         if (cause == null || cause != EntityDamageEvent.DamageCause.FALL) {
@@ -448,6 +419,7 @@ public class HealthHandler implements GenericMechanic {
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
 
+        //TODO: Combat fx.
         //player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
         
         //  DISABLE DEATH FROM FIRE TICK  //
@@ -471,10 +443,10 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if (newHP <= 0)
-            if (handlePlayerDeath(player, attacker)) return;
+        if (newHP <= 0 && handlePlayerDeath(player, attacker))
+            return;
 
-        setPlayerHP(player, (int) newHP);
+        setHP(player, (int) newHP);
         
         if (attacker != null && attacker.getType() != EntityType.PLAYER) {
             EntityMechanics.MONSTER_LAST_ATTACK.put(attacker, 15);
@@ -567,9 +539,8 @@ public class HealthHandler implements GenericMechanic {
             if (expiration > System.currentTimeMillis()) {
                 String killer = player.getMetadata("lastPlayerToDamage").get(0).asString();
                 Player onlineKiller = Bukkit.getPlayer(killer);
-                if (onlineKiller != null) {
+                if (onlineKiller != null)
                     return onlineKiller;
-                }
             }
         }
         return null;
@@ -602,17 +573,6 @@ public class HealthHandler implements GenericMechanic {
     }
     
     /**
-     * Damages an entity.
-     */
-    public static void damageEntity(AttackResult res) {
-    	if(res.getDefender().isPlayer()) {
-    		damagePlayer(res);
-    	} else {
-    		damageMonster(res);
-    	}
-    }
-    
-    /**
      * Damages a monster.
      */
     public static void damageMonster(AttackResult res) {
@@ -623,7 +583,7 @@ public class HealthHandler implements GenericMechanic {
     	LivingEntity attacker = res.getAttacker().getEntity();
     	double damage = res.getWeightedDamage();
     	
-    	if(defender instanceof EntityArmorStand)
+    	if (!(res.getDefender() instanceof LivingEntity) || res.getDefender() instanceof ArmorStand)
     		return;
     	
     	if (attacker != null && GameAPI.isPlayer(attacker) && damage > 3000) {
@@ -637,8 +597,8 @@ public class HealthHandler implements GenericMechanic {
     	}
     	
     	
-    	double maxHP = getMonsterMaxHP(defender);
-    	double currentHP = getMonsterHP(defender);
+    	double maxHP = getMaxHP(defender);
+    	double currentHP = getHP(defender);
     	double newHP = currentHP - damage;
     	
     	if (currentHP <= 0) {
@@ -666,7 +626,7 @@ public class HealthHandler implements GenericMechanic {
         if (newHP <= 0) {
         	//  KILL ENTITY  //
         	defender.playEffect(EntityEffect.DEATH);
-            setMonsterHP(defender, 0);
+            setHP(defender, 0);
             defender.damage(defender.getHealth());
             defender.setMaximumNoDamageTicks(2000);
             defender.setNoDamageTicks(1000);
@@ -696,7 +656,7 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
-        setMonsterHP(defender, (int) newHP);
+        setHP(defender, (int) newHP);
         
         //  TO VANILLA HP  //
         double monsterHPPercent = (newHP / maxHP);
@@ -717,73 +677,34 @@ public class HealthHandler implements GenericMechanic {
     }
 
     /**
-     * Calculates the entities MaximumHP
-     * from their armor and weapon
-     *
-     * @param entity
-     * @return int
-     * @since 1.0
+     * Calculates an entities max HP from their gear.
      */
-    public static int calculateMaxHPFromItems(LivingEntity entity) {
+    public static void calculateHP(LivingEntity entity) {
         int totalHP = 0; // base hp
-
-        if (entity.hasMetadata("type"))
-            totalHP += ((DRMonster) ((CraftLivingEntity) entity).getHandle()).getAttributes().getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
-        else if (GameAPI.isPlayer(entity))
-            totalHP += 50 + GameAPI.getGamePlayer((Player)entity).getAttributes().getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
+        
+        // Apply armor boost.
+        totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
 
         double[] hostileModifier = new double[] {.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[] {1.8, 2.5, 3, 4, 5.5};
         
-        if (entity.hasMetadata("tier")) {
-        	int tier = entity.getMetadata("tier").get(0).asInt();
+        // Apply monster boosts.
+        int tier = EntityAPI.getTier(entity);
+        if (tier > 0) {
         
         	//  HOSTILE MODIFIER  //
         	if (EnumEntityType.HOSTILE_MOB.isType(entity))
         		totalHP *= hostileModifier[tier - 1];
         
         	//  ELITE MODIFIER  //
-        	if (entity.hasMetadata("entity"))
+        	if (EntityAPI.isElite(entity))
         		totalHP *= eliteModifier[tier - 1];
 
         	//  BOSS MULTIPLIER  //
-        	if (entity.hasMetadata("boss"))
+        	if (EntityAPI.isBoss(entity))
         		totalHP *= 6;
         }
         
-        return totalHP;
-    }
-
-    /**
-     * Sets the players HP Regen
-     * metadata to the given amount
-     *
-     * @param player
-     * @param regenAmount
-     * @since 1.0
-     */
-    public static void setPlayerHPRegen(Player player, int regenAmount) {
-        player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), regenAmount));
-    }
-
-    /**
-     * Returns the players current HPRegen
-     *
-     * @param player
-     * @return int
-     * @since 1.0
-     */
-    public static int getPlayerHPRegen(Player player) {
-        if (player.hasMetadata("regenHP")) {
-            return player.getMetadata("regenHP").get(0).asInt();
-        } else {
-        	GamePlayer gp = GameAPI.getGamePlayer(player);
-        	if (gp != null) {
-        		int hpRegen = gp.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5;
-            	player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), hpRegen));
-            	return hpRegen;
-        	}
-        	return 0;
-        }
+        setMaxHP(entity, totalHP);
     }
 }
