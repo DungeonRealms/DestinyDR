@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
@@ -49,10 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MountUtils {
 
-    public static ConcurrentHashMap<UUID, Inventory> inventories = new ConcurrentHashMap<>();
-    
-    @Getter
-    private static Map<Player, Entity> mounts = new HashMap<>();
+    @Getter private static Map<UUID, Inventory> inventories = new ConcurrentHashMap<>();
+    @Getter private static Map<Player, Entity> mounts = new HashMap<>();
 
     public static boolean hasMountPrerequisites(EnumMounts mountType, List<String> playerMounts) {
     	if (mountType == EnumMounts.TIER1_HORSE || !mountType.name().contains("HORSE"))
@@ -61,6 +60,10 @@ public class MountUtils {
     	return !playerMounts.isEmpty() && playerMounts.contains(EnumMounts.getById(mountType.getId() - 1).name());
     }
 
+    public static void spawnMount(Player player, EnumMounts mount) {
+    	spawnMount(player, mount, null);
+    }
+    
     public static void spawnMount(Player player, EnumMounts mount, EnumMountSkins skin) {
     	if (!GameAPI.isMainWorld(player.getLocation())) {
     		player.sendMessage(ChatColor.RED + "Your mount is too scared by foreign land to step foot here.");
@@ -194,7 +197,20 @@ public class MountUtils {
     	if (mount.getPassenger() == p)
     		p.eject();
     	mount.remove();
-    	//TODO: Save?
     	getMounts().remove(p);
+    	DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(mount);
+    	p.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
     }
+
+	public static boolean isMount(Entity e) {
+		return getMounts().containsValue(e);
+	}
+
+	public static Inventory getInventory(Player p) {
+		return getInventories().get(p.getUniqueId());
+	}
+
+	public static boolean hasInventory(Player p) {
+		return getInventory(p) != null;
+	}
 }

@@ -2,15 +2,14 @@ package net.dungeonrealms.game.item.items.functional;
 
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.FunctionalItemEvent;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
 
 /**
@@ -59,23 +58,22 @@ public abstract class FunctionalItem extends ItemGeneric {
 		if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage()))
 			return;
 		
-		ice.handle();
+		try {
+			ice.handle();
+		} catch (Exception e) {
+			e.printStackTrace();
+			GameAPI.sendDevMessage(ChatColor.RED + "Error using " + ice.getPlayer().getName() +"'s " + ice.getItem().getClass().getSimpleName());
+			ice.getPlayer().sendMessage(ChatColor.RED + "There was an error while using this item. The developers have been notified.");
+		}
 	}
 	
 	/**
-	 * Called when an item is clicked either in air or on a block.
+	 * Used to skip trying out new ItemUsage[] {}
 	 */
-	public abstract void onClick(ItemClickEvent evt);
-	
-	/**
-	 * Called when this item is consumed.
-	 */
-	public abstract void onConsume(ItemConsumeEvent evt);
-	
-	/**
-	 * Called when an item is interacted with in the inventory.
-	 */
-	public abstract void onInventoryClick(ItemInventoryEvent evt);
+	@SuppressWarnings("unchecked")
+	protected <T> T[] arr(T... a) {
+		return a;
+	}
 	
 	/**
 	 * Gets the display name for this item.

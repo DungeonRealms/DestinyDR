@@ -8,8 +8,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
@@ -23,19 +22,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 
-public class PotionItem extends FunctionalItem {
+public class PotionItem extends FunctionalItem implements ItemClickListener {
 	
-	@Getter
-	private PotionTier tier;
-	
-	@Getter
-	private boolean splash;
-	
-	@Setter
-	private int healAmount;
-	
-	@Getter @Setter
-	private boolean fromShop;
+	@Getter private PotionTier tier;
+	@Getter private boolean splash;
+	@Setter private int healAmount;
+	@Getter @Setter private boolean fromShop;
 	
 	public PotionItem(int potionTier) {
 		this(PotionTier.getById(potionTier));
@@ -112,12 +104,6 @@ public class PotionItem extends FunctionalItem {
         	return;
         }
     }
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected ItemUsage[] getUsage() {

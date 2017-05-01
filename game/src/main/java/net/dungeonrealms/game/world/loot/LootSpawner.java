@@ -52,14 +52,14 @@ public class LootSpawner {
 	 */
 	private void setContents() {
 		getLocation().getBlock().setType(Material.CHEST);
-		HashMap<ItemStack, Integer> loot = LootManager.getLoot().get(getLootTable());
+		HashMap<ItemStack, Double> loot = LootManager.getLoot().get(getLootTable());
 		
 		int count = 0;
 		for (ItemStack stack : loot.keySet()) {
 			if (stack == null)
 				continue;
 			// Should we spawn this item?
-			if (loot.get(stack) < new Random().nextInt(100))
+			if (loot.get(stack) < new Random().nextInt(1000))
 				continue;
 			
 			ItemGeneric item = (ItemGeneric)PersistentItem.constructItem(stack);

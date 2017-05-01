@@ -13,14 +13,13 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemConsumeEvent.ItemConsumeListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 
-public class ItemHealingFood extends FunctionalItem {
+public class ItemHealingFood extends FunctionalItem implements ItemConsumeListener {
 	
 	private EnumHealingFood foodType;
 	
@@ -47,8 +46,8 @@ public class ItemHealingFood extends FunctionalItem {
 					return;
 				}
 				
-				if (HealthHandler.getPlayerHP(player) < HealthHandler.getPlayerMaxHP(player))
-					HealthHandler.healPlayer(player, healAmount);
+				if (HealthHandler.getHP(player) < HealthHandler.getMaxHP(player))
+					HealthHandler.heal(player, healAmount);
 			}
 		}, 0, 20);
 	}
@@ -62,9 +61,6 @@ public class ItemHealingFood extends FunctionalItem {
 	public void updateItem() {
 		setTagInt("healAmount", this.healAmount);
 	}
-	
-	@Override
-	public void onClick(ItemClickEvent evt) {}
 
 	@Override
 	public void onConsume(ItemConsumeEvent evt) {
@@ -72,16 +68,13 @@ public class ItemHealingFood extends FunctionalItem {
         
 		evt.setUsed(true);
         player.setFoodLevel(player.getFoodLevel() + 6);
-        if (HealthHandler.getPlayerHP(player) < HealthHandler.getPlayerMaxHP(player)) {
+        if (HealthHandler.getHP(player) < HealthHandler.getMaxHP(player)) {
             player.sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + healAmount + ChatColor.GREEN + "HP/s for 15 seconds!");
             startHealing(player, healAmount);
         } else {
             player.sendMessage(ChatColor.YELLOW + "You are already at full HP, however, your hunger has been satisfied.");
         }
 	}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected ItemUsage[] getUsage() {

@@ -14,13 +14,12 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 
-public class ItemGlobalMessager extends FunctionalItem {
+public class ItemGlobalMessager extends FunctionalItem implements ItemClickListener {
 
 	public ItemGlobalMessager() {
 		super(ItemType.GLOBAL_MESSAGER);
@@ -86,16 +85,9 @@ public class ItemGlobalMessager extends FunctionalItem {
 	protected String[] getLore() {
 		return new String[] {
 				ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1",
-				"Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS."
-		};
+				"Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS."};
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
-
+	
 	@Override
 	protected ItemUsage[] getUsage() {
 		return INTERACT;

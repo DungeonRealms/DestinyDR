@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,21 +16,18 @@ import org.bukkit.inventory.ItemStack;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R2.Entity;
 
-public class ItemMount extends FunctionalItem {
+public class ItemMount extends FunctionalItem implements ItemClickListener {
 	
 	@Getter @Setter
 	private boolean mule;
@@ -57,24 +55,22 @@ public class ItemMount extends FunctionalItem {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void attemptSummonMount(Player player, boolean mule) {
+	public static void attemptSummonMount(Player player) {
 		if (!canSummonMount(player))
         	return;
         
-        String mountType = mule ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+		EnumMounts mountType = EnumMounts.getByName((String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId()));
         
-        if (mountType == null || mountType.equals("")) {
+        if (mountType == null) {
             player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
             player.closeInventory();
             return;
         }
         
-        if (mule) {
-			List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-            if (!playerMounts.contains("MULE")) {
-                player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
-                return;
-            }
+        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+        if (!playerMounts.contains(mountType.name())) {
+            player.sendMessage(ChatColor.RED + "You do not own this mount.");
+            return;
         }
         
         player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
@@ -100,7 +96,7 @@ public class ItemMount extends FunctionalItem {
                 count[0]++;
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
             } else {
-                MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
+            	MountUtils.spawnMount(player, mountType, EnumMountSkins.getByName((String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId())));
             }
         	
         }, 0L, 20L);
@@ -108,18 +104,10 @@ public class ItemMount extends FunctionalItem {
 	}
 
 	private static boolean canSummonMount(Player player) {
-		
 		// Dismiss existing mount.
-		if (EntityAPI.hasMountOut(player.getUniqueId())) {
-			Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-			if (entity.isAlive())
-				entity.getBukkitEntity().remove();
-			
-			if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity))
-				DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-			
+		if (MountUtils.hasActiveMount(player)) {
+			MountUtils.removeMount(player);
 			player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
-			EntityAPI.removePlayerMountList(player.getUniqueId());
 			return false;
 		}
 		
@@ -138,14 +126,8 @@ public class ItemMount extends FunctionalItem {
 	
 	@Override
 	public void onClick(ItemClickEvent evt) {
-        attemptSummonMount(evt.getPlayer(), false);
+        attemptSummonMount(evt.getPlayer());
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

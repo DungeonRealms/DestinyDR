@@ -7,14 +7,13 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 
-public class ItemHearthstone extends FunctionalItem {
+public class ItemHearthstone extends FunctionalItem implements ItemInventoryListener {
 
 	private Player player;
 	
@@ -42,12 +41,6 @@ public class ItemHearthstone extends FunctionalItem {
                 "",
                 ChatColor.YELLOW + "Speak to an Innkeeper to change location."};
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
 
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {

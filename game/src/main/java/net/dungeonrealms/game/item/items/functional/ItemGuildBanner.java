@@ -8,15 +8,14 @@ import net.dungeonrealms.game.guild.token.GuildCreateToken;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
-import net.md_5.bungee.api.ChatColor;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemGuildBanner extends FunctionalItem {
+public class ItemGuildBanner extends FunctionalItem implements ItemClickListener {
 
 	@Getter @Setter
 	private GuildCreateToken guild;
@@ -62,12 +61,6 @@ public class ItemGuildBanner extends FunctionalItem {
             }
         });
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

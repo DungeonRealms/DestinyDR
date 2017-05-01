@@ -11,12 +11,11 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 
-public class ItemParticleTrail extends FunctionalItem {
+public class ItemParticleTrail extends FunctionalItem implements ItemClickListener {
 
 	public ItemParticleTrail() {
 		super(ItemType.PARTICLE_TRAIL);
@@ -47,12 +46,6 @@ public class ItemParticleTrail extends FunctionalItem {
         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
         player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

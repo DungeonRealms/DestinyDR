@@ -8,32 +8,22 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.md_5.bungee.api.ChatColor;
 
-
-
-
-
-
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemBuff extends FunctionalItem {
+@Getter @Setter
+public class ItemBuff extends FunctionalItem implements ItemClickListener {
 	
-	@Getter @Setter //The type of buff.
 	private EnumBuff buffType;
-	
-	@Getter @Setter // The duration of this buff, in ??? units.
 	private int duration;
-	
-	@Getter @Setter //The % increase of this buff.
 	private int buffPower;
 	
 	public ItemBuff(EnumBuff buff, int duration, int buffPower) {
@@ -91,12 +81,6 @@ public class ItemBuff extends FunctionalItem {
 			player.sendMessage(ChatColor.RED + getDisplayName() + " - CANCELLED");
 		});
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

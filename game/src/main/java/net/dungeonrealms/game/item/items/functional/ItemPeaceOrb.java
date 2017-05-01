@@ -13,14 +13,13 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.RealmProperty;
 import net.dungeonrealms.game.world.realms.Realms;
 
-public class ItemPeaceOrb extends FunctionalItem {
+public class ItemPeaceOrb extends FunctionalItem implements ItemClickListener {
 
 	public ItemPeaceOrb(ItemStack item) {
 		super(item);
@@ -94,12 +93,6 @@ public class ItemPeaceOrb extends FunctionalItem {
         realm.updateWGFlags();
         realm.updateHologram();
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected ItemUsage[] getUsage() {

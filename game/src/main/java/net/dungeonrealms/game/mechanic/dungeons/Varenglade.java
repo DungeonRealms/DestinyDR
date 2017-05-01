@@ -35,7 +35,7 @@ public class Varenglade extends Dungeon {
 		return key.generateItem();
 	}
 	
-	public class VarengladeListener implements Listener {
+	public static class VarengladeListener implements Listener {
 		
 		@EventHandler(priority = EventPriority.HIGHEST)
 	    public void monsterDeath(EntityDeathEvent event) {

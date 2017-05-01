@@ -9,12 +9,11 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.chat.Chat;
 
-public class ItemRetrainingBook extends FunctionalItem {
+public class ItemRetrainingBook extends FunctionalItem implements ItemClickListener {
 
 	public ItemRetrainingBook() {
 		super(ItemType.RETRAINING_BOOK);
@@ -49,12 +48,6 @@ public class ItemRetrainingBook extends FunctionalItem {
 				ChatColor.DARK_GRAY + "One time use."
 		};
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected ItemUsage[] getUsage() {

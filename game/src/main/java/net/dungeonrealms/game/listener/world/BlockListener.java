@@ -1,11 +1,8 @@
 package net.dungeonrealms.game.listener.world;
 
-import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.command.CommandSpawner;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
@@ -16,12 +13,9 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
-import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.world.loot.LootSpawner;
-import net.dungeonrealms.game.world.realms.Realm;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
@@ -29,11 +23,9 @@ import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -41,15 +33,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,54 +49,16 @@ public class BlockListener implements Listener {
     private Map<Location, Repair> repairMap = new HashMap<>();
 
     /**
-     * Disables the placement of core items that have NBTData of `important` in
-     * `type` field.
-     *
-     * @param event
-     * @since 1.0
+     * Disable placing blocks in the main world.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        if (event.getItemInHand() == null) return;
-        if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0) || event.getBlock().getWorld().getName().contains("DUNGEON")) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPickupWhileRepairing(PlayerPickupItemEvent event) {
-        for (Repair repair : repairMap.values()) {
-            if (repair.getRepairing().equals(event.getPlayer().getName())) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-    }
-
-    /**
-     * Disables the placement of Realm Chest.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void placeRealmChest(BlockPlaceEvent event) {
-        if (event.getItemInHand() == null || event.getItemInHand().getType() != Material.CHEST)
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE || event.getItemInHand() == null)
         	return;
-
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemInHand());
-        if (nms.hasTag() && nms.getTag().hasKey("type"))
+        if (!Realms.getInstance().isRealm(event.getPlayer().getWorld()))
             event.setCancelled(true);
-
-        Realm realm = Realms.getInstance().getRealm(event.getBlock().getWorld());
-        if (realm == null || !realm.isOpen() || !realm.canBuild(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
-            event.setCancelled(true);
-            return;
-        }
     }
-
+    
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent event) {
         if (event.hasBlock() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -195,10 +143,8 @@ public class BlockListener implements Listener {
                         min.set(Integer.parseInt(range.split("-")[0]));
                         max.set(Integer.parseInt(range.split("-")[1]));
                     } else {
-                        for (MobSpawner spawner : SpawningMechanics.getAllSpawners()) {
-                            if (spawner.getLoc().getBlockX() == block.getLocation().getBlockX() &&
-                                    spawner.getLoc().getBlockY() == block.getLocation().getBlockY() &&
-                                    spawner.getLoc().getBlockZ() == block.getLocation().getBlockZ()) {
+                        for (MobSpawner spawner : SpawningMechanics.getSpawners()) {
+                            if (spawner.getLocation().equals(block.getLocation())) {
                                 //Found
                                 foundSpawner = spawner;
                                 break;
@@ -209,7 +155,7 @@ public class BlockListener implements Listener {
                         elite.set(foundSpawner instanceof EliteMobSpawner);
                         tier.set(foundSpawner.getTier());
                         levelRange = foundSpawner.getLvlRange();
-                        min.set(foundSpawner.getMininmumXZ());
+                        min.set(foundSpawner.getMinimumXZ());
                         max.set(foundSpawner.getMaximumXZ());
                         spawnAmount.set(foundSpawner.getSpawnAmount());
                         delay.set(foundSpawner.getRespawnDelay());
@@ -229,10 +175,8 @@ public class BlockListener implements Listener {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                             MobSpawner mobSpawner = temp;
                             if (checkIfExists && mobSpawner == null) {
-                                for (MobSpawner spawner : SpawningMechanics.getAllSpawners()) {
-                                    if (spawner.getLoc().getBlockX() == block.getLocation().getBlockX() &&
-                                            spawner.getLoc().getBlockY() == block.getLocation().getBlockY() &&
-                                            spawner.getLoc().getBlockZ() == block.getLocation().getBlockZ()) {
+                                for (MobSpawner spawner : SpawningMechanics.getSpawners()) {
+                                    if (spawner.getLocation().equals(block.getLocation())) {
                                         //Found
                                         mobSpawner = spawner;
                                         break;
@@ -242,9 +186,9 @@ public class BlockListener implements Listener {
 
                             if (mobSpawner == null) {
                                 if (elite.get())
-                                    mobSpawner = new EliteMobSpawner(block.getLocation(), monsterType.getIdName(), tier.get(), SpawningMechanics.getELITESPAWNERS().size(), levelRange, delay.get(), min.get(), max.get());
+                                    mobSpawner = new EliteMobSpawner(block.getLocation(), null, monsterType, tier.get(), levelRange, delay.get(), min.get(), max.get());
                                 else
-                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType.getIdName(), tier.get(), spawnAmount.get(), SpawningMechanics.getALLSPAWNERS().size(), levelRange, delay.get(), min.get(), max.get());
+                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get());
                             }
 
                             boolean noName = false;
@@ -258,17 +202,15 @@ public class BlockListener implements Listener {
 
                             if (elite.get()) {
                                 EnumNamedElite eliteEnum = EnumNamedElite.getFromName(name.toLowerCase().replace("_", " "));
-                                if (eliteEnum != null && eliteEnum != EnumNamedElite.NONE)
+                                if (eliteEnum != null && eliteEnum != null)
                                     player.sendMessage(ChatColor.GREEN + "Found Elite named " + eliteEnum.getConfigName());
 
                             }
 
                             if (!noName) {
                                 mobSpawner.setCustomName(name.replace("_", " "));
-                                mobSpawner.setHasCustomName(true);
                             } else if (checkIfExists) {
                                 mobSpawner.setCustomName(null);
-                                mobSpawner.setHasCustomName(false);
                             }
 
                             mobSpawner.setSpawnAmount(spawnAmount.get());
@@ -295,16 +237,16 @@ public class BlockListener implements Listener {
                                 String elemental = data[2].toLowerCase();
 
                                 if (elemental.equals("none")) {
-                                    if (mobSpawner.getElementalDamage() != null && checkIfExists) {
+                                    if (mobSpawner.getElement() != null && checkIfExists) {
                                         //Set current to null.
-                                        mobSpawner.setElementalDamage(null);
+                                        mobSpawner.setElement(null);
                                     }
                                 } else {
                                     double chance = data.length > 3 ? Double.parseDouble(data[3]) : 100;
 
-                                    ElementalDamage damage = ElementalDamage.getFromName(elemental);
+                                    ElementalAttribute damage = ElementalAttribute.getByName(elemental);
                                     if (damage != null) {
-                                        mobSpawner.setElementalDamage(damage.getName().toLowerCase());
+                                        mobSpawner.setElement(damage);
                                         mobSpawner.setElementChance(chance);
                                     } else {
                                         player.sendMessage(ChatColor.RED + "Invalid element type given.");
@@ -313,22 +255,18 @@ public class BlockListener implements Listener {
 
                             }
 
-                            if (!checkIfExists) {
-                                if (elite.get())
-                                    SpawningMechanics.getELITESPAWNERS().add((EliteMobSpawner) mobSpawner);
-                                else
-                                    SpawningMechanics.getALLSPAWNERS().add((BaseMobSpawner) mobSpawner);
-                            }
+                            if (!checkIfExists)
+                            	SpawningMechanics.getSpawners().add(mobSpawner);
 
                             //Get serialized string?
                             String serialized = mobSpawner.getSerializedString();
 
                             if (checkIfExists) {
                                 if (monsterType != null)
-                                    mobSpawner.setSpawnType(monsterType.getIdName());
+                                	mobSpawner.setMonsterType(monsterType);
                                 for (int i = 0; i < SpawningMechanics.SPAWNER_CONFIG.size(); i++) {
                                     String line = SpawningMechanics.SPAWNER_CONFIG.get(i);
-                                    if (MobSpawner.doesLineMatchLocation(mobSpawner.getLoc(), line)) {
+                                    if (mobSpawner.doesLineMatchLocation(line)) {
                                         //Remove that whole line..
                                         String newString = mobSpawner.getSerializedString();
                                         SpawningMechanics.SPAWNER_CONFIG.set(i, newString);
@@ -348,7 +286,7 @@ public class BlockListener implements Listener {
                             //Init mobspawner.
                             mobSpawner.init();
                             mobSpawner.createEditInformation();
-                            CommandSpawner.shownMobSpawners.put(mobSpawner.getLoc(), mobSpawner);
+                            CommandSpawner.shownMobSpawners.put(mobSpawner.getLocation(), mobSpawner);
                             if (checkIfExists)
                                 player.sendMessage(ChatColor.RED + "Spawner created!");
                             else
@@ -395,52 +333,24 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void spawnerBreakEvent(BlockBreakEvent e) {
-        if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        if (!GameAPI.isMainWorld(e.getBlock()))
+        	return;
         Block block = e.getBlock();
-        if (block == null) return;
-        if (block.getType() == Material.MOB_SPAWNER) {
-            Lists.newArrayList(SpawningMechanics.getALLSPAWNERS()).stream().filter(spawner -> isEqual(spawner.getLoc(), block.getLocation())).forEach((spawner) -> {
-                SpawningMechanics.remove(spawner);
-                spawner.setRemoved(true);
-                spawner.remove();
-                e.getPlayer().sendMessage(ChatColor.RED + "Spawner removed.");
-                Bukkit.getLogger().info("Removing spawner at " + spawner.getLoc().toString());
-            });
-
-            Lists.newArrayList(SpawningMechanics.getELITESPAWNERS()).stream().filter(spawner -> isEqual(spawner.getLoc(), block.getLocation())).forEach((spawner) -> {
-                SpawningMechanics.remove(spawner);
-                spawner.setRemoved(true);
-                spawner.remove();
-                e.getPlayer().sendMessage(ChatColor.RED + "Elite Spawner removed.");
-                Bukkit.getLogger().info("Removing elite spawner at " + spawner.getLoc().toString());
-
-            });
-        }
-    }
-
-    private boolean isEqual(Location location, Location loc2) {
-        return location.getBlockX() == loc2.getBlockX() && loc2.getBlockY() == loc2.getBlockY() && loc2.getBlockZ() == location.getBlockZ() && loc2.getWorld().getName().equals(location.getWorld().getName());
+        if (block == null || block.getType() != Material.MOB_SPAWNER)
+        	return;
+        
+        new ArrayList<>(SpawningMechanics.getSpawners()).stream().filter(spawner -> spawner.getLocation().equals(block.getLocation())).forEach(spawner -> {
+        	SpawningMechanics.remove(spawner);
+            spawner.remove();
+            e.getPlayer().sendMessage(ChatColor.RED + "Spawner removed.");
+            Bukkit.getLogger().info("Removing spawner at " + spawner.getLocation().toString());
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void breakBlock(BlockBreakEvent e) {
-        if (e.getPlayer().isOp() || e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        if (e.getBlock().getWorld() == Bukkit.getWorlds().get(0) || e.getBlock().getWorld().getName().contains("DUNGEON")) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onEntityExplode(EntityExplodeEvent event) {
-        if (event.getLocation().getWorld().getName().contains("DUNGEON")) {
-            event.setCancelled(true);
-            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
-            List<Block> list = event.blockList();
-            for (Block b : list) {
-                b.setType(Material.AIR);
-            }
-            event.blockList().clear();
-        }
+        if (!e.getPlayer().isOp() && !Realms.getInstance().isRealm(e.getBlock().getWorld()))
+        	e.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -460,15 +370,10 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void itemMove(InventoryMoveItemEvent event) {
-        if (event.getDestination().getName().equalsIgnoreCase("container.furnace")) event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
-        if (block == null) return;
-        if (block.getType() != Material.ANVIL) return;
+        if (block == null || block.getType() != Material.ANVIL)
+        	return;
         event.setCancelled(true);
         if (!GameAPI.isMainWorld(block.getLocation())) return;
         
@@ -594,14 +499,10 @@ public class BlockListener implements Listener {
     /**
      * Cancels Portals changing to Air if
      * they are not surrounded by obsidian.
-     *
-     * @param event
-     * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPhysicsChange(BlockPhysicsEvent event) {
-        if (event.getBlock().getType() == Material.PORTAL && event.getChangedType() == Material.AIR) {
+        if (event.getBlock().getType() == Material.PORTAL && event.getChangedType() == Material.AIR)
             event.setCancelled(true);
-        }
     }
 }

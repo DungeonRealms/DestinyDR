@@ -6,8 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -18,7 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemTeleportBook extends FunctionalItem {
+public class ItemTeleportBook extends FunctionalItem implements ItemClickListener {
 
 	@Getter @Setter
 	private TeleportLocation teleportLocation;
@@ -82,12 +81,6 @@ public class ItemTeleportBook extends FunctionalItem {
 		
 		Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, getTeleportLocation());
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

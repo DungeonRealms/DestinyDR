@@ -2,9 +2,6 @@ package net.dungeonrealms.game.item.items.functional;
 
 import lombok.Getter;
 import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -70,15 +67,6 @@ public abstract class ItemMoney extends FunctionalItem {
 	protected boolean doesDestroyOnEmpty() {
 		return true;
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 	
 	public static boolean isMoney(ItemStack item) {
 		return ItemGem.isGem(item) || ItemGemNote.isGemNote(item) || ItemGemPouch.isPouch(item);

@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener.combat;
 
-
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievementMonsterKill;
@@ -11,21 +10,22 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -69,9 +69,9 @@ public class PvEListener implements Listener {
         //  THIS ONLY HANDLES PvE  //
         if (event.getEntity() instanceof Player) return;
         
-        //  NO HITTING PETS  //
-        if (EntityMechanics.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (EntityMechanics.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        // Don't attack pets!
+        if (PetUtils.getPets().containsValue(event.getEntity()) || MountUtils.getMounts().containsValue(event.getEntity()))
+        	return;
         
         //  ONLY HANDLE MOB ATTACKS  //
         if (event.getEntity() instanceof LivingEntity) {
@@ -84,12 +84,8 @@ public class PvEListener implements Listener {
         event.setDamage(0);
 
         if (DamageAPI.isInvulnerable(receiver)) {
-            if (receiver.hasMetadata("boss")) {
-                if (receiver instanceof CraftLivingEntity) {
-                    DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
-                    b.onBossAttack(event);
-                }
-            }
+            if (receiver.hasMetadata("boss"))
+            	((DungeonBoss)EntityAPI.getMonster(receiver)).onBossAttacked(damager);
             event.setCancelled(true);
             damager.updateInventory();
             return;
@@ -172,21 +168,14 @@ public class PvEListener implements Listener {
                 killer.sendMessage(ChatColor.GRAY + "They have been awarded the XP.");
             }
         }
-        if (Affair.getInstance().isInParty(highestDamage)) {
+        if (Affair.isInParty(highestDamage)) {
             List<Player> nearbyPlayers = GameAPI.getNearbyPlayers(highestDamage.getLocation(), 10);
             List<Player> nearbyPartyMembers = new ArrayList<>();
             if (!nearbyPlayers.isEmpty()) {
-                for (Player player : nearbyPlayers) {
-                    if (player.equals(highestDamage)) {
-                        continue;
-                    }
-                    if (!GameAPI.isPlayer(highestDamage)) {
-                        continue;
-                    }
-                    if (Affair.getInstance().areInSameParty(highestDamage, player)) {
+                for (Player player : nearbyPlayers)
+                    if (!player.equals(highestDamage) && Affair.areInSameParty(highestDamage, player))
                         nearbyPartyMembers.add(player);
-                    }
-                }
+
                 if (nearbyPartyMembers.size() > 0) {
                     nearbyPartyMembers.add(highestDamage);
                     //  ADD BOOST  //
@@ -245,12 +234,8 @@ public class PvEListener implements Listener {
                 PowerMove.doPowerMove("whirlwind", receiver, null);
             }
         } else if (receiver.hasMetadata("boss")) {
-            if (receiver instanceof CraftLivingEntity) {
-                DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
-                b.onBossAttack(event);
-            }
-            else
-                return;
+        	if (event.getDamager() instanceof Player)
+        		((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked((Player) event.getDamager());
             powerChance = 3;
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);

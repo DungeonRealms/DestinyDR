@@ -8,7 +8,9 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.player.chat.Chat;
 
 import org.bukkit.ChatColor;
@@ -16,7 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemGemNote extends ItemMoney {
+public class ItemGemNote extends ItemMoney implements ItemClickListener, ItemInventoryListener {
 
 	@Getter
 	private List<String> signers = new ArrayList<>();

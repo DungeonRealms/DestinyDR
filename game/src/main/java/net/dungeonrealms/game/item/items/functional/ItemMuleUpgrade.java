@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import java.util.ArrayList;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -7,9 +9,8 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -23,9 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.common.collect.Lists;
-
-public class ItemMuleUpgrade extends FunctionalItem {
+public class ItemMuleUpgrade extends FunctionalItem implements ItemInventoryListener {
 
 	@Getter @Setter
 	private MuleTier tier;
@@ -53,12 +52,6 @@ public class ItemMuleUpgrade extends FunctionalItem {
 	}
 
 	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
 		if(!ItemMuleMount.isMule(evt.getSwappedItem()))
 			return;
@@ -76,18 +69,16 @@ public class ItemMuleUpgrade extends FunctionalItem {
 		evt.getPlayer().sendMessage(ChatColor.GREEN + "Mule upgraded to " + getTier().getName() + ChatColor.GREEN + "!");
 		DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, muleTier.getTier(), true);
 		
-		if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
-            Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
-            //Close all people viewing this inventory.
-            Lists.newArrayList(inv.getViewers()).forEach(HumanEntity::closeInventory);
-
-            if (muleTier.getSize() != inv.getSize()) {
+		if (MountUtils.hasInventory(pl)) {
+			Inventory inv = MountUtils.getInventory(pl);
+			new ArrayList<>(inv.getViewers()).forEach(HumanEntity::closeInventory);
+			if (muleTier.getSize() != inv.getSize()) {
                 Inventory upgradeInventory = Bukkit.createInventory(null, muleTier.getSize(), "Mule Storage");
                 upgradeInventory.setContents(inv.getContents());
                 inv.clear();
-                MountUtils.inventories.put(pl.getUniqueId(), upgradeInventory);
+                MountUtils.getInventories().put(pl.getUniqueId(), upgradeInventory);
             }
-        }
+		}
 
 		evt.setSwappedItem(new ItemMuleMount(pl).generateItem());
         pl.updateInventory();

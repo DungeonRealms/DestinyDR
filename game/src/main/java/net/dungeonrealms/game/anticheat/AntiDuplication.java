@@ -79,7 +79,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
     }
 
     public void handleLogin(Player p) {
-        Inventory muleInv = MountUtils.inventories.get(p.getUniqueId());
+        Inventory muleInv = MountUtils.getInventory(p);
         Storage storage = BankMechanics.getStorage(p.getUniqueId());
         AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }

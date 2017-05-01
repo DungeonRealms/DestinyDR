@@ -33,27 +33,22 @@ import org.bukkit.event.Listener;
 public enum DungeonType {
     BANDIT_TROVE("Bandit Trove", "banditTrove",
     		BanditTrove.class, null, BossType.Mayel,
-    		"banditTrove", "T1Dungeon", EnumMounts.WOLF,
-    		1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
+    		EnumMounts.WOLF, 1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
     
     		
     VARENGLADE("Varenglade", "varenglade",
     		Varenglade.class, VarengladeListener.class, BossType.Burick,
-    		"varenglade", "DODungeon", EnumMounts.SLIME,
-    		3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE),
+    		EnumMounts.SLIME, 3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE),
     
-    THE_INFERNAL_ABYSS("Infernal Abyss", "theInfernalAbyss",
+    THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss",
     		InfernalAbyss.class,  InfernalListener.class, BossType.InfernalAbyss,
-    		"infernalAbyss", "fireydungeon", EnumMounts.SPIDER,
-    		4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS);
+    		EnumMounts.SPIDER, 4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS);
 
     private String name;
-    private String path;
+    private String internalName;
     private Class<? extends Dungeon> dungeonClass;
     private Class<? extends Listener> listenerClass;
     private BossType boss;
-    private String worldGuardName;
-    private String internalName;
     private EnumMounts mount;
     private int tier;
     private int minShards;
@@ -100,7 +95,7 @@ public enum DungeonType {
     }
     
     public File getZipFile() {
-    	return new File(GameAPI.getDataFolder() + "/dungeons/" + getPath() + ".zip");
+    	return new File(GameAPI.getDataFolder() + "/dungeons/" + getInternalName() + ".zip");
     }
     
     public Dungeon createDungeon() {
@@ -136,5 +131,12 @@ public enum DungeonType {
     		exception.printStackTrace();
     	}
     	DungeonManager.getDungeonSpawns().put(this, spawns);
+    }
+    
+    public static DungeonType getInternal(String internalName) {
+    	for (DungeonType d : values())
+    		if (d.getInternalName().equalsIgnoreCase(internalName))
+    			return d;
+    	return null;
     }
 }

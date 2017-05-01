@@ -8,12 +8,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 
-public class ItemPlayerProfile extends FunctionalItem {
+public class ItemPlayerProfile extends FunctionalItem implements ItemInventoryListener {
 
 	private Player player;
 	
@@ -44,13 +43,7 @@ public class ItemPlayerProfile extends FunctionalItem {
 	protected String[] getLore() {
 		return new String[] { ChatColor.GREEN + "Open Profile" };
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
+	
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
 		evt.setCancelled(true);

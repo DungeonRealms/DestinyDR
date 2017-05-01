@@ -169,7 +169,7 @@ public class ItemManager {
         		+ ChatColor.BLACK.toString() + playerAlignment.description + new_line + ChatColor.BLACK.toString() + "   " + gp.getHP()
         		+ " / " + gp.getHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
                 + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
-        		+ "   " + (HealthHandler.getPlayerHPRegen(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
+        		+ "   " + (HealthHandler.getRegen(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + gp.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString() + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
         		+ "   " + gp.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()

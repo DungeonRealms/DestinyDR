@@ -40,22 +40,15 @@ import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
-import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -87,8 +80,6 @@ public class DamageListener implements Listener {
 
     /**
      * Cancel World Guard PVP flag if players are dueling.
-     *
-     * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void disallowPVPEvent(DisallowedPVPEvent event) {
@@ -248,85 +239,27 @@ public class DamageListener implements Listener {
 
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerDamageOnMount(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            if (event.getEntity().getVehicle() != null && event.getEntity().getVehicle().isValid()) {
-                Entity vehicle = event.getEntity().getVehicle();
-
-                if (vehicle.hasMetadata("mount")) {
-                    EnumMounts mount = EnumMounts.getByName(vehicle.getMetadata("mount").get(0).asString());
-                    if (mount == null || mount.getMountData() == null) return;
-
-                    if (vehicle.hasMetadata("type") && vehicle.hasMetadata("owner") && EntityMechanics.PLAYER_MOUNTS.containsValue(vehicle)) {
-                        //Will eject the mount and handle through
-                        event.getEntity().sendMessage(ChatColor.RED + "Your mount has been dismissed due to taking damage.");
-                        vehicle.eject();
-                    }
-                }
-            }
+    public void specialEntityDamage(EntityDamageByEntityEvent event) {
+    	Entity e = event.getEntity();
+        if (e instanceof Player) {
+        	Player p = (Player) e;
+        	if (MountUtils.hasActiveMount(p)) {
+        		p.sendMessage(ChatColor.RED + "Your mount has been dismissed due to taking damage.");
+        		MountUtils.removeMount(p);
+        	}
         }
-    }
-
-    /**
-     * Listen for Pets Damage.
-     * <p>
-     * E.g. I can't attack Xwaffle's Wolf it's a pet!
-     *
-     * @param event
-     * @since 1.0
-     */
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void mountDamageListener(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
-        switch (metaValue) {
-            case "pet":
-                event.setCancelled(true);
-                event.setDamage(0);
-                break;
-            case "mount":
-                event.setCancelled(true);
-                event.setDamage(0);
-                Player p = null;
-                if (event.getDamager() instanceof Player) {
-                    p = (Player) event.getDamager();
-                } else if (event.getDamager() instanceof Projectile) {
-                    if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                        p = (Player) ((Projectile) event.getDamager()).getShooter();
-                    }
-                }
-                if (p == null) return;
-                if (event.getEntity() instanceof Horse) {
-                    Horse horse = (Horse) event.getEntity();
-                    if (!horse.getVariant().equals(Variant.MULE)) return;
-                    if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
-                        if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
-                            // Not in a safezone
-                            EntityAPI.removePlayerMountList(p.getUniqueId());
-                            horse.remove();
-                        } else {
-                            if (event.getDamager() instanceof Player) {
-                                event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
-                            }
-                        }
-                    }
-                } else {
-                    if (!GameAPI.isNonPvPRegion(event.getEntity().getLocation())) {
-                        Entity passenger = event.getEntity().getPassenger();
-                        if (passenger != null && passenger instanceof Player) {
-                            passenger.sendMessage(ChatColor.RED + "You have been dismounted due to your mount taking damage.");
-                        }
-                        event.getEntity().eject();
-                    } else {
-                        event.setCancelled(true);
-                        if (event.getDamager() instanceof Player)
-                            event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
-                    }
-                    break;
-                }
-            default:
-                break;
+        
+        if (EnumEntityType.PET.isType(e))
+        	event.setCancelled(true);
+        
+        if (MountUtils.isMount(e)) {
+        	event.setCancelled(true);
+        	
+        	Tameable mount = (Tameable) e;
+        	if (mount instanceof Horse && ((Horse)mount).getVariant() == Variant.MULE)
+        		return;
+        	if (mount.getOwner().equals(event.getDamager()) && mount.getOwner() instanceof Player)
+        		MountUtils.removeMount((Player) mount.getOwner());
         }
     }
 
@@ -445,22 +378,10 @@ public class DamageListener implements Listener {
         			.forEach(event.getDrops()::remove);
         }
 
-        Inventory mountInventory = MountUtils.inventories.get(p.getUniqueId());
-        if (MountUtils.inventories.containsKey(p.getUniqueId()) && mountInventory != null) {
-            for (ItemStack stack : mountInventory.getContents()) {
-                mountInventory.remove(stack);
-                event.getDrops().add(stack);
-            }
-            if (EntityAPI.hasMountOut(p.getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity entity = EntityAPI.getPlayerMount(p.getUniqueId());
-                if (entity.getBukkitEntity() instanceof Horse) {
-                    Horse horse = (Horse) entity.getBukkitEntity();
-                    if (horse.getVariant() == Variant.MULE) {
-                        horse.remove();
-                        EntityAPI.removePlayerMountList(p.getUniqueId());
-                    }
-                }
-            }
+        if (MountUtils.hasInventory(p)) {
+        	Arrays.stream(MountUtils.getInventory(p).getContents()).forEach(event.getDrops()::add);
+            MountUtils.getInventory(p).clear();
+            MountUtils.removeMount(p);
         }
         
         //  DONT DROP SAVED ITEMS  //
@@ -719,27 +640,23 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onMiscDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player)
+        Entity e = event.getEntity();
+    	if (e instanceof Player)
             return;
-
+        
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
-
-            if (event.getEntity().hasMetadata("boss")) {
-                if (event.getEntity() instanceof CraftLivingEntity) {
-                    DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
-                    if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast) {
-                        //Dont suffocate the ghast, teleport him to the middle.
-                        event.getEntity().teleport(new Location(event.getEntity().getWorld(), -53, 170, 660));
-                        return;
-                    }
-                }
+        	
+            if (EntityAPI.isBoss(e)) {
+        		if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast)
+        			event.getEntity().teleport(new Location(event.getEntity().getWorld(), -53, 170, 660));
                 return;
             }
             //Dont even despawn the boss.. or elites
-            if (event.getEntity().hasMetadata("elite")) return;
+            if (EntityAPI.isElite(e))
+            	return;
 
-            Bukkit.getLogger().info("Removing entity " + event.getEntity().getType() + " at " + event.getEntity().getLocation().toString() + " inside: " + event.getEntity().getLocation().getBlock().getType().name());
-            event.getEntity().remove();
+            Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name());
+            e.remove();
             return;
         } else if (event.getCause() == DamageCause.POISON) {
             //Endermen and witches immune to poison?
@@ -777,7 +694,7 @@ public class DamageListener implements Listener {
         GamePlayer gp = isPlayer ? GameAPI.getGamePlayer((Player)event.getEntity()) : null;
         LivingEntity ent = (LivingEntity)event.getEntity();
         
-        int maxHP = isPlayer ? gp.getMaxHP() : HealthHandler.getMonsterHP(ent);
+        int maxHP = HealthHandler.getMaxHP(ent);
         
         if (GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
             event.setDamage(0);
@@ -892,66 +809,26 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFireballHit(ProjectileHitEvent event) {
-        if (event.getEntity() instanceof LargeFireball) {
-            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            if (shooter instanceof Ghast) {
-                for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
-                    if (GameAPI.isPlayer(ent) && !GameAPI.isInSafeRegion(ent.getLocation())) {
-                    	AttackResult res = new AttackResult(shooter, (LivingEntity)ent, event.getEntity());
-                    	DamageAPI.calculateWeaponDamage(res, false);
-                    	DamageAPI.applyArmorReduction(res, true);
-                    	HealthHandler.damagePlayer(res);
-                    }
-                }
-                
-                //TODO: Move this code into the infernal listener (Once it exists), and make this less terrible.
-                if (new Random().nextInt(10) == 0) {
-                    // 10% chance of adds on explosion.
-                    Location hit_loc = event.getEntity().getLocation();
-                    World world = ((CraftWorld) event.getEntity().getWorld()).getHandle();
-                    for (int i = 0; i <= 3; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
-                        int level = Utils.getRandomFromTier(2, "low");
-                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.setMonsterRandomStats(entity, level, 2);
-                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(2).toString() + "Lesser Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(2).toString() + "Lesser Spawn of Inferno"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                }
-            }
-        } else if (event.getEntity() instanceof SmallFireball) {
-            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            if (shooter instanceof Blaze) {
-                if (new Random().nextInt(5) == 0) {
-                    if (event.getEntity().hasMetadata("tier")) {
-                        Location toSpawn = event.getEntity().getLocation();
-                        int tier = event.getEntity().getMetadata("tier").get(0).asInt();
-                        World world = ((CraftWorld) event.getEntity().getWorld()).getHandle();
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, tier, EnumMonster.MagmaCube);
-                        int level = Utils.getRandomFromTier(tier, "low");
-                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.setMonsterRandomStats(entity, level, tier);
-                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(tier).toString() + EnumMonster.MagmaCube.name);
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(tier).toString() + EnumMonster.MagmaCube.name));
-                        Location location = new Location(world.getWorld(), toSpawn.getX(), toSpawn.getY(), toSpawn.getZ());
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                }
-            }
-        }
+    	Entity e = event.getEntity();
+    	LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
+    	Random random = new Random();
+        if (e instanceof LargeFireball && shooter instanceof Ghast) {
+        	for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
+        		if (GameAPI.isPlayer(ent) && !GameAPI.isInSafeRegion(ent.getLocation())) {
+        			AttackResult res = new AttackResult(shooter, (LivingEntity)ent, event.getEntity());
+        			DamageAPI.calculateWeaponDamage(res, false);
+        			DamageAPI.applyArmorReduction(res, true);
+        			HealthHandler.damagePlayer(res);
+        		}
+        	}
+        	
+        	if (random.nextInt(10) == 0)
+        		for (int i = 0; i <= 3; i++)
+        			EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
+        	
+        } else if (event.getEntity() instanceof SmallFireball && shooter instanceof Blaze && random.nextInt(5) == 0) {
+        	int tier = EntityAPI.getTier(e);
+        	EntityAPI.spawnCustomMonster(e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
+        }	
     }
 }

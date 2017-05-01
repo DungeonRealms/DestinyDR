@@ -10,8 +10,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Fishing.EnumFish;
@@ -25,7 +24,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemFish extends FunctionalItem {
+public class ItemFish extends FunctionalItem implements ItemClickListener {
 
 	@Getter @Setter
 	private boolean cooked;
@@ -102,12 +101,6 @@ public class ItemFish extends FunctionalItem {
 				|| m == Material.FIRE || m == Material.LAVA
 				|| m == Material.STATIONARY_LAVA || m == Material.TORCH;
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

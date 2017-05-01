@@ -8,15 +8,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 /**
  * Created by Nick on 11/11/2015.
  */
 public class CommandPChat extends BaseCommand {
 
-    public CommandPChat(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandPChat() {
+        super("pchat", "/<command> [args]", "Talk in party chat.", "p");
     }
 
     @Override
@@ -26,7 +24,7 @@ public class CommandPChat extends BaseCommand {
 
         Player player = (Player) s;
 
-        if (Affair.getInstance().isInParty(player)) {
+        if (Affair.isInParty(player)) {
             if (args.length > 0) {
                 StringBuilder message = new StringBuilder();
 
@@ -36,7 +34,7 @@ public class CommandPChat extends BaseCommand {
 
                 Affair.getInstance().sendPartyChat(player, message.toString());
             } else {
-                Affair.getInstance().togglePartyChat(player);
+                Affair.togglePartyChat(player);
             }
         } else {
             player.sendMessage(ChatColor.RED + "You are not in a party!");

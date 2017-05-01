@@ -3,11 +3,16 @@ package net.dungeonrealms.game.mechanic.dungeons;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 
 import org.bukkit.Bukkit;
@@ -120,6 +125,8 @@ public class DungeonManager implements GenericMechanic {
         	
         	updateActionBar(d);
         }), 0L, 20L);
+        
+        Bukkit.getPluginManager().registerEvents(new DungeonListener(), DungeonRealms.getInstance());
     }
 
     @Override
@@ -185,8 +192,19 @@ public class DungeonManager implements GenericMechanic {
     }
     
     public static Dungeon createDungeon(DungeonType type, List<Player> players) {
+    	if (type == null) {
+    		players.forEach(p -> p.sendMessage(ChatColor.RED + "Invalid dungeon type."));
+    		Utils.printTrace();
+        	Bukkit.getLogger().warning("Attempted to start a dungeon without a dungeontype!");
+        	return null;
+        }
     	
-    	if (!canCreateDungeon()) {
+    	if (DungeonRealms.getInstance().isEventShard) {
+    		players.forEach(p -> p.sendMessage(ChatColor.RED + "You cannot enter a dungeon on this shard."));
+    		return null;
+    	}
+    	
+    	if (getDungeons().size() >= 3) {
     		players.forEach(p -> p.sendMessage(ChatColor.RED + "This shard has the max amount of dungeons open."));
     		return null;
     	}
@@ -196,16 +214,33 @@ public class DungeonManager implements GenericMechanic {
     		return null;
     	}
     	
+    	players.forEach(MountUtils::removeMount);
+    	players.forEach(PetUtils::removePet);
+    	
+    	// This is the player who is triggered the dungeon start.
+    	Player player = players.get(0);
+    	
+    	if (Affair.isInParty(player)) {
+    		Party party = Affair.getParty(player);
+    		if (party.isDungeon()) {
+    			player.sendMessage(ChatColor.RED + "Your party is already inside a " + ChatColor.UNDERLINE + "different" + ChatColor.RED + " instanced dungeon.");
+                player.sendMessage(ChatColor.GRAY + "You'll need to either leave your current party or wait for them to finish their run.");
+                return null;
+    		}
+    		
+    		if (!party.isOwner(player)) {
+    			player.sendMessage(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " the party leader.");
+                player.sendMessage(ChatColor.GRAY + "Only the party leader can start a new dungeon instance.");
+    			return null;
+    		}
+    	} else {
+    		Affair.createParty(player);
+    	}
+    	
+    	players.forEach(p -> p.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + type.getDisplayName() + ChatColor.GRAY + "' -- Please wait..."));
     	Dungeon dungeon = type.createDungeon();
     	getDungeons().add(dungeon);
     	dungeon.startDungeon(players);
     	return dungeon;
-    }
-    
-    /**
-     * Can a new dungeon get created right now?
-     */
-    public static boolean canCreateDungeon() {
-    	return getDungeons().size() < 3;
     }
 }

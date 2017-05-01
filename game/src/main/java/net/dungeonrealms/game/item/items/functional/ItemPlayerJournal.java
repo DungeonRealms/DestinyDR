@@ -4,11 +4,12 @@ import java.util.Arrays;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -25,7 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-public class ItemPlayerJournal extends FunctionalItem {
+public class ItemPlayerJournal extends FunctionalItem implements ItemClickListener {
 	
 	public ItemPlayerJournal() {
 		super(ItemType.PLAYER_JOURNAL);
@@ -46,6 +47,30 @@ public class ItemPlayerJournal extends FunctionalItem {
 	@Override
 	public void onClick(ItemClickEvent evt) {
 		Player player = evt.getPlayer();
+		
+		if (evt.hasEntity() && evt.isLeftClick() && evt.getClickedEntity() instanceof Player) {
+			Player clicked = (Player) evt.getClickedEntity();
+			
+			if (Affair.isInParty(clicked)) {
+				player.sendMessage(ChatColor.RED + "That player is already in a party.");
+				return;
+			}
+			
+			if (!Affair.isInParty(player))
+				Affair.createParty(player);
+			
+			Party p = Affair.getParty(player);
+			
+			if (!p.isOwner(player)) {
+				player.sendMessage(ChatColor.RED + "You are NOT the leader of your party.");
+                player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party.");
+				return;
+			}
+			
+			p.invite(player, clicked);
+			return;
+		}
+		
 		if (evt.isSneaking() && evt.isRightClick() && evt.hasBlock()) {
 			// Open Shop.
 			if (DungeonRealms.getInstance().isEventShard) {
@@ -95,12 +120,6 @@ public class ItemPlayerJournal extends FunctionalItem {
 	}
 
 	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
-
-	@Override
 	protected String getDisplayName() {
 		return ChatColor.GREEN + "" + ChatColor.BOLD + "Character Journal";
 	}
@@ -114,7 +133,7 @@ public class ItemPlayerJournal extends FunctionalItem {
 
 	@Override
 	protected ItemUsage[] getUsage() {
-		return INTERACT_RIGHT_CLICK;
+		return arr(ItemUsage.RIGHT_CLICK_AIR, ItemUsage.RIGHT_CLICK_BLOCK, ItemUsage.RIGHT_CLICK_ENTITY, ItemUsage.LEFT_CLICK_ENTITY);
 	}
 
 	@Override

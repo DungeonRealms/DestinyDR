@@ -108,6 +108,7 @@ public class EntityAPI {
     	net.minecraft.server.v1_9_R2.Entity e = createElite(loc, elite, monster, tier, level, name, dungeon);
     	e.getWorld().addEntity(e);
     	e.getBukkitEntity().teleport(loc);
+    	((LivingEntity)e.getBukkitEntity()).setCollidable(true);
     	return e.getBukkitEntity();
     }
     
@@ -146,6 +147,7 @@ public class EntityAPI {
     	net.minecraft.server.v1_9_R2.Entity e = createCustomMonster(loc, monster, level, tier, weaponType, customName);
     	e.getWorld().addEntity(e);
     	e.getBukkitEntity().teleport(loc);
+    	((LivingEntity)e.getBukkitEntity()).setCollidable(true);
     	return e.getBukkitEntity();
     }
     
@@ -286,6 +288,10 @@ public class EntityAPI {
      */
     public static boolean isBoss(Entity ent) {
     	return Metadata.BOSS.has(ent);
+    }
+    
+    public static String getCustomName(Entity entity) {
+    	return Metadata.CUSTOM_NAME.get(entity).asString();
     }
     
     /**

@@ -21,14 +21,13 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.RealmProperty;
 import net.dungeonrealms.game.world.realms.RealmState;
 import net.dungeonrealms.game.world.realms.RealmTier;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -69,18 +68,8 @@ public class RealmListener implements Listener {
     public void onWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         player.closeInventory();
-        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(player.getUniqueId());
-        }
-
-        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(player.getUniqueId());
-        }
-
+        PetUtils.removePet(player);
+        MountUtils.removeMount(player);
         World to = player.getWorld();
         
         Realm realm = Realms.getInstance().getRealm(to);
@@ -110,9 +99,7 @@ public class RealmListener implements Listener {
 
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 player.setFireTicks(0);
-                player.setFallDistance(0.0F);
-                if (GameAPI.getGamePlayer(player) != null)
-                    GameAPI.getGamePlayer(player).setInvulnerable(false);
+                GameAPI.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
@@ -126,6 +113,7 @@ public class RealmListener implements Listener {
             else
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have left " + ChatColor.BOLD + realmFrom.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
         }
+        player.setFallDistance(0.0F);
     }
 
 
@@ -679,20 +667,8 @@ public class RealmListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
-    	
-    	//Remove Pets
-    	if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-            Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
-        }
-    	
-    	//Remove Mount
-        if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-            Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
-        }
+    	PetUtils.removePet(event.getPlayer());
+    	MountUtils.removeMount(event.getPlayer());
         
         if (GameAPI.isMainWorld(event.getPlayer().getLocation())) {
         	// Player is entering a realm.

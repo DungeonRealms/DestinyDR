@@ -7,52 +7,31 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.item.items.core.ItemFishingPole;
-import net.dungeonrealms.game.item.items.core.ItemPickaxe;
-import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ItemBuff;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
-import net.dungeonrealms.game.item.items.functional.ItemHealingFood;
-import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleTrail;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemPetSelector;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
-import net.dungeonrealms.game.mechanic.data.EnumBuff;
-import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.support.Support;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.*;
@@ -61,7 +40,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -335,170 +313,37 @@ public class ClickHandler {
             case "Pet Selection":
                 event.setCancelled(true);
                 if (event.getCurrentItem().getType() == Material.LEASH) {
-                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        EntityAPI.removePlayerPetList(player.getUniqueId());
-                        player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You currently do not have a pet in the world.");
-                    }
+                	PetUtils.removePet(player);
                     return;
                 }
-                if (event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.LEASH) {
-                    if (event.getClick() == ClickType.LEFT) {
-                        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                            Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                            if (entity.isAlive()) {
-                                entity.getBukkitEntity().remove();
-                            }
-                            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                            }
-                            EntityAPI.removePlayerPetList(player.getUniqueId());
-                        }
-                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                        if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
-                            player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your pet! Please inform a developer! [PS-NBT-1]");
-                            player.closeInventory();
-                            return;
-                        }
-                        String petName = "";
-                        if (nmsStack.getTag().getString("petName") != null) {
-                            petName = nmsStack.getTag().getString("petName");
-                        }
-                        String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
+                
+                ItemStack petSelector = event.getCurrentItem();
+                
+                if (ItemPetSelector.isType(petSelector, ItemType.PET_SELECTOR)) {
+                	ItemPetSelector selector = (ItemPetSelector) PersistentItem.constructItem(petSelector);
+                	if (event.getClick() == ClickType.LEFT) {
+                        PetUtils.removePet(player);
+                        String petName = selector.getPetName();
+                        String toStore = selector.getPet().name() + "@" + petName;
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, toStore, true);
-                        PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), petName);
-                    } else if (event.getClick() == ClickType.RIGHT) {
-                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                        if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
-                            player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your pet! Please inform a developer! [PS-NBT-2]");
-                            player.closeInventory();
-                            return;
-                        }
-                        String petType = nmsStack.getTag().getString("petType");
-                        String petName = "";
-                        if (nmsStack.getTag().getString("petName") != null) {
-                            petName = nmsStack.getTag().getString("petName");
-                        }
-                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
-                        String finalPetName = petName;
-                        Chat.listenForMessage(player, newPetName -> {
-                            if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
-                                player.sendMessage(ChatColor.RED + "Pet naming - " + ChatColor.BOLD + "CANCELLED" + ChatColor.RED + ".");
-                                return;
-                            }
-                            String inputName = newPetName.getMessage();
-
-                            // Name must be below 20 characters
-                            if (inputName.length() > 20) {
-                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 20 characters.");
-                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 20) + " characters over the limit.");
-                                return;
-                            }
-
-                            if (inputName.contains("@")) {
-                                inputName = inputName.replaceAll("@", "_");
-                            }
-
-                            String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
-
-                            String newPet = petType + "@" + checkedPetName;
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
-
-                            player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
-                        }, null);
+                        PetUtils.spawnPet(player, selector.getPet(), petName);
+                    } else if (event.getClick() == ClickType.MIDDLE) {
+                    	ItemPet.renamePet(player);
                     }
                 }
                 break;
             case "Mount Selection":
                 event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null)
+                	return;
                 if (event.getCurrentItem().getType() == Material.BARRIER) {
                     PlayerMenus.openPlayerProfileMenu(player);
                     return;
-                }
-                if (event.getCurrentItem().getType() == Material.LEASH) {
-                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                        player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You currently do not have a mount in the world.");
-                    }
+                } else if (event.getCurrentItem().getType() == Material.LEASH) {
+                	MountUtils.removeMount(player);
                     return;
-                }
-                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.LEASH) {
-                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                    }
-                    if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
-                        return;
-                    }
-                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
-                        return;
-                    }
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
-                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount! Please inform a developer! [MS-NBT]");
-                        player.closeInventory();
-                        return;
-                    }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), true);
-                    player.sendMessage(ChatColor.GREEN + "Your mount is currently being summoned into this world...");
-                    final int[] count = {0};
-                    Location startingLocation = player.getLocation();
-                    final boolean[] cancelled = {false};
-                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                            if (player.getLocation().distanceSquared(startingLocation) <= 4) {
-                                if (!CombatLog.isInCombat(player)) {
-                                    if (!cancelled[0]) {
-                                        if (count[0] < 3) {
-                                            count[0]++;
-                                        } else {
-                                            MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"), (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
-                                        }
-                                    }
-                                } else {
-                                    if (!cancelled[0]) {
-                                        cancelled[0] = true;
-                                        count[0] = 0;
-                                        player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
-                                    }
-                                }
-                            } else {
-                                if (!cancelled[0]) {
-                                    cancelled[0] = true;
-                                    count[0] = 0;
-                                    player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
-                                }
-                            }
-                        }
-                    }, 0L, 20L);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
+                } else {
+                	ItemMount.attemptSummonMount(player);
                 }
                 break;
             case "Player Effect Selection":
@@ -562,28 +407,8 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
                             return;
                         }
-                        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                            Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                            if (entity.isAlive()) {
-                                entity.getBukkitEntity().remove();
-                            }
-                            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                            }
-                            EntityAPI.removePlayerMountList(player.getUniqueId());
-                            player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
-                        }
-                        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                            Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                            if (entity.isAlive()) {
-                                entity.getBukkitEntity().remove();
-                            }
-                            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                            }
-                            EntityAPI.removePlayerPetList(player.getUniqueId());
-                            player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
-                        }
+                        MountUtils.removeMount(player);
+                        PetUtils.removePet(player);
                         if (CombatLog.isInCombat(player)) {
                             player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in combat!");
                             return;
@@ -596,8 +421,8 @@ public class ClickHandler {
                         }
                         player.sendMessage(ChatColor.GREEN + "Please wait whilst your storage mule is summoned...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                                MountUtils.spawnMount(player.getUniqueId(), "MULE", "");
+                            if (!MountUtils.hasInventory(player)) {
+                                MountUtils.spawnMount(player, EnumMounts.MULE);
                             } else {
                                 player.sendMessage(ChatColor.RED + "Your mount is currently summoned, you fail to summon your storage mule.");
                             }
@@ -660,33 +485,13 @@ public class ClickHandler {
                     return;
                 }
                 if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
-                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                        player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed. Please re-summon your mount.");
-                    } else {
-                        player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed.");
-                    }
+                	MountUtils.removeMount(player);
+                	player.sendMessage(ChatColor.GREEN + "Skin removed.");
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true);
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
-                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
-                        }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        }
-                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                    }
+                    MountUtils.removeMount(player);
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("skinType") == null) {
                         player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount skin! Please inform a developer! [MSS-NBT]");
@@ -1340,19 +1145,8 @@ public class ClickHandler {
                                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
                                 player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                             }
-
-                            // Remove Pet
-                            if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                                Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                                if (entity.isAlive()) {
-                                    entity.getBukkitEntity().remove();
-                                }
-                                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                                }
-                                player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
-                                EntityAPI.removePlayerPetList(player.getUniqueId());
-                            }
+                            
+                            PetUtils.removePet(player);
 
                             // Make the user invisible / hidden.
                             GameAPI._hiddenPlayers.add(player);

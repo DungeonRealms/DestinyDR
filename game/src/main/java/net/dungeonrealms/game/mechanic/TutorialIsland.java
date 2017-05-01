@@ -93,11 +93,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
     }
 
     public static boolean onTutorialIsland(Location loc) {
-        if (loc == null) {
-            return false;
-        }
-        
-        return GameAPI.getRegionName(loc).equalsIgnoreCase(tutorialRegion);
+        return loc != null ? GameAPI.getRegionName(loc).equalsIgnoreCase(tutorialRegion) : false;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -106,37 +102,6 @@ public class TutorialIsland implements GenericMechanic, Listener {
         if (onTutorialIsland(pl.getLocation())) {
             e.setCancelled(true);
             pl.updateInventory();
-        }
-    }
-
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-        if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
-            ItemFrame is = (ItemFrame) event.getEntity();
-            is.setItem(is.getItem());
-            is.setRotation(Rotation.NONE);
-            event.setCancelled(true);
-            if (event.getDamager() instanceof Player) {
-                if (is.getItem().getType() != Material.MAP) return;
-                Player plr = (Player) event.getDamager();
-                if (plr.getInventory().contains(is.getItem())) {
-                    return;
-                }
-                plr.getInventory().addItem(is.getItem());
-            }
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
-            event.setCancelled(true);
-            ItemFrame is = (ItemFrame) event.getRightClicked();
-            is.setItem(is.getItem());
-            is.setRotation(Rotation.NONE);
-            return;
         }
     }
 

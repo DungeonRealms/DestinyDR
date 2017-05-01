@@ -15,17 +15,14 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.event.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.KarmaHandler;
-import net.dungeonrealms.game.item.items.core.ItemFishingPole;
-import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
-import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -36,13 +33,8 @@ import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.Item.ItemRarity;
-import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -57,7 +49,6 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -66,7 +57,6 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -75,15 +65,14 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -94,6 +83,8 @@ import java.util.UUID;
  */
 public class MainListener implements Listener {
 
+	private Set<UUID> kickedIgnore = new HashSet<>();
+	
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
         GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
@@ -161,26 +152,13 @@ public class MainListener implements Listener {
     }
 
     @EventHandler
-    public void onPm(PlayerMessagePlayerEvent event) {
-        if (event.getSender().equals(event.getReceiver())) {
-            Achievements.getInstance().giveAchievement(event.getSender().getUniqueId(), Achievements.EnumAchievements.MESSAGE_YOURSELF);
-        } else {
-            Achievements.getInstance().giveAchievement(event.getSender().getUniqueId(), Achievements.EnumAchievements.SEND_A_PM);
-        }
-    }
-
-    @EventHandler
     public void onPing(ServerListPingEvent event) {
-        if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
-        else
-            event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
+    	event.setMotd(DungeonRealms.getInstance().canAcceptPlayers() ? DungeonRealms.getShard().getShardID() + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER : "offline");
     }
 
     /**
      * Monitors and checks the players language.
-     *
-     * @param event
-     * @since 1.0
+
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -240,32 +218,10 @@ public class MainListener implements Listener {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
-    @EventHandler
-    public void asyncChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null) {
-            if (event.getMessage().toLowerCase().startsWith("@i")) {
-                if (event.getMessage().length() < 1) {
-                    // A player types "@i" only, cancel that message
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onShardClick(InventoryClickEvent event) {
-        if (event.getInventory().getTitle() != null)
-            if (event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards"))
-                event.setCancelled(true);
-    }
-
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g TitleAPI or
      * adding PotionEffects.. etc..
-     *
-     * @param event
-     * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
@@ -302,74 +258,48 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoinWhitelistedShard(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult() == Result.KICK_WHITELIST) {
+        if (event.getLoginResult() == Result.KICK_WHITELIST)
             event.setKickMessage(ChatColor.AQUA + "This DungeonRealms shard is on " + ChatColor.UNDERLINE +
                     "maintenance" + ChatColor.AQUA + " mode. Only authorized users can join");
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
-        Player p = event.getPlayer();
-        if (GameAPI.getGamePlayer(p) == null) return;
-        if (!GameAPI.getGamePlayer(p).isAbleToDrop()) {
-            event.setCancelled(true);
-        }
+    	GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
+        if (gp != null && !gp.isAbleToDrop())
+        	event.setCancelled(true);
     }
 
     /**
-     * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
-     * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
-     *
-     * @param event
-     * @WARNING: THIS EVENT IS VERY INTENSIVE!
-     * @since 1.0
+     * Prevent vanilla mob spawns.
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
-        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
             event.setCancelled(true);
-        }
-        if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
-            event.getEntity().setCustomNameVisible(true);
-            event.getEntity().setCollidable(true);
-        }
     }
 
     /**
-     * Makes sure to despawn mounts on dismount and remove from hashmap
-     *
-     * @param event
-     * @since 1.0
+     * Makes sure to despawn mounts on dismount.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
-        if (!(GameAPI.isPlayer(event.getExited()))) {
-            if (event.getExited() instanceof EntityArmorStand) {
+        if (!GameAPI.isPlayer(event.getExited())) {
+            if (event.getExited() instanceof EntityArmorStand)
                 event.getExited().remove();
-            }
             return;
         }
-        if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
-            if (event.getVehicle().hasMetadata("type")) {
-                String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
-                if (metaValue.equalsIgnoreCase("mount")) {
-                    event.getVehicle().remove();
-                    EntityAPI.removePlayerMountList(event.getExited().getUniqueId());
-                    event.getExited().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your mount has returned to the stable.");
-                }
-            }
+        
+        Player p = (Player) event.getExited();
+        if (MountUtils.hasActiveMount(p)) {
+        	event.getVehicle().remove();
+        	MountUtils.removeMount(p);
+        	event.getExited().sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "For its own safety, your mount has returned to the stable.");
         }
     }
 
-
-    private Set<UUID> kickedIgnore = new HashSet<>();
-
     /**
-     * Handles player leaving the server
-     *
-     * @param event
-     * @since 1.0
+     * Handles a player getting kicked from the server.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
@@ -706,29 +636,6 @@ public class MainListener implements Listener {
         }
     }
 
-    /**
-     * Checks for player punching a map on a wall
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerHitMap(HangingBreakByEntityEvent event) {
-        if (event.getRemover() instanceof Player && event.getEntity() instanceof ItemFrame) {
-            Player player = (Player) event.getRemover();
-            ItemFrame itemFrame = (ItemFrame) event.getEntity();
-            if (player.getInventory().firstEmpty() != -1 && (itemFrame.getItem().getType() == Material.MAP)) {
-                ItemStack map = itemFrame.getItem();
-                if (!(player.getInventory().contains(map))) {
-                    player.getInventory().addItem(map);
-                    player.updateInventory();
-                    player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CARTOGRAPHER);
-                }
-            }
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
         if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
@@ -743,36 +650,11 @@ public class MainListener implements Listener {
         }
     }
 
-    /**
-     * Checks for player punching a map on a wall
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
-        if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
-            ItemFrame is = (ItemFrame) event.getEntity();
-            is.setItem(is.getItem());
-            is.setRotation(Rotation.NONE);
-            event.setCancelled(true);
-            if (event.getDamager() instanceof Player) {
-                if (is.getItem().getType() != Material.MAP) return;
-                Player plr = (Player) event.getDamager();
-                if (plr.getInventory().contains(is.getItem())) {
-                    return;
-                }
-                plr.getInventory().addItem(is.getItem());
-            }
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding")) {
+        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding"))
             event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -800,52 +682,31 @@ public class MainListener implements Listener {
             player.closeInventory();
         });
     }
-
-    /**
-     * Prevents players from shearing sheep etc.
-     *
-     * @param event
-     * @since 1.0
-     */
+    
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerShearEntityEvent(PlayerShearEntityEvent event) {
-        if (event.getPlayer().isOp()) {
-            return;
-        }
+    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+        if (event.getEntity().getType() != EntityType.ITEM_FRAME)
+        	return;
+        
+        ItemFrame is = (ItemFrame) event.getEntity();
         event.setCancelled(true);
-    }
-
-    /**
-     * Prevents players from dropping maps
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onMapDrop(PlayerDropItemEvent event) {
-        if (event.getPlayer().hasMetadata("sharding")) event.setCancelled(true);
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
-        if (!(event.isCancelled())) {
-            Player pl = event.getPlayer();
-            // The maps gonna drop! DESTROY IT!
-            if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
-                event.getItemDrop().remove();
-                if (pl.getEquipment().getItemInMainHand().getType() == Material.MAP) {
-                    pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-                } else if (pl.getItemOnCursor().getType() == Material.MAP) {
-                    pl.setItemOnCursor(new ItemStack(Material.AIR));
-                }
-                pl.playSound(pl.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 2F);
-                pl.updateInventory();
-                return;
-            }
-            if (nms == null || !nms.hasTag())
-                return;
-            if (nms.getTag().hasKey("subtype")) event.getItemDrop().remove();
-            if (nms.getTag().hasKey("dataType")) event.getItemDrop().remove();
+        if (!(event.getDamager() instanceof Player) || is.getItem().getType() != Material.MAP)
+        	return;
+        
+        Player p = (Player) event.getDamager();
+        ItemStack map = new VanillaItem(is.getItem()).setUntradeable(true).generateItem();
+        if (!p.getInventory().contains(map)) {
+        	p.getInventory().addItem(map);
+        	p.playSound(p.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
+        	Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.CARTOGRAPHER);
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
+            event.setCancelled(true);
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerEnchant(EnchantItemEvent event) {
@@ -895,70 +756,38 @@ public class MainListener implements Listener {
         event.getItemDrop().remove();
         event.setCancelled(true);
 
-        if (pl.getItemOnCursor() != null) {
+        if (pl.getItemOnCursor() != null)
             pl.setItemOnCursor(new ItemStack(Material.AIR));
-        }
 
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 20 * 5);
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
-        if (trade == null) {
+        if (trade == null)
             return;
-        }
+        
         trader.playSound(trader.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
         pl.playSound(pl.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUnload(ChunkUnloadEvent event) {
-        if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            if (event.getChunk().getEntities().length > 0) {
-                for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
-                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
-                            entity.remove();
-                        }
-                    }
-                }
-            }
-        } else if (event.getWorld().getName().contains("DUNGEON")) {
-            event.setCancelled(true);
-        } else {
-            if (event.getChunk().getEntities().length > 0) {
-                for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof Player)) {
-                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
-                            entity.remove();
-                        }
-                    }
-                }
-            }
-        }
+    	if (!DungeonManager.isDungeon(event.getWorld()))
+    		removeEntities(event.getChunk());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkLoad(ChunkLoadEvent event) {
-        if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            if (event.getChunk().getEntities().length > 0) {
-                for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
-                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
-                            entity.remove();
-                        }
-                    }
-                }
-            }
-        } else {
-            if (event.getChunk().getEntities().length > 0) {
-                for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof Player)) {
-                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
-                            entity.remove();
-                        }
-                    }
-                }
-            }
-        }
+    	removeEntities(event.getChunk());
+    }
+    
+    /**
+     * Removes entites on chunk load / unload
+     */
+    private void removeEntities(Chunk chunk) {
+    	boolean mainWorld = GameAPI.isMainWorld(chunk.getWorld());
+    	Arrays.stream(chunk.getEntities())
+				.filter(e -> !(e instanceof Player || e instanceof Hanging || (mainWorld && e instanceof Item)))
+				.forEach(Entity::remove);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -967,16 +796,16 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             event.getItem().remove();
             return;
-            //Prevent weird MC glitch.
         }
+        
         if (event.getItem().getItemStack().getType() == Material.ARROW) {
             event.setCancelled(true);
             event.getItem().remove();
             return;
         }
-        if (event.getItem().getItemStack().getType() != Material.EMERALD) {
+        
+        if (event.getItem().getItemStack().getType() != Material.EMERALD)
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -990,20 +819,18 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerInteractMule(PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Horse)) return;
+        if (!(event.getRightClicked() instanceof Horse))
+        	return;
         Horse horse = (Horse) event.getRightClicked();
         event.setCancelled(true);
-        if (horse.getVariant() != Variant.MULE) return;
-        if (horse.getOwner() == null) {
-            horse.remove();
-            return;
-        }
+        if (horse.getVariant() != Variant.MULE)
+        	return;
+        
         Player p = event.getPlayer();
-        if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
-            horse.setLeashHolder(p);
-            Inventory inv = MountUtils.inventories.get(p.getUniqueId());
-            p.openInventory(inv);
-        }
+        if (!p.equals(horse.getOwner()))
+        	return;
+        horse.setLeashHolder(p);
+        p.openInventory(MountUtils.getInventory(p));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1024,79 +851,38 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void chickenLayEgg(ItemSpawnEvent event) {
-        if (event.getEntityType() != EntityType.EGG) return;
-        event.setCancelled(true);
+        if (event.getEntityType() == EntityType.EGG)
+        	event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDragonEggMove(BlockFromToEvent event) {
-        if (event.getBlock().getType() == Material.DRAGON_EGG) {
+        if (event.getBlock().getType() == Material.DRAGON_EGG)
             event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityTarget(EntityTargetEvent event) {
-        if (event.getTarget() != null) {
-            if (!(event.getTarget() instanceof Player)) {
-                event.setCancelled(true);
-            } else if (GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
-                event.setCancelled(true);
-            } else {
-                GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
-                if (gp != null && !gp.isTargettable()) {
-                    event.setCancelled(true);
-                }
-            }
-        }
+    	if (event.getTarget() == null)
+    		return;
+    	if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation()))
+    		event.setCancelled(true);
+    	
+    	GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
+    	if (gp != null && !gp.isTargettable())
+    		event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void explosionDungeon(EntityExplodeEvent event) {
-        if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
-            event.blockList().forEach(block -> block.setType(Material.AIR));
-            event.setYield(0);
-            event.blockList().clear();
-            event.getEntity().remove();
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void characterJournalPartyInvite(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            if (!GameAPI.isPlayer(event.getEntity())) return;
-            if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
-                ItemStack stack = ((Player) event.getDamager()).getEquipment().getItemInMainHand();
-                if (stack.getType() == Material.WRITTEN_BOOK) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    Player player = (Player) event.getDamager();
-                    Player invite = (Player) event.getEntity();
-                    if (Affair.getInstance().isInParty(invite)) {
-                        player.sendMessage(ChatColor.RED + "That player is already in a party!");
-                    } else {
-                        if (Affair.getInstance().isInParty(player)) {
-                            if (Affair.getInstance().isOwner(player)) {
-                                if (Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
-                                    player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
-                                    return;
-                                }
-                                Affair.getInstance().invitePlayer(invite, player);
-                            } else {
-                                player.sendMessage(new String[]{
-                                        ChatColor.RED + "You are NOT the leader of your party.",
-                                        ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
-                                });
-                            }
-                        } else {
-                            Affair.getInstance().createParty(player);
-                            Affair.getInstance().invitePlayer(invite, player);
-                        }
-                    }
-                }
-            }
-        }
+    	if (!DungeonManager.isDungeon(event.getEntity()))
+    		return;
+    	event.blockList().forEach(block -> block.setType(Material.AIR));
+    	event.setYield(0);
+    	event.blockList().clear();
+    	event.getEntity().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
+    	event.getEntity().remove();
+    	event.setCancelled(true);
     }
 
     @EventHandler

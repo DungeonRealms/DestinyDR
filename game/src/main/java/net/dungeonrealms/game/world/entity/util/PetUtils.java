@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.pet.CreeperPet;
@@ -250,5 +251,7 @@ public class PetUtils implements GenericMechanic{
     	Entity pet = getPets().get(p);
     	pet.remove();
     	getPets().remove(p);
+    	DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(pet);
+    	p.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
     }
 }

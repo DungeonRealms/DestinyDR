@@ -68,12 +68,14 @@ public class ItemInventoryEvent extends FunctionalItemEvent {
 
 	@Override
 	public void handle() {
+		if (!(getItem() instanceof ItemInventoryListener))
+			return;
 		//Don't allow items that trigger by activation swapping if you're in another window. IE a trade window. So for instance you can't orb another player's item.
 		if(!getEvent().getInventory().getTitle().equals("container.crafting") || getEvent().getSlotType() == SlotType.ARMOR)
 			return;
 		
 		//Call the event
-		getItem().onInventoryClick(this);
+		((ItemInventoryListener) getItem()).onInventoryClick(this);
 		
 		//Update the result.
 		if (getUsage() == ItemUsage.INVENTORY_PICKUP_ITEM || getUsage() == ItemUsage.INVENTORY_SWAP_PICKUP) {
@@ -109,5 +111,12 @@ public class ItemInventoryEvent extends FunctionalItemEvent {
 	
 	public void closeInventory() {
 		this.closeInventory = true;
+	}
+	
+	public interface ItemInventoryListener {
+		/**
+		 * Called when an item is interacted with in the inventory.
+		 */
+		public abstract void onInventoryClick(ItemInventoryEvent evt);
 	}
 }

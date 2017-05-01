@@ -50,15 +50,14 @@ public class CommandMuleSee extends BaseCommand {
         Player player = Bukkit.getPlayer(playerName);
         if (player != null) {
 
-            Inventory muleInventory = MountUtils.inventories.get(player.getUniqueId());
-            if (muleInventory != null) {
-                sender.openInventory(muleInventory);
+            if (MountUtils.hasInventory(player)) {
+                sender.openInventory(MountUtils.getInventory(player));
             } else {
                 sender.sendMessage(ChatColor.RED + "No mule inventory loaded into memory from " + player.getName());
             }
         } else {
 
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
 
                 //Database things outside.
                 String pulledUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);

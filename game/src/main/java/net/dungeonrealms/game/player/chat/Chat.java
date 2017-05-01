@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.chat;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -11,6 +12,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -230,111 +232,58 @@ public class Chat {
     }
     /**
      * Monitor the players primary language also check for bad words.
-     *
-     * @param event Chat event
-     * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         String fixedMessage = checkForBannedWords(event.getMessage());
-
+        Player p = event.getPlayer();
         if (fixedMessage.contains(".com") || fixedMessage.contains(".net") || fixedMessage.contains(".org") || fixedMessage.contains("http://") || fixedMessage.contains("www."))
-            if (!Rank.isDev(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+            if (!Rank.isDev(p)) {
+               	p.sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
                 return;
             }
 
         event.setMessage(fixedMessage);
-
-        if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
-            String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            if (playerName.length() == 0) return;
-
-            if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
-                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
-            }
-            fixedMessage = fixedMessage.replace("@" + playerName, "");
-            sendPrivateMessage(event.getPlayer(), playerName, fixedMessage);
-            event.setCancelled(true);
+        
+        if (fixedMessage.startsWith("@") && !fixedMessage.startsWith("@i@")) {
+        	String[] split = fixedMessage.substring(1).split(" ");
+        	String playerName = split[0];
+            if (playerName.length() == 0)
+            	return;
+            
+            split[0] = ""; // Don't include username in the message
+            String cmd = "msg " + playerName + String.join(" ", split);
+            Bukkit.getLogger().info(p.getName() + "> /" + cmd);
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Bukkit.dispatchCommand(p, cmd));
+            event.setCancelled(true);	
             return;
         }
+        
+        ItemStack held = p.getEquipment().getItemInMainHand();
+        JSONMessage show = fixedMessage.contains("@i@") && held != null && held.getType() != Material.AIR ? applyShowItem(p, fixedMessage) : null;
 
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
-
+        List<Player> recipients = GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75);
+        String prefix = GameChat.getPreMessage(event.getPlayer());
         if (gChat) {
             if (!checkGlobalCooldown(event.getPlayer())) {
                 event.setMessage(null);
-                event.setCancelled(true);
                 return;
             }
+            
             String messageType = GameChat.getGlobalType(fixedMessage);
             boolean tradeChat = messageType.equals("trade");
             if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, event.getPlayer().getUniqueId())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
-                event.setCancelled(true);
                 return;
             }
-            List<Player> recipients = getRecipients(tradeChat);
-
-            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                final Player p = event.getPlayer();
-                String aprefix = GameChat.getPreMessage(p);
-                String[] split = fixedMessage.split("@i@");
-                String after = "";
-                String before = "";
-                if (split.length > 0)
-                    before = split[0];
-                if (split.length > 1)
-                    after = split[1];
-
-
-                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
-
-                List<String> hoveredChat = new ArrayList<>();
-                ItemMeta meta = stack.getItemMeta();
-                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
-                if (meta.hasLore())
-                    hoveredChat.addAll(meta.getLore());
-                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                normal.addText(before + "");
-                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-                normal.addText(after);
-
-                recipients.forEach(normal::sendToPlayer);
-                event.setCancelled(true);
-                return;
-            }
-            event.setCancelled(true);
-            final String finalFixedMessage = fixedMessage;
-            recipients.forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, messageType) + finalFixedMessage));
-        } else {
-            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                final Player p = event.getPlayer();
-                String aprefix = GameChat.getPreMessage(p);
-                String[] split = fixedMessage.split("@i@");
-                String after = "";
-                String before = "";
-                if (split.length > 0)
-                    before = split[0];
-                if (split.length > 1)
-                    after = split[1];
-
-                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
-
-                List<String> hoveredChat = new ArrayList<>();
-                ItemMeta meta = stack.getItemMeta();
-                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
-                if (meta.hasLore())
-                    hoveredChat.addAll(meta.getLore());
-                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                normal.addText(before + "");
-                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-                normal.addText(after);
-
-                GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).forEach(normal::sendToPlayer);
-                event.setCancelled(true);
-            }
+            recipients = getRecipients(tradeChat);
+            prefix = GameChat.getPreMessage(event.getPlayer(), true, messageType);
         }
+        
+        event.setMessage(prefix + fixedMessage);
+        if (show != null)
+        	recipients.forEach(show::sendToPlayer);
     }
 
     /**
@@ -344,16 +293,14 @@ public class Chat {
      */
 
     public void doLocalChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) return;
-        final String finalFixedMessage = event.getMessage();
-
-
-        // HANDLE LOCAL CHAT
-        GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75, true).forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-        if (GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() <= 1) {
-            event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
-        }
+        if (event.isCancelled())
+        	return;
         event.setCancelled(true);
+        
+        List<Player> players = GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75, true);
+        players.forEach(p -> p.sendMessage(event.getMessage()));
+        if (players.isEmpty())
+            event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
     }
 
     public String checkForBannedWords(String msg) {
@@ -432,5 +379,30 @@ public class Chat {
         }
         player.setMetadata("lastGlobalChat", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
         return true;
+    }
+    
+    public static JSONMessage applyShowItem(Player player, String s) {
+    	ItemStack item = player.getEquipment().getItemInMainHand();
+    	
+    	if (!s.contains("@i@") || item == null || item.getType() == Material.AIR)
+    		return new JSONMessage(s);
+    	
+    	String[] split = s.split("@i@");
+    	String before = split[0];
+    	String after = split.length > 1 ? split[1] : "";
+    	
+    	// Generate display.
+        List<String> hoveredChat = new ArrayList<>();
+        ItemMeta meta = item.getItemMeta();
+        hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : item.getType().name()));
+        if (meta.hasLore())
+            hoveredChat.addAll(meta.getLore());
+        
+        final JSONMessage normal = new JSONMessage("", org.bukkit.ChatColor.WHITE);
+        normal.addText(before + "");
+        normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
+        normal.addText(after);
+        
+        return normal;
     }
 }

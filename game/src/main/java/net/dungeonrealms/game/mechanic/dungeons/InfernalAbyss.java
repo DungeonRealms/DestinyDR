@@ -5,18 +5,32 @@ import java.util.Random;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.Material;
@@ -24,13 +38,13 @@ import org.bukkit.Material;
 /**
  * The Infernal Abyss Dungeon
  * 
- * TODO: Infernal should ride the ghast.
- * 
  * Created April 28th, 2017.
  * @author Kneesnap
  */
 @Getter
 public class InfernalAbyss extends Dungeon {
+	
+	private int wither;
 	
 	public InfernalAbyss() {
 		super(DungeonType.THE_INFERNAL_ABYSS);
@@ -53,7 +67,16 @@ public class InfernalAbyss extends Dungeon {
 		super.updateMob(e);
 	}
 	
-	public class InfernalListener implements Listener {
+	public void setWither(int w) {
+		this.wither = w;
+		if (w > 0) {
+			getPlayers().forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 1, w * 20, true)));
+		} else {
+			getPlayers().forEach(p -> p.removePotionEffect(PotionEffectType.WITHER));
+		}
+	}
+	
+	public static class InfernalListener implements Listener {
 		
 		public InfernalListener() {
 			
@@ -77,26 +100,113 @@ public class InfernalAbyss extends Dungeon {
 			
 			// Handle wither effects.
 			Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> DungeonManager.getDungeons(DungeonType.THE_INFERNAL_ABYSS).forEach(d -> {
-				for (Player p : d.getPlayers()) {
-					int left = -1;
-					for (PotionEffect pe : p.getActivePotionEffects())
-						if (pe.getType() == PotionEffectType.WITHER)
-							left = (pe.getDuration() / 20) - 1;
-					
-					if (left == -1)
-						continue;
-					
-					if (left == 30) {
-						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE +
-								left + "s" + ChatColor.RED + " left until the inferno consumes you.");
-					} else if (left <= 1) {
-						p.removePotionEffect(PotionEffectType.WITHER);
+				InfernalAbyss ab = (InfernalAbyss)d;
+				int w = ab.getWither();
+				if (w <= 0)
+					return;
+				
+				if (w == 30) {
+					ab.announce(ChatColor.RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE +
+							w + "s" + ChatColor.RED + " left until the inferno consumes you.");
+				} else {
+					for (Player p : d.getPlayers()) {
 						HealthHandler.setHP(p, 1);
-						p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
 						p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
 					}
+					d.announce(ChatColor.RED + "" + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
 				}
+				ab.setWither(w--);
 			}), 200L, 20L);
 		}
+		
+		private void destroyDebuff(Entity e) {
+			InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(e.getWorld());
+			Block block = e.getLocation().clone().subtract(0, 1, 0).getBlock();
+			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+	        
+			if (block.getType() == Material.BEDROCK)
+				block.setType(Material.AIR);
+			e.remove();
+			
+			dungeon.setWither(90);
+			dungeon.announce(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + " Your HP " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
+			dungeon.getPlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F));
+		}
+		
+		/**
+		 * Handles punching a debuff.
+		 */
+		@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	    public void playerHitEnderCrystal(EntityDamageEvent event) {
+	        if (event.getEntity().getType() == EntityType.ENDER_CRYSTAL && DungeonManager.isDungeon(event.getEntity().getWorld(), DungeonType.THE_INFERNAL_ABYSS)) {
+	        	event.setCancelled(true);
+	        	destroyDebuff(event.getEntity());
+	        }
+	    }
+		
+		/**
+	     * Handles punching blocks to activate debuffs
+	     */
+	    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	    public void onBlockHit(PlayerInteractEvent event) {
+	        Block block = event.getClickedBlock();
+	        
+	        if (event.getAction() != Action.LEFT_CLICK_BLOCK || !DungeonManager.isDungeon(block.getWorld(), DungeonType.THE_INFERNAL_ABYSS) || (block.getType() != Material.BEDROCK && block.getType() != Material.FIRE))
+	        	return;
+	        
+	        if (block.getType() == Material.BEDROCK) {
+	        	Block up = block.getLocation().clone().add(0, 1, 0).getBlock();
+	        	if (up.getType() == Material.FIRE) {
+	        		block = up; // We want to touch the fire.
+	        	} else {
+	        		return; //We don't really want to touch bedrock.
+	        	}
+	        }
+	        
+	        block.getWorld().getNearbyEntities(block.getLocation(), 3, 3, 3).stream().filter(e -> e instanceof EnderCrystal)
+	        		.forEach(this::destroyDebuff);
+	    }
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onMobDeath(EntityDeathEvent evt) {
+		if (!DungeonManager.isDungeon(evt.getEntity().getWorld(), DungeonType.THE_INFERNAL_ABYSS))
+			return;
+		
+		InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(evt.getEntity().getWorld());
+		Entity entity = evt.getEntity();
+		String name = ChatColor.stripColor(EntityAPI.getCustomName(entity));
+		ItemStack stack = null;
+		
+		if (entity.getType() == EntityType.ENDERMAN) {
+			if (name.equals("The Devastator")) {
+				stack = getKey("A");
+			} else if (name.equals("The Annihilator")) {
+				stack = getKey("B");
+			}
+			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F, .75F, .75F, .06F, 50);
+        	entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
+		} else if (name.equals("Fire Lord Of The Abyss")) {
+			stack = ItemGenerator.getNamedItem("firelord");
+		} else if (name.equals("Ice Lord Of The Abyss")) {
+			stack = ItemGenerator.getNamedItem("icelord");
+		}
+		
+		Player killer = evt.getEntity().getKiller();
+		
+		if (stack != null) {
+			if (killer != null && killer.getInventory().firstEmpty() != -1) {
+				killer.getInventory().addItem(stack);
+			} else {
+				entity.getWorld().dropItemNaturally(entity.getLocation().clone().add(0, 1, 0), stack);
+			}
+		}
+		
+		dungeon.setWither(0);
+	}
+	
+	private ItemStack getKey(String k) {
+		ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey " + k, ChatColor.ITALIC + "A key required in the Infernal Abyss Dungeon");
+		return new VanillaItem(key).setDungeon(true).generateItem();
 	}
 }

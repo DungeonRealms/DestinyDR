@@ -226,7 +226,7 @@ public class GamePlayer {
      * Gets the player's max HP.
      */
     public int getMaxHP() {
-        return HealthHandler.getPlayerMaxHP(getPlayer());
+        return HealthHandler.getMaxHP(getPlayer());
     }
 
     /**

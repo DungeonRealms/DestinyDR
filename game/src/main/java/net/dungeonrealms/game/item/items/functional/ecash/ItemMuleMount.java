@@ -14,12 +14,11 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
 
-public class ItemMuleMount extends FunctionalItem {
+public class ItemMuleMount extends FunctionalItem implements ItemClickListener {
 
 	@Getter @Setter
 	private MuleTier tier;
@@ -49,14 +48,8 @@ public class ItemMuleMount extends FunctionalItem {
 
 	@Override
 	public void onClick(ItemClickEvent evt) {
-		ItemMount.attemptSummonMount(evt.getPlayer(), true);
+		ItemMount.attemptSummonMount(evt.getPlayer());
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-	
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

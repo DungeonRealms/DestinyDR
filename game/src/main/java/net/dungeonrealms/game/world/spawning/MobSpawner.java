@@ -280,7 +280,7 @@ public abstract class MobSpawner {
     	}, 0L, 40L);
     }
 
-    private boolean doesLineMatchLocation(String line){
+    public boolean doesLineMatchLocation(String line){
         if(!line.contains("="))return false;
         String[] coords = line.split("=")[0].split(",");
 

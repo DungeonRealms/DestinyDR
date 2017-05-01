@@ -35,7 +35,7 @@ public class LootType {
 		add("Orb", (amt, meta) -> new ItemOrb().generateItem());
 		add("RealmChest", (amt, meta) -> new ItemRealmChest().generateItem());
 		add("Teleport", (amt, meta) -> new ItemTeleportBook().generateItem());
-		add("Vanilla", (amt, meta) -> new ItemStack(Material.getMaterial(meta), amt));
+		add("Vanilla", (amt, meta) -> new ItemStack(Material.getMaterial(meta), amt > 0 ? amt : 1));
 	}
 	
 	private static void add(String type, LootGenerator g) {

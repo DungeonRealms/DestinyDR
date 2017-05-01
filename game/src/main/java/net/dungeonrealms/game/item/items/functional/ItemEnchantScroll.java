@@ -11,12 +11,13 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 
-public abstract class ItemEnchantScroll extends FunctionalItem {
+public abstract class ItemEnchantScroll extends FunctionalItem implements ItemClickListener, ItemInventoryListener {
 	
 	@Getter @Setter
 	private ItemTier tier;
@@ -53,9 +54,6 @@ public abstract class ItemEnchantScroll extends FunctionalItem {
 	public void onClick(ItemClickEvent evt) {
 		evt.getPlayer().sendMessage(ChatColor.RED + "To use a " + ChatColor.BOLD + "SCROLL" + ChatColor.RED + ", simply drag it on-top of the piece of equipment you wish to apply it to in your inventory.");
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
 
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {

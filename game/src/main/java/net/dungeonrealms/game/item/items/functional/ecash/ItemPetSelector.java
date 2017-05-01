@@ -11,10 +11,11 @@ import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.md_5.bungee.api.ChatColor;
 
+@Getter @Setter
 public class ItemPetSelector extends ItemGeneric {
 
-	@Getter @Setter
 	private EnumPets pet;
+	private String petName;
 	
 	public ItemPetSelector(ItemStack item) {
 		super(item);
@@ -22,18 +23,22 @@ public class ItemPetSelector extends ItemGeneric {
 	
 	public ItemPetSelector(EnumPets pet) {
 		super(ItemType.PET_SELECTOR);
+		this.pet = pet;
+		this.petName = getPet().getDisplayName();
 	}
 	
 	@Override
 	public void loadItem() {
 		setPet(EnumPets.valueOf(getTagString("pet")));
+		setPetName(hasTag("petName") ? getTagString("petName") : getPet().getDisplayName());
 		super.loadItem();
 	}
 	
 	@Override
 	public void updateItem() {
 		setTagString("pet", getPet().name());
-		getMeta().setDisplayName(ChatColor.YELLOW + getPet().getDisplayName());
+		setTagString("petName", getPetName());
+		getMeta().setDisplayName(ChatColor.YELLOW + getPetName());
 		super.updateItem();
 	}
 

@@ -35,15 +35,13 @@ import java.util.Map;
 /**
  * LootManager - Handles loot being spawned across the world.
  * 
- * TODO: Loot Chest particles.
- * 
  * Redone on April 29th, 2017.
  * @author Kneesnap
  */
 public class LootManager implements GenericMechanic, Listener {
 	
 	@Getter private static List<LootSpawner> spawners = new ArrayList<>();
-	@Getter private static Map<String, HashMap<ItemStack, Integer>> loot = new HashMap<>();
+	@Getter private static Map<String, HashMap<ItemStack, Double>> loot = new HashMap<>();
 	
 	@Override
 	public EnumPriority startPriority() {
@@ -65,14 +63,14 @@ public class LootManager implements GenericMechanic, Listener {
 			y = Integer.parseInt(cords[1]);
 			z = Integer.parseInt(cords[2]);
 			Location loc = new Location(GameAPI.getMainWorld(), x, y, z);
-			String lootData = line.split("=")[1].substring(1).split("@")[0];
+			String lootData = line.split("=")[1].split("@")[0];
 			
 			if (!getLoot().containsKey(lootData)) {
 				Bukkit.getLogger().warning("Could not find loot data '" + lootData + "'.");
 				continue;
 			}
 			
-			int spawnDelay = 1200 + Integer.parseInt(line.substring(line.lastIndexOf("@") +  1), line.indexOf("#"));
+			int spawnDelay = 1200 + Integer.parseInt(line.split("@")[1].split("#")[0]);
 			getSpawners().add(new LootSpawner(loc, spawnDelay, lootData));
 		}
 		
@@ -144,47 +142,54 @@ public class LootManager implements GenericMechanic, Listener {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(f));
 			String l = "";
-			while ((l = reader.readLine()) != null)
-				lines.add(l.split(" ")[0]); //Anything past space is ignored.
+			while ((l = reader.readLine()) != null) {
+				String s = l.split(" ")[0].split("#")[0]; //These lines are commented out in the config.
+				if (s.length() > 0)
+					lines.add(s);
+			}
 			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		HashMap<ItemStack, Integer> lootMap = new HashMap<>();
+		HashMap<ItemStack, Double> lootMap = new HashMap<>();
 		for (String line : lines) {
 			//amount = a static or ranged value that controls either the item amount or 
 			//meta = a static value that represents data such as item tier.
-			
-			// Generator type + meta.
-			String lootType = line.split("%")[0].split(":")[0];
-			int meta = 0;
-			if (lootType.contains(",")) {
-				meta = Integer.parseInt(lootType.split(",")[1]);
-				lootType = lootType.split(",")[0];
-			}
-			
-			// Get amount.
-			int amount = 1;
-			if (line.contains(":")) {
-				String amtStr = line.split(":")[1].split("%")[0];
-				if (amtStr.contains("-")) {
-					String[] split = amtStr.split("-");
-					amount = Utils.randInt(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-				} else {
-					amount = Integer.parseInt(amtStr);
+			try {
+				// Generator type + meta.
+				String lootType = line.split("%")[0].split(":")[0];
+				int meta = 1;
+				if (lootType.contains(",")) {
+					meta = Integer.parseInt(lootType.split(",")[1]);
+					lootType = lootType.split(",")[0];
 				}
+				
+				// Get amount.
+				int amount = 0;
+				if (line.contains(":")) {
+					String amtStr = line.split(":")[1].split("%")[0];
+					if (amtStr.contains("-")) {
+						String[] split = amtStr.split("-");
+						amount = Utils.randInt(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+					} else {
+						amount = Integer.parseInt(amtStr);
+					}
+				}
+				
+				//  GENERATE LOOT DATA  //
+				if (!LootType.isValid(lootType)) {
+					Bukkit.getLogger().warning("Unknown loot generator '" + lootType + "'.");
+					continue;
+				}
+				
+				double spawnChance = Math.max(1D, Double.parseDouble(line.split("%")[1]) * 10D);
+				
+				lootMap.put(LootType.getGenerator(lootType).getLoot(amount, meta), spawnChance);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Bukkit.getLogger().warning("Lootable '" + type + "' has an invalid line \"" + line + "\".");
 			}
-			
-			//  GENERATE LOOT DATA  //
-			if (!LootType.isValid(lootType)) {
-				Bukkit.getLogger().warning("Unknown loot generator '" + lootType + "'.");
-				continue;
-			}
-			
-			int spawnChance = Math.max(1, Integer.parseInt(line.split("%")[1]));
-			lootMap.put(LootType.getGenerator(lootType).getLoot(amount, meta), spawnChance);
-			
 			//In brackets = optional.
 			//Format: type[,amt][:minAmt[-maxAmt]]%chance
 			//Ex: gems:1-10%50 <- Random gem value between 1 and 10, with a 50% chance of spawning.

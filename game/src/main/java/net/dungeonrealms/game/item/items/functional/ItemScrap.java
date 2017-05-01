@@ -12,14 +12,13 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 
-public class ItemScrap extends FunctionalItem {
+public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 	@Getter @Setter
 	private ScrapTier tier;
@@ -46,12 +45,6 @@ public class ItemScrap extends FunctionalItem {
 		setTagInt(TIER, tier.getTier());
 		super.updateItem();
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
 
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {

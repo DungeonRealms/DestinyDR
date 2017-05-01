@@ -16,7 +16,9 @@ public class ItemConsumeEvent extends FunctionalItemEvent {
 
 	@Override
 	public void handle() {
-		getItem().onConsume(this);
+		if (!(getItem() instanceof ItemConsumeListener))
+			return;
+		((ItemConsumeListener) getItem()).onConsume(this);
 		
 		event.setCancelled(true);
 		
@@ -30,5 +32,12 @@ public class ItemConsumeEvent extends FunctionalItemEvent {
 		}
 		
 		event.getPlayer().updateInventory();
+	}
+	
+	public interface ItemConsumeListener {
+		/**
+		 * Called when this item is consumed.
+		 */
+		public abstract void onConsume(ItemConsumeEvent evt);
 	}
 }

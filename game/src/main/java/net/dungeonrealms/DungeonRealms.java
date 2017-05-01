@@ -311,8 +311,6 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new AchievementManager(), this);
         pm.registerEvents(new TabbedChatListener(), this);
         pm.registerEvents(new RestrictionListener(), this);
-        pm.registerEvents(new DungeonListener(), this);
-        pm.registerEvents(new BossListener(), this);
         pm.registerEvents(new PvPListener(), this);
         pm.registerEvents(new PvEListener(), this);
         pm.registerEvents(new PacketLogger(), this);
@@ -375,13 +373,13 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandAnnounce());
         cm.registerCommand(new CommandWatchList());
 
-        cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
+        cm.registerCommand(new CommandPAccept());
         cm.registerCommand(new CommandPLoot());
-        cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));
-        cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party.", Collections.singletonList("pquit")));
-        cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
-        cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
-        cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
+        cm.registerCommand(new CommandPRemove());
+        cm.registerCommand(new CommandPLeave());
+        cm.registerCommand(new CommandPChat());
+        cm.registerCommand(new CommandPl());
+        cm.registerCommand(new CommandPDecline());
 
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
@@ -478,8 +476,8 @@ public class DungeonRealms extends JavaPlugin {
             //cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
-            cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));
-            cm.registerCommand(new CommandPet("pet", "/<command> [args]", "Opens the player pets menu.", Collections.singletonList("pets")));
+            cm.registerCommand(new CommandMount());
+            cm.registerCommand(new CommandPet());
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Arrays.asList("trails", "effect", "effects")));
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));

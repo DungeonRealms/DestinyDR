@@ -10,8 +10,7 @@ import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.RealmMaterialFactory;
@@ -25,7 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemPortalRune extends FunctionalItem {
+public class ItemPortalRune extends FunctionalItem implements ItemClickListener {
 
 	private Player owner;
 	
@@ -141,12 +140,6 @@ public class ItemPortalRune extends FunctionalItem {
             }
 		}
 	}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

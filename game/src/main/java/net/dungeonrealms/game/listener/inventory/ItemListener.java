@@ -30,7 +30,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.inventivetalent.glow.GlowAPI;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,12 +40,10 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent event) {
-        //Party handler here.
-        Optional<Party> party = Affair.getInstance().getParty(event.getPlayer());
-        if (party != null && party.isPresent()) {
-            Party part = party.get();
-            Affair.getInstance().handlePartyPickup(event, part);
-        }
+    	Player player = event.getPlayer();
+    	Party p = Affair.getParty(player);
+    	if (p != null)
+    		Affair.getInstance().handlePartyPickup(event, p);
     }
 
     /**

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.functional;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 
@@ -11,7 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemGemPouch extends ItemMoney {
+public class ItemGemPouch extends ItemMoney implements ItemInventoryListener {
 	
 	private PouchTier tier;
 	

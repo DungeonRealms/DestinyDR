@@ -2,9 +2,6 @@ package net.dungeonrealms.game.item.items.functional;
 
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,15 +16,6 @@ public class ItemRealmChest extends FunctionalItem {
 	public ItemRealmChest() {
 		super(ItemType.REALM_CHEST);
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
-
-	@Override
-	public void onInventoryClick(ItemInventoryEvent evt) {}
 
 	@Override
 	protected String getDisplayName() {

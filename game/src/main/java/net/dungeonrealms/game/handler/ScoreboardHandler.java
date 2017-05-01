@@ -88,16 +88,12 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void updatePlayerHP(Player player, int hp) {
-        Affair affair = Affair.getInstance();
-        for (Player player1 : Bukkit.getOnlinePlayers()) {
-            //Party support.
-            if (affair.isInParty(player1)) continue;
+        for (Player player1 : Bukkit.getOnlinePlayers())
+            if (!Affair.isInParty(player1))
+            	getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
 
-            getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
-        }
-
-        for (Party party : affair._parties) {
-            Scoreboard scoreboard = party.getPartyScoreboard();
+        for (Party party : Affair.getParties()) {
+        	Scoreboard scoreboard = party.getScoreboard();
             scoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
         }
         mainScoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
@@ -113,9 +109,8 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHeadScoreboard(Player player, final ChatColor chatColor, int playerLevel) {
-        Affair affair = Affair.getInstance();
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
 
             ChatColor color = chatColor;
             String rank = Rank.getInstance().getRank(player.getUniqueId());
@@ -142,7 +137,7 @@ public class ScoreboardHandler implements GenericMechanic {
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
 
                     //Party support.
-                    if (affair.isInParty(player1)) {
+                    if (Affair.isInParty(player1)) {
                         //Dont update them each indiviually.
                         continue;
                     }
@@ -156,10 +151,10 @@ public class ScoreboardHandler implements GenericMechanic {
                     }
                 }
 
-                for (Party party : affair._parties) {
+                for (Party party : Affair.getParties()) {
                     //Update the party scoreboards with this persons new level.
 //                updateCurrentPlayerLevel(player, party.getPartyScoreboard());
-                    Scoreboard scoreboard = party.getPartyScoreboard();
+                    Scoreboard scoreboard = party.getScoreboard();
                     Team team = getPlayerTeam(scoreboard, player);
                     team.setPrefix(guildName + newColor);
                     team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");

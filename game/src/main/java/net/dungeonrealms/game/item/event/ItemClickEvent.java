@@ -61,10 +61,12 @@ public class ItemClickEvent extends FunctionalItemEvent {
 
 	@Override
 	public void handle() {
-		getItem().onClick(this);
+		if (!(getItem() instanceof ItemClickListener))
+			return;
+		
+		((ItemClickListener) getItem()).onClick(this);
 		
 		GameAPI.setHandItem(getPlayer(), getResultItem(), getHand());
-		
 		if(isCancelled() && this.event != null)
 			this.event.setCancelled(true);
 	}
@@ -102,5 +104,12 @@ public class ItemClickEvent extends FunctionalItemEvent {
 	 */
 	public boolean isSneaking() {
 		return getPlayer().isSneaking();
+	}
+	
+	public interface ItemClickListener {
+		/**
+		 * Called when an item is clicked either in air or on a block.
+		 */
+		public abstract void onClick(ItemClickEvent evt);
 	}
 }

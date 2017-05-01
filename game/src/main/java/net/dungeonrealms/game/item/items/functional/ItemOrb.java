@@ -19,17 +19,16 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.item.event.ItemConsumeEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
+import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 
-public class ItemOrb extends FunctionalItem {
+public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
 
-	private final String LAST_ORB = "lastOrbUsed";
+	private static final String LAST_ORB = "lastOrbUsed";
 	
 	public ItemOrb() {
 		super(ItemType.ORB_OF_ALTERATION);
@@ -98,12 +97,6 @@ public class ItemOrb extends FunctionalItem {
 	protected String[] getLore() {
 		return new String[] { "Randomizes bonus stats of selected equipment" };
 	}
-
-	@Override
-	public void onClick(ItemClickEvent evt) {}
-
-	@Override
-	public void onConsume(ItemConsumeEvent evt) {}
 
 	@Override
 	protected ItemUsage[] getUsage() {
