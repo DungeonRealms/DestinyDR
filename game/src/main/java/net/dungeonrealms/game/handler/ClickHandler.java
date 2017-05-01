@@ -552,6 +552,23 @@ public class ClickHandler {
                             player.closeInventory();
                             return;
                         }
+                        String petType = nmsStack.getTag().getString("petType");
+                        EnumPets pet = EnumPets.getByName(petType);
+                        if (pet == null) {
+                            player.sendMessage(ChatColor.RED + "Invalid pet!");
+                            return;
+                        }
+                        PetData hisData = wrapper.getPetsUnlocked().get(pet);
+                        boolean isLocked = hisData == null || !hisData.isUnlocked();
+
+                        if(pet.subGetsFree() && Rank.PlayerRank.getFromInternalName(wrapper.getRank()).isAtleast(Rank.PlayerRank.SUB)) {
+                            isLocked = false;
+                        }
+
+                        if(isLocked) {
+                            player.sendMessage(ChatColor.RED + "You do not have access to this pet. To unlock this pet please visit http://www.dungeonrealms.net/oldshop");
+                            return;
+                        }
                         String petName = "";
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
@@ -572,9 +589,23 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "Invalid pet!");
                             return;
                         }
+
+
                         String petName = "";
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
+                        }
+
+                        PetData hisData = wrapper.getPetsUnlocked().get(pet);
+                        boolean isLocked = hisData == null || !hisData.isUnlocked();
+
+                        if(pet.subGetsFree() && Rank.PlayerRank.getFromInternalName(wrapper.getRank()).isAtleast(Rank.PlayerRank.SUB)) {
+                            isLocked = false;
+                        }
+
+                        if(isLocked) {
+                            player.sendMessage(ChatColor.RED + "You do not have access to this pet. To unlock this pet please visit http://www.dungeonrealms.net/oldshop");
+                            return;
                         }
                         player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
                         String finalPetName = petName;
@@ -598,7 +629,7 @@ public class ClickHandler {
                             String checkedPetName = SQLDatabaseAPI.filterSQLInjection(Chat.getInstance().checkForBannedWords(inputName));
 //                            wrapper.getPetsUnlocked().remove(petType);
 //                            wrapper.getPetsUnlocked().remove(petType + "@" + finalPetName);
-                            wrapper.getPetsUnlocked().put(pet, new PetData(checkedPetName));
+                            wrapper.getPetsUnlocked().put(pet, new PetData(checkedPetName, hisData != null));
 
                             player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
@@ -1613,7 +1644,7 @@ public class ClickHandler {
 
                     if (supportPetLocked) {
                         otherWrapper.getPetsUnlocked().remove(supportPets);
-                    } else otherWrapper.getPetsUnlocked().put(supportPets, new PetData(null));
+                    } else otherWrapper.getPetsUnlocked().put(supportPets, new PetData(null,true));
 
                     otherWrapper.saveData(true, null, (wrappa) -> {
                         if (supPetLocked)
@@ -1776,7 +1807,7 @@ public class ClickHandler {
                 }
                 int eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    wrapper.getPetsUnlocked().put(pets, new PetData(null));
+                    wrapper.getPetsUnlocked().put(pets, new PetData(null,true));
                     wrapper.setActivePet(petType);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {

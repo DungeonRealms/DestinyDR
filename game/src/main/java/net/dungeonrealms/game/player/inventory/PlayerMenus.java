@@ -137,27 +137,56 @@ public class PlayerMenus {
 
         Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
 
-        if (Rank.isSubscriber(player))
+        /*if (Rank.isSubscriber(player))
             for (EnumPets p : EnumPets.values()) {
                 if (p == EnumPets.BABY_HORSE)
                     continue;
                 if (playerPets.containsKey(p)) continue;
                 playerPets.put(p, new PetData(null));
-//                playerPets.add(p.getRawName());
-            }
+            }*/
 
 
-        if (playerPets.size() <= 0) {
+        /*if (playerPets.size() <= 0) {
             Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Pets!");
             player.openInventory(noPets);
             return;
-        }
+        }*/
 
         Inventory inv = Bukkit.createInventory(null, 27, "Pet Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
 
-        playerPets.forEach((pets, data) -> {
+
+        for(EnumPets pets : EnumPets.values()) {
+            PetData hisData = playerPets.get(pets);
+            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
+            boolean isLocked = hisData == null || !hisData.isUnlocked();
+            if(pets.subGetsFree() && Rank.PlayerRank.getFromInternalName(wrapper.getRank()).isAtleast(Rank.PlayerRank.SUB)) {
+                isLocked = false;
+            }
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("petType", new NBTTagString(pets.getRawName()));
+            tag.set("petName", new NBTTagString(hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
+            nmsStack.setTag(tag);
+            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), !isLocked ? new String[]{
+                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
+                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
+                    "",
+                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
+                    ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED",
+                    ChatColor.GRAY + "Display Item"
+            } : new String[]{
+                            //He doesn't own it.
+                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
+                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
+                    "",
+                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (pets.getDisplayName()),
+                    ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED",
+                    ChatColor.GRAY + "Display Item"
+            }));
+        }
+        /*playerPets.forEach((pets, data) -> {
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -171,7 +200,7 @@ public class PlayerMenus {
                     ChatColor.GREEN + "Name: " + ChatColor.WHITE + (data.getPetName() != null ? data.getPetName() : pets.getDisplayName()),
                     ChatColor.GRAY + "Display Item"
             }));
-        });
+        });*/
         player.openInventory(inv);
     }
 

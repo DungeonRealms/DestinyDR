@@ -488,7 +488,7 @@ public class CommandAdd extends BaseCommand {
                                 continue;
                             }
                         }
-                        wrapper.getPetsUnlocked().put(pets, new PetData(null));
+                        wrapper.getPetsUnlocked().put(pets, new PetData(null,true));
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
                     }
 

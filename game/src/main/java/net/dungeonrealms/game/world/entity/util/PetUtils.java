@@ -259,6 +259,16 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBetaZombie);
                 player.closeInventory();
                 break;
+            case ENDERMAN:
+                Enderman petEnderman = new Enderman(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petEnderman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petEnderman, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petEnderman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 1F);
+                makePet(petEnderman, player.getUniqueId(), 1.0D, EnumPets.BETA_ZOMBIE);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petEnderman);
+                player.closeInventory();
+                break;
             case BABY_PIGZOMBIE:
                 BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);

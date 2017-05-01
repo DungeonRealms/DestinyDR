@@ -879,7 +879,7 @@ public class ItemListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    /*@EventHandler(priority = EventPriority.HIGHEST)
     public void petRename(PlayerInteractEntityEvent event) {
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Player player = event.getPlayer();
@@ -953,7 +953,7 @@ public class ItemListener implements Listener {
                 player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
             }, null);
         }
-    }
+    }*/
 
 
     @EventHandler(priority = EventPriority.LOWEST)

@@ -47,7 +47,7 @@ public class CommandPet extends BaseCommand {
                 return true;
             }
 
-            PetUtils.spawnPet(player.getUniqueId(), "BETA_ZOMBIE", "Testing");
+            PetUtils.spawnPet(player.getUniqueId(), "ENDERMAN", "Testing");
             return true;
 
         }

@@ -29,12 +29,14 @@ public enum EnumPets {
     MAGMA_CUBE(12, "MAGMA_CUBE", 62, "Magma Cube"),
     CREEPER_OF_INDEPENDENCE(13, "CREEPER_INDEPENDENCE", 50, "Independence Creeper"),
     BABY_HORSE(14, "BABY_HORSE", 64, "Baby Horse"),
-    BETA_ZOMBIE(15, "BETA_ZOMBIE", 54, "Beta Zombie");
+    BETA_ZOMBIE(15, "BETA_ZOMBIE", 54, "Beta Zombie",false),
+    ENDERMAN(16, "ENDERMAN", 67, "Enderman",false);
 
     private int id;
     private String name;
     private int eggShortData;
     private String displayName;
+    private boolean subGetsFree;
 
     public int getId() {
         return id;
@@ -51,14 +53,21 @@ public enum EnumPets {
     public String getDisplayName() {
         return displayName;
     }
+    public boolean subGetsFree() {
+        return subGetsFree;
+    }
 
-    EnumPets(int id, String name, int eggShortData, String displayName) {
+    EnumPets(int id, String name, int eggShortData, String displayName, boolean subGetsFree) {
         this.id = id;
         this.name = name;
         this.eggShortData = eggShortData;
         this.displayName = displayName;
+        this.subGetsFree = subGetsFree;
     }
 
+    EnumPets(int id, String name, int eggShortData, String displayName) {
+        this(id,name,eggShortData,displayName,true);
+    }
     public static EnumPets getById(int id) {
         for (EnumPets ep : values()) {
             if (ep.getId() == id) {

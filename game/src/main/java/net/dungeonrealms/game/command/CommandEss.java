@@ -127,7 +127,7 @@ public class CommandEss extends BaseCommand {
                                     return;
                                 }
                                 wrapper.setActivePet(petType.toUpperCase());
-                                wrapper.getPetsUnlocked().put(EnumPets.getByName(petType), new PetData(null));
+                                wrapper.getPetsUnlocked().put(EnumPets.getByName(petType), new PetData(null,true));
                                 wrapper.saveData(true, null, (wrappa) -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, "unlockables");

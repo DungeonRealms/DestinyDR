@@ -19,9 +19,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.UUID;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/2/2016
- */
 
 public class CommandMute extends BaseCommand {
 

@@ -9,4 +9,8 @@ public class PetData {
     @Getter
     @Setter
     private String petName;
+
+    @Getter
+    @Setter
+    private boolean unlocked = false;
 }

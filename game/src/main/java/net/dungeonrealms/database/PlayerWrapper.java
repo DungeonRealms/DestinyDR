@@ -381,9 +381,6 @@ public class PlayerWrapper {
         SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 1, DungeonRealms.getShard().getPseudoName() != null ? "'" + DungeonRealms.getShard().getPseudoName() + "'" : null, accountID);
     }
 
-    public Rank.PlayerRank getPlayerRank() {
-        return Rank.PlayerRank.getFromInternalName(getRank());
-    }
 
     public String getRank() {
         if (rank == null) return "DEFAULT";
@@ -411,9 +408,11 @@ public class PlayerWrapper {
             for (String str : list) {
                 String type;
                 String name = null;
+                boolean unlocked = false;
                 if (str.contains("@")) {
                     type = str.split("@")[0];
                     name = str.split("@")[1];
+                    unlocked = Boolean.valueOf(str.split("@")[2]);
                 } else {
                     type = str;
                 }
@@ -424,7 +423,7 @@ public class PlayerWrapper {
                     continue;
                 }
 
-                this.petsUnlocked.put(pets, new PetData(name));
+                this.petsUnlocked.put(pets, new PetData(name,unlocked));
             }
         }
     }
@@ -433,7 +432,7 @@ public class PlayerWrapper {
         if (this.petsUnlocked.isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
 
-        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getRawName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "").append(","));
+        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getRawName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + data.isUnlocked()).append(","));
 
         return builder.toString();
     }
