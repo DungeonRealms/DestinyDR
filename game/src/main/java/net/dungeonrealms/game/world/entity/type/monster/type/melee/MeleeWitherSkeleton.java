@@ -9,13 +9,6 @@ import net.minecraft.server.v1_9_R2.World;
  */
 public class MeleeWitherSkeleton extends DRWitherSkeleton {
     public MeleeWitherSkeleton(World world) {
-        this(world, 1, EnumMonster.Skeleton1);
-    }
-
-    public MeleeWitherSkeleton(World world, int tier, EnumMonster monster) {
-        super(world, monster, tier);
-        this.setSize(0.7F, 2.4F);
-        this.fireProof = true;
-        this.setSkeletonType(1);
+        super(world, EnumMonster.Skeleton1);
     }
 }

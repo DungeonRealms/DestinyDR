@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged;
 
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
 import net.minecraft.server.v1_9_R2.*;
 
@@ -12,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class RangedSkeleton extends DRSkeleton implements IRangedEntity {
 
-    public RangedSkeleton(World world, EnumMonster monsterType, int tier) {
-        super(world, monsterType, tier);
+    public RangedSkeleton(World world) {
+        super(world);
     }
 
     @Override

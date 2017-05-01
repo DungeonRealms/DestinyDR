@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
-import lombok.Getter;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
-import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -15,19 +13,9 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran Quigley (Proxying) on 09-Jun-16.
  */
 public class DRWitch extends EntityWitch implements DRMonster {
-
-    @Getter
-    protected AttributeList attributes = new AttributeList();
     
     public DRWitch(World world) {
-    	super(world);
-    }
-    
-    public DRWitch(World world, int tier) {
-        this(world);
-        setupMonster(tier);
-        
-        
+        super(world);
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.0D, 5, 30, 10.0F));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
@@ -44,9 +32,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     @Override
     public boolean damageEntity(DamageSource damagesource, float f) {
-        if(damagesource == DamageSource.MAGIC){
+        if(damagesource == DamageSource.MAGIC)
             return false;
-        }
         return super.damageEntity(damagesource, f);
     }
 
@@ -86,9 +73,4 @@ public class DRWitch extends EntityWitch implements DRMonster {
     public void enderTeleportTo(double d0, double d1, double d2) {
         //Test for EnderPearl TP Cancel.
     }
-
-	@Override
-	public EntityLiving getNMS() {
-		return this;
-	}
 }

@@ -1,44 +1,25 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
-import lombok.Getter;
-import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 
 /**
  * Created by Chase on Oct 3, 2015
  */
-public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
+public abstract class DRWitherSkeleton extends DRSkeleton implements DRMonster {
 
-    public EnumMonster enumMonster;
-    @Getter
-    protected AttributeList attributes = new AttributeList();
-
-    public DRWitherSkeleton(World world) {
-        super(world);
-    }
-
-    public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
-        this(world);
-        enumMonster = mon;
-        setupMonster(tier);
-        
+	protected DRWitherSkeleton(World world, EnumMonster m) {
+		super(world, m);
         setSkeletonType(1);
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        if (livingEntity instanceof Skeleton)
-            ((Skeleton) livingEntity).setSkeletonType(Skeleton.SkeletonType.WITHER);
-        
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
-    }
+	}
 
     @Override
     protected Item getLoot() {
@@ -47,8 +28,8 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
 
     @Override
     public boolean B(Entity entity) {
-      return damage(entity);
-        //Should prevent wither effect being added on.
+    	return damage(entity);
+    	//Should prevent wither effect being added on.
     }
 
     public boolean damage(Entity entity) {
@@ -93,22 +74,7 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
 
         return flag;
     }
-
-    @Override
-    public void enderTeleportTo(double d0, double d1, double d2) {
-        //Test for EnderPearl TP Cancel.
-    }
-
-    @Override
-    public EnumMonster getEnum() {
-        return this.enumMonster;
-    }
     
     @Override
-    public EntityLiving getNMS() {
-    	return this;
-    }
-    
-    @Override
-    public void collide(Entity e) {}
+	public void a(EntityLiving entityliving, float f) {}
 }

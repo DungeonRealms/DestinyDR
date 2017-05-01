@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.melee;
 
-import lombok.Setter;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.SoundEffects;
 import net.minecraft.server.v1_9_R2.Vec3D;
@@ -8,11 +7,8 @@ import net.minecraft.server.v1_9_R2.World;
 
 public class InfernalEndermen extends MeleeEnderman {
 
-    @Setter
-    private boolean teleport = true;
-
-    public InfernalEndermen(World world, int tier, boolean teleport) {
-        super(world, tier);
+    public InfernalEndermen(World world) {
+        super(world);
         this.persistent = true;
     }
 

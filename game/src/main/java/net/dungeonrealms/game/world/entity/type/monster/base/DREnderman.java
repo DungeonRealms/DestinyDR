@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
-import lombok.Getter;
 import net.dungeonrealms.game.item.items.core.ItemWeaponSword;
-import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
@@ -13,28 +11,14 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran Quigley (Proxying) on 21-Jun-16.
  */
 public abstract class DREnderman extends EntityEnderman implements DRMonster {
-
-    @Getter
-    protected AttributeList attributes = new AttributeList();
-
-
-    protected DREnderman(World world, int tier) {
-        this(world);
-        setupMonster(tier);
-    }
-
-    protected DREnderman(World world) {
+	
+    public DREnderman(World world) {
         super(world);
     }
 
     @Override
     public EnumMonster getEnum(){
     	return EnumMonster.Enderman;
-    }
-    
-    @Override
-    public EntityLiving getNMS() {
-    	return this;
     }
 
     @Override

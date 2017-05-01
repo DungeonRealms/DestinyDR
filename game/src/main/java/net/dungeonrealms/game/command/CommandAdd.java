@@ -3,11 +3,7 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.CombatItem;
@@ -21,20 +17,17 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
-import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.spawning.BuffMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
@@ -114,9 +107,6 @@ public class CommandAdd extends BaseCommand {
                 	for (AttributeType at : gp.getAttributes().getAttributes())
                 		player.sendMessage(at.getNBTName() + " - " + gp.getAttributes().getAttribute(at).toString());
                 	break;
-                case "pcheck":
-                    player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
-                    break;
                 case "uuid":
                     player.sendMessage(Bukkit.getPlayer(GameAPI.getUUIDFromName(player.getName())).getDisplayName());
                     break;
@@ -227,7 +217,7 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(new ItemGlobalMessager().generateItem());
                     break;
                 case "buff":
-                    BuffUtils.spawnBuff(player.getUniqueId());
+                	BuffMechanics.spawnBuff(player);
                     break;
                 case "armorench":
                 case "armorenchant":
@@ -303,80 +293,6 @@ public class CommandAdd extends BaseCommand {
                             player.sendMessage(ChatColor.GREEN + "Spawned " + tl.getDisplayName() + " teleport book.");
                         }
                     }
-                    break;
-                case "everything":
-                    // This is a special command for giving YouTubers "everything" & for testing.
-                    // Therefore, we want to ensure that the player is an authorized developer.
-                    if (!Rank.isDev(player)) {
-                        player.sendMessage(ChatColor.RED + "This command can only be executed by a a developer.");
-                        return false;
-                    }
-
-                    // If we don't specify a 2nd argument, we assume we're doing it to ourselves.
-                    Player currentProfile = player;
-                    if (args.length >= 2) {
-                        if (Bukkit.getPlayer(args[1]) != null && Bukkit.getPlayer(args[1]).getDisplayName().equalsIgnoreCase(args[1])) {
-                            currentProfile = Bukkit.getPlayer(args[1]);
-                        } else {
-                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline.");
-                            return false;
-                        }
-                    }
-
-                    // Add all pets to the player.
-                    List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, currentProfile.getUniqueId());
-                    for (EnumPets pets : EnumPets.values()) {
-                        if (pets == EnumPets.BABY_HORSE) {
-                            continue;
-                        }
-                        if (!playerPets.isEmpty()) {
-                            if (playerPets.contains(pets.getName().toUpperCase())) {
-                                continue;
-                            }
-                            boolean hasPet = false;
-                            for (String playerPet : playerPets) {
-                                if (playerPet.contains("@") && playerPet.split("@")[0].equals(pets.getName())) {
-                                    hasPet = true;
-                                    break;
-                                }
-                            }
-                            if (hasPet) continue;
-                        }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getName(), true);
-                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
-                    }
-
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, EnumPets.BAT.getName(), true);
-
-                    // Add all trails to the player.
-                    List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, currentProfile.getUniqueId());
-                    for (ParticleAPI.ParticleEffect trails : ParticleAPI.ParticleEffect.values()) {
-                        if (!playerTrails.isEmpty()) {
-                            if (playerTrails.contains(trails.getRawName().toUpperCase())) {
-                                continue;
-                            }
-                        }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, trails.getRawName(), true);
-                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(trails.getRawName()) + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
-                    }
-
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, ParticleAPI.ParticleEffect.CRIT.getRawName(), true);
-
-                    // Add all mount skins to the player.
-                    List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, currentProfile.getUniqueId());
-                    for (EnumMountSkins mountSkins : EnumMountSkins.values()) {
-                        if (!playerMountSkins.isEmpty()) {
-                            if (playerMountSkins.contains(mountSkins.getName().toUpperCase())) {
-                                continue;
-                            }
-                        }
-                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, mountSkins.getName(), true);
-                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(mountSkins.getName()) + ChatColor.GREEN + " mount skin to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
-                    }
-
-                    DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, EnumMountSkins.SKELETON_HORSE.getName(), true);
-
-                    player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + " has received everything.");
                     break;
                 case "ecash_buff":
                     if (args.length >= 2) {

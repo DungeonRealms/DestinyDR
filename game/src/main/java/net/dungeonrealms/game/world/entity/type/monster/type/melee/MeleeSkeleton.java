@@ -11,15 +11,9 @@ import net.minecraft.server.v1_9_R2.World;
 public class MeleeSkeleton extends DRSkeleton {
 
 	public MeleeSkeleton(World world) {
-		this(world, EnumMonster.Skeleton, 1);
+		super(world, EnumMonster.Skeleton);
 	}
-	
-    public MeleeSkeleton(World world, EnumMonster monsterType, int tier) {
-        super(world, monsterType, tier);
-    }
 
     @Override
-    public void a(EntityLiving entityliving, float f) {
-    	
-    }
+    public void a(EntityLiving entityliving, float f) {}
 }

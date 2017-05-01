@@ -17,7 +17,7 @@ import net.minecraft.server.v1_9_R2.World;
 public class MadBanditPyromancer extends DRWitherSkeleton implements DungeonBoss {
 
 	public MadBanditPyromancer(World world) {
-		super(world);
+		super(world, null);
 	}
 	
 	@Override

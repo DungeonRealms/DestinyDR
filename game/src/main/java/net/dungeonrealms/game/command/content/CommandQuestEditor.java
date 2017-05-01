@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.commands.quests;
+package net.dungeonrealms.game.command.content;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -13,8 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandQuestEditor extends BaseCommand {
-	public CommandQuestEditor(String command, String usage, String description) {
-		super(command, usage, description);
+	public CommandQuestEditor() {
+		super("quests", "/<command>", "Edit quests");
 	}
 
 	@Override

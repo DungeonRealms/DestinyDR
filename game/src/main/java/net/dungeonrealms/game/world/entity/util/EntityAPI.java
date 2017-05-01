@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.util;
 
+import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -21,11 +22,13 @@ import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityLiving;
 import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
+import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -38,7 +41,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * EntityAPI - Basic Entity utilities.
@@ -47,7 +52,10 @@ import java.util.Random;
  */
 public class EntityAPI {
 
-    public static Random random = new Random();
+    private static Random random = new Random();
+    
+    @Getter
+    private static Map<DRMonster, AttributeList> entityAttributes = new ConcurrentHashMap<>();
     
     public static Entity spawnElite(Location loc, EnumNamedElite elite, int level) {
     	return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), level, null, false);
@@ -57,7 +65,7 @@ public class EntityAPI {
      * Creates an elite without spawning it into the world.
      */
     public static net.minecraft.server.v1_9_R2.Entity createElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name, boolean dungeon) {
-    	EntityLiving entity = (EntityLiving) createEntity(elite != null ? elite.getEntity() : monster.getCustomEntity());
+    	EntityLiving entity = (EntityLiving) createEntity(monster, elite != null ? elite.getEntity() : monster.getCustomEntity(), loc.getWorld(), tier);
     	
     	ItemWeapon weapon = null;
     	ItemArmor armor = null;
@@ -124,7 +132,7 @@ public class EntityAPI {
      * Creates a custom monster and returns the NMS entity without spawning it into the world.
      */
     public static net.minecraft.server.v1_9_R2.Entity createCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
-    	net.minecraft.server.v1_9_R2.Entity entity = createEntity(monster.getCustomEntity());
+    	net.minecraft.server.v1_9_R2.Entity entity = createEntity(monster, monster.getCustomEntity(), loc.getWorld(), tier);
     	
     	// Non friendly.
     	if (!monster.isFriendly()) {
@@ -347,7 +355,19 @@ public class EntityAPI {
         }
     }
     
-    public static net.minecraft.server.v1_9_R2.Entity createEntity(CustomEntityType type) {
+    public static net.minecraft.server.v1_9_R2.EntityLiving createEntity(EnumMonster mType, CustomEntityType type, org.bukkit.World w, int tier) {
+    	DRMonster monster = null;
     	
+    	try {
+    		monster = (DRMonster) type.getClazz().getDeclaredConstructor(World.class).newInstance(((CraftWorld)w).getHandle());
+    		getEntityAttributes().put(monster, new AttributeList());
+    		monster.setMonster(mType);
+    		monster.setupMonster(tier);
+    		return monster.getNMS();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		Bukkit.getLogger().warning("Failed to create " + type.getClazz().getSimpleName());
+    	}
+    	return null;
     }
 }

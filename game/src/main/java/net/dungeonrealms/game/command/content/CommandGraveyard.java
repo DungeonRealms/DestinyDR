@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.command.gameplay;
+package net.dungeonrealms.game.command.content;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;

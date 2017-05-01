@@ -8,10 +8,6 @@ import net.minecraft.server.v1_9_R2.World;
  */
 public class LargeSpider extends DRSpider {
     public LargeSpider(World world) {
-        this(world, 1);
-    }
-    
-    public LargeSpider(World world, int tier) {
-        super(world, tier);
+        super(world);
     }
 }

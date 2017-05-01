@@ -8,6 +8,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
@@ -206,11 +207,15 @@ public class Party {
     		player.teleport(TeleportLocation.CYRENNICA.getLocation());
     }
     
-    public boolean isDungeon() {
+    public Dungeon getDungeon() {
     	for (Player p : getAllMembers())
     		if (DungeonManager.isDungeon(p))
-    			return true;
-    	return false;
+    			return DungeonManager.getDungeon(p.getWorld());
+    	return null;
+    }
+    
+    public boolean isDungeon() {
+    	return getDungeon() != null;
     }
     
     /**

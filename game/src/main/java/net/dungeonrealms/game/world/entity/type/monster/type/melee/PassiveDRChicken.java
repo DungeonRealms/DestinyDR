@@ -1,20 +1,14 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.melee;
 
-import lombok.Getter;
-import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.pathfinders.PathfinderPassiveMeleeAttack;
 import net.minecraft.server.v1_9_R2.*;
 
 public class PassiveDRChicken extends EntityChicken implements DRMonster {
-	
-    @Getter
-    protected AttributeList attributes = new AttributeList();
 
-    public PassiveDRChicken(World world, int tier) {
+    public PassiveDRChicken(World world) {
         super(world);
-        setupMonster(tier);
     }
 
     @Override
@@ -29,9 +23,5 @@ public class PassiveDRChicken extends EntityChicken implements DRMonster {
     @Override
     public EnumMonster getEnum() {
         return EnumMonster.PassiveChicken;
-    }
-    
-    public EntityLiving getNMS() {
-    	return this;
     }
 }

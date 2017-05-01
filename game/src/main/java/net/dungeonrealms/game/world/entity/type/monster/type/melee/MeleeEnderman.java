@@ -8,14 +8,8 @@ import net.minecraft.server.v1_9_R2.World;
  * Created by Kieran Quigley (Proxying) on 21-Jun-16.
  */
 public class MeleeEnderman extends DREnderman {
-
-    public MeleeEnderman(World world, int tier) {
-        super(world, tier);
-
-        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
-    }
-
     public MeleeEnderman(World world) {
         super(world);
+        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
     }
 }

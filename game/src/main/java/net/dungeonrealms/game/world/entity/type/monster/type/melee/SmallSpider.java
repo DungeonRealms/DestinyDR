@@ -8,8 +8,8 @@ import net.minecraft.server.v1_9_R2.World;
  */
 public class SmallSpider extends DRCaveSpider {
 
-    public SmallSpider(World world, int tier) {
-        super(world, tier);
+    public SmallSpider(World world) {
+        super(world);
     }
     
     @Override

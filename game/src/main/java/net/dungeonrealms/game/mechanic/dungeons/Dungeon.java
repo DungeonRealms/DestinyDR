@@ -322,10 +322,17 @@ public abstract class Dungeon {
 	}
 	
 	/**
+	 * Gets the amount of mobs left needed to kill.
+	 */
+	public int getKillsLeft() {
+		return Math.max(0, (int) (getAliveMonsters().size() * 0.8D) - getKillCount());
+	}
+	
+	/**
 	 * Can the boss spawn now?
 	 */
 	public boolean canBossSpawn() {
-		return getAliveMonsters().size() <= getMaxMobCount() * 0.2D;
+		return getKillsLeft() == 0;
 	}
 	
 	/**

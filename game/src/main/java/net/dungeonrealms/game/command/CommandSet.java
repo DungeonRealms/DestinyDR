@@ -19,10 +19,6 @@ import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
@@ -148,21 +144,6 @@ public class CommandSet extends BaseCommand {
                 DungeonRealms.getInstance().saveConfig();
                 SpawningMechanics.loadSpawner(text);
                 break;
-            case "loot":
-                if (args.length < 2) {
-                    player.sendMessage(ChatColor.RED + "Invalid usage! /set loot <tier>");
-                }
-                int lootTier = Integer.parseInt(args[1]);
-                String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
-                LootManager.SPAWNER_CONFIG.add(data);
-                DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
-                player.getWorld().getBlockAt(player.getLocation()).setType(Material.SPONGE);
-                player.sendMessage((LootManager.LOOT_SPAWNERS.size() + 1) + " loot spawner placed");
-                break;
-            case "kill":
-                player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
-                SpawningMechanics.getALLSPAWNERS().forEach(BaseMobSpawner::kill);
-                break;
             case "pick":
             case "rod":
             	ItemStack held = player.getEquipment().getItemInMainHand();
@@ -277,8 +258,7 @@ public class CommandSet extends BaseCommand {
                 }
                 int hp = Integer.parseInt(args[1]);
                 if (hp > 0) {
-                    HealthHandler.setPlayerMaxHP(player, hp);
-                    HealthHandler.setPlayerHP(player, hp);
+                	HealthHandler.initHP(player, hp);
                     player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
                 } else {
                     player.sendMessage(ChatColor.RED + "Unable to set health to " + hp + ", value is  too low.");

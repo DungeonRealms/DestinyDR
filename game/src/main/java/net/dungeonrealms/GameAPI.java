@@ -37,8 +37,6 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
-import net.dungeonrealms.game.item.items.functional.ItemPlayerJournal;
-import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
@@ -56,15 +54,13 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -90,14 +86,12 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -745,8 +739,8 @@ public class GameAPI {
         }
 
         // MULE INVENTORY
-        if (MountUtils.inventories.containsKey(uuid))
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.INVENTORY_MULE.getKey(), ItemSerialization.toString(MountUtils.inventories.get(uuid))))));
+        if (MountUtils.hasInventory(player))
+            operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.INVENTORY_MULE.getKey(), ItemSerialization.toString(MountUtils.getInventory(player))))));
 
         // LEVEL AND STATISTICS
         if (GAMEPLAYERS.size() > 0) {
@@ -760,7 +754,7 @@ public class GameAPI {
 
         // MISC
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.CURRENT_FOOD.getKey(), player.getFoodLevel()))));
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getPlayerHP(player)))));
+        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getHP(player)))));
 
         KarmaHandler.getInstance().saveToMongo(player);
 
@@ -798,10 +792,7 @@ public class GameAPI {
         Chat.listenForMessage(player, null, null);
         
         // Remove dungeonitems from inventory.
-        for (ItemStack stack : player.getInventory().getContents())
-        	if (stack != null && stack.getType() != Material.AIR)
-        		if (DungeonManager.getInstance().isDungeonItem(stack))
-        			player.getInventory().remove(stack);
+        DungeonManager.removeDungeonItems(player);
         
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
@@ -821,7 +812,7 @@ public class GameAPI {
                 return;
             }
             
-            MountUtils.inventories.remove(uuid);
+            MountUtils.getInventories().remove(uuid);
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.LAST_LOGOUT.getKey(), System.currentTimeMillis()))));
             KarmaHandler.getInstance().handleLogoutEvents(player);
             Quests.getInstance().handleLogoutEvents(player);
@@ -829,32 +820,11 @@ public class GameAPI {
                 ScoreboardHandler.getInstance().removePlayerScoreboard(player);
             });
             
-            if (EntityAPI.hasPetOut(uuid)) {
-                net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(uuid);
-                pet.dead = true;
-                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(pet)) {
-                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(pet);
-                }
-                EntityAPI.removePlayerPetList(uuid);
-            }
-            
-            if (EntityAPI.hasMountOut(uuid)) {
-                net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(uuid);
-                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(mount)) {
-                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(mount);
-                }
-                if (mount.isAlive()) { // Safety check
-                    if (mount.passengers != null) {
-                        mount.passengers.forEach(passenger -> passenger = null);
-                    }
-                    mount.dead = true;
-                }
-                EntityAPI.removePlayerMountList(uuid);
-            }
+            PetUtils.removePet(player);
+            MountUtils.removeMount(player);
 
-            if (Affair.getInstance().isInParty(player)) {
-                Affair.getInstance().removeMember(player, false);
-            }
+            if (Affair.isInParty(player))
+            	Affair.getParty(player).removePlayer(player, false);
 
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IS_PLAYING.getKey(), false))));
 
@@ -920,7 +890,6 @@ public class GameAPI {
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     String name = player.getName();
-                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                     if (ShopMechanics.ALLSHOPS != null && !ShopMechanics.ALLSHOPS.isEmpty()) {
                         // Second shop deletion handler
                         ShopMechanics.getShop(name).deleteShop(true);
@@ -997,9 +966,6 @@ public class GameAPI {
         // Hide invisible users from non-GMs.
         if (!Rank.isTrialGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
 
-        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
-        //Prevent players entering a dungeon as they spawn.
-
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
@@ -1074,7 +1040,7 @@ public class GameAPI {
             }
         }
         if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
-            MountUtils.inventories.put(player.getUniqueId(), muleInv);
+            MountUtils.getInventories().put(player.getUniqueId(), muleInv);
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
             String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
@@ -1582,13 +1548,10 @@ public class GameAPI {
     	ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
     	int tier = EntityAPI.getTier(ent);
-        // check if we have a skull
-        int intTier = ent.getMetadata("tier").get(0).asInt();
-        Item.ItemTier tier = Item.ItemTier.getByTier(intTier);
-        if (armorSet[3].getType() == Material.SKULL_ITEM && (intTier >= 3 || new Random().nextInt(10) <= (6 + intTier))) {
-            // if we have a skull we need to generate a helmet so mob stats are calculated correctly
-            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(ent.hasMetadata("elite"))).generateItem();
-        }
+    	
+    	// if we have a skull we need to generate a helmet so mob stats are calculated correctly
+        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || new Random().nextInt(10) <= (6 + tier)))
+            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(ent))).generateItem();
 
         attributes.addStats(ent.getEquipment().getItemInMainHand());
         for (ItemStack armor : armorSet)

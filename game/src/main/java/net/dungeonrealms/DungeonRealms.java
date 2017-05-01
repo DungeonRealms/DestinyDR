@@ -21,12 +21,12 @@ import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.anticheat.PacketModifier;
 import net.dungeonrealms.game.command.*;
+import net.dungeonrealms.game.command.content.*;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
 import net.dungeonrealms.game.command.friend.AddCommand;
 import net.dungeonrealms.game.command.friend.FriendsCommand;
 import net.dungeonrealms.game.command.friend.RemoveCommand;
-import net.dungeonrealms.game.command.gameplay.CommandGraveyard;
 import net.dungeonrealms.game.command.guild.*;
 import net.dungeonrealms.game.command.menu.*;
 import net.dungeonrealms.game.command.moderation.*;
@@ -35,7 +35,6 @@ import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.*;
 import net.dungeonrealms.game.command.toggle.*;
-import net.dungeonrealms.game.commands.quests.CommandQuestEditor;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.*;
 import net.dungeonrealms.game.item.FunctionalItemListener;
@@ -46,7 +45,6 @@ import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
 import net.dungeonrealms.game.listener.inventory.*;
 import net.dungeonrealms.game.listener.mechanic.BankListener;
-import net.dungeonrealms.game.listener.mechanic.BossListener;
 import net.dungeonrealms.game.listener.mechanic.EnergyListener;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.listener.network.BungeeChannelListener;
@@ -77,7 +75,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.dungeonrealms.game.world.spawning.BuffManager;
+import net.dungeonrealms.game.world.spawning.BuffMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
@@ -288,7 +286,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(CrashDetector.getInstance());
             mm.registerMechanic(SpawningMechanics.getInstance());
             mm.registerMechanic(TabMechanics.getInstance());
-            mm.registerMechanic(BuffManager.getInstance());
+            mm.registerMechanic(BuffMechanics.getInstance());
             mm.registerMechanic(new GraveyardMechanic());
         }
         
@@ -405,13 +403,12 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
 
         cm.registerCommand(new CommandWarp());
-        cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
-        cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
+        cm.registerCommand(new CommandMonSpawn());
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
         cm.registerCommand(new BossSpawn("bspawn", "/<command> [args]", "Spawn a dungeon boss."));
         cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
-        cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
+        //cm.registerCommand(new DungeonJoin());
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
         cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell", "t", "whisper", "w", "m")));
@@ -448,7 +445,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandPacketLog("packetlog", "/<command> [args]", "Log all data a user sends"));
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
-            cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
+            cm.registerCommand(new CommandInvoke());
             cm.registerCommand(new CommandHead("head", "/<command> [args]", "Spawn a player's Minecraft head."));
             cm.registerCommand(new CommandStore("drstore", "/<command> [args]", "This command will issue store items to users."));
 
@@ -504,7 +501,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
         // Commands exclusive to support agents on their special server.
         if (isMasterShard || isSupportShard ) {
-            cm.registerCommand(new CommandQuestEditor("quests", "/<command>", "Edit quests"));
+            cm.registerCommand(new CommandQuestEditor());
         }
 
         try {

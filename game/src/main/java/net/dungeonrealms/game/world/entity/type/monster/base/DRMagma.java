@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
-import lombok.Getter;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
@@ -13,17 +11,9 @@ import org.bukkit.inventory.ItemStack;
  * Created by Chase on Oct 17, 2015
  */
 public class DRMagma extends EntityMagmaCube implements DRMonster {
-
-	@Getter
-	protected AttributeList attributes = new AttributeList();
-
+	
 	public DRMagma(World world) {
 		super(world);
-	}
-	
-	public DRMagma(World world, int tier) {
-		this(world);
-		setupMonster(tier);
 		
 		//  SET NMS DATA  //
 		setSize(4);

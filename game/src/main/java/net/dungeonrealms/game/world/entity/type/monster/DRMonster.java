@@ -23,6 +23,7 @@ import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -111,11 +112,17 @@ public interface DRMonster {
 		
     }
 
+    default void setMonster(EnumMonster m) {}
+    
     EnumMonster getEnum();
     
-    EntityLiving getNMS();
-
-    AttributeList getAttributes();
+    default EntityLiving getNMS() {
+    	return (EntityLiving) this;
+    }
+    
+    default AttributeList getAttributes() {
+    	return EntityAPI.getEntityAttributes().get(this);
+    }
     
     default LivingEntity getBukkit() {
     	return (LivingEntity) ((net.minecraft.server.v1_9_R2.Entity)this).getBukkitEntity();

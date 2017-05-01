@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged;
 
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
@@ -14,12 +13,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEntity {
 
-    public RangedWitherSkeleton(World world, EnumMonster monsterType, int tier) {
-        super(world, monsterType, tier);
-    }
-
     public RangedWitherSkeleton(World world) {
-        super(world);
+        super(world, null);
     }
     
     public ItemStack getWeapon() {

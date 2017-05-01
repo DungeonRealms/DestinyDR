@@ -1,20 +1,12 @@
 package net.dungeonrealms.game.command;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
-import net.dungeonrealms.game.world.entity.type.monster.type.melee.InfernalEndermen;
-import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeEnderman;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
-import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.World;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,201 +14,79 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 9/17/2015.
  */
 public class CommandMonSpawn extends BaseCommand {
 
-    public CommandMonSpawn(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandMonSpawn() {
+        super("monspawn", "/<command> [args]", "Spawn monsters");
     }
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-        if (s instanceof ConsoleCommandSender) {
+        if (s instanceof ConsoleCommandSender)
             return false;
+        
+        if (args.length < 5) {
+        	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <> <display_name>");
+        	return true;
         }
-        if (s instanceof BlockCommandSender) {
-            BlockCommandSender bcs = (BlockCommandSender) s;
-            Location location = bcs.getBlock().getLocation().add(0, 2, 0);
-            World nmsWorld = ((CraftWorld) bcs.getBlock().getWorld()).getHandle();
-            if (args.length != 5) return true;
-            String monsterType = args[0];
-            int tier = Integer.parseInt(args[1]);
-            boolean elite = false;
-            if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("elite")) {
-                elite = true;
-            }
-            String meta = args[3];
-            if (meta.equals("null")) {
-                meta = "";
-            }
-            String customName = args[4];
-            if (customName.equalsIgnoreCase("null")) {
-                customName = "";
-            } else {
-                customName = ChatColor.translateAlternateColorCodes('&', customName);
-                customName = customName.replaceAll("_", " ");
-                customName = customName.replaceAll("&0", ChatColor.BLACK.toString());
-                customName = customName.replaceAll("&1", ChatColor.DARK_BLUE.toString());
-                customName = customName.replaceAll("&2", ChatColor.DARK_GREEN.toString());
-                customName = customName.replaceAll("&3", ChatColor.DARK_AQUA.toString());
-                customName = customName.replaceAll("&4", ChatColor.DARK_RED.toString());
-                customName = customName.replaceAll("&5", ChatColor.DARK_PURPLE.toString());
-                customName = customName.replaceAll("&6", ChatColor.GOLD.toString());
-                customName = customName.replaceAll("&7", ChatColor.GRAY.toString());
-                customName = customName.replaceAll("&8", ChatColor.DARK_GRAY.toString());
-                customName = customName.replaceAll("&9", ChatColor.BLUE.toString());
-                customName = customName.replaceAll("&a", ChatColor.GREEN.toString());
-                customName = customName.replaceAll("&b", ChatColor.AQUA.toString());
-                customName = customName.replaceAll("&c", ChatColor.RED.toString());
-                customName = customName.replaceAll("&d", ChatColor.LIGHT_PURPLE.toString());
-                customName = customName.replaceAll("&e", ChatColor.YELLOW.toString());
-                customName = customName.replaceAll("&f", ChatColor.WHITE.toString());
-
-                customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString());
-                customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
-                customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
-                customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
-                //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
-            }
-            EnumMonster enumMonster = EnumMonster.getMonsterByString(monsterType);
-            if (enumMonster == null) {
-                enumMonster = EnumMonster.Undead;
-            }
-
-            DungeonManager.DungeonObject dungeonInstance = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
-            if (enumMonster == EnumMonster.Enderman && dungeonInstance != null) {
-                if (dungeonInstance != null && dungeonInstance.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
-                    //Custom endermen?
-                    if (customName.contains("The Devastator") || customName.contains("The Annihilator")) {
-                        //Custom endermen type.
-                        enumMonster = EnumMonster.InfernalEndermen;
-                    }
-                }
-            }
-
-            Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
-            if (entity == null) {
-                return true;
-            }
-            int level = Utils.getRandomFromTier(tier, "high");
-            if (elite) {
-                entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, bcs.getBlock().getWorld().getName().contains("DUNGEON"));
-            } else if (bcs.getBlock().getWorld().getName().contains("DUNGEON")) {
-                entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                EntityStats.createDungeonMob(entity, level, tier);
-            } else {
-                EntityStats.setMonsterRandomStats(entity, level, tier);
-            }
-            SpawningMechanics.rollElement(entity, enumMonster);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-
-            if (entity instanceof InfernalEndermen && DungeonManager.getInstance().getDungeon(nmsWorld.getWorld()) != null) {
-                ((InfernalEndermen) entity).setTeleport(false);
-            }
-            if (!customName.equals("")) {
-                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-            } else {
-                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
-            }
-
-            if (dungeonInstance != null) {
-                dungeonInstance.aliveMonsters.add(entity);
-                DungeonManager.getInstance().TRACKED_SPAWNS.put(entity.getUniqueID(), location);
-//                if(elite){
-//                    EliteMobSpawner
-//                }
-            }
-            return true;
-        } else if (s instanceof Player) {
-            Player player = (Player) s;
-            if (Rank.isGM(player)) {
-                Location location = player.getLocation();
-                World nmsWorld = ((CraftWorld) player.getWorld()).getHandle();
-                if (args.length > 0) {
-                    String monsterType = args[0];
-                    int tier = Integer.parseInt(args[1]);
-                    boolean elite = false;
-                    if (args[2].equalsIgnoreCase("true")) {
-                        elite = true;
-                    }
-                    String meta = args[3];
-                    if (meta.equals("null")) {
-                        meta = "";
-                    }
-                    String customName = args[4];
-                    if (customName.equalsIgnoreCase("null")) {
-                        customName = "";
-                    } else {
-                        customName = ChatColor.translateAlternateColorCodes('&', customName);
-                        customName = customName.replaceAll("_", " ");
-                        customName = customName.replaceAll("&0", ChatColor.BLACK.toString());
-                        customName = customName.replaceAll("&1", ChatColor.DARK_BLUE.toString());
-                        customName = customName.replaceAll("&2", ChatColor.DARK_GREEN.toString());
-                        customName = customName.replaceAll("&3", ChatColor.DARK_AQUA.toString());
-                        customName = customName.replaceAll("&4", ChatColor.DARK_RED.toString());
-                        customName = customName.replaceAll("&5", ChatColor.DARK_PURPLE.toString());
-                        customName = customName.replaceAll("&6", ChatColor.GOLD.toString());
-                        customName = customName.replaceAll("&7", ChatColor.GRAY.toString());
-                        customName = customName.replaceAll("&8", ChatColor.DARK_GRAY.toString());
-                        customName = customName.replaceAll("&9", ChatColor.BLUE.toString());
-                        customName = customName.replaceAll("&a", ChatColor.GREEN.toString());
-                        customName = customName.replaceAll("&b", ChatColor.AQUA.toString());
-                        customName = customName.replaceAll("&c", ChatColor.RED.toString());
-                        customName = customName.replaceAll("&d", ChatColor.LIGHT_PURPLE.toString());
-                        customName = customName.replaceAll("&e", ChatColor.YELLOW.toString());
-                        customName = customName.replaceAll("&f", ChatColor.WHITE.toString());
-
-                        customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString());
-                        customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
-                        customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
-                        customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
-                        //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
-                    }
-                    EnumMonster enumMonster = EnumMonster.getMonsterByString(monsterType);
-                    if (enumMonster == null) {
-                        enumMonster = EnumMonster.Undead;
-                    }
-                    Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
-                    if (entity == null) {
-                        return true;
-                    }
-                    int level = Utils.getRandomFromTier(tier, "high");
-                    if (elite) {
-                        entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                        EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, player.getWorld().getName().contains("DUNGEON"));
-                    } else if (player.getWorld().getName().contains("DUNGEON")) {
-                        entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                        EntityStats.createDungeonMob(entity, level, tier);
-                    } else {
-                        EntityStats.setMonsterRandomStats(entity, level, tier);
-                    }
-                    SpawningMechanics.rollElement(entity, enumMonster);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    if (!customName.equals("")) {
-                        entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-                    } else {
-                        entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
-                    }
-                    return true;
-                }
-            }
+        
+        //args[0] = monsterType
+        //args[1] = tier
+        //args[2] = true || elite -> elite.
+        //args[3] = Ignored, kept so old command blocks don't break.
+        //args[4] = DisplayName
+        
+        Location spawn = s instanceof BlockCommandSender ? ((BlockCommandSender)s).getBlock().getLocation() : null;
+        if (s instanceof Player)
+        	spawn = ((Player)s).getLocation();
+        spawn = spawn.clone().add(0, 2, 0);
+        
+        boolean elite = args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("elite");
+        
+        String customName = args[4].equalsIgnoreCase("null") ? "" : args[4];
+        customName = ChatColor.translateAlternateColorCodes('&', customName);
+        customName = customName.replaceAll("_", " ");
+        customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString()); //TODO: Convert existing command blocks to use proper color codes.
+        customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
+        customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
+        customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
+        
+        EnumMonster type = EnumMonster.getMonsterByString(args[0]);
+        
+        if (type == null) {
+        	s.sendMessage(ChatColor.RED + "Unknown monster '" + args[0] + "'.");
+        	if (s instanceof BlockCommandSender)
+        		GameAPI.sendDevMessage("Command block at " + ((BlockCommandSender)s).getBlock().getLocation().toString() + " tried to spawn an unknown monster.");
+        	return true;
         }
-        return false;
+        
+        //TODO: Just change the command blocks instead of using this junk.
+        if (type == EnumMonster.Enderman && DungeonManager.isDungeon(spawn.getWorld(), DungeonType.THE_INFERNAL_ABYSS))
+        	if (customName.contains("The Devastator") || customName.contains("The Annihilator"))
+        		type = EnumMonster.InfernalEndermen;
+       
+        int tier = Integer.parseInt(args[1]);
+        int level = Utils.getRandomFromTier(tier, "high");
+        boolean dungeon = DungeonManager.isDungeon(spawn.getWorld());
+        
+        Entity e = null;
+        if (elite) {
+        	e = EntityAPI.spawnElite(spawn, null, type, tier, level, customName, dungeon);
+        } else {
+        	e = EntityAPI.spawnCustomMonster(spawn, type, level, tier, null, customName);
+        }
+        
+        if (dungeon && e != null) {
+        	EntityAPI.makeDungeonMob(e, level, tier);
+        	DungeonManager.getDungeon(spawn.getWorld()).getTrackedMonsters().put(e, spawn);
+        }
+        
+        return true;
     }
 }
