@@ -17,9 +17,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- * Created by Kieran Quigley (Proxying) on 29-May-16.
- */
 public class CommandPet extends BaseCommand {
 
     public CommandPet(String command, String usage, String description, List<String> aliases) {

@@ -30,6 +30,7 @@ import net.dungeonrealms.game.world.entity.type.pet.Chicken;
 import net.dungeonrealms.game.world.entity.type.pet.Creeper;
 import net.dungeonrealms.game.world.entity.type.pet.Enderman;
 import net.dungeonrealms.game.world.entity.type.pet.Endermite;
+import net.dungeonrealms.game.world.entity.type.pet.Guardian;
 import net.dungeonrealms.game.world.entity.type.pet.MagmaCube;
 import net.dungeonrealms.game.world.entity.type.pet.Ocelot;
 import net.dungeonrealms.game.world.entity.type.pet.Rabbit;
@@ -132,6 +133,9 @@ public class EntityMechanics implements GenericMechanic {
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBetaZombie", 54, EntityZombie.class, BetaZombie.class);
         nmsUtils.registerEntity("PetEnderman", 58, EntityEnderman.class, Enderman.class);
+        nmsUtils.registerEntity("PetGuardian", EntityType.GUARDIAN.getTypeId(), EntityGuardian.class, Guardian.class);
+        nmsUtils.registerEntity("PetBabySheep", EntityType.SHEEP.getTypeId(), EntitySheep.class, BabySheep.class);
+        nmsUtils.registerEntity("PetRainbowSheep", EntityType.SHEEP.getTypeId(), EntitySheep.class, RainbowSheep.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);
         nmsUtils.registerEntity("PetWolf", 95, EntityWolf.class, Wolf.class);
         nmsUtils.registerEntity("PetChicken", 93, EntityChicken.class, Chicken.class);

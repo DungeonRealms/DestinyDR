@@ -152,12 +152,21 @@ public class PlayerMenus {
             return;
         }*/
 
-        Inventory inv = Bukkit.createInventory(null, 27, "Pet Selection");
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-        inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
+        int size = EnumPets.values().length + 2; //Add 2 for the buttons
+        if(size <= 9) size = 9;
+        else if(size <= 18) size = 18;
+        else if(size <= 27) size = 27;
+        else if(size <= 36) size = 36;
+        else if(size <= 45) size = 45;
+        else if(size <= 54) size = 54;
+
+        Inventory inv = Bukkit.createInventory(null, size, "Pet Selection");
+        inv.setItem(size - 2, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(size -1, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
 
 
         for(EnumPets pets : EnumPets.values()) {
+            if(!pets.showInGUI() && !Rank.isGM(player)) continue;
             PetData hisData = playerPets.get(pets);
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
             boolean isLocked = hisData == null || !hisData.isUnlocked();

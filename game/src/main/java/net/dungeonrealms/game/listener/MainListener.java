@@ -79,6 +79,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -102,6 +103,10 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
+            if(event.getEntity().hasMetadata("type")) {
+                MetadataValue value = event.getEntity().getMetadata("type").get(0);
+                if (value != null && value.asString().equals("pet")) return;
+            }
             event.setCancelled(true);
         }
     }

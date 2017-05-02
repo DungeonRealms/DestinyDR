@@ -565,6 +565,8 @@ public class ClickHandler {
                             isLocked = false;
                         }
 
+                        if(!pet.showInGUI() && !Rank.isGM(player)) return;
+
                         if(isLocked) {
                             player.sendMessage(ChatColor.RED + "You do not have access to this pet. To unlock this pet please visit http://www.dungeonrealms.net/oldshop");
                             return;

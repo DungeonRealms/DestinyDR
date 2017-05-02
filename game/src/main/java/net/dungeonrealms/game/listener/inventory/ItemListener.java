@@ -1145,6 +1145,7 @@ public class ItemListener implements Listener {
                     }
                     EnumPets pets = EnumPets.getByName(petType);
                     if(pets == null)return;
+                    if(!pets.showInGUI() && !Rank.isGM(player)) return;
                     PetUtils.spawnPet(player.getUniqueId(), petType, wrapper.getPetName(pets));
                     player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
                     break;

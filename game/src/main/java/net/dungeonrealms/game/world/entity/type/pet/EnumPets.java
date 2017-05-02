@@ -1,17 +1,19 @@
 package net.dungeonrealms.game.world.entity.type.pet;
 
+import org.bukkit.entity.EntityType;
+
 /**
  * Created by Kieran on 10/15/2015.
  */
 public enum EnumPets {
     //Snowman - Christmas
     //Killer Rabbit - Easter
-    //Green Baby Sheep - St.Patrick's
+    //Green Baby BabySheep - St.Patrick's
     //Primed Creeper - 4th of July
     //Cave Spider - Halloween
-    //Blue Baby Sheep - St.Andrew's
+    //Blue Baby BabySheep - St.Andrew's
     //Magma Cube - Guy Fawkes/Bonfire Night
-    //Pink Baby Sheep - Cancer Awareness (Maybe different for Breast/Lung etc based on the ribbons)
+    //Pink Baby BabySheep - Cancer Awareness (Maybe different for Breast/Lung etc based on the ribbons)
     //Pig (In Love) - Valentines Day
     //Adult Chicken - Thanksgiving
     WOLF(0, "WOLF", 95, "Wolf"),
@@ -30,13 +32,18 @@ public enum EnumPets {
     CREEPER_OF_INDEPENDENCE(13, "CREEPER_INDEPENDENCE", 50, "Independence Creeper"),
     BABY_HORSE(14, "BABY_HORSE", 64, "Baby Horse"),
     BETA_ZOMBIE(15, "BETA_ZOMBIE", 54, "Beta Zombie",false),
-    ENDERMAN(16, "ENDERMAN", 67, "Enderman",false);
+    ENDERMAN(16, "ENDERMAN", 67, "Enderman",false,false),
+    GUARDIAN(17, "GUARDIAN", 68, "Guardian",false),
+    BABY_SHEEP(18, "BABY_SHEEP", EntityType.SHEEP.getTypeId(), "Baby Sheep",false),
+    RAINBOW_SHEEP(18, "RAINBOW_SHEEP", EntityType.SHEEP.getTypeId(), "Rainbow Sheep",false);
 
     private int id;
     private String name;
     private int eggShortData;
     private String displayName;
     private boolean subGetsFree;
+    //Maybe pets we have not released yet?
+    private boolean showInGui;
 
     public int getId() {
         return id;
@@ -56,13 +63,21 @@ public enum EnumPets {
     public boolean subGetsFree() {
         return subGetsFree;
     }
+    public boolean showInGUI() {
+        return showInGui;
+    }
 
-    EnumPets(int id, String name, int eggShortData, String displayName, boolean subGetsFree) {
+    EnumPets(int id, String name, int eggShortData, String displayName, boolean subGetsFree, boolean showInGui) {
         this.id = id;
         this.name = name;
         this.eggShortData = eggShortData;
         this.displayName = displayName;
         this.subGetsFree = subGetsFree;
+        this.showInGui = showInGui;
+    }
+
+    EnumPets(int id, String name, int eggShortData, String displayName, boolean subGetsFree) {
+        this(id,name,eggShortData,displayName,subGetsFree,true);
     }
 
     EnumPets(int id, String name, int eggShortData, String displayName) {

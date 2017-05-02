@@ -318,6 +318,14 @@ public class RealmListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onHopperPickup(InventoryPickupItemEvent event) {
+        if(event.getItem() != null && event.getItem().hasMetadata("no_pickup")) {
+            event.setCancelled(true);
+        }
+
+    }
+
     private void createDoubleHelix(Location loc) {
         double radius;
 
