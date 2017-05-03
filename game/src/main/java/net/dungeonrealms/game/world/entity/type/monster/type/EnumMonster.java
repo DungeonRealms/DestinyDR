@@ -91,6 +91,7 @@ public enum EnumMonster {
     Pig(l(CustomEntityType.PIG), "Pig"),
     Bat(l(CustomEntityType.BAT), "Bat"),
     Cow(l(CustomEntityType.COW), "Cow"),
+    Mooshroom(l(CustomEntityType.MOOSHROOM), "Mooshroom"),
     Ocelot(l(CustomEntityType.OCELOT), "Ocelot");
 
     private CustomEntityType[] clazzes;
@@ -152,11 +153,11 @@ public enum EnumMonster {
     }
 
     public String getPrefix() {
-    	return prefix[new Random().nextInt(prefix.length)];
+    	return prefix.length > 0 ? prefix[new Random().nextInt(prefix.length)] : "";
     }
 
     public String getSuffix() {
-        return suffix[new Random().nextInt(suffix.length)];
+        return suffix.length > 0 ? suffix[new Random().nextInt(suffix.length)] : "";
     }
 
 	public static EnumMonster getMonsterByString(String mob) {
@@ -219,6 +220,7 @@ public enum EnumMonster {
         BAT(EntityBat.class),
         COW(EntityCow.class),
         OCELOT(EntityOcelot.class),
+        MOOSHROOM(EntityMushroomCow.class),
         
         //  BASE  //
         DR_SPIDER(DRSpider.class, 59),
@@ -275,7 +277,7 @@ public enum EnumMonster {
  		}
  	}
 
-	public boolean isPassive() {
-		return name().contains("Passive");
+ 	public boolean isPassive() {
+		return name().toLowerCase().contains("passive");
 	}
 }

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ItemArmor extends CombatItem {
 
-	public final static ItemType[] ARMOR = new ItemType[] {ItemType.HELMET, ItemType.CHESTPLATE, ItemType.LEGGINGS, ItemType.BOOTS};
+	public final static ItemType[] ARMOR = new ItemType[] {ItemType.BOOTS, ItemType.LEGGINGS, ItemType.CHESTPLATE, ItemType.HELMET};
 	
 	public ItemArmor() {
 		this(ARMOR);

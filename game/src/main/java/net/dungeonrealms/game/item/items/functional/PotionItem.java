@@ -40,6 +40,9 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 	
 	public PotionItem(ItemStack item) {
 		super(item);
+		setTier(PotionTier.getById(getTagInt(TIER)));
+		setSplash(getItem().getType() == Material.SPLASH_POTION);
+		setHealAmount(getTagInt("healAmount"));
 	}
 
 	public void setTier(PotionTier tier) {
@@ -56,14 +59,6 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 	
 	public int getHealAmount() {
 		return (int) (this.healAmount * (isSplash() ? 0.65D : 1D));
-	}
-	
-	@Override
-	protected void loadItem() {
-		setTier(PotionTier.getById(getTagInt(TIER)));
-		setSplash(getItem().getType() == Material.SPLASH_POTION);
-		setHealAmount(getTagInt("healAmount"));
-		super.loadItem();
 	}
 	
 	@Override

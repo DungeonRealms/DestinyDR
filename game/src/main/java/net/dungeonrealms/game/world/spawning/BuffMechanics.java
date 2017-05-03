@@ -96,7 +96,7 @@ public class BuffMechanics implements GenericMechanic, Listener {
         
         String message = ChatColor.BLUE + "" + ChatColor.BOLD + "           ";
         
-        if (effectType == PotionEffectType.HEAL) {
+        if (effectType != PotionEffectType.HEAL) {
         	message += Utils.capitalize(effectType.getName().replaceAll("_", " ")) + " Buff [" + BUFF_DURATION + "s]";
         	// Give the receivers the buff.
         	for (Player player : toBuff)

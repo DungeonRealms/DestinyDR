@@ -32,12 +32,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 	public ItemScrap(ItemStack item) {
 		super(item);
 		setAntiDupe(false);
-	}
-	
-	@Override
-	public void loadItem() {
 		setTier(ScrapTier.getScrapTier(getTagInt(TIER)));
-		super.loadItem();
 	}
 	
 	@Override

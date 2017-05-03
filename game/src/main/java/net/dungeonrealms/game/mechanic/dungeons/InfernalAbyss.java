@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
+import java.util.List;
 import java.util.Random;
 
 import lombok.Getter;
@@ -46,8 +47,8 @@ public class InfernalAbyss extends Dungeon {
 	
 	private int wither;
 	
-	public InfernalAbyss() {
-		super(DungeonType.THE_INFERNAL_ABYSS);
+	public InfernalAbyss(List<Player> players) {
+		super(DungeonType.THE_INFERNAL_ABYSS, players);
 	}
 	
 	@Override

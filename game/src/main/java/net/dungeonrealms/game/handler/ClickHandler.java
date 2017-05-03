@@ -25,6 +25,8 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
+import net.dungeonrealms.game.player.inventory.menus.AchievementMenu;
+import net.dungeonrealms.game.player.inventory.menus.AchievementMenu.AchievementCategory;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -49,8 +51,6 @@ import java.util.UUID;
 
 /**
  * Created by Nick on 10/2/2015.
- * 
- * TODO: Convert to new recode.
  */
 public class ClickHandler {
 
@@ -61,7 +61,8 @@ public class ClickHandler {
         String name = event.getInventory().getName();
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
-        if (slot == -999) return;
+        if (slot == -999)
+        	return; // Dropping item.
 
         switch (name) {
             case "Merchant":
@@ -504,71 +505,17 @@ public class ClickHandler {
                 break;
             case "Achievements":
                 event.setCancelled(true);
-                if (slot > 9) return;
-                switch (slot) {
-                    case 0:
-                        PlayerMenus.openPlayerProfileMenu(player);
-                        break;
-                    case 2:
-                        PlayerMenus.openExplorationAchievementMenu(player);
-                        break;
-                    case 3:
-                        PlayerMenus.openCombatAchievementMenu(player);
-                        break;
-                    case 4:
-                        PlayerMenus.openCharacterAchievementMenu(player);
-                        break;
-                    case 5:
-                        PlayerMenus.openCurrencyAchievementMenu(player);
-                        break;
-                    case 6:
-                        PlayerMenus.openSocialAchievementMenu(player);
-                        break;
-                    case 7:
-                        PlayerMenus.openRealmAchievementMenu(player);
-                        break;
-                    case 8:
-                        PlayerMenus.openEventAchievementMenu(player);
-                        break;
-                    default:
-                        break;
-                }
+                if (slot == 0)
+                	PlayerMenus.openPlayerProfileMenu(player);
+                
+                if (slot > 2 && 2 + AchievementCategory.values().length > slot)
+                	new AchievementMenu(player, AchievementCategory.values()[slot - 2]);
                 break;
             case "Exploration Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
             case "Character Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
             case "Social Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
             case "Combat Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
             case "Currency Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
             case "Realm Achievements":
                 event.setCancelled(true);
                 if (slot == 0) {
@@ -1225,81 +1172,6 @@ public class ClickHandler {
 
                 PlayerMenus.openHeadGameMasterTogglesMenu(player);
                 break;
-            /*case "E-Cash Effects":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-                if (slot == 0) {
-                    NPCMenus.openECashPurchaseMenu(player);
-                    return;
-                }
-                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack == null) return;
-                if (nmsStack.getTag() == null) return;
-                if (!nmsStack.getTag().hasKey("effectType")) return;
-                if (!nmsStack.getTag().hasKey("eCash")) return;
-                String effectType = nmsStack.getTag().getString("effectType");
-                List<String> playerEffects = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
-                ParticleAPI.ParticleEffect effect = ParticleAPI.ParticleEffect.getByName(effectType);
-                if (effect == null) {
-                    return;
-                }
-                if (!playerEffects.isEmpty()) {
-                    if (playerEffects.contains(effectType)) {
-                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + effect.getDisplayName() + ChatColor.RED + " effect.");
-                        return;
-                    }
-                }
-                eCashCost = nmsStack.getTag().getInt("eCash");
-                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
-                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
-                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "trail")) {
-                        player.getInventory().addItem(new ItemParticleTrail().generateItem());
-                    }
-                    player.closeInventory();
-                } else {
-                    player.sendMessage(ChatColor.RED + "You cannot afford this effect, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                }
-                break;
-            case "E-Cash Skins":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-                if (slot == 0) {
-                    NPCMenus.openECashPurchaseMenu(player);
-                    return;
-                }
-                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack == null) return;
-                if (nmsStack.getTag() == null) return;
-                if (!nmsStack.getTag().hasKey("skinType")) return;
-                if (!nmsStack.getTag().hasKey("eCash")) return;
-                if (DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId()).equals("")) {
-                    player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
-                    return;
-                }
-                String skinType = nmsStack.getTag().getString("skinType");
-                List<String> playerSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, player.getUniqueId());
-                EnumMountSkins skin = EnumMountSkins.getByName(skinType);
-                if (skin == null) {
-                    return;
-                }
-                if (!playerSkins.isEmpty()) {
-                    if (playerSkins.contains(skinType)) {
-                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + skin.getDisplayName() + ChatColor.RED + " mount skin.");
-                        return;
-                    }
-                }
-                eCashCost = nmsStack.getTag().getInt("eCash");
-                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true);
-                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin.");
-                    player.closeInventory();
-                } else {
-                    player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                }
-                break;*/
         }
     }
 }

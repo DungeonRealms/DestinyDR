@@ -138,11 +138,9 @@ public class CommandSet extends BaseCommand {
                 }
                 String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
                         + player.getLocation().getZ() + "=" + args[1] + ":" + tier + ";" + spawnAmount);
-                player.sendMessage("Line " + (SpawningMechanics.SPAWNER_CONFIG.size() + 2) + " added " + args[1] + " tier " + tier);
-                SpawningMechanics.SPAWNER_CONFIG.add(text);
-                DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                DungeonRealms.getInstance().saveConfig();
-                SpawningMechanics.loadSpawner(text);
+                SpawningMechanics.getSpawners().add(SpawningMechanics.loadSpawner(text));
+                SpawningMechanics.saveConfig();
+                player.sendMessage("Line " + (SpawningMechanics.getSpawners().size() + 2) + " added " + args[1] + " tier " + tier);
                 break;
             case "pick":
             case "rod":

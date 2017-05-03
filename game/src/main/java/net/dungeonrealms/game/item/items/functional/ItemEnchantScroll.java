@@ -32,16 +32,11 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 	
 	public ItemEnchantScroll(ItemStack stack) {
 		super(stack);
+		if (hasTag(TIER))
+			setTier(ItemTier.getByTier(getTagInt(TIER)));
 	}
 
 	protected abstract boolean isApplicable(ItemStack item);
-
-	@Override
-	public void loadItem() {
-		if (hasTag(TIER))
-			setTier(ItemTier.getByTier(getTagInt(TIER)));
-		super.loadItem();
-	}
 	
 	@Override
 	public void updateItem() {

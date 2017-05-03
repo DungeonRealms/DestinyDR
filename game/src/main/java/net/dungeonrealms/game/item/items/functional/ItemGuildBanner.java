@@ -29,12 +29,7 @@ public class ItemGuildBanner extends FunctionalItem implements ItemClickListener
 	
 	public ItemGuildBanner(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
 		this.guildName = getTagString("guild");
-		super.loadItem();
 	}
 	
 	@Override

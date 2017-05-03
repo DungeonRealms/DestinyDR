@@ -24,8 +24,6 @@ import org.bukkit.entity.Projectile;
 /**
  * InfernalAbyss Boss
  * 
- * TODO: Test, verify infernal rides the ghast.
- * 
  * Redone on April 28th, 2017.
  * @author Kneesnap
  */
@@ -36,7 +34,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     public InfernalAbyss(World world) {
         super(world);
-        createEntity(50);
         this.fireProof = true;
         
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);

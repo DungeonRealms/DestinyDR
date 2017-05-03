@@ -73,18 +73,11 @@ public class CommandMonSpawn extends BaseCommand {
        
         int tier = Integer.parseInt(args[1]);
         int level = Utils.getRandomFromTier(tier, "high");
-        boolean dungeon = DungeonManager.isDungeon(spawn.getWorld());
         
-        Entity e = null;
         if (elite) {
-        	e = EntityAPI.spawnElite(spawn, null, type, tier, level, customName, dungeon);
+        	EntityAPI.spawnElite(spawn, null, type, tier, level, customName);
         } else {
-        	e = EntityAPI.spawnCustomMonster(spawn, type, level, tier, null, customName);
-        }
-        
-        if (dungeon && e != null) {
-        	EntityAPI.makeDungeonMob(e, level, tier);
-        	DungeonManager.getDungeon(spawn.getWorld()).getTrackedMonsters().put(e, spawn);
+        	EntityAPI.spawnCustomMonster(spawn, type, level, tier, null, customName);
         }
         
         return true;

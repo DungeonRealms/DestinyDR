@@ -1,14 +1,21 @@
 package net.dungeonrealms.game.world.item.itemgenerator;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.MojangsonParser;
+import net.minecraft.server.v1_9_R2.NBTBase;
+import net.minecraft.server.v1_9_R2.NBTBase.NBTNumber;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagIntArray;
+import net.minecraft.server.v1_9_R2.NBTTagList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,7 +40,7 @@ public class ItemGenerator {
     public static List<ItemModifier> modifierObjects = new ArrayList<>();
     
     private static File getFile(String itemName) {
-    	return new File("plugins/DungeonRealms/custom_items/" + Utils.sanitizeFileName(itemName) + ".item");
+    	return new File(GameAPI.getDataFolder() + "/custom_items/" + Utils.sanitizeFileName(itemName) + ".item");
     }
     
     /**
@@ -65,6 +72,7 @@ public class ItemGenerator {
     			if (template != null)
     				tag.setString("customId", template);
     			
+    			applyRNG(tag, true);
     			// Create Item
     			nms.setTag(tag);
     			item = CraftItemStack.asBukkitCopy(nms);
@@ -74,7 +82,7 @@ public class ItemGenerator {
     		Utils.log.info("NBT Json is formatted incorrectly. (ID = " + template + ")");
     	}
     	
-    	return item;
+    	return PersistentItem.constructItem(item).generateItem();
     }
     
     /**
@@ -114,6 +122,56 @@ public class ItemGenerator {
     	fullObj.addProperty("tag", toSave.getTag().toString());
     	
     	return fullObj;
+    }
+    
+    /**
+     * Applies the RNG to the ranges in an NBT tag.
+     * Does not apply to child tag compounds.
+     */
+    public static void applyRNG(NBTTagCompound tag) {
+    	applyRNG(tag, false);
+    }
+    
+    /**
+     * Applies RNG to the ranges in an NBT tag.
+     * Applies to child components.
+     */
+    public static void applyRNG(NBTTagCompound tag, boolean deep) {
+    	System.out.println("Trying to apply RNG to " + tag.toString());
+    	for (String key : tag.c()) {
+    		NBTBase base = tag.get(key);
+    		
+    		System.out.println("Trying to generate from " + base.toString());
+    		if (base instanceof NBTTagList || base instanceof NBTTagIntArray) {
+    			tag.set(key, applyRNG(base));
+    		} else if (base instanceof NBTTagCompound && deep) {
+    			applyRNG((NBTTagCompound) base, true);
+    		}
+    	}
+    }
+    
+    /**
+     * Loads a data range from an nbt int array or an nbt list.
+     */
+    private static NBTBase applyRNG(NBTBase data) {
+    	System.out.println("Trying to load " + data.toString());
+    	
+    	if (data instanceof NBTTagIntArray) {
+    		int[] d = ((NBTTagIntArray)data).c();
+    		return new NBTTagInt( d.length > 1 ? Utils.randInt(d[0], d[1]) : d[0]);
+    	} else if (data instanceof NBTTagList) {
+    		NBTTagList list = (NBTTagList) data;
+    		if (list.h(0) instanceof NBTNumber) {
+    			return new NBTTagInt(list.size() > 1 ? Utils.randInt(list.c(0), list.c(1)) : list.c(0));
+    		} else if (list.h(0) instanceof NBTTagList || list.h(0) instanceof NBTTagIntArray){
+    			NBTTagList newData = new NBTTagList();
+    			newData.add(applyRNG(list.h(0)));
+    			newData.add(applyRNG(list.h(1)));
+    			return newData;
+    		}
+    	}
+    	
+    	return data;
     }
     
     /**

@@ -9,8 +9,6 @@ import net.minecraft.server.v1_9_R2.World;
 /**
  * The Priest
  * 
- * TODO: Move onto the next stage when killed.
- * 
  * Created April 29th, 2017.
  * @author Kneesnap
  */

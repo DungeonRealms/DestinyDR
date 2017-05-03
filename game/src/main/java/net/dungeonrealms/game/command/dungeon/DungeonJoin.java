@@ -46,6 +46,11 @@ public class DungeonJoin extends BaseCommand {
         	return true;
         }
         
+        if (!p.getDungeon().getAllowedPlayers().contains(player)) {
+        	player.sendMessage(ChatColor.RED + "You cannot join a dungeon you did not start.");
+        	return true;
+        }
+        
         p.announce(player.getName() + " has joined the dungeon.");
         player.teleport(p.getDungeon().getWorld().getSpawnLocation());
         player.setFallDistance(0F);

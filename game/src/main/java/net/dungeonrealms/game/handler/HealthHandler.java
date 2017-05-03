@@ -45,6 +45,7 @@ import org.inventivetalent.bossbar.BossBarAPI.Style;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -65,8 +66,7 @@ public class HealthHandler implements GenericMechanic {
 
     public void startInitialization() {
         Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> 
-            Bukkit.getServer().getOnlinePlayers().forEach(this::updatePlayerOverheadHP)
-        , 0L, 20L);
+            Bukkit.getServer().getOnlinePlayers().forEach(this::updatePlayerOverheadHP), 0L, 20L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
 
     }
@@ -77,14 +77,13 @@ public class HealthHandler implements GenericMechanic {
     }
 
     /**
-     * Calculates the player's max HP from gear, and 
-     * TODO: Calculate attributes from armor first?
+     * Calculates the player's stats on login.
      */
     public void handleLoginEvents(Player player) {
         player.setMetadata("loggingIn", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
         
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	// Recalculate from armor, etc.
+        	GameAPI.getGamePlayer(player).calculateAllAttributes();
             updatePlayerHP(player);
             
             // Loads current HP from DB.
@@ -94,7 +93,7 @@ public class HealthHandler implements GenericMechanic {
             //  MARK PLAYER AS DONE.  //
             player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             player.removeMetadata("loggingIn", DungeonRealms.getInstance());
-        }, 21);
+        }, 5l);
     }
 
     /**
@@ -418,8 +417,10 @@ public class HealthHandler implements GenericMechanic {
             }
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
-
-        //TODO: Combat fx.
+        
+        Random r = new Random();
+        player.getWorld().spawnParticle(Particle.BLOCK_DUST, player.getLocation().clone().add(0, 1, 0), 10,
+        		r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
         //player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
         
         //  DISABLE DEATH FROM FIRE TICK  //
@@ -608,6 +609,9 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
+        Random r = new Random();
+        defender.getWorld().spawnParticle(Particle.BLOCK_DUST, defender.getLocation().clone().add(0, 1, 0), 10,
+        		r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
 
         if (attacker != null && GameAPI.isPlayer(attacker)) {
         	handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);

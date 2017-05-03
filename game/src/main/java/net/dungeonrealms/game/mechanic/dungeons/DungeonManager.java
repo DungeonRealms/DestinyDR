@@ -134,8 +134,10 @@ public class DungeonManager implements GenericMechanic {
 
     }
     
-    public static List<MobSpawner> getSpawns(DungeonType type) {
-    	return new ArrayList<>(getDungeonSpawns().get(type));
+    public static List<MobSpawner> getSpawns(World w, DungeonType type) {
+    	List<MobSpawner> spawns = new ArrayList<>(getDungeonSpawns().get(type));
+    	spawns.forEach(ms -> ms.getLocation().setWorld(w));
+    	return spawns;
     }
     
     /**
@@ -214,11 +216,13 @@ public class DungeonManager implements GenericMechanic {
     		return null;
     	}
     	
-    	players.forEach(MountUtils::removeMount);
-    	players.forEach(PetUtils::removePet);
-    	
     	// This is the player who is triggered the dungeon start.
     	Player player = players.get(0);
+    	
+    	// Prevent creating multiple dungeons at once.
+    	for (Dungeon d : DungeonManager.getDungeons())
+    		if (d.getAllowedPlayers().contains(player) && d.getWorld() == null)
+    			return null;
     	
     	if (Affair.isInParty(player)) {
     		Party party = Affair.getParty(player);
@@ -237,10 +241,11 @@ public class DungeonManager implements GenericMechanic {
     		Affair.createParty(player);
     	}
     	
+    	players.forEach(MountUtils::removeMount);
+    	players.forEach(PetUtils::removePet);
     	players.forEach(p -> p.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + type.getDisplayName() + ChatColor.GRAY + "' -- Please wait..."));
-    	Dungeon dungeon = type.createDungeon();
+    	Dungeon dungeon = type.createDungeon(players);
     	getDungeons().add(dungeon);
-    	dungeon.startDungeon(players);
     	return dungeon;
     }
 }

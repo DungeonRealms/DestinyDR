@@ -22,12 +22,16 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 public class ItemHealingFood extends FunctionalItem implements ItemConsumeListener {
 	
 	private EnumHealingFood foodType;
-	
 	private int healAmount;
 
 	public ItemHealingFood(EnumHealingFood foodType) {
 		super(ItemType.FOOD);
 		this.foodType = foodType;
+	}
+	
+	public ItemHealingFood(ItemStack item) {
+		super(item);
+		this.healAmount = getTagInt("healAmount");
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -50,11 +54,6 @@ public class ItemHealingFood extends FunctionalItem implements ItemConsumeListen
 					HealthHandler.heal(player, healAmount);
 			}
 		}, 0, 20);
-	}
-	
-	@Override
-	public void loadItem() {
-		this.healAmount = getTagInt("healAmount");
 	}
 	
 	@Override

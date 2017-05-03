@@ -147,7 +147,8 @@ public abstract class ItemGear extends ItemGeneric {
 	 */
 	public ItemGear setType(ItemType type) {
 		super.setType(type);
-		this.generatedItemType = type.getType();
+		if (type != null)
+			this.generatedItemType = type.getType();
 		return this;
 	}
 	

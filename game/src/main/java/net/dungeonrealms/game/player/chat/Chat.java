@@ -1,16 +1,13 @@
 package net.dungeonrealms.game.player.chat;
 
-import com.google.common.collect.Lists;
-
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
 
 import org.bson.Document;
@@ -35,15 +32,7 @@ import java.util.stream.Collectors;
  */
 public class Chat {
 
-    static Chat instance = null;
-
-    public static Chat getInstance() {
-        if (instance == null) {
-            instance = new Chat();
-        }
-        return instance;
-    }
-
+	@Getter private static Chat instance = new Chat();
 
     private static final Map<Player, Consumer<? super AsyncPlayerChatEvent>> chatListeners = new ConcurrentHashMap<>();
     private static final Map<Player, Consumer<? super Player>> orElseListeners = new ConcurrentHashMap<>();
@@ -281,9 +270,12 @@ public class Chat {
             prefix = GameChat.getPreMessage(event.getPlayer(), true, messageType);
         }
         
+        fixedMessage = prefix + fixedMessage;
         event.setMessage(prefix + fixedMessage);
-        if (show != null)
+        if (show != null) {
         	recipients.forEach(show::sendToPlayer);
+        	event.setMessage("");
+        }
     }
 
     /**
@@ -388,7 +380,7 @@ public class Chat {
     		return new JSONMessage(s);
     	
     	String[] split = s.split("@i@");
-    	String before = split[0];
+    	String before = split.length > 0 ? split[0] : "";
     	String after = split.length > 1 ? split[1] : "";
     	
     	// Generate display.

@@ -2,7 +2,6 @@ package net.dungeonrealms.game.world.spawning;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -59,10 +58,10 @@ public abstract class MobSpawner {
     @Setter @Getter // Should we ignore spawn conditions?
     private boolean firstSpawn = true;
 
-    @Setter @Getter
+    @Getter
     private int initialRespawnDelay;
     
-    @Getter @Setter //Delay between spawns.
+    @Setter //Delay between spawns.
     private int respawnDelay;
 
     @Setter @Getter
@@ -98,6 +97,7 @@ public abstract class MobSpawner {
 
         this.lvlRange = lvlRange;
         this.initialRespawnDelay = respawnDelay;
+        setRespawnDelay(respawnDelay);
 
         this.spawnAmount = spawnAmount;
         this.location = location;
@@ -159,6 +159,18 @@ public abstract class MobSpawner {
         	holo.appendTextLine(getElement().getColor() + "" + (getElementChance() != 0 ? getElementChance() : "100") + "% chance for " + getElement().getPrefix() + " damage");
         
         this.editHologram = holo;
+    }
+    
+    public int getRespawnDelay() {
+    	int delay = respawnDelay;
+    	if (delay < 25)
+    		delay = getDelays()[getTier() - 1];
+    	delay += delay / 10;
+    	return delay;
+    }
+    
+    public int[] getDelays() {
+    	return new int[] {40, 80, 105, 145, 200};
     }
     
     public boolean hasCustomName() {
@@ -237,16 +249,8 @@ public abstract class MobSpawner {
         kill();
         Bukkit.getScheduler().cancelTask(getTimerID());
 
-        for (String spawner : Lists.newArrayList(SpawningMechanics.SPAWNER_CONFIG)) {
-            if(doesLineMatchLocation(spawner)){
-                //Remove that whole line..
-                SpawningMechanics.SPAWNER_CONFIG.remove(spawner);
-                DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                DungeonRealms.getInstance().saveConfig();
-                Bukkit.getLogger().info("Removing spawner line: " + spawner);
-                break;
-            }
-        }
+        SpawningMechanics.getSpawners().remove(this);
+        SpawningMechanics.saveConfig();
     }
     
     protected Entity spawn() {
@@ -267,8 +271,7 @@ public abstract class MobSpawner {
     	} else {
     		entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
     	}
-    	if (isDungeon())
-    		EntityAPI.makeDungeonMob(entity, level, getTier());
+    	
     	getSpawnedMonsters().add(entity);
     	return entity;
     }

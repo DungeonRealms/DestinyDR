@@ -18,10 +18,14 @@ public class EliteMobSpawner extends MobSpawner {
 
 	@Setter @Getter
     private EnumNamedElite eliteType;
+	
+	public EliteMobSpawner(EnumNamedElite elite) {
+		this(elite.getLocation(), elite.getDisplayName(), elite.getMonster(), elite.getTier(), elite.getRespawnDelay(), elite.getSpread());
+		setEliteType(elite);
+	}
 
-    public EliteMobSpawner(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, String mobPower, int respawnDelay, int mininmumXZ, int maximumXZ) {
-        super(loc, monster, "", tier, 1, mobPower, respawnDelay, mininmumXZ, maximumXZ);
-        setEliteType(elite);
+    public EliteMobSpawner(Location l, String displayName, EnumMonster m, int tier, int respawnDelay, int spread) {
+        super(l, m, displayName, tier, 1, "low", respawnDelay, 1, spread);
     }
 
     @Override
@@ -30,8 +34,8 @@ public class EliteMobSpawner extends MobSpawner {
     }
     
     @Override
-    public int getSpawnAmount() {
-    	return 1;
+    public int[] getDelays() {
+    	return new int[] {300, 500, 750, 1000, 1500};
     }
 
     @Override

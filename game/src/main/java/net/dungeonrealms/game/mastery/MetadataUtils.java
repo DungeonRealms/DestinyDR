@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
@@ -25,9 +26,8 @@ import org.bukkit.metadata.Metadatable;
  * 
  * Redone on April 20th, 2017.
  * @author Kneesnap
- * @param <T>
  */
-public class MetadataUtils<T> {
+public class MetadataUtils {
 
 	/**
 	 * Registry of most basic metadata.
@@ -87,9 +87,17 @@ public class MetadataUtils<T> {
 			return (T) getEnum(m, cls);
 		}
 		
-		@SuppressWarnings({ "unchecked", "static-access" })
-		public <T extends Enum<T>> T getEnum(Metadatable m, Class<T> c) {
-			return ((T) defaultValue).valueOf(c, get(m).asString());
+		@SuppressWarnings("unchecked")
+		private <T extends Enum<T>> T getEnum(Metadatable m, Class<T> c) {
+			if (!has(m))
+				return null;
+			try {
+				return (T) c.getMethod("valueOf", String.class).invoke(null, get(m).asString());
+			} catch (Exception e) {
+				e.printStackTrace();
+				Bukkit.getLogger().warning("Failed to load value '" + get(m).asString() + "' as " + c.getSimpleName() + ".");
+			}
+			return null;
 		}
 		
 		/**

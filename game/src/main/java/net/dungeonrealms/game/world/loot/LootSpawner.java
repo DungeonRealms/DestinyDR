@@ -35,6 +35,7 @@ public class LootSpawner {
 	private int tickDelay;
 	private Inventory inventory = Bukkit.createInventory(null, 27, "Loot");
 	private String lootTable;
+	private boolean broken; // Cached so the chest particles don't throw an async error.
 	
 	public LootSpawner(Location loc, int tickDelay, String loot) {
 		this.location = loc;
@@ -44,7 +45,9 @@ public class LootSpawner {
 	}
 	
 	public boolean isBroken() {
-		return getLocation().getBlock().getType() != Material.CHEST && getInventory().getContents().length == 0;
+		if (Bukkit.isPrimaryThread())
+			broken = (!getLocation().getChunk().isLoaded() || getLocation().getBlock().getType() != Material.CHEST) && getInventory().getContents().length == 0;
+		return this.broken;
 	}
 	
 	/**
@@ -52,6 +55,7 @@ public class LootSpawner {
 	 */
 	private void setContents() {
 		getLocation().getBlock().setType(Material.CHEST);
+		isBroken();
 		HashMap<ItemStack, Double> loot = LootManager.getLoot().get(getLootTable());
 		
 		int count = 0;
@@ -113,6 +117,7 @@ public class LootSpawner {
 		
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::setContents,
 			(long) (getTickDelay() + (getTickDelay() * LootManager.getDelayMultiplier())));
+		isBroken();
 	}
 	
 	/**

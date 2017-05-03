@@ -37,12 +37,7 @@ public class ItemMuleUpgrade extends FunctionalItem implements ItemInventoryList
 	
 	public ItemMuleUpgrade(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
 		setTier(MuleTier.getByTier(getTagInt(TIER)));
-		super.loadItem();
 	}
 	
 	@Override

@@ -17,17 +17,12 @@ public class ItemParticleSelector extends ItemGeneric {
 	
 	public ItemParticleSelector(ItemStack item) {
 		super(item);
+		setEffect(ParticleEffect.valueOf(getTagString("effect")));
 	}
 	
 	public ItemParticleSelector(ParticleEffect effect) {
 		super(ItemType.PARTICLE_SELECTOR);
 		setEffect(effect);
-	}
-	
-	@Override
-	public void loadItem() {
-		setEffect(ParticleEffect.valueOf(getTagString("effect")));
-		super.loadItem();
 	}
 	
 	@Override

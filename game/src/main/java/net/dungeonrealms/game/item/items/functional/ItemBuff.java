@@ -36,14 +36,9 @@ public class ItemBuff extends FunctionalItem implements ItemClickListener {
 	
 	public ItemBuff(ItemStack stack) {
 		super(stack);
-	}
-	
-	@Override
-	public void loadItem() {
 		setBuffType(EnumBuff.valueOf(getTagString("buff")));
 		setDuration(getTagInt("duration"));
 		setBuffPower(getTagInt("buffPower"));
-		super.loadItem();
 	}
 	
 	@Override

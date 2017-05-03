@@ -13,7 +13,7 @@ public class DebugUtil {
 		String playerReport = p.getName() + " - Debug Report\n"
         		+ "Shard: " + DungeonRealms.getShard().getShardID() + "\n"
 				+ "Position: " + p.getLocation().getBlockX() + " " + p.getLocation().getBlockY() + " " + p.getLocation().getBlockZ() + "\n"
-        		+ "World" + p.getWorld().getName() + "\n"
+        		+ "World: " + p.getWorld().getName() + "\n"
 				+ "Open Inventory: " + (p.getOpenInventory() != null ? p.getOpenInventory().getTitle() : "None") + "\n"
         		+ "Inventory: " + (p.getInventory() != null ? p.getInventory().getTitle() : "None") + "\n"
         		+ (gp == null ? "GamePlayer is null!\n" : ""

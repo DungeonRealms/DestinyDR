@@ -451,7 +451,7 @@ public class Realm {
 		// Don't load a realm that's already loaded.
 		if(isLoaded()) {
 			if (doAfter != null)
-				doAfter.run();
+				Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> doAfter.run());
 			return;
 		}
 		
@@ -654,7 +654,7 @@ public class Realm {
 			//Setup an existing realm.
 			setupRealmWorld();
 			if(doAfter != null)
-				doAfter.run();
+				Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> doAfter.run());
 		}
 	}
 	

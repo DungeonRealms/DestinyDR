@@ -95,7 +95,7 @@ public enum EnumPets {
      * @return
      */
     public boolean isFrame() {
-    	return getClazz() != null;
+    	return getClazz() == null;
     }
     
     /**

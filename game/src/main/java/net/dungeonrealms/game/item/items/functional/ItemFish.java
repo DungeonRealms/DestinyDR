@@ -49,15 +49,11 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
 	
 	public ItemFish(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
+		
 		setCooked(getTagBool("cooked"));
 		setTier(FishingTier.values()[getTagInt(TIER) - 1]);
 		if(hasTag("buffType"))
 			setFishBuff(Fishing.loadBuff(getTag()));
-		super.loadItem();
 	}
 	
 	@Override

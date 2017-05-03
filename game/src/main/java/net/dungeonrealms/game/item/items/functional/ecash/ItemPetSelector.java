@@ -19,19 +19,14 @@ public class ItemPetSelector extends ItemGeneric {
 	
 	public ItemPetSelector(ItemStack item) {
 		super(item);
+		setPet(EnumPets.valueOf(getTagString("pet")));
+		setPetName(hasTag("petName") ? getTagString("petName") : getPet().getDisplayName());
 	}
 	
 	public ItemPetSelector(EnumPets pet) {
 		super(ItemType.PET_SELECTOR);
 		this.pet = pet;
 		this.petName = getPet().getDisplayName();
-	}
-	
-	@Override
-	public void loadItem() {
-		setPet(EnumPets.valueOf(getTagString("pet")));
-		setPetName(hasTag("petName") ? getTagString("petName") : getPet().getDisplayName());
-		super.loadItem();
 	}
 	
 	@Override

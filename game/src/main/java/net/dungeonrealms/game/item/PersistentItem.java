@@ -27,7 +27,6 @@ public abstract class PersistentItem {
 		this.item = item;
 		if(item != null)
 			loadItem();
-		//TODO: Move all the load items into the constructor.
 	}
 	
 	public ItemStack getItem() {

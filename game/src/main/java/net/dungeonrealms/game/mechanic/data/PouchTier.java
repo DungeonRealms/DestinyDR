@@ -19,7 +19,7 @@ public enum PouchTier {
 	}
 	
 	public int getId() {
-		return ordinal();
+		return ordinal() + 1;
 	}
 
 	public static PouchTier getById(int tier) {

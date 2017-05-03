@@ -71,7 +71,8 @@ public class ShopMenuListener implements Listener {
 			return;
 		}
 		
-		boolean res = shop.getCallback().onClick(p, shop);
+		boolean res = shop.getCallback().onClick(p, shop)
+				&& (shop.getShards() > 0 || shop.getPrice() > 0 || shop.getECashCost() > 0);
 		
 		// Remove currency.
 		if (res) {
@@ -80,7 +81,7 @@ public class ShopMenuListener implements Listener {
 			if (shop.getPrice() > 0)
 				BankMechanics.takeGemsFromInventory(p, shop.getPrice());
 			if (shards != null)
-				DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, shards, shop.getShards(), true);
+				DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, shards, -shop.getShards(), true);
 			p.sendMessage(ChatColor.GREEN + "Transaction complete.");
 			p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 		}

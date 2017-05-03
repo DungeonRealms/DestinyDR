@@ -1,13 +1,11 @@
 package net.dungeonrealms.game.donation;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
-import net.dungeonrealms.game.player.json.JsonBuilder;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
@@ -18,8 +16,6 @@ import java.io.Serializable;
 
 /**
  * Created by Alan on 7/28/2016.
- * 
- * TODO: This could be done better.
  */
 @Getter
 @Setter
@@ -75,36 +71,11 @@ public class Buff implements Serializable {
     }
 
     public String serialize() {
-        JsonBuilder jb = new JsonBuilder();
-        jb.setData("timeUntilExpiry", timeUntilExpiry).setData("bonusAmount", bonusAmount).setData("duration",
-                duration).setData("activatingPlayer", activatingPlayer).setData("fromServer", fromServer);
-        return jb.getJson().toString();
+    	return new Gson().toJson(this);
     }
 
     public static Buff deserialize(String serializedBuff) {
-        if (serializedBuff == null || serializedBuff.equals("")) return null;
-
-        JsonParser jsParser = new JsonParser();
-        JsonObject jo = (JsonObject) jsParser.parse(serializedBuff);
-        Buff instance = null;
-
-        try {
-            instance = Buff.class.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        if (instance == null) return null;
-
-        instance.setTimeUntilExpiry(jo.get("timeUntilExpiry").getAsLong());
-        instance.setDuration(jo.get("duration").getAsInt());
-        instance.setBonusAmount(jo.get("bonusAmount").getAsFloat());
-        instance.setActivatingPlayer(jo.get("activatingPlayer").getAsString());
-        instance.setFromServer(jo.get("fromServer").getAsString());
-
-        return instance;
+        return new Gson().fromJson(serializedBuff, Buff.class);
     }
 
 }

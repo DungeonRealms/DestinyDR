@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
-import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 
 import org.bukkit.ChatColor;
@@ -23,12 +23,7 @@ public class ItemGemPouch extends ItemMoney implements ItemInventoryListener {
 	
 	public ItemGemPouch(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
 		this.tier = PouchTier.getById(getTagInt(TIER));
-		super.loadItem();
 	}
 	
 	@Override
@@ -49,7 +44,7 @@ public class ItemGemPouch extends ItemMoney implements ItemInventoryListener {
 
 	@Override
 	protected String getDisplayName() {
-		return EnumTier.getById(tier.getId()).getColor() + tier.getName() + " Gem Pouch " + ChatColor.GREEN + getGemValue() + "g";
+		return GameAPI.getTierColor(tier.getId()) + tier.getName() + " Gem Pouch " + ChatColor.GREEN + getGemValue() + "g";
 	}
 
 	@Override

@@ -109,7 +109,6 @@ public interface DRMonster {
 		}
 		e.setArmorContents(entityArmor);
 		e.setItemInMainHand(getWeapon());
-		
     }
 
     default void setMonster(EnumMonster m) {}

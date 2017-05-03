@@ -53,8 +53,8 @@ public class LootManager implements GenericMechanic, Listener {
 		Utils.log.info("[ChestLoot] - Loading types and spawners...");
 		
 		//  LOAD LOOT CHOICES  //
-		Arrays.stream(new File(GameAPI.getDataFolder() + "/loot/").list())
-				.filter(name -> name.endsWith(".loot")).forEach(name -> loadLoot(name));
+		Arrays.stream(new File(GameAPI.getDataFolder() + "/loot/").listFiles())
+				.filter(f -> f.getName().endsWith(".loot")).forEach(this::loadLoot);
 		
 		for (String line : DungeonRealms.getInstance().getConfig().getStringList("loot")) {
 			String[] cords = line.split("=")[0].split(",");
@@ -117,6 +117,7 @@ public class LootManager implements GenericMechanic, Listener {
 				if (item != null)
 					block.getLocation().getWorld().dropItemNaturally(block.getLocation(), item);
 			spawner.getInventory().clear();
+			spawner.attemptBreak(p);
 		}
 		
 		Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
@@ -132,9 +133,8 @@ public class LootManager implements GenericMechanic, Listener {
 				spawner.attemptBreak((Player) event.getPlayer());
 	}
 	
-	private void loadLoot(String type) {
-		File f = new File(GameAPI.getDataFolder() + "/loot/" + type);
-		type = type.split(".")[0];
+	private void loadLoot(File f) {
+		String type = f.getName().split("\\.")[0];
 		
 		//  READ FILE  //
 		List<String> lines = new ArrayList<>();

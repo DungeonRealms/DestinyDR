@@ -319,7 +319,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new BankListener(), this);
             pm.registerEvents(new TitleAPI(), this);
             pm.registerEvents(TutorialIsland.getInstance(), this);
-            //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new PassiveEntityListener(), this);
             cm = new CraftingMenu();
@@ -408,7 +407,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
         cm.registerCommand(new BossSpawn("bspawn", "/<command> [args]", "Spawn a dungeon boss."));
         cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
-        //cm.registerCommand(new DungeonJoin());
+        cm.registerCommand(new DungeonJoin());
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
         cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell", "t", "whisper", "w", "m")));

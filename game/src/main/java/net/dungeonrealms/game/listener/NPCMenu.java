@@ -18,12 +18,12 @@ public enum NPCMenu {
 	SKILL_TRAINER("Skill Trainer", ShopProfessionVendor.class, false),
 	FOOD_VENDOR("Food Vendor", ShopFoodVendor.class, false),
 	ITEM_VENDOR("Item Vendor", ShopItemVendor.class, false),
-	INNKEEPER("Innkeeper", ShopHearthstoneLocation.class, false);
+	INNKEEPER("Innkeeper", ShopHearthstoneLocation.class, false),
 	//ECASH_VENDOR("E-Cash Vendor", ShopECashVendor.class, false),
-	//PET_VENDOR("Pet Vendor", ShopMenuPet.class, false),
-	//ECASH_MISC("E-Cash Miscellaneous", ShopMenuMisc.class, false),
-	//SKIN_VENDOR("Skin Vendor", ShopMenuMountSkin.class, false),
-	//EFFECT_VENDOR("Effect Vendor", ShopMenuParticleEffect.class, false);
+	PET_VENDOR("Pet Vendor", ShopMenuPet.class, false),
+	ECASH_MISC("E-Cash Miscellaneous", ShopMenuMisc.class, false),
+	SKIN_VENDOR("Skin Vendor", ShopMenuMountSkin.class, false),
+	EFFECT_VENDOR("Effect Vendor", ShopMenuParticleEffect.class, false);
 	
 	@Getter private String npcName;
 	private Class<? extends ShopMenu> shopCls;

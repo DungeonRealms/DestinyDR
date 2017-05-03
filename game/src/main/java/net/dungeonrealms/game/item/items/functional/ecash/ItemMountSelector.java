@@ -16,17 +16,12 @@ public class ItemMountSelector extends ItemGeneric {
 	
 	public ItemMountSelector(ItemStack item) {
 		super(item);
+		setTier(HorseTier.getByTier(getTagInt(TIER)));
 	}
 	
 	public ItemMountSelector(HorseTier tier) {
 		super(ItemType.MOUNT_SELECTOR);
 		setTier(tier);
-	}
-	
-	@Override
-	public void loadItem() {
-		setTier(HorseTier.getByTier(getTagInt(TIER)));
-		super.loadItem();
 	}
 	
 	@Override
@@ -36,7 +31,7 @@ public class ItemMountSelector extends ItemGeneric {
 		if (getTier().getJump() != 100)
 			addLore("Jump " + getTier().getJump() + "%");
 		addLore(ChatColor.ITALIC + getTier().getDescription());
-		addLore(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + HorseTier.getByTier(getTier().getId() - 1).getDescription());
+		addLore(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + getTier().getDescription());
 		setTagInt(TIER, getTier().getId());
 		super.updateItem();
 	}

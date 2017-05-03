@@ -49,6 +49,8 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackMob(EntityDamageByEntityEvent event) {
+    	if (!(event.getEntity() instanceof LivingEntity))
+    		return;
     	
     	Player damager = null;
     	Projectile projectile = null;

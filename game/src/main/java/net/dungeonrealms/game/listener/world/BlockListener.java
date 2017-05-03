@@ -160,6 +160,7 @@ public class BlockListener implements Listener {
                         spawnAmount.set(foundSpawner.getSpawnAmount());
                         delay.set(foundSpawner.getRespawnDelay());
                     }
+                    
                     player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Spawner Setup STEP 2 / 2");
                     player.sendMessage(ChatColor.GREEN + "Please enter the custom mob name if applicable or 'none' for no name, (Explicit Weapon type or none), If you want to specify element damage: fire/ice/poison/pure <chance for elemental damage>");
                     player.sendMessage(ChatColor.GRAY + "EX: none none fire 80 or none none 0 or &aThe_Devestator sword");
@@ -186,7 +187,7 @@ public class BlockListener implements Listener {
 
                             if (mobSpawner == null) {
                                 if (elite.get())
-                                    mobSpawner = new EliteMobSpawner(block.getLocation(), null, monsterType, tier.get(), levelRange, delay.get(), min.get(), max.get());
+                                    mobSpawner = new EliteMobSpawner(block.getLocation(), "", monsterType, tier.get(), delay.get(), max.get());
                                 else
                                     mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get());
                             }
@@ -203,7 +204,7 @@ public class BlockListener implements Listener {
                             if (elite.get()) {
                                 EnumNamedElite eliteEnum = EnumNamedElite.getFromName(name.toLowerCase().replace("_", " "));
                                 if (eliteEnum != null && eliteEnum != null)
-                                    player.sendMessage(ChatColor.GREEN + "Found Elite named " + eliteEnum.getConfigName());
+                                    player.sendMessage(ChatColor.GREEN + "NOTE: Named elites are not configurable for now.");
 
                             }
 
@@ -215,10 +216,9 @@ public class BlockListener implements Listener {
 
                             mobSpawner.setSpawnAmount(spawnAmount.get());
                             mobSpawner.setTier(tier.get());
-                            if(mobSpawner.getInitialRespawnDelay() != delay.get()){
-                                mobSpawner.setInitialRespawnDelay(delay.get());
+                            if(mobSpawner.getInitialRespawnDelay() != delay.get())
                                 mobSpawner.setRespawnDelay(delay.get());
-                            }
+                            
                             if (data != null && data.length >= 2) {
                                 String weapon = data[1];
                                 if (!weapon.equalsIgnoreCase("none")) {
@@ -264,23 +264,10 @@ public class BlockListener implements Listener {
                             if (checkIfExists) {
                                 if (monsterType != null)
                                 	mobSpawner.setMonsterType(monsterType);
-                                for (int i = 0; i < SpawningMechanics.SPAWNER_CONFIG.size(); i++) {
-                                    String line = SpawningMechanics.SPAWNER_CONFIG.get(i);
-                                    if (mobSpawner.doesLineMatchLocation(line)) {
-                                        //Remove that whole line..
-                                        String newString = mobSpawner.getSerializedString();
-                                        SpawningMechanics.SPAWNER_CONFIG.set(i, newString);
-                                        DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                                        DungeonRealms.getInstance().saveConfig();
-                                        Bukkit.getLogger().info("Updating spawner line from '" + line + "' to '" + newString + "'");
-                                        break;
-                                    }
-                                }
                             } else {
-                                SpawningMechanics.SPAWNER_CONFIG.add(serialized);
-                                DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                                DungeonRealms.getInstance().saveConfig();
+                                SpawningMechanics.getSpawners().add(mobSpawner);
                             }
+                            SpawningMechanics.saveConfig();
 
                             mobSpawner.kill();
                             //Init mobspawner.

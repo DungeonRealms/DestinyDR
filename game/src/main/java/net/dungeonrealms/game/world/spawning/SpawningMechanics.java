@@ -29,13 +29,9 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 public class SpawningMechanics implements GenericMechanic {
 	
 	@Getter private static List<String> spawnerConfig = new ArrayList<>();
-    public static ArrayList<String> SPAWNER_CONFIG = new ArrayList<>();
     @Getter private static SpawningMechanics instance = new SpawningMechanics();
     
     @Getter private static List<MobSpawner> spawners = new ArrayList<>();
-    
-    private static final int[] SPAWN_DELAYS = {40, 80, 105, 145, 200};
-    private static final int[] ELITE_DELAYS = {300, 500, 750, 1000, 1500};
 
     private static void initAllSpawners() {
     	getSpawners().forEach(MobSpawner::init);
@@ -54,14 +50,29 @@ public class SpawningMechanics implements GenericMechanic {
             entity.remove();
         });
     }
+    
+    public static void saveConfig() {
+    	List<String> config = new ArrayList<String>();
+    	for (MobSpawner s : getSpawners())
+    		if (!(s instanceof EliteMobSpawner) || ((EliteMobSpawner)s).getEliteType() == null)
+    			config.add(s.getSerializedString());
+    	DungeonRealms.getInstance().getConfig().set("spawners", config);
+    	DungeonRealms.getInstance().saveConfig();
+    }
 
     private static void loadSpawners() {
     	Utils.log.info("DungeonRealms - Loading spawners...");
     	spawnerConfig = DungeonRealms.getInstance().getConfig().getStringList("spawners");
     	
+    	// Load normal mobs from config.
     	for (String line : spawnerConfig)
-    		if (line != null && line.equalsIgnoreCase("null"))
+    		if (line != null && line.length() > 0)
     			getSpawners().add(loadSpawner(line));
+    	
+    	// Load named elites.
+    	for (EnumNamedElite elite : EnumNamedElite.values())
+    		getSpawners().add(new EliteMobSpawner(elite));
+    	
     	initAllSpawners();
     }
     
@@ -75,32 +86,27 @@ public class SpawningMechanics implements GenericMechanic {
     	Location location = new Location(GameAPI.getMainWorld(), x, y, z);
     	
     	// Load general info.
-    	int tier = Integer.parseInt(line.split(":")[1].split(";")[0].substring(1));
-    	int amount = Integer.parseInt(String.valueOf(line.charAt(line.indexOf(";") + 1)));
+    	boolean elite = line.contains("*");
+    	if (elite)
+    		line = line.replace("*", "");
+    	
+    	int tier = Integer.parseInt(line.split(":")[1].split(";")[0]);
+    	int amount = Integer.parseInt(line.split(";")[1].substring(0, 1));
     	
     	// Load mob type.
-    	String monsterType = line.split("=")[1].split(":")[0];
-    	EnumNamedElite elite = EnumNamedElite.getFromName(monsterType);
+    	String monsterType = line.split("=")[1].split(":")[0].split("\\(")[0];
     	EnumMonster monster = EnumMonster.getByName(monsterType);
-    	if (elite == null)
-    		monster = EnumMonster.getByName(monsterType);
     	
     	// Spawn data.
-    	int spawnDelay = Integer.parseInt(line.split(":")[1].split("#")[0]);
+    	int spawnDelay = Integer.parseInt(line.split("@")[1].split("#")[0]);
     	
     	if (monster == null) {
     		Bukkit.getLogger().warning("Failed to create monster '" + monsterType + "'.");
     		return null;
     	}
     	
-    	// Calculate spawn delays.
-    	int initialDelay = spawnDelay;
-    	if (spawnDelay < 25)
-    		spawnDelay = (elite != null ? ELITE_DELAYS : SPAWN_DELAYS)[tier - 1];
-    	spawnDelay += spawnDelay / 10;
-    	
     	// Calculate location ranges.
-    	String[] locationRange = line.split("#")[1].split("$")[0].split("-");
+    	String[] locationRange = line.split("#")[1].split("\\$")[0].split("-");
     	
     	int minXZ = Integer.parseInt(locationRange[0]);
     	int maxXZ = Integer.parseInt(locationRange[1]);
@@ -108,18 +114,16 @@ public class SpawningMechanics implements GenericMechanic {
     	String mobPower = String.valueOf(line.charAt(line.indexOf("@") - 1)).equals("+") ? "high" : "low";
     	
     	String name = "";
-    	if (line.contains("(") && line.contains(")"))
-    		name = line.split("(")[1].split(")")[0].replaceAll("_", " ");
+    	if (line.contains("\\(") && line.contains("\\)"))
+    		name = line.split("\\(")[1].split("\\)")[0].replaceAll("_", " ");
     	
     	// Create spawner.
     	MobSpawner spawner;
-    	if (elite != null) {
-    		spawner = new EliteMobSpawner(location, elite, monster, tier, mobPower, spawnDelay, minXZ, maxXZ);
+    	if (elite) {
+    		spawner = new EliteMobSpawner(location, name, monster, tier, spawnDelay, minXZ);
     	} else {
     		spawner = new BaseMobSpawner(location, monster, name, tier, amount, mobPower, spawnDelay, minXZ, maxXZ);
     	}
-    	
-    	spawner.setInitialRespawnDelay(initialDelay);
     	
     	if (line.endsWith("$"))
     		return spawner;

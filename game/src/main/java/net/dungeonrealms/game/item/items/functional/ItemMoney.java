@@ -27,14 +27,9 @@ public abstract class ItemMoney extends FunctionalItem {
 	
 	public ItemMoney(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
 		this.writeNbt = hasTag("worth");
 		if(this.writeNbt)
 			setGemValue(getTagInt("worth"));
-		super.loadItem();
 	}
 	
 	@Override

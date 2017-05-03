@@ -40,12 +40,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
 	
 	public ItemMount(ItemStack item) {
 		super(item);
-	}
-	
-	@Override
-	public void loadItem() {
 		setMule(getTagBool("mule"));
-		super.loadItem();
 	}
 	
 	@Override

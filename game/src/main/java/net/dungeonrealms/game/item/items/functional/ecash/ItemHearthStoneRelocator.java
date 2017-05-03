@@ -18,17 +18,12 @@ public class ItemHearthStoneRelocator extends ItemGeneric {
 	
 	public ItemHearthStoneRelocator(ItemStack item) {
 		super(item);
+		setLocation(TeleportLocation.valueOf(getTagString("loc")));
 	}
 	
 	public ItemHearthStoneRelocator(TeleportLocation loc) {
 		super(ItemType.HEARTHSTONE_RELOCATE);
 		setLocation(loc);
-	}
-	
-	@Override
-	public void loadItem() {
-		setLocation(TeleportLocation.valueOf(getTagString("loc")));
-		super.loadItem();
 	}
 	
 	@Override

@@ -79,6 +79,10 @@ public abstract class ShopMenu {
 		return item;
 	}
 	
+	protected ShopItem addItem(ItemStack item) {
+		return addItem(new VanillaItem(item));
+	}
+	
 	protected ShopItem addItem(ItemGeneric item) {
 		return addItem(new ShopItem(item));
 	}
@@ -136,11 +140,7 @@ public abstract class ShopMenu {
 		ShopMenuListener.getMenus().put(player, this);
 	}
 	
-	protected static ItemStack createItem(Material mat, String name) {
-		return createItem(mat, name, null);
-	}
-	
-	protected static ItemStack createItem(Material mat, String name, String[] lore) {
+	protected static ItemStack createItem(Material mat, String name, String... lore) {
 		ItemStack stack = new ItemStack(mat);
 		ItemMeta meta = stack.getItemMeta();
 		

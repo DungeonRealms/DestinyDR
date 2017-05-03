@@ -40,6 +40,10 @@ public class PlayerManager {
         return (item == null || item.getType() == null || item.getType() == Material.AIR);
     }
 
+    public static boolean hasItem(Player p, ItemType type) {
+    	return hasItem(p.getInventory(), type);
+    }
+    
     public static boolean hasItem(PlayerInventory inv, ItemType type) {
         for (ItemStack item : inv.getContents())
             if (PersistentItem.isType(item, type))

@@ -29,14 +29,12 @@ import java.util.stream.Collectors;
 public class DungeonListener implements Listener {
 	
 	//TODO: Mounts -> Database
-	//TODO: Last touches on item recode. (The RNG values in the format.)
-	//TODO: Finish item recode testing.
 	//TODO: Mob nametag stuff.
 	// Lootchest particles better.
 	//TODO: Metadata
-	//TODO: Finish guis (ClickHandler too)
-	
 	//TODO: Write a .item converter.
+	//TODO: Prevent using items while sharding.
+	//TODO: Integrate new drops to dungeons.
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeaveDungeon(PlayerEnterRegionEvent evt) {

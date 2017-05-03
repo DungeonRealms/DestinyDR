@@ -26,12 +26,7 @@ public abstract class ItemEnchantProfession extends ItemEnchantScroll {
 	
 	public ItemEnchantProfession(ItemStack stack) {
 		super(stack);
-	}
-	
-	@Override
-	public void loadItem() {
 		this.attributes.load(getTag(), getValues());
-		super.loadItem();
 	}
 	
 	@Override

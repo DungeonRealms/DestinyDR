@@ -21,6 +21,7 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 /**
@@ -34,7 +35,6 @@ public enum DungeonType {
     BANDIT_TROVE("Bandit Trove", "banditTrove",
     		BanditTrove.class, null, BossType.Mayel,
     		EnumMounts.WOLF, 1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
-    
     		
     VARENGLADE("Varenglade", "varenglade",
     		Varenglade.class, VarengladeListener.class, BossType.Burick,
@@ -98,9 +98,9 @@ public enum DungeonType {
     	return new File(GameAPI.getDataFolder() + "/dungeons/" + getInternalName() + ".zip");
     }
     
-    public Dungeon createDungeon() {
+    public Dungeon createDungeon(List<Player> players) {
     	try {
-    		return getDungeonClass().getDeclaredConstructor().newInstance();
+    		return getDungeonClass().getDeclaredConstructor(List.class).newInstance(players);
     	} catch (Exception e) {
     		e.printStackTrace();
     		Bukkit.getLogger().warning("Failed to initialize " + getName() + "!");
@@ -120,15 +120,16 @@ public enum DungeonType {
     	List<MobSpawner> spawns = new ArrayList<>();
     	try (BufferedReader br = new BufferedReader(new FileReader(f))) {
     		for (String line; (line = br.readLine()) != null;) {
-    			if (!line.equalsIgnoreCase("null") && line.contains("=")) {
-    				MobSpawner s = SpawningMechanics.loadSpawner(line);
-    				s.setDungeon(true);
-    				spawns.add(s);
-    			}
-    		}		
+    			if (!line.contains("="))
+    				continue;
+    			MobSpawner s = SpawningMechanics.loadSpawner(line);
+    			s.setDungeon(true);
+    			spawns.add(s);
+    		}
     		br.close();
     	} catch (Exception exception) {
     		exception.printStackTrace();
+    		Bukkit.getLogger().warning("Failed to parse mob spawns for " + f.getName() + ".");
     	}
     	DungeonManager.getDungeonSpawns().put(this, spawns);
     }

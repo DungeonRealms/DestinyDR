@@ -57,6 +57,11 @@ public class ShopItem extends ItemGeneric {
 		return this;
 	}
 	
+	public ShopItem setOnClick(ShopItemClick c) {
+		this.callback = c;
+		return this;
+	}
+	
 	@Override
 	public void loadItem() {
 		setECash(getTagInt("eCash"));

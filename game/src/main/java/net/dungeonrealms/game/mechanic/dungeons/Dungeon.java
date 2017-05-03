@@ -41,6 +41,7 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -68,18 +69,19 @@ public abstract class Dungeon {
 	private int maxMobCount;
 	private DungeonBoss boss;
 	@Setter private boolean editMode;
+	private List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
 	
-	public Dungeon(DungeonType dungeon) {
+	public Dungeon(DungeonType dungeon, List<Player> players) {
 		this.type = dungeon;
-		this.spawns = DungeonManager.getSpawns(getType());
-		createWorld();
+		this.allowedPlayers = players;
+		createWorld(); // Init dungeon.
 	}
 	
 	/**
 	 * Start the dungeon.
 	 */
-	public void startDungeon(List<Player> players) {
-		for (Player player : players) {
+	public void startDungeon() {
+		for (Player player : this.allowedPlayers) {
 			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, TeleportLocation.CYRENNICA.getDBString(), true);
     		player.teleport(getWorld().getSpawnLocation());
     		player.setFallDistance(0F);
@@ -91,6 +93,7 @@ public abstract class Dungeon {
 	 * Creates the world.
 	 */
 	protected void setupWorld(String worldName) {
+		// Create world.
 		WorldCreator worldCreator = new WorldCreator(worldName);
         worldCreator.generateStructures(false);
         World w = Bukkit.getServer().createWorld(worldCreator);
@@ -101,6 +104,10 @@ public abstract class Dungeon {
         w.setGameRuleValue("randomTickSpeed", "0");
         Bukkit.getWorlds().add(w);
         this.world = w;
+        
+        // Load spawns.
+        this.spawns = DungeonManager.getSpawns(getWorld(), getType());
+        startDungeon();
 	}
 	
 	/**
@@ -428,7 +435,8 @@ public abstract class Dungeon {
 		try {
 			net.minecraft.server.v1_9_R2.World w = ((CraftWorld)getWorld()).getHandle();
 			net.minecraft.server.v1_9_R2.EntityInsentient e = type.getMonster().getClazz().getDeclaredConstructor(net.minecraft.server.v1_9_R2.World.class).newInstance(w);
-			w.addEntity(e);
+			e.setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
+			w.addEntity(e, SpawnReason.CUSTOM);
 			Entity ent = e.getBukkitEntity();
 			ent.teleport(loc);
 			boss = (DungeonBoss) e;

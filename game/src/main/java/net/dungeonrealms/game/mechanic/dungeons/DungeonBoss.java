@@ -140,7 +140,7 @@ public interface DungeonBoss extends DRMonster {
 		}
 		
 		getBukkit().setRemoveWhenFarAway(false);
-		EntityAPI.registerBoss(this, 100, getTier());
+		EntityAPI.registerBoss(this, level, getTier());
         say(getBossType().getGreeting());
 	}
 	

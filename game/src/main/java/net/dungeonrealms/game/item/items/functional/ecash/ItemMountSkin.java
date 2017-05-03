@@ -18,6 +18,7 @@ public class ItemMountSkin extends ItemGeneric {
 	
 	public ItemMountSkin(ItemStack item) {
 		super(item);
+		setSkin(EnumMountSkins.valueOf(getTagString("skinType")));
 	}
 	
 	public ItemMountSkin(EnumMountSkins s) {
@@ -31,12 +32,6 @@ public class ItemMountSkin extends ItemGeneric {
 		setTagString("skinType", getSkin().name());
 		getMeta().setDisplayName(ChatColor.GREEN + getSkin().getDisplayName() + " Skin");
 		super.updateItem();
-	}
-	
-	@Override
-	public void loadItem() {
-		setSkin(EnumMountSkins.valueOf(getTagString("skinType")));
-		super.loadItem();
 	}
 	
 	@Override

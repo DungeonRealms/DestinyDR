@@ -74,8 +74,6 @@ public class TradeManager implements GenericMechanic {
             return false;
         }
 
-        //TODO: Check if the player has an inventory open.
-
         if (getTrade(uniqueId) != null) {
             return false;
         }
