@@ -197,31 +197,6 @@ public class CommandSet extends BaseCommand {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
                 break;
-            case "dummyitem":
-                ItemStack currentItem = player.getInventory().getItemInMainHand();
-                if (currentItem == null || currentItem.getType() == Material.AIR) {
-                    player.sendMessage(ChatColor.RED + "You must have an item in your main hand to make it a dummy.");
-                    break;
-                }
-
-                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(currentItem);
-                NBTTagCompound tag = nmsStack.getTag();
-                if (tag == null) {
-                    player.sendMessage(ChatColor.RED + "There was an error, the item has no tag.");
-                    break;
-                }
-
-                boolean addFlag = !tag.hasKey("dummy_item");
-                if (addFlag) {
-                    tag.set("dummy_item", new NBTTagString("1"));
-                } else {
-                    tag.remove("dummy_item");
-                }
-                nmsStack.setTag(tag);
-
-                player.getInventory().setItemInMainHand(CraftItemStack.asBukkitCopy(nmsStack));
-                player.sendMessage((addFlag ?  ChatColor.GREEN + "Added" : ChatColor.RED + "Removed") + " item's dummy flag.");
-                break;
             case "pvpoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
                     CombatLog.removeFromPVP(Bukkit.getPlayer(args[1]));

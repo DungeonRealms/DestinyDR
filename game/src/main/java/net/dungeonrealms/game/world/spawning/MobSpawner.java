@@ -266,8 +266,10 @@ public abstract class MobSpawner {
     	
     	Entity entity;
     	int level = Utils.getRandomFromTier(getTier(), getLvlRange());
+    	System.out.println("Spawning " + getMonsterType().getIdName() + ". Tier = " + getTier() + ", Level = " + level);
     	if (this instanceof EliteMobSpawner) {
-    		entity = EntityAPI.spawnElite(getLocation(), ((EliteMobSpawner)this).getEliteType(), getMonsterType(), getTier(), level, getCustomName(), false);
+    		EliteMobSpawner ms = (EliteMobSpawner) this;
+    		entity = EntityAPI.spawnElite(getLocation(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
     	} else {
     		entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
     	}
@@ -297,15 +299,15 @@ public abstract class MobSpawner {
     public Location spray() {
     	Location loc = getLocation();
     	double bound = getMinimumXZ() + getMaximumXZ();
-    	double xMin = loc.getX() - bound;
-    	double xMax = loc.getX() + bound;
-    	double zMin = loc.getZ() - bound;
-    	double zMax = loc.getZ() + bound;
+    	int xMin = (int) (loc.getX() - bound);
+    	int xMax = (int) (loc.getX() + bound);
+    	int zMin = (int) (loc.getZ() - bound);
+    	int zMax = (int) (loc.getZ() + bound);
     	
     	// Add 0.5 so they spawn in the middle of the block.
-        double x = xMin + (int) (Math.random() * (xMax - xMin + 1)) + 0.5D;
+        double x = Utils.randInt(xMin, xMax) + 0.5D;
         double y = loc.getY() + 3D;
-        double z = zMin + (int) (Math.random() * (zMax - zMin + 1)) + 0.5D;
+        double z = Utils.randInt(zMin, zMax) + 0.5D;
 
         // Raise mobs out of ground if they spawn in it.
         Location ret = new Location(loc.getWorld(), x, y, z);

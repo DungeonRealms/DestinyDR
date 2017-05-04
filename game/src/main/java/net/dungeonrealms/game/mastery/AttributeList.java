@@ -24,7 +24,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 * Does this item have a specified attribute?
 	 */
 	public boolean hasAttribute(AttributeType t) {
-		return this.containsKey(t) && get(t) != null && get(t).getValue() > 0;
+		return this.containsKey(t) && get(t) != null && get(t).getValue() != 0;
 	}
 	
 	/**
@@ -36,7 +36,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	
 	/**
 	 * Gets a list of all the attributes this has.
-	 * Basically keySet() except it checks the value is > 0
+	 * Basically keySet() except it checks the value is not 0
 	 */
 	public List<AttributeType> getAttributes() {
 		return keySet().stream().filter(this::hasAttribute).collect(Collectors.toList());
@@ -92,7 +92,9 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 */
 	public void subtractStat(AttributeType t, ModifierRange mr) {
 		ModifierRange take = mr.clone();
+		System.out.println("Attempting to remove " + t.getNBTName() + ", " + mr.toString());
 		take.setVal(-take.getValLow(), -take.getValHigh());
+		System.out.println("Doing this by adding " + take.toString());
 		addStat(t, take);
 	}
 	
@@ -105,15 +107,15 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 * Fails silently if attribute is not found.
 	 */
 	public void addStat(AttributeType t, ModifierRange range) {
-		if(!hasAttribute(t))
-			return;
 		ModifierRange mr = getAttribute(t);
 		
+		System.out.println("Adding " + range.toString() + " to " + t.getNBTName());
 		if(t.isRange()) {
 			setStatRange(t, range.getValLow() + mr.getValLow(), range.getValHigh() + mr.getValHigh());
 		} else {
 			setStat(t, range.getValue() + mr.getValue());
 		}
+		System.out.println("Ok! Is now " + getAttribute(t).toString());
 	}
 	
 	public void addStat(AttributeType t, int inc) {
@@ -160,6 +162,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	
 	public void load(NBTTagCompound tag, AttributeType[] types) {
 		NBTTagCompound attr = tag.getCompound("itemAttributes");
+		
 		for (String key : attr.c()) {
 			//  FIND ATTRIBUTE TYPE  //
 			AttributeType aType = null;
@@ -173,5 +176,13 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 				Utils.log.info("Could not find Item attribute " + key + " for " + key.toString());
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		String values = "";
+		for (AttributeType type : keySet())
+			values += "," + type.getNBTName() + "->" + getAttribute(type).toString();
+		return "[AttributeList (" + size() + ")" + values + "]";
 	}
 }

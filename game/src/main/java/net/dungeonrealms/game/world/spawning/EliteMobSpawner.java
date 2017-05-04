@@ -22,6 +22,8 @@ public class EliteMobSpawner extends MobSpawner {
 	public EliteMobSpawner(EnumNamedElite elite) {
 		this(elite.getLocation(), elite.getDisplayName(), elite.getMonster(), elite.getTier(), elite.getRespawnDelay(), elite.getSpread());
 		setEliteType(elite);
+		if (getEliteType() != null)
+			setMonsterType(getEliteType().getMonster());
 	}
 
     public EliteMobSpawner(Location l, String displayName, EnumMonster m, int tier, int respawnDelay, int spread) {

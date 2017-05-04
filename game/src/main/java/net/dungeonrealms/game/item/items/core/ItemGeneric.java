@@ -51,7 +51,7 @@ public abstract class ItemGeneric extends PersistentItem {
 	private int price; //The price of this item. 0 marks no price.
 	
 	@Setter @Getter
-	private boolean showPrice; //Whether or not lore should be created for this price.
+	private boolean showPrice = true; //Whether or not lore should be created for this price.
 	
 	private long soulboundTrade = 0;
 	private List<String> soulboundAllowedTraders;

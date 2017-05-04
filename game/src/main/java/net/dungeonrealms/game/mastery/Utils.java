@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.BlockIterator;
 
@@ -262,4 +263,17 @@ public class Utils {
     public static void removeFiles(File root, Predicate<? super File> cb) {
     	Arrays.stream(root.listFiles()).filter(cb).forEach(Utils::removeFile);
     }
+
+	public static String getItemName(ItemStack item) {
+		if (item == null || item.getType() == Material.AIR || !item.hasItemMeta())
+			return "NOTHING";
+		ItemMeta meta = item.getItemMeta();
+		if (meta.hasDisplayName())
+			return meta.getDisplayName();
+		
+		String name = "";
+		for (String s : item.getType().name().split("_"))
+			name += " " + Utils.capitalize(s);
+		return name.length() > 1 ? name.substring(1) : name;
+	}
 }

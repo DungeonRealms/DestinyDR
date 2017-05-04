@@ -153,7 +153,11 @@ public class GamePlayer {
     }
     
     public void updateWeapon() {
-    	if(!getCurrentWeapon().equals(AntiDuplication.getUniqueEpochIdentifier(getPlayer().getInventory().getItemInMainHand())))
+    	ItemStack item = getPlayer().getInventory().getItemInMainHand();
+    	if (item == null)
+    		return;
+    	String epoch = AntiDuplication.getUniqueEpochIdentifier(item);
+    	if(epoch != null && !epoch.equals(getCurrentWeapon()))
     		calculateAllAttributes();
     }
     

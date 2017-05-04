@@ -36,6 +36,7 @@ public class ModifierRange implements Cloneable {
 	
     public ModifierRange(ModifierType type, int low, int high){
 		this(type, low, 0, high);
+		setVal(low, high);
 	}
 	
 	public ModifierRange(ModifierType type, int low, int high, boolean halve){

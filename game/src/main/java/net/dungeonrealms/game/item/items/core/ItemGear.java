@@ -61,7 +61,7 @@ public abstract class ItemGear extends ItemGeneric {
 	private int durability;
 	
 	@Getter
-	private AttributeList attributes = new AttributeList();
+	private AttributeList attributes;
 	
 	@Getter
 	private GeneratedItemType generatedItemType;
@@ -190,6 +190,7 @@ public abstract class ItemGear extends ItemGeneric {
 	private void updateLore() {
 		//  SAVE ATTRIBUTES TO NBT  //
 		NBTTagCompound nbtAttributes = new NBTTagCompound();
+		//TODO: Sort this so it appears in order.
 		for(AttributeType t : this.getAttributes().keySet()) {
 			ModifierRange range = getAttributes().getAttribute(t);
 			range.save(nbtAttributes, t.getNBTName());
@@ -370,7 +371,8 @@ public abstract class ItemGear extends ItemGeneric {
 	 * Rolls the stats for this item.
 	 */
 	public void rollStats(boolean isReroll) {
-		
+		if (this.attributes == null)
+			this.attributes = new AttributeList();
 		//Simulate random order.
 		Collections.shuffle(ItemGenerator.modifierObjects);
 		ItemMeta meta = getItem().getItemMeta();

@@ -104,51 +104,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onVote(VotifierEvent event) {
         // No votes on the event shard.
-        if (DungeonRealms.getInstance().isEventShard)
-            return;
-
-        if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
-            Player player = Bukkit.getPlayer(event.getVote().getUsername());
-
-            // Handle the experience calculations.
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-            int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-            int expToGive = expToLevel / 20;
-            expToGive += 100;
-
-            // Prepare the message.
-            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
-            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-
-            // Handle reward calculations & achievements.
-            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-            int ecashReward = 15;
-            if (Rank.isSubscriber(player)) {
-                ecashReward = 20;
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
-                // Now let's check if we should reward them for being a SUB+/++.
-                if (Rank.isSubscriberPlus(player)) {
-                    ecashReward = 25;
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
-                }
-            }
-
-            // Update the database with the new E-Cash reward!
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_VOTE, System.currentTimeMillis(), true);
-
-            // Reward to player with their EXP increase.
-            if (GameAPI.getGamePlayer(player) == null) {
-                return;
-            }
-            gamePlayer.addExperience(expToGive, false, true);
-
-            // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
-            final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
-            GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
-        }
+        if (!DungeonRealms.getInstance().isEventShard)
+            GameAPI.announceVote(Bukkit.getPlayer(event.getVote().getUsername()));
     }
 
     @EventHandler

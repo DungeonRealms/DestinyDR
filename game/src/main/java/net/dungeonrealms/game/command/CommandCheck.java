@@ -54,7 +54,7 @@ public class CommandCheck extends BaseCommand {
 				
 				if (item instanceof ItemGear) {
 					ItemGear gear = (ItemGear)item;
-					player.sendMessage(ChatColor.GREEN + "Item Attributes:");
+					player.sendMessage(ChatColor.GREEN + "" + gear.getAttributes().size() + " Item Attributes:");
 					for (AttributeType t : gear.getAttributes().keySet())
 						player.sendMessage(ChatColor.YELLOW + t.getNBTName() + " - " + gear.getAttributes().getAttribute(t).toString());
 				} else {

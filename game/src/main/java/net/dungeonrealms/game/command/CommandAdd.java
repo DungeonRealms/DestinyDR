@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
@@ -23,14 +24,13 @@ import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.BuffMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagString;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,15 +38,17 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.util.*;
 
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
-//import net.dungeonrealms.common.game.database.player.rank.NewRank;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -61,9 +63,8 @@ public class CommandAdd extends BaseCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
-        if (!Rank.isGM(player)) {
+        if (!Rank.isGM(player))
             return false;
-        }
 
         // Extended Permission Check
         if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
@@ -73,6 +74,7 @@ public class CommandAdd extends BaseCommand {
 
         if (args.length > 0) {
             int tier;
+            LivingEntity target;
             switch (args[0]) {
             	case "save":
             		ItemStack held = player.getEquipment().getItemInMainHand();
@@ -113,23 +115,6 @@ public class CommandAdd extends BaseCommand {
                 case "name":
                     player.sendMessage(GameAPI.getNameFromUUID(player.getUniqueId()));
                     break;
-                /*case "myrank":
-                    NewRank rank = NewRank.getRank(player);
-                	player.sendMessage("Your NewRank: " + rank.getChatPrefix());
-                	player.sendMessage(ChatColor.RED + "Expires = " + NewRank.getDaysUntilRankExpiry(player.getUniqueId()));
-                	break;
-                case "setrank":
-                	NewRank newRank = NewRank.valueOf(args[1].toUpperCase());
-                	if(newRank == null) {
-                		player.sendMessage(ChatColor.RED + "Rank Not Found.");
-                		return true;
-                	}
-                	int expiry = 0;
-                	if(args.length > 2)
-                		expiry = Integer.parseInt(args[2]);
-                	NewRank.setRank(player.getUniqueId(), newRank, expiry);
-                	player.sendMessage(ChatColor.GREEN + "Rank Set.");
-                	break;*/
                 case "armor":
                 case "weapon":
                 	//TODO: Attribute editor.
@@ -154,13 +139,6 @@ public class CommandAdd extends BaseCommand {
                 case "particle":
                     if (args[1] != null)
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
-                    break;
-                case "bank":
-                    net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
-                    NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
-                    Banktag.set("type", new NBTTagString("bank"));
-                    nmsBank.setTag(Banktag);
-                    player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
                     break;
                 case "reloadModifiers":
                     ItemGenerator.loadModifiers();
@@ -242,19 +220,7 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(new ItemGemPouch(PouchTier.getById(tier)).generateItem());
                     break;
                 case "votemessage":
-                    if (GameAPI.getGamePlayer(player) == null) {
-                        break;
-                    }
-                    GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-                    int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-                    int expToGive = expToLevel / 20;
-                    expToGive += 100;
-                    gamePlayer.addExperience(expToGive, false, true);
-                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal.sendToPlayer(player1);
-                    }
+                    GameAPI.announceVote(player);
                     break;
                 case "banknote":
                     int quantity = 1000;
@@ -311,6 +277,37 @@ public class CommandAdd extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "Invalid usage! /add ecash_buff <LOOT|PROFESSION|LEVEL>");
                     }
                     break;
+                case "stats":
+                	GameAPI.getGamePlayer(player).calculateAllAttributes();
+                	player.sendMessage("Recalculated.");
+                	break;
+                case "einfo":
+                	target = getEntity(player, args);
+                	if (target == null)
+                		return true;
+                	boolean monster = EntityAPI.isMonster(target);
+                	player.sendMessage("Name: " + target.getCustomName());
+                	player.sendMessage("HP: " + HealthHandler.getHP(target));
+                	player.sendMessage("Monster: " + monster);
+                	if (monster) {
+                		player.sendMessage("Tier: " + EntityAPI.getTier(target));
+                		if (EntityAPI.isElemental(target))
+                			player.sendMessage("Element: " + EntityAPI.getElement(target).getPrefix());
+                		player.sendMessage("Attributes: " + EntityAPI.getAttributes(target));
+                	}
+                	break;
+                case "invsee":
+                	target = getEntity(player, args);
+                	if (target == null)
+                		return true;
+                	
+                	Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, target.getCustomName());
+                	EntityEquipment e = target.getEquipment();
+                	inventory.addItem(e.getItemInMainHand());
+                	inventory.addItem(e.getArmorContents());
+                	player.sendMessage(ChatColor.YELLOW + "Opening inventory of " + target.getCustomName() + ".");
+                	player.openInventory(inventory);
+                	break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
                     break;
@@ -318,5 +315,21 @@ public class CommandAdd extends BaseCommand {
         }
 
         return true;
+    }
+    
+    private LivingEntity getEntity(Player player, String[] args) {
+    	return getEntity(player, args, 1);
+    }
+    
+    private LivingEntity getEntity(Player player, String[] args, int startIndex) {
+    	String search = "";
+    	for (int i = startIndex; i < args.length; i++)
+    		search += ( i == startIndex ? "" : " ") + args[i];
+    	
+    	final String finalSearch = search;
+    	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity && ChatColor.stripColor(e.getCustomName()).contains(finalSearch)).findAny().get();
+    	if (target == null)
+    		player.sendMessage(ChatColor.RED + "Entity not found.");
+    	return target;
     }
 }

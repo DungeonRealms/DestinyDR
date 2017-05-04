@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Stats;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -254,8 +255,6 @@ public class InventoryListener implements Listener {
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
         if (!ItemArmor.isArmor(event.getNewArmorPiece()) && !ItemArmor.isArmor(event.getOldArmorPiece())) return;
-        // Level restrictions on equipment removed on 7/18/16 Build#131
-        // Level restrictions added back on 2/2/2017
         
         if (!RestrictionListener.canPlayerUseItem(event.getPlayer(), event.getNewArmorPiece())) {
         	event.setCancelled(true);
@@ -269,6 +268,7 @@ public class InventoryListener implements Listener {
             }
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
+            // TODO: Remove this delay, it allows armor stacking.
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
             	handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
             }, 10L);
@@ -298,8 +298,8 @@ public class InventoryListener implements Listener {
     	boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
     	boolean hasNewArmor = ItemArmor.isArmor(newArmor);
     	
-        String oldArmorName = hasOldArmor ? "NOTHING" : oldArmor.getItemMeta().getDisplayName();
-        String newArmorName = hasNewArmor ? "NOTHING" : newArmor.getItemMeta().getDisplayName();
+        String oldArmorName = Utils.getItemName(oldArmor);
+        String newArmorName = Utils.getItemName(newArmor);
         
         
         // display differences to player
@@ -309,28 +309,36 @@ public class InventoryListener implements Listener {
         //TODO: Don't show the same stat twice, combine the messages.
         AttributeList armorChanges = new AttributeList();
         
+        System.out.println("Old player stats:");
+    	System.out.println(gp.getAttributes().toString());
+        
         // Show stats for the armor being removed.
         if (hasOldArmor) {
         	ItemArmor removedArmor = (ItemArmor)PersistentItem.constructItem(oldArmor);
-        	armorChanges.addStats(removedArmor.getAttributes());
+        	armorChanges.removeStats(removedArmor.getAttributes());
+        	System.out.println("Applied old armor:");
+        	System.out.println(armorChanges.toString());
         }
         
         // Show stats for the armor being equipped.
         if (hasNewArmor) {
         	ItemArmor addedArmor = (ItemArmor)PersistentItem.constructItem(newArmor);
         	armorChanges.addStats(addedArmor.getAttributes());
+        	System.out.println("Applied new armor:");
+        	System.out.println(armorChanges.toString());
         }
+        
+        gp.getAttributes().addStats(armorChanges);
+        System.out.println("New player stats:");
+    	System.out.println(gp.getAttributes().toString());
         
         for (AttributeType t : armorChanges.keySet()) {
         	ModifierRange armorVal = armorChanges.getAttribute(t);
         	ModifierRange newVal = gp.getAttributes().getAttribute(t);
         	
-        	if (armorVal.getValue() != 0)
-        		continue;
-        	
-        	p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+": ChatColor.RED + "-")
+        	p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+": ChatColor.RED + "")
         			+ armorVal.getValue() + t.getSuffix()
-        			+ " " + t.getDisplayPrefix() + " ["
+        			+ " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
         			+ newVal.getValue() + t.getSuffix() + "]");
         }
         
