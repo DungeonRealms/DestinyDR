@@ -1,8 +1,5 @@
 package net.dungeonrealms.common.game.punishment;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 7/1/2016
- */
 
 public enum TimeFormat {
 

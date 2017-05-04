@@ -1,10 +1,6 @@
 package net.dungeonrealms.game.player.banks;
 
 import lombok.Getter;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
@@ -45,30 +41,60 @@ public class CurrencyTab {
         this.owner = owner;
     }
 
-    public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
-        if (scrapStorage.isEmpty()) {
-            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+    public CurrencyTab deserializeCurrencyTab(String data) {
+        if (data == null || !data.contains(":")) return null;
+        String[] args = data.split(":");
 
-                Boolean access = (Boolean) DatabaseAPI.getInstance().getData(EnumData.CURRENCY_TAB_ACCESS, owner);
+        try {
+            for (int i = 0; i < ScrapTier.values().length; i++) {
+                ScrapTier tier = ScrapTier.values()[i];
+                scrapStorage.put(tier, Integer.parseInt(args[i]));
+            }
 
-                if (access == null || !access) {
-                    hasAccess = false;
-                } else {
-                    hasAccess = true;
-                    for (ScrapTier tier : ScrapTier.values()) {
-                        Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
-                        scrapStorage.put(tier, found == null ? 0 : found);
-                    }
-                }
-
-                if (doAfter != null)
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> doAfter.accept(this));
-            });
-        } else if (doAfter != null) {
-            doAfter.accept(this);
+            hasAccess = true;
+        } catch (Exception e) {
+            Bukkit.getLogger().info("Unable to parse currency tab for " + owner.toString());
+            e.printStackTrace();
         }
+        return this;
     }
 
+//    public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
+//        if (scrapStorage.isEmpty()) {
+//            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//
+//                Boolean access = (Boolean) DatabaseAPI.getInstance().getData(EnumData.CURRENCY_TAB_ACCESS, owner);
+//
+//                if (access == null || !access) {
+//                    hasAccess = false;
+//                } else {
+//                    hasAccess = true;
+//                    for (ScrapTier tier : ScrapTier.values()) {
+//                        Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
+//                        scrapStorage.put(tier, found == null ? 0 : found);
+//                    }
+//                }
+//
+//                if (doAfter != null)
+//                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> doAfter.accept(this));
+//            });
+//        } else if (doAfter != null) {
+//            doAfter.accept(this);
+//        }
+//    }
+
+
+    public String getSerializedScrapTab() {
+        if(!this.hasAccess)return null;
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < ScrapTier.values().length; i++) {
+            ScrapTier tier = ScrapTier.values()[i];
+            Integer count = scrapStorage.get(tier);
+            builder.append(count == null ? 0 : count).append(":");
+        }
+        return builder.toString();
+    }
 
     public Inventory createCurrencyInventory() {
         Inventory inventory = Bukkit.createInventory(null, 9 * 3, getInventoryName());
@@ -86,8 +112,9 @@ public class CurrencyTab {
         if (newAmount > 250) newAmount = 250;
 
         this.scrapStorage.put(tier, newAmount);
+
         //Save async?
-        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
+//        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
     }
 
     public void depositScrap(ScrapTier tier, int amount) {
@@ -98,8 +125,9 @@ public class CurrencyTab {
         if (newAmount > 250) newAmount = 250;
 
         this.scrapStorage.put(tier, newAmount);
+
         //Save async?
-        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
+//        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, tier.getDbData(), newAmount, true);
     }
 
     public String getInventoryName() {

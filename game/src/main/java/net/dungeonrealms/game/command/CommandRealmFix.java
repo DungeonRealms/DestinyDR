@@ -2,16 +2,14 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/23/2016
@@ -35,18 +33,31 @@ public class CommandRealmFix extends BaseCommand {
             return true;
         }
 
-        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + args[0] + ChatColor.RED + " does not exist, have they played Dungeon Realms?");
-            return true;
-        }
+        SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, uuid -> {
+            if (uuid == null) {
+                sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                return;
+            }
 
-        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
-        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
+                if (wrapper == null) {
+                    sender.sendMessage(ChatColor.RED + "Could not load player data!");
+                    return;
+                }
 
-        sender.sendMessage(ChatColor.GREEN + "Successfully fixed " + args[0] + "'s realm.");
+                wrapper.setUploadingRealm(false);
+                wrapper.setUpgradingRealm(false);
 
-        GameAPI.updatePlayerData(p_uuid);
+                SQLDatabaseAPI.getInstance().executeUpdate(results -> {
+                    sender.sendMessage(ChatColor.GREEN + "Successfully fixed " + args[0] + "'s realm.");
+                    //Update their realm status..
+                    GameAPI.updatePlayerData(uuid, "realm");
+                }, QueryType.SET_REALM_INFO.getQuery(0, 0, wrapper.getRealmTier(), wrapper.getCharacterID()));
+            });
+
+        });
+
+
         return true;
     }
 }

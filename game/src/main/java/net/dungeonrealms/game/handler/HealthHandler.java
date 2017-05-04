@@ -3,11 +3,9 @@ package net.dungeonrealms.game.handler;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -94,7 +92,8 @@ public class HealthHandler implements GenericMechanic {
         player.setMetadata("loggingIn", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, player) + 50);
-            int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
+            int hp = PlayerWrapper.getPlayerWrapper(player).getHealth();
+//            Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
             if (Rank.isTrialGM(player)) {
                 setPlayerHPLive(player, 10000);
             } else if (hp > 0) {
@@ -113,22 +112,23 @@ public class HealthHandler implements GenericMechanic {
         }, 21); // 1 sec
     }
 
-    /**
-     * Handles players logging out,
-     * removes potion effects and
-     * updates database for web usage.
-     *
-     * @param player
-     * @since 1.0
-     */
-    public void handleLogoutEvents(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), true);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-                player.removePotionEffect(potionEffect.getType());
-            }
-        });
-    }
+//    /**
+//     * Handles players logging out,
+//     * removes potion effects and
+//     * updates database for web usage.
+//     *
+//     * @param player
+//     * @since 1.0
+//     */
+//    public void handleLogoutEvents(Player player) {
+//        PlayerWrapper.getPlayerWrapper(player).setHealth(getPlayerHPLive(player));
+////        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), true);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+//                player.removePotionEffect(potionEffect.getType());
+//            }
+//        });
+//    }
 
     //private void updatePlayerHPBars() {
     //    Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
@@ -176,13 +176,14 @@ public class HealthHandler implements GenericMechanic {
         boolean spectating = player.getGameMode() == GameMode.SPECTATOR && player.getSpectatorTarget() instanceof Player;
         Player spect = spectating ? (Player) player.getSpectatorTarget() : null;
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(spect != null ? spect : player);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(spect != null ? spect : player);
         if (gamePlayer == null || !gamePlayer.isAttributesLoaded()) {
             return;
         }
 
         if (spect != null)
-            hp = getPlayerHPLive(player);
+            hp = getPlayerHPLive(spect);
 
         double maxHP = spectating ? getPlayerMaxHPLive(spect) : getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
@@ -190,7 +191,7 @@ public class HealthHandler implements GenericMechanic {
             healthPercentage = 1.0;
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
-        int playerLevel = gamePlayer.getLevel();
+        int playerLevel = wrapper.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.WHITE.toString() + " - ";
         String playerHPInfo;
@@ -205,7 +206,7 @@ public class HealthHandler implements GenericMechanic {
             color = BossBarAPI.Color.RED;
             playerHPInfo = hp != maxHP ? ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP : ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + (int) maxHP;
         }
-        double exp = ((double) gamePlayer.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
+        double exp = ((double) wrapper.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
         exp *= 100;
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "XP " + ChatColor.LIGHT_PURPLE + (int) exp + "%";
         if (playerLevel == 100) {
@@ -398,6 +399,8 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void healPlayerByAmount(Player player, int amount) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         double currentHP = getPlayerHPLive(player);
         double maxHP = getPlayerMaxHPLive(player);
         if (currentHP + 1 > maxHP) {
@@ -410,7 +413,7 @@ public class HealthHandler implements GenericMechanic {
         if ((currentHP + (double) amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 double newHealth = currentHP + amount;
                 if (newHealth >= maxHP) {
                     newHealth = maxHP;
@@ -435,7 +438,7 @@ public class HealthHandler implements GenericMechanic {
             player.setHealth((int) newPlayerHP);
         }
 
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+        if (wrapper.getToggles().isDebug()) {
             double newHealth = currentHP + amount;
             if (newHealth >= maxHP) {
                 newHealth = maxHP;
@@ -582,6 +585,8 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (leAttacker instanceof Player) {
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player)leAttacker);
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
                 if (offer != null) {
@@ -596,11 +601,12 @@ public class HealthHandler implements GenericMechanic {
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
                 if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK && !isReflectedDamage) {
                     if (!(leAttacker.hasMetadata("duel_cooldown") && leAttacker.getMetadata("duel_cooldown").size() > 0 && leAttacker.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
-                        KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                        KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker, wrapper);
                     }
                 }
-                if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && wrapper.getToggles().isChaoticPrevention()) {
+                    PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrap.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                         player.setFireTicks(0);
                         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                             player.removePotionEffect(potionEffect.getType());
@@ -618,7 +624,7 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
             }
 
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
+            if (wrapper != null && wrapper.getToggles().isDebug()) {
                 String msg = ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]";
                 leAttacker.sendMessage(msg);
                 GameAPI.runAsSpectators(leAttacker, (pl) -> pl.sendMessage(msg));
@@ -633,9 +639,11 @@ public class HealthHandler implements GenericMechanic {
                 //Check for killer from this.
                 Player killer = getKillerFromRecentDamage(player);
                 if (killer != null) {
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                        if (KarmaHandler.getInstance().getPlayerRawAlignment(killer) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            boolean prevent = Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, killer.getUniqueId()).toString());
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(killer);
+                    PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrap.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                        if (wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            boolean prevent = wrapper.getToggles().isChaoticPrevention();
                             if (prevent || !GameAPI.isNonPvPRegion(player.getLocation())) {
                                 player.setFireTicks(0);
                                 newHP = 1;
@@ -649,8 +657,8 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
         }
-
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (wrapper.getToggles().isDebug()) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 String msg = ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
                         + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" +
@@ -744,7 +752,7 @@ public class HealthHandler implements GenericMechanic {
     public boolean handlePlayerDeath(Player player, LivingEntity leAttacker) {
     	Chat.listenForMessage(player, null, null);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
-        
+
         if (DungeonRealms.getInstance().isEventShard) {
             if (Rank.isTrialGM(player)) {
                 player.sendMessage(ChatColor.GOLD + "Death has acknowledged your identity and chosen to spare your life.");
@@ -752,11 +760,11 @@ public class HealthHandler implements GenericMechanic {
                 Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                     if(player.isOnline())
                         player.kickPlayer(ChatColor.RED + "You have been eliminated from this event.");
-                    PunishAPI.ban(player.getUniqueId(), player.getName(), "Event Controller", -1, "You have been eliminated", null);
+                    PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "You have been eliminated", null);
                 }, 5);
             }
     	}
-    
+
         if (player.hasMetadata("last_death_time")) {
             if (System.currentTimeMillis() - player.getMetadata("last_death_time").get(0).asLong() > 100) {
                 String killerName = "";
@@ -947,6 +955,7 @@ public class HealthHandler implements GenericMechanic {
                 //entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
                 Player player = (Player) attacker;
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                 if (player.hasMetadata("sprinting") && player.isSprinting()) {
                     player.setSprinting(false);
                     player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -961,7 +970,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                 }
 
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                if (wrapper.getToggles().isDebug()) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
                         ChatColor npcTierColor = GameAPI.getTierColor(entity.getMetadata("tier").get(0).asInt());

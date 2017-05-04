@@ -1,13 +1,10 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.json.JSONMessage;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,13 +16,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TabbedChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+
+        if(wrapper == null) return;
 
         if (PunishAPI.isMuted(e.getPlayer().getUniqueId())) {
             e.getPlayer().sendMessage(PunishAPI.getMutedMessage(e.getPlayer().getUniqueId()));
@@ -55,7 +54,7 @@ public class TabbedChatListener implements Listener {
         String messageType = GameChat.getGlobalType(finalChat);
         prefix.append(GameChat.getPreMessage(player, true, messageType));
         boolean tradeChat = messageType.equals("trade");
-        if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId())) {
+        if (tradeChat && !wrapper.getToggles().isTradeChat()) {
             player.sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
             return;
         }

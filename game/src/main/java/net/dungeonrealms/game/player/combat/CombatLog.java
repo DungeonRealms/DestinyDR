@@ -5,9 +5,10 @@ import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -79,7 +80,7 @@ public class CombatLog implements GenericMechanic {
      */
     public void handleCombatLog(Player player) {
         if (inPVP(player)) {
-            KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+            KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
             switch (alignments) {
                 case LAWFUL:
                     ItemStack storedItem = null;
@@ -161,9 +162,11 @@ public class CombatLog implements GenericMechanic {
      * @param player The player
      */
     public static void addToPVP(Player player) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (!inPVP(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             PVP_COMBAT.put(player, 10);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
             }
 
@@ -191,11 +194,13 @@ public class CombatLog implements GenericMechanic {
      * @param player The player
      */
     public static void removeFromPVP(Player player) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (inPVP(player)) {
             PVP_COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
             }
         }
@@ -220,9 +225,11 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static void addToCombat(Player player) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (!isInCombat(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             COMBAT.put(player, 10);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
             }
 
@@ -246,11 +253,13 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static void removeFromCombat(Player player) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
         if (isInCombat(player)) {
             COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            if (wrapper.getToggles().isDebug()) {
                 TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
             }
         }
@@ -264,7 +273,7 @@ public class CombatLog implements GenericMechanic {
         List<ItemStack> armorToDrop = new ArrayList<>();
         List<ItemStack> itemsToSave = new ArrayList<>();
         List<ItemStack> armorToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+        KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
         int lvl = GameAPI.getGamePlayer(player).getLevel();
         if (alignments == null) {
             return;
@@ -309,7 +318,7 @@ public class CombatLog implements GenericMechanic {
             }
         }
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true);
+//        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true);
 
         MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld) world).getHandle());
         combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -385,8 +394,12 @@ public class CombatLog implements GenericMechanic {
                 combatLogger.handleTimeOut();
             }
 
+            //Get characterID.
+            SQLDatabaseAPI.getInstance().getSqlQueries().add("UPDATE characters SET combatLogged = 0 WHERE character_id = '" + "';");
             GameAPI.submitAsyncCallback(() -> {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+
+                //NEEDS RECODE.
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
                 return true;
             }, null);
         }

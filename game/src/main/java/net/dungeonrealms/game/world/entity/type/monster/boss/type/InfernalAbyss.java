@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -193,7 +194,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 	}
 
 	@Override
-	public void addKillStat(GamePlayer gp) {
-		gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
-	}
+	public void addKillStat(PlayerWrapper gp) {
+        gp.getPlayerGameStats().setBossInfernalAbyss(gp.getPlayerGameStats().getBossInfernalAbyss() + 1);
+    }
 }

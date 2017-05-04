@@ -94,18 +94,18 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
         </dependency>
 
-        <!--Bukkit GameAPI-->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
+        <!--Bukkit GameAPI&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.bukkit</groupId>-->
+            <!--<artifactId>bukkit</artifactId>-->
+            <!--<version>1.9.4-R0.1-SNAPSHOT</version>-->
+            <!--<type>jar</type>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <!-- Local dependency required -->
         <dependency>
@@ -140,17 +140,17 @@
             <scope>system</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>3.2.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mongodb</groupId>-->
+            <!--<artifactId>mongo-java-driver</artifactId>-->
+            <!--<version>3.2.2</version>-->
+        <!--</dependency>-->
+<!---->
+        <!--<dependency>-->
+            <!--<groupId>org.mongodb</groupId>-->
+            <!--<artifactId>bson</artifactId>-->
+            <!--<version>3.2.2</version>-->
+        <!--</dependency>-->
 
 
         <dependency>
@@ -175,9 +175,15 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
+<<<<<<< HEAD
             <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
             <version>RELEASE</version>
             <scope>system</scope>
+=======
+            <version>4.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
+>>>>>>> refs/heads/db-recode
         </dependency>
 
         <dependency>

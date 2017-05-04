@@ -1,8 +1,6 @@
 package net.dungeonrealms.lobby;
 
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
@@ -11,6 +9,10 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+<<<<<<< HEAD
+=======
+import org.bukkit.Bukkit;
+>>>>>>> refs/heads/db-recode
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,11 +35,11 @@ public class ShardSelector extends AbstractMenu {
 
         Collections.sort(servers, (o1, o2) -> {
 
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
             if (!o1.getServerName().contains("us"))
                 return -1;
+
+            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
+            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
 
             return o1num - o2num;
         });
@@ -75,14 +77,14 @@ public class ShardSelector extends AbstractMenu {
                         player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
                     } else {
-                        try {
-                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
-                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
-                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
-                                return;
-                            }
-                        } catch (NullPointerException ignored) {
-                        }
+//                        try {
+//                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
+//                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
+//                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+//                                return;
+//                            }
+//                        } catch (NullPointerException ignored) {
+//                        }
                     }
 
                     BungeeUtils.sendToServer(player.getName(), info.getServerName());
@@ -102,14 +104,19 @@ public class ShardSelector extends AbstractMenu {
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
 
-            String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
-            lore.add(ChatColor.GRAY + "Load: " + data[1]);
+            try {
+                String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
+                lore.add(ChatColor.GRAY + "Load: " + data[1]);
 
-            lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+                lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            if (data.length >= 3)
-                lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
+                if (data.length >= 3)
+                    lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
+            } catch(Exception e){
+                Bukkit.getLogger().info("Problem parsing " + info.getServerName());
+                e.printStackTrace();
+            }
             button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
             button.setLore(lore);
 
@@ -198,6 +205,7 @@ public class ShardSelector extends AbstractMenu {
             player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
             return;
         }
+<<<<<<< HEAD
         try {
             AtomicInteger secondsLeft = Lobby.getInstance().getRecentLogouts().getIfPresent(player.getUniqueId());
 
@@ -213,6 +221,22 @@ public class ShardSelector extends AbstractMenu {
         } catch (Exception e) {
             //Catches an NPE relating to if a player has a last shard transfer time
             e.printStackTrace();
+=======
+        
+        try{
+            //Not sure what to do with this? Manually pull from db or something?
+//        	long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
+
+//        	if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
+//            	if ((System.currentTimeMillis() - lastShardTransfer) < 30000) {
+//                	player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
+//                	return;
+//            	}
+//        	}
+        }catch(Exception e){
+        	//Catches an NPE relating to if a player has a last shard transfer time
+        	e.printStackTrace();
+>>>>>>> refs/heads/db-recode
         }
 
         player.openInventory(inventory);

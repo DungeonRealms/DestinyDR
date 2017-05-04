@@ -1,24 +1,22 @@
 package net.dungeonrealms.game.command.moderation;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Brad on 25/12/2016.
@@ -46,43 +44,60 @@ public class CommandBinsee extends BaseCommand {
         if (Bukkit.getPlayer(playerName) != null) {
             Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
             sender.openInventory(storage.collection_bin);
-        }
-        else {
-            if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
-                return true;
-            }
+        } else {
 
-            UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-
-            // check if they're logged in on another shard
-            if ((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
-                String shard = DatabaseAPI.getInstance().getFormattedShardName(p_uuid);
-                sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
-                        "Please banksee on that shard to avoid concurrent modification.");
-                return false;
-            }
-
-            String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, p_uuid);
-            Inventory inv = null;
-            if (stringInv.length() > 1) {
-                inv = ItemSerialization.fromString(stringInv);
-                for (ItemStack item : inv.getContents()) {
-                    if (item != null && item.getType() == Material.AIR) {
-                        inv.addItem(item);
-                    }
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+                if (uuid == null) {
+                    Bukkit.getLogger().info(playerName + " does not exist in our database.");
+                    return;
                 }
-                Player p = Bukkit.getPlayer(p_uuid);
-                if (p != null)
-                    p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "That player's collection bin is empty.");
-                return false;
-            }
 
-            offline_bin_watchers.put(sender.getUniqueId(), p_uuid);
-            sender.openInventory(inv);
+                PlayerWrapper.getPlayerWrapper(uuid, false, false, (wrapper) -> {
+                    if (wrapper.isPlaying()) {
+                        sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + wrapper.getFormattedShardName() + ". " +
+                                "Please banksee on that shard to avoid concurrent modification.");
+                        return;
+                    }
+
+
+                    if (wrapper.getPendingBankStorage() != null && wrapper.getPendingBankStorage().collection_bin != null) {
+                        sender.openInventory(wrapper.getPendingBankStorage().collection_bin);
+                        offline_bin_watchers.put(sender.getUniqueId(), uuid);
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "That players Collection Bin is empty.");
+                    }
+                });
+            });
+//
+//            UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+//
+//            // check if they're logged in on another shard
+//            if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
+//                String shard = DatabaseAPI.getInstance().getFormattedShardName(p_uuid);
+//                sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
+//                        "Please banksee on that shard to avoid concurrent modification.");
+//                return false;
+//            }
+//
+//            String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, p_uuid);
+//            Inventory inv = null;
+//            if (stringInv.length() > 1) {
+//                inv = ItemSerialization.fromString(stringInv);
+//                for (ItemStack item : inv.getContents()) {
+//                    if (item != null && item.getType() == Material.AIR) {
+//                        inv.addItem(item);
+//                    }
+//                }
+//                Player p = Bukkit.getPlayer(p_uuid);
+//                if (p != null)
+//                    p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
+//            } else {
+//                sender.sendMessage(ChatColor.RED + "That player's collection bin is empty.");
+//                return false;
+//            }
+//
+//            offline_bin_watchers.put(sender.getUniqueId(), p_uuid);
+//            sender.openInventory(inv);
         }
         return false;
     }

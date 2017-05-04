@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.util;
 
+import com.google.common.base.Stopwatch;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -10,19 +11,20 @@ import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.pet.*;
 import net.minecraft.server.v1_9_R2.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Sheep;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -91,14 +93,17 @@ public class PetUtils implements GenericMechanic{
     public static void makePet(EntityLiving e, UUID toFollow, double speed, EnumPets petType) {
         try {
             if (e instanceof EntityInsentient) {
-                if (petType != EnumPets.SLIME && petType != EnumPets.MAGMA_CUBE) {
+                if (petType == EnumPets.SLIME || petType == EnumPets.MAGMA_CUBE) {
                     PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
                     goal.a(0, new PathfinderGoalFloat((EntityInsentient) e));
+                    goal.a(1, new PathfinderGoalSlimeFollowOwner((EntityInsentient) e, toFollow, speed));
+                } else if(petType == EnumPets.GUARDIAN) {
+                    PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
                     goal.a(1, new PathfinderGoalWalkToTile((EntityInsentient) e, toFollow, speed));
                 } else {
                     PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
                     goal.a(0, new PathfinderGoalFloat((EntityInsentient) e));
-                    goal.a(1, new PathfinderGoalSlimeFollowOwner((EntityInsentient) e, toFollow, speed));
+                    goal.a(1, new PathfinderGoalWalkToTile((EntityInsentient) e, toFollow, speed));
                 }
             } else {
                 throw new IllegalArgumentException(e.getCustomName() + " is not an instance of an EntityInsentient.");
@@ -122,18 +127,19 @@ public class PetUtils implements GenericMechanic{
 
         @Override
         public boolean a() {
-            if (Bukkit.getPlayer(p) == null) {
+            Player player = Bukkit.getPlayer(p);
+            if (player == null) {
                 return path != null;
             }
-            Location targetLocation = Bukkit.getPlayer(p).getLocation();
+            Location targetLocation = player.getLocation();
 
-            this.entity.getNavigation();
             this.path = this.entity.getNavigation().a(targetLocation.getX() + 1, targetLocation.getY(), targetLocation.getZ() + 1);
-            this.entity.getNavigation();
-            if (this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) >= 6) {
+
+            boolean isInRange = this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) >= 6;
+            if (this.path != null && isInRange) {
                 this.c();
             }
-            return this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) >= 6;
+            return this.path != null && isInRange;
         }
 
         @Override
@@ -249,6 +255,61 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombie);
                 player.closeInventory();
                 break;
+            case BETA_ZOMBIE:
+                BetaZombie petBetaZombie = new BetaZombie(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petBetaZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petBetaZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petBetaZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 1F);
+                makePet(petBetaZombie, player.getUniqueId(), 1.0D, EnumPets.BETA_ZOMBIE);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petBetaZombie);
+                player.closeInventory();
+                break;
+            case ENDERMAN:
+                Enderman petEnderman = new Enderman(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petEnderman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petEnderman, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petEnderman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_SCREAM, 1F, 1F);
+                makePet(petEnderman, player.getUniqueId(), 1.0D, EnumPets.ENDERMAN);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petEnderman);
+                player.closeInventory();
+                break;
+            case GUARDIAN:
+                Guardian petGuardian = new Guardian(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petGuardian.setElder(true);
+                petGuardian.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petGuardian, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petGuardian.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1F, 1F);
+                makePet(petGuardian, player.getUniqueId(), 1.0D, EnumPets.GUARDIAN);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petGuardian);
+                player.closeInventory();
+                ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutGameStateChange(10, 0.0F));
+                break;
+            case BABY_SHEEP:
+                BabySheep petSheep = new BabySheep(world, name, player.getUniqueId(), EnumEntityType.PET);
+                ((Sheep)petSheep.getBukkitEntity()).setBaby();
+                ((Sheep)petSheep.getBukkitEntity()).setColor(DyeColor.values()[ThreadLocalRandom.current().nextInt(DyeColor.values().length)]);
+                petSheep.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petSheep, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petSheep.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_SHEEP_AMBIENT, 1F, 1F);
+                makePet(petSheep, player.getUniqueId(), 1.0D, EnumPets.BABY_SHEEP);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petSheep);
+                player.closeInventory();
+                break;
+            case RAINBOW_SHEEP:
+                RainbowSheep petRBSheep = new RainbowSheep(world, name, player.getUniqueId(), EnumEntityType.PET);
+                ((Sheep)petRBSheep.getBukkitEntity()).setColor(DyeColor.values()[ThreadLocalRandom.current().nextInt(DyeColor.values().length)]);
+                petRBSheep.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petRBSheep, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petRBSheep.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.ENTITY_SHEEP_AMBIENT, 1F, 1F);
+                makePet(petRBSheep, player.getUniqueId(), 1.0D, EnumPets.BABY_SHEEP);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petRBSheep);
+                player.closeInventory();
+                break;
             case BABY_PIGZOMBIE:
                 BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -303,13 +364,14 @@ public class PetUtils implements GenericMechanic{
                 break;
             case RABBIT:
                 Rabbit petRabbit = new Rabbit(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petRabbit.setRabbitType(99);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petRabbit, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petRabbit.setAge(-1);
                 petRabbit.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.ENTITY_RABBIT_AMBIENT, 1F, 1F);
-                makePet(petRabbit, player.getUniqueId(), 0.9D, EnumPets.RABBIT);
+                makePet(petRabbit, player.getUniqueId(), 1.5D, EnumPets.RABBIT);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
                 break;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.command.toggle;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,9 +22,11 @@ public class CommandTogglePvp extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        PlayerManager.PlayerToggles toggle = PlayerManager.PlayerToggles.PVP;
-        toggle.setToggleState(player, !(boolean) DatabaseAPI.getInstance().getData(toggle.getDbField(), player.getUniqueId()));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return false;
 
+//        wrapper.getToggles().setPvp(!wrapper.getToggles().isPvp());
+        PlayerManager.PlayerToggles.PVP.toggle(wrapper);
         return true;
     }
 

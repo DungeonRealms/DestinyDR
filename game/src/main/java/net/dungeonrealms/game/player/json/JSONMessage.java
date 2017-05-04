@@ -154,7 +154,7 @@ public class JSONMessage {
         getExtra().add(o);
     }
 
-    public void addRunCommand(String text, ChatColor color, String cmd) {
+    public void addRunCommand(String text, ChatColor color, String cmd, String hoverData) {
         JsonObject o = new JsonObject();
         o.addProperty("text", text);
         o.addProperty("color", color.name().toLowerCase());
@@ -162,8 +162,11 @@ public class JSONMessage {
         JsonObject u = new JsonObject();
         u.addProperty("action", "run_command");
         u.addProperty("value", cmd);
-
         o.add("clickEvent", u);
+        JsonObject a = new JsonObject();
+        a.addProperty("action", "show_text");
+        a.addProperty("value", hoverData);
+        o.add("hoverEvent", a);
         getExtra().add(o);
     }
 

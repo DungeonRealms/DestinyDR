@@ -1,16 +1,14 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
-import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Created by Nick on 11/18/2015.
@@ -53,13 +51,17 @@ public final class GameChat {
         StringBuilder message = new StringBuilder();
         String r = Rank.getInstance().getRank(player.getUniqueId());
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         String clanTag = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
-            clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+
+        //Use the ID cause its faster.
+        GuildWrapper guild = GuildDatabase.getAPI().getGuildWrapper(wrapper.getGuildID());
+        if (guild != null) {
+            clanTag = guild.getTag();
         }
 
         // We're using global chat, append global prefix.
-        boolean gChat = isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        boolean gChat = isGlobal || wrapper.getToggles().isGlobalChat();
         if (gChat) {
             // Determine which global type we should use, default is GLOBAL.
             switch (globalType.toLowerCase()) {
@@ -105,7 +107,7 @@ public final class GameChat {
         return getName(player, Rank.getInstance().getRank(player.getUniqueId()), onlyName);
     }
 
-    public static String getName(String name, String rank, boolean onlyName) {
+    public static String getName(String name, String rank, boolean onlyName, KarmaHandler.EnumPlayerAlignments alignment) {
         switch (rank.toLowerCase()) {
             case "headgm":
             case "gm":
@@ -122,7 +124,7 @@ public final class GameChat {
             case "pmod":
             case "hiddenmod":
             default:
-                String alignmentName = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name)));
+                String alignmentName = alignment.name();
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }
@@ -145,7 +147,7 @@ public final class GameChat {
             case "pmod":
             case "hiddenmod":
             default:
-                String alignmentName = GameAPI.getGamePlayer(player).getPlayerAlignment().name();
+                String alignmentName = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment().name();
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }
@@ -187,28 +189,18 @@ public final class GameChat {
      */
     public static String getFormattedName(Player player) {
         String guild = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId()))
-            guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(player
-                    .getUniqueId())) + "] ";
+        GuildWrapper foundGuild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+
+        if (foundGuild != null)
+            guild = ChatColor.WHITE + "[" + foundGuild.getTag() + "] ";
+
         final String rank = Rank.getInstance().getRank(player.getUniqueId());
         return guild + getRankPrefix(rank) + getName(player, rank, true);
     }
 
-    public static String getFormattedName(String playerName) {
-        UUID uuid = null;
-        try {
-            uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-        } catch (Exception e) {
-            Utils.log.warning("EXCEPTION NOT PRINTED - ERROR AT: GameChat.java(getFormattedName(string playerName)");
-        }
-        if (uuid != null) {
-            String guild = "";
-            if (!GuildDatabase.getAPI().isGuildNull(uuid))
-                guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(uuid)) + "] ";
-            final String rank = Rank.getInstance().getRank(uuid);
-            return guild + getRankPrefix(rank) + getName(playerName, rank, true);
-        }
-        return "";
+
+    public static String getFormattedName(String playerName, String guild,String rank, boolean onlyName, KarmaHandler.EnumPlayerAlignments alignment) {
+            return guild + getRankPrefix(rank) + getName(playerName, rank, onlyName, alignment);
     }
 
     /**

@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.player.combat;
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Zombie;
@@ -31,18 +28,18 @@ public class CombatLogger {
 
     public void handleNPCDeath() {
         setRespawnLocation();
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
     }
 
     public void handleTimeOut() {
         if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(playerUUID)) {
             loggerNPC.remove();
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+//            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
             CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false,
-                    true);
+//            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false,
+//                    true);
         }
     }
 
@@ -51,12 +48,12 @@ public class CombatLogger {
             Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
             if (loc != null) {
                 String locString = loc.getBlockX() +"," + loc.getBlockY() + 3 + "," + loc.getBlockZ() + "," + "0,0";
-                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
+//                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
             } else {
-                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
+//                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
             }
         } else {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
+//            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
         }
     }
 

@@ -1,8 +1,9 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.realms.Realm;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,6 +27,7 @@ public class CommandRealm extends BaseCommand {
         }
 
         Player player = (Player) sender;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
         if (args.length == 0) {
             player.sendMessage(usage);
@@ -40,18 +42,14 @@ public class CommandRealm extends BaseCommand {
             return true;
         }
 
-        if(Chat.containsIllegal(newTitle.toString())){
-            sender.sendMessage(ChatColor.RED + "Your message contains illegal characters.");
-            return true;
-        }
-        String fixedTitle = Chat.getInstance().checkForBannedWords(newTitle.toString());
+        String fixedTitle = SQLDatabaseAPI.filterSQLInjection(Chat.getInstance().checkForBannedWords(newTitle.toString()));
 
         player.sendMessage("");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "                       " + "* REALM TITLE SET *");
         player.sendMessage(ChatColor.GRAY + "\"" + fixedTitle + "\"");
         player.sendMessage("");
 
-        Realm.setTitle(player.getUniqueId(), fixedTitle);
+        wrapper.setRealmTitle(fixedTitle);
         return true;
     }
 }

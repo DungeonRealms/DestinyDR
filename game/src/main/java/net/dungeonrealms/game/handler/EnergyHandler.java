@@ -2,10 +2,8 @@ package net.dungeonrealms.game.handler;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -43,7 +41,7 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 1L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
@@ -56,23 +54,6 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     /**
-     * Handles players logging out,
-     * removes metadata from the player
-     *
-     * @param player
-     * @since 1.0
-     */
-    public void handleLogoutEvents(Player player) {
-        if (player.hasMetadata("starving")) {
-            player.removeMetadata("starving", DungeonRealms.getInstance());
-        }
-        if (player.hasMetadata("sprinting")) {
-            player.removeMetadata("sprinting", DungeonRealms.getInstance());
-        }
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), true);
-    }
-
-    /**
      * Handles players logging in,
      * adds metadata to the player if
      * applicable (no food level).
@@ -81,7 +62,9 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        int foodLevel = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_FOOD, player.getUniqueId())));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+        int foodLevel = wrapper.getStoredFoodLevel();
         if (foodLevel < 0) {
             foodLevel = 0;
         }
@@ -121,8 +104,9 @@ public class EnergyHandler implements GenericMechanic {
             if (!GameAPI.isPlayer(player)) {
                 continue;
             }
+            PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
             GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp == null || !gp.isAttributesLoaded()) {
+            if (gp == null || playerWrapper == null || !gp.isAttributesLoaded()) {
                 continue; // player data not yet loaded
             }
             if (getPlayerCurrentEnergy(player) == 1.0F) {
@@ -140,8 +124,8 @@ public class EnergyHandler implements GenericMechanic {
                     regenAmount = 0.05F;
                 }
                 regenAmount = regenAmount / 18.9F;
-                if (gp.getStats() == null) return;
-                regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
+                if (playerWrapper.getPlayerStats() == null) return;
+                regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getEnergyRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }
         }
@@ -239,7 +223,7 @@ public class EnergyHandler implements GenericMechanic {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) return;
         if (player.hasMetadata("last_energy_remove")) {
-            if(!(GameAPI.isWeapon(player.getInventory().getItemInMainHand()) && player.getInventory().getItemInMainHand().getType().name().endsWith("_HOE"))) {
+            if (!(GameAPI.isWeapon(player.getInventory().getItemInMainHand()) && player.getInventory().getItemInMainHand().getType().name().endsWith("_HOE"))) {
                 if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
                     return;
                 }
@@ -257,9 +241,10 @@ public class EnergyHandler implements GenericMechanic {
         updatePlayerEnergyBar(player);
     }
 
-    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove){
+    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
         removeEnergyFromPlayerAndUpdate(uuid, amountToRemove, false);
     }
+
     /**
      * Adds the hunger potion effect
      * to a player and "starving" as

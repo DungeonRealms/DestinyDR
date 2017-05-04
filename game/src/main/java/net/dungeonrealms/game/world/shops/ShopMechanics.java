@@ -1,13 +1,12 @@
 package net.dungeonrealms.game.world.shops;
 
+import lombok.Cleanup;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
-import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -15,12 +14,8 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
-import net.dungeonrealms.game.quests.Quest;
-import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
-import net.dungeonrealms.game.quests.objectives.QuestObjective;
-
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,6 +34,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,15 +102,17 @@ public class ShopMechanics implements GenericMechanic, Listener {
         return null;
     }
 
-    public static void deleteAllShops(boolean shutDown) {
+    public static PreparedStatement deleteAllShops(boolean shutDown) throws SQLException {
+        PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
         for (Shop shop : ALLSHOPS.values())
-            shop.deleteShop(shutDown);
+            shop.deleteShop(shutDown, statement);
         ALLSHOPS.clear();
+        return statement;
     }
 
     public static boolean isItemSellable(ItemStack i) {
         if (!GameAPI.isItemDroppable(i)) return false;
-        if(i.getType() == Material.EMERALD || i.getType() == Material.PAPER) return false;
+        if (i.getType() == Material.EMERALD || i.getType() == Material.PAPER) return false;
         return true;
     }
 
@@ -134,43 +133,48 @@ public class ShopMechanics implements GenericMechanic, Listener {
                 player.sendMessage(ChatColor.RED + "Invalid character '@' in name.");
                 return;
             }
-            if(player.getWorld() != block.getWorld()){
-            	player.sendMessage(ChatColor.RED + "You cannot place a shop in this world.");
-            	return;
+            if (player.getWorld() != block.getWorld()) {
+                player.sendMessage(ChatColor.RED + "You cannot place a shop in this world.");
+                return;
             }
 
             Block b = block.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
             Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
             if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    if (wrapper == null) return;
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
+                    
                     if(Chat.containsIllegal(shopName)){
                         player.sendMessage(ChatColor.RED + "Shop name contains illegal characters.");
                         return;
                     }
-
-                    Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
-                    DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
+                    
+                    Shop shop = new Shop(uniqueId, b.getLocation(), wrapper.getCharacterID(), Chat.getInstance().checkForBannedWords(shopName));
+                    wrapper.setShopOpened(true);
+                    SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, 1, wrapper.getCharacterID());
+                    
                     ALLSHOPS.put(player.getName(), shop);
                     player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
                     player.sendMessage("");
                     player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
                     player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
-                    
+
                     //  LOAD ITEMS FROM COLLECTION BIN  //
                     Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                     if (storage.collection_bin != null) {
-                    	for(ItemStack i : storage.collection_bin.getContents())
-                    		if(i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
-                    			shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));
+                        for (ItemStack i : storage.collection_bin.getContents())
+                            if (i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
+                                shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));
                         player.sendMessage(ChatColor.GREEN + "The items from your collection bin have been loaded into your shop.");
                         storage.clearCollectionBin();
                     }
-                    
+
                     Quests.getInstance().triggerObjective(player, ObjectiveCreateShop.class);
-                    
+
                 }, 1L);
             } else {
                 player.sendMessage("You can't place a shop there");

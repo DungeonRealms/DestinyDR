@@ -72,18 +72,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.inventivetalent.npclib</groupId>
       <artifactId>api</artifactId>
       <version>1.8.6</version>
@@ -160,6 +148,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>net.citizensnpcs</groupId>
       <artifactId>Citizens2</artifactId>
       <version>1.0.0</version>
@@ -190,7 +185,11 @@
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
+<<<<<<< HEAD
       <version>RELEASE</version>
+=======
+      <version>4.0</version>
+>>>>>>> refs/heads/db-recode
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
     </dependency>

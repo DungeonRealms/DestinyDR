@@ -3,20 +3,16 @@ package net.dungeonrealms.game.tab.column;
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Tuple;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.game.handler.FriendHandler;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.tab.Column;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -32,9 +28,12 @@ public class FriendTabColumn extends Column {
                 variablesToRegister.add(new Variable("friends." + cursor) {
                     @Override
                     public String getReplacement(Player player) {
-                        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) return "";
+                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                        if(wrapper == null) return "";
 
-                        List<String> friends = new ArrayList<>(FriendHandler.getInstance().getFriendsList(player.getUniqueId()));
+
+
+                        HashMap<UUID, Integer> friends = wrapper.getFriendsList();
 
                         if (friends.size() == 0) {
                             switch (cursor) {
@@ -50,14 +49,16 @@ public class FriendTabColumn extends Column {
                         List<String> onlineFriends = new CopyOnWriteArrayList<>();
 
                         // MAKE SURE FRIENDS ARE ONLINE //
-                        friends.forEach(uuid -> {
+                        friends.keySet().forEach(uuid -> {
 
                             String playerName = null;
                             ShardInfo shard = null;
 
-                            if (Bukkit.getPlayer(UUID.fromString(uuid)) == null) {
+                            Player friendPlayer = Bukkit.getPlayer(uuid);
 
-                                Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
+                            if (friendPlayer == null) {
+
+                                Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
                                 if (!curInfo.isPresent()) return;
 
                                 PlayerToken playerInfo = curInfo.get().a();
@@ -68,7 +69,7 @@ public class FriendTabColumn extends Column {
 
                             } else {
                                 shard = DungeonRealms.getShard();
-                                playerName = Bukkit.getPlayer(UUID.fromString(uuid)).getName();
+                                playerName = Bukkit.getPlayer(uuid).getName();
                             }
 
                             onlineFriends.add(getFormat(playerName, shard));

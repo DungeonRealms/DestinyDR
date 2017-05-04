@@ -112,7 +112,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
     @Override
     public void onMonsterDeath(Player killer) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monster, this.getBukkitEntity(), killer);
+            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), this.getBukkitEntity(), killer);
         });
     }
 

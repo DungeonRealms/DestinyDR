@@ -3,7 +3,10 @@ package net.dungeonrealms.game.command.punish;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.Utils;
 
@@ -16,9 +19,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.UUID;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/2/2016
- */
 
 public class CommandMute extends BaseCommand {
 
@@ -38,6 +38,7 @@ public class CommandMute extends BaseCommand {
             return true;
         }
 
+        int senderID = sender instanceof Player ? PlayerWrapper.getPlayerWrapper((Player)sender).getAccountID() : 0;
 
         String p_name = args[0];
 
@@ -74,7 +75,7 @@ public class CommandMute extends BaseCommand {
         }
 
         if (isNull)
-            duration = Integer.getInteger(args[1]);
+            duration = Integer.parseInt(args[1]);
 
         if (duration < 0) {
             sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
@@ -92,13 +93,15 @@ public class CommandMute extends BaseCommand {
             reasonString = reason.toString();
         }
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p_uuid);
         // Apply the mute against the user.
-        PunishAPI.mute(p_uuid, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid));
+        PunishAPI.mute(wrapper, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid, "mute"));
 
         //
         String punishmentLength = ChatColor.RED + PunishAPI.timeString((int) (duration / 60));
         String friendlyReason = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
 
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_MUTE, wrapper.getAccountID(), "mute", System.currentTimeMillis(), System.currentTimeMillis() + duration * 1000, senderID, reasonString);
         // Distribute the appropriate messages.
         sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + ".");
         p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");

@@ -99,7 +99,7 @@ public class DRWolf extends EntityWolf implements DRMonster {
     @Override
     public void onMonsterDeath(Player killer) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity(), killer);
+            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), this.getBukkitEntity(), killer);
         });
     }
 

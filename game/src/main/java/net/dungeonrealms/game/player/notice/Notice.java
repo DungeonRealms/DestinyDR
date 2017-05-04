@@ -3,11 +3,8 @@ package net.dungeonrealms.game.player.notice;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.handler.MailHandler;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.tool.PatchTools;
@@ -16,8 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
 
 /**
  * Created by Nick on 10/11/2015.
@@ -52,13 +47,11 @@ public class Notice {
      * @since 1.0
      */
     public void doLogin(Player player) {
-        ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
 
-        if (mailbox.size() > 0)
-            MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + " ✉ You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail! ✉ ");
+        String lastViewedBuild = wrapper.getLastViewedBuild();
 
-        String lastViewedBuild = (String) DatabaseAPI.getInstance().getData(EnumData.LAST_BUILD, player.getUniqueId());
-        
         int lastSeenBuild = -1;
         int serverBuild = Integer.parseInt(Constants.BUILD_NUMBER.substring(1));
         if(lastViewedBuild != null && lastViewedBuild.length() > 1) {
@@ -66,17 +59,17 @@ public class Notice {
             double last = Double.parseDouble(build);
             lastSeenBuild = (int) last;
         }
-        Object noteSize = DatabaseAPI.getInstance().getData(EnumData.LAST_NOTES_SIZE, player.getUniqueId());
+        int noteSize = wrapper.getLastNoteSize();
         
-        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (noteSize == null || PatchTools.getInstance().getSize() != (Integer)noteSize)))
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player), 150);
+        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (PatchTools.getInstance().getSize() != noteSize)))
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player, wrapper), 150);
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeVoteReminder(player), 300);
     }
 
-    private void executeBuildNotice(Player p) {
+    private void executeBuildNotice(Player p, PlayerWrapper wrapper) {
         final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
-        normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
+        normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch", "");
         normal.addText(ChatColor.GOLD + " ❢ ");
 
         p.sendMessage(" ");
@@ -86,8 +79,8 @@ public class Notice {
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
 
         // UPDATE LAST VIEWED BUILD NUMBER //
-        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LAST_BUILD, Constants.BUILD_NUMBER, true);
-        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LAST_NOTES_SIZE, PatchTools.getInstance().getSize(), true);
+        wrapper.setLastViewedBuild(Constants.BUILD_NUMBER);
+        wrapper.setLastNoteSize(PatchTools.getInstance().getSize());
     }
 
     private void executeVoteReminder(Player p) {
@@ -95,9 +88,13 @@ public class Notice {
         if (DungeonRealms.getInstance().isEventShard)
             return;
 
-        Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, p.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+        if(wrapper == null) return;
 
-        if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {
+
+        long vote = wrapper.getLastVote();
+
+        if ((System.currentTimeMillis() - vote) >= 86_400_000) {
             int ecashAmount = 15;
             if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
             else if (Rank.isSubscriber(p)) ecashAmount = 20;

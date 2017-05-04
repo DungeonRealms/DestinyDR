@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.pet;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.minecraft.server.v1_9_R2.EntityRabbit;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 import java.util.UUID;
@@ -25,10 +26,12 @@ public class Rabbit extends EntityRabbit {
         this.getBukkitEntity().setCustomName(mobName);
         this.canPickUpLoot = false;
         this.persistent = true;
-        this.setAge(0);
+        this.setAge(3);
         this.ageLocked = true;
 
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.4F);
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+
     }
 
     public Rabbit(World world) {

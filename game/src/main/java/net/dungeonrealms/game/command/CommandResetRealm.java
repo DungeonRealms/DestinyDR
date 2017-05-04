@@ -2,22 +2,18 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.RealmState;
 import net.dungeonrealms.game.world.realms.Realms;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.io.IOException;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/23/2016
@@ -35,14 +31,17 @@ public class CommandResetRealm extends BaseCommand {
 
         Player player = (Player) sender;
 
-        long lastReset = (long) DatabaseAPI.getInstance().getData(EnumData.REALM_LAST_RESET, player.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return false;
+
+        long lastReset = wrapper.getLastRealmReset();
 
         if (lastReset != 0 && !Rank.isTrialGM(player)) {
             player.sendMessage(ChatColor.RED + "You may only reset your realm " + ChatColor.UNDERLINE + "ONCE" + ChatColor.RED + " per hour.");
             return true;
         }
 
-        Realm realm = Realms.getInstance().getOrCreateRealm(player);
+        Realm realm = Realms.getInstance().getOrCreateRealm(player, wrapper.getAccountID());
         
         if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
         	player.sendMessage(realm.getState().getStatusMessage());

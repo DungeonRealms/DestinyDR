@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -142,17 +143,20 @@ public class DuelOffer {
 
         if(winner != null && loser != null) {
             GamePlayer wGP = GameAPI.getGamePlayer(winner);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(winner);
             GamePlayer lGP = GameAPI.getGamePlayer(loser);
+            PlayerWrapper loserWrapper = PlayerWrapper.getPlayerWrapper(winner);
             if (wGP != null) {
                 wGP.setPvpTaggedUntil(0);
-                wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
+
+                wrapper.getPlayerGameStats().setDuelsWon(wrapper.getPlayerGameStats().getDuelsWon() + 1);
 //                if (GameAPI.isNonPvPRegion(winner.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(winner.getWorld().getName())) {
 //                    KarmaHandler.getInstance().setPlayerAlignment(winner, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
 //                }
             }
             if (lGP != null) {
                 lGP.setPvpTaggedUntil(0);
-                lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
+                loserWrapper.getPlayerGameStats().setDuelsLost(loserWrapper.getPlayerGameStats().getDuelsLost() + 1);
 //                if (GameAPI.isNonPvPRegion(loser.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(loser.getWorld().getName())) {
 //                    KarmaHandler.getInstance().setPlayerAlignment(loser, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
 //                }

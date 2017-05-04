@@ -70,7 +70,7 @@ public class CommandList extends BaseCommand {
 
             String messageString = ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " ");
             if (!isModerator) {
-                message.addRunCommand(messageString, ChatColor.GRAY, "/tp " + player.getDisplayName());
+                message.addRunCommand(messageString, ChatColor.GRAY, "/tp " + player.getDisplayName(), "Click to teleport!");
             } else {
                 message.addText(messageString, ChatColor.GRAY);
             }

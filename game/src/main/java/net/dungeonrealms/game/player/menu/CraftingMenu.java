@@ -10,9 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -25,7 +23,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -150,16 +147,13 @@ public class CraftingMenu implements Listener {
     public static void addMuleItem(Player player) {
         if (player.getInventory().contains(Material.LEASH)) return;
 
-        Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-        if (muleTier == null) {
-            player.sendMessage(ChatColor.RED + "No mule data found.");
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1,
-                    true);
-            muleTier = 1;
-        }
-        MuleTier tier = MuleTier.getByTier((int) muleTier);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return;
+
+        int muleTier = wrapper.getMuleLevel();
+        MuleTier tier = MuleTier.getByTier(muleTier);
         if (tier == null) {
-            System.out.println("Invalid mule tier!");
+            player.sendMessage(ChatColor.RED + "Something went wrong!");
             return;
         }
         player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));

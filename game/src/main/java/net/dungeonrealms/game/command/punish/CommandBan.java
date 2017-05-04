@@ -2,20 +2,18 @@ package net.dungeonrealms.game.command.punish;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.mastery.UUIDFetcher;
 import net.dungeonrealms.game.mastery.Utils;
-
 import net.dungeonrealms.game.player.combat.CombatLog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 
 import java.util.Arrays;
 
@@ -80,65 +78,74 @@ public class CommandBan extends BaseCommand {
                 return;
             }
 
-            if (sender instanceof Player)
-                if (!Rank.isTrialGM((Player) sender) && Rank.isPMOD((Player) sender)) {
-                	
-                    if(PunishAPI.isBanned(p_uuid)){
-                    	sender.sendMessage(ChatColor.RED + "This player is already banned.");
-                    	return;
-                    }
-                	
-                    if (duration > 1209600L) {
-                        sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
-                        return;
-                    }
+            if (duration == -1) duration = 0;
 
-                    if (duration == -1) {
-                        sender.sendMessage(ChatColor.RED + "You cannot permanently ban players");
-                        return;
-                    }
-                }
-
-            if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
-                if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) {
-                    sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
+            final long finalDuration = duration;
+            PunishAPI.isBanned(p_uuid, banned -> {
+                if (banned) {
+                    sender.sendMessage(ChatColor.RED + "This player is already banned.");
                     return;
                 }
-            }
+                if (sender instanceof Player) {
+                    if (!Rank.isTrialGM((Player) sender) && Rank.isPMOD((Player) sender)) {
 
-            String reasonString = "";
 
-            if (args.length >= 3) {
-                StringBuilder reason = new StringBuilder(args[2]);
+                        if (finalDuration > 1209_600L) {
+                            sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
+                            return;
+                        }
 
-                for (int arg = 3; arg < args.length; arg++)
-                    reason.append(" ").append(args[arg]);
+                        if (finalDuration == 0) {
+                            sender.sendMessage(ChatColor.RED + "You cannot permanently ban players");
+                            return;
+                        }
+                    }
+                }
 
-                reasonString = reason.toString();
-            }
+                if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
+                    if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) {
+                        sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
+                        return;
+                    }
+                }
 
-            String friendlyMessage = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
-            if (duration != -1) {
-                String punishExpiry = ChatColor.BOLD + PunishAPI.timeString((int) (duration / 60));
-                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + ".");
-                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + friendlyMessage + ".");
-            } else {
-                sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
-            }
-            
-            //  BROADCASTS TO DISCORD  //
-            String message = "/" + label;
-            for(String a : args)
-            	message += " " + a;
-            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
-            
-            Player online = Bukkit.getPlayer(p_uuid);
-            if(online != null){
-                CombatLog.removeFromCombat(online);
-                CombatLog.removeFromPVP(online);
-            }
-            PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, reasonString + " [" + sender.getName() + "]", null);
+
+                String reasonString = "";
+
+                if (args.length >= 3) {
+                    StringBuilder reason = new StringBuilder(args[2]);
+
+                    for (int arg = 3; arg < args.length; arg++)
+                        reason.append(" ").append(args[arg]);
+
+                    reasonString = reason.toString();
+                }
+
+                String friendlyMessage = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
+                if (finalDuration != 0) {
+                    String punishExpiry = ChatColor.BOLD + PunishAPI.timeString((int) (finalDuration / 60));
+                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + ".");
+                    GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + friendlyMessage + ".");
+                } else {
+                    sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                    GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
+                }
+
+                //  BROADCASTS TO DISCORD  //
+                String message = "/" + label;
+                for (String a : args)
+                    message += " " + a;
+                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
+
+                Player online = Bukkit.getPlayer(p_uuid);
+                if (online != null) {
+                    CombatLog.removeFromCombat(online);
+                    CombatLog.removeFromPVP(online);
+                }
+                int accountID = sender instanceof Player ? PlayerWrapper.getPlayerWrapper((Player) sender).getAccountID() : 0;
+//                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                PunishAPI.ban(p_uuid, p_name, accountID, finalDuration, reasonString + " [" + sender.getName() + "]", null);
+            });
         });
 
         return false;

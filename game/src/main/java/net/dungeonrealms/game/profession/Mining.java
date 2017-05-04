@@ -6,8 +6,7 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -352,6 +351,7 @@ public class Mining implements GenericMechanic {
      * @since 1.0
      */
     public static void addExperience(ItemStack stackInHand, int experienceGain, Player p) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackInHand);
         int currentXP = nms.getTag().getInt("XP");
         int maxXP = nms.getTag().getInt("maxXP");
@@ -366,7 +366,7 @@ public class Mining implements GenericMechanic {
         experienceGain *= 1.3;
         currentXP += experienceGain;
 
-        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+        if (wrapper.getToggles().isDebug()) {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(experienceGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(currentXP - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stackInHand)) + " EXP]");
 //            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);

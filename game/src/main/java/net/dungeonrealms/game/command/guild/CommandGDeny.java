@@ -1,12 +1,17 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.guild.GuildMember;
+import net.dungeonrealms.game.guild.GuildWrapper;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,27 +37,41 @@ public class CommandGDeny extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
-        Document guildInvitation = (Document) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
-
-        if (guildInvitation == null) {
+        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
+        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+        if(wrapper == null) {
             player.sendMessage(ChatColor.RED + "No pending guild invitation.");
             return true;
         }
 
-        String guildName = guildInvitation.getString("guild");
-        String guildDisplayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-        String referrer = guildInvitation.getString("referrer");
+        if(playerWrapper == null) {
+            player.sendMessage(ChatColor.RED + "An error occurred.");
+            return true;
+        }
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true, doAfter -> {
-            player.sendMessage("");
-            player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.RED + "s guild.");
+        GuildMember member = wrapper.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
 
-            Player owner = Bukkit.getPlayer(referrer);
-            BungeeUtils.sendPlayerMessage(owner.getName(), ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
-            GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)));
-        });
+        if(member == null) {
+            player.sendMessage(ChatColor.RED + "You do not have a pending guild invitation!");
+            Constants.log.info("A person did /g deny. We found their guildwrapper but they were not in the guild!");
+            return true;
+        }
 
-        return false;
+        if(member.isAccepted()) {
+            player.sendMessage(ChatColor.RED + "You are already in the guild! Do /g leave");
+            return true;
+        }
+
+        playerWrapper.setGuildID(0);
+        player.sendMessage("");
+        player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + wrapper.getName() + "'" + ChatColor.RED + "s guild.");
+        wrapper.removePlayer(player.getUniqueId());
+        SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+            wrapper.sendGuildMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.", false,GuildMember.GuildRanks.OFFICER);
+            GameAPI.sendNetworkMessage("Guilds", "deny", DungeonRealms.getShard().getPseudoName(),String.valueOf(wrapper.getGuildID()), String.valueOf(member.getAccountID()));
+        }, String.format("DELETE FROM guild_members WHERE account_id = '%s';", member.getAccountID()), true);
+
+        return true;
     }
 
 }

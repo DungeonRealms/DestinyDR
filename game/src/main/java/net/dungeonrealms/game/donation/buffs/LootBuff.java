@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.donation.buffs;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.Utils;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -34,8 +31,7 @@ public class LootBuff extends Buff {
                         + " for " + formattedTime + " by using 'Global Loot Buff' from the store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveLootBuff(this);
-        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                "buffs.activeLootBuff", this.serialize(), true);
+        DonationEffects.getInstance().updateLootBuff("activeLootBuff", this.serialize());
     }
 
     @Override
@@ -45,15 +41,13 @@ public class LootBuff extends Buff {
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The " + ChatColor.UNDERLINE
                 + "+" + bonusAmount + "% Global Drop Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
-
         if (nextBuff != null) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
-                    "buffs.queuedLootBuffs", -1, true);
+
+            de.updateLootBuff("queuedLootBuffs", de.serializeQueuedBuffs(de.getQueuedLootBuffs()));
             nextBuff.activateBuff();
         } else {
-            de.getInstance().setActiveLootBuff(null);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-                    "buffs.activeLootBuff", "", true);
+            de.setActiveLootBuff(null);
+            de.updateLootBuff("activeLootBuff", null);
         }
     }
 }

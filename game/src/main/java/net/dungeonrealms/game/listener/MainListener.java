@@ -5,12 +5,10 @@ import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -22,7 +20,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -84,6 +81,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -109,6 +107,10 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
+            if(event.getEntity().hasMetadata("type")) {
+                MetadataValue value = event.getEntity().getMetadata("type").get(0);
+                if (value != null && value.asString().equals("pet")) return;
+            }
             event.setCancelled(true);
         }
     }
@@ -119,8 +121,8 @@ public class MainListener implements Listener {
         if (DungeonRealms.getInstance().isEventShard)
             return;
 
-        if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
-            Player player = Bukkit.getPlayer(event.getVote().getUsername());
+        Player player = Bukkit.getPlayer(event.getVote().getUsername());
+        if (player != null) {
 
             // Handle the experience calculations.
             GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
@@ -146,12 +148,14 @@ public class MainListener implements Listener {
                 }
             }
 
-            // Update the database with the new E-Cash reward!
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_VOTE, System.currentTimeMillis(), true);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
+            wrapper.setEcash(wrapper.getEcash() + ecashReward);
+            wrapper.setLastVote(System.currentTimeMillis());
+
+            // Update the database with the new E-Cash reward!
             // Reward to player with their EXP increase.
-            if (GameAPI.getGamePlayer(player) == null) {
+            if (gamePlayer == null) {
                 return;
             }
             gamePlayer.addExperience(expToGive, false, true);
@@ -211,37 +215,37 @@ public class MainListener implements Listener {
         e.getWorld().setKeepSpawnInMemory(false);
     }
 
-    @EventHandler
-    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-
-        if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
-            event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
-            return;
-        }
-
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
-            event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
-            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
-            return;
-        }
-
-        if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
-            String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
-                event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
-
-                        + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
-                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
-                        + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
-                return;
-            }
-        }
-
-        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
-
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-    }
+//    @EventHandler(priority = EventPriority.HIGH)
+//    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+//
+//        if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
+//            event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
+//            return;
+//        }
+//
+//        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
+//            event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+//            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
+//            return;
+//        }
+//
+//        if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
+//            String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
+//            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
+//                event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
+//
+//                        + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
+//                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
+//                        + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
+//                return;
+//            }
+//        }
+//
+//        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
+//
+//        // REQUEST PLAYER'S DATA ASYNC //
+//        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+//    }
 
     @EventHandler
     public void asyncChat(AsyncPlayerChatEvent event) {
@@ -276,24 +280,18 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-
-        //No left over shit..
-        savedOnLogout.remove(player.getUniqueId());
-        savedAfterSharding.remove(player.getUniqueId());
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            player.kickPlayer(ChatColor.RED + "Unable to load your character.");
-            return;
-        }
+        player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
         try {
-            GameAPI.handleLogin(player.getUniqueId());
+            GameAPI.handleLogin(player);
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
+            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+//            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
             e.printStackTrace();
             return;
         }
@@ -301,9 +299,11 @@ public class MainListener implements Listener {
         GameAPI.asyncTracker.add(player);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
-                if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                if(wrapper == null) return;
+                if (wrapper.isLoggerDied()) {
                     player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, your doppelganger was killed and alas your items are gone.");
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+                    wrapper.setLoggerDied(false);
                     ItemManager.giveStarter(player);
                 }
             }
@@ -395,9 +395,7 @@ public class MainListener implements Listener {
             event.allow();
     }
 
-    private SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
-
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
@@ -454,14 +452,15 @@ public class MainListener implements Listener {
             if (offer != null)
                 offer.handleLogOut(player);
         }
+
         player.updateInventory();
         // Good to go lads
 
-        String name = player.getName();
-        UUID uuid = player.getUniqueId();
-        GameAPI.handleLogout(uuid, true, (result) -> {
-            savedOnLogout.add(uuid);
-        });
+        //So only remove tehm from the list on logout..
+        GameAPI.handleLogout(player, true, savedData -> {
+            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+            GameAPI.GAMEPLAYERS.remove(player.getName());
+        }, false);
     }
 
     /**
@@ -589,11 +588,13 @@ public class MainListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) {
             return;
         }
-        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             return;
         }
 
@@ -608,7 +609,7 @@ public class MainListener implements Listener {
                 player.getVehicle().eject();
 
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
-            if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+            if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
             else
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your PvP tagged status.");
@@ -617,7 +618,7 @@ public class MainListener implements Listener {
         if (GameAPI.isInSafeRegion(event.getTo()) || GameAPI.isNonPvPRegion(event.getTo())) {
             event.setCancelled(true);
             player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
-            if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+            if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
             else
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones while PvP tagged.");
@@ -761,6 +762,8 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {
         final Player pl = e.getPlayer();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+        if(wrapper == null) return;
         if (!pl.getWorld().equals(Bukkit.getWorlds().get(0))) {
             e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
             e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
@@ -867,7 +870,8 @@ public class MainListener implements Listener {
                     GamePlayer gamePlayer = GameAPI.getGamePlayer(pl);
                     if (gamePlayer == null) return;
                     gamePlayer.addExperience(exp / 8, false, true);
-                    gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
+                    wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 1);
+//                    gamePlayer().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);
@@ -877,10 +881,11 @@ public class MainListener implements Listener {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                        if (wrapper.getToggles().isDebug()) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                         }
-                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
+                        //Caught another..
+                        wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 1);
                     }
 
                     int doi_triple_drop = new Random().nextInt(100) + 1;
@@ -900,10 +905,10 @@ public class MainListener implements Listener {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                        if (wrapper.getToggles().isDebug()) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                         }
-                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 2);
+                        wrapper.getPlayerGameStats().setFishCaught(wrapper.getPlayerGameStats().getFishCaught() + 2);
                     }
 
                     int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
@@ -1275,13 +1280,17 @@ public class MainListener implements Listener {
 
         Player pl = event.getPlayer();
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+
+        if(wrapper == null) return;
+
         Player trader = TradeManager.getTarget(pl);
         if (trader == null)
             return;
 
         if (GameAPI._hiddenPlayers.contains(trader) || trader.getGameMode() == GameMode.SPECTATOR) return;
 
-        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isTrialGM(pl)) {
+        if (!wrapper.getToggles().isTrade() && !Rank.isTrialGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");
             trader.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
             trader.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");

@@ -2,9 +2,8 @@ package net.dungeonrealms.game.command.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -61,7 +60,11 @@ public class CommandMount extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                 return true;
             }
-            String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null) return false;
+
+            String mountType = wrapper.getActiveMount();
             if (mountType == null || mountType.equals("")) {
                 player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
                 player.closeInventory();
@@ -85,7 +88,7 @@ public class CommandMount extends BaseCommand {
                                 if (count[0] < 3) {
                                     count[0]++;
                                 } else {
-                                    MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
+                                    MountUtils.spawnMount(player.getUniqueId(), mountType, wrapper.getActiveMountSkin());
                                 }
                             }
                         } else {

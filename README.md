@@ -8,5 +8,5 @@ Authors:
 Bradez1571, iFamasssxD, Kneesnap, Ingot
 
 
-© Keeling Systems LLC 
+© DungeonRealms LLC
 DungeonRealms is a trademark of Keeling Systems LLC 

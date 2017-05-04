@@ -1,9 +1,10 @@
 package net.dungeonrealms.game.player.stats;
 
+import lombok.SneakyThrows;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.LoadableData;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.SaveableData;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,13 +14,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
 /**
  * Created by Chase on Nov 2, 2015
  */
-public class PlayerStats {
+public class PlayerStats implements LoadableData, SaveableData {
+
+
+    private int characterID;
     public int freePoints;
     public int strPoints;
     public int tempstrPoints = 0;
@@ -30,14 +35,13 @@ public class PlayerStats {
     public int intPoints;
     public int tempintPoints = 0;
     public int tempFreePoints = 0;
-    private int level;
     UUID playerUUID;
     public int freeResets;
     public final static int POINTS_PER_LEVEL = 3;
     public int resetAmounts;
     public boolean reset = true;
 
-    public PlayerStats(UUID playerUUID) {
+    public PlayerStats(UUID playerUUID, int characterID) {
         this.playerUUID = playerUUID;
         this.freePoints = 6;
         this.tempFreePoints = 0;
@@ -45,36 +49,17 @@ public class PlayerStats {
         this.dexPoints = 0;
         this.vitPoints = 0;
         this.intPoints = 0;
-        this.level = 1;
         this.tempstrPoints = 0;
         this.tempdexPoints = 0;
         this.tempvitPoints = 0;
         this.tempintPoints = 0;
         this.resetAmounts = 0;
         this.freeResets = 0;
-        loadPlayerStats();
     }
 
 
     public void setPlayerLevel(int lvl) {
-        level = lvl;
-        updatePoints();
-    }
-
-    /**
-     * gets stat points from the database for UUID
-     *
-     * @since 1.0;
-     */
-    public void loadPlayerStats() {
-        this.freePoints = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID)));
-        this.intPoints = (int) DatabaseAPI.getInstance().getData(EnumData.INTELLECT, playerUUID);
-        this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
-        this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
-        this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
-        this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
-        this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
-        this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
+        updatePoints(lvl);
     }
 
     public void allocatePoint(String type, Player p, Inventory inv) {
@@ -306,14 +291,13 @@ public class PlayerStats {
     }
 
 
-    public void lvlUp() {
-        int lvl = level + 1;
-        if (lvl == 10 || lvl == 50)
+    public void lvlUp(int newLevel) {
+        if (newLevel == 10 || newLevel == 50)
             freeResets++;
-        setPlayerLevel(lvl);
+        setPlayerLevel(newLevel);
     }
 
-    public void updatePoints() {
+    public void updatePoints(int level) {
         int allPoints = freePoints;
         allPoints += strPoints;
         allPoints += intPoints;
@@ -330,16 +314,21 @@ public class PlayerStats {
      * Called to sync database with players server stats
      */
 
-    public void updateDatabase(boolean logout) {
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
-    }
+//    public void updateDatabase(boolean logout) {
+//        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(playerUUID);
+//        if (wrapper == null) return;
+//
+////        SQLDatabaseAPI.getInstance().executeUpdate(updates -> ,
+////                "UPDATE attributes SET po");
+////        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
+//    }
 
     /**
      * Resets temp stats
@@ -357,29 +346,43 @@ public class PlayerStats {
      *
      * @since 1.0
      */
-    public void unallocateAllPoints() {
+    public void unallocateAllPoints(int level) {
         resetTemp();
         this.freePoints = POINTS_PER_LEVEL * level;
         this.intPoints = 0;
         this.dexPoints = 0;
         this.strPoints = 0;
         this.vitPoints = 0;
-        updateDatabase(false);
+//        updateDatabase(false);
         // recalculate player attributes
 //        GamePlayer gp = GameAPI.getGamePlayer(Bukkit.getPlayer(playerUUID));
         GameAPI.calculateAllAttributes(Bukkit.getPlayer(playerUUID));
 //        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
     }
 
-    /**
-     * @return
-     */
-    public int getLevel() {
-        return level;
-    }
-
     public void addReset() {
         resetAmounts++;
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
+//        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
     }
+
+    @Override
+    @SneakyThrows
+    public void extractData(ResultSet resultSet) {
+        this.freePoints = resultSet.getInt("attributes.points_available");
+        this.intPoints = resultSet.getInt("attributes.intellect");
+        this.strPoints = resultSet.getInt("attributes.strength");
+        this.dexPoints = resultSet.getInt("attributes.dexterity");
+        this.vitPoints = resultSet.getInt("attributes.vitality");
+        this.freeResets = resultSet.getInt("attributes.freeResets");
+        this.resetAmounts = resultSet.getInt("attributes.resets_available");
+    }
+
+    @Override
+    public String getUpdateStatement() {
+        return String.format("UPDATE attributes SET strength = '%s', dexterity = '%s', intellect = '%s', vitality = '%s', " +
+                "resets_available = '%s',  points_available = '%s', freeResets = '%s' WHERE character_id = '%s';",
+                strPoints, dexPoints, intPoints, vitPoints,
+                resetAmounts, freePoints, freeResets, this.characterID);
+    }
+
 }

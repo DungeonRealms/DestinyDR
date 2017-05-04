@@ -3,9 +3,6 @@ package net.dungeonrealms.tool;
 import com.mongodb.Block;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Database;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -39,92 +36,90 @@ public class DupedItemsRemover implements GenericMechanic {
         final int[] totalQueries = {0};
         final int[] totalQueriesWithDupes = {0};
         long currTotalTime = System.currentTimeMillis();
-        DatabaseInstance.getInstance().startInitialization(true);
+//        DatabaseInstance.getInstance().startInitialization(true);
 
-        DatabaseInstance.playerData.find().forEach(new Block<Document>() {
-            @Override
-            public void apply(Document doc) {
-                totalQueries[0]++;
-                int dupedItemsFound = 0;
-                long currTime = System.currentTimeMillis();
-                final Document infoDoc = doc.get("info", Document.class);
-                if (infoDoc == null) return;
-
-                final String rank = doc.get("rank", Document.class).get("rank", String.class);
-                if (rank.equalsIgnoreCase("GM") || rank.equalsIgnoreCase("DEV") || rank.equalsIgnoreCase("HEADGM") || rank.equalsIgnoreCase("TRIALGM"))
-                    return;
-
-                String name = infoDoc.get("username", String.class);
-                UUID uuid = UUID.fromString(infoDoc.get("uuid", String.class));
-
-                if (name != null) System.out.println("Checking player " + name);
-
-                playerGems = infoDoc.get("gems", Integer.class);
-
-                Document invDoc = doc.get("inventory", Document.class);
-
-                // PLAYER INVENTORY
-                String playerInv = invDoc.get("player", String.class);
-                if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(playerInv, 36), EnumData
-                            .INVENTORY, uuid, name);
-                }
-                // ARMOR
-                List<String> playerArmor = (ArrayList<String>) invDoc.get("armor");
-                ItemStack[] armorAndOffHand = new ItemStack[5];
-                for (int i = 0; i < playerArmor.size(); i++) {
-                    final String armor = playerArmor.get(i);
-                    if (armor.equals("null") || armor.equals("")) {
-                        armorAndOffHand[i] = new ItemStack(Material.AIR);
-                    } else {
-                        armorAndOffHand[i] = ItemSerialization.itemStackFromBase64(armor);
-                    }
-                }
-                dupedItemsFound += addGearUIDSAndCheckDupes(armorAndOffHand, uuid, name);
-
-                // STORAGE
-                String storage = invDoc.get("storage", String.class);
-                if (storage != null && storage.length() > 0 && !storage.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(storage), EnumData
-                            .INVENTORY_STORAGE, uuid, name);
-                }
-
-                // MULE
-                int muleLevel = infoDoc.get("muleLevel", Integer.class);
-                String invString = invDoc.get("mule", String.class);
-                if (muleLevel > 3) {
-                    muleLevel = 3;
-                }
-                MuleTier tier = MuleTier.getByTier(muleLevel);
-                Inventory muleInv = null;
-                if (tier != null && !invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-                    muleInv = ItemSerialization.fromString(invString, tier.getSize());
-                }
-                if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
-                    dupedItemsFound += addGearUIDSAndCheckDupes(muleInv, EnumData.INVENTORY_MULE, uuid, name);
-
-                // COLLECTION BIN
-                String bin = invDoc.get("collection_bin", String.class);
-                if (bin != null && bin.length() > 0 && !bin.equalsIgnoreCase("null")) {
-                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(bin), EnumData
-                            .INVENTORY_COLLECTION_BIN, uuid, name);
-                }
-
-                System.out.println("Single player took " + String.valueOf(System.currentTimeMillis() - currTime) +
-                        "ms");
-
-                if (dupedItemsFound > 0) {
-                    System.out.println(dupedItemsFound + " duped items found and removed for player " + name);
-                    totalQueriesWithDupes[0]++;
-                }
-
-                totalDupedItemsFound[0] += dupedItemsFound;
-                if (playerGems > 50000) playersWithHighGems.put(name, playerGems);
-                if (playerOrbs > 32) playersWithHighOrbs.put(name, playerOrbs);
-                playerGems = 0;
-                playerOrbs = 0;
-            }
-        });
+//        DatabaseInstance.playerData.find().forEach(new Block<Document>() {
+//            @Override
+//            public void apply(Document doc) {
+//                totalQueries[0]++;
+//                int dupedItemsFound = 0;
+//                long currTime = System.currentTimeMillis();
+//                final Document infoDoc = doc.get("info", Document.class);
+//                if (infoDoc == null) return;
+//
+//                final String rank = doc.get("rank", Document.class).get("rank", String.class);
+//                if (rank.equalsIgnoreCase("GM") || rank.equalsIgnoreCase("DEV") || rank.equalsIgnoreCase("HEADGM") || rank.equalsIgnoreCase("TRIALGM"))
+//                    return;
+//
+//                String name = infoDoc.get("username", String.class);
+//                UUID uuid = UUID.fromString(infoDoc.get("uuid", String.class));
+//
+//                if (name != null) System.out.println("Checking player " + name);
+//
+//                playerGems = infoDoc.get("gems", Integer.class);
+//
+//                Document invDoc = doc.get("inventory", Document.class);
+//
+//                // PLAYER INVENTORY
+//                String playerInv = invDoc.get("player", String.class);
+//                if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
+//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(playerInv, 36), name);
+//                }
+//                // ARMOR
+//                List<String> playerArmor = (ArrayList<String>) invDoc.get("armor");
+//                ItemStack[] armorAndOffHand = new ItemStack[5];
+//                for (int i = 0; i < playerArmor.size(); i++) {
+//                    final String armor = playerArmor.get(i);
+//                    if (armor.equals("null") || armor.equals("")) {
+//                        armorAndOffHand[i] = new ItemStack(Material.AIR);
+//                    } else {
+//                        armorAndOffHand[i] = ItemSerialization.itemStackFromBase64(armor);
+//                    }
+//                }
+//                dupedItemsFound += addGearUIDSAndCheckDupes(armorAndOffHand, uuid, name);
+//
+//                // STORAGE
+//                String storage = invDoc.get("storage", String.class);
+//                if (storage != null && storage.length() > 0 && !storage.equalsIgnoreCase("null")) {
+//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(storage), name);
+//                }
+//
+//                // MULE
+//                int muleLevel = infoDoc.get("muleLevel", Integer.class);
+//                String invString = invDoc.get("mule", String.class);
+//                if (muleLevel > 3) {
+//                    muleLevel = 3;
+//                }
+//                MuleTier tier = MuleTier.getByTier(muleLevel);
+//                Inventory muleInv = null;
+//                if (tier != null && !invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+//                    muleInv = ItemSerialization.fromString(invString, tier.getSize());
+//                }
+//                if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
+//                    dupedItemsFound += addGearUIDSAndCheckDupes(muleInv, name);
+//
+//                // COLLECTION BIN
+//                String bin = invDoc.get("collection_bin", String.class);
+//                if (bin != null && bin.length() > 0 && !bin.equalsIgnoreCase("null")) {
+//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(bin), name);
+//                }
+//
+//
+//                System.out.println("Single player took " + String.valueOf(System.currentTimeMillis() - currTime) +
+//                        "ms");
+//
+//                if (dupedItemsFound > 0) {
+//                    System.out.println(dupedItemsFound + " duped items found and removed for player " + name);
+//                    totalQueriesWithDupes[0]++;
+//                }
+//
+//                totalDupedItemsFound[0] += dupedItemsFound;
+//                if (playerGems > 50000) playersWithHighGems.put(name, playerGems);
+//                if (playerOrbs > 32) playersWithHighOrbs.put(name, playerOrbs);
+//                playerGems = 0;
+//                playerOrbs = 0;
+//            }
+//        });
         String formattedTime = DurationFormatUtils.formatDurationWords(System.currentTimeMillis() -
                 currTotalTime, true, true);
         System.out.println("Checked " + totalQueries[0] + " players in " + formattedTime + " and found " +
@@ -148,7 +143,7 @@ public class DupedItemsRemover implements GenericMechanic {
         }
     }
 
-    private static int addGearUIDSAndCheckDupes(Inventory inv, EnumData data, UUID uuid, String name) {
+    private static int addGearUIDSAndCheckDupes(Inventory inv, String name) {
         int dupedItemsFound = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null || i.getType() == Material.AIR) continue;

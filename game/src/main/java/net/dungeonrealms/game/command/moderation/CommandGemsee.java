@@ -1,19 +1,16 @@
 package net.dungeonrealms.game.command.moderation;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-
-import org.bukkit.Bukkit;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Collections;
 
 /**
  * Created by Brad on 25/12/2016.
@@ -36,17 +33,21 @@ public class CommandGemsee extends BaseCommand {
         }
 
         String playerName = args[0];
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-           String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-           if(uuid == null || uuid.equals("")){
-               sender.sendMessage(ChatColor.RED + "No player found with that name.");
-               return;
-           }
 
-            UUID p_uuid = UUID.fromString(uuid);
+        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+            if(uuid == null) {
+                sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                return;
+            }
 
-            sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + DatabaseAPI.getInstance().getData(EnumData.GEMS, p_uuid));
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                if(wrapper == null) {
+                    sender.sendMessage(ChatColor.RED + "Something went wrong");
+                    return;
+                }
 
+                sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + wrapper.getGems());
+            });
         });
         return false;
     }

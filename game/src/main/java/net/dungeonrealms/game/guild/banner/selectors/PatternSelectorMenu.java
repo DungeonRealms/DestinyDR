@@ -22,7 +22,7 @@ import java.util.Collections;
 
 public class PatternSelectorMenu extends AbstractMenu {
 
-    public PatternSelectorMenu(Player player) {
+    public PatternSelectorMenu(Player player, String guildName, String guildTag, String guildDisplayName, ItemStack banner) {
         super(DungeonRealms.getInstance(), "Select a pattern", 54, player.getUniqueId());
         setDestroyOnExit(true);
 
@@ -40,7 +40,7 @@ public class PatternSelectorMenu extends AbstractMenu {
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     event.getWhoClicked().closeInventory();
-                    new ColorSelectorMenu(event.getWhoClicked(), PatternSelectorMenu.this, patternType).open(event.getWhoClicked());
+                    new ColorSelectorMenu(event.getWhoClicked(), PatternSelectorMenu.this, patternType, guildName, guildTag, guildDisplayName, banner).open(event.getWhoClicked());
                 }
             };
 

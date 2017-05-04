@@ -3,8 +3,8 @@ package net.dungeonrealms.game.command.punish;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.game.mastery.UUIDFetcher;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,40 +41,22 @@ public class CommandUnban extends BaseCommand {
             return true;
         }
 
-        UUIDFetcher.getUUID(args[0], (uuid) -> {
-
-            if (uuid == null) {
-                sender.sendMessage(ChatColor.RED + "No UUID found for " + p_name);
+        SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, p_uuid -> {
+            if (p_uuid == null) {
+                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
                 return;
             }
-            if (!PunishAPI.isBanned(uuid)) {
-                sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
-                return;
-            }
-
-            PunishAPI.unban(uuid);
-
-            sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-            GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /unban " + p_name);
+            PunishAPI.isBanned(p_uuid, banned -> {
+                if (!banned) {
+                    sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
+                    return;
+                }
+                PunishAPI.unban(p_uuid);
+                sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /unban " + p_name);
+            });
         });
-//        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
-//            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
-//            return true;
-//        }
-//
-//        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-//
-//        if (!PunishAPI.isBanned(p_uuid)) {
-//            sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
-//            return true;
-//        }
-//
-//        PunishAPI.unban(p_uuid);
-//
-//        sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-//        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-//        GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /unban " + p_name);
         return false;
     }
 }

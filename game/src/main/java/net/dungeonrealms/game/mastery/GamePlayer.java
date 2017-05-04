@@ -1,14 +1,11 @@
 package net.dungeonrealms.game.mastery;
 
-import io.netty.util.concurrent.CompleteFuture;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -19,8 +16,6 @@ import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.statistics.PlayerStatistics;
-import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -34,9 +29,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -49,21 +42,15 @@ public class GamePlayer {
 
     private boolean sharding = false;
 
-    private PlayerStats playerStats;
-    private PlayerStatistics playerStatistics;
-
+//    private PlayerStats playerStats;
     /**
      * Attribute values and their values
      */
     private Map<String, Integer[]> attributes;
     private Map<AttributeType, Float> attributeBonusesFromStats;
 
-    @Getter
-    private ArrayList<String> ignoredPlayers = new ArrayList<>();
     private boolean attributesLoaded;
     private String currentWeapon; // used so we only reload weapon stats when we need to.
-
-    private int playerEXP;
 
     // Game Master
     private boolean isInvulnerable;
@@ -83,25 +70,23 @@ public class GamePlayer {
 
     public GamePlayer(Player player) {
         T = player;
-        this.playerStats = new PlayerStats(player.getUniqueId());
-        this.playerStatistics = new PlayerStatistics(player.getUniqueId());
+//        this.playerStats = new PlayerStats(player.getUniqueId());
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
-        this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
         this.isInvulnerable = false;
         this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
-
-//        CompletableFuture.
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            this.ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, player.getUniqueId());
-            if (this.ignoredPlayers == null) this.ignoredPlayers = new ArrayList<>();
-
-            if (this.ignoredPlayers.size() > 0)
-                Bukkit.getLogger().info("Loaded " + this.ignoredPlayers.size() + " Ignored players for " + player.getName());
-        });
+//
+////        CompletableFuture.
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            this.ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, player.getUniqueId());
+//            if (this.ignoredPlayers == null) this.ignoredPlayers = new ArrayList<>();
+//
+//            if (this.ignoredPlayers.size() > 0)
+//                Bukkit.getLogger().info("Loaded " + this.ignoredPlayers.size() + " Ignored players for " + player.getName());
+//        });
     }
 
     /**
@@ -124,6 +109,10 @@ public class GamePlayer {
             return Tier.TIER5;
         } else
             return Tier.TIER1;
+    }
+
+    public int getLevel() {
+        return PlayerWrapper.getPlayerWrapper(T.getUniqueId()).getLevel();
     }
 
     /**
@@ -149,15 +138,9 @@ public class GamePlayer {
         TIER5,
     }
 
-    /**
-     * Gets the players level
-     *
-     * @return the level
-     * @since 1.0
-     */
-    public int getLevel() {
-        return playerStats.getLevel();
-    }
+//    public int getLevel() {
+//        return playerStats.getLevel();
+//    }
 
 
     /**
@@ -166,9 +149,9 @@ public class GamePlayer {
      * @return the experience
      * @since 1.0
      */
-    public int getExperience() {
-        return playerEXP;
-    }
+//    public int getExperience() {
+//        return playerEXP;
+//    }
 
     /**
      * Checks if the player is in a Dungeon
@@ -188,18 +171,9 @@ public class GamePlayer {
         return !T.getWorld().getName().contains("DUNGEON") && !T.getWorld().getName().contains("DUEL") && !T.getWorld().equals(Bukkit.getWorlds().get(0));
     }
 
-    /**
-     * Gets the players current alignment.
-     *
-     * @return the alignment
-     * @since 1.0
-     */
-    public KarmaHandler.EnumPlayerAlignments getPlayerAlignment() {
-        return KarmaHandler.getInstance().getPlayerRawAlignment(T);
-    }
-
     public KarmaHandler.EnumPlayerAlignments getPlayerAlignmentDB() {
-        return KarmaHandler.EnumPlayerAlignments.getByName(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, T.getUniqueId())));
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return KarmaHandler.EnumPlayerAlignments.getByName(wrapper.getPlayerAlignment().name());
     }
 
     /**
@@ -217,7 +191,8 @@ public class GamePlayer {
     }
 
     public int getEcashBalance() {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, T.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return wrapper.getEcash();
     }
 
     /**
@@ -280,9 +255,10 @@ public class GamePlayer {
      * @since 1.0
      */
     public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
-        int level = getLevel();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
+        int level = wrapper.getLevel();
         if (level >= 100) return;
-        int experience = getExperience();
+        int experience = wrapper.getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
@@ -310,9 +286,10 @@ public class GamePlayer {
             updateLevel(level + 1, true, false);
             addExperience(continuedExperience, isParty, displayMessage);
         } else {
-            setPlayerEXP(futureExperience);
+            wrapper.setExperience(futureExperience);
+//            setPlayerEXP(futureExperience);
             if (displayMessage) {
-                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
+                if (wrapper.getToggles().isDebug()) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     if (expBonus > 0) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(Rank.getInstance().getRank(T.getUniqueId()).toLowerCase()) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
@@ -338,14 +315,17 @@ public class GamePlayer {
      * @param levelSet - if the level change is set artificially
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
-        setPlayerEXP(0);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T.getUniqueId());
+
+        wrapper.setExperience(0);
+        wrapper.setLevel(wrapper.getLevel() + 1);
+//        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
+//        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
 
         if (levelUp) { // natural level up
-            getStats().lvlUp();
+            wrapper.getPlayerStats().lvlUp(wrapper.getLevel());
 
-            if (newLevel != getLevel()) return; // not a natural level up
+            if (newLevel != wrapper.getLevel()) return; // not a natural level up
 
             T.getWorld().playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
@@ -363,18 +343,18 @@ public class GamePlayer {
             T.sendMessage("");
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + newLevel);
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + getEXPNeeded(newLevel));
-            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + wrapper.getPlayerStats().freePoints);
             Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
         } else if (levelSet) { // level was set
-            getStats().setPlayerLevel(newLevel);
-
+//            get().setPlayerLevel(newLevel);
+            wrapper.setLevel(newLevel);
             Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             T.playSound(T.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
         }
 
         // update scoreboard
-        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), newLevel);
+        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, wrapper.getPlayerAlignment().getAlignmentColor(), newLevel);
         switch (newLevel) {
             case 10:
                 Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_10);
@@ -420,16 +400,16 @@ public class GamePlayer {
      * @return boolean
      */
     public boolean hasShopOpen() {
-        return (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, T.getUniqueId());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(T);
+        return wrapper.isShopOpened();
     }
 
     /**
      * @return Player Stats
      */
-    public PlayerStats getStats() {
-        return playerStats;
-    }
-
+//    public PlayerStats getStats() {
+//        return playerStats;
+//    }
     public int getPlayerGemFind() {
         return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.GEM_FIND);
     }

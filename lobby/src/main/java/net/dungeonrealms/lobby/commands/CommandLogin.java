@@ -8,8 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.lobby.Lobby;
 import net.md_5.bungee.api.ChatColor;
@@ -35,22 +33,22 @@ public class CommandLogin extends BaseCommand {
 			return false;
 		}
 		
-		Object code = DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId());
-		
-		if(code == null){
-			sendMessage(player, "You do not have a PIN set. Use /setpin <pin>", ChatColor.RED);
-			return false;
-		}
-		
-		String loginCode = (String)code;
-		
-		if(loginCode.equals(args[0])){
-			Lobby.getInstance().allowLogin(player, true);
-			sendMessage(player, "You have successfully logged in.", ChatColor.GREEN);
-		}else{
-			sendMessage(player, "The PIN you have entered is incorrect, please try again.", ChatColor.RED);
-			Lobby.getInstance().getClient().sendNetworkMessage("GMMessage", ChatColor.RED + player.getName() + " entered an invalid login code!");
-		}
+//		Object code = DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId());
+//
+//		if(code == null){
+//			sendMessage(player, "You do not have a PIN set. Use /setpin <pin>", ChatColor.RED);
+//			return false;
+//		}
+//
+//		String loginCode = (String)code;
+
+//		if(loginCode.equals(args[0])){
+//			Lobby.getInstance().allowLogin(player, true);
+//			sendMessage(player, "You have successfully logged in.", ChatColor.GREEN);
+//		}else{
+//			sendMessage(player, "The PIN you have entered is incorrect, please try again.", ChatColor.RED);
+//			Lobby.getInstance().getClient().sendNetworkMessage("GMMessage", ChatColor.RED + player.getName() + " entered an invalid login code!");
+//		}
 		return true;
 	}
 

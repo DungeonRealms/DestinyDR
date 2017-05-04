@@ -1,14 +1,11 @@
 package net.dungeonrealms.game.command.moderation;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.mastery.ItemSerialization;
-
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -16,7 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Brad on 25/12/2016.
@@ -53,39 +53,23 @@ public class CommandArmorsee extends BaseCommand {
             sender.openInventory(inv);
         }
         else {
-            if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
-                return true;
-            }
 
-            UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-            Inventory inventoryView = Bukkit.createInventory(null, 9, playerName + "'s Offline Armor View (Last slot is offhand)");
-
-            List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, p_uuid);
-            if (playerArmor == null) return true;
-            int i = -1;
-            ItemStack[] armorContents = new ItemStack[4];
-            ItemStack offHand = new ItemStack(Material.AIR);
-            for (String armor : playerArmor) {
-                i++;
-                if (i <= 3) { //Normal armor piece
-                    if (armor.equals("null") || armor.equals("")) {
-                        inventoryView.addItem(new ItemStack(Material.AIR));
-                    } else {
-                        inventoryView.addItem(ItemSerialization.itemStackFromBase64(armor));
-                    }
-
-                } else {
-                    if (armor.equals("null") || armor.equals("")) {
-                        inventoryView.addItem(new ItemStack(Material.AIR));
-                    } else {
-                        inventoryView.addItem(ItemSerialization.itemStackFromBase64(armor));
-                    }
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+                if(uuid == null) {
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
+                    return;
                 }
-            }
+                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                    if(wrapper == null) {
+                        return;
+                    }
 
-            offline_armor_watchers.put(sender.getUniqueId(), p_uuid);
-            sender.openInventory(inventoryView);
+                    sender.openInventory(wrapper.getPendingArmor());
+                    offline_armor_watchers.put(sender.getUniqueId(), uuid);
+
+                });
+            });
+
         }
 
         return false;

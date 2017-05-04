@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -149,7 +150,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
     }
 
 	@Override
-	public void addKillStat(GamePlayer gp) {
-		gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getBurickKills() + 1);
+	public void addKillStat(PlayerWrapper gp) {
+		gp.getPlayerGameStats().setBossBurickKills(gp.getPlayerGameStats().getBossBurickKills() + 1);
 	}
 }

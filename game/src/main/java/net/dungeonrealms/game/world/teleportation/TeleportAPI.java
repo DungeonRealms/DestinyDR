@@ -1,9 +1,7 @@
 package net.dungeonrealms.game.world.teleportation;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
@@ -16,7 +14,6 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -49,7 +46,7 @@ public class TeleportAPI {
             return false;
         }
 
-        if (GameAPI.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+        if (PlayerWrapper.getPlayerWrapper(player.getUniqueId()).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are currently Chaotic.");
             return false;
         }
@@ -158,10 +155,13 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static String getLocationFromDatabase(UUID uuid) {
-        if (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid) != null) {
-            return Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString());
-        } else {
-            return "Cyrennica";
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        if(wrapper == null) return "Cyrennica";
+
+        if (wrapper.getHearthstone() != null) {
+            return Utils.ucfirst(wrapper.getHearthstone());
         }
+
+        return "Cyrennica";
     }
 }

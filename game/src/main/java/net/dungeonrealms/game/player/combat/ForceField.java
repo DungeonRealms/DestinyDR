@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -61,11 +62,12 @@ public class ForceField implements Listener, GenericMechanic {
     public void updateViewedBlocks(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) return;
 
         // check if we have to send blocks or remove them
-        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC &&
+        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC &&
                 !previousUpdates.containsKey(player.getUniqueId()))
             return;
 
@@ -120,11 +122,12 @@ public class ForceField implements Listener, GenericMechanic {
     private Set<Location> getChangedBlocks(Player player) {
         Set<Location> locations = new HashSet<>();
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) return locations;
 
         // Do nothing if player is not tagged or chaotic
-        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return locations;
+        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return locations;
 
         // Find the radius around the player
         int r = 10;

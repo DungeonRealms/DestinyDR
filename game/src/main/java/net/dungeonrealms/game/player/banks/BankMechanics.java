@@ -1,14 +1,10 @@
 package net.dungeonrealms.game.player.banks;
 
-import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -28,9 +24,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Created by Chase on Sep 18, 2015
- */
 public class BankMechanics implements GenericMechanic {
 
     public static ItemStack gem;
@@ -39,8 +32,8 @@ public class BankMechanics implements GenericMechanic {
 
     public static HashMap<String, ItemStack> shopPricing = new HashMap<>();
 
-    @Getter
-    public Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
+    //    @Getter
+//    public Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
     private static BankMechanics instance = null;
 
     public static BankMechanics getInstance() {
@@ -65,16 +58,19 @@ public class BankMechanics implements GenericMechanic {
          */
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            for (GamePlayer gp : GameAPI.GAMEPLAYERS.values()) {
-                if (gp == null || gp.getPlayer() == null)
+            for (PlayerWrapper gp : PlayerWrapper.getPlayerWrappers().values()) {
+                if (gp == null)
                     continue;
-                if (gp.getStats().freePoints > 0) {
+                Player online = gp.getPlayer();
+                if (online == null) continue;
+
+                if (gp.getPlayerStats().freePoints > 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                                 "To allocate click ", ChatColor.WHITE);
-                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
                         normal.addText(ChatColor.GREEN + "*");
-                        normal.sendToPlayer(gp.getPlayer());
+                        normal.sendToPlayer(online);
                     });
                 }
             }
@@ -160,6 +156,7 @@ public class BankMechanics implements GenericMechanic {
         if (amount <= 0) {
             return true; // It's free.
         }
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         HashMap<Integer, ? extends ItemStack> invItems = i.all(Material.EMERALD);
         for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
             int index = entry.getKey();
@@ -178,10 +175,7 @@ public class BankMechanics implements GenericMechanic {
                 paid_off += to_take;
             }
             if (paid_off >= amount) {
-                GamePlayer gp = GameAPI.getGamePlayer(p);
-                if (gp != null) {
-                    gp.getPlayerStatistics().setGemsSpent(gp.getPlayerStatistics().getGemsSpent() + amount);
-                }
+                wrapper.getPlayerGameStats().setGemsSpent(wrapper.getPlayerGameStats().getGemsSpent() + amount);
                 p.updateInventory();
                 return true;
             }
@@ -206,10 +200,7 @@ public class BankMechanics implements GenericMechanic {
             }
 
             if (paid_off >= amount) {
-                GamePlayer gp = GameAPI.getGamePlayer(p);
-                if (gp != null) {
-                    gp.getPlayerStatistics().setGemsSpent(gp.getPlayerStatistics().getGemsSpent() + amount);
-                }
+                wrapper.getPlayerGameStats().setGemsSpent(wrapper.getPlayerGameStats().getGemsSpent() + amount);
                 p.updateInventory();
                 return true;
             }
@@ -408,18 +399,6 @@ public class BankMechanics implements GenericMechanic {
      */
     public static int getNoteValue(ItemStack stack) {
         return CraftItemStack.asNMSCopy(stack).getTag().getInt("worth");
-    }
-
-    /**
-     * Add gems to player database
-     *
-     * @param uuid
-     * @param num
-     */
-    public void addGemsToPlayerBank(UUID uuid, int num) {
-    	if (num == 0)
-    		return;
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, true);
     }
 
     /**

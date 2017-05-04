@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.miscellaneous.ScrapTier;
@@ -54,7 +54,7 @@ public class CurrencyTabListener implements Listener {
                 //In their inventory?
                 if (ItemManager.isScrap(clicked)) {
                     //Add the scrap to their max inventory.
-                    CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
+                    CurrencyTab tab = PlayerWrapper.getPlayerWrapper(player).getCurrencyTab();
 
                     if (tab == null) {
                         player.closeInventory();
@@ -116,7 +116,7 @@ public class CurrencyTabListener implements Listener {
 
                     if (scrap == null) return;
 
-                    CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
+                    CurrencyTab tab = PlayerWrapper.getPlayerWrapper(player).getCurrencyTab();
 
                     if (tab == null) {
                         player.closeInventory();
@@ -216,7 +216,7 @@ public class CurrencyTabListener implements Listener {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
                 //Clicking on
-                CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
+                CurrencyTab tab = PlayerWrapper.getPlayerWrapper(player).getCurrencyTab();
                 if (tab == null || !tab.hasAccess) {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
                     player.sendMessage(ChatColor.RED + "You have not unlocked the Scrap Tab!");

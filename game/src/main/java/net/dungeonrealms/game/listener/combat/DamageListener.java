@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handler.EnergyHandler;
@@ -510,6 +508,7 @@ public class DamageListener implements Listener {
     public void handlePlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage("");
         final Player p = event.getEntity();
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         final Location deathLocation = p.getEyeLocation();
         p.setExp(0F);
         p.setLevel(0);
@@ -523,19 +522,19 @@ public class DamageListener implements Listener {
         });
 
         List<ItemStack> gearToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignment = KarmaHandler.getInstance().getPlayerRawAlignment(p);
+        KarmaHandler.EnumPlayerAlignments alignment = wrapper.getPlayerAlignment();
 
         if (alignment == null) return;
 
         boolean neutral_boots = false, neutral_legs = false, neutral_chest = false, neutral_helmet = false, neutral_weapon = false;
         if (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
             // 50% of weapon dropping, 25% for every piece of equipped armor.
-            if (new Random().nextInt(100) <= 50) {
+            if (ThreadLocalRandom.current().nextInt(100) <= 50) {
                 neutral_weapon = true;
             }
 
-            if (new Random().nextInt(100) <= 25) {
-                int index = new Random().nextInt(4);
+            if (ThreadLocalRandom.current().nextInt(100) <= 25) {
+                int index = ThreadLocalRandom.current().nextInt(4);
                 if (index == 0) {
                     neutral_boots = true;
                 } else if (index == 1) {
@@ -993,17 +992,17 @@ public class DamageListener implements Listener {
                         armorContents.add(ItemSerialization.itemStackToBase64(itemStack));
                     }
                 }
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
             } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
             }
             if (!combatLogger.getItemsToSave().isEmpty()) {
                 Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");
                 combatLogger.getItemsToSave().forEach(inventory::addItem);
                 itemsToSave = ItemSerialization.toString(inventory);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, true);
+                //DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, true);
             } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
+//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
             }
             combatLogger.handleNPCDeath();
         }

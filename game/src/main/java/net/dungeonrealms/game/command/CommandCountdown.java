@@ -19,7 +19,7 @@ public class CommandCountdown extends BaseCommand {
 	private static int broadcastTask;
 	
 	public CommandCountdown() {
-		super("cdstart", "/<command> <length> <frequency> <message...>", "Broadcast a message across the network.");
+		super("cdstart", "/<command> <length> <frequency> <reboot> <message...>", "Broadcast a message across the network.");
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class CommandCountdown extends BaseCommand {
 			
 			//  GETS THE BROADCAST MESSAGE  //
 			String message = "";
-			for(int i = 2; i < args.length; i++)
+			for(int i = 3; i < args.length; i++)
 				message += " " + args[i];
 			if(message.length() > 1)
 				message = message.substring(1); //TODO: Do we have a method for this anywhere?
@@ -93,7 +93,7 @@ public class CommandCountdown extends BaseCommand {
 		if (length > 0){
 			GameAPI.sendNetworkMessage("Broadcast", message.replaceAll("\\{0\\}", length + ""));
 			broadcastTask = Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), CommandCountdown::sendBroadcast, interval * 20 * 60).getTaskId();
-		} else if (length == 0) {
+		} else if (length == 0 && restart) {
 			DungeonRealms.getInstance().isDrStopAll = true;
 			GameAPI.sendStopAllServersPacket();
 			GameAPI.stopGame();

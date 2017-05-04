@@ -18,41 +18,32 @@
             <artifactId>kryo-shaded</artifactId>
             <version>4.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.2.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mongodb</groupId>-->
+            <!--<artifactId>mongo-java-driver</artifactId>-->
+            <!--<version>3.2.2</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryonet</artifactId>
             <version>2.22.0-RC1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>3.2.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mongodb</groupId>-->
+            <!--<artifactId>bson</artifactId>-->
+            <!--<version>3.2.2</version>-->
+        <!--</dependency>-->
 
         <!--Spigot API-->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+            <scope>system</scope>
         </dependency>
 
-
-        <!--Bukkit API-->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
 		  <dependency>
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>

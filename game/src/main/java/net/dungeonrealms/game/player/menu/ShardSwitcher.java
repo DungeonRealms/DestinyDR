@@ -2,8 +2,6 @@ package net.dungeonrealms.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
@@ -14,10 +12,11 @@ import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -45,12 +44,10 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
         List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
 
         Collections.sort(servers, (o1, o2) -> {
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
             if (!o1.getServerName().contains("us"))
                 return -1;
-
+            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
+            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
             return o1num - o2num;
         });
 
@@ -161,15 +158,20 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
 
-            String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
-            lore.add(ChatColor.GRAY + "Load: " + data[1]);
+            try {
+                String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
+                lore.add(ChatColor.GRAY + "Load: " + data[1]);
 
-            lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+                lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            if (data.length >= 3)
-                lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
+                if (data.length >= 3)
+                    lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
-            button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
+                button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
+            } catch (Exception e) {
+                Bukkit.getLogger().info("Error parsing MOTD: " + info.getMotd1() + " MOTD2: " + info.getMotd2() + " from " + info.getServerName());
+                e.printStackTrace();
+            }
             button.setLore(lore);
 
 //            button.setSlot(slot);
@@ -286,7 +288,8 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             return;
         }
 
-        long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
+        long lastShardTransfer = PlayerWrapper.getPlayerWrapper(player).getLastShardTransfer();
+//        long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
         if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
             if (GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
@@ -297,7 +300,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                 return;
             }
         }
-
 
 
         player.openInventory(inventory);

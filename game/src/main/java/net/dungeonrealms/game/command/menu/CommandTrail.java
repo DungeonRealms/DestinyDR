@@ -1,8 +1,7 @@
 package net.dungeonrealms.game.command.menu;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -37,7 +36,11 @@ public class CommandTrail extends BaseCommand {
                 player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                 return true;
             }
-            String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null) return false;
+
+            String trailType = wrapper.getActiveTrail();
             if (trailType == null || trailType.equals("")) {
                 player.sendMessage(ChatColor.RED + "You don't have an active trail, please enter the trails section in your profile to set one.");
                 player.closeInventory();

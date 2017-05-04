@@ -2,8 +2,7 @@ package net.dungeonrealms.game.world.entity.type.monster;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -29,9 +28,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-/**
- * Created by Chase on Oct 21, 2015
- */
 public interface DRMonster {
 
     void onMonsterAttack(Player p);
@@ -46,7 +42,10 @@ public interface DRMonster {
     	return entity.getMetadata("tier").get(0).asInt();
     }
 
-    default void checkItemDrop(int tier, EnumMonster nullArgs, Entity ent, Player killer) {
+    default void checkItemDrop(int tier, Entity ent, Player killer) {
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(killer);
+        if(wrapper == null) return;
         if (ent.getWorld().getName().contains("DUNGEON")) {
             //No normal drops in dungeons.
             return;
@@ -61,7 +60,7 @@ public interface DRMonster {
         }
         Random random = new Random();
         GamePlayer gp = GameAPI.getGamePlayer(killer);
-        boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
+        boolean toggleDebug = wrapper.getToggles().isDebug();
         double gold_drop_multiplier = (gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
         int killerItemFind = gp.getRangedAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
         Location loc = ent.getLocation();

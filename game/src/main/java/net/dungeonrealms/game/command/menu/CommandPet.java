@@ -1,8 +1,7 @@
 package net.dungeonrealms.game.command.menu;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
@@ -18,9 +17,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- * Created by Kieran Quigley (Proxying) on 29-May-16.
- */
 public class CommandPet extends BaseCommand {
 
     public CommandPet(String command, String usage, String description, List<String> aliases) {
@@ -34,6 +30,24 @@ public class CommandPet extends BaseCommand {
         }
 
         Player player = (Player) sender;
+        if(player.getName().equalsIgnoreCase("ingot") || player.getName().equals("iFamasssxD")) {
+            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (entity.isAlive()) {
+                    entity.getBukkitEntity().remove();
+                }
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                }
+                player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
+                EntityAPI.removePlayerPetList(player.getUniqueId());
+                return true;
+            }
+
+            PetUtils.spawnPet(player.getUniqueId(), "ENDERMAN", "Testing");
+            return true;
+
+        }
         if (args.length == 0) {
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
@@ -48,23 +62,20 @@ public class CommandPet extends BaseCommand {
                 return true;
             }
 
-            String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
-            if (petType == null || petType.equals("")) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+
+            if(wrapper == null) return false;
+            String petType = wrapper.getActivePet();
+            EnumPets pets = EnumPets.getByName(petType);
+            if (petType == null || petType.equals("") || pets == null) {
                 player.sendMessage(ChatColor.RED + "You currently don't have an active pet. Please select one from your profile.");
                 player.closeInventory();
                 return true;
             }
-            String petName;
-            String petToSummon;
-            if (petType.contains("@")) {
-                petToSummon = petType.split("@")[0];
-                petName = petType.split("@")[1];
-            } else {
-                petToSummon = petType;
-                petName = EnumPets.getByName(petToSummon).getDisplayName();
-            }
+
+            String petName = wrapper.getPetName(pets);
             player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
-            PetUtils.spawnPet(player.getUniqueId(), petToSummon, petName);
+            PetUtils.spawnPet(player.getUniqueId(), petType, petName);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {

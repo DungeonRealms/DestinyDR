@@ -1,26 +1,20 @@
 package net.dungeonrealms.game.command;
 
-import com.mongodb.client.model.Filters;
-
-import net.dungeonrealms.GameAPI;
+import lombok.Cleanup;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
-
-import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.PreparedStatement;
 import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Nick on 12/2/2015.
@@ -43,19 +37,22 @@ public class CommandPlayerFix extends BaseCommand {
         }
 
         if (args[0].equalsIgnoreCase("all")) {
-            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.isPlaying", true),
-                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
-                try {
-                    if (result.get().wasAcknowledged()) {
-                        sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
-                                "statuses to offline.");
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            });
+
+		    SQLDatabaseAPI.getInstance().getSqlQueries().add("UPDATE users SET is_online = 0 WHERE is_online = 1;");
+
+//            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.isPlaying", true),
+//                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
+//                try {
+//                    if (result.get().wasAcknowledged()) {
+//                        sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
+//                                "statuses to offline.");
+//                    } else {
+//                        sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
+//                    }
+//                } catch (InterruptedException | ExecutionException e) {
+//                    e.printStackTrace();
+//                }
+//            });
             return true;
         }
 
@@ -68,29 +65,48 @@ public class CommandPlayerFix extends BaseCommand {
 
         if (wholeShard) {
             String shard = args[0].toLowerCase();
-            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard),
-                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
-                try {
-                    if (result.get().wasAcknowledged()) {
-                        sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
-                                "statuses to offline from " +
-                                "shard " + shard);
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
-                    }
-                } catch (InterruptedException | ExecutionException e) {
+
+            CompletableFuture.runAsync(() -> {
+                try{
+                    @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().
+                            prepareStatement(QueryType.FIX_WHOLE_SHARD.getQuery(shard));
+                    int updates = statement.executeUpdate();
+                    sender.sendMessage(ChatColor.RED + "Updated " + updates + " players with currentShard = " + shard);
+                }catch(Exception e){
                     e.printStackTrace();
                 }
-            });
+            }, ForkJoinPool.commonPool());
+//            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard),
+//                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
+//                try {
+//                    if (result.get().wasAcknowledged()) {
+//                        sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
+//                                "statuses to offline from " +
+//                                "shard " + shard);
+//                    } else {
+//                        sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
+//                    }
+//                } catch (InterruptedException | ExecutionException e) {
+//                    e.printStackTrace();
+//                }
+//            });
         } else {
             String playerName = args[0];
-            DatabaseAPI.getInstance().update(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)),
-                    EnumOperators.$SET, EnumData.IS_PLAYING, false, true, doAfter -> {
-                        if (doAfter.wasAcknowledged())
-                            sender.sendMessage(ChatColor.YELLOW + "Set status of player " + playerName + " to offline.");
-                        else
-                            sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
-                    });
+
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+                if(uuid == null) {
+                    sender.sendMessage(ChatColor.RED + "Unable to find player for name.");
+                    return;
+                }
+
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if(accountID == null){
+                    sender.sendMessage(ChatColor.RED + "Unable to find accountID for " + uuid.toString());
+                    return;
+                }
+
+                SQLDatabaseAPI.getInstance().getSqlQueries().add("UPDATE users SET is_online = 0, currentShard = null WHERE account_id = '" + accountID + "';");
+            });
         }
 
 		return false;

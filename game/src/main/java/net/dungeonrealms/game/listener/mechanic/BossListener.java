@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -70,7 +71,7 @@ public class BossListener implements Listener {
 					if (player.getGameMode() != GameMode.SURVIVAL) 
 						continue;
 					
-	            	GamePlayer gp = GameAPI.getGamePlayer(player);
+	            	PlayerWrapper gp = PlayerWrapper.getPlayerWrapper(player);
 	            	if (gp != null)
 	            		b.addKillStat(gp);
 				}
