@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;

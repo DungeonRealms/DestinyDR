@@ -5,7 +5,7 @@ import com.google.common.collect.HashMultimap;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.item.items.core.ItemGear;

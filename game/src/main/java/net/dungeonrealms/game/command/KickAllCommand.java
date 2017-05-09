@@ -3,7 +3,7 @@ package net.dungeonrealms.game.command;
 import lombok.Cleanup;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 
 import org.bukkit.ChatColor;

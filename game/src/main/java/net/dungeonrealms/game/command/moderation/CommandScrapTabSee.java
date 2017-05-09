@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;

@@ -14,8 +14,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 
 public class PlayerToggles implements LoadableData, SaveableData {
 

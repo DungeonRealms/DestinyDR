@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.handler;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;

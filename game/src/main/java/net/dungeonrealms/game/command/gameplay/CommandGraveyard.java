@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.command.gameplay;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.miscellaneous.Graveyard;

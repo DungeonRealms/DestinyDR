@@ -2,7 +2,7 @@ package net.dungeonrealms.game.command.dungeon;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mechanic.dungeons.BossType;
 import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;

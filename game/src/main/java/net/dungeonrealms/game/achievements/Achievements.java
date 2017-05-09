@@ -3,7 +3,7 @@ package net.dungeonrealms.game.achievements;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ParticleAPI;

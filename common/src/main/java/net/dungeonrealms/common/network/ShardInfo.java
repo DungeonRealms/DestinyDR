@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
 
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

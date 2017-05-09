@@ -2,7 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;

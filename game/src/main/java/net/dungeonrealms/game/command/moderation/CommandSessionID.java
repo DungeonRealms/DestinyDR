@@ -2,7 +2,7 @@ package net.dungeonrealms.game.command.moderation;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 
 import org.bukkit.ChatColor;

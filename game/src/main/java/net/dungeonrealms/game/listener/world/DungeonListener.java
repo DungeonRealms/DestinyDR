@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.listener.world;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;

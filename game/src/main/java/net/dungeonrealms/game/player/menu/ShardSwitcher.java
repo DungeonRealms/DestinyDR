@@ -2,8 +2,8 @@ package net.dungeonrealms.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;

@@ -3,7 +3,7 @@ package net.dungeonrealms.game.player.chat;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;

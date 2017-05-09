@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.player.rank;
+package net.dungeonrealms.common.game.database.player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

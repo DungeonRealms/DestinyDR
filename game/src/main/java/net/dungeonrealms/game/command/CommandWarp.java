@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.game.world.teleportation.Teleportation.EnumTeleportType;

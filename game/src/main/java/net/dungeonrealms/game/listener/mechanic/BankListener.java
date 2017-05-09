@@ -3,7 +3,7 @@ package net.dungeonrealms.game.listener.mechanic;
 import com.google.common.collect.Lists;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.game.item.PersistentItem;

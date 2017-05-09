@@ -5,7 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 
 import org.apache.commons.lang3.StringUtils;

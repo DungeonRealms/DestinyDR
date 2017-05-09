@@ -5,7 +5,7 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;

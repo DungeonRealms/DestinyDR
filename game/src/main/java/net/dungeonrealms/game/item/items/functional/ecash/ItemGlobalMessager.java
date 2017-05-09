@@ -9,7 +9,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;

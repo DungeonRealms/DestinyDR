@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.support;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.player.inventory.SupportMenus;

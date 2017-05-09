@@ -2,7 +2,7 @@ package net.dungeonrealms.game.listener.world;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.command.CommandSpawner;
 import net.dungeonrealms.game.command.moderation.CommandLootChest;
 import net.dungeonrealms.game.player.chat.Chat;

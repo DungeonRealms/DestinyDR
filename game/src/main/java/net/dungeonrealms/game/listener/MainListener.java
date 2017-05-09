@@ -3,11 +3,10 @@ package net.dungeonrealms.game.listener;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 import io.netty.util.internal.ConcurrentSet;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerWrapper;

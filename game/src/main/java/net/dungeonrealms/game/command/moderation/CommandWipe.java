@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
