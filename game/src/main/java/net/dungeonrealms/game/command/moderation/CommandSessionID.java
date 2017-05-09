@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.command.moderation;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -26,24 +26,22 @@ public class CommandSessionID extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (Rank.isTrialGM(player)) {
-                if (args.length == 1) {
+        if (sender instanceof Player && Rank.isTrialGM((Player) sender) || sender instanceof ConsoleCommandSender) {
+            if (args.length == 1) {
 
-                    SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
-                        if (uuid == null) {
-                            sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
-                            return;
-                        }
+                SQLDatabaseAPI.getInstance().getUUIDFromName(args[0], false, (uuid) -> {
+                    if (uuid == null) {
+                        sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
+                        return;
+                    }
 
-                        Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
-                        if(accountID == null){
-                            sender.sendMessage(ChatColor.RED + "Account ID not found for " + uuid);
-                            return;
-                        }
+                    Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                    if (accountID == null) {
+                        sender.sendMessage(ChatColor.RED + "Account ID not found for " + uuid);
+                        return;
+                    }
 
-                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 0, accountID);
+                    SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 0, accountID);
                 });
 //                    UUID uuid = null;
 //                    try {
@@ -58,11 +56,10 @@ public class CommandSessionID extends BaseCommand {
 //                        sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
 //                        return true;
 //                    }
-                }
-            } else {
-                sender.sendMessage(ChatColor.RED + "Command: /session <player> | Fixes a player's session ID.");
-                return true;
             }
+        } else {
+            sender.sendMessage(ChatColor.RED + "Command: /session <player> | Fixes a player's session ID.");
+            return true;
         }
         return false;
     }

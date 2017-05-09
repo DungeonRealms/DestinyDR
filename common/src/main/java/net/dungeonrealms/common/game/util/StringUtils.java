@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 public class StringUtils {
 
 	public static <T extends Enum<T>> String serializeEnumList(List<T> values) {
+	    if(values == null)return "";
 		String s = "";
 		for (T val : values)
 			s += val.name() + ",";
@@ -21,6 +22,7 @@ public class StringUtils {
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> List<T> deserializeEnumList(String s, Class<T> c) {
 		List<T> list = new ArrayList<>();
+		if(s == null)return list;
 		for (String str : s.split(",")) {
 			try {
 				if (!str.equals(""))

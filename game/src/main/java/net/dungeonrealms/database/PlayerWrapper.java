@@ -1,7 +1,7 @@
 package net.dungeonrealms.database;
 
+import com.google.common.collect.Lists;
 import com.mysql.jdbc.StatementImpl;
-
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -28,12 +27,13 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Stats;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
@@ -47,15 +47,8 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-
 import org.apache.commons.lang.StringEscapeUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -76,121 +69,163 @@ public class PlayerWrapper {
     @Getter
     private static Map<UUID, PlayerWrapper> playerWrappers = new ConcurrentHashMap<>();
 
-    @Getter private UUID uuid;
+    @Getter
+    private UUID uuid;
 
     @Getter
     private int accountID, characterID;
 
-    @Getter @Setter private int guildID;
+    @Getter
+    @Setter
+    private int guildID;
 
     @Getter
     private PlayerGameStats playerGameStats;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long timeCreated;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int health, level, ecash, experience;
 
     @Getter
     private int gems;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long lastLogin, lastLogout, lastShardTransfer, lastFreeEcash, firstLogin;
 
     @Getter
     private Inventory pendingInventory, pendingArmor, pendingMuleInventory;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String pendingInventoryString, pendingArmorString, storedLocationString, storedCollectionBinString;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String shardPlayingOn, questData, username;
 
-    @Getter @Setter private EnumMounts activeMount;
-    @Getter @Setter private EnumPets activePet;
-    @Getter private ParticleEffect activeTrail;
-    @Getter @Setter private EnumMountSkins activeMountSkin;
+    @Getter
+    @Setter
+    private EnumMounts activeMount;
+    @Getter
+    @Setter
+    private EnumPets activePet;
+    @Getter
+    private ParticleEffect activeTrail;
+    @Getter
+    @Setter
+    private EnumMountSkins activeMountSkin;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int bankLevel, shopLevel, muleLevel, storedFoodLevel;
 
     @Getter
     private boolean isPlaying = false;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean combatLogged = false, shopOpened = false, loggerDied = false;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String lastIP;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private TeleportLocation hearthstone;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long lastTimeIPUsed;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean enteringRealm = false, uploadingRealm, upgradingRealm;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long lastRealmReset;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String realmTitle, realmDescription;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int realmTier = 1;
 
     @Getter
     private EnumPlayerAlignments alignment = EnumPlayerAlignments.LAWFUL;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int alignmentTime = 0;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Location storedLocation;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private CurrencyTab currencyTab;
 
     private Map<ShardTier, Integer> keyShards = new HashMap<>();
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long muteExpire = -1, banExpire = -1;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String muteReason, banReason;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Integer whoBannedMeID, whoMutedMeID;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean firstTimePlaying = false;
 
     @Getter
     private HashMap<UUID, Integer> friendsList = new HashMap<>(), ignoredFriends = new HashMap<>(), pendingFriends = new HashMap<>();
 
-    @Getter	private List<EnumAchievements> achievements = new ArrayList<>();
-    @Getter private List<ParticleEffect> particles = new ArrayList<>();
-    @Getter private List<ParticleEffect> trails = new ArrayList<>();
-    @Getter private List<EnumMountSkins> mountSkins = new ArrayList<>();
-    @Getter private List<EnumMounts> mountsUnlocked = new ArrayList<>();
-    @Getter private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
+    @Getter
+    private List<EnumAchievements> achievements = new ArrayList<>();
+    @Getter
+    private List<ParticleEffect> particles = new ArrayList<>();
+    @Getter
+    private List<ParticleEffect> trails = new ArrayList<>();
+    @Getter
+    private List<EnumMountSkins> mountSkins = new ArrayList<>();
+    @Getter
+    private List<EnumMounts> mountsUnlocked = new ArrayList<>();
+    @Getter
+    private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String playerName;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Integer rankExpiration;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String lastViewedBuild;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int lastNoteSize;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long lastVote;
 
     @Getter
@@ -204,11 +239,14 @@ public class PlayerWrapper {
 
 
     // Non database data:
-    @Setter private Player player;
+    @Setter
+    private Player player;
 
-    @Getter private AttributeList attributes = new AttributeList();
+    @Getter
+    private AttributeList attributes = new AttributeList();
     private String currentWeapon;
-    @Getter private boolean attributesLoaded;
+    @Getter
+    private boolean attributesLoaded;
 
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
@@ -261,7 +299,7 @@ public class PlayerWrapper {
                 this.shardPlayingOn = result.getString("users.currentShard");
                 this.characterID = result.getInt("characters.character_id");
 
-                if(this.characterID == 0){
+                if (this.characterID == 0) {
                     //No character ID??
 
                 }
@@ -342,7 +380,7 @@ public class PlayerWrapper {
                 this.loadUnlockables(result);
 
                 for (ShardTier tier : ShardTier.values())
-                	this.keyShards.put(tier, result.getInt(tier.getDBField()));
+                    this.keyShards.put(tier, result.getInt(tier.getDBField()));
 
                 this.timeCreated = result.getLong("characters.created");
 
@@ -370,19 +408,19 @@ public class PlayerWrapper {
     }
 
     public GuildWrapper getGuild() {
-    	return getGuildID() != 0 ? GuildDatabase.getAPI().getGuildWrapper(getGuildID()) : null;
+        return getGuildID() != 0 ? GuildDatabase.getAPI().getGuildWrapper(getGuildID()) : null;
     }
 
     public boolean isInGuild() {
-    	return getGuild() != null;
+        return getGuild() != null;
     }
 
     public int getPortalShards(ShardTier tier) {
-    	return keyShards.containsKey(tier) ? keyShards.get(tier) : 0;
+        return keyShards.containsKey(tier) ? keyShards.get(tier) : 0;
     }
 
     public void setPortalShards(ShardTier tier, int amt) {
-    	keyShards.put(tier, amt);
+        keyShards.put(tier, amt);
     }
 
     public Player getPlayer() {
@@ -391,24 +429,24 @@ public class PlayerWrapper {
 
 
     public void setGems(int gems) {
-    	if (gems < 0 || gems > 10000000) {
-    		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
-    		gems = 0;
-    	}
+        if (gems < 0 || gems > 10000000) {
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
+            gems = 0;
+        }
 
-    	if (gems != getGems())
-    		SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, getCharacterID(), getGems());
-    	this.gems = gems;
+        if (gems != getGems())
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, getCharacterID(), getGems());
+        this.gems = gems;
     }
 
     public void addGems(int gems) {
-    	assert gems >= 0;
-    	setGems(getGems() + gems);
+        assert gems >= 0;
+        setGems(getGems() + gems);
     }
 
     public void subtractGems(int gems) {
-    	assert gems >= 0;
-    	setGems(getGems() - gems);
+        assert gems >= 0;
+        setGems(getGems() - gems);
     }
 
     public String getPetName(EnumPets pets) {
@@ -417,10 +455,10 @@ public class PlayerWrapper {
     }
 
     public void loadUnlockables(ResultSet result) throws SQLException {
-    	this.mountsUnlocked = StringUtils.deserializeEnumList(result.getString("users.mounts"), EnumMounts.class);
-    	this.mountSkins = StringUtils.deserializeEnumList(result.getString("users.mountSkin"), EnumMountSkins.class);
-    	this.particles = StringUtils.deserializeEnumList("users.particles", ParticleEffect.class);
-    	this.trails = StringUtils.deserializeEnumList("users.trails", ParticleEffect.class);
+        this.mountsUnlocked = StringUtils.deserializeEnumList(result.getString("users.mounts"), EnumMounts.class);
+        this.mountSkins = StringUtils.deserializeEnumList(result.getString("users.mountSkin"), EnumMountSkins.class);
+        this.particles = StringUtils.deserializeEnumList(result.getString("users.particles"), ParticleEffect.class);
+        this.trails = StringUtils.deserializeEnumList(result.getString("users.trails"), ParticleEffect.class);
 
         List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
         if (list != null) {
@@ -442,7 +480,7 @@ public class PlayerWrapper {
                     continue;
                 }
 
-                this.petsUnlocked.put(pets, new PetData(name,unlocked));
+                this.petsUnlocked.put(pets, new PetData(name, unlocked));
             }
         }
     }
@@ -456,12 +494,12 @@ public class PlayerWrapper {
         return builder.toString();
     }
 
-    public void loadAllPunishments(boolean async, Consumer<Punishments> callback){
+    public void loadAllPunishments(boolean async, Consumer<Punishments> callback) {
         SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALL_PUNISHMENTS.getQuery(this.uuid.toString()), async, rs -> {
             Punishments punishments = new Punishments();
-            try{
+            try {
                 punishments.extractData(rs);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             callback.accept(punishments);
@@ -644,78 +682,89 @@ public class PlayerWrapper {
 
         String locationString = player == null ? storedLocationString : getLocationString(player);
 
-        List<Object> data = Arrays.asList(getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
+        List<Object> array = new ArrayList<Object>();
+
+        array.addAll(Lists.newArrayList(
+                getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(),
+                player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
                 getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(),
                 getQuestData(), collectionBinString, player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
-                isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime());
+                isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime()));
 
         for (ShardTier tier : ShardTier.values())
-        	data.add(getPortalShards(tier));
+            array.add(getPortalShards(tier));
 
-        data.add(getCharacterID());
-        return getQuery(QueryType.CHARACTER_UPDATE, data);
+        array.add(getCharacterID());
+        return getQuery(QueryType.CHARACTER_UPDATE, array.toArray(new Object[array.size()]));
     }
 
     public void runQuery(QueryType t, Object... args) {
-    	SQLDatabaseAPI.getInstance().addQuery(getQuery(t, args));
+        SQLDatabaseAPI.getInstance().addQuery(getQuery(t, args));
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	public String getQuery(QueryType t, Object... args) {
-    	for (int i = 0; i < args.length; i++) {
-    		Object obj = args[i];
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public String getQuery(QueryType t, Object... args) {
 
-    		if (obj instanceof Boolean)
-    			obj = ((Boolean)obj) ? 1 : 0;
+        for (int i = 0; i < args.length; i++) {
+            Object obj = args[i];
 
-    		if (obj instanceof List<?>) {
-    			List<?> list = (List<?>) obj;
+            if (obj instanceof Boolean)
+                obj = (Boolean) obj ? "1" : "0";
 
-    			if (list.isEmpty()) {
-    				obj = "";
-    			} else {
-    				Object example = list.get(0);
+            if (obj instanceof List<?>) {
+                List<?> list = (List<?>) obj;
 
-    				if (example instanceof Enum)
-    					obj = StringUtils.serializeEnumList((List<Enum>) list);
-    			}
-    		}
+                if (list.isEmpty()) {
+                    obj = "";
+                } else {
+                    Object example = list.get(0);
 
-    		if (obj instanceof Enum)
-    			obj = ((Enum<?>)obj).name();
+                    if (example instanceof Enum)
+                        obj = StringUtils.serializeEnumList((List<Enum>) list);
+                }
+            }
 
-    		if (obj instanceof Inventory)
-    			obj = ItemSerialization.toString((Inventory) obj);
+            if (obj instanceof Enum)
+                obj = ((Enum<?>) obj).name();
 
-    		if (obj instanceof String)
-    			obj = "'" + StringEscapeUtils.escapeSql((String)obj) + "'";
+            if (obj instanceof Inventory)
+                obj = ItemSerialization.toString((Inventory) obj);
 
-    		args[i] = obj;
-    	}
+            if (obj instanceof String)
+                obj = "'" + StringEscapeUtils.escapeSql((String) obj) + "'";
 
-    	return t.getQuery(args);
+            if(obj instanceof Number)
+                obj = String.valueOf(obj);
+
+            args[i] = obj;
+            if(t == QueryType.CHARACTER_UPDATE)System.out.println("finalArgs[" + i + "]: " + args[i]);
+        }
+
+        if(t == QueryType.CHARACTER_UPDATE)System.out.println("finalArgs Elements: " + args.length);
+
+        return t.getQuery(args);
     }
 
     public void setRank(PlayerRank newRank) {
-    	PlayerRank oldRank = getRank();
-		Rank.getCachedRanks().put(getUuid(), newRank);
-		Player p = getPlayer();
-		if (oldRank != newRank && p != null && p.isOnline()) {
-			p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-		}
+        PlayerRank oldRank = getRank();
+        Rank.getCachedRanks().put(getUuid(), newRank);
+        Player p = getPlayer();
+        if (oldRank != newRank && p != null && p.isOnline()) {
+            p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+        }
     }
 
     public PlayerRank getRank() {
-    	return Rank.getPlayerRank(this.uuid);
+        return Rank.getPlayerRank(this.uuid);
     }
 
     public void sendDebug(String str) {
-    	if (getToggles().getState(Toggles.DEBUG)) {
-    		getPlayer().sendMessage(str);
-    		GameAPI.runAsSpectators(getPlayer(), p -> p.sendMessage(str));
-    	}
+        if (getToggles().getState(Toggles.DEBUG)) {
+            getPlayer().sendMessage(str);
+            GameAPI.runAsSpectators(getPlayer(), p -> p.sendMessage(str));
+        }
     }
 
     private String getUsersUpdateQuery(Boolean isOnline) {
@@ -724,8 +773,8 @@ public class PlayerWrapper {
         String currencyTab = getCurrencyTab() != null ? getCurrencyTab().getSerializedScrapTab() : null;
 
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
-        		getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
-        		currencyTab, getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getTrails(), getAccountID());
+                getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
+                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getTrails(), getAccountID());
     }
 
     @SneakyThrows
@@ -775,7 +824,7 @@ public class PlayerWrapper {
 
         toReturn.append(" ON DUPLICATE KEY UPDATE `status` = VALUES(`status`)");
 
-        if(!isFirstValues) {
+        if (!isFirstValues) {
             System.out.println("Attempting to update the friends with the query: " + toReturn.toString());
             statement.executeUpdate(toReturn.toString());
         }
@@ -788,7 +837,7 @@ public class PlayerWrapper {
     }
 
     public static PlayerWrapper getWrapper(Player get) {
-    	return getPlayerWrapper(get);
+        return getPlayerWrapper(get);
     }
 
     public static PlayerWrapper getPlayerWrapper(Player toGet) {
@@ -825,8 +874,8 @@ public class PlayerWrapper {
     }
 
     public boolean isOnline() {
-    	Player p = getPlayer();
-    	return p != null && p.isOnline();
+        Player p = getPlayer();
+        return p != null && p.isOnline();
     }
 
     public static void getPlayerWrapper(UUID uuid, Consumer<PlayerWrapper> hadToLoadCallback) {
@@ -892,31 +941,31 @@ public class PlayerWrapper {
      * Update the held weapon stats, if changed.
      */
     public void updateWeapon() {
-    	ItemStack item = getPlayer().getInventory().getItemInMainHand();
-    	if (item == null)
-    		return;
-    	String epoch = AntiDuplication.getUniqueEpochIdentifier(item);
-    	if(epoch == null || !epoch.equals(this.currentWeapon))
-    		calculateAllAttributes();
+        ItemStack item = getPlayer().getInventory().getItemInMainHand();
+        if (item == null)
+            return;
+        String epoch = AntiDuplication.getUniqueEpochIdentifier(item);
+        if (epoch == null || !epoch.equals(this.currentWeapon))
+            calculateAllAttributes();
     }
 
     /**
      * Calculate all stat attributes from gear.
      */
     public void calculateAllAttributes() {
-    	if (!isOnline())
-    		return;
-    	getAttributes().clear(); // Reset stats.
+        if (!isOnline())
+            return;
+        getAttributes().clear(); // Reset stats.
 
-    	//  CALCULATE FROM ITEMS  //
+        //  CALCULATE FROM ITEMS  //
         getAttributes().addStats(getPlayer().getInventory().getItemInMainHand());
         for (ItemStack armor : getPlayer().getInventory().getArmorContents())
-        	getAttributes().addStats(armor);
+            getAttributes().addStats(armor);
 
         this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(getPlayer().getEquipment().getItemInMainHand());
 
-        for(Stats stat : Stats.values())
-        	getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
+        for (Stats stat : Stats.values())
+            getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
 
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses();
@@ -933,32 +982,32 @@ public class PlayerWrapper {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
 
         if (alignmentTo != getAlignment()) {
-        	player.sendMessage("");
-        	player.sendMessage(alignmentTo.getColor() + "              * YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + alignmentTo.name() + alignmentTo.getColor() + " ALIGNMENT *");
-        	player.sendMessage(ChatColor.GRAY + alignmentTo.getDescription());
-        	player.sendMessage("");
+            player.sendMessage("");
+            player.sendMessage(alignmentTo.getColor() + "              * YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + alignmentTo.name() + alignmentTo.getColor() + " ALIGNMENT *");
+            player.sendMessage(ChatColor.GRAY + alignmentTo.getDescription());
+            player.sendMessage("");
         }
 
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
 
         if (getAlignment() != alignmentTo) {
-        	ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getColor(), getLevel());
-        	this.alignment = alignmentTo;
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getColor(), getLevel());
+            this.alignment = alignmentTo;
         }
     }
 
     public void setActiveTrail(ParticleEffect e) {
-    	this.activeTrail = e;
+        this.activeTrail = e;
 
-    	if (e == null) {
-    		disableTrail();
-    	} else {
-    		DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(getPlayer(), e);
-    	}
+        if (e == null) {
+            disableTrail();
+        } else {
+            DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(getPlayer(), e);
+        }
     }
 
     public void disableTrail() {
-    	DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(getPlayer());
+        DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(getPlayer());
     }
 
     /**
@@ -966,16 +1015,16 @@ public class PlayerWrapper {
      * Contains our rank and our username, and alignment.
      */
     public String getDisplayName() {
-    	PlayerRank rank = getRank();
-    	String alignment = rank.isAtLeast(PlayerRank.TRIALGM) ? "" : getAlignment().getAlignmentColor() + "";
-    	return rank.getPrefix() + alignment + (isOnline() ? getPlayer().getName() : getPlayerName());
+        PlayerRank rank = getRank();
+        String alignment = rank.isAtLeast(PlayerRank.TRIALGM) ? "" : getAlignment().getAlignmentColor() + "";
+        return rank.getPrefix() + alignment + (isOnline() ? getPlayer().getName() : getPlayerName());
     }
 
     /**
      * Gets the chat prefixed name.
      */
     public String getChatName() {
-    	return getChatName(true);
+        return getChatName(true);
     }
 
     /**
@@ -983,14 +1032,14 @@ public class PlayerWrapper {
      * If false is supplied, the guild and channel tags will be skipped.
      */
     public String getChatName(boolean deep) {
-    	String name = getDisplayName();
+        String name = getDisplayName();
 
-    	if (deep) {
-    		if (isInGuild())
-    			name = getGuild().getChatPrefix() + name;
-    	}
+        if (deep) {
+            if (isInGuild())
+                name = getGuild().getChatPrefix() + name;
+        }
 
-    	return name;
+        return name;
     }
 
     @SneakyThrows
@@ -1129,10 +1178,10 @@ public class PlayerWrapper {
         return TimeUtil.formatDifference((this.muteExpire - System.currentTimeMillis()) / 1_000);
     }
 
-	public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
+    public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
         int level = getLevel();
         if (level >= 100 || experienceToAdd <= 0)
-        	return;
+            return;
 
         int experience = getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
@@ -1151,7 +1200,7 @@ public class PlayerWrapper {
         int levelBuffBonus = 0;
 
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LEVEL)) {
-        	Buff levelBuff = DonationEffects.getInstance().getBuff(EnumBuff.LEVEL);
+            Buff levelBuff = DonationEffects.getInstance().getBuff(EnumBuff.LEVEL);
             levelBuffBonus = Math.round(experienceToAdd * (levelBuff.getBonusAmount() / 100f));
             experienceToAdd += levelBuffBonus;
         }
@@ -1164,25 +1213,25 @@ public class PlayerWrapper {
         } else {
             setExperience(futureExperience);
             if (displayMessage) {
-            	sendDebug(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-            	if (expBonus > 0)
-            		getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + getRank().getPrefix() + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                sendDebug(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                if (expBonus > 0)
+                    getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + getRank().getPrefix() + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
 
-            	if (levelBuffBonus > 0)
-            		getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
-            				.toString() + ChatColor.BOLD + "XP BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
-            				+ "+" + ChatColor.YELLOW + Math.round(levelBuffBonus) + ChatColor.BOLD + " EXP " +
-            				ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" +
-            				ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                if (levelBuffBonus > 0)
+                    getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
+                            .toString() + ChatColor.BOLD + "XP BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                            + "+" + ChatColor.YELLOW + Math.round(levelBuffBonus) + ChatColor.BOLD + " EXP " +
+                            ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" +
+                            ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
             }
         }
-	}
+    }
 
-	public int getEXPNeeded() {
-		return getEXPNeeded(getLevel());
-	}
+    public int getEXPNeeded() {
+        return getEXPNeeded(getLevel());
+    }
 
-	public int getEXPNeeded(int level) {
+    public int getEXPNeeded(int level) {
         if (level >= 101) {
             return 0;
         }
@@ -1200,7 +1249,7 @@ public class PlayerWrapper {
         return (int) ((100 * Math.pow(level, 2)) * difficulty + 500);
     }
 
-	/**
+    /**
      * Updates a player's level. Can be called for a natural level up or for
      * an artificial change of a player's level via /set level or other means.
      *
@@ -1213,7 +1262,7 @@ public class PlayerWrapper {
         setLevel(getLevel() + 1);
 
         if (natural && newLevel == getLevel()) { // natural level up
-        	getPlayerStats().lvlUp();
+            getPlayerStats().lvlUp();
 
             getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
             getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
@@ -1247,7 +1296,7 @@ public class PlayerWrapper {
         }
 
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())
-    		if (ael.getLevelRequirement() == newLevel)
-    			Achievements.giveAchievement(player, ael.getAchievement());
+            if (ael.getLevelRequirement() == newLevel)
+                Achievements.giveAchievement(player, ael.getAchievement());
     }
 }

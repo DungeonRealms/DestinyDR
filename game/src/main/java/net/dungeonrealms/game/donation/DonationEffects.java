@@ -20,9 +20,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by Kieran on 10/1/2015.
- */
 @Getter
 @Setter
 public class DonationEffects implements GenericMechanic {
@@ -62,11 +59,7 @@ public class DonationEffects implements GenericMechanic {
                     for (EnumBuff buffType : EnumBuff.values()) {
                         LinkedList<Buff> buffs = new LinkedList<>();
                         this.buffMap.put(buffType, buffs);
-                        Buff activeBuff = Buff.deserialize(rs.getString(buffType.getActiveColumn()));
-                        if (activeBuff != null)
-                            buffs.add(activeBuff);
-
-                        List<String> queuedBuffs = StringUtils.deserializeList(rs.getString(buffType.getQueuedColumn()), buffDelimeter);
+                        List<String> queuedBuffs = StringUtils.deserializeList(rs.getString(buffType.getColumnName()), buffDelimeter);
                         queuedBuffs.forEach(s -> {
                             Buff buff = Buff.deserialize(s);
                             buff.setType(buffType);
@@ -111,8 +104,7 @@ public class DonationEffects implements GenericMechanic {
     public void saveBuffData() {
         for (EnumBuff buffType : EnumBuff.values()) {
             Buff current = getBuff(buffType);
-            updateLootBuff(buffType.getActiveColumn(), current != null ? current.serialize() : null);
-            updateLootBuff(buffType.getQueuedColumn(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
+            updateLootBuff(buffType.getColumnName(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
         }
     }
 

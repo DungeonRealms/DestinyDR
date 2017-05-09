@@ -10,24 +10,27 @@ import org.bukkit.Material;
 public enum EnumBuff {
 	
 	@SerializedName("Profession")
-	PROFESSION(Material.GOLDEN_CARROT, "activeProfessionBuff", "queuedProfessionBuffs", "Profession", "Increases all experience gained from professions for everyone", "character experience gained"),
+	PROFESSION(Material.GOLDEN_CARROT, "Profession", "Increases all experience gained from professions for everyone", "character experience gained"),
 
 	@SerializedName("Loot")
-	LOOT(Material.DIAMOND, "activeLootBuff", "queuedLootBuffs", "Loot", "Increases all loot drop chances for everyone", "loot drop chances"),
+	LOOT(Material.DIAMOND, "Loot", "Increases all loot drop chances for everyone", "loot drop chances"),
 	
 	@SerializedName("Level")
-	LEVEL(Material.EXP_BOTTLE, "activeLevelBuff", "queuedLevelBuffs", "Level EXP", "Increases all experience gained from mobs for everyone", "experience gained from professions");
+	LEVEL(Material.EXP_BOTTLE, "Level EXP", "Increases all experience gained from mobs for everyone", "experience gained from professions");
 	
 	private Material icon;
 	@Getter
-	private String activeColumn, queuedColumn, name;
+	private String name;
 	private String description;
 	private String miniDescription;
 	
 	public String getItemName() {
 		return ChatColor.GOLD + getFriendlyName();
 	}
-	
+
+	public String getColumnName(){
+		return name().toLowerCase();
+	}
 	public String getFriendlyName() {
 		return "Global " + getName() + " Buff";
 	}

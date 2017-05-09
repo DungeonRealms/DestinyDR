@@ -560,7 +560,7 @@ public class Item {
         }
         
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, String displayPrefix, String displaySuffix, int displayPriority) {
-        	this(prefix, suffix, NBTName, chance, false, range, displayPrefix, displaySuffix, displaySuffix, displayPriority);
+        	this(prefix, suffix, NBTName, chance, rerollInclude, range, displayPrefix, displaySuffix, displaySuffix, displayPriority);
         }
 
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {
