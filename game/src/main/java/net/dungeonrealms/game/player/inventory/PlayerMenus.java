@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.game.achievements.Achievements.AchievementCategory;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemPetSelector;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -32,7 +33,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Nick on 9/29/2015.
@@ -147,17 +150,17 @@ public class PlayerMenus {
             
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("petType", new NBTTagString(pets.getName()));
+            tag.set("pet", new NBTTagString(pets.getName()));
             tag.set("petName", new NBTTagString(hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
             nmsStack.setTag(tag);
-            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
+            inv.addItem(new ItemPetSelector(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
                     ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
                     ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
                     "",
                     ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
                     (isLocked ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked ? "" : "UN") + "LOCKED",
                     ChatColor.GRAY + "Display Item"
-            }));
+            })).getItem());
         }
         player.openInventory(inv);
     }
