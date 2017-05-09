@@ -1,53 +1,236 @@
 package net.dungeonrealms.game.world.entity.util;
 
-import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.minecraft.server.v1_9_R2.Entity;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.LivingEntity;
+import lombok.Getter;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.mastery.AttributeList;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
+import net.minecraft.server.v1_9_R2.World;
 
-import java.util.UUID;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.lang.reflect.Field;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by Kieran on 9/19/2015.
+ * EntityAPI - Basic Entity utilities.
+ * 
+ * Redone by Kneesnap on April 19th, 2017.
  */
 public class EntityAPI {
 
-    public static boolean hasPetOut(UUID uuid) {
-        return EntityMechanics.PLAYER_PETS.containsKey(uuid);
+    private static Random random = new Random();
+    
+    @Getter //TODO: Prevent memory leaks.
+    private static Map<DRMonster, AttributeList> entityAttributes = new ConcurrentHashMap<>();
+    
+    public static Entity spawnElite(Location loc, EnumNamedElite elite) {
+    	return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), null);
+    }
+    
+    public static Entity spawnElite(Location loc, EnumNamedElite elite, String displayName) {
+    	return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), displayName);
+    }
+    
+    /**
+     * Creates an elite without spawning it into the world.
+     */
+    public static Entity spawnElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name) {
+    	name = name != null ? name : monster.getName();
+    	LivingEntity entity = spawnEntity(loc, monster, elite != null ? elite.getEntity() : monster.getCustomEntity(), tier, level, name);;
+    	;
+    	
+    	// For non-Named elites that don't have custom gear.
+    	if (elite == null && monster != null && !DungeonManager.isDungeon(loc.getWorld())) {
+    		ItemWeapon weapon = new ItemWeapon();
+    		weapon.setTier(tier).setRarity(ItemRarity.getRandomRarity(true)).setGlowing(true);
+    		ItemType type = monster.getWeaponType();
+    		
+    		if (type != null)
+    			weapon.setType(type);
+    		
+    		// These have an extra special chance.
+    		if ((monster == EnumMonster.Zombie || monster == EnumMonster.Undead) && random.nextBoolean())
+    			weapon.setType(ItemType.AXE);
+    		
+    		ItemArmor armor = (ItemArmor) new ItemArmor().setRarity(ItemRarity.getRandomRarity(true)).setTier(tier).setGlowing(true);
+    		
+    		EntityEquipment e = entity.getEquipment();
+    		e.setItemInMainHand(weapon.generateItem());
+    		e.setArmorContents(armor.generateArmorSet());
+    	} else if (elite != null) {
+    		// Load elite custom gear.
+    		for (EquipmentSlot slot : EquipmentSlot.values()) {
+            	if (slot == EquipmentSlot.OFF_HAND) // Skip offhand.
+            		continue;
+            	
+            	ItemStack item = ItemGenerator.getNamedItem(elite.name() + Utils.capitalize(slot.name()));
+            	if (item == null || item.getType() == Material.AIR)
+            		continue;
+            	
+            	EnchantmentAPI.addGlow(item);
+            	GameAPI.setItem(entity, slot, item);
+            }
+    	}
+    	
+    	Metadata.ELITE.set(entity, true);
+        if (elite != null)
+        	Metadata.NAMED_ELITE.set(entity, elite);
+        
+        return entity;
+    }
+    
+    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, String levelRange, int tier, ItemType weaponType) {
+    	return spawnCustomMonster(loc, monster, Utils.getRandomFromTier(tier, levelRange), tier, weaponType);
+    }
+    
+    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType) {
+    	return spawnCustomMonster(loc, monster, level, tier, weaponType, null);
+    }
+    
+    /**
+     * Spawns a custom monster.
+     */
+    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
+    	LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName);
+    	
+    	// Register mob element.
+    	if (!monster.isFriendly() && new Random().nextInt(100) < monster.getElementalChance())
+    			setMobElement(e, monster.getRandomElement());
+    	
+    	if (monster.isPassive())
+    		Metadata.PASSIVE.set(e, true);
+    	return e;
     }
 
-    public static boolean hasMountOut(UUID uuid) {
-        return EntityMechanics.PLAYER_MOUNTS.containsKey(uuid);
+	/**
+     * Updates the entity's display name to its friendly display name.
+     */
+    public static void updateName(Entity entity) {
+    	if (!Metadata.CUSTOM_NAME.has(entity)) {
+    		// They don't have a custom name set.
+    		Bukkit.getLogger().warning(entity.getName() + " has no custom name!");
+    		return;
+    	}
+    	
+    	String prefix = "";
+    	String name = Metadata.CUSTOM_NAME.get(entity).asString();
+    	
+    	// Apply elemental name.
+    	if (isElemental(entity)) {
+    		ElementalAttribute ea = getElement(entity);
+    		String[] splitName = name.split(" ", 2);
+    		
+    		boolean shortName = ea == ElementalAttribute.PURE || splitName.length == 1;
+    		String ePrefix = shortName ? splitName[0] + " " : "";
+    		String eSuffix = shortName ? name : splitName[1];
+    		name = ea.getColor() + ePrefix + ea.getPrefix() + " " + eSuffix;
+    	}
+    	
+    	// Apply boss.
+    	if (isBoss(entity))
+    		prefix = ChatColor.RED + "" + ChatColor.BOLD;
+    	
+    	// Apply elite.
+    	if (Metadata.ELITE.get(entity).asBoolean())
+    		prefix = ChatColor.BOLD + "";
+    	
+    	entity.setCustomName(prefix + name);
+    	entity.setCustomNameVisible(true);
     }
-
-    public static Entity getPlayerPet(UUID uuid) {
-        return EntityMechanics.PLAYER_PETS.get(uuid);
+    
+    public static boolean isElemental(Entity e) {
+    	return Metadata.ELEMENT.has(e);
     }
-
-    public static Entity getPlayerMount(UUID uuid) {
-        return EntityMechanics.PLAYER_MOUNTS.get(uuid);
+    
+    public static ElementalAttribute getElement(Entity e) {
+    	return Metadata.ELEMENT.getEnum(e);
     }
-
-    public static void removePlayerPetList(UUID uuid) {
-        if (EntityMechanics.PLAYER_PETS.containsKey(uuid)) {
-            EntityMechanics.PLAYER_PETS.remove(uuid);
-        }
+    
+    public static void setMobElement(Entity entity, ElementalAttribute ea) {
+    	Metadata.ELEMENT.set(entity, ea);
+        updateName(entity);
     }
-
-    public static void removePlayerMountList(UUID uuid) {
-        if (EntityMechanics.PLAYER_MOUNTS.containsKey(uuid)) {
-            EntityMechanics.PLAYER_MOUNTS.remove(uuid);
-        }
+    
+    public static void registerMonster(Entity entity, int level, int tier) {
+    	registerMonster(entity, level, tier, null, null, null);
     }
-
-    public static void addPlayerPetList(UUID uuid, Entity entity) {
-        EntityMechanics.PLAYER_PETS.put(uuid, entity);
+     
+    /**
+     * Adds metadata that identifies this as a custom monster.
+     * Sets tier and level, health, etc.
+     * Weapon / Armor should only be supplied if you wish to forcefully set the gear, since gear is normally generated in DRMonster's setup.
+     * 
+     * Formerly: setMonsterRandomStats
+     */
+    public static void registerMonster(Entity entity, int level, int tier, ItemArmor armorSet, ItemWeapon weapon, String name) {
+    	MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+    	
+    	LivingEntity le = (LivingEntity) entity;
+        HealthHandler.calculateHP(le);
+        HealthHandler.setHP(le, HealthHandler.getMaxHP(le));
+        
+        if (armorSet != null)
+        	le.getEquipment().setArmorContents(armorSet.generateArmorSet());
+        
+        if (weapon != null)
+        	le.getEquipment().setItemInMainHand(weapon.generateItem());
+        
+        if (name != null && name.length() > 0)
+        	Metadata.CUSTOM_NAME.set(entity, name);
+        updateName(entity);
     }
-
-    public static void addPlayerMountList(UUID uuid, Entity entity) {
-        EntityMechanics.PLAYER_MOUNTS.put(uuid, entity);
+    
+    /**
+     * Setup the supplied entity as a dungeon boss.
+     */
+    public static void registerBoss(DungeonBoss boss, int level, int tier) {
+    	LivingEntity le = boss.getBukkit();
+    	Metadata.BOSS.set(le, boss.getBossType().name());
+    	registerMonster(le, level, tier);
+    	
+    	for (ItemStack item : le.getEquipment().getArmorContents())
+    		if (item != null && item.getType() != Material.AIR)
+    			EnchantmentAPI.addGlow(item);
+    	le.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
     }
-
+    
     /**
      * Get all nearby entities within a certain radius to untarget another entity.
      *
@@ -56,10 +239,137 @@ public class EntityAPI {
      */
     public static void untargetEntity(LivingEntity entToUntarget, int radius) {
         entToUntarget.getNearbyEntities(radius, radius, radius).stream().forEach(ent -> {
-            if (!(ent instanceof Creature)) return;
-            if (((Creature) ent).getTarget() == null || !((Creature) ent).getTarget().equals(entToUntarget)) return;
+            // Has to be targettable.
+        	if (!(ent instanceof Creature))
+            	return;
+            // Make sure the target was actually who we said to untarget.
+            if (((Creature) ent).getTarget() == null || !((Creature) ent).getTarget().equals(entToUntarget))
+            	return;
+            //Untarget
             ((Creature) ent).setTarget(null);
         });
     }
+    
+    /**
+     * Gets this mob tier.
+     */
+    public static int getTier(Entity entity) {
+		return Metadata.TIER.get(entity).asInt();
+	}
+    
+    /**
+     * Is this an elite?
+     */
+    public static boolean isElite(Entity ent) {
+    	return Metadata.ELITE.has(ent);
+    }
+    
+    /**
+     * Is this entity a boss?
+     */
+    public static boolean isBoss(Entity ent) {
+    	return Metadata.BOSS.has(ent);
+    }
+    
+    public static String getCustomName(Entity entity) {
+    	return Metadata.CUSTOM_NAME.get(entity).asString();
+    }
+    
+    /**
+     * Get an entity's level.
+     */
+    public static int getLevel(Entity ent) {
+    	return Metadata.LEVEL.get(ent).asInt();
+    }
+    
+    /**
+     * Is this a DR Monster?
+     */
+    public static boolean isMonster(Entity monster) {
+    	return ((CraftEntity)monster).getHandle() instanceof DRMonster;
+    }
+    
+    /**
+     * Gets attributes of the specified entity.
+     */
+    public static AttributeList getAttributes(Entity e) {
+    	if (GameAPI.isPlayer(e)) {
+    		return PlayerWrapper.getWrapper((Player) e).getAttributes();
+    	} else if (isMonster(e)) {
+    		return getMonster(e).getAttributes();
+    	}
+    	
+    	Utils.printTrace();
+    	Bukkit.getLogger().warning("Could not get attributes from " + e.getName() + "!");
+    	return new AttributeList();
+    }
+    
+    /**
+     * Returns the supplied bukkit entity as a DRMonster.
+     */
+    public static DRMonster getMonster(Entity monster) {
+    	return (DRMonster) ((CraftEntity)monster).getHandle();
+    }
+    
+    @SuppressWarnings("rawtypes")
+	public static void clearAI(PathfinderGoalSelector goal, PathfinderGoalSelector target) {
+    	try {
+            Field a = PathfinderGoalSelector.class.getDeclaredField("b");
+            Field b = PathfinderGoalSelector.class.getDeclaredField("c");
+            a.setAccessible(true);
+            b.setAccessible(true);
+            ((LinkedHashSet) a.get(goal)).clear();
+            ((LinkedHashSet) b.get(goal)).clear();
 
+            ((LinkedHashSet) a.get(target)).clear();
+            ((LinkedHashSet) b.get(target)).clear();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName) {
+    	DRMonster monster = null;
+    	
+    	try {
+    		// Setup monster.
+    		World nmsWorld = ((CraftWorld) loc.getWorld()).getHandle();
+    		monster = (DRMonster) type.getClazz().getDeclaredConstructor(World.class).newInstance(nmsWorld);
+    		getEntityAttributes().put(monster, new AttributeList());
+    		monster.setMonster(mType);
+    		monster.setupMonster(tier);
+    		
+    		// Add to world.
+    		monster.getNMS().setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
+    		nmsWorld.addEntity(monster.getNMS(), SpawnReason.CUSTOM);
+    		
+    		// Setup bukkit data and return.
+    		LivingEntity le = monster.getBukkit();
+    		le.teleport(loc);
+    		le.setCollidable(true);
+    		
+    		boolean dungeon = DungeonManager.isDungeon(loc.getWorld());
+    		ItemWeapon weapon = dungeon ? (ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
+    		ItemArmor armor = dungeon ? (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
+    		
+    		// Register monster data.
+    		if (!mType.isFriendly()) {
+    			registerMonster(le, tier, level, armor, weapon, displayName);
+    		
+    			// Mark as dungeon mob.
+        		if (dungeon) {
+        			Metadata.DUNGEON.set(le, true);
+        			DungeonManager.getDungeon(loc.getWorld()).getTrackedMonsters().put(le, loc);
+        		}
+        		
+        		GameAPI.calculateAllAttributes(le);
+    		}
+    		
+    		return le;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		Bukkit.getLogger().warning("Failed to create " + type.getClazz().getSimpleName());
+    	}
+    	return null;
+    }
 }

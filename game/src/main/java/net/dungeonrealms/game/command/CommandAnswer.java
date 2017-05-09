@@ -5,8 +5,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mechanic.PlayerManager;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
-
 public class CommandAnswer extends BaseCommand {
 
     public CommandAnswer(String command, String usage, String description) {
@@ -41,15 +40,15 @@ public class CommandAnswer extends BaseCommand {
         for (int arg = 2; arg < args.length; arg++) message.append(" ").append(args[arg]);
 
 
-        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.GREEN + "<ANSWERED> " + ChatColor.GOLD + GameChat.getPreMessage(p) + ChatColor.GOLD + message);
-        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.RED + "Type " + ChatColor.YELLOW + (DungeonRealms.getInstance().isMasterShard ? "/ask" : "/msg " + sender.getName().toLowerCase()) + " [message] " + ChatColor.RED + "to reply back.");
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.GREEN + "<ANSWERED> " + ChatColor.GOLD + wrapper.getChatName() + ChatColor.GOLD + message);
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.RED + "Type " + ChatColor.YELLOW + (DungeonRealms.isMaster() || wrapper.getToggles().getState(Toggles.VANISH) ? "/ask" : "/msg " + sender.getName().toLowerCase()) + " [message] " + ChatColor.RED + "to reply back.");
 
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
 
-        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.GREEN + "<ANSWERED: " + other + "> " + ChatColor.GOLD + "(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + ChatColor.YELLOW + message);
+        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.GREEN + "<ANSWERED: " + other + "> " + ChatColor.GOLD + "(" + DungeonRealms.getInstance().shardid + ") " + wrapper.getChatName() + ChatColor.YELLOW + message);
 
-        if (!wrapper.getToggles().isReceiveMessage()) {
-            wrapper.getToggles().setReceiveMessage(true);
+        if (!wrapper.getToggles().getState(Toggles.ENABLE_PMS)) {
+            wrapper.getToggles().toggle(Toggles.ENABLE_PMS);
             sender.sendMessage(ChatColor.GRAY + "Your DND has been disabled so players can reply to your answer.");
         }
 

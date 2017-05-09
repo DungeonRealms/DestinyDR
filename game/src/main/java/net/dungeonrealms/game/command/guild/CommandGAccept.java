@@ -27,7 +27,7 @@ public class CommandGAccept extends BaseCommand {
         Player player = (Player) sender;
 
         // No guilds on the event shard.
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             player.sendMessage(ChatColor.RED + "You cannot accept a guild invitation on this shard.");
             return false;
         }

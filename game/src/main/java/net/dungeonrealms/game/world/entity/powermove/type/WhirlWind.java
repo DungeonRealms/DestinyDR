@@ -3,10 +3,12 @@ package net.dungeonrealms.game.world.entity.powermove.type;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
+import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
@@ -64,17 +66,16 @@ public class WhirlWind extends PowerMove {
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
-                        if ((p_y - 1) <= e_y || m == Material.AIR) {
-
+                        if ((p_y - 1) <= e_y || m == Material.AIR)
                             EntityMechanics.setVelocity(p, unitVector);
-                        }
+                        
                         // * 4 for whirlwind
                         double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;
-                        double dmg = DamageAPI.calculateWeaponDamage(entity, p, true) * multiplier;
-                        double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
-                        int armourReducedDamage = (int) result[0];
-                        int totalArmor = (int) result[1];
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, dmg, armourReducedDamage, totalArmor);
+                        AttackResult res = new AttackResult(entity, p);
+                        DamageAPI.calculateWeaponDamage(res, true);
+                        res.setDamage(res.getDamage() * multiplier);
+                        DamageAPI.applyArmorReduction(res, true);
+                        HealthHandler.damageEntity(res);
                     });
 
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 0.5F);

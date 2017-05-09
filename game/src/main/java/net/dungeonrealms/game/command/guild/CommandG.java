@@ -1,19 +1,18 @@
 package net.dungeonrealms.game.command.guild;
 
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Arrays;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/16/2016
@@ -45,7 +44,7 @@ public class CommandG extends BaseCommand {
         }
 
         if (args.length == 0) {
-            GuildMechanics.getInstance().toggleGuildChat(player);
+            Bukkit.dispatchCommand(sender, Toggles.GUILD_CHAT.getCommand());
             return true;
         }
 
@@ -65,7 +64,6 @@ public class CommandG extends BaseCommand {
         StringBuilder msg = new StringBuilder(format);
         for (int arg = 0; arg < args.length; arg++) msg.append(" ").append(args[arg]);
         wrapper.sendGuildMessage(msg.toString(), false);
-//        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg.toString());
         return false;
     }
 

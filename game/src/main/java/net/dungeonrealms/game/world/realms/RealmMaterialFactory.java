@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 
@@ -414,30 +416,27 @@ public class RealmMaterialFactory {
             }
 
 
-            if (!isEcash && BankMechanics.getInstance().getTotalGemsInInventory(player) < total_price) {
+            if (!isEcash && BankMechanics.getGemsInInventory(player) < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " gem(s)/ea = " + (pricePerItem * amount_to_buy) + " gem(s).");
                 return;
             }
 
-            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
-
-            if (isEcash && gamePlayer.getEcashBalance() < total_price) {
+            if (isEcash && PlayerWrapper.getWrapper(player).getEcash() < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough E-CASH to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " EC/ea = " + (pricePerItem * amount_to_buy) + " EC.");
-                //player.sendMessage(ChatColor.GRAY + "Purchase more at www.dungeonrealms.net/store -- instant delivery!");
                 return;
 
             }
 
             if (isEcash) DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
-            else BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
+            else BankMechanics.takeGemsFromInventory(player, total_price);
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
-
-            player.getInventory().setItem(player.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
-        }, null);
+            
+            player.getInventory().setItem(player.getInventory().firstEmpty(), ItemManager.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
+        });
     }
 
 }

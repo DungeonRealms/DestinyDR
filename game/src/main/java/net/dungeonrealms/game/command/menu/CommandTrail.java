@@ -3,9 +3,10 @@ package net.dungeonrealms.game.command.menu;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,13 +41,13 @@ public class CommandTrail extends BaseCommand {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if(wrapper == null) return false;
 
-            String trailType = wrapper.getActiveTrail();
+            ParticleEffect trailType = wrapper.getActiveTrail();
             if (trailType == null || trailType.equals("")) {
                 player.sendMessage(ChatColor.RED + "You don't have an active trail, please enter the trails section in your profile to set one.");
                 player.closeInventory();
                 return true;
             }
-            DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
+            DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, trailType);
             player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
             return true;
         } else if (args.length == 1) {

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.entity.powermove.type;
 
-import net.dungeonrealms.game.world.entity.powermove.PowerMove;
+import net.dungeonrealms.game.world.entity.PowerMove;
+
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;

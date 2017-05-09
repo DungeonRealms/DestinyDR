@@ -6,13 +6,12 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class CommandCloseShop extends BaseCommand {
 
@@ -53,7 +52,6 @@ public class CommandCloseShop extends BaseCommand {
                     return false;
                 } else {
                     // If he isn't viewing his shop GUI, continue
-                    UUID uuid = other.getUniqueId();
                     GameAPI.sendNetworkMessage("Shop", "close:" + " ," + playerName);
                     otherWrapper.setShopOpened(false);
                     commandSender.sendMessage(ChatColor.GREEN + "Safely closed " + playerName + "'s shop");
@@ -61,7 +59,6 @@ public class CommandCloseShop extends BaseCommand {
                 }
             }
         } else {
-            //  A player types /closeshop
             Player player = (Player) commandSender;
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (GameAPI.isShop(player.getOpenInventory())) {
@@ -74,7 +71,7 @@ public class CommandCloseShop extends BaseCommand {
                 player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     //Update the collection bin..
-                    BankMechanics.getInstance().getStorage(player.getUniqueId()).update(bin -> {
+                    BankMechanics.getStorage(player).update(bin -> {
                         wrapper.setShopOpened(false);
                         player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely.");
                     });

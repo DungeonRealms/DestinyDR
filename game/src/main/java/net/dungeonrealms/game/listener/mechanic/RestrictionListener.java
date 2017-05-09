@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
@@ -12,17 +14,22 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ProtectionHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -66,7 +73,7 @@ public class RestrictionListener implements Listener {
                     Player player = (Player) event.getEntity().getShooter();
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                     if (wrapper != null) {
-                        if (wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || wrapper.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                        if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
                             event.setCancelled(true);
                             player.sendMessage(ChatColor.RED + "You cannot use a potion whilst " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " or " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "NEUTRAL");
                         }
@@ -75,27 +82,23 @@ public class RestrictionListener implements Listener {
             }
         }
     }
-
-    public static int getLevelToUseTier(int tier) {
-        switch (tier) {
-            case 1:
-                return 1;
-            case 2:
-                return 5;
-            case 3:
-                return 10;
-            case 4:
-                return 20;
-            case 5:
-                return 25;
-        }
-        return 1;
+    
+    public static boolean canPlayerUseItem(Player p, ItemStack item) {
+    	if(!ItemGear.isCustomTool(item))
+    		return true;
+    	ItemGear gear = (ItemGear)PersistentItem.constructItem(item);
+    	
+    	if(!canPlayerUseTier(p, gear.getTier())) {
+    		p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
+                    + gear.getTier().getLevelRequirement() + " to use this weapon.");
+    		return false;
+    	}
+    	
+    	return true;
     }
 
-    public static boolean canPlayerUseTier(Player p, int tier) {
-        if (GameAPI.getGamePlayer(p) == null) return true;
-        int level = GameAPI.getGamePlayer(p).getLevel();
-        return tier == 1 || tier == 2 && level >= 5 || tier == 3 && level >= 10 || tier == 4 && level >= 20 || tier == 5 && level >= 25;
+    public static boolean canPlayerUseTier(Player p, ItemTier tier) {
+        return PlayerWrapper.getWrapper(p).getLevel() >= tier.getLevelRequirement();
     }
 
     //Illegal item check.
@@ -131,39 +134,18 @@ public class RestrictionListener implements Listener {
         for (ItemStack is : p.getInventory().getArmorContents()) {
             if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
                 continue;
-            if (RepairAPI.getArmorOrWeaponTier(is) == 0) {
-                continue;
-            }
-            if (!p.isOnline()) return;
-            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(is))) {
+         
+            if (!p.isOnline())
+            	return;
+            
+            if (!canPlayerUseItem(p, is)) {
                 hadIllegalArmor = true;
-                if (p.getInventory().firstEmpty() == -1) {
-                    // No space for the armor
-                    p.getWorld().dropItem(p.getLocation(), is);
-                } else {
-                    p.getInventory().addItem(is);
-                }
-                if (Item.isItemType(Item.ItemType.HELMET, is.getType())) {
-                    p.getInventory().setHelmet(new ItemStack(Material.AIR));
-                }
-                if (Item.isItemType(Item.ItemType.CHESTPLATE, is.getType())) {
-                    p.getInventory().setChestplate(new ItemStack(Material.AIR));
-                }
-                if (Item.isItemType(Item.ItemType.LEGGINGS, is.getType())) {
-                    p.getInventory().setLeggings(new ItemStack(Material.AIR));
-                }
-                if (Item.isItemType(Item.ItemType.BOOTS, is.getType())) {
-                    p.getInventory().setBoots(new ItemStack(Material.AIR));
-                }
+                GameAPI.giveOrDropItem(p, GameAPI.removeArmor(p, is));
             }
         }
         if (hadIllegalArmor) {
             p.updateInventory();
-            HealthHandler.getInstance().setPlayerMaxHPLive(p, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, p) + 50);
-            HealthHandler.getInstance().setPlayerHPRegenLive(p, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, p) + 5);
-            if (HealthHandler.getInstance().getPlayerHPLive(p) > HealthHandler.getInstance().getPlayerMaxHPLive(p)) {
-                HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerMaxHPLive(p));
-            }
+            HealthHandler.updatePlayerHP(p);
             p.sendMessage(ChatColor.RED + "You were found with armor that is not wearable at your level.");
         }
     }
@@ -173,7 +155,7 @@ public class RestrictionListener implements Listener {
         String command = event.getMessage();
 
         // Servers that can bypass these limits altogether.
-        if (DungeonRealms.getInstance().isSupportShard || DungeonRealms.getInstance().isMasterShard)
+        if (DungeonRealms.isMaster() || DungeonRealms.isSupport())
             return;
 
         // Commands that can bypass the cooldown restriction.
@@ -234,16 +216,11 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
-        if (event.getPlayer().getOpenInventory() == null) return;
-        if (!GameAPI.isShop(event.getPlayer().getOpenInventory())) return;
-
-        String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
-        if (ownerName == null) return;
-        Shop shop = ShopMechanics.getShop(ownerName);
-        if (shop == null) return;
-        event.setCancelled(true);
+        if (Metadata.NO_PICKUP.get(event.getItem()).asBoolean())
+        	event.setCancelled(true);
     }
 
+    //TODO: What is the point of this? If the server has crashed, events shouldn't be firing?
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onCrash(PlayerInteractEvent event) {
         if (CrashDetector.crashDetected)
@@ -341,7 +318,7 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onCropGrowth(BlockGrowEvent event) {
-        if (event.getBlock().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())) return;
+        if (!GameAPI.isMainWorld(event.getBlock().getWorld())) return;
 
         //Disable in realms and everywhere else.
         event.setCancelled(true);
@@ -352,17 +329,13 @@ public class RestrictionListener implements Listener {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
         if (i == null || i.getType() == Material.AIR) return;
-
-        if (GameAPI.isWeapon(i)) {
-            // Level restrictions on equipment removed on 7/18/16 Build#131
-            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
-                event.setCancelled(true);
-                p.sendMessage(ChatColor.RED + "You must be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
-                        + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(i)) + " to use this weapon.");
+        
+        if (ItemWeapon.isWeapon(i)) {
+        	if(!canPlayerUseItem(p, i)) {
+        		event.setCancelled(true);
                 p.updateInventory();
-                return;
-            }
-            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
+        	}
+        	p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
     }
 
@@ -389,15 +362,12 @@ public class RestrictionListener implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
-            if (player.getEquipment().getItemInMainHand() != null) {
-                if (GameAPI.isWeapon(player.getEquipment().getItemInMainHand())) {
-                    if (!canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
-                        player.sendMessage(ChatColor.RED + "You must be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
-                                + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
-                    }
+            ItemStack held = player.getEquipment().getItemInMainHand();
+            if(ItemWeapon.isWeapon(held)) {
+            	if (!canPlayerUseItem(player, held)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
                 }
             }
         }
@@ -457,18 +427,6 @@ public class RestrictionListener implements Listener {
                 checkPlayersArmorIsValid(event.getPlayer());
             }
         }, 150L);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerOpenEmptyMap(PlayerInteractEvent event) {
-        if (event.hasItem() && event.getItem().getType() == Material.EMPTY_MAP) {
-            Player player = event.getPlayer();
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
-            event.setUseInteractedBlock(Event.Result.DENY);
-            player.sendMessage(ChatColor.RED + "To use a " + ChatColor.BOLD + "SCROLL" + ChatColor.RED + ", simply drag it on-top of the piece of equipment you wish to apply it to in your inventory.");
-            player.updateInventory();
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -575,10 +533,11 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
         if (!GameAPI.isPlayer(event.getTarget())) return;
+        PlayerWrapper pw = PlayerWrapper.getWrapper((Player) event.getTarget());
         GamePlayer gamePlayer = GameAPI.getGamePlayer((Player) event.getTarget());
         if (gamePlayer == null) return;
-        if (event.getEntity().hasMetadata("tier")) {
-            if (GameAPI.getTierFromLevel(gamePlayer.getLevel()) > (event.getEntity().getMetadata("tier").get(0).asInt() + 2)) {
+        if (Metadata.TIER.has(event.getEntity())) {
+            if (GameAPI.getTierFromLevel(pw.getLevel()) > EntityAPI.getTier(event.getEntity()) + 2) {
                 if (!CombatLog.isInCombat((Player) event.getTarget()) && event.getTarget().getWorld().equals(Bukkit.getWorlds().get(0))) {
                     event.setCancelled(true);
                     return;
@@ -735,10 +694,8 @@ public class RestrictionListener implements Listener {
             }
 
             PlayerWrapper damagerWrapper = PlayerWrapper.getPlayerWrapper(pDamager);
-            if (!damagerWrapper.getToggles().isPvp()) {
-                if (damagerWrapper.getToggles().isDebug()) {
-                    pDamager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                }
+            if (!damagerWrapper.getToggles().getState(Toggles.PVP)) {
+            	damagerWrapper.sendDebug(ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();
@@ -758,7 +715,7 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-            if (Affair.getInstance().areInSameParty(pDamager, pReceiver)) {
+            if (Affair.areInSameParty(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();

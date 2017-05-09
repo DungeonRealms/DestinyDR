@@ -3,12 +3,14 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -67,7 +69,7 @@ public class CommandRealmWipe extends BaseCommand {
 
                     SQLDatabaseAPI.getInstance().executeUpdate(i -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
-                        GameAPI.updatePlayerData(uuid, "realm");
+                        GameAPI.updatePlayerData(uuid, UpdateType.REALM);
                     }), QueryType.SET_REALM_INFO.getQuery(0, 0, 1, realm.getCharacterID()));
                 });
 

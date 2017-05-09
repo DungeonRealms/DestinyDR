@@ -4,14 +4,17 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
-import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -19,7 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,10 +44,10 @@ public class CommandEss extends BaseCommand {
                 return false;
 
             // Support Agents can only use this command on the support shard.
-            if (!Rank.isGM(player) && Rank.isSupport(player)) {
-                if (!DungeonRealms.getInstance().isSupportShard)
+            if (!Rank.isGM(player) && Rank.isSupport(player))
+                if (!DungeonRealms.isSupport())
                     return false;
-            }
+            
             // Extended Permission Check
             else if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
                 commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
@@ -126,11 +129,12 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Something went wrong when loading the data!");
                                     return;
                                 }
-                                wrapper.setActivePet(petType.toUpperCase());
-                                wrapper.getPetsUnlocked().put(EnumPets.getByName(petType), new PetData(null,true));
+                                EnumPets pet = EnumPets.getByName(petType);
+                                wrapper.setActivePet(pet);
+                                wrapper.getPetsUnlocked().put(pet, new PetData(null, true));
                                 wrapper.saveData(true, null, (wrappa) -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                    GameAPI.updatePlayerData(uuid, "unlockables");
+                                    GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
                                 });
                             });
                         });
@@ -173,19 +177,19 @@ public class CommandEss extends BaseCommand {
                                     }
                                 }
 
-                                HashSet<String> playerMounts = wrapper.getMountsUnlocked();
+                                List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
                                 if (!playerMounts.isEmpty()) {
                                     if (playerMounts.contains(mountType.toUpperCase())) {
                                         commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " mount.");
                                         return;
                                     }
 
-                                    playerMounts.add(mountType.toUpperCase());
-                                    wrapper.setActiveMount(mountType.toUpperCase());
+                                    playerMounts.add(mount);
+                                    wrapper.setActiveMount(mount);
 
                                     wrapper.saveData(true, null, (wrappa) -> {
                                         commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                        GameAPI.updatePlayerData(uuid, "unlockables");
+                                        GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
                                     });
                                 }
 
@@ -202,6 +206,7 @@ public class CommandEss extends BaseCommand {
                     if (args.length == 3) {
                         String playerName = args[1];
                         String trailType = args[2];
+                        ParticleEffect trail = ParticleEffect.getByName(trailType);
                         String trailFriendly = trailType.toUpperCase().replace("_", " ");
 
                         if (!GameAPI.isStringTrail(trailType)) {
@@ -220,7 +225,7 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Could not load player data!");
                                     return;
                                 }
-                                HashSet<String> playerTrails = wrapper.getTrails();
+                                List<ParticleEffect> playerTrails = wrapper.getTrails();
                                 if (!playerTrails.isEmpty()) {
                                     if (playerTrails.contains(trailType.toUpperCase())) {
                                         commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
@@ -228,10 +233,10 @@ public class CommandEss extends BaseCommand {
                                     }
                                 }
 
-                                wrapper.getTrails().add(trailType.toUpperCase());
-                                wrapper.setActiveTrail(trailType.toUpperCase());
+                                wrapper.getTrails().add(trail);
+                                wrapper.setActiveTrail(trail);
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                GameAPI.updatePlayerData(uuid, "unlockables");
+                                GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
                             });
                         });
 
@@ -263,7 +268,7 @@ public class CommandEss extends BaseCommand {
 
                                         SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
                                             commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
-                                            GameAPI.updatePlayerData(uuid, "ecash");
+                                            GameAPI.updatePlayerData(uuid, UpdateType.ECASH);
                                         }, QueryType.SET_ECASH.getQuery(amount, wrapper.getAccountID()));
                                     });
                                 });
@@ -295,14 +300,14 @@ public class CommandEss extends BaseCommand {
                                     return;
                                 }
 
-                                String currentRank = wrapper.getRank();
-
+                                PlayerRank currentRank = wrapper.getRank();
+                                
                                 int days = Integer.parseInt(args[4]) * 86400;
                                 int subscriptionLength = wrapper.getRankExpiration();
 
                                 if (rankName.equalsIgnoreCase("sub") || rankName.equalsIgnoreCase("sub+")) {
-                                    if (!currentRank.equalsIgnoreCase("default") && !currentRank.equalsIgnoreCase(rankName) && (rankName.equalsIgnoreCase("sub") || (rankName.equalsIgnoreCase("sub+") && !currentRank.equalsIgnoreCase("sub")))) {
-                                        commandSender.sendMessage(ChatColor.RED + "Cannot change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + ", they're currently " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank.toUpperCase() + ChatColor.RED + "!");
+                                    if (currentRank.isAtLeast(PlayerRank.BUILDER)) {
+                                        commandSender.sendMessage(ChatColor.RED + "Cannot change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + ", they're currently " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank.getPrefix() + ChatColor.RED + "!");
                                         return;
                                     }
 
@@ -318,10 +323,10 @@ public class CommandEss extends BaseCommand {
                                         return;
                                     }
                                     int finalSubLength = subscriptionLength;
-                                    wrapper.setRank(rankName);
+                                    wrapper.setRank(PlayerRank.getFromPrefix(rankName));
                                     wrapper.setRankExpiration(finalSubLength);
                                     wrapper.saveData(true, null, (wrappa) -> {
-                                        GameAPI.updatePlayerData(uuid, "rank");
+                                        GameAPI.updatePlayerData(uuid, UpdateType.RANK);
                                         commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     });
                                 } else {
@@ -383,26 +388,7 @@ public class CommandEss extends BaseCommand {
                     }
                     String duration = args[2];
                     String bonusAmount = args[3];
-                    switch (buffType) {
-                        case "level":
-                            GameAPI.sendNetworkMessage("levelBuff", duration, bonusAmount, commandSender instanceof
-                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
-                            break;
-                        case "loot":
-                            GameAPI.sendNetworkMessage("lootBuff", duration, bonusAmount, commandSender instanceof
-                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
-                            break;
-                        case "profession":
-                            GameAPI.sendNetworkMessage("professionBuff", duration, bonusAmount, commandSender instanceof
-                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
-                            break;
-                        default:
-                            commandSender.sendMessage(ChatColor.RED + "Invalid buff type! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
-                            break;
-                    }
+                    GameAPI.sendNetworkMessage("buff", buffType.toUpperCase(), duration, bonusAmount, commandSender.getName(), DungeonRealms.getShard().getShardID());
                     break;
                 default:
                     commandSender.sendMessage(ChatColor.RED + "The command " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0].toUpperCase() + ChatColor.RED + " does not exist.");
@@ -416,16 +402,17 @@ public class CommandEss extends BaseCommand {
 
     public boolean setRank(CommandSender commandSender, UUID uuid, String playerName, String type, String rankName) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        PlayerRank newRank = PlayerRank.getFromPrefix(rankName);
         if (wrapper == null) {
             return false;
         }
 
         switch (type) {
             case "rank":
-                String currentRank = wrapper.getRank().toUpperCase();
-                if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
-                    if (rankName.equalsIgnoreCase("SUB++")) {
-                        Rank.getInstance().setRank(uuid, rankName, done -> GameAPI.updatePlayerData(uuid, "rank"));
+                PlayerRank currentRank = wrapper.getRank();
+                if (newRank.isAtLeast(currentRank)) {
+                    if (newRank == PlayerRank.SUB_PLUS_PLUS) {
+                        Rank.setRank(uuid, rankName, done -> GameAPI.updatePlayerData(uuid, UpdateType.RANK));
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
                         return false;

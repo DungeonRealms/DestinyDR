@@ -1,38 +1,25 @@
-/**
- *
- */
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -82,7 +69,6 @@ public class CommandSet extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
                         break;
                     }
-                    GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
                     PlayerWrapper.getPlayerWrapper(p.getUniqueId(), false, true, wrapp -> wrapp.setLevel(lvl));
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE + lvl);
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
@@ -108,86 +94,33 @@ public class CommandSet extends BaseCommand {
 //                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, false);
                 break;
             case "portal_keys":
-                wrapper.setPortalShardsT1(1500);
-                wrapper.setPortalShardsT2(1500);
-                wrapper.setPortalShardsT3(1500);
-                wrapper.setPortalShardsT4(1500);
-                wrapper.setPortalShardsT5(1500);
+            	PlayerWrapper pw = PlayerWrapper.getPlayerWrapper(player);
+            	for (ShardTier tier : ShardTier.values())
+            		pw.setPortalShards(tier, 1500);
                 break;
             case "durability":
-                if (args.length < 3) {
-                    player.sendMessage(ChatColor.RED + "Invalid usage! /set durability SUBTRACT #");
-                    break;
-                } else if (player.getInventory().getItemInMainHand() == null) {
-                    player.sendMessage(ChatColor.RED + "Error! You must have an item in your main hand.");
-                    break;
-                }
-
-                switch (args[1].toLowerCase()) {
-                    case "add":
-                        if (RepairAPI.canItemBeRepaired(player.getInventory().getItemInMainHand())) {
-                            player.sendMessage(ChatColor.RED + "Error! You cannot repair this item.");
-                            break;
-                        }
-
-                        player.sendMessage(ChatColor.RED + "Error! Coming soon...");
-                        break;
-                    case "subtract":
-                        RepairAPI.subtractCustomDurability(player, player.getInventory().getItemInMainHand(), Integer.parseInt(args[2]));
-                        player.sendMessage(ChatColor.GREEN + "Subtracted " + args[2] + " from item in your main hand.");
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.RED + "Error! " + args[1] + " is invalid.");
-                        break;
-                }
-                break;
-            case "spawner":
-                if (args.length < 4) {
-                    player.sendMessage("/set spawner monster tier (* on monster for elite chance), (MOBS TO SPAWN x2)");
-                    player.sendMessage("/set spawner goblin 2 2(spawns 4)");
-                    return false;
-                }
-                int tier = 0;
-                int spawnAmount = 0;
-                String range = "-";
-                try {
-                    tier = Integer.parseInt(args[2]);
-                    spawnAmount = Integer.parseInt(args[3]);
-                    if (args.length == 5)
-                        range = args[4];
-                } catch (Exception exc) {
-                    return false;
-                }
-                String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
-                        + player.getLocation().getZ() + "=" + args[1] + ":" + tier + ";" + spawnAmount);
-                player.sendMessage("Line " + (SpawningMechanics.SPAWNER_CONFIG.size() + 2) + " added " + args[1] + " tier " + tier);
-                SpawningMechanics.SPAWNER_CONFIG.add(text);
-                DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                DungeonRealms.getInstance().saveConfig();
-                SpawningMechanics.loadSpawner(text);
-                break;
-            case "loot":
+            	ItemStack i = player.getInventory().getItemInMainHand();
                 if (args.length < 2) {
-                    player.sendMessage(ChatColor.RED + "Invalid usage! /set loot <tier>");
+                    player.sendMessage(ChatColor.RED + "Invalid usage! /set durability #");
+                    break;
+                } else if (!ItemGear.isCustomTool(i)) {
+                    player.sendMessage(ChatColor.RED + "Error! This item is not repairable!");
+                } else {
+                	ItemGear gear = (ItemGear)PersistentItem.constructItem(i);
+                	gear.damageItem(player, Integer.parseInt(args[1]));
+                	player.sendMessage(ChatColor.GREEN + "Damaged!");
                 }
-                int lootTier = Integer.parseInt(args[1]);
-                String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
-                LootManager.SPAWNER_CONFIG.add(data);
-                DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
-                player.getWorld().getBlockAt(player.getLocation()).setType(Material.SPONGE);
-                player.sendMessage((LootManager.LOOT_SPAWNERS.size() + 1) + " loot spawner placed");
-                break;
-            case "kill":
-                player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
-                SpawningMechanics.getALLSPAWNERS().forEach(BaseMobSpawner::kill);
                 break;
             case "pick":
-                Mining.lvlUp(Mining.getPickTier(player.getEquipment().getItemInMainHand()), player);
-                player.updateInventory();
-                break;
             case "rod":
-                Fishing.lvlUp(Fishing.getRodTier(player.getEquipment().getItemInMainHand()), player);
-                player.updateInventory();
+            	ItemStack held = player.getEquipment().getItemInMainHand();
+                if (!ProfessionItem.isProfessionItem(held)) {
+                	player.sendMessage("This is not a profession item.");
+                	return true;
+                }
+                ProfessionItem pr = (ProfessionItem)PersistentItem.constructItem(held);
+                pr.levelUp(player);
+                player.getEquipment().setItemInMainHand(pr.generateItem());
                 break;
             case "shopoff":
                 if (args.length < 2) {
@@ -222,7 +155,7 @@ public class CommandSet extends BaseCommand {
                 if (target == null)
                     target = player;
 
-                KarmaHandler.getInstance().setPlayerAlignment(target, KarmaHandler.EnumPlayerAlignments.valueOf(args[0].toUpperCase()), null, false);
+                PlayerWrapper.getWrapper(target).setAlignment(EnumPlayerAlignments.valueOf(args[0].toUpperCase()));
                 player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s alignment to " + args[0] + ".");
                 break;
             case "g":
@@ -240,31 +173,6 @@ public class CommandSet extends BaseCommand {
                 } else {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
-                break;
-            case "dummyitem":
-                ItemStack currentItem = player.getInventory().getItemInMainHand();
-                if (currentItem == null || currentItem.getType() == Material.AIR) {
-                    player.sendMessage(ChatColor.RED + "You must have an item in your main hand to make it a dummy.");
-                    break;
-                }
-
-                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(currentItem);
-                NBTTagCompound tag = nmsStack.getTag();
-                if (tag == null) {
-                    player.sendMessage(ChatColor.RED + "There was an error, the item has no tag.");
-                    break;
-                }
-
-                boolean addFlag = !tag.hasKey("dummy_item");
-                if (addFlag) {
-                    tag.set("dummy_item", new NBTTagString("1"));
-                } else {
-                    tag.remove("dummy_item");
-                }
-                nmsStack.setTag(tag);
-
-                player.getInventory().setItemInMainHand(CraftItemStack.asBukkitCopy(nmsStack));
-                player.sendMessage((addFlag ? ChatColor.GREEN + "Added" : ChatColor.RED + "Removed") + " item's dummy flag.");
                 break;
             case "pvpoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
@@ -301,48 +209,10 @@ public class CommandSet extends BaseCommand {
                 }
                 int hp = Integer.parseInt(args[1]);
                 if (hp > 0) {
-                    HealthHandler.getInstance().setPlayerMaxHPLive(player, hp);
-                    HealthHandler.getInstance().setPlayerHPLive(player, hp);
+                	HealthHandler.initHP(player, hp);
                     player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
                 } else {
                     player.sendMessage(ChatColor.RED + "Unable to set health to " + hp + ", value is  too low.");
-                }
-                break;
-            case "achievement":
-            case "achievements":
-                if (!Rank.isDev(player)) {
-                    player.sendMessage(ChatColor.RED + "You must be a " + ChatColor.BOLD + ChatColor.UNDERLINE + "DEVELOPER" + ChatColor.RED + " to modify this.");
-                    return false;
-                }
-                if (args.length < 3 || (!args[1].equalsIgnoreCase("unlock") && !args[1].equalsIgnoreCase("lock"))) {
-                    player.sendMessage(ChatColor.RED + "Invalid usage! /set achievement <lock|unlock> <id|*>");
-                    break;
-                }
-                if (args[2].equalsIgnoreCase("all") || args[2].equals("*")) {
-                    if (args[1].equalsIgnoreCase("unlock")) {
-                        for (Achievements.EnumAchievements playerAchievements : Achievements.EnumAchievements.values()) {
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
-                        }
-                    } else {
-                        wrapper.getAchievements().clear();
-                        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, null, wrapper.getAccountID());
-                    }
-                    player.sendMessage(ChatColor.GREEN + "Finished " + args[1].toLowerCase() + "ing all achievements.");
-                } else {
-                    for (Achievements.EnumAchievements playerAchievements : Achievements.EnumAchievements.values()) {
-                        if (playerAchievements.getDBName().equalsIgnoreCase("achievement." + args[2])) {
-                            if (args[1].equalsIgnoreCase("unlock")) {
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
-                            } else {
-                                wrapper.getAchievements().remove(playerAchievements.getDBName());
-                                SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, StringUtils.serializeList(wrapper.getAchievements(), ","), wrapper.getAccountID());
-//                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getDBName(), true);
-                            }
-                            player.sendMessage(ChatColor.GREEN + "Successfully " + args[1].toLowerCase() + "ed the achievement: " + args[2].toLowerCase());
-                            return true;
-                        }
-                    }
-                    player.sendMessage(ChatColor.RED + "Failed to " + args[1].toLowerCase() + " achievements because " + args[2].toLowerCase() + " is invalid.");
                 }
                 break;
             default:

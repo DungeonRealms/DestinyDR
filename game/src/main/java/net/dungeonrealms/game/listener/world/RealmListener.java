@@ -7,29 +7,32 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
-import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.handler.FriendHandler;
-import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.items.core.CombatItem;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantScroll;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
-import net.dungeonrealms.game.world.realms.*;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
+import net.dungeonrealms.game.world.realms.Realm;
+import net.dungeonrealms.game.world.realms.RealmProperty;
+import net.dungeonrealms.game.world.realms.RealmState;
+import net.dungeonrealms.game.world.realms.RealmTier;
+import net.dungeonrealms.game.world.realms.Realms;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -41,7 +44,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -68,18 +70,8 @@ public class RealmListener implements Listener {
     public void onWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         player.closeInventory();
-        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(player.getUniqueId());
-        }
-
-        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(player.getUniqueId());
-        }
-
+        PetUtils.removePet(player);
+        MountUtils.removeMount(player);
         World to = player.getWorld();
 
         Realm realm = Realms.getInstance().getRealm(to);
@@ -109,9 +101,7 @@ public class RealmListener implements Listener {
 
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 player.setFireTicks(0);
-                player.setFallDistance(0.0F);
-                if (GameAPI.getGamePlayer(player) != null)
-                    GameAPI.getGamePlayer(player).setInvulnerable(false);
+                GameAPI.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
@@ -125,6 +115,7 @@ public class RealmListener implements Listener {
             else
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have left " + ChatColor.BOLD + realmFrom.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
         }
+        player.setFallDistance(0.0F);
     }
 
 
@@ -146,7 +137,7 @@ public class RealmListener implements Listener {
                 if (player.getGameMode() == GameMode.CREATIVE || event.getClickedBlock().getWorld() == Bukkit.getWorlds().get(0))
                     return;
 
-                if (event.getItem() != null && GameAPI.isWeapon(event.getItem()) && event.getClickedBlock().getType() == Material.GRASS) {
+                if (event.getItem() != null && ItemWeapon.isWeapon(event.getItem()) && event.getClickedBlock().getType() == Material.GRASS) {
                     event.setCancelled(true);
                     event.setUseInteractedBlock(Event.Result.DENY);
                 }
@@ -204,10 +195,8 @@ public class RealmListener implements Listener {
                 }
 
 
-                SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(uuid, "upgradingRealm"),
+                SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(uuid, net.dungeonrealms.database.UpdateType.REALM),
                         QueryType.SET_REALM_UPGRADE.getQuery(0, realm.getCharacterID()));
-//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true,
-//                        doAfter -> GameAPI.updatePlayerData(uuid, "realm"));
 
                 Realms.getInstance().getProcessingBlocks().remove(uuid);
                 realm.setUpgradeProgress(0);
@@ -229,9 +218,12 @@ public class RealmListener implements Listener {
         if (!e.getType().equals(UpdateType.SEC)) return;
 
         for (Realm realm : Realms.getInstance().getRealms()) {
-            Player owner = Bukkit.getPlayer(realm.getOwner());
+        	if (!realm.isOpen())
+        		continue;
+        	
+        	Player owner = Bukkit.getPlayer(realm.getOwner());
             if (owner != null && owner.isOnline()) {
-                if (!realm.getProperty("peaceful") && realm.getProperty("flight")) {
+                if (realm.isChaotic() && realm.getProperty("flight")) {
                     RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getRealmProperties().get("flight");
                     property.setExpiry(System.currentTimeMillis() - 1000L);
                 }
@@ -268,7 +260,7 @@ public class RealmListener implements Listener {
                             break;
                     }
                     realm.updateWGFlags();
-                    realm.updateRealmHologram();
+                    realm.updateHologram();
                     p.setAcknowledgeExpiration(false);
                 }
 
@@ -283,7 +275,7 @@ public class RealmListener implements Listener {
 
                 //loc.subtract(.5D, 2D, .5D);
                 if (realm.getProperty("peaceful"))
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
 
                 //loc.subtract(.5D, 1.5D, .5D);
                 if (realm.getProperty("flight"))
@@ -299,12 +291,8 @@ public class RealmListener implements Listener {
     }
 
     public static boolean isItemBanned(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR)
-            return false;
-
-        return GameAPI.isArmor(item) || GameAPI.isWeapon(item) || BankMechanics.isMoney(item)
-                || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item)
-                || GameAPI.isOrb(item) || RepairAPI.isItemArmorScrap(item);
+    	return CombatItem.isCombatItem(item) || ItemMoney.isMoney(item)
+    			|| ItemEnchantScroll.isScroll(item) || ItemOrb.isOrb(item) || ItemScrap.isScrap(item);
     }
 
     @EventHandler
@@ -339,7 +327,7 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
 
         for (double y = 0; y < 2; y += 0.007) {
@@ -352,114 +340,8 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerUseOrb(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        Player p = event.getPlayer();
-        if (p.getEquipment().getItemInMainHand() == null)
-            return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
-        if (nmsStack == null) return;
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (!tag.hasKey("orb")) return;
-        if (!tag.getString("orb").equalsIgnoreCase("flight") && !tag.getString("orb").equalsIgnoreCase("peace")) return;
-
-        event.setCancelled(true);
-        event.setUseItemInHand(Event.Result.DENY);
-
-        if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
-        Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
-
-        if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString()) && !Rank.isTrialGM(p)) {
-            // Trying to use in a realm that isn't theirs.
-            if (tag.getString("orb").equalsIgnoreCase("flight"))
-                p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " in your OWN realm.");
-            else if (tag.getString("orb").equalsIgnoreCase("peace"))
-                p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Peace" + ChatColor.RED + " in your OWN realm.");
-
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
-            return;
-        }
-        Realm realm = Realms.getInstance().getRealm(p);
-
-
-
-        if (tag.getString("orb").equalsIgnoreCase("flight")) {
-
-            if(realm == null) {
-                p.sendMessage(ChatColor.RED + "You need to be in your realm to do this!");
-                return;
-            }
-            if (!realm.getProperty("peaceful")) {
-                p.sendMessage(ChatColor.RED + "You can only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED
-                        + " in a peaceful realm.");
-                return;
-            }
-
-            p.sendMessage("");
-            p.sendMessage(ChatColor.AQUA + "Your realm will now be a " + ChatColor.BOLD + "FLY ENABLED ZONE" + ChatColor.AQUA
-                    + " for 30 minute(s), or until logout.");
-            p.sendMessage(ChatColor.GRAY + "Only YOU and anyone you add to your build list will be able to fly in your realm.");
-
-            for (Player pl : realm.getWorld().getPlayers()) {
-                if (pl == null || (!realm.canBuild(pl)))
-                    continue;
-                pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                pl.setAllowFlight(true);
-            }
-
-            RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getRealmProperties().get("flight");
-            property.setExpiry(System.currentTimeMillis() + 1800000L);
-
-            property.setValue(true);
-            property.setAcknowledgeExpiration(true);
-        } else if (tag.getString("orb").equalsIgnoreCase("peace")) {
-
-            if(realm == null) {
-                p.sendMessage(ChatColor.RED + "You need to be in your realm to do this!");
-                return;
-            }
-            PlayerWrapper gp = PlayerWrapper.getPlayerWrapper(p);
-
-            if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " use an orb of peace while chaotic.");
-                return;
-            }
-
-            p.sendMessage("");
-            p.sendMessage(ChatColor.GREEN + "Your realm will now be a " + ChatColor.BOLD + "SAFE ZONE" + ChatColor.GREEN + " for 1 hour(s), or until logout.");
-            p.sendMessage(ChatColor.GRAY + "All damage in your realm will be disabled for this time period.");
-            p.getWorld().playEffect(p.getLocation(), Effect.ENDER_SIGNAL, 10);
-
-            RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getRealmProperties().get("peaceful");
-            property.setExpiry(System.currentTimeMillis() + 3600000L);
-
-            property.setValue(true);
-            property.setAcknowledgeExpiration(true);
-
-            // SET WORLD GUARD FLAG
-            realm.updateWGFlags();
-            realm.updateRealmHologram();
-        }
-
-        int amount = p.getInventory().getItemInMainHand().getAmount();
-        ItemStack in_hand = p.getInventory().getItemInMainHand();
-
-        if (amount <= 1) {
-            p.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-        } else if (amount > 1) {
-            amount--;
-            in_hand.setAmount(amount);
-            p.getInventory().setItemInMainHand(in_hand);
-        }
-        p.updateInventory();
     }
 
 
@@ -585,71 +467,6 @@ public class RealmListener implements Listener {
         }
     }
 
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onAddBuilder(EntityDamageByEntityEvent event) {
-        if (!GameAPI.isPlayer(event.getDamager()) || !GameAPI.isPlayer(event.getEntity())) return;
-
-        Player p = (Player) event.getDamager();
-        Player target = (Player) event.getEntity();
-
-        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
-            return;
-
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
-
-        event.setCancelled(true);
-        event.setDamage(0);
-
-        if (!p.isSneaking()) return;
-
-        Realm realm = Realms.getInstance().getRealm(p.getWorld());
-
-        if (realm == null || !realm.isOwner(p)) {
-            p.sendMessage(ChatColor.RED + "You must be in your realm to add builders.");
-            return;
-        }
-
-        if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
-            p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
-            p.sendMessage(ChatColor.GRAY + "Goto your friends list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
-                    + "' as friend.");
-            return;
-        }
-
-        if (!realm.getBuilders().contains(target.getUniqueId())) {
-            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.RESET + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
-                    + ChatColor.GREEN + " to your realm builder list.");
-            p.sendMessage(ChatColor.GRAY + target.getName()
-                    + " can now place/destroy blocks in your realm until you logout of your current game session.");
-            target.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "ADDED" + ChatColor.GREEN + " to " + p.getName() + "'s build list.");
-            target.sendMessage(ChatColor.GRAY + "You can now place/destroy blocks in their realm until the end of their game session.");
-
-            realm.getBuilders().add(target.getUniqueId());
-
-            if (target.getWorld().getName().equals(p.getUniqueId().toString()) && realm.getProperty("flight")) {
-                target.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                target.setAllowFlight(true);
-            }
-
-        } else {
-            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RESET + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
-                    + ChatColor.RED + " from your realm builder list.");
-            p.sendMessage(ChatColor.GRAY + target.getName() + " can no longer place/destroy blocks in your realm.");
-            target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REMOVED " + ChatColor.RED + "from " + p.getName() + "'s builder list.");
-            target.sendMessage(ChatColor.GRAY + "You can no longer place/destroy blocks/fly in their realm.");
-
-            realm.getBuilders().remove(target.getUniqueId());
-
-            if (target.getWorld().getName().equals(p.getUniqueId().toString()) && realm.getProperty("flight"))
-                target.setAllowFlight(false);
-
-        }
-    }
-
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerBlockBreak(PlayerInteractEvent e) {
@@ -709,8 +526,8 @@ public class RealmListener implements Listener {
         }
 
         if (b.getType() == Material.CHEST)
-            loot = ItemManager.createRealmChest();
-
+            loot = new ItemRealmChest().generateItem();
+        
         //Get data from bukkit drops.
         for (ItemStack i : b.getDrops())
             if (i.getType() == b.getType())
@@ -759,7 +576,7 @@ public class RealmListener implements Listener {
             }
 
             // There's room!
-            p.getInventory().setItem(p.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(loot));
+            p.getInventory().setItem(p.getInventory().firstEmpty(), ItemManager.makeItemUntradeable(loot));
         }
 
         p.updateInventory();
@@ -857,30 +674,9 @@ public class RealmListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
-
-        if (event.getPlayer().hasMetadata("realmcd")) {
-            Long timer = event.getPlayer().getMetadata("realmcd").get(0).asLong();
-            if (System.currentTimeMillis() - timer <= TimeUnit.SECONDS.toMillis(3)) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-
-
-        //Remove Pets
-        if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-            Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
-        }
-
-        //Remove Mount
-        if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-            Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
-        }
-
+    	PetUtils.removePet(event.getPlayer());
+    	MountUtils.removeMount(event.getPlayer());
+        
         if (GameAPI.isMainWorld(event.getPlayer().getLocation())) {
             // Player is entering a realm.
             if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
@@ -900,7 +696,6 @@ public class RealmListener implements Listener {
                 return;
 
             // Saves their location so they don't spawn in the realm if they logout.
-//            DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
             wrapper.setStoredLocation(event.getFrom());
             wrapper.setStoredLocationString(GameAPI.locationToString(event.getFrom()));
@@ -926,123 +721,8 @@ public class RealmListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerUsePortalRune(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK
-                || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) return;
-        Player p = event.getPlayer();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
-        if (wrapper == null || p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
-            return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
-
-        Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
-
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-
-            if (Cooldown.hasCooldown(event.getPlayer().getUniqueId()))
-                return;
-
-            Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
-
-            if (p.isSneaking()) {
-
-                if (DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000) {
-                    p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot upgrade this realm on this shard.");
-                    return;
-                }
-
-                if (realm == null || !realm.isOwner(p)) {
-                    p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
-                    return;
-                }
-
-                if (realm.getTier().getTier() >= RealmTier.values().length) {
-                    p.sendMessage(ChatColor.RED + "You have upgraded your realm to it's final tier");
-                    return;
-                }
-
-                int upgradeCost = RealmTier.getByTier(realm.getTier().getTier() + 1).getPrice();
-
-                p.sendMessage("");
-                p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Realm Upgrade Confirmation"
-                        + ChatColor.DARK_GRAY + " ***");
-                p.sendMessage(ChatColor.DARK_GRAY + "FROM Tier " + ChatColor.LIGHT_PURPLE + realm.getTier().getTier() + ChatColor.DARK_GRAY + " TO " + ChatColor.LIGHT_PURPLE
-                        + (realm.getTier().getTier() + 1));
-                p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + upgradeCost + " Gem(s) from your bank");
-                p.sendMessage("");
-                p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm realm upgrade.");
-                p.sendMessage("");
-                p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Realm upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT"
-                        + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
-                p.sendMessage("");
-
-                final Realm r = realm;
-                Chat.promptPlayerConfirmation(p, () -> {
-                    int balance = wrapper.getGems();
-
-                    if (balance < upgradeCost) {
-                        p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) in your bank to purchase this upgrade. Upgrade cancelled.");
-                        p.sendMessage(ChatColor.RED + "COST: " + upgradeCost + " gems");
-                        return;
-                    }
-
-                    wrapper.setGems(wrapper.getGems() - upgradeCost);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> r.upgradeRealm(p));
-                    //Take Gems -> Upgrade Realm
-                }, () -> p.sendMessage(ChatColor.RED + "Realm upgrade cancelled."));
-
-                return;
-            }
-
-            if (realm != null && realm.isOwner(p)) {
-                if (event.getClickedBlock() != null && event.getClickedBlock().getLocation() != null) {
-                    Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
-
-                    if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER)
-                            || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)
-                            || newLocation.getBlock().getType() != Material.AIR
-                            || newLocation.clone().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
-                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-                        return;
-                    }
-
-                    realm.setRealmSpawn(newLocation);
-                    event.setCancelled(true);
-                    return;
-                } // Player is clicking air
-            }
-
-            //Open the player's realm.
-            if (event.getClickedBlock() != null) {
-                realm = Realms.getInstance().getOrCreateRealm(event.getPlayer(), wrapper.getCharacterID());
-                realm.openPortal(p, event.getClickedBlock().getLocation());
-            }
-            event.setCancelled(true);
-        } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-
-            if (event.hasBlock() && event.getClickedBlock().getType() == Material.PORTAL || p.isSneaking())
-                return;
-
-            if (!Realms.getInstance().isInRealm(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
-                event.setCancelled(true);
-                return;
-            }
-
-            // OPENS STORE //
-            RealmMaterialFactory.getInstance().openMaterialStore(p, 0);
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
     public void onWaterFlow(BlockFromToEvent event) {
-        //Dont cancel in main world.
-        if (GameAPI.isMainWorld(event.getBlock().getLocation())) return;
-
-        event.setCancelled(true);
+        if (!GameAPI.isMainWorld(event.getBlock().getLocation()))
+        	event.setCancelled(true);
     }
 }

@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -51,8 +52,6 @@ public class CommandRealmsee extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "Player not found in database.");
                 return;
             }
-
-            Player owner = Bukkit.getPlayer(uuid);
 
             PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 if (wrapper.isPlaying()) {

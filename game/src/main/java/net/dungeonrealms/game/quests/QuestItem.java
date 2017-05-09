@@ -1,13 +1,22 @@
 package net.dungeonrealms.game.quests;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemFishingPole;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemGeneric;
+import net.dungeonrealms.game.item.items.core.ItemPickaxe;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
+import net.dungeonrealms.game.item.items.functional.ItemGem;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.Item.ItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -59,39 +68,34 @@ public class QuestItem implements ISaveable {
 	public ItemStack createItem(Player player){
 		ItemStack created = new ItemStack(Material.DIRT);
 		if(this.isGeneratedItem()){
-			ItemGenerator generator = new ItemGenerator();
-			generator.setTier(this.tier);
-			generator.setRarity(this.rarity);
 			
 			switch(this.generationType){
 				case ARMOR:
-					generator.setType(ItemType.getRandomArmor());
-					created = generator.generateItem().getItem();
+					created = new ItemArmor().setTier(this.tier).setRarity(this.rarity).generateItem();
 					break;
 				case WEAPON:
-					generator.setType(ItemType.getRandomWeapon());
-					created = generator.generateItem().getItem();
+					created = new ItemWeapon().setTier(this.tier).setRarity(this.rarity).generateItem();
 					break;
 				case ORB:
-					created = ItemManager.createOrbofAlteration();
+					created = new ItemOrb().generateItem();
 					break;
 				case PICKAXE:
-					created = ItemManager.createPickaxe(this.tier.getTierId());
+					created = new ItemPickaxe(this.tier.getTierId() * 20).generateItem();
 					break;
 				case FISHING_ROD:
-					created = ItemManager.createFishingPole(this.tier.getTierId());
+					created = new ItemFishingPole(this.tier.getTierId()).generateItem();
 					break;
 				case WEAPON_ENCH_SCROLL:
-					created = ItemManager.createWeaponEnchant(this.tier.getTierId());
+					created = new ItemEnchantWeapon(this.tier).generateItem();
 					break;
 				case ARMOR_ENCH_SCROLL:
-					created = ItemManager.createArmorEnchant(this.tier.getTierId());
+					created = new ItemEnchantArmor(this.tier).generateItem();
 					break;
 				case PROT_SCROLL:
-					created = ItemManager.createProtectScroll(this.tier.getTierId());
+					created = new ItemProtectionScroll(this.tier).generateItem();
 					break;
 				case GEM_NOTE:
-					created = BankMechanics.createGems(this.itemAmount);
+					created = new ItemGem(this.itemAmount).generateItem();
 					break;
 				default:
 					System.out.println("Can't generate quest item " + this.generationType.name());
@@ -110,20 +114,21 @@ public class QuestItem implements ISaveable {
 			}
 		}
 		
-		if(this.isSoulBound)
-			created = ItemManager.makeSoulBound(created);
+		ItemGeneric vi = (ItemGeneric)PersistentItem.constructItem(created);
+		if (this.isSoulBound)
+			vi.setSoulbound(true);
 		
-		if(this.durability != 100)
-			RepairAPI.setCustomItemDurability(created, durability * (1500 / 100) );
+		if (vi instanceof ItemGear && this.durability != 100)
+			((ItemGear)vi).damageItem(null, durability * (ItemGear.MAX_DURABILITY / 100));
 		
-		return created;
+		return vi.generateItem();
 	}
 	
 	/**
 	 * Checks whether an itemstack matches this quest item.
 	 */
 	public boolean doesItemMatch(ItemStack item){
-		if(this.isSoulBound != GameAPI.isItemSoulbound(item))
+		if(this.isSoulBound != ItemManager.isItemSoulbound(item))
 			return false;
 		if(this.isDRItem())
 			return this.drItemName.equals(GameAPI.getCustomID(item));
@@ -245,7 +250,7 @@ public class QuestItem implements ISaveable {
 		this.displayName = i.getItemMeta().getDisplayName();
 		if(this.displayName == null)
 			this.displayName = this.itemMaterial.name();
-		this.isSoulBound = GameAPI.isItemSoulbound(i);
+		this.isSoulBound = ItemManager.isItemSoulbound(i);
 	}
 	
 	public boolean isSoulbound(){

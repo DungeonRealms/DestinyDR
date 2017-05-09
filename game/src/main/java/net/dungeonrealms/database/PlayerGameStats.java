@@ -6,116 +6,108 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.dungeonrealms.game.mastery.Utils;
+
+import org.bukkit.entity.Player;
+
+import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 
 public class PlayerGameStats implements LoadableData, SaveableData {
 
-    @Getter
-    private int characterID;
-
-    @Getter
-    @Setter
-    private int playerKills, lawfulKills, unlawfulKills, deaths;
-
-    @Getter
-    @Setter
-    //Mob kils
-    private int t1MonsterKills, t2MonsterKills, t3MonsterKills, t4MonsterKills, t5MonsterKills;
-
-    @Getter
-    @Setter
-    private int bossMayelKills, bossBurickKills, bossInfernalAbyss;
-
-    @Getter
-    @Setter
-    private int lootOpened, duelsWon, duelsLost, oreMined, fishCaught, orbsUsed, timePlayed, successfulEnchants, failedEnchants, ecashSpent, gemsEarned, gemsSpent;
+	@Getter @Setter private int characterID;
+    private Map<StatColumn, Integer> statMap = new HashMap<>();
 
     public PlayerGameStats(int id){
         this.characterID = id;
+    }
+    
+    public int getStat(StatColumn s) {
+    	return statMap.containsKey(s) ? statMap.get(s) : 0;
     }
 
     @Override
     @SneakyThrows
     public void extractData(ResultSet resultSet) {
-        this.playerKills = resultSet.getInt(StatColumn.PLAYER_KILLS.get());
-        this.lawfulKills = resultSet.getInt(StatColumn.LAWFUL_KILLS.get());
-        this.unlawfulKills = resultSet.getInt(StatColumn.UNLAWFUL_KILLS.get());
-        this.deaths = resultSet.getInt(StatColumn.DEATHS.get());
-        this.t1MonsterKills = resultSet.getInt(StatColumn.T1_MOB_KILLS.get());
-        this.t2MonsterKills = resultSet.getInt(StatColumn.T2_MOB_KILLS.get());
-        this.t3MonsterKills = resultSet.getInt(StatColumn.T3_MOB_KILLS.get());
-        this.t4MonsterKills = resultSet.getInt(StatColumn.T4_MOB_KILLS.get());
-        this.t5MonsterKills = resultSet.getInt(StatColumn.T5_MOB_KILLS.get());
-
-        this.bossMayelKills = getInt(resultSet, StatColumn.BOSS_KILLS_MAYEL);
-        this.bossBurickKills = getInt(resultSet, StatColumn.BOSS_KILLS_BURICK);
-        this.bossInfernalAbyss = getInt(resultSet, StatColumn.BOSS_KILLS_INFERNALABYSS);
-
-        this.lootOpened = getInt(resultSet, StatColumn.LOOT_OPENED);
-        this.duelsWon = getInt(resultSet, StatColumn.DUELS_WON);
-        this.duelsLost = getInt(resultSet, StatColumn.DUELS_LOST);
-        this.oreMined = getInt(resultSet, StatColumn.ORE_MINED);
-        this.fishCaught = getInt(resultSet, StatColumn.FISH_CAUGHT);
-        this.timePlayed = getInt(resultSet, StatColumn.TIME_PLAYED);
-        this.successfulEnchants = getInt(resultSet, StatColumn.SUCCESSFUL_ENCHANTS);
-        this.failedEnchants = getInt(resultSet, StatColumn.FAILED_ENCHANTS);
-        this.ecashSpent = getInt(resultSet, StatColumn.ECASH_SPENT);
-        this.gemsEarned = getInt(resultSet, StatColumn.GEMS_EARNED);
-        this.gemsSpent = getInt(resultSet, StatColumn.GEMS_SPENT);
+        for (StatColumn s : StatColumn.values())
+        	setStat(s, resultSet.getInt("statistics." + s.getColumnName()));
     }
-
+    
+    public void addStat(StatColumn s) {
+    	addStat(s, 1);
+    }
+    
+    public void addStat(StatColumn s, int amt) {
+    	setStat(s, getStat(s) + amt);
+    }
+    
+    public void setStat(StatColumn s, int val) {
+    	statMap.put(s, val);
+    }
+    
     public int getTotalMobKills(){
-        return t1MonsterKills + t2MonsterKills + t3MonsterKills + t4MonsterKills + t5MonsterKills;
+    	return getStat(StatColumn.T1_MOB_KILLS) + getStat(StatColumn.T2_MOB_KILLS) + getStat(StatColumn.T3_MOB_KILLS)
+    			+ getStat(StatColumn.T4_MOB_KILLS) + getStat(StatColumn.T5_MOB_KILLS);
     }
+    
     public String getUpdateStatement(){
-        return String.format("UPDATE statistics SET player_kills = '%s', lawful_kills = '%s', unlawful_kills = '%s', deaths = '%s', " +
-                "monster_kills_t1 = '%s', monster_kills_t2 = '%s', monster_kills_t3 = '%s', monster_kills_t4 = '%s', monster_kills_t5 = '%s'," +
-                "boss_kills_mayel = '%s', boss_kills_burick = '%s', boss_kills_infernal_abyss = '%s', loot_opened = '%s', duels_won = '%s', duels_lost = '%s', ore_mined = '%s'," +
-                "fish_caught = '%s', orbs_used = '%s', time_played = '%s', enchants_succeeded = '%s', enchants_failed = '%s', ecash_spent = '%s', gems_earned = '%s', gems_spent = '%s' " +
-                "WHERE character_id = '%s';",
-                getPlayerKills(), getLawfulKills(), getUnlawfulKills(), getDeaths(),
-                getT1MonsterKills(), getT2MonsterKills(), getT3MonsterKills(), getT4MonsterKills(), getT5MonsterKills(),
-                getBossMayelKills(), getBossBurickKills(), getBossInfernalAbyss(), getLootOpened(), getDuelsWon(), getDuelsLost(), getOreMined(),
-                getFishCaught(), getOrbsUsed(), getTimePlayed(), getSuccessfulEnchants(), getFailedEnchants(), getEcashSpent(), getGemsEarned(), getGemsSpent(),
-                getCharacterID());
-    }
-
-    @SneakyThrows
-    private int getInt(ResultSet rs, StatColumn column) {
-        return rs.getInt(column.get());
+    	String sql = "UPDATE statistics SET ";
+    	
+    	for (StatColumn s : StatColumn.values())
+    		sql += (s == StatColumn.values()[0] ? "" : ", ") + s.getColumnName() + " = '" + getStat(s) + "'";
+    	
+    	return sql + " WHERE character_id = '" + characterID + "';";
     }
 
     @AllArgsConstructor
-    enum StatColumn {
-        PLAYER_KILLS("player_kills"),
+	public enum StatColumn {
+        PLAYER_KILLS("player_kills", "pk"),
+        T1_MOB_KILLS("monster_kills_t1", "t1"),
+        T2_MOB_KILLS("monster_kills_t2", "t2"),
+        T3_MOB_KILLS("monster_kills_t3", "t3"),
+        T4_MOB_KILLS("monster_kills_t4", "t4"),
+        T5_MOB_KILLS("monster_kills_t5", "t5"),
+        DEATHS("deaths", "deaths"),
+        TIME_PLAYED("time_played", "played"),
+        LOOT_OPENED("loot_opened", "loot"),
+        ORE_MINED("ore_mined", "mined"),
+        FISH_CAUGHT("fish_caught", "fished"),
+        
         LAWFUL_KILLS("lawful_kills"),
         UNLAWFUL_KILLS("unlawful_kills"),
-        DEATHS("deaths"),
-        T1_MOB_KILLS("monster_kills_t1"),
-        T2_MOB_KILLS("monster_kills_t2"),
-        T3_MOB_KILLS("monster_kills_t3"),
-        T4_MOB_KILLS("monster_kills_t4"),
-        T5_MOB_KILLS("monster_kills_t5"),
         BOSS_KILLS_MAYEL("boss_kills_mayel"),
         BOSS_KILLS_BURICK("boss_kills_burick"),
-        BOSS_KILLS_INFERNALABYSS("boss_kills_infernal_abyss"),
-        LOOT_OPENED("loot_opened"),
+        BOSS_KILLS_INFERNALABYSS("boss_kills_infernal"),
         DUELS_WON("duels_won"),
         DUELS_LOST("duels_lost"),
-        ORE_MINED("ore_mined"),
-        FISH_CAUGHT("fish_caught"),
         ORBS_USED("orbs_used"),
-        TIME_PLAYED("time_played"),
         SUCCESSFUL_ENCHANTS("enchants_succeeded"),
         FAILED_ENCHANTS("enchants_failed"),
         ECASH_SPENT("ecash_spent"),
         GEMS_EARNED("gems_earned"),
         GEMS_SPENT("gems_spent");
-
-        @Getter
-        private String columnName;
-
-        public String get() {
-            return this.columnName;
+        
+        @Getter private String columnName;
+        private String btlpVariableName;
+        
+        StatColumn(String sqlName) {
+        	this(sqlName, null);
+        }
+        
+        public Variable getVariable() {
+        	if (btlpVariableName == null)
+        		return null;
+        	
+        	final StatColumn stat = this;
+        	return new Variable(btlpVariableName) {
+				@Override
+				public String getReplacement(Player player) {
+					PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    return wrapper != null ? Utils.format(wrapper.getPlayerGameStats().getStat(stat)) : null;
+				}
+        	};
         }
     }
 }

@@ -2,34 +2,29 @@ package net.dungeonrealms.game.world.entity.type.pet;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.GameAPI;
 import net.minecraft.server.v1_9_R2.*;
-import org.bukkit.Bukkit;
+
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BetaZombie extends BabyZombie {
+public class BetaZombie extends ZombiePet implements Ownable {
 
-    @Getter
-    @Setter
-    private long lastBrainEat = 0L;
+	@Setter private Player owner;
+    @Getter @Setter private long lastBrainEat;
+    @Setter private int lastTick;
 
-    @Getter
-    @Setter
-    private int lastTick = 0;
-
-    public BetaZombie(net.minecraft.server.v1_9_R2.World world, String mobName, UUID ownerUUID, EnumEntityType entityType) {
-        super(world, mobName, ownerUUID, entityType);
+    public BetaZombie(World world) {
+        super(world);
     }
 
     @Override
     protected void r() {
+    	// Override default AI.
         this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
     }
@@ -38,25 +33,22 @@ public class BetaZombie extends BabyZombie {
     public void n() {
 
         super.n();
-        if(isPassenger() && this.getVehicle().isAlive()){
+        
+        if(isPassenger() && getVehicle().isAlive()) // If we're chomping someone, mirror their head direction.
             this.setYawPitch(getVehicle().yaw, 90);
-        }
-        if (lastTick++ % 10 != 0) return;
+        
+        if (lastTick++ % 10 != 0)
+        	return;
 
-        if (lastTick % 15 == 0) {
-            Player owner = Bukkit.getPlayer(getOwnerUUID());
-            if (owner == null) {
-                this.getBukkitEntity().remove();
-                return;
-            }
-            if (owner.getWorld() != this.getBukkitEntity().getWorld() || (getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 15)) {
-                if (this.isPassenger()) {
+        if (lastTick % 15 == 0) { // If we're too far away or in a different world, teleport.
+            if (owner.getWorld() != this.getBukkitEntity().getWorld() || getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 15) {
+                if (this.isPassenger())
                     this.getBukkitEntity().eject();
-                }
                 this.getBukkitEntity().teleport(owner.getLocation());
             }
         }
-        if (this.isPassenger()) {
+        
+        if (isPassenger()) { // If we're chomping someone,
             long time = System.currentTimeMillis() - this.getLastBrainEat();
             if (time >= 750) {
                 getBukkitEntity().getWorld().playSound(this.getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1.2F);
@@ -67,16 +59,12 @@ public class BetaZombie extends BabyZombie {
             }
             return;
         }
-        for (Entity near : this.getBukkitEntity().getNearbyEntities(5, 5, 5)) {
-            if (!(near instanceof Player)) continue;
-            Player player = (Player) near;
-            if(player.hasMetadata("NPC"))continue;
-            if (player.getUniqueId().equals(getOwnerUUID())) continue;
-            if (player.getPassenger() != null) continue;
-            if (this.getBukkitEntity().getVehicle() != null && ThreadLocalRandom.current().nextInt(50) != 5) continue;
-            player.setPassenger(this.getBukkitEntity());
-        }
-
+        
+        // Try to chomp nearby players.
+        GameAPI.getNearbyPlayers(getBukkitEntity().getLocation(), 5).forEach(p -> {
+        	if (p != owner && p.getPassenger() == null && getBukkitEntity().getVehicle() == null && ThreadLocalRandom.current().nextInt(50) == 0)
+        		p.setPassenger(getBukkitEntity());
+        });
     }
 
 }

@@ -1,176 +1,241 @@
 package net.dungeonrealms.game.world.loot;
 
-import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
+import net.dungeonrealms.game.command.moderation.CommandLootChest;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.loot.types.LootType;
+import net.dungeonrealms.game.world.loot.LootTable.PossibleLoot;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Created by Chase on Oct 9, 2015
+ * LootManager - Handles loot being spawned across the world.
+ * 
+ * Redone on April 29th, 2017.
+ * @author Kneesnap
  */
-public class LootManager implements GenericMechanic {
+public class LootManager implements GenericMechanic, Listener {
+	
+	@Getter private static List<LootSpawner> spawners = new ArrayList<>();
+	@Getter private static Map<String, LootTable> loot = new HashMap<>();
+	
+	@Override
+	public EnumPriority startPriority() {
+		return EnumPriority.ARCHBISHOPS;
+	}
+	
+	@Override
+	public void startInitialization() {
+		Utils.log.info("[Loot] - Loading types and spawners...");
+		
+		//  LOAD LOOT CHOICES  //
+		Arrays.stream(new File(GameAPI.getDataFolder() + "/loot/").listFiles())
+				.filter(f -> f.getName().endsWith(".loot")).forEach(this::loadLoot);
+		
+		for (String line : DungeonRealms.getInstance().getConfig().getStringList("loot")) {
+			String[] cords = line.split("=")[0].split(",");
+			int x,y,z;
+			x = Integer.parseInt(cords[0]);
+			y = Integer.parseInt(cords[1]);
+			z = Integer.parseInt(cords[2]);
+			Location loc = new Location(GameAPI.getMainWorld(), x, y, z);
+			String lootData = line.split("=")[1].split("@")[0];
+			
+			if (!getLoot().containsKey(lootData)) {
+				Bukkit.getLogger().warning("Could not find loot data '" + lootData + "'.");
+				continue;
+			}
+			
+			getSpawners().add(new LootSpawner(loc, Integer.parseInt(line.split("@")[1].split("#")[0]), lootData));
+		}
+		
+		Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
+		
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> 
+			getSpawners().stream().filter(s -> !s.isBroken()).forEach(LootSpawner::showParticles), 20L, 20L);
+		
+		Utils.log.info("[Loot] - Spawns loaded.");
+	}
+	
+	@Override
+	public void stopInvocation() {
+		
+	}
+	
+	public static void addSpawner(LootSpawner s) {
+		getSpawners().add(s);
+		updateConfig();
+	}
+	
+	public static void removeSpawner(LootSpawner s) {
+		CommandLootChest.removeHologram(s.getLocation());
+		getSpawners().remove(s);
+		updateConfig();
+	}
+	
+	private static void updateConfig() {
+		List<String> config = new ArrayList<>();
+		for (LootSpawner s : getSpawners())
+			config.add(s.toString());
+		DungeonRealms.getInstance().getConfig().set("loot", config);
+		DungeonRealms.getInstance().saveConfig();
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void playerOpenChest(PlayerInteractEvent e) {
+		Block block = e.getClickedBlock();
+		
+		if (block == null || block.getType() != Material.CHEST)
+			return;
+		
+		Player p = e.getPlayer();
+		e.setCancelled(true);
+		LootSpawner spawner = getSpawner(block.getLocation());
+		if (!GameAPI.isMainWorld(block) || spawner == null) {
+			p.sendMessage(ChatColor.GRAY + "The chest is locked.");
+			return;
+		}
+		
+		if (!GameAPI.getNearbyMonsters(block.getLocation(), 10).isEmpty()) {
+			p.sendMessage(ChatColor.RED + "It is " + ChatColor.BOLD + "NOT" + ChatColor.RESET + ChatColor.RED + " safe to open that right now");
+			p.sendMessage(ChatColor.GRAY + "Eliminate the monsters in the area first.");
+			return;
+		}
+		
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			p.playSound(block.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
+			p.openInventory(spawner.getInventory());
+		} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+			// Drop all items.
+			for (ItemStack item : spawner.getInventory().getContents())
+				if (item != null)
+					block.getLocation().getWorld().dropItemNaturally(block.getLocation(), item);
+			spawner.getInventory().clear();
+			spawner.attemptBreak(p);
+		}
+		
+		Achievements.giveAchievement(e.getPlayer(), EnumAchievements.OPEN_LOOT_CHEST);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onLootClose(InventoryCloseEvent event) {
+		if (!event.getInventory().getTitle().equals("Loot"))
+			return;
+		
+		for (LootSpawner spawner : getSpawners())
+			if (spawner.getInventory().equals(event.getInventory()))
+				spawner.attemptBreak((Player) event.getPlayer());
+	}
+	
+	private void loadLoot(File f) {
+		String type = f.getName().split("\\.")[0];
+		
+		//  READ FILE  //
+		List<String> lines = new ArrayList<>();
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(f));
+			String l = "";
+			while ((l = reader.readLine()) != null) {
+				String s = l.split(" ")[0].split("#")[0]; //These lines are commented out in the config.
+				if (s.length() > 0)
+					lines.add(s);
+			}
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		LootTable table = new LootTable();
+		
+		for (String line : lines) {
+			//amount = a static or ranged value that controls either the item amount or 
+			//meta = a static value that represents data such as item tier.
+			try {
+				// Generator type + meta.
+				String lootType = line.split("%")[0].split(":")[0];
+				int meta = 1;
+				if (lootType.contains(",")) {
+					meta = Integer.parseInt(lootType.split(",")[1]);
+					lootType = lootType.split(",")[0];
+				}
+				
+				// Get amount.
+				int minAmt = 0;
+				int maxAmt = -1;
+				if (line.contains(":")) {
+					String amtStr = line.split(":")[1].split("%")[0];
+					if (amtStr.contains("-")) {
+						String[] split = amtStr.split("-");
+						minAmt = Integer.parseInt(split[0]);
+						maxAmt = Integer.parseInt(split[1]);
+					} else {
+						minAmt = Integer.parseInt(amtStr);
+					}
+				}
+				if (maxAmt == -1)
+					maxAmt = minAmt;
+				
+				//  GENERATE LOOT DATA  //
+				if (!LootType.isValid(lootType)) {
+					Bukkit.getLogger().warning("Unknown loot generator '" + lootType + "'.");
+					continue;
+				}
+				
+				double spawnChance = Math.max(1D, Double.parseDouble(line.split("%")[1]) * 10D);
+				
+				table.addLoot(new PossibleLoot(LootType.getGenerator(lootType), spawnChance, minAmt, maxAmt, meta));
+			} catch (Exception e) {
+				e.printStackTrace();
+				Bukkit.getLogger().warning("Lootable '" + type + "' has an invalid line \"" + line + "\".");
+			}
+			//In brackets = optional.
+			//Format: type[,amt][:minAmt[-maxAmt]]%chance
+			//Ex: gems:1-10%50 <- Random gem value between 1 and 10, with a 50% chance of spawning.
+		}
+		
+		getLoot().put(type, table);
+	}
+	
+	/**
+	 * Calculates the delay multiplier for loot spawns based on playercount.
+	 */
+	public static double getDelayMultiplier() {
+		return Math.max(0.2D, (150D - (Bukkit.getOnlinePlayers().size() * 1.75D)));
+	}
 
-    public static List<LootSpawner> LOOT_SPAWNERS = new ArrayList<>();
-    public static List<String> SPAWNER_CONFIG = new ArrayList<>();
+	public static boolean checkLocationForLootSpawner(Location location) {
+		return getSpawners().stream().filter(l -> l.getLocation().distanceSquared(location) <= 2).count() > 0;
+	}
 
-    public static Map<String, Inventory> getOpenChests() {
-        return OPEN_CHESTS;
-    }
-
-    private static Map<String, Inventory> OPEN_CHESTS = new HashMap<>();
-    /**
-     * Weapons/Armor 1% Glyphs .2%
-     *
-     *
-     *
-     * Health Potion %75 Food 75% TP Books 10%
-     *
-     */
-
-    /**
-     *
-     */
-    public static void loadLootSpawners() {
-        loadLootItems();
-        SPAWNER_CONFIG = DungeonRealms.getInstance().getConfig().getStringList("loot");
-        for (String line : SPAWNER_CONFIG) {
-            String[] cords = line.split("=")[0].split(",");
-            int x, y, z;
-            x = Integer.parseInt(cords[0]);
-            y = Integer.parseInt(cords[1]);
-            z = Integer.parseInt(cords[2]);
-            World world = Bukkit.getWorlds().get(0);
-            Location loc = new Location(world, x, y, z);
-            Block chest = world.getBlockAt(loc);
-            chest.setType(Material.CHEST);
-            String lootType = line.split("=")[1];
-            lootType = lootType.substring(1, lootType.length());
-            lootType = lootType.split("@")[0];
-            if (LootType.getLootType(lootType) == null) {
-                Utils.log.info(lootType + " NULL");
-                continue;
-            }
-            long spawn_delay = Math.round(Double.parseDouble(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")))) + (1200);//Add a minute to all Loots Chests
-            LootSpawner spawner = new LootSpawner(chest, spawn_delay, LootType.getLootType(lootType));
-            //- -96,49,-3501=@m3.loot@500#
-
-            LOOT_SPAWNERS.add(spawner);
-        }
-    }
-
-    public static LootSpawner createLootChest(Location location, int spawnDelay, LootType lootType) {
-        SPAWNER_CONFIG.add(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "=@" + lootType.fileName + "@" + spawnDelay + "#");
-
-        long spawn_delay = spawnDelay + (1200);//Add a minute to all Loots Chests
-        LootSpawner spawner = new LootSpawner(location.getBlock(), spawn_delay, lootType);
-        LOOT_SPAWNERS.add(spawner);
-        saveConfig();
-        return spawner;
-    }
-
-    public static void removeLootSpawner(Location location) {
-
-        for (LootSpawner spawner : Lists.newArrayList(LOOT_SPAWNERS)) {
-            if (spawner.getBlock().getLocation().equals(location)) {
-                LOOT_SPAWNERS.remove(spawner);
-            }
-        }
-        Iterator<String> iter = SPAWNER_CONFIG.iterator();
-        while (iter.hasNext()) {
-            String spawnerString = iter.next();
-            if (spawnerString.startsWith(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ())) {
-                //Its this one..
-                iter.remove();
-                saveConfig();
-                Bukkit.getLogger().info("Removing loot chest line: " + spawnerString);
-                return;
-            }
-        }
-    }
-
-    public static void saveConfig() {
-        DungeonRealms.getInstance().getConfig().set("loot", SPAWNER_CONFIG);
-        DungeonRealms.getInstance().saveConfig();
-    }
-
-    /**
-     * @return
-     */
-    static double getDelayMultiplier() {
-        int player_count = Bukkit.getOnlinePlayers().size() - 1;
-        if (player_count <= 10) {
-            return 1.25D;
-        }
-        if (player_count <= 30) {
-            return 0.75D;
-        }
-        if (player_count <= 50) {
-            return 0.50D;
-        }
-        if (player_count <= 70) {
-            return 0.40D;
-        }
-        if (player_count <= 100) {
-            return 0.39D;
-        }
-        if (player_count <= 150) {
-            return 0.20D;
-        }
-        return 0.20D; // player_count is greater than 100.
-    }
-
-    /**
-     * Creates ItemStack Array from templates in the loot folder.
-     */
-    private static void loadLootItems() {
-        LootType.initLoot();
-    }
-
-    public static boolean checkLocationForLootSpawner(Location location) {
-        for (LootSpawner lootSpawner : LOOT_SPAWNERS) {
-            if (lootSpawner.location.distanceSquared(location) <= 2) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public EnumPriority startPriority() {
-        return EnumPriority.ARCHBISHOPS;
-    }
-
-    @Override
-    public void startInitialization() {
-        Utils.log.info("LOADING ALL LOOT CHESTS...");
-        loadLootSpawners();
-    }
-
-    @Override
-    public void stopInvocation() {
-
-    }
-
-    /**
-     * @param location
-     * @return
-     */
-    public static LootSpawner getSpawner(Location location) {
-        for (LootSpawner loot : LootManager.LOOT_SPAWNERS) {
-            if (loot.location.getX() == location.getX() && loot.location.getY() == location.getY() && loot.location.getZ() == location.getZ()) {
-                return loot;
-            }
-        }
-        return null;
-    }
+	public static LootSpawner getSpawner(Location location) {
+		return getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny().get();
+	}
 }

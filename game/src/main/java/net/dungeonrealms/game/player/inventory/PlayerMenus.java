@@ -5,12 +5,13 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
+import net.dungeonrealms.game.achievements.Achievements.AchievementCategory;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenProfile;
@@ -20,6 +21,7 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -36,15 +38,10 @@ import java.util.*;
  * Created by Nick on 9/29/2015.
  */
 public class PlayerMenus {
-//TODO: DisplayItem Lore on stuff here.
 
     public static void openFriendsMenu(Player player) {
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if (wrapper == null) return;
-
+        PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
         Map<UUID, Integer> friends = wrapper.getFriendsList();
-//        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
 
         Inventory inv = Bukkit.createInventory(null, 54, "Friends");
 
@@ -55,8 +52,8 @@ public class PlayerMenus {
 
 
         int slot = 9;
-        for (Map.Entry<UUID, Integer> s : friends.entrySet()) {
-            String name = SQLDatabaseAPI.getInstance().getUsernameFromUUID(s.getKey());
+        for (UUID u : friends.keySet()) {
+            String name = SQLDatabaseAPI.getInstance().getNameFromUUID(u);
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!",
                     ChatColor.GRAY + "Display Item"
@@ -64,7 +61,7 @@ public class PlayerMenus {
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("info", new NBTTagString(s.getKey().toString()));
+            tag.set("info", new NBTTagString(u.toString()));
             nmsStack.setTag(tag);
 
 
@@ -79,11 +76,7 @@ public class PlayerMenus {
     }
 
     public static void openFriendInventory(Player player) {
-        UUID uuid = player.getUniqueId();
-//        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
-
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if (wrapper == null) return;
+        PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
 
         Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 
@@ -100,7 +93,6 @@ public class PlayerMenus {
         int slot = 9;
         for (Map.Entry<UUID, Integer> from : wrapper.getPendingFriends().entrySet()) {
             String name = SQLDatabaseAPI.getInstance().getUsernameFromUUID(from.getKey());
-//            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!",
@@ -122,10 +114,8 @@ public class PlayerMenus {
 
     }
 
-
     public static void openPlayerPetMenu(Player player) {
-        UUID uuid = player.getUniqueId();
-
+    	
         if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
             Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
             player.openInventory(jailed);
@@ -137,28 +127,8 @@ public class PlayerMenus {
 
         Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
 
-        /*if (Rank.isSubscriber(player))
-            for (EnumPets p : EnumPets.values()) {
-                if (p == EnumPets.BABY_HORSE)
-                    continue;
-                if (playerPets.containsKey(p)) continue;
-                playerPets.put(p, new PetData(null));
-            }*/
-
-
-        /*if (playerPets.size() <= 0) {
-            Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Pets!");
-            player.openInventory(noPets);
-            return;
-        }*/
-
         int size = EnumPets.values().length + 2; //Add 2 for the buttons
-        if(size <= 9) size = 9;
-        else if(size <= 18) size = 18;
-        else if(size <= 27) size = 27;
-        else if(size <= 36) size = 36;
-        else if(size <= 45) size = 45;
-        else if(size <= 54) size = 54;
+        size -= size % 9;
 
         Inventory inv = Bukkit.createInventory(null, size, "Pet Selection");
         inv.setItem(size - 2, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
@@ -166,56 +136,33 @@ public class PlayerMenus {
 
 
         for(EnumPets pets : EnumPets.values()) {
-            if(!pets.showInGUI() && !Rank.isGM(player)) continue;
+            if(!pets.isShowInGui() && !Rank.isGM(player))
+            	continue;
+            
             PetData hisData = playerPets.get(pets);
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
             boolean isLocked = hisData == null || !hisData.isUnlocked();
-            if(pets.subGetsFree() && Rank.PlayerRank.getFromInternalName(wrapper.getRank()).isAtleast(Rank.PlayerRank.SUB)) {
+            if(pets.isSubGetsFree() && wrapper.getRank().isSUB()) 
                 isLocked = false;
-            }
+            
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("petType", new NBTTagString(pets.getRawName()));
+            tag.set("petType", new NBTTagString(pets.getName()));
             tag.set("petName", new NBTTagString(hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
-            nmsStack.setTag(tag);
-            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), !isLocked ? new String[]{
-                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
-                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
-                    "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
-                    ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED",
-                    ChatColor.GRAY + "Display Item"
-            } : new String[]{
-                            //He doesn't own it.
-                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
-                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
-                    "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (pets.getDisplayName()),
-                    ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED",
-                    ChatColor.GRAY + "Display Item"
-            }));
-        }
-        /*playerPets.forEach((pets, data) -> {
-            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("petType", new NBTTagString(pets.getRawName()));
-            tag.set("petName", new NBTTagString(data.getPetName() != null ? data.getPetName() : pets.getDisplayName()));
             nmsStack.setTag(tag);
             inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
                     ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
                     ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
                     "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (data.getPetName() != null ? data.getPetName() : pets.getDisplayName()),
+                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
+                    (isLocked ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked ? "" : "UN") + "LOCKED",
                     ChatColor.GRAY + "Display Item"
             }));
-        });*/
+        }
         player.openInventory(inv);
     }
 
     public static void openPlayerMountMenu(Player player) {
-        UUID uuid = player.getUniqueId();
-
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null) return;
 
@@ -225,16 +172,9 @@ public class PlayerMenus {
             return;
         }
 
-        HashSet<String> playerMounts = wrapper.getMountsUnlocked();
-        int count = 0;
-        if (playerMounts.size() > 0) {
-            for (String mount : playerMounts) {
-                if (!mount.equalsIgnoreCase("MULE")) {
-                    count++;
-                }
-            }
-        }
-        if (count <= 0) {
+        List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
+                    
+        if (playerMounts.isEmpty()) {
             Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
             player.openInventory(noMounts);
             return;
@@ -243,58 +183,25 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Mount Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
-
-        ItemStack itemStack;
-        String mountType = null;
-
-        if (playerMounts.contains(EnumMounts.TIER4_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER4_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER3_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER2_HORSE.getRawName();
-        } else if (playerMounts.contains(EnumMounts.TIER1_HORSE.getRawName())) {
-            mountType = EnumMounts.TIER1_HORSE.getRawName();
+        
+        for (EnumMounts m : playerMounts) {
+        	VanillaItem mount = new VanillaItem(m.getSelectionItem());
+        	mount.setTagString("mountType", m.name());
+        	mount.setDisplay(true);
+        	mount.setDisplayName(ChatColor.GREEN + m.getDisplayName());
+        	if (m.getMountData() != null)
+        		m.getMountData().getLore().forEach(mount::addLore);
+        	inv.addItem(mount.generateItem());
         }
-
-        if (mountType == null) {
-            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
-            player.openInventory(noMounts);
-            return;
-        }
-
-        itemStack = EnumMounts.getByName(mountType).getSelectionItem();
-
-        if (itemStack == null) {
-            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
-            player.openInventory(noMounts);
-            return;
-        }
-
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("mountType", new NBTTagString(mountType));
-        nmsStack.setTag(tag);
-        inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + EnumMounts.getByName(mountType).getDisplayName(), new String[]{
-                ChatColor.GRAY + "Display Item"
-        }));
 
         player.openInventory(inv);
     }
 
     public static void openPlayerParticleMenu(Player player) {
-        UUID uuid = player.getUniqueId();
+        PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
+        List<ParticleEffect> trails = Rank.isSUB(player) ? Arrays.asList(ParticleEffect.values()) : wrapper.getTrails();
 
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-
-        Set<String> playerTrails = wrapper.getParticlesUnlocked();
-
-        if (Rank.isSubscriber(player))
-            for (ParticleAPI.ParticleEffect effect : ParticleAPI.ParticleEffect.values())
-                playerTrails.add(effect.getRawName());
-
-        if (playerTrails == null || playerTrails.size() <= 0) {
+        if (trails.isEmpty()) {
             Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Effects!");
             player.openInventory(noTrails);
             return;
@@ -303,30 +210,22 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Player Effect Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Effect", new String[]{}));
-
-        for (String trailType : playerTrails) {
-            ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("playerTrailType", new NBTTagString(trailType));
-            nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + ParticleAPI.ParticleEffect.getByName(trailType).getDisplayName(), new String[]{
-                    ChatColor.GRAY + "Display Item"
-            }));
+        
+        for (ParticleEffect effect : trails) {
+        	VanillaItem item = new VanillaItem(effect.getSelectionItem());
+        	item.setTagString("playerTrailType", effect.name());
+        	item.setDisplay(true);
+        	item.setDisplayName(ChatColor.GREEN + effect.getDisplayName());
+        	inv.addItem(item.generateItem());
         }
 
         player.openInventory(inv);
     }
 
     public static void openPlayerMountSkinMenu(Player player) {
-        UUID uuid = player.getUniqueId();
+    	List<EnumMountSkins> skins = PlayerWrapper.getWrapper(player).getMountSkins();
 
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-
-        HashSet<String> playerMountSkins = wrapper.getMountSkins();
-
-        if (playerMountSkins == null || playerMountSkins.size() <= 0) {
+        if (skins.isEmpty()) {
             Inventory noSkins = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mount Skins!");
             player.openInventory(noSkins);
             return;
@@ -335,16 +234,13 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Mount Skin Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Mount Skin", new String[]{}));
-
-        for (String skinType : playerMountSkins) {
-            ItemStack itemStack = EnumMountSkins.getByName(skinType).getSelectionItem();
-            itemStack.setDurability(EnumMountSkins.getByName(skinType).getShortID());
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("skinType", new NBTTagString(skinType));
-            nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + EnumMountSkins.getByName(skinType).getDisplayName(), new String[]{
-            }));
+        
+        for (EnumMountSkins s : skins) {
+        	VanillaItem item = new VanillaItem(s.getSelectionItem());
+        	item.setTagString("skinType", s.name());
+        	item.setDisplay(true);
+        	item.setDisplayName(ChatColor.GREEN + s.getDisplayName());
+        	inv.addItem(item.generateItem());
         }
 
         player.openInventory(inv);
@@ -353,325 +249,20 @@ public class PlayerMenus {
     public static void openPlayerAchievementsMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Achievements");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-        inv.setItem(2, editItem(new ItemStack(Material.MAP), ChatColor.GOLD + "Exploration", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to exploration.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(3, editItem(new ItemStack(Material.GOLD_SWORD), ChatColor.GOLD + "Combat", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to combat.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(4, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Character", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to character customization.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(5, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "Currency", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to currency.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(6, editItem(new ItemStack(Material.WRITTEN_BOOK), ChatColor.GOLD + "Social", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Social Achievements",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(7, editItem(new ItemStack(Material.NETHER_STAR), ChatColor.GOLD + "Realm", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your realm.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        inv.setItem(8, editItem(new ItemStack(Material.GOLD_INGOT), ChatColor.GOLD + "Event", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to event participation.",
-                "",
-                ChatColor.GRAY + "Display Item"
-        }));
-        player.openInventory(inv);
-    }
-
-    public static void openExplorationAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 36, "Exploration Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".explorer_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
+        for (int i = 2; i < 2 + AchievementCategory.values().length; i++) {
+        	AchievementCategory c = AchievementCategory.values()[i - 2];
+        	inv.setItem(i, editItem(new ItemStack(c.getIcon()), ChatColor.GOLD + c.getName(), new String[] {
+        		"", ChatColor.GRAY + "" + ChatColor.ITALIC + "Achievements related to " + c.getDescription() + ".", ""}));
         }
+        
         player.openInventory(inv);
     }
-
-    public static void openSocialAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 36, "Social Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".social_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openCurrencyAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 36, "Currency Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".currency_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openCombatAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 36, "Combat Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".combat_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openRealmAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Realm Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".realm_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openEventAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Event Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".event")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openCharacterAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 45, "Character Achievements");
-        UUID uuid = player.getUniqueId();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Set<String> playerAchievements = wrapper.getAchievements();
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getDBName().contains(".character_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getDBName())) {
-                    if (achievement.getHide()) continue;
-
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                            ChatColor.GRAY + "Display Item"
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
+    
     public static void openPlayerProfileMenu(Player player) {
+    	player.openInventory(getPlayerProfileMenu(player));
+    }
+
+    public static Inventory getPlayerProfileMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Profile");
         inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "Stat Distribution", new String[]{
                 "",
@@ -752,10 +343,8 @@ public class PlayerMenus {
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open toggles menu.",
                 ChatColor.GRAY + "Display Item"
         }));
-
-        player.openInventory(inv);
-
         Quests.getInstance().triggerObjective(player, ObjectiveOpenProfile.class);
+        return inv;
     }
 
     public static ItemStack editItem(String playerName, String name, String[] lore) {
@@ -799,18 +388,21 @@ public class PlayerMenus {
      * @param player
      */
     public static void openToggleMenu(Player player) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-        Inventory inv = Bukkit.createInventory(null, ((int) Math.ceil((1 + PlayerManager.PlayerToggles.values().length) / 9.0) * 9), "Toggles");
+        Inventory inv = Bukkit.createInventory(null, ((int) Math.ceil((1 + Toggles.values().length) / 9.0) * 9), "Toggles");
 
         int i = 0;
-        for (PlayerManager.PlayerToggles playerToggles : PlayerManager.PlayerToggles.values()) {
-            boolean isToggled = playerToggles.getToggleState(wrapper);
-            inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{
-                    ChatColor.GRAY + playerToggles.getDescription(),
-                    ChatColor.GRAY + "Display Item"
-            }).build());
-            i++;
+        PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
+        for (Toggles t : Toggles.getToggles(player)) {
+        	if (!wrapper.getRank().isAtLeast(t.getMinRank()))
+        		continue;
+        	boolean toggle = wrapper.getToggles().getState(t);
+        	VanillaItem vi = new VanillaItem(new ItemStack(Material.INK_SACK, 1, (short) (toggle ? 10 : 8)));
+        	vi.setDisplay(true);
+        	vi.setDisplayName(( toggle ? ChatColor.GREEN : ChatColor.RED) + "/" + t.getCommand());
+        	vi.addLore(t.getDescription());
+        	vi.setTagString("toggle", t.name());
+        	inv.setItem(i, vi.generateItem());
+        	i++;
         }
 
         inv.setItem(i, ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{

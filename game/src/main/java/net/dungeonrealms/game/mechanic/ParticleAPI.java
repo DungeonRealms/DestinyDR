@@ -1,106 +1,95 @@
 package net.dungeonrealms.game.mechanic;
 
+import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.Packet;
 import net.minecraft.server.v1_9_R2.PacketPlayOutWorldParticles;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
-import java.util.UUID;
+import java.util.Random;
 
 /**
  * Created by Kieran on 9/20/2015.
  */
 public class ParticleAPI {
 
+	@Getter
     public enum ParticleEffect {
-        FIREWORKS_SPARK(0, "FIREWORKS", EnumParticle.FIREWORKS_SPARK, new org.bukkit.inventory.ItemStack(Material.FIREWORK), "Fireworks"),
-        BUBBLE(1, "BUBBLE", EnumParticle.WATER_BUBBLE, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET), "Bubble"),
-        TOWN_AURA(2, "TOWNAURA", EnumParticle.TOWN_AURA, new org.bukkit.inventory.ItemStack(Material.SULPHUR), "Stubble"),
-        CRIT(3, "CRITICAL", EnumParticle.CRIT, new org.bukkit.inventory.ItemStack(Material.NETHER_STAR), "Light Stars"),
-        MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.FIREWORK_CHARGE), "Dark Stars"),
-        WITCH_MAGIC(5, "WITCHMAGIC", EnumParticle.SPELL_WITCH, new org.bukkit.inventory.ItemStack(Material.CAULDRON_ITEM), "Magic"),
-        NOTE(6, "NOTE", EnumParticle.NOTE, new org.bukkit.inventory.ItemStack(Material.NOTE_BLOCK), "Notes"),
-        PORTAL(7, "PORTAL", EnumParticle.PORTAL, new org.bukkit.inventory.ItemStack(Material.EYE_OF_ENDER), "Portal"),
-        ENCHANTMENT_TABLE(8, "ENCHANTMENT", EnumParticle.ENCHANTMENT_TABLE, new org.bukkit.inventory.ItemStack(Material.ENCHANTMENT_TABLE), "Enchantment"),
-        FLAME(9, "FLAME", EnumParticle.FLAME, new org.bukkit.inventory.ItemStack(Material.FIREBALL), "Flames"),
-        LAVA(10, "LAVA", EnumParticle.LAVA, new org.bukkit.inventory.ItemStack(Material.LAVA_BUCKET), "Lava"),
-        SPLASH(11, "SPLASH", EnumParticle.WATER_SPLASH, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET), "Splash"),
-        LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.MELON), "Thick Smoke"),
-        RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.CAKE), "Birthday"),
-        SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL), "Snowball"),
-        SMALL_SMOKE(15, "SMOKEY", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.SUGAR), "Thin Smoke"),
-        CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON), "Cloudy"),
-        HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.SPIDER_EYE), "Poison"),
-        SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER), "Potion"),
-        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW), "Snowfall"),
-        VALENTINES(20, "VALENTINES", EnumParticle.HEART, new org.bukkit.inventory.ItemStack(Material.APPLE), "Hearts");
+        FIREWORKS_SPARK(Material.FIREWORK, "Fireworks"),
+        WATER_BUBBLE(Material.WATER_BUCKET, "Bubble", -1),
+        TOWN_AURA(Material.SULPHUR, "Stubble"),
+        CRIT(Material.NETHER_STAR, "Light Stars"),
+        CRIT_MAGIC(Material.FIREWORK_CHARGE, "Dark Stars"),
+        SPELL_WITCH(Material.CAULDRON_ITEM, "Magic"),
+        NOTE(Material.NOTE_BLOCK, "Notes", 1250),
+        PORTAL(Material.EYE_OF_ENDER, "Portal", 1250),
+        ENCHANTMENT_TABLE(Material.ENCHANTMENT_TABLE, "Enchantment"),
+        FLAME(Material.FIREBALL, "Flames", 1250),
+        LAVA(Material.LAVA_BUCKET, "Lava", -1),
+        WATER_SPLASH(Material.WATER_BUCKET, "Splash"),
+        SMOKE_LARGE(Material.MELON, "Thick Smoke", -1),
+        REDSTONE(Material.CAKE, "Birthday", ChatColor.RED, 1250),
+        SNOWBALL(Material.SNOW_BALL, "Snowball"),
+        SMOKE_NORMAL(Material.SUGAR, "Thin Smoke", 1250),
+        CLOUD(Material.BEACON, "Cloudy", 1250),
+        VILLAGER_HAPPY(Material.SPIDER_EYE, "Poison", ChatColor.DARK_GREEN, 650),
+        SPELL(Material.BLAZE_POWDER, "Potion", -1),
+        SNOW_SHOVEL(Material.SNOW, "Snowfall"),
+        HEART(Material.APPLE, "Hearts", -1);
 
-        private int id;
-        private String rawName;
-        private EnumParticle particle;
-        private org.bukkit.inventory.ItemStack selectionItem;
+        private ItemStack selectionItem;
         private String displayName;
+        private ChatColor color;
+        private int price;
+        
+        
+        ParticleEffect(Material mat, String displayName) {
+        	this(mat, displayName, 650);
+        }
+        
+        ParticleEffect(Material mat, String displayName, int price) {
+        	this(mat, displayName, ChatColor.WHITE, price);
+        }
 
-        ParticleEffect(int id, String rawName, EnumParticle particle, org.bukkit.inventory.ItemStack selectionItem, String displayName) {
-            this.id = id;
-            this.rawName = rawName;
-            this.particle = particle;
-            this.selectionItem = selectionItem;
+        ParticleEffect(Material mat, String displayName, ChatColor color, int price) {
+            this.selectionItem = new ItemStack(mat);
             this.displayName = displayName;
+            this.color = color;
+            this.price = price;
+        }
+        
+        public EnumParticle getParticle() {
+        	return EnumParticle.valueOf(name());
+        }
+        
+        public int getId() {
+        	return ordinal();
         }
 
         public static ParticleEffect getById(int id) {
-            for (ParticleEffect particleEffect : values()) {
-                if (particleEffect.id == id) {
+            for (ParticleEffect particleEffect : values())
+                if (particleEffect.getId() == id)
                     return particleEffect;
-                }
-            }
             return null;
         }
 
         public static ParticleEffect getByName(String rawName) {
-            for (ParticleEffect particleEffect : values()) {
-                if (particleEffect.rawName.equalsIgnoreCase(rawName)) {
+            for (ParticleEffect particleEffect : values())
+                if (particleEffect.name().equalsIgnoreCase(rawName))
                     return particleEffect;
-                }
-            }
             return null;
-        }
-
-        public EnumParticle getParticle() {
-            return particle;
-        }
-
-        public org.bukkit.inventory.ItemStack getSelectionItem() {
-            return selectionItem;
-        }
-
-        public String getRawName() {
-            return rawName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public static ChatColor getChatColorByName(String rawName) {
-            switch (getByName(rawName)) {
-                case FLAME:
-                    return ChatColor.RED;
-                case HAPPY_VILLAGER:
-                    return ChatColor.DARK_GREEN;
-                default:
-                    return ChatColor.WHITE;
-            }
         }
     }
 
@@ -184,6 +173,15 @@ public class ParticleAPI {
             }
         }
     }
+    
+    public static void spawnParticle(Particle p, Location loc, int count, float speed) {
+    	Random r = new Random();
+    	spawnParticle(p, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), count, speed);
+    }
+    
+    public static void spawnParticle(Particle p, Location loc, double xOff, double yOff, double zOff, int count, float speed) {
+    	GameAPI.getNearbyPlayers(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
+    }
 
     /**
      * Creates a new packet to send to players with given parameters
@@ -233,6 +231,6 @@ public class ParticleAPI {
      * @since 1.0
      */
     private static void sendPacketToPlayer(Player player, Object packet) {
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket((Packet) packet);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket((Packet<?>) packet);
     }
 }

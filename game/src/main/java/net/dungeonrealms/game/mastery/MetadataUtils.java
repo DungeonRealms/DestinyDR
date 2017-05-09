@@ -1,103 +1,210 @@
 package net.dungeonrealms.game.mastery;
 
+import java.util.UUID;
+
+import lombok.AllArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.item.Item;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
+import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.Map;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.Metadatable;
 
 /**
- * Created by Kieran on 9/18/2015.
+ * MetadataUtils - Registers basic entity metadata.
+ * 
+ * Redone on April 20th, 2017.
+ * @author Kneesnap
  */
 public class MetadataUtils {
 
+	/**
+	 * Registry of most basic metadata.
+	 * Enums MUST either be a default enum value or its class.
+	 * 
+	 * @author Kneesnap
+	 */
+	@AllArgsConstructor
+	public enum Metadata {
+		
+		// Entity
+		CUSTOM_NAME("Error"),
+		DUNGEON(false),
+		NAMED_ELITE(EnumNamedElite.class),
+		ELITE(false),
+		BOSS(false),
+		LEVEL(1),
+		ENTITY_TYPE(EnumEntityType.class),
+		ELEMENT(ElementalAttribute.class),
+		PASSIVE(false),
+		
+		CURRENT_HP(50),
+		MAX_HP(50),
+		HP_REGEN(5),
+		
+		// Items
+		WHITELIST(""),
+		NO_PICKUP(false),
+		
+		// Mounts
+		MOUNT(EnumMounts.class),
+		OWNER(UUID.randomUUID()),
+		
+		// Projectile
+		DR_PROJECTILE(false),
+		
+		// Spawners
+		SPAWN_TYPE(null),
+		
+		// General
+		TIER(1);
+		
+		private Object defaultValue;
+		
+		public MetadataValue get(Metadatable m) {
+			if (!has(m)) { //If the value isn't set
+				if (isDefClass()) // A class will only be set if there is no value.
+					return null;
+				setDefault(m);
+			}
+			return m.getMetadata(getKey()).get(0);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public <T extends Enum<T>> T getEnum(Metadatable m) {
+			// Since the default value can be an enum class or an enum value, we must get the class dependent on that.
+			Class<T> cls = isDefClass() ? (Class<T>) defaultValue : (Class<T>) ((Enum<T>) defaultValue).getClass();
+			return (T) getEnum(m, cls);
+		}
+		
+		@SuppressWarnings("unchecked")
+		private <T extends Enum<T>> T getEnum(Metadatable m, Class<T> c) {
+			if (!has(m))
+				return null;
+			try {
+				return (T) c.getMethod("valueOf", String.class).invoke(null, get(m).asString());
+			} catch (Exception e) {
+				e.printStackTrace();
+				Bukkit.getLogger().warning("Failed to load value '" + get(m).asString() + "' as " + c.getSimpleName() + ".");
+			}
+			return null;
+		}
+		
+		/**
+		 * Does this object have this metadata?
+		 */
+		public boolean has(Metadatable m) {
+			return m.hasMetadata(getKey());
+		}
+		
+		/**
+		 * Sets default value.
+		 */
+		public void setDefault(Metadatable m) {
+			set(m, defaultValue);
+		}
+		
+		/**
+		 * Sets metadata. If the value impements MetaValue, set it to that instead.
+		 */
+		public void set(Metadatable m, Object value) {
+			if (value instanceof MetaValue)
+				value = ((MetaValue)value).getValue();
+			else if (value instanceof Enum<?>)
+				value = ((Enum<?>)value).name();
+			m.setMetadata(getKey(), new FixedMetadataValue(DungeonRealms.getInstance(), value));
+		}
+		
+		/**
+		 * Removes metadata.
+		 */
+		public void remove(Metadatable m) {
+			m.removeMetadata(getKey(), DungeonRealms.getInstance());
+		}
+		
+		private String getKey() {
+			return name().toLowerCase();
+		}
+		
+		/**
+		 * Is the default value a class?
+		 */
+		private boolean isDefClass() {
+			return defaultValue instanceof Class<?>;
+		}
+	}
+	
+	public interface MetaValue {
+		public Object getValue();
+	}
+	
+	public interface EnumMetaValue extends MetaValue {
+		@Override
+		default Object getValue() {
+			assert this instanceof Enum<?>;
+			return ((Enum<?>)this).name();
+		}
+	}
+	
+	public static void registerEntityMetadata(Entity entity, EnumEntityType type) {
+		assert !type.isCombat();
+		registerEntityMetadata(entity, type, 0, 0);
+	}
+	
     /**
-     * This type is used to register metadata on entities.
-     *
-     * @param entity
-     * @param entityType
-     * @param entityTier
-     * @param level
-     * @since 1.0
+     * Registers basic entity metadata.
      */
-    public static void registerEntityMetadata(Entity entity, EnumEntityType entityType, int entityTier, int level) {
-        switch (entityType) {
-            case PET: {
-                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "pet"));
-                break;
-            }
-            case FRIENDLY_MOB: {
-                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "friendly"));
-                entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
-                entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
-                break;
-            }
-            case MOUNT: {
-                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
-                break;
-            }
-            case HOSTILE_MOB: {
-                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "hostile"));
-                entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
-                entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
-                GameAPI.calculateAllAttributes((LivingEntity)entity.getBukkitEntity(), ((DRMonster) entity).getAttributes());
-                break;
-            }
-        }
+    public static void registerEntityMetadata(Entity entity, EnumEntityType type, int tier, int level) {
+    	if (type.isCombat()) {
+    		Metadata.TIER.set(entity, tier);
+    		Metadata.LEVEL.set(entity, level);
+    		if (type == EnumEntityType.HOSTILE_MOB)
+    			GameAPI.calculateAllAttributes((LivingEntity) entity);
+    	}
+    	
+    	Metadata.ENTITY_TYPE.set(entity, type);
     }
 
     /**
-     * This type is used to create buffs.
-     *
-     * @param entity
-     * @param potionEffectType
-     * @param radius
-     * @param duration
-     * @since 1.0
+     * Sets projectile attributes from the weapon it was shot from.
      */
-    public static void registerBuffMetadata(Entity entity, PotionEffectType potionEffectType, int radius, int duration) {
-        entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "buff"));
-        entity.getBukkitEntity().setMetadata("effectType", new FixedMetadataValue(DungeonRealms.getInstance(), potionEffectType.getName()));
-        entity.getBukkitEntity().setMetadata("radius", new FixedMetadataValue(DungeonRealms.getInstance(), radius));
-        entity.getBukkitEntity().setMetadata("duration", new FixedMetadataValue(DungeonRealms.getInstance(), duration));
+    public static void registerProjectileMetadata(ItemGear dataFrom, Projectile projectile) {
+    	registerProjectileMetadata(dataFrom.getAttributes(), dataFrom.getTier().getId(), projectile);
     }
-
+    
     /**
-     * This type is used add metadata to projectiles based on their firing weapons nbt data.
-     *
-     * @param tag
-     * @param projectile
-     * @since 1.0
+     * Saves attributes into projectile metadata.
      */
-    public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
-        projectile.setMetadata("drProjectile", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-        // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
-        // type.
-        for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
+    public static void registerProjectileMetadata(AttributeList attributes, int tier, Projectile projectile) {
+    	Metadata.DR_PROJECTILE.set(projectile, true);
+        Metadata.TIER.set(projectile, tier);
+        
+        // Transfer weapon attributes.
+    	for (AttributeType type : attributes.keySet()) {
+        	if (!(type instanceof WeaponAttributeType)) // Since this is a weapon, only transfer offensive attributes.
+        		continue;
             String modifier = type.getNBTName();
             if (type.isRange()) {
                 projectile.setMetadata(modifier + "Min", new FixedMetadataValue(DungeonRealms.getInstance(),
-                        attributes.get(modifier)[0]));
+                        attributes.getAttribute(type).getValLow()));
 
                 projectile.setMetadata(modifier + "Max", new FixedMetadataValue(DungeonRealms.getInstance(),
-                        attributes.get(modifier)[1]));
+                        attributes.getAttribute(type).getValHigh()));
             } else {
                 projectile.setMetadata(modifier, new FixedMetadataValue(DungeonRealms.getInstance(), attributes
-                        .get(modifier)[1]));
+                        .getAttribute(type).getValue()));
             }
         }
-        // transfer the itemTier, itemType, and itemRarity
-        projectile.setMetadata("itemTier", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemTier")));
-        projectile.setMetadata("itemType", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemType")));
-        projectile.setMetadata("itemRarity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemRarity")));
-
     }
 }

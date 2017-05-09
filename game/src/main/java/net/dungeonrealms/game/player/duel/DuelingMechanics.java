@@ -2,7 +2,9 @@ package net.dungeonrealms.game.player.duel;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -35,12 +37,7 @@ public class DuelingMechanics {
 
         if(senderWrapper == null || requestedWrapper == null) return;
 
-    	/*if(!DungeonRealms.getInstance().isMasterShard){
-    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled.");
-    		return;
-    	}*/
-
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             sender.sendMessage(ChatColor.RED + "Dueling is disabled on this shard.");
             return;
         }
@@ -63,7 +60,7 @@ public class DuelingMechanics {
             return;
         }
 
-        if (requestedWrapper.getToggles().isDuel()) {
+        if (requestedWrapper.getToggles().getState(Toggles.DUEL)) {
             pending.put(sender.getUniqueId(), requested.getUniqueId());
             cooldown.add(sender.getUniqueId());
             sender.sendMessage(ChatColor.GREEN + "Duel request sent!");

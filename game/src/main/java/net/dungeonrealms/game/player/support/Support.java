@@ -1,8 +1,11 @@
 package net.dungeonrealms.game.player.support;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +36,7 @@ public class Support {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setEcash(type.equals("set") ? amount : type.equals("remove") ? wrapper.getEcash() + (amount * -1) : wrapper.getEcash() + amount);
             wrapper.saveData(true, null, (wrapp) -> {
-                GameAPI.updatePlayerData(uuid, "ecash");
+                GameAPI.updatePlayerData(uuid, UpdateType.ECASH);
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -58,16 +61,11 @@ public class Support {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setLevel(type.equals("set") ? amount : type.equals("remove") ? wrapper.getLevel() + (amount * -1) : wrapper.getLevel() + amount);
             wrapper.saveData(true, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid, "level");
+                GameAPI.updatePlayerData(uuid, UpdateType.LEVEL);
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
         });
-//        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, doAfter -> {
-//            GameAPI.updatePlayerData(uuid);
-//            player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-//            SupportMenus.openMainMenu(player, playerName);
-//        });
     }
 
     /**
@@ -84,7 +82,7 @@ public class Support {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setExperience(type.equals("set") ? amount : type.equals("remove") ? wrapper.getExperience() + (amount * -1) : wrapper.getExperience() + amount);
             wrapper.saveData(true, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid, "experience");
+                GameAPI.updatePlayerData(uuid, UpdateType.EXP);
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
@@ -104,25 +102,24 @@ public class Support {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setGems(type.equals("set") ? amount : type.equals("remove") ? (amount * -1) : amount);
             wrapper.saveData(true, null, (wrap) -> {
-                GameAPI.updatePlayerData(uuid, "gems");
+                GameAPI.updatePlayerData(uuid, UpdateType.GEMS);
                 player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
         });
     }
 
-    public static void modifySubscription(Player player, String playerName, UUID uuid, int amount, String type, String rank) {
+    public static void modifySubscription(Player player, String playerName, UUID uuid, int amount, String type, PlayerRank rank) {
         // @todo: There's an error with this, still a WIP.
 
-        player.sendMessage(playerName + ", " + uuid.toString() + ", " + amount + ", " + type + ", " + rank);
-        final String playerRank = rank.toUpperCase();
+        player.sendMessage(playerName + ", " + uuid.toString() + ", " + amount + ", " + type + ", " + rank.name());
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-            wrapper.setRank(playerRank);
+            wrapper.setRank(rank);
             wrapper.setRankExpiration(type.equalsIgnoreCase("set") ? amount : wrapper.getRankExpiration() + amount);
             wrapper.saveData(true, null, wrap -> {
-                GameAPI.updatePlayerData(uuid, "rank");
-                player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + " " + playerRank + " DAYS" + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                GameAPI.updatePlayerData(uuid, UpdateType.RANK);
+                player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + " " + rank.getPrefix() + " DAYS" + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
             });
         });

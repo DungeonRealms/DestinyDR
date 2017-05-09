@@ -1,28 +1,39 @@
 package net.dungeonrealms.game.command;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 
-/**
- * Created by Kieran on 30-Nov-15.
- */
 public class CommandToggle extends BaseCommand {
-    public CommandToggle(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
-    }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	private Toggles toggle;
+	
+	public CommandToggle(Toggles t) {
+		super(t.getCommand(), "/<command>", t.getDescription());
+		this.toggle = t;
+	}
 
-        if (!(sender instanceof Player)) return false;
-
-        PlayerMenus.openToggleMenu((Player) sender);
-
-        return true;
-    }
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player))
+			return false;
+		
+		Player p = (Player) sender;
+		PlayerWrapper pw = PlayerWrapper.getWrapper(p);
+		if (pw == null)
+			return false;
+		
+		if (!pw.getRank().isAtLeast(toggle.getMinRank())) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission to use this toggle.");
+			return true;
+		}
+		
+		pw.getToggles().toggle(toggle);
+		return true;
+	}
 }

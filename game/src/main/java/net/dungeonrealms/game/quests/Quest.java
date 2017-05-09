@@ -5,9 +5,8 @@ import java.util.List;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.md_5.bungee.api.ChatColor;
@@ -111,15 +110,15 @@ public class Quest implements ISaveable {
 	}
 	
 	public boolean canStartQuest(Player player){
-		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+		PlayerWrapper pw = PlayerWrapper.getWrapper(player);
 		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
-		if (gamePlayer == null || data == null)
+		if (pw == null || data == null)
 			return false;
 		
 		if(data.isDoingQuest(this))
 			return false;
 		
-		if (this.getLevelRequirement() > gamePlayer.getLevel()){
+		if (this.getLevelRequirement() > pw.getLevel()){
 			player.sendMessage(ChatColor.RED + "You must be level " + ChatColor.UNDERLINE + this.getLevelRequirement() + ChatColor.RED + " to do this quest.");
 			return false;
 		}
@@ -241,11 +240,6 @@ public class Quest implements ISaveable {
 		
 		player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "Quest Complete> " + ChatColor.AQUA + this.getQuestName());
 		data.completeQuest(this);
-
-		//if (this.getQuestName().equalsIgnoreCase("Tutorial Island")) {
-		//	ItemManager.giveStarter(player, true);  //This replaces any armor they're wearing already, plus they get this when they login.
-		//}
-		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 		
 		player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 		Builder effect = FireworkEffect.builder();
@@ -255,12 +249,12 @@ public class Quest implements ISaveable {
 		
 		if(this.gemReward > 0){
 			player.sendMessage(ChatColor.GREEN + "You acquired " + this.gemReward + " gems!");
-			player.getInventory().addItem(BankMechanics.createBankNote(this.gemReward, this.getQuestName()));
+			player.getInventory().addItem(new ItemGemNote(getQuestName(), gemReward).generateItem());
 		}
 		
 		//This delay is purely for "cosmetic" purposes.
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
-				() -> gamePlayer.addExperience(this.getXPReward(), false, true), 40);
+				() -> PlayerWrapper.getWrapper(player).addExperience(this.getXPReward(), false, true), 40);
 	}
 	
 	private void startQuest(Player player, QuestPlayerData data){

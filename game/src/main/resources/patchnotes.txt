@@ -1,11 +1,21 @@
 Build <build>
 
+<<<<<<< HEAD
 &8&lChanges&0
 - &a&l2x&0 Drop Rates
 - &a&l30%&0 Increased Profession EXP Rates
 - Orbs now tradeable for 180 T3 Scrap
 - Easter Eggs no longer drop from mobs.
+=======
+&8Changes&0
+- Realms Optimized
+>>>>>>> refs/heads/item-recode
 
+<<<<<<< HEAD
 &8&lBug Fixes&0
 - Fixed glow not working for some people.
 - Fixed going Chaotic after a duel in the Wilderness
+=======
+&8Bugfixes&0
+- 
+>>>>>>> refs/heads/item-recode

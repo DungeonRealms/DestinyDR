@@ -29,7 +29,7 @@ public class AcceptCommand extends BaseCommand implements CooldownCommand {
         Player player = (Player) s;
 
         // No friends on the event shard.
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             player.sendMessage(ChatColor.RED + "You cannot accept a friend request on this shard.");
             return false;
         }

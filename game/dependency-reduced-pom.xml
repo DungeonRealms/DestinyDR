@@ -185,11 +185,7 @@
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
-<<<<<<< HEAD
-      <version>RELEASE</version>
-=======
       <version>4.0</version>
->>>>>>> refs/heads/db-recode
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
     </dependency>
@@ -202,4 +198,3 @@
     </dependency>
   </dependencies>
 </project>
-

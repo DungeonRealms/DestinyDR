@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.teleportation;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -7,9 +8,7 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseHearthStone;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,34 +28,19 @@ import java.util.UUID;
  */
 public class Teleportation implements GenericMechanic {
 
-    private static Teleportation instance = null;
-
-    public static Teleportation getInstance() {
-        if (instance == null) {
-            return new Teleportation();
-        }
-        return instance;
-    }
+	@Getter
+    private static Teleportation instance = new Teleportation();
 
     public static HashMap<UUID, Integer> PLAYER_TELEPORT_COOLDOWNS = new HashMap<>();
     public static HashMap<UUID, Location> PLAYERS_TELEPORTING = new HashMap<>();
 
+    //Avalon enter / exit
     public static Location Underworld;
     public static Location Overworld;
-    //teleport_overworld
-    //teleport_underworld
 
     public enum EnumTeleportType {
-        HEARTHSTONE(0, "Hearthstone"),
-        TELEPORT_BOOK(1, "Teleport Book");
-
-        private int id;
-        private String name;
-
-        EnumTeleportType(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
+        HEARTHSTONE,
+        TELEPORT_BOOK;
     }
 
     @Override
@@ -69,17 +53,8 @@ public class Teleportation implements GenericMechanic {
         Underworld = new Location(Bukkit.getWorlds().get(0), -362, 172, -3440, -90F, 1F);
         Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 96, -515, 91F, 1F);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
-                /*if (e.getValue() == 0) {
-                    Player player = Bukkit.getPlayer(e.getKey());
-                    if (!player.hasMetadata("hearthstoneReady")) {
-                        player.sendMessage(ChatColor.RED + "Your Hearthstone is ready.");
-                        player.setMetadata("hearthstoneReady", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    }
-                    continue;
-                }*/
+            for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet())
                 TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));
-            }
         }, 20L, 20L);
     }
 
@@ -124,7 +99,7 @@ public class Teleportation implements GenericMechanic {
                 taskTimer[0] = 10;
                 break;
             case TELEPORT_BOOK:
-                particleEffect[0] = ParticleAPI.ParticleEffect.WITCH_MAGIC;
+                particleEffect[0] = ParticleAPI.ParticleEffect.SPELL_WITCH;
                 particleEffect[1] = ParticleAPI.ParticleEffect.PORTAL;
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));

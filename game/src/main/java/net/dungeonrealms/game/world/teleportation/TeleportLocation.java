@@ -1,9 +1,13 @@
 package net.dungeonrealms.game.world.teleportation;
 
-import net.dungeonrealms.GameAPI;
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Getter;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Bukkit;
@@ -21,8 +25,7 @@ public enum TeleportLocation {
 	TROLLSBANE("Trollsbane Tavern", WorldRegion.TROLLSBANE, 7500, 962, 95, 1069, -153.0F, 1F),
 	TRIPOLI("Tripoli", WorldRegion.TRIPOLI, 7500, -1320, 91, 370, 153F, 1F),
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
-	//+ ChatColor.RED + " WARNING: CHAOTIC ZONE"
-	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F);
+	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, true);
 	
 	private String displayName;
 	private WorldRegion region;
@@ -33,6 +36,7 @@ public enum TeleportLocation {
 	private float pitch;
 	private int price;
 	private boolean allowBooks;
+	@Getter private boolean chaotic;
 	
 	TeleportLocation(String displayName, WorldRegion region, int price, double x, double y, double z) {
 		this(displayName, region, price, x, y, z, 0, 0);
@@ -47,6 +51,10 @@ public enum TeleportLocation {
 	}
 	
 	TeleportLocation(String displayName, WorldRegion region, int price, double x, double y, double z, float yaw, float pitch, boolean allowBooks){
+		this(displayName, region, price, x, y, z, yaw, pitch, allowBooks, false);
+	}
+	
+	TeleportLocation(String displayName, WorldRegion region, int price, double x, double y, double z, float yaw, float pitch, boolean allowBooks, boolean chaotic){
 		this.displayName = displayName;
 		this.region = region;
 		this.x = x;
@@ -56,6 +64,7 @@ public enum TeleportLocation {
 		this.pitch = pitch;
 		this.price = price;
 		this.allowBooks = allowBooks;
+		this.chaotic = chaotic;
 	}
 	
 	public boolean canSetHearthstone(Player player){
@@ -63,7 +72,7 @@ public enum TeleportLocation {
 			return true;
 		if(this.region == null || this.region.getAchievement() == null)
 			return false;
-		return Achievements.getInstance().hasAchievement(player.getUniqueId(), this.region.getAchievement());
+		return Achievements.hasAchievement(player, this.region.getAchievement());
 	}
 	
 	public String getDisplayName(){
@@ -78,11 +87,8 @@ public enum TeleportLocation {
 		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 		if (wrapper == null)
             return false;
-        
-        if (wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC)
-            return true;
-        
-        return this == TeleportLocation.DEADPEAKS;
+		
+        return wrapper.getAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC;
 	}
 	
 	public static TeleportLocation getTeleportLocation(NBTTagCompound tag){
@@ -97,5 +103,17 @@ public enum TeleportLocation {
 	
 	public boolean canBeABook() {
 		return this.allowBooks;
+	}
+
+	public static TeleportLocation getRandomBookTP() {
+		List<TeleportLocation> teleportable = new ArrayList<TeleportLocation>();
+    	for(TeleportLocation tl : TeleportLocation.values())
+    		if(tl.canBeABook())
+    			teleportable.add(tl);
+    	return teleportable.get(Utils.randInt(0, teleportable.size() - 1));
+	}
+	
+	public String getDBString() {
+		return x + "," + y + "," + z + "," + yaw + "," + pitch;
 	}
 }

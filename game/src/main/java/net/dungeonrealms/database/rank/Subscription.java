@@ -1,9 +1,12 @@
 package net.dungeonrealms.database.rank;
 
+import lombok.Getter;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -15,17 +18,11 @@ import java.util.UUID;
  */
 public class Subscription {
 
-    static Subscription instance = null;
+	@Getter
+	private static Subscription instance = new Subscription();
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("American/New_York"));
-    }
-
-    public static Subscription getInstance() {
-        if (instance == null) {
-            instance = new Subscription();
-        }
-        return instance;
     }
 
     /**
@@ -36,7 +33,7 @@ public class Subscription {
      *
      */
     public int checkSubscription(UUID uuid, int expiration) {
-        Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
+        Rank.PlayerRank rank = Rank.getPlayerRank(uuid);
         if (rank == Rank.PlayerRank.SUB || rank == Rank.PlayerRank.SUB_PLUS) {
             int currentTime = (int) (System.currentTimeMillis() / 1000);
             int endTime = expiration;
@@ -59,15 +56,15 @@ public class Subscription {
             showSubscriptionExpiry(player, subLength);
         } else if (subLength == 0) {
             expireSubscription(player, wrapper);
-        } else if (subLength == -1 && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub++")) {
+        } else if (subLength == -1 && Rank.isSUBPlusPlus(player)) {
             showSubscriptionExpiry(player, -1);
         }
     }
 
     public void expireSubscription(Player player, PlayerWrapper wrapper) {
-        wrapper.setRank("default");
+        wrapper.setRank(PlayerRank.DEFAULT);
         wrapper.setRankExpiration(0);
-        Rank.getInstance().getCachedRanks().put(player.getUniqueId(), Rank.PlayerRank.DEFAULT);
+        Rank.getCachedRanks().put(player.getUniqueId(), Rank.PlayerRank.DEFAULT);
         SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_RANK, "DEFAULT", wrapper.getAccountID());
         player.sendMessage(ChatColor.RED + "Your subscription has expired!");
     }

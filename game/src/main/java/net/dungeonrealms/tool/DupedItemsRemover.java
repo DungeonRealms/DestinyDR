@@ -1,18 +1,14 @@
 package net.dungeonrealms.tool;
 
-import com.mongodb.Block;
-
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
-import org.bson.Document;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +17,8 @@ import java.util.*;
 
 /**
  * Class written by Alan Lu on 8/2/2016
+ * 
+ * This class is not used. Maybe we can write a better system later.
  */
 
 public class DupedItemsRemover implements GenericMechanic {
@@ -36,90 +34,7 @@ public class DupedItemsRemover implements GenericMechanic {
         final int[] totalQueries = {0};
         final int[] totalQueriesWithDupes = {0};
         long currTotalTime = System.currentTimeMillis();
-//        DatabaseInstance.getInstance().startInitialization(true);
-
-//        DatabaseInstance.playerData.find().forEach(new Block<Document>() {
-//            @Override
-//            public void apply(Document doc) {
-//                totalQueries[0]++;
-//                int dupedItemsFound = 0;
-//                long currTime = System.currentTimeMillis();
-//                final Document infoDoc = doc.get("info", Document.class);
-//                if (infoDoc == null) return;
-//
-//                final String rank = doc.get("rank", Document.class).get("rank", String.class);
-//                if (rank.equalsIgnoreCase("GM") || rank.equalsIgnoreCase("DEV") || rank.equalsIgnoreCase("HEADGM") || rank.equalsIgnoreCase("TRIALGM"))
-//                    return;
-//
-//                String name = infoDoc.get("username", String.class);
-//                UUID uuid = UUID.fromString(infoDoc.get("uuid", String.class));
-//
-//                if (name != null) System.out.println("Checking player " + name);
-//
-//                playerGems = infoDoc.get("gems", Integer.class);
-//
-//                Document invDoc = doc.get("inventory", Document.class);
-//
-//                // PLAYER INVENTORY
-//                String playerInv = invDoc.get("player", String.class);
-//                if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(playerInv, 36), name);
-//                }
-//                // ARMOR
-//                List<String> playerArmor = (ArrayList<String>) invDoc.get("armor");
-//                ItemStack[] armorAndOffHand = new ItemStack[5];
-//                for (int i = 0; i < playerArmor.size(); i++) {
-//                    final String armor = playerArmor.get(i);
-//                    if (armor.equals("null") || armor.equals("")) {
-//                        armorAndOffHand[i] = new ItemStack(Material.AIR);
-//                    } else {
-//                        armorAndOffHand[i] = ItemSerialization.itemStackFromBase64(armor);
-//                    }
-//                }
-//                dupedItemsFound += addGearUIDSAndCheckDupes(armorAndOffHand, uuid, name);
-//
-//                // STORAGE
-//                String storage = invDoc.get("storage", String.class);
-//                if (storage != null && storage.length() > 0 && !storage.equalsIgnoreCase("null")) {
-//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(storage), name);
-//                }
-//
-//                // MULE
-//                int muleLevel = infoDoc.get("muleLevel", Integer.class);
-//                String invString = invDoc.get("mule", String.class);
-//                if (muleLevel > 3) {
-//                    muleLevel = 3;
-//                }
-//                MuleTier tier = MuleTier.getByTier(muleLevel);
-//                Inventory muleInv = null;
-//                if (tier != null && !invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-//                    muleInv = ItemSerialization.fromString(invString, tier.getSize());
-//                }
-//                if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
-//                    dupedItemsFound += addGearUIDSAndCheckDupes(muleInv, name);
-//
-//                // COLLECTION BIN
-//                String bin = invDoc.get("collection_bin", String.class);
-//                if (bin != null && bin.length() > 0 && !bin.equalsIgnoreCase("null")) {
-//                    dupedItemsFound += addGearUIDSAndCheckDupes(ItemSerialization.fromString(bin), name);
-//                }
-//
-//
-//                System.out.println("Single player took " + String.valueOf(System.currentTimeMillis() - currTime) +
-//                        "ms");
-//
-//                if (dupedItemsFound > 0) {
-//                    System.out.println(dupedItemsFound + " duped items found and removed for player " + name);
-//                    totalQueriesWithDupes[0]++;
-//                }
-//
-//                totalDupedItemsFound[0] += dupedItemsFound;
-//                if (playerGems > 50000) playersWithHighGems.put(name, playerGems);
-//                if (playerOrbs > 32) playersWithHighOrbs.put(name, playerOrbs);
-//                playerGems = 0;
-//                playerOrbs = 0;
-//            }
-//        });
+        
         String formattedTime = DurationFormatUtils.formatDurationWords(System.currentTimeMillis() -
                 currTotalTime, true, true);
         System.out.println("Checked " + totalQueries[0] + " players in " + formattedTime + " and found " +
@@ -147,12 +62,12 @@ public class DupedItemsRemover implements GenericMechanic {
         int dupedItemsFound = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null || i.getType() == Material.AIR) continue;
-            if (GameAPI.isOrb(i))
+            if (ItemOrb.isOrb(i))
                 playerOrbs += i.getAmount();
-            else if (BankMechanics.getInstance().isBankNote(i))
-                playerGems += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
-            if (!RepairAPI.isItemArmorOrWeapon(i)) continue;
-            final String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
+            else if (ItemMoney.isMoney(i))
+                playerGems += ((ItemMoney)PersistentItem.constructItem(i)).getGemValue();
+            if (!ItemGear.isCustomTool(i)) continue;
+            final String uniqueEpochIdentifier = AntiDuplication.getUniqueEpochIdentifier(i);
             if (uniqueEpochIdentifier == null) continue;
 
             if (uids.containsKey(uniqueEpochIdentifier)) {
@@ -192,7 +107,7 @@ public class DupedItemsRemover implements GenericMechanic {
         int dupedItemsFound = 0;
         for (int i = 0; i < items.length; i++) {
             if (items[i] == null || items[i].getType() == Material.AIR) continue;
-            if (!RepairAPI.isItemArmorOrWeapon(items[i])) continue;
+            if (!ItemGear.isCustomTool(items[i])) continue;
             final String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(items[i]);
             if (uniqueEpochIdentifier == null) continue;
 

@@ -1,36 +1,30 @@
 package net.dungeonrealms.game.player.combat;
 
-
-import com.google.common.collect.Lists;
-
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.CombatItem;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -47,18 +41,10 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class CombatLog implements GenericMechanic {
 
-    private static CombatLog instance = null;
-
-    public static CombatLog getInstance() {
-        if (instance == null) {
-            instance = new CombatLog();
-        }
-        return instance;
-
-    }
+	@Getter
+    private static CombatLog instance = new CombatLog();
 
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
-
     public static ConcurrentHashMap<Player, Integer> PVP_COMBAT = new ConcurrentHashMap<>();
 
     public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
@@ -80,7 +66,7 @@ public class CombatLog implements GenericMechanic {
      */
     public void handleCombatLog(Player player) {
         if (inPVP(player)) {
-            KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
+            KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getAlignment();
             switch (alignments) {
                 case LAWFUL:
                     ItemStack storedItem = null;
@@ -97,7 +83,7 @@ public class CombatLog implements GenericMechanic {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
-                                if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack) && !GameAPI.isItemSoulbound(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
                                     // We don't want to drop the storedItem
                                     if (!itemStack.equals(storedItem)) {
                                         player.getWorld().dropItem(player.getLocation(), itemStack);
@@ -114,17 +100,14 @@ public class CombatLog implements GenericMechanic {
                     for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                if (!GameAPI.isItemSoulbound(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack))
                                     player.getWorld().dropItem(player.getLocation(), itemStack);
-                                }
                                 player.getInventory().remove(itemStack);
                             }
                         }
                     }
                     player.getInventory().clear();
                     player.getEquipment().clear();
-                    break;
-                case NONE:
                     break;
                 default:
                     break;
@@ -134,14 +117,12 @@ public class CombatLog implements GenericMechanic {
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {
-        if (GameAPI.isArmor(itemStack) || GameAPI.isWeapon(itemStack)) {
+        if (CombatItem.isCombatItem(itemStack)) {
             // Damage by 30% of current durability
-            double durability = RepairAPI.getCustomDurability(itemStack);
-            double toSubstract = (durability / 100) * 30; // 30% of current durability
-            RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
-            if (list != null) {
-                list.add(itemStack);
-            }
+        	CombatItem ci = (CombatItem)PersistentItem.constructItem(itemStack);
+        	ci.damageItem(player, (int) (ci.getDurability() / 3.33333D));
+            if (list != null)
+                list.add(ci.generateItem());
         }
     }
 
@@ -153,6 +134,8 @@ public class CombatLog implements GenericMechanic {
     public static void updatePVP(Player player) {
         if (inPVP(player)) {
             PVP_COMBAT.put(player, 10);
+        } else {
+        	addToPVP(player);
         }
     }
 
@@ -166,23 +149,15 @@ public class CombatLog implements GenericMechanic {
         if(wrapper == null) return;
         if (!inPVP(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             PVP_COMBAT.put(player, 10);
-            if (wrapper.getToggles().isDebug()) {
-                TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
 
             /*
             Knock player off of horse, if they're tagged in combat.
              */
             if (player.getVehicle() != null) {
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-                    player.eject();
-                    mount.getBukkitEntity().remove();
-                    EntityAPI.removePlayerMountList(player.getUniqueId());
-                } else {
-                    player.eject();
-                    player.getVehicle().remove();
-                }
+            	MountUtils.removeMount(player);
+            	if (player.getVehicle() != null)
+            		player.getVehicle().remove();
                 player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
             }
         }
@@ -200,9 +175,7 @@ public class CombatLog implements GenericMechanic {
             PVP_COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (wrapper.getToggles().isDebug()) {
-                TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
         }
     }
 
@@ -219,9 +192,10 @@ public class CombatLog implements GenericMechanic {
     // END PVP COMBAT
 
     public static void updateCombat(Player player) {
-        if (isInCombat(player)) {
+        if (isInCombat(player))
             COMBAT.put(player, 10);
-        }
+        else
+        	addToCombat(player);
     }
 
     public static void addToCombat(Player player) {
@@ -229,23 +203,15 @@ public class CombatLog implements GenericMechanic {
         if(wrapper == null) return;
         if (!isInCombat(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             COMBAT.put(player, 10);
-            if (wrapper.getToggles().isDebug()) {
-                TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
-            }
-
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
+            
             /*
             Knock player off of horse, if they're tagged in combat.
              */
             if (player.getVehicle() != null) {
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-                    player.eject();
-                    mount.getBukkitEntity().remove();
-                    EntityAPI.removePlayerMountList(player.getUniqueId());
-                } else {
-                    player.eject();
+            	MountUtils.removeMount(player);
+            	if (player.getVehicle() != null)
                     player.getVehicle().remove();
-                }
                 player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
             }
 
@@ -259,9 +225,7 @@ public class CombatLog implements GenericMechanic {
             COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            if (wrapper.getToggles().isDebug()) {
-                TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
-            }
+            TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
         }
     }
 
@@ -273,11 +237,12 @@ public class CombatLog implements GenericMechanic {
         List<ItemStack> armorToDrop = new ArrayList<>();
         List<ItemStack> itemsToSave = new ArrayList<>();
         List<ItemStack> armorToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getPlayerAlignment();
-        int lvl = GameAPI.getGamePlayer(player).getLevel();
-        if (alignments == null) {
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        KarmaHandler.EnumPlayerAlignments alignments = pw.getAlignment();
+        int lvl = pw.getLevel();
+        if (alignments == null)
             return;
-        }
+        
         Random random = new Random();
         //TODO: Check if this includes Armor.
         for (int i = 0; i <= player.getInventory().getContents().length; i++) {
@@ -330,9 +295,9 @@ public class CombatLog implements GenericMechanic {
         combatNPC.getEquipment().setItemInOffHand(player.getEquipment().getItemInOffHand());
         combatNPC.setCustomName(ChatColor.AQUA + "[Lvl. " + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
-        MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
-        HealthHandler.getInstance().setMonsterHPLive(combatNPC, HealthHandler.getInstance().getPlayerHPLive(player));
-        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(player)));
+        MetadataUtils.registerEntityMetadata(combatNPC, EnumEntityType.HOSTILE_MOB, 4, lvl);
+        HealthHandler.setHP(combatNPC, HealthHandler.getHP(player));
+        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getMaxHP(player)));
         combatNPC.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         combatNPC.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), player.getUniqueId().toString()));
         combatLogger.setArmorToDrop(armorToDrop);
@@ -381,16 +346,13 @@ public class CombatLog implements GenericMechanic {
 
     }
 
-    /**
-     * @param uuid
-     */
     public static void checkCombatLog(UUID uuid) {
         if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
             CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
             if (combatLogger.getLoggerNPC().isDead()) {
                 combatLogger.handleNPCDeath();
             } else {
-                HealthHandler.getInstance().setPlayerHPLive(Bukkit.getPlayer(uuid), HealthHandler.getInstance().getMonsterHPLive(combatLogger.getLoggerNPC()));
+                HealthHandler.setHP(Bukkit.getPlayer(uuid), HealthHandler.getHP(combatLogger.getLoggerNPC()));
                 combatLogger.handleTimeOut();
             }
 

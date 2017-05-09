@@ -4,12 +4,15 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.database.PlayerWrapper;
+
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
  /**
@@ -17,7 +20,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class DataListener implements Listener {
 
-    @SuppressWarnings("unused")
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerWrapper wrapper = new PlayerWrapper(event.getUniqueId());
@@ -59,7 +61,6 @@ public class DataListener implements Listener {
 //        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
-    @SuppressWarnings("unused")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLogin(PlayerJoinEvent event) {
         if(!event.getPlayer().isOnline())return;
@@ -73,8 +74,18 @@ public class DataListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer().getUniqueId());
-        if(wrapper == null) return;
+        onDC(event.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerKick(PlayerKickEvent event) {
+        onDC(event.getPlayer());
+    }
+    
+    private void onDC(Player player) {
+    	PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
+        if(wrapper == null)
+        	return;
         //We need to remove this instance of the player after they have left the server.. Keep that object for some more use tho.
         wrapper.setPlayer(null);
 //        wrapper.saveData(true, event.getPlayer(), true, (newWrapper) -> newWrapper.setPlayingStatus(false));

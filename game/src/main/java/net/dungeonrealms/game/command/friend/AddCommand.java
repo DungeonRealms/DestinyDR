@@ -34,7 +34,7 @@ public class AddCommand extends BaseCommand implements CooldownCommand {
         Player player = (Player) s;
 
         // No friends on the event shard.
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             player.sendMessage(ChatColor.RED + "You cannot add friends on this shard.");
             return false;
         }

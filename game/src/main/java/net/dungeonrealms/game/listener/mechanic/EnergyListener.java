@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listener.mechanic;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
+import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -89,7 +90,7 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (weapon.getType() != Material.AIR && Mining.isDRPickaxe(weapon)) {
+        if (weapon.getType() != Material.AIR && ItemPickaxe.isPickaxe(weapon)) {
             return;
         }
         if (weapon.getType() == Material.POTION) {
@@ -219,19 +220,11 @@ public class EnergyListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!player.hasPotionEffect(PotionEffectType.HUNGER) && !player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && !player.hasMetadata("starving") && !player.hasMetadata("sprinting"))
-            return;
-        if (player.hasPotionEffect(PotionEffectType.HUNGER)) {
-            player.removePotionEffect(PotionEffectType.HUNGER);
-        }
         if (player.hasMetadata("starving")) {
             player.removeMetadata("starving", DungeonRealms.getInstance());
         }
         if (player.hasMetadata("sprinting")) {
             player.removeMetadata("sprinting", DungeonRealms.getInstance());
-        }
-        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING)) {
-            player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
         }
     }
 }

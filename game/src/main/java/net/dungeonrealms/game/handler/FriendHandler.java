@@ -122,6 +122,10 @@ public class FriendHandler {
      * @param friend Wanting to add.
      * @since 1.0
      */
+    public void sendRequest(Player sender, Player receiver) {
+    	sendRequest(sender, PlayerWrapper.getWrapper(sender).getAccountID(), receiver);
+    }
+    
     public void sendRequest(Player player, int accountID, Player friend) {
         if (player.getDisplayName().equalsIgnoreCase(friend.getDisplayName())) {
             player.sendMessage(ChatColor.RED + "You cannot add yourself.");

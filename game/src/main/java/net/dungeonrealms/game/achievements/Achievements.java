@@ -1,57 +1,50 @@
 package net.dungeonrealms.game.achievements;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 /**
  * Created by Nick on 8/29/2015.
  */
-@SuppressWarnings("unchecked")
 public class Achievements {
 
-    private static Achievements instance = null;
+    @Getter private static Achievements instance = new Achievements();
 
-    public static Achievements getInstance() {
-        if (instance == null) {
-            instance = new Achievements();
-        }
-        return instance;
+    public static boolean hasAchievement(Player player, EnumAchievements ach) {
+    	return hasAchievement(player.getUniqueId(), ach);
+    }
+    
+    public static boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+        return wrapper != null && wrapper.getAchievements().contains(achievement);
     }
 
-    /**
-     * Checks if a player has the achievement.
-     *
-     * @param uuid
-     * @param achievement
-     * @return
-     * @since 1.0
-     */
-    public boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        return wrapper != null && wrapper.getAchievements().contains(achievement.getDBName());
+    private static int getAchievementCount(UUID uuid, AchievementCategory category) {
+    	int count = 0;
+    	for (EnumAchievements ach : EnumAchievements.getByCategory(category))
+    		if (hasAchievement(uuid, ach))
+    			count++;
+    	return count;
     }
-
-    private int explorerAchievementCount(UUID uuid) {
-        int count = 0;
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        for (String achievement : wrapper.getAchievements()) {
-            if (achievement.toLowerCase().contains("explorer_")) {
-                count++;
-            }
-        }
-        return count;
+    
+    public static void giveAchievement(Player p, EnumAchievements achievement) {
+    	giveAchievement(p.getUniqueId(), achievement);
     }
 
     /**
@@ -61,569 +54,313 @@ public class Achievements {
      * @param achievement
      * @since 1.0
      */
-    public void giveAchievement(UUID uuid, EnumAchievements achievement) {
+    public static void giveAchievement(UUID uuid, EnumAchievements achievement) {
     	
     	if (!Bukkit.isPrimaryThread()) {
     		Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> giveAchievement(uuid, achievement));
     		return;
     	}
+    	
         // Achievements are disabled on the event shard.
-        if (DungeonRealms.getInstance().isEventShard)
-            return;
-
-        // You cannot earn an achievement you already have.
-        if (hasAchievement(uuid, achievement))
+        if (DungeonRealms.isEvent() || hasAchievement(uuid, achievement))
             return;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
         if(wrapper == null) return;
 
         // Why wouldnt this be async?
-        //DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getDBName(), true);
-        wrapper.getAchievements().add(achievement.getDBName());
-        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ACHIEVEMENTS, StringUtils.serializeList(wrapper.getAchievements(), ","), wrapper.getCharacterID());
+        wrapper.getAchievements().add(achievement);
+        wrapper.runQuery(QueryType.SET_ACHIEVEMENTS, wrapper.getAchievements(), wrapper.getCharacterID());
+        
         Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
+        if (player == null)
+        	return;
         player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");
-        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0]);
+        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage());
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
-        try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 10);
-        } catch (Exception e) {
-            e.printStackTrace();
+        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 10);
+        if (achievement.getReward() > 0)
+            wrapper.addExperience(achievement.getReward(), false, true);
+        
+        for (EnumAchievementCount count : EnumAchievementCount.values())
+        	if (count.getRequirement() == wrapper.getAchievements().size())
+        		giveAchievement(uuid, count.getAchievement());
+        
+        int expCount = getAchievementCount(uuid, AchievementCategory.EXPLORE);
+        
+        if (expCount == 10) {
+        	giveAchievement(uuid, EnumAchievements.TOURIST);
+        } else if (expCount == 20) {
+        	giveAchievement(uuid, EnumAchievements.ADVENTURER);
         }
-        if (achievement.getReward() > 0) {
-            GameAPI.getGamePlayer(player).addExperience(achievement.getReward(), false, true);
-        }
-        switch (wrapper.getAchievements().size()) {
-            case 10:
-                giveAchievement(uuid, EnumAchievements.NOVICE);
-                break;
-            case 20:
-                giveAchievement(uuid, EnumAchievements.APPRENTICE);
-                break;
-            case 50:
-                giveAchievement(uuid, EnumAchievements.ADEPT);
-                break;
-            case 100:
-                giveAchievement(uuid, EnumAchievements.EXPERT);
-                break;
-            case 200:
-                giveAchievement(uuid, EnumAchievements.MASTER);
-                break;
-            default:
-                break;
-        }
-        switch (explorerAchievementCount(uuid)) {
-            case 10:
-                giveAchievement(uuid, EnumAchievements.TOURIST);
-                break;
-            case 20:
-                giveAchievement(uuid, EnumAchievements.ADVENTURER);
-                break;
-            default:
-                break;
-        }
-        if (achievement == EnumAchievements.FISHINGROD_LEVEL_V) {
-            if (hasAchievement(player.getUniqueId(), EnumAchievements.PICKAXE_LEVEL_V)) {
-                giveAchievement(player.getUniqueId(), EnumAchievements.SKILL_MASTER);
-            }
-        } else if (achievement == EnumAchievements.PICKAXE_LEVEL_V) {
-            if (hasAchievement(player.getUniqueId(), EnumAchievements.FISHINGROD_LEVEL_V)) {
-                giveAchievement(player.getUniqueId(), EnumAchievements.SKILL_MASTER);
-            }
-        }
+        
+        if (achievement == EnumAchievements.FISHINGROD_LEVEL_V && hasAchievement(uuid, EnumAchievements.PICKAXE_LEVEL_V))
+        	giveAchievement(uuid, EnumAchievements.SKILL_MASTER);
+        
+        if (achievement == EnumAchievements.PICKAXE_LEVEL_V && hasAchievement(uuid, EnumAchievements.FISHINGROD_LEVEL_V))
+        	giveAchievement(uuid, EnumAchievements.SKILL_MASTER);
     }
+    
+    @AllArgsConstructor @Getter
+	public enum AchievementCategory {
+		
+		EXPLORE("Exploration", "exploration", Material.MAP),
+		SOCIAL("Social", "socialization", Material.WRITTEN_BOOK),
+		MONEY("Currency", "currency", Material.EMERALD),
+		COMBAT("Combat", "combat", Material.GOLD_SWORD),
+		REALM("Realm", "your realm", Material.NETHER_STAR),
+		//EVENT("Event", "event participation", Material.GOLD_INGOT),
+		DUNGEON("Dungeon", "dungeons", Material.COMMAND),
+		CHARACTER("Character", "character customization", Material.ARMOR_STAND);
+		
+		private String name;
+		private String description;
+		private Material icon;
+	}
 
+    @AllArgsConstructor @Getter
     public enum EnumAchievements {
 
-        FIRST_LOGIN("First Login", new String[]{
-                "Welcome to Dungeon Realms!",
-        }, 100, "first_login", false),
-
-        TUTORIAL_ISLAND("Tutorial Island", new String[]{
-                "Explorer: Tutorial Island",
-        }, 100, "explorer_tutorial_island", false),
-
-        HARRISONS_FIELD("Harrisons Fields", new String[]{
-                "Explorer: Harrisons Fields",
-        }, 500, "explorer_harrisons_fields", false),
-
-        PLAINS_OF_CYRENE("Plains of Cyrene", new String[]{
-                "Explorer: Plains of Cyrene",
-        }, 500, "explorer_plains_of_cyrene", false),
-
-        DARKOAK("Darkoak", new String[]{
-                "Explorer: Darkoak",
-        }, 500, "explorer_darkoak", false),
-
-        JAGGED_ROCKS("Jagged Rocks", new String[]{
-                "Explorer: Jagged Rocks",
-        }, 500, "explorer_jagged_rocks", false),
-
-        GOBLIN_CITY("Skullneck", new String[]{
-                "Explorer: Skullneck",
-        }, 1000, "explorer_skull_neck", false),
-
-        TROLLINGOR("Trollingor", new String[]{
-                "Explorer: Trollingor",
-        }, 2500, "explorer_trollingor", false),
-
-        CRYSTALPEAK_TOWER("Crystalpeak Tower", new String[]{
-                "Explorer: Crystalpeak Tower",
-        }, 5000, "explorer_crystalpeak_tower", false),
-
-        HELMCHEN("Helmchen", new String[]{
-                "Explorer: Helmchen",
-        }, 1000, "explorer_helmchen", false),
-
-        AL_SAHRA("Al Sahra", new String[]{
-                "Explorer: Al Sahra",
-        }, 1000, "explorer_al_sahra", false),
-
-        TRIPOLI("Tripoli", new String[]{
-                "Explorer: Tripoli",
-        }, 1000, "explorer_tripoli", false),
-
-        DREADWOOD("Dreadwood", new String[]{
-                "Explorer: Dreadwood",
-        }, 500, "explorer_dreadwood", false),
-
-        GLOOMY_HOLLOWS("Gloomy Hallows", new String[]{
-                "Explorer: Gloomy Hallows",
-        }, 1000, "explorer_gloomy_hallows", false),
-
-        CREST_GUARD("Crest Guard", new String[]{
-                "Explorer: Crest Guard",
-        }, 2500, "explorer_crest_guard", false),
-
-        FROZEN_NORTH("The Frozen North", new String[]{
-                "Explorer: The Frozen North",
-        }, 5000, "explorer_the_frozen_north", false),
-
-        UNDER_WORLD("The Lost City of Avalon", new String[]{
-                "Explorer: The Lost City of Avalon",
-        }, 10000, "explorer_the_lost_city_of_avalon", false),
-
-        CHIEF("Chief's Glory", new String[]{
-                "Explorer: Chief's Glory",
-        }, 7500, "explorer_chiefs_glory", false),
-
-        DEAD_PEAKS("Deadpeaks", new String[]{
-                "Explorer: Deadpeaks",
-        }, 1000, "explorer_deadpeaks", false),
-
-        MURE("Mure", new String[]{
-                "Explorer: Mure",
-        }, 2500, "explorer_mure", false),
-
-        SEBRATA("Sebrata", new String[]{
-                "Explorer: Sebrata",
-        }, 2500, "explorer_sebrata", false),
-
-        CYRENNICA("Cyrennica", new String[]{
-                "Explorer: Cyrennica",
-        }, 500, "explorer_cyrennica", false),
-
-        FIERY_DUNGEON("The Infernal Abyss", new String[]{
-                "Explorer: The Infernal Abyss",
-        }, 5000, "explorer_the_infernal_abyss", false),
-
-        NOVICE("Dungeon Realms Novice", new String[]{
-                "You've unlocked 10 or more achievements.",
-        }, 1500, "character_novice", false),
-
-        APPRENTICE("Dungeon Realms Apprentice", new String[]{
-                "You've unlocked 25 or more achievements.",
-        }, 2500, "character_apprentice", false),
-
-        ADEPT("Dungeon Realms Adept", new String[]{
-                "You've unlocked 50 or more achievements.",
-        }, 5000, "character_adept", false),
-
-        EXPERT("Dungeon Realms Expert", new String[]{
-                "You've unlocked 100 or more achievements.",
-        }, 10000, "character_expert", false),
-
-        MASTER("Dungeon Realms Master", new String[]{
-                "You've unlocked 200 or more achievements.",
-        }, 20000, "character_master", false),
-
-        LEAP_OF_FAITH("Leap of Faith", new String[]{
-                "You've taken a leap of faith.",
-        }, 1000, "character_leap_of_faith", false),
-
-        PLAY_WITH_DEV("Play with Developer", new String[]{
-                "You're playing with a Developer!",
-        }, 450, "social_play_with_dev", false),
-
-        MESSAGE_YOURSELF("Message yourself", new String[]{
-                "That's not quite right, try messaging someone else."
-        }, 640, "social_message_your_self", false),
-
-        SEND_A_PM("Send a private message", new String[]{
-                "You've just sent your first private message."
-        }, 200, "social_send_a_pm", false),
-
-        DUELER("Dueler", new String[]{
-                "You just challenged someone to a duel.",
-        }, 400, "social_dueler", false),
-
-        GUILD_INVITE_YOURSELF("Krazy Kat.", new String[]{
-                "Invite yourself to your own guild!",
-        }, 400, "social_krazy_kat", false),
-
-        VOTE("Vote for the Server", new String[]{
-                "Vote for Dungeon Realms!",
-        }, 1000, "character_you_voted", false),
-
-        VOTE_AS_SUB("Vote as Subscriber", new String[]{
-                "Vote for Dungeon Realms while being a Subscriber."
-        }, 500, "character_vote_as_subscriber", false),
-
-        VOTE_AS_SUB_PLUS("Vote as Subscriber+", new String[]{
-                "Vote for Dungeon Realms while being a Subscriber+"
-        }, 1000, "character_vote_as_subscriber+", false),
-
-        PM_DEV( "Message a Developer", new String[]{
-                "You attempted to message a Developer, please contact a Game Master for game assistance."
-        }, 450, "social_pmdev", false),
-
-        CREATE_A_GUILD("Create a Guild", new String[]{
-                "Congratulations on the creation of your new guild!"
-        }, 750, "social_create_a_guild", false),
-
-        TOURIST("Tourist", new String[]{
-                "You've begun to explore the world of Andalucia"
-        }, 1000, "explorer_tourist", false),
-
-        ADVENTURER("Adventurer", new String[]{
-                "You've explored many of the important areas within Andalucia"
-        }, 2000, "explorer_adventurer", false),
-
-        OPEN_LOOT_CHEST("A chest within a chest", new String[]{
-                "You've opened your first loot chest."
-        }, 250, "explorer_open_loot_chest", false),
-
-        REALM_EXPANSION_I("Expanding I", new String[]{
-                "You've begun work on your realm."
-        }, 500, "realm_expansion_i", false),
-
-        REALM_EXPANSION_II("Expanding II", new String[]{
-                "You've taken the initiative to expand your realm."
-        }, 1000, "realm_expansion_ii", false),
-
-        REALM_EXPANSION_III("Expanding III", new String[]{
-                "Your realm is looking very nice."
-        }, 2500, "realm_expansion_iii", false),
-
-        REALM_EXPANSION_IV("Expanding IV", new String[]{
-                "Your realm is truly a sight to behold."
-        }, 5000, "realm_expansion_iv", false),
-
-        ACQUIRE_CURRENCY_I("Acquire Currency I", new String[]{
-                "You have gems to spend."
-        }, 250, "currency_acquire_i", false),
-
-        ACQUIRE_CURRENCY_II("Acquire Currency II", new String[]{
-                "More money each day."
-        }, 500, "currency_acquire_ii", false),
-
-        ACQUIRE_CURRENCY_III("Acquire Currency III", new String[]{
-                "A large pile of gems."
-        }, 1000, "currency_acquire_iii", false),
-
-        ACQUIRE_CURRENCY_IV("Acquire Currency IV", new String[]{
-                "Gem hoarder..."
-        }, 1500, "currency_acquire_iv", false),
-
-        ACQUIRE_CURRENCY_V("Acquire Currency V", new String[]{
-                "Wow, that's a lot of gems"
-        }, 2500, "currency_acquire_v", false),
-
-        ACQUIRE_CURRENCY_VI("Acquire Currency VI", new String[]{
-                "I'm not sure you need all of these."
-        }, 5000, "currency_acquire_vi", false),
-
-        ACQUIRE_CURRENCY_VII("Acquire Currency VII", new String[]{
-                "You should start your own bank."
-        }, 7500, "currency_acquire_vii", false),
-
-        ACQUIRE_CURRENCY_VIII("Acquire Currency VIII", new String[]{
-                "You're now one of the elites in Andalucia"
-        }, 10000, "currency_acquire_vii", false),
-
-        OLD_TIMER("Old Timer", new String[]{
-                "You helped shape Dungeon Realms during the Beta."
-        }, 500, "character_old_timer", false),
-
-        PET_COMPANION("A Companion", new String[]{
-                "You've purchased your first pet, take care of it."
-        }, 250, "character_pet_owner", false),
-
-        ANIMAL_TAMER("Animal Tamer", new String[]{
-                "You've mastered the art of animal taming."
-        }, 500, "character_pet_master", false),
-
-        SUBSCRIBER("Subscriber", new String[]{
-                "Thank you for purchasing Subscriber."
-        }, 500, "character_donate_subscriber", false),
-
-        SUBSCRIBER_PLUS("Subscriber+", new String[]{
-                "Thank you for purchasing Subscriber+."
-        }, 750, "character_donate_subscriber+", false),
-
-        SUBSCRIBER_PLUS_PLUS("Subscriber++", new String[]{
-                "Thank you for purchasing Subscriber++."
-        }, 1000, "character_donate_subscriber++", false),
-
-        PLAYER_MOD("Player Moderator", new String[]{
-                "You're the eyes and ears of Dungeon Realms."
-        }, 500, "character_staff_pmod", true),
-
-        SUPPORT_AGENT("Support Agent", new String[]{
-                "Thank you for helping the players."
-        }, 500, "character_staff_support", true),
-
-        GAME_MASTER("Game Master", new String[]{
-                "You keep Dungeon Realms under check."
-        }, 500, "character_staff_gm", true),
-
-        DEVELOPER("Developer", new String[]{
-                "Thank you for helping build Dungeon Realms."
-        }, 500, "character_staff_dev", true),
-
-        GUILD_MEMBER("Guild Member", new String[]{
-                "You're part of a guild now."
-        }, 250, "social_guild_member", false),
-
-        GUILD_OFFICER("Guild Officer", new String[]{
-                "Helping to ensure order within your guild."
-        }, 250, "social_guild_officer", false),
-
-        GUILD_CREATOR("Guild Creator", new String[]{
-                "You've created a guild, best of luck."
-        }, 250, "social_guild_creator", false),
-
-        GUILD_REPESENT("Represent", new String[]{
-                "Equip a Guild Banner."
-        }, 250, "social_guild_represent", false),
-
-        PARTY_MAKER("Party Maker", new String[]{
-                "Create your very own party."
-        }, 250, "social_party_create", false),
-
-        PARTY_UP("Party Up", new String[]{
-                "Join a party."
-        }, 250, "social_party_join", false),
-
-        LEVEL_10("Level 10", new String[]{
-                "Reach level 10."
-        }, 1000, "character_level_10", false),
-
-        LEVEL_25("Level 25", new String[]{
-                "Reach level 25."
-        }, 2500, "character_level_25", false),
-
-        LEVEL_50("Level 50", new String[]{
-                "Reach level 50."
-        }, 5000, "character_level_50", false),
-
-        LEVEL_100("Level 100", new String[]{
-                "Reach level 100."
-        }, 10000, "character_level_100", false),
-
-        SHOP_CREATOR("Shop Creator", new String[]{
-                "Create your own shop."
-        }, 250, "currency_shop_created", false),
-
-        SHOP_UPGRADE_I("Shop Upgrade I", new String[]{
-                "Upgrade your shop."
-        }, 250, "currency_shop_upgrade_i", false),
-
-        SHOP_MERCHANT("Merchant", new String[]{
-                "Sell an item from your shop."
-        }, 250, "currency_shop_merchant", false),
-
-        CARTOGRAPHER("Cartographer", new String[]{
-                "Obtain a map of the area."
-        }, 250, "explorer_cartographer", false),
-
-        MOUNT_OWNER("Saddle Up!", new String[]{
-                "Own a mount."
-        }, 250, "character_mount_owner", false),
-
-        CAKE_IS_A_LIE("The Cake is a Lie", new String[]{
-                "Discovered the truth about the cake."
-        }, 250, "explorer_easteregg_portal_cakelie", false),
-
-        INFECTED("Infected!", new String[]{
-                "Killed someone who was infected."
-        }, 500, "combat_infected", false),
-
-        BANDIT_TROVE("Mayel The Cruel", new String[]{
-                "Defeated Mayel The Cruel."
-        }, 15000, "combat_bandit_trove", false),
-
-        VARENGLADE("Burick The Fanatic", new String[]{
-                "Defeated Burick The Fanatic."
-        }, 50000, "combat_varenglade", false),
-
-        INFERNAL_ABYSS("The Infernal Abyss", new String[]{
-                "Defeated The Infernal Abyss."
-        }, 75000, "combat_infernal_abyss", false),
-
-        //Isn't implemented. Part of the incomplete "OneWolfe" dunegon.
-        DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
-                "Defeated Aceron."
-        }, 75000, "combat_depths_of_aceron", true),
-
-        MONSTER_HUNTER_I("Monster Hunter I", new String[]{
-                "Defeated 100 monsters."
-        }, 250, "combat_monster_hunter_i", false),
-
-        MONSTER_HUNTER_II("Monster Hunter II", new String[]{
-                "Defeated 300 monsters."
-        }, 500, "combat_monster_hunter_ii", false),
-
-        MONSTER_HUNTER_III("Monster Hunter III", new String[]{
-                "Defeated 500 monsters."
-        }, 1000, "combat_monster_hunter_iii", false),
-
-        MONSTER_HUNTER_IV("Monster Hunter IV", new String[]{
-                "Defeated 1000 monsters."
-        }, 3000, "combat_monster_hunter_iv", false),
-
-        MONSTER_HUNTER_V("Monster Hunter V", new String[]{
-                "Defeated 1500 monsters."
-        }, 6000, "combat_monster_hunter_v", false),
-
-        MONSTER_HUNTER_VI("Monster Hunter VI", new String[]{
-                "Defeated 2000 monsters."
-        }, 10000, "combat_monster_hunter_vi", false),
-
-        MAN_HUNTER_I("Man Hunter I", new String[]{
-                "Defeated 1 player."
-        }, 250, "combat_man_hunter_i", false),
-
-        MAN_HUNTER_II("Man Hunter II", new String[]{
-                "Defeated 3 players."
-        }, 500, "combat_man_hunter_ii", false),
-
-        MAN_HUNTER_III("Man Hunter III", new String[]{
-                "Defeated 5 players."
-        }, 1000, "combat_man_hunter_iii", false),
-
-        MAN_HUNTER_IV("Man Hunter IV", new String[]{
-                "Defeated 10 players."
-        }, 3000, "combat_man_hunter_iv", false),
-
-        MAN_HUNTER_V("Man Hunter V", new String[]{
-                "Defeated 15 players."
-        }, 6000, "combat_man_hunter_v", false),
-
-        MAN_HUNTER_VI("Man Hunter VI", new String[]{
-                "Defeated 20 players."
-        }, 10000, "combat_man_hunter_vi", false),
-
-        ENFORCER_OF_JUSTICE_I("Enforcer of Justice I", new String[]{
-            "Defeated 1 chaotic player."
-        }, 300, "combat_enforcer_of_justice_i", false),
-
-        ENFORCER_OF_JUSTICE_iI("Enforcer of Justice II", new String[]{
-            "Defeated 3 chaotic players."
-        }, 2500, "combat_enforcer_of_justice_ii", false),
-
-        ENFORCER_OF_JUSTICE_Iii("Enforcer of Justice III", new String[]{
-            "Defeated 5 chaotic players."
-        }, 5000, "combat_enforcer_of_justice_iii", false),
-
-        HERO("Hero", new String[]{
-                "Heroically killed an outlaw."
-        }, 250, "combat_hero_i", false),
-
-        PICKAXE_LEVEL_I("Pickaxe Level I", new String[]{
-            "Obtained a level 20 Pickaxe."
-        }, 500, "character_pickaxe_level_i", false),
-
-        PICKAXE_LEVEL_II("Pickaxe Level II", new String[]{
-                "Obtained a level 40 Pickaxe."
-        }, 1000, "character_pickaxe_level_ii", false),
-
-        PICKAXE_LEVEL_III("Pickaxe Level III", new String[]{
-                "Obtained a level 60 Pickaxe."
-        }, 2000, "character_pickaxe_level_iii", false),
-
-        PICKAXE_LEVEL_IV("Pickaxe Level IV", new String[]{
-                "Obtained a level 80 Pickaxe."
-        }, 3500, "character_pickaxe_level_iv", false),
-
-        PICKAXE_LEVEL_V("Pickaxe Level V", new String[]{
-                "Obtained a level 100 Pickaxe."
-        }, 5000, "character_pickaxe_level_v", false),
-
-        FISHINGROD_LEVEL_I("Fishing Rod Level I", new String[]{
-                "Obtained a level 20 Fishing Rod."
-        }, 500, "character_fishingrod_level_i", false),
-
-        FISHINGROD_LEVEL_II("Fishing Rod Level II", new String[]{
-                "Obtained a level 40 Fishing Rod."
-        }, 1000, "character_fishingrod_level_ii", false),
-
-        FISHINGROD_LEVEL_III("Fishing Rod Level III", new String[]{
-                "Obtained a level 60 Fishing Rod."
-        }, 2000, "character_fishingrod_level_iii", false),
-
-        FISHINGROD_LEVEL_IV("Fishing Rod Level IV", new String[]{
-                "Obtained a level 80 Fishing Rod."
-        }, 3500, "character_fishingrod_level_iv", false),
-
-        FISHINGROD_LEVEL_V("Fishing Rod Level IV", new String[]{
-                "Obtained a level 100 Fishing Rod."
-        }, 5000, "character_fishingrod_level_v", false),
-
-        SKILL_MASTER("Skill Master", new String[]{
-            "Obtained both a level 100 Fishing Rod and Pickaxe."
-        }, 25000, "character_skill_master", false),
-
-        EVENT_PARTICIPANT_1("Championship of Cyrennica 2017", new String[]{
-                "Participated in the Championship of Cyrennica 2017 Event."
-        }, 0, "event_participant_1", false);
+    	FIRST_LOGIN("First Login", "Welcome to DungeonRealms!", 100),
+
+    	// Exploration
+    	TUTORIAL_ISLAND("Tutorial Island", "Explorer: Tutorial Island", 100, AchievementCategory.EXPLORE),
+    	HARRISONS_FIELD("Harrisons Fields", "Explorer: Harrisons Fields", 500, AchievementCategory.EXPLORE),
+    	PLAINS_OF_CYRENE("Plains of Cyrene", "Explorer: Plains of Cyrene", 500, AchievementCategory.EXPLORE),
+    	DARKOAK("Darkoak", "Explorer: Darkoak", 500, AchievementCategory.EXPLORE),
+    	JAGGED_ROCKS("Jagged Rocks", "Explorer: Jagged Rocks", 500, AchievementCategory.EXPLORE),
+    	SKULLNECK("Skullneck", "Explorer: Skullneck", 1000, AchievementCategory.EXPLORE),
+    	TROLLINGOR("Trollingor", "Explorer: Trollingor", 2500, AchievementCategory.EXPLORE),
+    	CRYSTALPEAK_TOWER("Crystalpeak Tower", "Explorer: Crystalpeak Tower", 5000, AchievementCategory.EXPLORE),
+    	HELMCHEN("Helmchen", "Explorer: Helmchen", 1000, AchievementCategory.EXPLORE),
+    	AL_SAHRA("Al Sahra", "Explorer: Al Sahra", 1000, AchievementCategory.EXPLORE),
+    	TRIPOLI("Tripoli", "Explorer: Tripoli", 1000, AchievementCategory.EXPLORE),
+    	DREADWOOD("Dreadwood", "Explorer: Dreadwood", 500, AchievementCategory.EXPLORE),
+    	GLOOMY_HOLLOWS("Gloomy Hallows", "Explorer: Gloomy Hallows", 1000, AchievementCategory.EXPLORE),
+    	CREST_GUARD("Crest Guard", "Explorer: Crest Guard", 2500, AchievementCategory.EXPLORE),
+    	FROZEN_NORTH("The Frozen North", "Explorer: The Frozen North", 5000, AchievementCategory.EXPLORE),
+    	UNDER_WORLD("The Lost City of Avalon", "Explorer: The Lost City of Avalon", 10000, AchievementCategory.EXPLORE),
+    	CHIEF("Chief's Glory", "Explorer: Chief's Glory", 7500, AchievementCategory.EXPLORE),
+    	DEAD_PEAKS("Deadpeaks", "Explorer: Deadpeaks", 1000, AchievementCategory.EXPLORE),
+    	MURE("Mure", "Explorer: Mure", 2500, AchievementCategory.EXPLORE),
+    	SEBRATA("Sebrata", "Explorer: Sebrata", 2500, AchievementCategory.EXPLORE),
+    	CYRENNICA("Cyrennica", "Explorer: Cyrennica", 500, AchievementCategory.EXPLORE),
+    	TOURIST("Tourist", "Begin to explore the world of Andalucia", 1000, AchievementCategory.EXPLORE),
+    	ADVENTURER("Adventurer", "Explore many of the important areas withing Andalucia", 2000, AchievementCategory.EXPLORE),
+    	OPEN_LOOT_CHEST("A chest within a chest", "You've opened your first loot chest.", 250, AchievementCategory.EXPLORE),
+    	CARTOGRAPHER("Cartographer", "Obtain a map of the area.", 250, AchievementCategory.EXPLORE),
+        CAKE_IS_A_LIE("The Cake is a Lie", "Discovered the truth about the cake.", 250, AchievementCategory.EXPLORE),
+    	
+    	// Character
+    	NOVICE("DungeonRealms Novice", "You've unlocked 10 or more achievements.", 1500, AchievementCategory.CHARACTER),
+    	APPRENTICE("DungeonRealms Apprentice", "You've unlocked 25 or more achievements.", 2500, AchievementCategory.CHARACTER),
+    	ADEPT("DungeonRealms Adept", "You've unlocked 50 or more achievements.", 5000, AchievementCategory.CHARACTER),
+    	EXPERT("DungeonRealms Expert", "You've unlocked 100 or more achievements.", 10000, AchievementCategory.CHARACTER),
+    	MASTER("DungeonRealms Master", "You've unlocked 200 or more achievements.", 20000, AchievementCategory.CHARACTER),
+    	LEAP_OF_FAITH("Leap of Faith", "You've taken a leap of faith.", 1000, AchievementCategory.CHARACTER),
+    	VOTE("Vote for the Server", "Vote for DungeonRealms!", 1000, AchievementCategory.CHARACTER),
+    	VOTE_AS_SUB("Vote as Subscriber", "Vote for Dungeon Realms while being a Subscriber", 500, AchievementCategory.CHARACTER),
+    	VOTE_AS_SUB_PLUS("Vote as Subscriber+", "Vote for Dungeon Realms while being a Subscriber+", 1000, AchievementCategory.CHARACTER),
+    	SKILL_MASTER("Skill Master", "Obtained both a level 100 fishing rod and pickaxe.", 25000, AchievementCategory.CHARACTER),
+    	OLD_TIMER("Old Timer", "You helped shape Dungeon Realms during the Beta.", 500, AchievementCategory.CHARACTER),
+        PET_COMPANION("A Companion", "You've purchased your first pet, take care of it.", 250, AchievementCategory.CHARACTER),
+        ANIMAL_TAMER("Animal Tamer", "You've mastered the art of animal taming.", 500, AchievementCategory.CHARACTER),
+        SUBSCRIBER("Subscriber", "Thank you for purchasing Subscriber.", 500, AchievementCategory.CHARACTER),
+        SUBSCRIBER_PLUS("Subscriber+", "Thank you for purchasing Subscriber+.", 750, AchievementCategory.CHARACTER),
+        SUBSCRIBER_PLUS_PLUS("Subscriber++", "Thank you for purchasing Subscriber++.", 1000, AchievementCategory.CHARACTER),
+        LEVEL_10("Level 10", "Reach level 10.", 1000, AchievementCategory.CHARACTER),
+        LEVEL_25("Level 25", "Reach level 25.", 2500, AchievementCategory.CHARACTER),
+        LEVEL_50("Level 50", "Reach level 50.", 5000, AchievementCategory.CHARACTER),
+        LEVEL_100("Level 100", "Reach level 100.", 10000, AchievementCategory.CHARACTER),
+        MOUNT_OWNER("Saddle Up!", "Own a mount.", 250, AchievementCategory.CHARACTER),
+        PICKAXE_LEVEL_I("Pickaxe Level I", "Obtained a level 20 Pickaxe.", 500, AchievementCategory.CHARACTER),
+        PICKAXE_LEVEL_II("Pickaxe Level II", "Obtained a level 40 Pickaxe.", 1000, AchievementCategory.CHARACTER),
+        PICKAXE_LEVEL_III("Pickaxe Level III", "Obtained a level 60 Pickaxe.", 2000, AchievementCategory.CHARACTER),
+        PICKAXE_LEVEL_IV("Pickaxe Level IV", "Obtained a level 80 Pickaxe.", 3500, AchievementCategory.CHARACTER),
+        PICKAXE_LEVEL_V("Pickaxe Level V", "Obtained a level 100 Pickaxe.", 5000, AchievementCategory.CHARACTER),
+        FISHINGROD_LEVEL_I("Fishing Rod Level I", "Obtained a level 20 Fishing Rod.", 500, AchievementCategory.CHARACTER),
+        FISHINGROD_LEVEL_II("Fishing Rod Level II", "Obtained a level 40 Fishing Rod.", 1000, AchievementCategory.CHARACTER),
+        FISHINGROD_LEVEL_III("Fishing Rod Level III", "Obtained a level 60 Fishing Rod.", 2000, AchievementCategory.CHARACTER),
+        FISHINGROD_LEVEL_IV("Fishing Rod Level IV", "Obtained a level 80 Fishing Rod.", 3500, AchievementCategory.CHARACTER),
+        FISHINGROD_LEVEL_V("Fishing Rod Level IV", "Obtained a level 100 Fishing Rod.", 5000, AchievementCategory.CHARACTER),
+    	
+        PLAYER_MOD("Player Moderator", "You're the eyes and ears of Dungeon Realms.", 500, true, AchievementCategory.CHARACTER),
+        SUPPORT_AGENT("Support Agent", "Thank you for helping the players.", 500, true, AchievementCategory.CHARACTER),
+        GAME_MASTER("Game Master", "You keep Dungeon Realms under check.", 500, true, AchievementCategory.CHARACTER),
+        DEVELOPER("Developer", "Thank you for helping build Dungeon Realms.", 500, true, AchievementCategory.CHARACTER),
+        
+    	// Social
+    	PLAY_WITH_DEV("Play with a Developer", "You're playing with a Developer.", 450, AchievementCategory.SOCIAL),
+    	MESSAGE_YOURSELF("Message Yourself", "That's not quite right, try messaging someone else.", 640, AchievementCategory.SOCIAL),
+    	SEND_A_PM("Send a Private Message", "Send your first private message.", 200, AchievementCategory.SOCIAL),
+    	DUELIST("Duelist", "Challenge someone to a duel.", 400, AchievementCategory.SOCIAL),
+    	PM_DEV("Message a Developer", "Message a developer for the first time.", 450, AchievementCategory.SOCIAL),
+    	CREATE_A_GUILD("Create a Guild", "Create a guild.", 750, AchievementCategory.SOCIAL),
+    	GUILD_MEMBER("Guild Member", "You're part of a guild now.", 250, AchievementCategory.SOCIAL),
+        GUILD_OFFICER("Guild Officer", "Helping to ensure order within your guild.", 250, AchievementCategory.SOCIAL),
+        GUILD_CREATOR("Guild Creator", "You've created a guild, best of luck.", 250, AchievementCategory.SOCIAL),
+        GUILD_REPESENT("Represent", "Equip a Guild Banner.", 250, AchievementCategory.SOCIAL),
+        PARTY_MAKER("Party Maker", "Create your very own party.", 250, AchievementCategory.SOCIAL),
+        PARTY_UP("Party Up", "Join a party.", 250, AchievementCategory.SOCIAL),
+    	
+    	// Realm
+        REALM_EXPANSION_I("Expanding I", "You've begun work on your realm.", 500, AchievementCategory.REALM),
+        REALM_EXPANSION_II("Expanding II", "You've taken the initiative to expand your realm.", 1000, AchievementCategory.REALM),
+        REALM_EXPANSION_III("Expanding III", "Your realm is looking very nice.", 2500, AchievementCategory.REALM),
+        REALM_EXPANSION_IV("Expanding IV", "Your realm is truly a sight to behold.", 5000, AchievementCategory.REALM),
+        
+        // Money
+        ACQUIRE_CURRENCY_I("Acquire Currency I", "You have gems to spend.", 250, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_II("Acquire Currency II", "More money each day.", 500, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_III("Acquire Currency III", "A large pile of gems.", 1000, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_IV("Acquire Currency IV", "Gem hoarder...", 1500, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_V("Acquire Currency V", "Wow, that's a lot of gems", 2500, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_VI("Acquire Currency VI", "I'm not sure you need all of these.", 5000, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_VII("Acquire Currency VII", "You should start your own bank.", 7500, AchievementCategory.MONEY),
+        ACQUIRE_CURRENCY_VIII("Acquire Currency VIII", "You're now one of the elites in Andalucia", 10000, AchievementCategory.MONEY),
+        SHOP_CREATOR("Shop Creator", "Create your own shop.", 250, AchievementCategory.MONEY),
+        SHOP_UPGRADE_I("Shop Upgrade I", "Upgrade your shop.", 250, AchievementCategory.MONEY),
+        SHOP_MERCHANT("Merchant", "Sell an item from your shop.", 250, AchievementCategory.MONEY),
+        
+        
+        // Combat
+        INFECTED("Infected!", "Killed someone who was infected.", 500, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_I("Monster Hunter I", "Defeated 100 monsters.", 250, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_II("Monster Hunter II", "Defeated 300 monsters.", 500, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_III("Monster Hunter III", "Defeated 500 monsters.", 1000, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_IV("Monster Hunter IV", "Defeated 1000 monsters.", 3000, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_V("Monster Hunter V", "Defeated 1500 monsters.", 6000, AchievementCategory.COMBAT),
+        MONSTER_HUNTER_VI("Monster Hunter VI", "Defeated 2000 monsters.", 10000, AchievementCategory.COMBAT),
+        MAN_HUNTER_I("Man Hunter I", "Defeated 1 player.", 250, AchievementCategory.COMBAT),
+        MAN_HUNTER_II("Man Hunter II", "Defeated 3 players.", 500, AchievementCategory.COMBAT),
+        MAN_HUNTER_III("Man Hunter III", "Defeated 5 players.", 1000, AchievementCategory.COMBAT),
+        MAN_HUNTER_IV("Man Hunter IV", "Defeated 10 players.", 3000, AchievementCategory.COMBAT),
+        MAN_HUNTER_V("Man Hunter V", "Defeated 15 players.", 6000, AchievementCategory.COMBAT),
+        MAN_HUNTER_VI("Man Hunter VI", "Defeated 20 players.", 10000, AchievementCategory.COMBAT),
+        ENFORCER_OF_JUSTICE_I("Enforcer of Justice I", "Defeated 1 chaotic player.", 300, AchievementCategory.COMBAT),
+        ENFORCER_OF_JUSTICE_iI("Enforcer of Justice II", "Defeated 3 chaotic players.", 2500, AchievementCategory.COMBAT),
+        ENFORCER_OF_JUSTICE_Iii("Enforcer of Justice III", "Defeated 5 chaotic players.", 5000, AchievementCategory.COMBAT),
+        HERO("Hero", "Heroically killed an outlaw.", 250, AchievementCategory.COMBAT),
+        
+        // Dungeons:
+        BANDIT_TROVE("Mayel The Cruel", "Defeat Mayel The Cruel.", 15000, AchievementCategory.DUNGEON),
+        VARENGLADE("Burick The Fanatic", "Defeat Burick The Fanatic.", 50000, AchievementCategory.DUNGEON),
+        INFERNAL_ABYSS("The Infernal Abyss", "Defeat The Infernal Abyss.", 75000, AchievementCategory.DUNGEON);
+        //DEPTHS_OF_ACERON("Depths of Aceron", "Defeat Aceron.", 75000, AchievementCategory.DUNGEON),
+        
+        // Event
+        //EVENT_PARTICIPANT_1("Championship of Cyrennica 2017", "Participated in the Championship of Cyrennica 2017 Event.", 0, AchievementCategory.EVENT);
 
         private String name;
-        private String[] message;
+        private String message;
         private int reward;
-        private String rawName;
-        private boolean hideWhenIncomplete;
-
-        EnumAchievements(String name, String[] message, int reward, String rawName, boolean hideWhenIncomplete) {
-            this.name = name;
-            this.message = message;
-            this.reward = reward;
-            this.rawName = rawName;
-            this.hideWhenIncomplete = hideWhenIncomplete;
+        private boolean hide;
+        private AchievementCategory category;
+        
+        EnumAchievements(String name, String message, int reward) {
+        	this(name, message, reward, false);
         }
-
-        public String getName() {
-            return name;
+        
+        EnumAchievements(String name, String message, int reward, AchievementCategory c) {
+        	this(name, message, reward, false, c);
         }
-
-        public String[] getMessage() {
-            return message;
+        
+        EnumAchievements(String name, String message, int reward, boolean hide) {
+        	this(name, message, reward, hide, null);
         }
-
-        public int getReward() {
-            return reward;
-        }
-
-        public String getDBName() {
-            return rawName;
-        }
-
-        public boolean getHide() {
-            return hideWhenIncomplete;
+        
+        public static List<EnumAchievements> getByCategory(AchievementCategory category) {
+        	List<EnumAchievements> list = new ArrayList<>();
+        	for (EnumAchievements ach : values())
+        		if (ach.getCategory() == category)
+        			list.add(ach);
+        	return list;
         }
     }
-
-
+    
+    public enum EnumAchievementMonsterKill {
+    	MONSTER_HUNTER_I(100),
+    	MONSTER_HUNTER_II(300),
+    	MONSTER_HUNTER_III(5000),
+    	MONSTER_HUNTER_IV(1000),
+    	MONSTER_HUNTER_VI(2000);
+    	
+    	@Getter private int killRequirement;
+    	
+    	EnumAchievementMonsterKill(int req) {
+    		this.killRequirement = req;
+    	}
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    	
+    }
+    
+    @Getter
+    public enum EnumRankAchievement {
+    	
+    	SUB(PlayerRank.SUB, EnumAchievements.SUBSCRIBER),
+    	SUB_P(PlayerRank.SUB_PLUS, EnumAchievements.SUBSCRIBER_PLUS),
+    	SUB_P_P(PlayerRank.SUB_PLUS_PLUS, EnumAchievements.SUBSCRIBER_PLUS_PLUS),
+    	SUPPORT(PlayerRank.SUPPORT, EnumAchievements.SUPPORT_AGENT),
+    	PMOD(PlayerRank.PMOD, EnumAchievements.PLAYER_MOD),
+    	GM(PlayerRank.TRIALGM, EnumAchievements.GAME_MASTER),
+    	DEV(PlayerRank.DEV, EnumAchievements.DEVELOPER, EnumAchievements.INFECTED);
+    	
+    	private PlayerRank minRank;
+    	private EnumAchievements[] achievements;
+    	
+    	EnumRankAchievement(PlayerRank minRank, EnumAchievements... ach) {
+    		this.minRank = minRank;
+    		this.achievements = ach;
+    	}
+    }
+    
+    @AllArgsConstructor @Getter
+    public enum EnumAchievementCount {
+    	NOVICE(10),
+    	APPRENTICE(20),
+        ADEPT(50),
+        EXPERT(100),
+        MASTER(200);
+    	
+    	private int requirement;
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    }
+    
+    @AllArgsConstructor
+    public enum EnumAchievementMoney {
+    	ACQUIRE_CURRENCY_I(100),
+    	ACQUIRE_CURRENCY_II(1000),
+    	ACQUIRE_CURRENCY_III(5000),
+    	ACQUIRE_CURRENCY_IV(10000),
+    	ACQUIRE_CURRENCY_V(50000),
+    	ACQUIRE_CURRENCY_VI(100000),
+    	ACQUIRE_CURRENCY_VII(500000),
+    	ACQUIRE_CURRENCY_VIII(1000000);
+    	
+    	@Getter private int moneyRequirement;
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    }
+    
+    @AllArgsConstructor
+    public enum EnumAchievementLevel {
+    	LEVEL_10(10),
+    	LEVEL_25(25),
+    	LEVEL_50(50),
+    	LEVEL_100(100);
+    	
+    	@Getter private int levelRequirement;
+    	
+    	public EnumAchievements getAchievement() {
+    		return EnumAchievements.valueOf(name());
+    	}
+    }
 }

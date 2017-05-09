@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,17 +23,11 @@ public class CommandArmorSee extends BaseCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Player p = null;
-		if(sender instanceof Player) {
-			p = (Player) sender;
-		}
-		else {
+		if (!(sender instanceof Player))
 			return true;
-		}
-
-		if(p != null) {
-			if(!(Rank.isGM(p))) { return true; }
-		}
+		Player p = (Player) sender;
+		if (!Rank.isGM(p))
+			return true;
 
 		String ent_name = null;
 		Inventory inv = null;

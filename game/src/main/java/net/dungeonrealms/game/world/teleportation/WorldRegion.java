@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.world.teleportation;
 
 import static net.dungeonrealms.game.achievements.Achievements.EnumAchievements.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import org.bukkit.entity.Player;
 
@@ -15,6 +17,7 @@ import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
  * Created Febuary 15th, 2017.
  * @author Kneesnap
  */
+@AllArgsConstructor @Getter
 public enum WorldRegion {
 	
 	CYRENNICA("Cyrennica", "cityofcyrennica", EnumAchievements.CYRENNICA),
@@ -22,7 +25,7 @@ public enum WorldRegion {
 	PLAINS_OF_CYRENNE("Cyrenne", "plainsofcyrenne", PLAINS_OF_CYRENE),
 	DARK_OAK("Dark Oak", "darkoakwild2", DARKOAK),
 	JAGGED_ROCKS("Jagged Rocks", "infrontoftavern", EnumAchievements.JAGGED_ROCKS),
-	SKULLNECK("Skullneck", "goblincity", GOBLIN_CITY),
+	SKULLNECK("Skullneck", "goblincity", EnumAchievements.SKULLNECK),
 	TROLLINGOR("Trollingor", "trollcity1", EnumAchievements.TROLLINGOR),
 	CRYSTALPEAK("Crystal Peak", "crystalpeakt", CRYSTALPEAK_TOWER),
 	HELMCHEN("Helmchen", "transitional3", EnumAchievements.HELMCHEN),
@@ -38,31 +41,15 @@ public enum WorldRegion {
 	MURE("Mure", "mure", EnumAchievements.MURE),
 	SEBRATA("Sebrata", "sebrata", EnumAchievements.SEBRATA),
 	PORTAL_EASTER_EGG("Oak's Portal", "achievement_easteregg_portal_cakelie", CAKE_IS_A_LIE),
-	TROLLSBANE("Trollsbane Tavern", "jrtavern", null),
+	TROLLSBANE("Trollsbane Tavern", "jrtavern", null);
 	
-	INFERNAL_ABYSS("The Infernal Abyss", "fireydungeon", EnumAchievements.FIERY_DUNGEON);
-	
-	private final String wgRegion;
-	private final Achievements.EnumAchievements achievement;
 	private final String displayName;
-	
-	WorldRegion(String displayName, String worldGuardName, Achievements.EnumAchievements achievement){
-		this.wgRegion = worldGuardName;
-		this.achievement = achievement;
-		this.displayName = displayName;
-	}
-	
-	public String getRegionName(){
-		return this.wgRegion;
-	}
+	private final String regionName;
+	private final Achievements.EnumAchievements achievement;
 	
 	public void giveAchievement(Player player){
-		if(this.achievement != null)
-			Achievements.getInstance().giveAchievement(player.getUniqueId(), this.achievement);
-	}
-	
-	public String getDisplayName(){
-		return this.displayName;
+		if(getAchievement() != null)
+			Achievements.giveAchievement(player, getAchievement());
 	}
 	
 	public static WorldRegion getByRegionName(String regionName){
@@ -70,9 +57,5 @@ public enum WorldRegion {
 			if(region.getRegionName().equals(regionName.toLowerCase()))
 				return region;
 		return null;
-	}
-
-	public EnumAchievements getAchievement() {
-		return this.achievement;
 	}
 }

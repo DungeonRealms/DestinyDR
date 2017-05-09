@@ -170,6 +170,11 @@ public class SQLDatabaseAPI {
 
 
     }
+    
+    public void addQuery(String query) {
+    	if (query != null)
+    		this.sqlQueries.add(query);
+    }
 
 
     public void addQuery(QueryType type, Object... values) {
@@ -257,7 +262,6 @@ public class SQLDatabaseAPI {
     public void init() {
         Bukkit.getLogger().info("Attempting to connect to MySQL database...");
         this.database = new SQLDatabase("158.69.121.40", "root", "N963GSvR2xwM9D5S5b4934HfDH", "dungeonrealms");
-//        this.database = new SQLDatabase("127.0.0.1", "dev", "3HCKkPc6mWr63E924C", "dungeonrealms");
 
         this.saveRunnable = () -> {
             //Dont do anything.. no queries..
@@ -338,23 +342,23 @@ public class SQLDatabaseAPI {
      * @return
      */
     public Integer getAccountIdFromUUID(UUID uuid) {
-        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
-            if (uuid.equals(entry.getValue().getUuid())) return entry.getKey();
-        }
+        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
+            if (uuid.equals(entry.getValue().getUuid()))
+            	return entry.getKey();
         return null;
     }
 
     public String getNameFromUUID(UUID uuid) {
-        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
-            if (uuid.equals(entry.getValue().getUuid())) return entry.getValue().getName();
-        }
+        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
+            if (uuid.equals(entry.getValue().getUuid()))
+            	return entry.getValue().getName();
         return null;
     }
 
     public String getUsernameFromUUID(UUID uuid) {
-        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet()) {
-            if (uuid.equals(entry.getValue().getUuid())) return entry.getValue().getName();
-        }
+        for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
+            if (uuid.equals(entry.getValue().getUuid()))
+            	return entry.getValue().getName();
         return null;
     }
 

@@ -51,7 +51,7 @@ public class Quests implements GenericMechanic {
 
     @Override
     public void stopInvocation() {
-        if (DungeonRealms.getInstance().isMasterShard) {
+        if (DungeonRealms.isMaster()) {
             questStore.save();
             npcStore.save();
         }

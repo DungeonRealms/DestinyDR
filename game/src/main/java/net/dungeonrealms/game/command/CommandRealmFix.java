@@ -2,10 +2,12 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,7 +53,7 @@ public class CommandRealmFix extends BaseCommand {
                 SQLDatabaseAPI.getInstance().executeUpdate(results -> {
                     sender.sendMessage(ChatColor.GREEN + "Successfully fixed " + args[0] + "'s realm.");
                     //Update their realm status..
-                    GameAPI.updatePlayerData(uuid, "realm");
+                    GameAPI.updatePlayerData(uuid, UpdateType.REALM);
                 }, QueryType.SET_REALM_INFO.getQuery(0, 0, wrapper.getRealmTier(), wrapper.getCharacterID()));
             });
 

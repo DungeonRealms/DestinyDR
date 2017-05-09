@@ -3,38 +3,31 @@ package net.dungeonrealms.game.achievements;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
- * Created by Nick on 10/24/2015.
+ * AchievementManager - Manages Achievements.
+ * 
+ * Redone on May 7th, 2017.
+ * @author Kneesnap
  */
 public class AchievementManager implements GenericMechanic, Listener {
-
-    static AchievementManager instance = null;
-
-    public static AchievementManager getInstance() {
-        if (instance == null) {
-            instance = new AchievementManager();
-        }
-        return instance;
-    }
-
-    public static HashMap<UUID, String> REGION_TRACKER = new HashMap<>();
-
+	
+    private static HashMap<Player, Location> regionMap = new HashMap<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -43,20 +36,14 @@ public class AchievementManager implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
-        /**
-         * every 4 seconds to check all players regions and fire proper event if
-         * applicable.
-         *
-         * @since 1.0
-         */
+    	Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
+    	// Calls when a player moves into a new region... But why is this in AchivementManager?
+    	// TODO: Find a better place for this.
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(player -> {
-            String region = GameAPI.getRegionName(player.getLocation());
-            if (REGION_TRACKER.containsKey(player.getUniqueId()))
-                if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))
-                    return;
-            KarmaHandler.getInstance().tellPlayerRegionInfo(player);
-            Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, region));
-            REGION_TRACKER.put(player.getUniqueId(), region);
+            if (regionMap.containsKey(player) && GameAPI.getRegionName(regionMap.get(player)).equals(GameAPI.getRegionName(player.getLocation())))
+            	return;
+            Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, regionMap.get(player), player.getLocation()));
+            regionMap.put(player, player.getLocation());
         }), 0, 60L);
     }
 
@@ -71,30 +58,27 @@ public class AchievementManager implements GenericMechanic, Listener {
      * @param uuid
      * @since 1.0
      */
-    public void handleLogin(UUID uuid) {
-        if (Bukkit.getPlayer(uuid) == null) return;
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return;
-        if (wrapper.getPetsUnlocked().size() > 0) {
-            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PET_COMPANION);
-        }
-        if (wrapper.getPetsUnlocked().size() >= 3) {
-            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ANIMAL_TAMER);
-        }
-        int playerBankGems = wrapper.getGems();
-        BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
+	public static void handleLogin(Player player) {
+        
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null)
+        	return;
+        
+        if (wrapper.getPetsUnlocked().size() > 0)
+            Achievements.giveAchievement(player, EnumAchievements.PET_COMPANION);
+        
+        if (wrapper.getPetsUnlocked().size() >= 3)
+        	Achievements.giveAchievement(player, EnumAchievements.ANIMAL_TAMER);
+        
+        BankMechanics.checkBankAchievements(player);
+        
+        if (wrapper.isInGuild())
+            Achievements.giveAchievement(player, EnumAchievements.GUILD_MEMBER);
 
-
-        if (wrapper.getGuildID() != 0) {
-            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
-            //TODO: Check if they are Officer when type is implemented.
-        }
-        //TODO: Realm level/tier checks when they are implemented.
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
             for (String dev : DungeonRealms.getInstance().getDevelopers()) {
-                if (player.getName().equalsIgnoreCase(dev)) {
-                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PLAY_WITH_DEV);
+                if (p.getName().equalsIgnoreCase(dev)) {
+                    Achievements.giveAchievement(player, EnumAchievements.PLAY_WITH_DEV);
                     break;
                 }
             }
@@ -111,7 +95,7 @@ public class AchievementManager implements GenericMechanic, Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRegionEnter(PlayerEnterRegionEvent event) {
-        WorldRegion region = WorldRegion.getByRegionName(event.getRegion());
+        WorldRegion region = WorldRegion.getByRegionName(event.getNewRegion());
         if(region != null)
         	region.giveAchievement(event.getPlayer());
     }

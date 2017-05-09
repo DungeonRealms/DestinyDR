@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
-import net.minecraft.server.v1_9_R2.Item;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,17 +12,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.BlockIterator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -97,10 +99,7 @@ public class Utils {
     }
 
     public static int randInt(int min, int max) {
-
-        Random rand = new Random();
-
-        return rand.nextInt((max - min) + 1) + min;
+        return new Random().nextInt((max - min) + 1) + min;
     }
 
     public static boolean isInt(String s) {
@@ -123,17 +122,6 @@ public class Utils {
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 
-    public static void setMaxStackSize(Item item, int i) {
-        try {
-
-            Field field = Item.class.getDeclaredField("maxStackSize");
-            field.setAccessible(true);
-            field.setInt(item, i);
-
-        } catch (Exception ignored) {
-        }
-    }
-
     public static <T> Set<T> findDuplicates(Collection<T> list) {
         Set<T> duplicates = new HashSet<T>();
         Set<T> uniques = new HashSet<T>();
@@ -144,59 +132,12 @@ public class Utils {
 
 
     public static int getRandomFromTier(int tier, String lvlRange) {
-        Random r = new Random();
-        int Low = 1;
-        int High = 10;
-        int R;
-        //TODO: Remove the +2 from every level when we implement high/low properly
-        switch (tier) {
-            case 1:
-                Low = 1;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 5;
-                High = 10;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 5;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 2:
-                Low = 10;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 15;
-                High = 20;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 15;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 3:
-                Low = 20;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 25;
-                High = 30;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 25;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 4:
-                Low = 30;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 35;
-                High = 40;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 35;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-            case 5:
-                Low = 40;
-                if (lvlRange.equalsIgnoreCase("high"))
-                    Low = 45;
-                High = 100;
-                if (lvlRange.equalsIgnoreCase("low"))
-                    High = 95;
-                R = r.nextInt(High - Low) + Low + 2;
-                return R;
-        }
-        return 1;
+        int lowBase = (tier - 1) * 10;
+        int highBase = tier == 5 ? 90 : lowBase;
+        
+        int low = lvlRange.equalsIgnoreCase("high") ? lowBase + 5 : Math.max(lowBase, 1);
+        int high = lvlRange.equalsIgnoreCase("low") ? highBase + 5 : highBase + 10;
+        return Utils.randInt(low + 2, high + 2);
     }
 
     private final static int CENTER_PX = 154;
@@ -233,6 +174,10 @@ public class Utils {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
     }
 
+    public static String capitalize(String s) {
+    	return ucfirst(s);
+    }
+    
     public static String ucfirst(String string) {
         return Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();
     }
@@ -289,47 +234,51 @@ public class Utils {
         }
     }
 
-    /**
-     * Convert seconds into a human readable format.
-     *
-     * @param seconds
-     * @return seconds.
-     */
-    public static String formatTimeAgo(int seconds) {
-        if (seconds == 0) return "0 seconds"; // @note: 0 seconds is a special case.
-
-        String date = "";
-
-        String[] unitNames = {"week", "day", "hour", "minute", "second"};
-        int[] unitValues = {604800, 86400, 3600, 60, 1};
-
-        // Loop through all of the units.
-        for (int i = 0; i < unitNames.length; i++) {
-            int quot = seconds / unitValues[i];
-            if (quot > 0) {
-                date += quot + " " + unitNames[i] + (Math.abs(quot) > 1 ? "s" : "") + ", ";
-                seconds -= (quot * unitValues[i]);
-            }
-        }
-
-        // Return the date, substring -2 to remove the trailing ", ".
-        return date.substring(0, date.length() - 2);
-    }
-
-    /**
-     * Convert milliseconds into a human readable format.
-     *
-     * @param milliseconds
-     * @return String
-     */
-    public static String formatTimeAgo(Long milliseconds) {
-        return formatTimeAgo((int) (milliseconds / 1000));
-    }
-
     public static String getDate(Long milliseconds) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC-0"));
         return dateFormat.format(new Date(milliseconds));
     }
+    
+    /**
+     * Sanitizes user input so it can be used as a file path.
+     * Works by changing all non alphanumeric characters to underscore.
+     * Multiple characters in a row will be treated as a single underscore.
+     */
+    public static String sanitizeFileName(String fileName) {
+    	return fileName.replaceAll("[^a-zA-Z0-9\\._]+", "_");
+    }
+    
+    public static void removeFile(File file) {
+    	try {
+			FileUtils.forceDelete(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Bukkit.getLogger().warning("Failed to delete " + file.getName());
+		}
+    }
+    
+    /**
+     * Force deletes folders / files that meet certain parameters.
+     */
+    public static void removeFiles(File root, Predicate<? super File> cb) {
+    	Arrays.stream(root.listFiles()).filter(cb).forEach(Utils::removeFile);
+    }
+    
+    public static String capitalizeWords(String sentence) {
+    	String formatted = "";
+		for (String s : sentence.split(" "))
+			formatted += " " + Utils.capitalize(s);
+		return formatted.length() > 1 ? formatted.substring(1) : formatted;
+    }
 
+	public static String getItemName(ItemStack item) {
+		if (item == null || item.getType() == Material.AIR || !item.hasItemMeta())
+			return "NOTHING";
+		ItemMeta meta = item.getItemMeta();
+		if (meta.hasDisplayName())
+			return meta.getDisplayName();
+		
+		return capitalizeWords(item.getType().name().replaceAll("_", " "));
+	}
 }

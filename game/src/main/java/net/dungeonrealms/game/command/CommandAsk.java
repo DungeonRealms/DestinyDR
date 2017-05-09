@@ -3,8 +3,9 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
-import net.dungeonrealms.game.player.chat.GameChat;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +16,6 @@ import java.util.List;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
-
 public class CommandAsk extends BaseCommand {
 
     public CommandAsk(String command, String usage, String description, List<String> aliases) {
@@ -40,7 +40,7 @@ public class CommandAsk extends BaseCommand {
                 message.append(" ").append(args[arg]);
 
             p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Your question has been sent to an online staff member."));
-            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);
+            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper(p).getChatName() + "&e" + message);
 
         } else sender.sendMessage("/ask|a [message]");
 

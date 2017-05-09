@@ -103,19 +103,21 @@ public class Realms implements GenericMechanic {
      * Handles a player logout.
      */
     public void handleLogout(Player player) {
-    	if(!hasRealm(player))
-    		return;
-    	
-    	Realm realm = getRealm(player);
-    	
-    	//Don't do anything while this is upgrading, it's not ready yet.
-    	if(realm.getState() == RealmState.UPGRADING)
-    		return;
+        if (!hasRealm(player))
+            return;
 
-        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-            realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
-            realm.removeRealm(true);
-        });
+        Realm realm = getRealm(player);
+
+        //Don't do anything while this is upgrading, it's not ready yet.
+        if (realm.getState() == RealmState.UPGRADING)
+            return;
+
+        realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
+
+        realm.setState(RealmState.REMOVING);
+
+        //Must run sync.
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> realm.removeRealm(true), 5);
     }
 
     /**

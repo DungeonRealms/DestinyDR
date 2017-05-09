@@ -2,8 +2,7 @@ package net.dungeonrealms.common.game.updater;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class UpdateTask
-        implements Runnable {
+public class UpdateTask implements Runnable {
     private JavaPlugin _plugin;
 
     public UpdateTask(JavaPlugin plugin) {

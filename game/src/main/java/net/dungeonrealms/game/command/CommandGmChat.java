@@ -4,7 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -39,7 +39,7 @@ public class CommandGmChat extends BaseCommand {
             for (int arg = 1; arg < args.length; arg++)
                 message.append(" ").append(args[arg]);
 
-            GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.AQUA + "<GM> (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + ChatColor.AQUA + message);
+            GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.AQUA + "<GM> (" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper((Player) sender).getChatName() + ChatColor.AQUA + message);
         } else sender.sendMessage("/gc|gmchat [message]");
 
         return true;

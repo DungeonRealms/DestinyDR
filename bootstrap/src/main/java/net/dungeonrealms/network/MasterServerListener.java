@@ -48,7 +48,7 @@ public class MasterServerListener extends Listener {
                         String playerName = in.readUTF();
                         String friendlyName = "";
                         //TODO: This can be done better.
-                        switch(type) {
+                        switch(type.toLowerCase()) {
                         	case "loot":
                         		friendlyName = "Loot";
                         		break;

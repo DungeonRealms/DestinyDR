@@ -128,7 +128,7 @@ public class PacketLogger implements Listener {
 	}
 	
 	private void uploadPacketLog(File file) {
-		if(DungeonRealms.getInstance().isMasterShard || DungeonRealms.getInstance().isEventShard)
+		if(DungeonRealms.isMaster() || DungeonRealms.isEvent())
 			return;
 		FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();
         InputStream inputStream = null;

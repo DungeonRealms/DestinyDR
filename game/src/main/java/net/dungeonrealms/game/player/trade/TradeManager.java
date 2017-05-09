@@ -29,10 +29,10 @@ public class TradeManager implements GenericMechanic {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for(Trade trade : trades){
                 if(trade.p1 != null && trade.p1.isOnline()){
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, trade.p1.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, trade.p1.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
                 }
                 if(trade.p2 != null && trade.p2.isOnline()){
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, trade.p2.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, trade.p2.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
                 }
             }
         }, 20, 20);
@@ -73,8 +73,6 @@ public class TradeManager implements GenericMechanic {
         if (CombatLog.isInCombat(p)) {
             return false;
         }
-
-        //TODO: Check if the player has an inventory open.
 
         if (getTrade(uniqueId) != null) {
             return false;

@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -42,7 +43,7 @@ public class CommandBinsee extends BaseCommand {
 
         String playerName = args[0];
         if (Bukkit.getPlayer(playerName) != null) {
-            Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
+            Storage storage = BankMechanics.getStorage(Bukkit.getPlayer(playerName).getUniqueId());
             sender.openInventory(storage.collection_bin);
         } else {
 

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command.dungeon;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,7 +21,8 @@ public class ReplaceNear extends BaseCommand {
         super(command, usage, description);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length != 3) { return true; }
         if(!(sender instanceof BlockCommandSender)) { return true; }
@@ -31,11 +33,9 @@ public class ReplaceNear extends BaseCommand {
         int from_id = Integer.parseInt(args[1]);
         int to_id = Integer.parseInt(args[2]);
 
-        for(Block b : getNearbyBlocks(cb.getBlock().getLocation(), radius)) {
-            if(b.getTypeId() == from_id) {
+        for(Block b : getNearbyBlocks(cb.getBlock().getLocation(), radius))
+            if(b.getTypeId() == from_id)
                 b.setType(Material.getMaterial(to_id));
-            }
-        }
         return true;
     }
 

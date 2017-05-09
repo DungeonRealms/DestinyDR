@@ -2,10 +2,12 @@ package net.dungeonrealms.game.command.moderation;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,11 +44,10 @@ public class CommandFishing extends BaseCommand {
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("show")) {
 
-                Fishing fishing = Fishing.getInstance();
                 int radius = StringUtils.isNumeric(args[1]) ? Integer.parseInt(args[1]) : 10;
 
                 AtomicInteger shown = new AtomicInteger(0);
-                fishing.FISHING_LOCATIONS.forEach((loc, tier) -> {
+                Fishing.getLocations().forEach((loc, tier) -> {
 
                     if (loc.distanceSquared(player.getLocation()) <= radius * radius) {
                         //SHOOWWWW

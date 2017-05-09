@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -20,8 +19,6 @@ import java.util.List;
 /**
  * Class written by Rar349 on 4/27/2017
  */
-
-
 public class CommandGQuit extends BaseCommand {
 
     public CommandGQuit(String command, String usage, String description, List<String> aliases) {
@@ -33,20 +30,15 @@ public class CommandGQuit extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
-
-        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (playerWrapper == null) {
-            Constants.log.info("Could not load player wrapper for the player " + playerWrapper.getPlayerName() + " ");
-            return true;
-        }
-
-        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
-        if (wrapper == null) {
+        PlayerWrapper pw = PlayerWrapper.getPlayerWrapper(player);
+        
+        if (!pw.isInGuild()) {
             player.sendMessage(ChatColor.RED + "You must be in a guild to use this command!");
             return true;
         }
 
-        GuildMember member = wrapper.getMembers().get(playerWrapper.getAccountID());
+        GuildWrapper guild = pw.getGuild();
+        GuildMember member = guild.getMembers().get(pw.getAccountID());
         if (member == null) {
             player.sendMessage(ChatColor.RED + "An internal server error occurred.");
             return true;
@@ -63,45 +55,40 @@ public class CommandGQuit extends BaseCommand {
         player.sendMessage("");
         player.sendMessage(ChatColor.GRAY + "Please type " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM" + ChatColor.GRAY + " to disband your guild!");
         player.sendMessage("");
+        
+        Chat.promptPlayerConfirmation(player, () -> {
+        	if(isGuildOwner) {
+                SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+                    if(rows == null || rows == 0) {
+                        player.sendMessage(ChatColor.RED + "Something went wrong when trying to disband your guild");
+                        return;
+                    }
 
-        Chat.listenForMessage(player, event -> {
-            event.setCancelled(true);
-            if (event.getMessage().equalsIgnoreCase("confirm")) {
-                if(isGuildOwner) {
-                    SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
-                        if(rows == null || rows == 0) {
-                            player.sendMessage(ChatColor.RED + "Something went wrong when trying to disband your guild");
-                            return;
-                        }
-
-                        playerWrapper.setGuildID(0);
-                        wrapper.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
-                        GuildDatabase.getAPI().cached_guilds.remove(wrapper.getGuildID());
-                        for(GuildMember memberWrap : wrapper.getMembers().values()) {
-                            if(memberWrap == null) continue;
-                            PlayerWrapper memberWrapper = PlayerWrapper.getPlayerWrapper(memberWrap.getUUID());
-                            if(memberWrapper != null) {
-                                memberWrapper.setGuildID(0);
-                            }
-                        }
-                        GameAPI.sendNetworkMessage("Guilds", "disband", String.valueOf(wrapper.getGuildID()));
-                    }, QueryType.DELETE_GUILD.getQuery(wrapper.getGuildID()), true);
-                } else {
-                    SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
-                        if(rows == null || rows == 0) {
-                            player.sendMessage(ChatColor.RED + "Something went wrong when trying to disband your guild");
-                            return;
-                        }
-                        playerWrapper.setGuildID(0);
-                        player.sendMessage(ChatColor.RED + "You have left your guild!");
-                        wrapper.removePlayer(playerWrapper.getAccountID());
-                        wrapper.sendGuildMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY + " has left your guild!");
-                    }, QueryType.DELETE_GUILD_MEMBER.getQuery(playerWrapper.getAccountID()), true);
-                }
+                    int gId = pw.getGuildID();
+                    pw.setGuildID(0);
+                    guild.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
+                    GuildDatabase.getAPI().cached_guilds.remove(gId);
+                    for(GuildMember memberWrap : guild.getMembers().values()) {
+                        if(memberWrap == null) continue;
+                        PlayerWrapper memberWrapper = PlayerWrapper.getPlayerWrapper(memberWrap.getUUID());
+                        if(memberWrapper != null)
+                            memberWrapper.setGuildID(0);
+                    }
+                    GameAPI.sendNetworkMessage("Guilds", "disband", gId + "");
+                }, QueryType.DELETE_GUILD.getQuery(pw.getGuildID()), true);
             } else {
-                player.sendMessage(ChatColor.RED + "Guild disband cancelled.");
+                SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+                    if(rows == null || rows == 0) {
+                        player.sendMessage(ChatColor.RED + "Something went wrong when trying to disband your guild");
+                        return;
+                    }
+                    pw.setGuildID(0);
+                    player.sendMessage(ChatColor.RED + "You have left your guild!");
+                    guild.removePlayer(pw.getAccountID());
+                    guild.sendGuildMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY + " has left your guild!");
+                }, QueryType.DELETE_GUILD_MEMBER.getQuery(pw.getAccountID()), true);
             }
-        }, null);
+        }, () -> sender.sendMessage(ChatColor.RED + "Cancelled."));
         return true;
     }
 }

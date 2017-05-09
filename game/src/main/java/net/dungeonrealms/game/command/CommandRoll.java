@@ -2,7 +2,8 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,7 +41,7 @@ public class CommandRoll extends BaseCommand {
 
             int roll = new Random().nextInt(max) + 1;
 
-            String playerName = GameChat.getPreMessage(player, false, "local");
+            String playerName = PlayerWrapper.getWrapper(player).getChatName();
 
             GameAPI.getNearbyPlayers(player.getLocation(), 20).forEach(player1 -> player1.sendMessage(playerName.substring(0, playerName.length() - 4) +
                     ChatColor.GRAY + " has rolled a " + ChatColor.UNDERLINE + ChatColor.BOLD + roll + ChatColor.GRAY + " out of " + ChatColor.UNDERLINE + ChatColor.BOLD + max + ChatColor.GRAY + "."));

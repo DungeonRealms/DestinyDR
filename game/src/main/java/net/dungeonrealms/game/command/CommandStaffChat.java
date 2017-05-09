@@ -4,14 +4,13 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Brad on 16/06/2016.
@@ -28,17 +27,15 @@ public class CommandStaffChat extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        if (!Rank.isPMOD(player) && !Rank.isSupport(player)) return false;
+        if (!Rank.isPMOD(player))
+        	return false;
+        
+        if (args.length == 0) {
+        	sender.sendMessage("/sc|staffchat|s [message]");
+        	return true;
+        }
 
-        StringBuilder message;
-        if (args.length > 0) {
-            message = new StringBuilder(args[0]);
-
-            for (int arg = 1; arg < args.length; arg++)
-                message.append(" ").append(args[arg]);
-
-            GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&6" + message);
-        } else sender.sendMessage("/sc|staffchat|s [message]");
+        GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper((Player) sender).getChatName() + "&6" + String.join(" ", args));
         return true;
     }
 }

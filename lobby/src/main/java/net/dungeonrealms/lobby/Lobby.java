@@ -5,25 +5,25 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-<<<<<<< HEAD
-import net.dungeonrealms.lobby.bungee.NetworkClientListener;
-=======
 import net.dungeonrealms.common.util.TimeUtil;
->>>>>>> refs/heads/db-recode
+import net.dungeonrealms.lobby.bungee.NetworkClientListener;
 import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
+
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -44,29 +44,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;
-<<<<<<< HEAD
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-=======
->>>>>>> refs/heads/db-recode
+
 
 public class Lobby extends JavaPlugin implements Listener {
 
-    @Getter
-    private GameClient client;
-
-    @Getter
-    private static Lobby instance;
-
-    @Getter
-    private GhostFactory ghostFactory;
+    @Getter private GameClient client;
+    @Getter private static Lobby instance;
+    @Getter private GhostFactory ghostFactory;
 
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
-
-    @Getter
-    private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
+    @Getter private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
 
     @Override
     public void onEnable() {
@@ -109,25 +98,21 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
         cm.registerCommand(new CommandBuild());
-<<<<<<< HEAD
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-//            recentLogouts.getAllPresent((iter))
             recentLogouts.asMap().forEach((id, timer) -> timer.decrementAndGet());
         }, 20, 20);
     }
 
     public void sendClientMessage(String task, String message, String[] contents) {
-        if (this.client != null) {
+        if (this.client != null)
             this.client.sendNetworkMessage(task, message, contents);
-        }
-=======
+        
     }
 
     @Override
     public void onDisable() {
         SQLDatabaseAPI.getInstance().shutdown();
->>>>>>> refs/heads/db-recode
     }
 
     @EventHandler
@@ -191,7 +176,7 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
 
-            Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(player.getUniqueId());
+            PlayerRank rank = Rank.getRank(player);
             String rankColor = rank.getChatColor() + player.getName();
             player.setPlayerListName(rankColor);
             player.setDisplayName(rankColor);
@@ -205,63 +190,16 @@ public class Lobby extends JavaPlugin implements Listener {
             player.getInventory().setItem(0, getShardSelector());
 
             ghostFactory.addPlayer(player);
-            ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
+            ghostFactory.setGhost(player, !rank.isSUB());
 
-            if (Rank.isPMOD(player)) {
-<<<<<<< HEAD
-                Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-
-                    String lastIp = (String) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
-
-                    if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
-                        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
-                        this.allowLogin(player, true);
-                        return;
-                    }
-
-                    String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
-                    if (DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null) {
-                        player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
-                    } else {
-                        player.sendMessage(messagePrefix + "Please login with /pin <pin>");
-                    }
-                });
-
-=======
-//                Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-//
-//                    String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
-//
-//                    if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
-//                        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
-//                        this.allowLogin(player, true);
-//                        return;
-//                    }
-//
-//                    String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
-//                    if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
-//                        player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
-//                    }else{
-//                        player.sendMessage(messagePrefix + "Please login with /pin <pin>");
-//                    }
-//                });
-                this.allowLogin(player, false);
->>>>>>> refs/heads/db-recode
-            } else {
-                this.allowLogin(player, false);
-            }
+            //if (Rank.isPMOD(player))
+            this.allowLogin(player, false);
         });
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        final Player player = event.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(), () -> {
-//            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-//                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
-//            }
-            this.allowedStaff.remove(event.getPlayer().getUniqueId());
-        }, 1L);
+        Bukkit.getScheduler().runTaskLater(Lobby.getInstance(), () -> this.allowedStaff.remove(event.getPlayer().getUniqueId()), 1L);
     }
 
 
@@ -349,19 +287,6 @@ public class Lobby extends JavaPlugin implements Listener {
         return navigator;
     }
 
-    private boolean hasItem(PlayerInventory inventory, ItemStack item) {
-
-        if (!item.hasItemMeta()) return false;
-        if (!item.getItemMeta().hasDisplayName()) return false;
-
-        for (ItemStack i : inventory.getContents()) {
-            if (i != null && i.hasItemMeta() && i.getItemMeta().getDisplayName().contains(item.getItemMeta().getDisplayName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void allowLogin(Player player, boolean addToList) {
         if (addToList && !this.allowedStaff.contains(player.getUniqueId()))
             this.allowedStaff.add(player.getUniqueId());
@@ -373,11 +298,6 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
     public boolean isLoggedIn(Player player) {
-<<<<<<< HEAD
-        return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
-=======
-        return true;
-        //return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
->>>>>>> refs/heads/db-recode
+        return true; //this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }

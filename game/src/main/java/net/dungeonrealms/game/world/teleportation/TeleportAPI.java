@@ -3,16 +3,11 @@ package net.dungeonrealms.game.world.teleportation;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.KarmaHandler;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -37,7 +32,7 @@ public class TeleportAPI {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
             return false;
         }
-        if (TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
+        if (TutorialIsland.onTutorialIsland(player.getLocation())) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
             return false;
         }
@@ -46,7 +41,7 @@ public class TeleportAPI {
             return false;
         }
 
-        if (PlayerWrapper.getPlayerWrapper(player.getUniqueId()).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+        if (PlayerWrapper.getPlayerWrapper(player).getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are currently Chaotic.");
             return false;
         }
@@ -114,39 +109,7 @@ public class TeleportAPI {
     public static int getPlayerHearthstoneCD(UUID uuid) {
         return Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid);
     }
-
-    /**
-     * Checks if the item is a teleportation book
-     *
-     * @param itemStack
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isTeleportBook(ItemStack itemStack) {
-        if (itemStack.getType() != Material.BOOK) {
-            return false;
-        }
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsItem.getTag();
-        return !(tag == null) && tag.getString("type").equalsIgnoreCase("teleport");
-    }
-
-    /**
-     * Checks if the item is a hearthstone
-     *
-     * @param itemStack
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isHearthstone(ItemStack itemStack) {
-        if (itemStack.getType() != Material.QUARTZ) {
-            return false;
-        }
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsItem.getTag();
-        return !(tag == null) && tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
-    }
-
+    
     /**
      * Gets the location of a players hearthstone from Mongo
      *
@@ -156,12 +119,6 @@ public class TeleportAPI {
      */
     public static String getLocationFromDatabase(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if(wrapper == null) return "Cyrennica";
-
-        if (wrapper.getHearthstone() != null) {
-            return Utils.ucfirst(wrapper.getHearthstone());
-        }
-
-        return "Cyrennica";
+        return wrapper != null && wrapper.getHearthstone() != null ? wrapper.getHearthstone().getDisplayName() : "Cyrennica";
     }
 }

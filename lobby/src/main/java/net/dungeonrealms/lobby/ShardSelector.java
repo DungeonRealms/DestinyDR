@@ -2,6 +2,7 @@ package net.dungeonrealms.lobby;
 
 
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
@@ -9,14 +10,10 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-<<<<<<< HEAD
-=======
+
 import org.bukkit.Bukkit;
->>>>>>> refs/heads/db-recode
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,48 +40,37 @@ public class ShardSelector extends AbstractMenu {
 
             return o1num - o2num;
         });
+        
+        PlayerRank rank = Rank.getRank(player);
 
         // DISPLAY AVAILABLE SHARDS //
         for (BungeeServerInfo info : servers) {
-            String bungeeName = info.getServerName();
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
+            ShardInfo shard = ShardInfo.getByPseudoName(info.getServerName());
+            
+            // Don't show shard if you aren't allowed to see them.
+            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB)
+            	continue;
 
-            // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
-                continue;
-
-            GUIButton button = new GUIButton(getShardItem(shardID)) {
+            GUIButton button = new GUIButton(shard.getType().getIcon()) {
 
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
-                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !Rank.isSubscriber(player)) {
+                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !rank.isSUB()) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
                                 ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store" + ChatColor.RED + " to bypass this."
                         });
                     }
-
-                    if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
-                        player.sendMessage(new String[]{
-                                ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
-                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store"
-                        });
-                        return;
-                    } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
-                        player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
-                        return;
-                    } else {
-//                        try {
-//                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
-//                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
-//                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
-//                                return;
-//                            }
-//                        } catch (NullPointerException ignored) {
-//                        }
+                    
+                    if (!rank.isAtLeast(shard.getType().getMinRank())) {
+                    	player.sendMessage(ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getType().name() + " ONLY" + ChatColor.RED + " shard!");
+                    	
+                    	if (shard.getType().getMinRank() == PlayerRank.SUB)
+                    		player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store");
+                    	return;
                     }
 
                     BungeeUtils.sendToServer(player.getName(), info.getServerName());
@@ -93,8 +79,8 @@ public class ShardSelector extends AbstractMenu {
 
             List<String> lore = new ArrayList<>();
 
-            if (!getServerType(shardID).equals(""))
-                lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + getServerType(shardID));
+            if (shard.getType().getDescription().length() > 0)
+                lore.add(ChatColor.RED + "" + ChatColor.ITALIC + shard.getType().getDescription());
 
 
             //final int slot = getServerType(shardID).equals("") ? getSize() : Math.min(getInventorySize(), getInventorySize() - 1) - (getSize() - getNormalServers());
@@ -117,60 +103,11 @@ public class ShardSelector extends AbstractMenu {
                 Bukkit.getLogger().info("Problem parsing " + info.getServerName());
                 e.printStackTrace();
             }
-            button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
+            button.setDisplayName(shard.getType().getColor() + "" + ChatColor.BOLD + shard.getShardID());
             button.setLore(lore);
 
             set(getSize(), button);
         }
-    }
-
-
-    private int getNormalServers() {
-        int count = 0;
-
-        for (String bungeeName : getFilteredServers().keySet()) {
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
-            if (getServerType(shardID).equals(""))
-                count++;
-        }
-
-        return count;
-    }
-
-    /**
-     * Returns the material associated with a shard.
-     *
-     * @param shardID
-     * @return Material
-     */
-    private ItemStack getShardItem(String shardID) {
-        shardID = shardID.toUpperCase();
-
-        if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
-        else if (shardID.startsWith("CS-")) return new ItemStack(Material.PRISMARINE_SHARD);
-        else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
-        else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
-        else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
-        else if (shardID.startsWith("EVENT-")) return new ItemStack(Material.GOLD_INGOT);
-
-        return new ItemStack(Material.END_CRYSTAL);
-    }
-
-    /**
-     * Returns the chat colour associated with a shard.
-     *
-     * @param shardID
-     * @return ChatColor
-     */
-    private ChatColor getShardColour(String shardID) {
-        shardID = shardID.toUpperCase();
-
-        if (shardID.equals("US-0")) return ChatColor.AQUA;
-        else if (shardID.startsWith("CS-")) return ChatColor.BLUE;
-        else if (shardID.startsWith("YT-")) return ChatColor.RED;
-        else if (shardID.startsWith("SUB-")) return ChatColor.GREEN;
-
-        return ChatColor.YELLOW;
     }
 
     private static Map<String, BungeeServerInfo> getFilteredServers() {
@@ -190,22 +127,13 @@ public class ShardSelector extends AbstractMenu {
         return filteredServers;
     }
 
-    public String getServerType(String shardID) {
-        if (shardID.contains("SUB")) return "Subscribers Only";
-        if (shardID.contains("YT")) return "YouTubers Only";
-        if (shardID.contains("BR")) return "Brazilian Shard";
-        if (shardID.contains("RP")) return "Role-playing Shard";
-        if (shardID.contains("CS")) return "Support Agents Only";
-        return "";
-    }
-
     @Override
     public void open(Player player) {
         if (getSize() == 0) {
             player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
             return;
         }
-<<<<<<< HEAD
+        
         try {
             AtomicInteger secondsLeft = Lobby.getInstance().getRecentLogouts().getIfPresent(player.getUniqueId());
 
@@ -221,22 +149,6 @@ public class ShardSelector extends AbstractMenu {
         } catch (Exception e) {
             //Catches an NPE relating to if a player has a last shard transfer time
             e.printStackTrace();
-=======
-        
-        try{
-            //Not sure what to do with this? Manually pull from db or something?
-//        	long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
-
-//        	if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
-//            	if ((System.currentTimeMillis() - lastShardTransfer) < 30000) {
-//                	player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
-//                	return;
-//            	}
-//        	}
-        }catch(Exception e){
-        	//Catches an NPE relating to if a player has a last shard transfer time
-        	e.printStackTrace();
->>>>>>> refs/heads/db-recode
         }
 
         player.openInventory(inventory);

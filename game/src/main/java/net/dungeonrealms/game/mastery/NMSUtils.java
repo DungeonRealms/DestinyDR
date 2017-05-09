@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.mastery;
 
-import net.minecraft.server.v1_9_R2.BiomeBase;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 import net.minecraft.server.v1_9_R2.EntityTypes;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -12,13 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Nick on 9/17/2015.
- * From Bukkit, to register our NPCs.
+ * NMSUtils - Utils for interacting with NMS.
+ * 
+ * Redone on May 5th, 2017.
+ * @author Kneesnap
  */
 public class NMSUtils {
 
-    public void registerEntity(String name, int id, Class<? extends EntityInsentient> nmsClass,
-                               Class<? extends EntityInsentient> customClass) {
+    public static void registerEntity(String name, int id, Class<? extends EntityInsentient> customClass) {
         try {
 
             List<Map<?, ?>> dataMaps = new ArrayList<>();
@@ -28,7 +28,9 @@ public class NMSUtils {
                     dataMaps.add((Map<?, ?>) f.get(null));
                 }
             }
-
+            
+            // Remove existing entities with this ids.
+            // It's ok to register multiple entities with the same id this way.
             if (dataMaps.get(2).containsKey(id)) {
                 dataMaps.get(0).remove(name);
                 dataMaps.get(2).remove(id);
@@ -36,30 +38,7 @@ public class NMSUtils {
 
             Method method = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, int.class);
             method.setAccessible(true);
-            method.invoke(null, customClass, name, id);
-            for (Field f : BiomeBase.class.getDeclaredFields()) {
-                if (f.getType().getSimpleName().equals(BiomeBase.class.getSimpleName())) {
-                    if (f.get(null) != null) {
-
-                        for (Field list : BiomeBase.class.getDeclaredFields()) {
-                            if (list.getType().getSimpleName().equals(List.class.getSimpleName())) {
-                                list.setAccessible(true);
-                                @SuppressWarnings("unchecked")
-                                List<BiomeBase.BiomeMeta> metaList = (List<BiomeBase.BiomeMeta>) list.get(f.get(null));
-
-                                for (BiomeBase.BiomeMeta meta : metaList) {
-                                    Field clazz = BiomeBase.BiomeMeta.class.getDeclaredFields()[0];
-                                    if (clazz.get(meta).equals(nmsClass)) {
-                                        clazz.set(meta, customClass);
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-
+            method.invoke(null, customClass, name, id); // Register the entity in NMS.
         } catch (Exception e) {
             e.printStackTrace();
         }

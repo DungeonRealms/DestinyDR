@@ -1,14 +1,18 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+
 import com.google.common.collect.Sets;
-import net.dungeonrealms.GameAPI;
+
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
-import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.tab.Column;
-import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.item.Item.AttributeType;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -24,59 +28,42 @@ public class CharacterTabColumn extends Column {
                     new Variable("plevel") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            if (gp.getLevel() == 0) return "?";
-                            return String.valueOf(gp.getLevel());
+                        	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+                        	return pw != null && pw.getLevel() > 0 ? String.valueOf(pw.getLevel()) : "?";
                         }
                     },
                     new Variable("exp") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                            if (gp == null) return null;
-                            if (wrapper.getExperience() == 0) return "?";
+                            if (wrapper == null || wrapper.getExperience() == 0)
+                            	return "?";
 
-                            double exp = (double) wrapper.getExperience() / (double) gp.getEXPNeeded(gp.getLevel());
+                            double exp = (double) wrapper.getExperience() / (double) wrapper.getEXPNeeded();
                             exp *= 100;
 
-                            if (gp.getLevel() == 100) return ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "MAX";
-                            return (int) exp + "%";
+                            return wrapper.getLevel() == 100 ? ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "MAX" : (int) exp + "%";
                         }
                     },
                     new Variable("energy") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null) return null;
-                            int calculatedValue;
-
-                            try {
-                                calculatedValue = gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN);
-                            } catch (NullPointerException ignored) {
-                                return "";
-                            }
-
-                            return String.valueOf(calculatedValue);
+                            return getAttribute(player, ArmorAttributeType.ENERGY_REGEN);
                         }
                     },
                     new Variable("hps") {
                         @Override
                         public String getReplacement(Player player) {
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                            if (wrapper == null) return null;
-
-                            return String.valueOf((HealthHandler.getInstance().getPlayerHPRegenLive(player) + wrapper.getPlayerStats().getHPRegen()));
+                            if (wrapper == null)
+                            	return null;
+                            return String.valueOf((HealthHandler.getRegen(player) + wrapper.getPlayerStats().getRegen()));
                         }
                     },
                     new Variable("dps") {
                         @Override
                         public String getReplacement(Player player) {
-                            GamePlayer gp = GameAPI.getGamePlayer(player);
-                            if (gp == null || !gp.isAttributesLoaded()) return null;
-
-                            return String.valueOf(gp.getAttributes().get("dps")[0] + " - " + gp.getAttributes().get("dps")[1]);
+                            return getAttribute(player, WeaponAttributeType.DAMAGE);
                         }
                     },
                     new Variable("alignment") {
@@ -85,11 +72,11 @@ public class CharacterTabColumn extends Column {
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                             if (wrapper == null) return null;
 
-                            KarmaHandler.EnumPlayerAlignments playerAlignment = wrapper.getPlayerAlignment();
+                            KarmaHandler.EnumPlayerAlignments playerAlignment = wrapper.getAlignment();
                             String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                                     playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
 
-                            if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
+                            if (playerAlignment != EnumPlayerAlignments.LAWFUL) {
                                 String time = String.valueOf(wrapper.getAlignmentTime());
                                 return pretty_align + playerAlignment.getAlignmentColor().toString() + " " + ChatColor.BOLD + time + "s..";
                             }
@@ -102,5 +89,10 @@ public class CharacterTabColumn extends Column {
 
         }
         return this;
+    }
+    
+    private String getAttribute(Player player, AttributeType type) {
+    	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+    	return pw != null ? pw.getAttributes().getAttribute(type).toString() : "?";
     }
 }

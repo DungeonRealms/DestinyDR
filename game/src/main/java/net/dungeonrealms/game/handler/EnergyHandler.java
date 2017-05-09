@@ -1,18 +1,21 @@
 package net.dungeonrealms.game.handler;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -26,14 +29,8 @@ import java.util.UUID;
  */
 public class EnergyHandler implements GenericMechanic {
 
-    private static EnergyHandler instance = null;
-
-    public static EnergyHandler getInstance() {
-        if (instance == null) {
-            instance = new EnergyHandler();
-        }
-        return instance;
-    }
+	@Getter
+    private static EnergyHandler instance = new EnergyHandler();
 
     @Override
     public EnumPriority startPriority() {
@@ -105,8 +102,7 @@ public class EnergyHandler implements GenericMechanic {
                 continue;
             }
             PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
-            GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp == null || playerWrapper == null || !gp.isAttributesLoaded()) {
+            if (playerWrapper == null || !playerWrapper.isAttributesLoaded()) {
                 continue; // player data not yet loaded
             }
             if (getPlayerCurrentEnergy(player) == 1.0F) {
@@ -118,14 +114,15 @@ public class EnergyHandler implements GenericMechanic {
                 continue;
             }
             // get regenAmount, 10% base energy regen (calculated here because it's hidden)
-            float regenAmount = (((float) GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN, player)) / 100.0F) + 0.20F;
+            
+            float regenAmount = (((float) playerWrapper.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).getValue()) / 100.0F) + 0.20F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.05F;
                 }
                 regenAmount = regenAmount / 18.9F;
                 if (playerWrapper.getPlayerStats() == null) return;
-                regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getEnergyRegen());
+                regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }
         }
@@ -223,7 +220,7 @@ public class EnergyHandler implements GenericMechanic {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) return;
         if (player.hasMetadata("last_energy_remove")) {
-            if (!(GameAPI.isWeapon(player.getInventory().getItemInMainHand()) && player.getInventory().getItemInMainHand().getType().name().endsWith("_HOE"))) {
+            if(ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
                 if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
                     return;
                 }
@@ -270,8 +267,7 @@ public class EnergyHandler implements GenericMechanic {
      * @return Calculated float
      */
     public static float handleAirSwingItem(ItemStack itemStack) {
-        Material material = itemStack.getType();
-        switch (material) {
+        switch (itemStack.getType()) {
             case AIR:
                 return 0.025f;
             case WOOD_SWORD:
@@ -315,20 +311,15 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_HOE:
                 return 0.075F / 1.1F;
             case BOW:
-                switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
-                    case 1:
-                        return 0.0625F;
-                    case 2:
-                        return 0.0725F;
-                    case 3:
-                        return 0.0825F;
-                    case 4:
-                        return 0.0925F;
-                    case 5:
-                        return 0.125F;
-                }
+            	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
+            	return 0.0525F + (gear.getTier().getId() * 0.01F);
+            default:
+            	return 0.10F;
         }
-        return 0.10F;
+    }
+    
+    public static float getSwingCost(ItemStack item) {
+    	return getWeaponSwingEnergyCost(item);
     }
 
     /**
@@ -340,8 +331,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public static float getWeaponSwingEnergyCost(ItemStack itemStack) {
-        Material material = itemStack.getType();
-        switch (material) {
+        switch (itemStack.getType()) {
             case AIR:
                 return 0.025f;
             case WOOD_SWORD:
@@ -385,19 +375,10 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_HOE:
                 return 0.15F / 1.1F;
             case BOW:
-                switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
-                    case 1:
-                        return 0.125F;
-                    case 2:
-                        return 0.145F;
-                    case 3:
-                        return 0.165F;
-                    case 4:
-                        return 0.185F;
-                    case 5:
-                        return 0.205F;
-                }
+            	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
+            	return 0.105F + (gear.getTier().getId() * 0.2F);
+           default:
+        	   return 0.10F;
         }
-        return 0.10F;
     }
 }

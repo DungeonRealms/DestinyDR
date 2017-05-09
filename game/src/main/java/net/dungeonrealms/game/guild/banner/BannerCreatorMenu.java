@@ -8,7 +8,7 @@ import net.dungeonrealms.common.game.menu.item.GUIDisplayer;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.banner.selectors.ColorSelectorMenu;
 import net.dungeonrealms.game.guild.banner.selectors.PatternSelectorMenu;
-import net.dungeonrealms.game.guild.token.GuildCreateToken;
+
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -33,12 +33,11 @@ public class BannerCreatorMenu extends AbstractMenu {
         final ItemStack currentBanner = banner == null ? new ItemStack(Material.BANNER, 1, (byte) 15) : banner;
         BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta();
 
-
         GUIDisplayer bannerPreview = new GUIDisplayer(currentBanner);
         bannerPreview.getItemStack().setItemMeta(bannerMeta);
         bannerPreview.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Preview");
         bannerPreview.setLore(Collections.singletonList("&7This is how your banner will appear."));
-
+        
         set(4, bannerPreview);
 
         GUIButton setBaseColor = new GUIButton(Material.INK_SACK, (byte) 1) {

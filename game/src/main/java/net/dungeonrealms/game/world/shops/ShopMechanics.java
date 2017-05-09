@@ -1,27 +1,26 @@
 package net.dungeonrealms.game.world.shops;
 
-import lombok.Cleanup;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,11 +31,9 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -109,11 +106,18 @@ public class ShopMechanics implements GenericMechanic, Listener {
         ALLSHOPS.clear();
         return statement;
     }
+    
+    public static void deleteShop(Player player, boolean shutdown) {
+    	deleteShop(player.getName(), shutdown);
+    }
+    
+    public static void deleteShop(String name, boolean shutdown) {
+    	if (ALLSHOPS.containsKey(name))
+    		getShop(name).deleteShop(shutdown, null);
+    }
 
     public static boolean isItemSellable(ItemStack i) {
-        if (!GameAPI.isItemDroppable(i)) return false;
-        if (i.getType() == Material.EMERALD || i.getType() == Material.PAPER) return false;
-        return true;
+    	return ItemManager.isItemTradeable(i) && !ItemMoney.isMoney(i);
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
@@ -164,11 +168,17 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
 
                     //  LOAD ITEMS FROM COLLECTION BIN  //
-                    Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                    Storage storage = BankMechanics.getStorage(player);
                     if (storage.collection_bin != null) {
-                        for (ItemStack i : storage.collection_bin.getContents())
-                            if (i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
-                                shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));
+                    	for(ItemStack i : storage.collection_bin.getContents()) {
+                    		if(i != null && i.getType() != Material.AIR) {
+                    			VanillaItem vi = new VanillaItem(i);
+                    			if (vi.getPrice() <= 0)
+                    				continue;
+                    			vi.setShowPrice(true);
+                    			shop.inventory.addItem(vi.generateItem()); 
+                    		}
+                    	}
                         player.sendMessage(ChatColor.GREEN + "The items from your collection bin have been loaded into your shop.");
                         storage.clearCollectionBin();
                     }
@@ -204,21 +214,6 @@ public class ShopMechanics implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
-    }
-
-    /**
-     * @param item
-     * @param price
-     * @return
-     */
-    public static ItemStack addPrice(ItemStack item, int price) {
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.getLore();
-        lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + price + "g");
-        String[] arr = lore.toArray(new String[lore.size()]);
-        item = NPCMenus.editItem(item, item.getItemMeta().getDisplayName(), arr);
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        nms.getTag().setInt("worth", price);
-        return CraftItemStack.asBukkitCopy(nms);
+    	
     }
 }

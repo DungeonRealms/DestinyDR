@@ -2,15 +2,16 @@ package net.dungeonrealms.game.command.moderation;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,11 +53,10 @@ public class CommandLootChest extends BaseCommand {
 
             if (args[0].equalsIgnoreCase("show")) {
                 int shown = 0;
-                for (LootSpawner spawner : LootManager.LOOT_SPAWNERS) {
+                for (LootSpawner spawner : LootManager.getSpawners()) {
                     if (spawner.getLocation().getWorld().equals(pl.getWorld()) && spawner.getLocation().distanceSquared(pl.getLocation()) <= radius * radius) {
                         if (shownLootChests.containsKey(spawner.getLocation())) continue;
 
-                        spawner.getBlock().setType(Material.CHEST);
                         spawner.setContents();
                         createHologram(spawner);
                         shown++;
@@ -90,8 +90,8 @@ public class CommandLootChest extends BaseCommand {
     public static void createHologram(LootSpawner spawner) {
         Hologram holo = HologramsAPI.createHologram(DungeonRealms.getInstance(), spawner.getLocation().clone().add(.5, 2.5, 0.5));
         holo.appendTextLine(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Loot Chest");
-        holo.appendTextLine(ChatColor.YELLOW + "Loot Type: " + spawner.getLootType().fileName);
-        holo.appendTextLine(ChatColor.YELLOW + "Respawn Timer: " + (spawner.getDelay() - 1200) + "s");
+        holo.appendTextLine(ChatColor.YELLOW + "Loot Type: " + spawner.getLootTable());
+        holo.appendTextLine(ChatColor.YELLOW + "Respawn Timer: " + (spawner.getTickDelay() - 1200) + "s");
         shownLootChests.put(spawner.getLocation(), holo);
     }
 }

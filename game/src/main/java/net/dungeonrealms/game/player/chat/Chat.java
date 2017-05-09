@@ -1,16 +1,18 @@
 package net.dungeonrealms.game.player.chat;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.guild.GuildWrapper;
-import net.dungeonrealms.game.guild.database.GuildDatabase;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
+import net.dungeonrealms.database.punishment.PunishAPI;
+import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,35 +28,36 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Nick on 9/26/2015.
  */
 public class Chat {
 
-    static Chat instance = null;
-
-    public static Chat getInstance() {
-        if (instance == null) {
-            instance = new Chat();
-        }
-        return instance;
-    }
-
+	@Getter private static Chat instance = new Chat();
 
     private static final Map<Player, Consumer<? super AsyncPlayerChatEvent>> chatListeners = new ConcurrentHashMap<>();
     private static final Map<Player, Consumer<? super Player>> orElseListeners = new ConcurrentHashMap<>();
 
     /**
-     * Kill me
-     *
-     * @param player Some nasty cheating boy
-     * @return Is he?
+     * Is this player currently being listened on by a chat prompt?
      */
     public static boolean listened(Player player) {
         return chatListeners.containsKey(player) || orElseListeners.containsKey(player);
     }
-
+    
+    public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer) {
+    	listenForMessage(player, consumer, (Runnable)null);
+    }
+    
+    public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Runnable fail) {
+    	listenForMessage(player, consumer, p -> {
+    		if (fail != null)
+    			fail.run();
+    	});
+    }
+    
     /**
      * Listens for a player message.
      * If <i>consumer</i> is null, the player is removed from memory (used in Quit event)
@@ -106,7 +109,7 @@ public class Chat {
      */
     public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback) {
         Chat.listenForMessage(player, (evt) -> {
-            int num;
+        	int num;
 
             if (evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")) {
                 failCallback.run();
@@ -161,20 +164,20 @@ public class Chat {
                 return;
             }
             PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
-                if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isTrialGM(player))
-                    if (!wrapper.getToggles().isReceiveMessage()) {
+                if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isTrialGM(player)) {
+                    if (!wrapper.getToggles().getState(Toggles.ENABLE_PMS)) {
                         player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                         return;
                     }
+                }
 
-                if (!wrapper.isPlaying() || (wrapper.getToggles().isVanish() && !Rank.isTrialGM(player))) {
+                if (!wrapper.isPlaying() || wrapper.getToggles().getState(Toggles.VANISH)) {
                     player.sendMessage(ChatColor.RED + "That user is not currently online.");
                     return;
                 }
 
                 //The recipient is ignoring the player, not themselves.
                 boolean ignoringPlayer = wrapper.getIgnoredFriends().containsKey(player.getUniqueId());
-//                wrapper.getig
 
                 System.out.println("Ignored: " + ignoringPlayer + " " + wrapper.getIgnoredFriends().size());
                 ShardInfo shard = ShardInfo.getByPseudoName(wrapper.getShardPlayingOn());
@@ -183,17 +186,13 @@ public class Chat {
                     player.sendMessage(ChatColor.RED + "Unable to find shard to send to: " + wrapper.getShardPlayingOn());
                     return;
                 }
-
-                GuildWrapper foundGuild = GuildDatabase.getAPI().getGuildWrapper(wrapper.getGuildID());
-                String guild = foundGuild != null ? net.md_5.bungee.api.ChatColor.WHITE + "[" + foundGuild.getTag() + "] " : "";
-                final String rank = wrapper.getRank().toLowerCase();
-                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                        (recipientName, guild, rank, true, wrapper.getPlayerAlignment()) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
-                        ChatColor.WHITE + finalMessage);
+                
+                player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "TO " + wrapper.getChatName()
+                		+ ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
 
                 if (!ignoringPlayer) {
                     GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), player.getUniqueId().toString(), recipientName, (ChatColor.GRAY.toString() +
-                            ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
+                            ChatColor.BOLD + "FROM " + sendingWrapper.getChatName() + ChatColor.GRAY + " [" + ChatColor
                             .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
                             finalMessage));
 
@@ -224,158 +223,98 @@ public class Chat {
         }
     }
 
-    public static List<Player> getRecipients(boolean tradeChat) {
-        return Bukkit.getOnlinePlayers().stream().filter((pl) -> {
-                    PlayerWrapper wrapper =PlayerWrapper.getPlayerWrapper(pl);
-                    if(wrapper == null) return false;
-                    return GameAPI.isPlayer(pl) && (!tradeChat || wrapper.getToggles().isTradeChat());
-                }
-                )
-                .collect(Collectors.toList());
+    public static List<Player> getRecipients(Player sender, ChatChannel channel) {
+    	Stream<? extends Player> search = (channel == ChatChannel.LOCAL ?
+    			GameAPI.getNearbyPlayers(sender.getLocation(), 75) : Bukkit.getOnlinePlayers()).stream();
+    	
+        return search.filter(pl -> {
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+                    return wrapper != null && (channel != ChatChannel.TRADE || wrapper.getToggles().getState(Toggles.TRADE_CHAT));
+        		}).collect(Collectors.toList());
     }
-
+    
     /**
-     * Monitor the players primary language also check for bad words.
-     *
-     * @param event Chat event
-     * @since 1.0
+     * Send a chat message as the supplied player.
      */
-    public void doChat(AsyncPlayerChatEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-
-        if (Chat.containsIllegal(event.getMessage())) {
-            event.setCancelled(true);
-            event.setMessage("");
-            event.getPlayer().sendMessage(ChatColor.RED + "Message contains illegal characters.");
+    public static void sendChatMessage(Player player, String message, boolean forceGlobal) {
+    	PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+    	if (wrapper == null)
+    		return;
+    	
+    	if (wrapper.isMuted()) {
+            player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
             return;
         }
-        
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-
-        if(wrapper == null)
-        	return;
-        
-        String fixedMessage = checkForBannedWords(event.getMessage());
-
-        if (fixedMessage.contains(".com") || fixedMessage.contains(".net") || fixedMessage.contains(".org") || fixedMessage.contains("http://") || fixedMessage.contains("www."))
-            if (!Rank.isDev(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+    	
+    	if (!Rank.isGM(player))
+    		message = Chat.checkForBannedWords(message);
+    	
+    	if ((message.contains(".com") || message.contains(".net") || message.contains(".org") || message.contains("http://") || message.contains("www."))) {
+    		if (!Rank.isGM(player)) {
+               	player.sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
                 return;
             }
-
-        event.setMessage(fixedMessage);
-
-        if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
-            String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            if (playerName.length() == 0) return;
-
-            if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
-                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
-            }
-            fixedMessage = fixedMessage.replace("@" + playerName, "");
-            sendPrivateMessage(event.getPlayer(), playerName, fixedMessage);
-            event.setCancelled(true);
+		}
+    	
+    	// Handle party chat.
+    	if (Affair.isPartyChat(player)) {
+    		Affair.getInstance().sendPartyChat(player, message);
+			return;
+		}
+    	
+    	// Handle guild chat.
+    	if (wrapper.isInGuild() && wrapper.getToggles().getState(Toggles.GUILD_CHAT)) {
+    		wrapper.getGuild().sendGuildMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + wrapper.getGuild().getTag() +
+    				ChatColor.DARK_AQUA + ChatColor.GRAY + player.getName() + ": " + message, false);
+    		return;
+    	}
+    	
+    	//@Username Message
+    	if (message.startsWith("@") && !message.startsWith("@i@")) {
+        	String[] split = message.substring(1).split(" ");
+        	String playerName = split[0];
+            if (playerName.length() == 0)
+            	return;
+            
+            split[0] = ""; // Don't include username in the message
+            String cmd = "msg " + playerName + String.join(" ", split);
+            Bukkit.getLogger().info(player.getName() + "> /" + cmd);
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Bukkit.dispatchCommand(player, cmd));
             return;
         }
+    	
+    	boolean global = forceGlobal || wrapper.getToggles().getState(Toggles.GLOBAL_CHAT);
+    	
+    	if (global && !checkGlobalCooldown(player))
+    		return;
+    	
+    	sendChat(player, message, global ? ChatChannel.getChannel(message) : ChatChannel.LOCAL);
+    }
+    
+    private static void sendChat(Player sender, String message, ChatChannel channel) {
+        PlayerWrapper pw = PlayerWrapper.getWrapper(sender);
+        
+        if (channel == ChatChannel.TRADE && !pw.getToggles().getState(Toggles.TRADE_CHAT)) {
+        	sender.sendMessage(ChatColor.RED + "You cannot talk in trade chat while it's toggled off.");
+        }
+        
+        ItemStack held = sender.getEquipment().getItemInMainHand();
 
-        boolean gChat = wrapper.getToggles().isGlobalChat();
-
-        if (gChat) {
-            if (!checkGlobalCooldown(event.getPlayer())) {
-                event.setMessage(null);
-                event.setCancelled(true);
-                return;
-            }
-            String messageType = GameChat.getGlobalType(fixedMessage);
-            boolean tradeChat = messageType.equals("trade");
-            if (tradeChat && !wrapper.getToggles().isTradeChat()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
-                event.setCancelled(true);
-                return;
-            }
-            List<Player> recipients = getRecipients(tradeChat);
-
-            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                final Player p = event.getPlayer();
-                String aprefix = GameChat.getPreMessage(p);
-                String[] split = fixedMessage.split("@i@");
-                String after = "";
-                String before = "";
-                if (split.length > 0)
-                    before = split[0];
-                if (split.length > 1)
-                    after = split[1];
-
-
-                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
-
-                List<String> hoveredChat = new ArrayList<>();
-                ItemMeta meta = stack.getItemMeta();
-                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
-                if (meta.hasLore())
-                    hoveredChat.addAll(meta.getLore());
-                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                normal.addText(before + "");
-                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-                normal.addText(after);
-
-                recipients.forEach(normal::sendToPlayer);
-                event.setCancelled(true);
-                return;
-            }
-            event.setCancelled(true);
-            final String finalFixedMessage = fixedMessage;
-            recipients.forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, messageType) + finalFixedMessage));
+        List<Player> recipients = getRecipients(sender, channel);
+        String finalMessage = channel.getPrefix() + PlayerWrapper.getWrapper(sender).getChatName() + ChatColor.RESET + ": " + message;
+        JSONMessage show = message.contains("@i@") && held != null && held.getType() != Material.AIR ? applyShowItem(sender, message) : null;
+        
+        if (show != null) {
+        	recipients.forEach(show::sendToPlayer);
         } else {
-            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                final Player p = event.getPlayer();
-                String aprefix = GameChat.getPreMessage(p);
-                String[] split = fixedMessage.split("@i@");
-                String after = "";
-                String before = "";
-                if (split.length > 0)
-                    before = split[0];
-                if (split.length > 1)
-                    after = split[1];
-
-                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
-
-                List<String> hoveredChat = new ArrayList<>();
-                ItemMeta meta = stack.getItemMeta();
-                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
-                if (meta.hasLore())
-                    hoveredChat.addAll(meta.getLore());
-                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                normal.addText(before + "");
-                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-                normal.addText(after);
-
-                GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).forEach(normal::sendToPlayer);
-                event.setCancelled(true);
-            }
+        	recipients.forEach(p -> p.sendMessage(finalMessage));
         }
+        
+        if (channel == ChatChannel.LOCAL && recipients.size() <= 1)
+        	sender.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you... Type /gl [message] to talk in global.");
     }
 
-    /**
-     * Handles local player chat
-     *
-     * @param event Chat event
-     */
-
-    public void doLocalChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) return;
-        final String finalFixedMessage = event.getMessage();
-
-
-        // HANDLE LOCAL CHAT
-        GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75, true).forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-        if (GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() <= 1) {
-            event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
-        }
-        event.setCancelled(true);
-    }
-
-    public String checkForBannedWords(String msg) {
+    public static String checkForBannedWords(String msg) {
         String result = msg;
         result = result.replace("ð", "");
 
@@ -407,14 +346,15 @@ public class Chat {
         return string.trim();
     }
 
-    private String toCensor(int characters) {
+    private static String toCensor(int characters) {
         String result = "";
-        for (int i = 0; i < characters; i++) result = result.concat("*");
+        for (int i = 0; i < characters; i++)
+        	result = result.concat("*");
         return result;
     }
 
 
-    private String replaceOperation(String source, String search) {
+    private static String replaceOperation(String source, String search) {
         int length = search.length();
         if (length < 2) return source;
 
@@ -447,7 +387,7 @@ public class Chat {
     }
 
     public static boolean checkGlobalCooldown(Player player) {
-        if (Rank.isPMOD(player) || Rank.isSubscriber(player)) return true;
+        if (Rank.isSUB(player)) return true;
         if (player.hasMetadata("lastGlobalChat") && (System.currentTimeMillis() - player.getMetadata
                 ("lastGlobalChat").get(0).asLong()) < 10000) {
             int timeRemaining = ((int) (10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)
@@ -458,5 +398,68 @@ public class Chat {
         }
         player.setMetadata("lastGlobalChat", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
         return true;
+    }
+    
+    public static JSONMessage applyShowItem(Player player, String s) {
+    	ItemStack item = player.getEquipment().getItemInMainHand();
+    	
+    	if (!s.contains("@i@") || item == null || item.getType() == Material.AIR)
+    		return new JSONMessage(s);
+    	
+    	String[] split = s.split("@i@");
+    	String before = split.length > 0 ? split[0] : "";
+    	String after = split.length > 1 ? split[1] : "";
+    	
+    	// Generate display.
+        List<String> hoveredChat = new ArrayList<>();
+        ItemMeta meta = item.getItemMeta();
+        hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : item.getType().name()));
+        if (meta.hasLore())
+            hoveredChat.addAll(meta.getLore());
+        
+        final JSONMessage normal = new JSONMessage("", org.bukkit.ChatColor.WHITE);
+        normal.addText(before + "");
+        normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
+        normal.addText(after);
+        
+        return normal;
+    }
+    
+    public enum ChatChannel {
+    	LOCAL(),
+    	TRADE("T", ChatColor.GREEN, "wtb", "wts", "wtt", "trade", "trading", "buying", "selling", "casino"),
+    	RECRUIT("GR", ChatColor.RED, "recruiting", "guild", "guilds"),
+    	GLOBAL("G", ChatColor.AQUA);
+    	
+    	private String prefix;
+    	private ChatColor color;
+    	@Getter private String[] keywords;
+    	
+    	ChatChannel() {
+    		this(null, null);
+    	}
+    	
+    	ChatChannel(String prefix, ChatColor color, String... keywords) {
+    		this.prefix = prefix;
+    		this.color = color;
+    		this.keywords = keywords;
+    	}
+    	
+    	public String getPrefix() {
+    		return prefix != null ? color + "<" + ChatColor.BOLD + prefix + color + "> " + ChatColor.RESET : "";
+    	}
+    	
+    	/**
+    	 * Gets the chat channel based on the keywords in a chat message.
+    	 * Defaults to global.
+    	 */
+    	public static ChatChannel getChannel(String message) {
+    		message = message.toLowerCase();
+    		for (ChatChannel c : values())
+    			for (String keyword : c.getKeywords())
+    				if (message.startsWith(keyword) || message.contains(" " + keyword + " ") || message.endsWith(" " + keyword))
+    					return c;
+    		return ChatChannel.GLOBAL;
+    	}
     }
 }

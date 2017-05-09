@@ -1,12 +1,14 @@
 package net.dungeonrealms.game.command;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.friend.CooldownCommand;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -56,8 +58,7 @@ public class CommandIgnore extends BaseCommand implements CooldownCommand {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
 
-            Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
-            if (rank != null && rank.isAtleast(Rank.PlayerRank.PMOD)) {
+            if (Rank.isPMOD(uuid)) {
                 player.sendMessage(ChatColor.RED + "You cannot ignore that player.");
                 return;
             }

@@ -6,27 +6,20 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.donation.buffs.Buff;
-import net.dungeonrealms.game.donation.buffs.LevelBuff;
-import net.dungeonrealms.game.donation.buffs.LootBuff;
-import net.dungeonrealms.game.donation.buffs.ProfessionBuff;
+import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entity.type.pet.Creeper;
 import net.minecraft.server.v1_9_R2.Entity;
+
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -35,14 +28,8 @@ import java.util.stream.Collectors;
 @Setter
 public class DonationEffects implements GenericMechanic {
 
-    private static DonationEffects instance = null;
-
-    public static DonationEffects getInstance() {
-        if (instance == null) {
-            instance = new DonationEffects();
-        }
-        return instance;
-    }
+	@Getter
+    private static DonationEffects instance = new DonationEffects();
 
     //CLOSED BETA PAYERS = RED_DUST
     //HALLOWEEN PLAYERS = SMALL_SMOKE
@@ -51,18 +38,10 @@ public class DonationEffects implements GenericMechanic {
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
     public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
-    @Getter
-    public Set<Creeper> fireWorkCreepers = new CopyOnWriteArraySet<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
-
-    private LootBuff activeLootBuff = null;
-    private ProfessionBuff activeProfessionBuff = null;
-    private LevelBuff activeLevelBuff = null;
-    private Queue<LootBuff> queuedLootBuffs = new LinkedList<>();
-    private Queue<ProfessionBuff> queuedProfessionBuffs = new LinkedList<>();
-    private Queue<LevelBuff> queuedLevelBuffs = new LinkedList<>();
-
+    private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
+    private static String buffDelimeter = "@#$%";
 
     private static Random random = new Random();
 
@@ -71,130 +50,73 @@ public class DonationEffects implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-    private static String buffDelimeter = "@#$%";
-
-    @Override
+	@Override
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::handleCreeperFireworks, 40L, 100L);
-
-        //Pull the loot buff column we have stored.. should only be 1.
+        
         SQLDatabaseAPI.getInstance().executeQuery("SELECT * FROM buffs LIMIT 1;", rs -> {
-            try {
-                if (rs.first()) {
-                    //Found buff row.
-                    this.activeLootBuff = (LootBuff) Buff.deserialize(rs.getString("activeLootBuff"), LootBuff.class);
-                    this.queuedLootBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLootBuffs"), buffDelimeter), LootBuff.class);
-
-                    this.activeProfessionBuff = (ProfessionBuff) Buff.deserialize(rs.getString("activeProfessionBuff"), ProfessionBuff.class);
-                    this.queuedProfessionBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedProfessionBuffs"), buffDelimeter), ProfessionBuff.class);
-
-                    this.activeLevelBuff = (LevelBuff) Buff.deserialize(rs.getString("activeLevelBuff"), LevelBuff.class);
-                    this.queuedLevelBuffs = deserialize(StringUtils.deserializeList(rs.getString("queuedLevelBuffs"), buffDelimeter), LevelBuff.class);
-                    Bukkit.getLogger().info("Found loot buffs!");
-                } else {
-                    //No table there?
-                    Bukkit.getLogger().info("Unable to find any loot buff in table...");
-                }
-
-                rs.close();
-                if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeLootBuff", "", true);
-                    updateLootBuff("activeLootBuff", null);
-                    activeLootBuff.deactivateBuff();
-                }
-                if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeProfessionBuff", "", true);
-                    updateLootBuff("activeProfessionBuff", null);
-                    activeProfessionBuff.deactivateBuff();
-                }
-                if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
-//                    "buffs.activeLevelBuff", "", true);
-                    updateLootBuff("activeLevelBuff", null);
-                    activeLevelBuff.deactivateBuff();
-                }
-
-                if (activeLootBuff != null) {
-                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLootBuff.deactivateBuff(), (
-                            (activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-                }
-                if (activeLevelBuff != null) {
-                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLevelBuff.deactivateBuff(), (
-                            (activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-                }
-                if (activeProfessionBuff != null) {
-                    Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeProfessionBuff.deactivateBuff(), (
-                            (activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        	try {
+        		if (rs.first()) {
+        			for (EnumBuff buffType : EnumBuff.values()) {
+                		this.buffMap.put(buffType, new LinkedList<Buff>());
+                		List<String> buffs = StringUtils.deserializeList(rs.getString(buffType.getDatabaseTag()), buffDelimeter);
+                		buffs.forEach(s -> {
+                			Buff buff = Buff.deserialize(s);
+                			buff.setType(buffType);
+                			buffMap.get(buffType).add(buff);
+                		});
+                	}
+        		}
+        		
+        		rs.close();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
         });
-//        // check if there are available buffs (will be null if not)
-//        activeLootBuff = (LootBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
-//                .getInstance().bungeeName, "buffs.activeLootBuff"), LootBuff.class);
-//        final ArrayList<String> queuedLootBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-//                .getInstance().bungeeName, "buffs.queuedLootBuffs");
-//        if (queuedLootBuffData != null && !queuedLootBuffData.isEmpty()) {
-//            for (String s : queuedLootBuffData) {
-//                queuedLootBuffs.add((LootBuff) Buff.deserialize(s, LootBuff.class));
-//            }
-//        }
-//
-//        activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
-//                (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
-//        final ArrayList<String> queuedProfessionBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-//                .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
-//        if (queuedProfessionBuffData != null && !queuedProfessionBuffData.isEmpty()) {
-//            for (String s : queuedProfessionBuffData) {
-//                queuedProfessionBuffs.add((ProfessionBuff) Buff.deserialize(s, ProfessionBuff.class));
-//            }
-//        }
-//
-//
-//        activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
-//                .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
-//        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>) DatabaseAPI.getInstance().getShardData(DungeonRealms
-//                .getInstance().bungeeName, "buffs.queuedLevelBuffs");
-//        if (queuedLevelBuffData != null && !queuedLevelBuffData.isEmpty()) {
-//            for (String s : queuedLevelBuffData) {
-//                queuedLevelBuffs.add((LevelBuff) Buff.deserialize(s, LevelBuff.class));
-//            }
-//        }
-
-        // expired while we were offline, RIP
+        
+        handleExpiry();
+    }
+    
+    private void handleExpiry() {
+    	boolean changed = false;
+    	for (EnumBuff buffType : EnumBuff.values()) {
+    		if (!hasBuff(buffType))
+    			continue;
+    		
+    		Buff buff = getBuff(buffType);
+    		
+    		//  Expired while offline D:
+    		if (System.currentTimeMillis() > buff.getTimeUntilExpiry()) {
+    			buff.deactivate();
+    			changed = true;
+    			continue;
+    		}
+    		
+    		//Set this buff to expire.
+    		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), buff::deactivate,
+                    (buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 50);
+    	}
+    	
+    	if (changed)
+    		saveBuffData();
+    }
+    
+    public void saveBuffData() {
+    	for (EnumBuff buffType : EnumBuff.values())
+    		updateLootBuff(buffType.getDatabaseTag(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
+    }
+    
+    private String serializeQueuedBuffs(Queue<? extends Buff> buffs) {
+        if (buffs == null || buffs.isEmpty())
+        	return null;
+        List<String> list = new ArrayList<>();
+        buffs.forEach(b -> list.add(b.serialize()));
+        return StringUtils.serializeList(list, buffDelimeter);
     }
 
-    public <T extends Buff> Queue<T> deserialize(List<String> list, Class<T> clazz) {
-        Queue<T> buff = new LinkedList<>();
-        if (list != null && !list.isEmpty()) {
-            return list.stream().map(s -> (T) Buff.deserialize(s, clazz)).collect(Collectors.toCollection(LinkedList::new));
-        }
-        return new LinkedList<>();
-    }
-
-
-    public String serializeQueuedBuffs(Queue<? extends Buff> buffs) {
-        if (buffs == null || buffs.isEmpty()) return null;
-
-        StringBuilder builder = new StringBuilder();
-        for (Buff buff : buffs) {
-            builder.append(buff.serialize()).append(buffDelimeter);
-        }
-
-        String retr = builder.toString();
-        if (retr.endsWith(buffDelimeter)) {
-            return retr.substring(0, retr.length() - buffDelimeter.length());
-        }
-        return retr;
-    }
-
-    public void updateLootBuff(String lootColumnName, String value) {
+    private void updateLootBuff(String lootColumnName, String value) {
         SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
             Bukkit.getLogger().info("SET " + lootColumnName + " to " + value + " for loot buff.");
         }, "UPDATE buffs SET " + lootColumnName + " = " + (value == null ? null : "'" + value + "'") + ";");
@@ -202,29 +124,28 @@ public class DonationEffects implements GenericMechanic {
 
     @Override
     public void stopInvocation() {
-        // update database of active buffs (queued buffs should already be there)
-        if (this.activeLootBuff != null)
-            updateLootBuff("activeLootBuff", activeLootBuff.serialize());
-        if (this.activeProfessionBuff != null)
-            updateLootBuff("activeProfessionBuff", activeProfessionBuff.serialize());
-        if (this.activeLevelBuff != null)
-            updateLootBuff("activeLevelBuff", activeLevelBuff.serialize());
+        saveBuffData();
     }
-
-    private void handleCreeperFireworks() {
-        if (fireWorkCreepers.isEmpty()) return;
-        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.BLUE, Color.RED, Color.WHITE).withFade(Color.BLUE, Color.RED, Color.WHITE).with(FireworkEffect.Type.STAR).trail(true).build();
-        for (Creeper creeper : fireWorkCreepers) {
-            if (!creeper.isAlive()) {
-                fireWorkCreepers.remove(creeper);
-                continue;
-            }
-            Firework fw = (Firework) creeper.getBukkitEntity().getWorld().spawnEntity(creeper.getBukkitEntity().getLocation(), EntityType.FIREWORK);
-            FireworkMeta fwm = fw.getFireworkMeta();
-            fwm.addEffect(effect);
-            fwm.setPower(1); // 0.5 seconds
-            fw.setFireworkMeta(fwm);
-        }
+    
+    /**
+     * Gets all the queued buffs.
+     */
+    public Queue<Buff> getQueuedBuffs(EnumBuff type) {
+    	return buffMap.get(type);
+    }
+    
+    /**
+     * Gets the active buff of this type.
+     */
+    public Buff getBuff(EnumBuff buffType) {
+    	return hasBuff(buffType) ? buffMap.get(buffType).getFirst() : null;
+    }
+    
+    /**
+     * Returns if there is at least one buff of this type queued / active.
+     */
+    public boolean hasBuff(EnumBuff buffType) {
+    	return !buffMap.get(buffType).isEmpty();
     }
 
     public void spawnPlayerParticleEffects(Location location) {
@@ -236,7 +157,7 @@ public class DonationEffects implements GenericMechanic {
             }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
-            if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
+            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
                 moveSpeed = -1F;
             }
             try {
@@ -249,89 +170,32 @@ public class DonationEffects implements GenericMechanic {
     }
 
     public void doLogin(Player p) {
-        if (this.activeLootBuff != null) {
-            int minutesLeft = (int) (((activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
-            int bonusAmount = (int) activeLootBuff.getBonusAmount();
-            String playerName = activeLootBuff.getActivatingPlayer();
-            if (p != null) {
-                p.sendMessage("");
-                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Drop Rates" + ChatColor.GOLD
-                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
-                p.sendMessage("");
-            }
-        }
-        if (this.activeProfessionBuff != null) {
-            int minutesLeft = (int) (((activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
-            int bonusAmount = (int) activeProfessionBuff.getBonusAmount();
-            String playerName = activeProfessionBuff.getActivatingPlayer();
-            if (p != null) {
-                p.sendMessage("");
-                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Profession EXP Rates" + ChatColor.GOLD
-                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
-                p.sendMessage("");
-            }
-        }
-        if (this.activeLevelBuff != null) {
-            int minutesLeft = (int) (((activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
-            int bonusAmount = (int) activeLevelBuff.getBonusAmount();
-            String playerName = activeLevelBuff.getActivatingPlayer();
-            if (p != null) {
-                p.sendMessage("");
-                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Character Level EXP Rates" + ChatColor.GOLD
-                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
-                p.sendMessage("");
-            }
-        }
+    	for (EnumBuff buffType : EnumBuff.values()) {
+    		if (!hasBuff(buffType))
+    			continue;
+    		Buff buff = getBuff(buffType);
+    		int minutesLeft = (int) (((buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
+    		
+    		p.sendMessage("");
+    		p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + buff.getActivatingPlayer() + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + buff.getBonusAmount() + "% "
+    				+ ChatColor.stripColor(buff.getType().getDescription()) + ChatColor.GOLD + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
+    		p.sendMessage("");
+    	}
     }
-
-    public void activateNewLootBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
-        final LootBuff newLootBuff = new LootBuff(duration, bonusAmount, activatingPlayer, shard);
-
-        // check if there is already one active
-        if (this.activeLootBuff != null) {
-            // queue a new buff
-            this.queuedLootBuffs.add(newLootBuff);
-            updateLootBuff("queuedLootBuffs", serializeQueuedBuffs(this.queuedLootBuffs));
-            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLootBuff.getActivatingPlayer() + ChatColor
-                    .GOLD + " has queued a Global Loot Buff set for activation after the current one expires.");
+    
+    public void activateLocalBuff(Buff buff) {
+    	boolean existingBuff = hasBuff(buff.getType());
+    	this.buffMap.get(buff.getType()).add(buff);
+    	saveBuffData();
+    	
+    	if (existingBuff) {
+    		Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + buff.getActivatingPlayer() + ChatColor
+                    .GOLD + " has queued a " + buff.getType().getItemName() + " set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        } else {
-            newLootBuff.activateBuff();
-        }
-    }
-
-    public void activateNewLevelBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
-        final LevelBuff newLevelBuff = new LevelBuff(duration, bonusAmount, activatingPlayer, shard);
-
-        // check if there is already one active
-        if (this.activeLevelBuff != null) {
-            // queue a new buff
-            this.queuedLevelBuffs.add(newLevelBuff);
-            updateLootBuff("queuedLevelBuffs", serializeQueuedBuffs(this.queuedLevelBuffs));
-            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLevelBuff.getActivatingPlayer() + ChatColor
-                    .GOLD + " has queued a Global Level Buff set for activation after the current one expires.");
-            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        } else {
-            newLevelBuff.activateBuff();
-        }
-    }
-
-    public void activateNewProfessionBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
-        final ProfessionBuff newProfessionBuff = new ProfessionBuff(duration, bonusAmount, activatingPlayer, shard);
-
-        // check if there is already one active
-        if (this.activeProfessionBuff != null) {
-            // queue a new buff
-            this.queuedProfessionBuffs.add(newProfessionBuff);
-            updateLootBuff("queuedProfessionBuffs", serializeQueuedBuffs(this.queuedProfessionBuffs));
-//            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
-//                    "buffs.queuedProfessionBuffs", newProfessionBuff.serialize(), true);
-            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newProfessionBuff.getActivatingPlayer() + ChatColor
-                    .GOLD + " has queued a Global Profession Buff set for activation after the current one expires.");
-            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-        } else {
-            newProfessionBuff.activateBuff();
-        }
+    		return;
+    	}
+    	
+    	buff.activate();
     }
 
     private void spawnPlayerParticleEffects() {
@@ -343,7 +207,7 @@ public class DonationEffects implements GenericMechanic {
             }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
-            if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
+            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
                 moveSpeed = -1F;
             }
             try {
@@ -380,7 +244,7 @@ public class DonationEffects implements GenericMechanic {
             }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = ENTITY_PARTICLE_EFFECTS.get(entity);
-            if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
+            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
                 moveSpeed = -1F;
             }
             Location location = new Location(Bukkit.getWorlds().get(0), entity.locX, entity.locY, entity.locZ);
@@ -394,20 +258,18 @@ public class DonationEffects implements GenericMechanic {
     }
 
     public boolean removeECashFromPlayer(Player player, int amount) {
-        if (amount <= 0) {
+    	if (amount <= 0)
             return true;
-            //Someone done fucked up and made it remove a negative amount. Probably Chase.
-        }
+        
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null) return false;
 
         int playerEcash = wrapper.getEcash();
-        if (playerEcash <= 0) {
+        if (playerEcash <= 0) 
             return false;
-        }
+        
         if (playerEcash - amount >= 0) {
-
-            wrapper.getPlayerGameStats().setEcashSpent(wrapper.getPlayerGameStats().getEcashSpent() + amount);
+        	wrapper.getPlayerGameStats().addStat(StatColumn.ECASH_SPENT, amount);
 
             wrapper.setEcash(wrapper.getEcash() - amount);
 //            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);

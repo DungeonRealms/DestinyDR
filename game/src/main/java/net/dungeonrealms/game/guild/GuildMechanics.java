@@ -6,9 +6,10 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.guild.token.GuildCreateToken;
@@ -16,27 +17,20 @@ import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class GuildMechanics {
-    private static GuildMechanics instance = null;
-
-    public static GuildMechanics getInstance() {
-        if (instance == null) {
-            instance = new GuildMechanics();
-        }
-        return instance;
-    }
+	
+	@Getter
+    private static GuildMechanics instance = new GuildMechanics();
 
     @Getter
     private final Map<UUID, GuildCreateToken> GUILD_CREATE_TOKENS = new WeakHashMap<>();
@@ -86,29 +80,6 @@ public class GuildMechanics {
         }
     }
 
-    public void doChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) return;
-        PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
-        GuildWrapper wrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(event.getPlayer().getUniqueId());
-        if (playerWrapper == null) return;
-        if (wrapper == null) {
-            if (playerWrapper.getToggles().isGuildChatOnly()) {
-                playerWrapper.getToggles().setGuildChatOnly(false);
-            }
-            return;
-        }
-        GuildMember member = wrapper.getMembers().get(playerWrapper.getAccountID());
-        if (member == null || !member.isAccepted()) return;
-        if (!playerWrapper.getToggles().isGuildChatOnly()) return;
-
-        String tag = wrapper.getTag();
-        String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + event.getPlayer().getName() + ": " + ChatColor.GRAY;
-        String message = event.getMessage();
-
-        wrapper.sendGuildMessage(format + message, false);
-        event.setCancelled(true);
-    }
-
     public void doLogout(Player player) {
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
         if (guild == null) return;
@@ -125,28 +96,6 @@ public class GuildMechanics {
                 if (guild.getNumberOfGuildMembersOnThisShard() > 1) return;
                 GuildDatabase.getAPI().cached_guilds.remove(guild.getGuildID());
             });
-        }
-    }
-
-
-    /**
-     * All local messages will be sent to
-     * guild chat once this is toggled.
-     *
-     * @param player Player player
-     */
-    public void toggleGuildChat(Player player) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        GuildWrapper gWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
-        if (wrapper == null || gWrapper == null) return;
-        boolean isGuildChat = !wrapper.getToggles().isGuildChatOnly();
-        wrapper.getToggles().setGuildChatOnly(isGuildChat);
-
-        if (!isGuildChat) {
-            player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
-        } else {
-            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + gWrapper.getTag() + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
-            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
     }
 
@@ -211,79 +160,8 @@ public class GuildMechanics {
      */
     public void kickFromGuild(Player kicker, UUID player, String guildName) {
         sendAlert(guildName, kicker.getName() + " has kicked " + SQLDatabaseAPI.getInstance().getUsernameFromUUID(player) + " from the guild.");
-//        GuildDatabaseAPI.get().removeFromGuild(guildName, player);
-
-        GameAPI.updatePlayerData(player, "guild");
+        GameAPI.updatePlayerData(player, UpdateType.GUILD);
     }
-
-    /**
-     * Prompts user then,
-     * Manually removes player from their guild if they confirm.
-     *
-     * @param player Targeted player
-     */
-
-//    public void leaveGuild(Player player) {
-//        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId()))
-//            return;
-//
-//        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-//        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-//        List<UUID> officers = GuildDatabaseAPI.get().getGuildOfficers(guildName);
-//
-//        player.sendMessage(ChatColor.GRAY + "Are you sure you want to QUIT the guild '" + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + "' - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
-//        final boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
-//
-//        if (isOwner && officers.size() == 0)
-//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "You are the " + ChatColor.UNDERLINE + "GUILD LEADER" + ChatColor.GRAY + " and there are no successors to watch after the guild. If you leave, this guild will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". All members will be kicked, and you will lose your 5,000g deposit.");
-//
-//        Chat.listenForMessage(player, confirmation -> {
-//            if (!confirmation.getMessage().equalsIgnoreCase("y") || confirmation.getMessage().equalsIgnoreCase("n") || confirmation.getMessage().equalsIgnoreCase("cancel")) {
-//                player.sendMessage(ChatColor.RED + "/gquit - " + ChatColor.BOLD + "CANCELLED");
-//                return;
-//            }
-//
-//            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
-//            sendAlert(guildName, player.getName() + " has left the guild.");
-//
-//            GamePlayer gp = GameAPI.getGamePlayer(player);
-//            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-//            if (gp != null) {
-//                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-//            }
-//
-//            boolean setOwner = false;
-//            boolean disbanded = false;
-//
-//            if (isOwner) {
-//                if (officers.size() > 0) {
-//                    UUID sucessor = officers.get(0);
-//                    sendAlert(guildName, SQLDatabaseAPI.getInstance().getUsernameFromUUID(sucessor)+ " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
-//                    setOwner = true;
-//                } else {
-//                    // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
-//                    sendAlert(guildName, player.getName() + " has disbanded the guild.");
-//
-//                    for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
-//                        GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
-//                    }
-//
-//                    GuildDatabaseAPI.get().deleteGuild(guildName);
-//                    disbanded = true;
-//                }
-//            }
-//
-//            if (!disbanded)
-//                GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
-//
-//            if (setOwner) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
-//
-//            GuildDatabaseAPI.get().updateCache(guildName, true);
-//
-//            GameAPI.updateGuildData(guildName);
-//            GameAPI.updatePlayerData(player.getUniqueId(), "guild");
-//        }, null);
-//    }
 
     /**
      * Opens or reopens guild banner creators
@@ -317,7 +195,6 @@ public class GuildMechanics {
         }
         int playerAccountID = hisPlayerWrapper.getAccountID();
 
-
         // Confirmation stage
         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, thank you. Let me show you a quick summary of your guild.");
         player.sendMessage("");
@@ -344,18 +221,11 @@ public class GuildMechanics {
 
                 // Confirms purchase
                 if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                    if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+                    if (BankMechanics.getGemsInInventory(player) < 5000) {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                         return;
                     }
-
-                    BannerMeta meta = (BannerMeta) banner.getItemMeta();
-                    meta.setLore(new ArrayList<>());
-                    meta.setDisplayName(ChatColor.GREEN + guildDisplayName + "'s Guild banner");
-                    meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
-                    banner.setItemMeta(meta);
-
-
+                    
                     GuildDatabase.getAPI().doesGuildNameExist(guildName, guildIDChecking -> {
                         if (guildIDChecking == null || guildIDChecking >= 0) {
                             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this name already exists!");
@@ -366,8 +236,7 @@ public class GuildMechanics {
                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this tag already exists!");
                                 return;
                             }
-
-
+                            
                             GuildWrapper newWrapper = new GuildWrapper(-1);
 
                             newWrapper.setName(guildName);
@@ -389,54 +258,27 @@ public class GuildMechanics {
                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "A guild with this tag already exists!");
 
 
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
+                                Achievements.giveAchievement(player, EnumAchievements.CREATE_A_GUILD);
 
                                 player.sendMessage("");
                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + newWrapper.getDisplayName() + "' guild!");
                                 player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-                                BankMechanics.getInstance().takeGemsFromInventory(5000, player);
+                                BankMechanics.takeGemsFromInventory(player, 5000);
 
                                 // guild tags in scoreboard disabled
                                 GamePlayer gp = GameAPI.getGamePlayer(player);
                                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                                 if (gp != null)
-                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getAlignment().getColor(), wrapper.getLevel());
 
                                 player.getInventory().addItem(newWrapper.getBanner().clone());
 
                             });
                         });
-
                     });
-
-                    // Registers guild in database
-//                    GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
-//                        if (!onComplete) {
-//                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
-//                            return;
-//                        }
-//
-//                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
-//
-//                        player.sendMessage("");
-//                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
-//                        player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-//                        BankMechanics.getInstance().takeGemsFromInventory(5000, player);
-//
-//                        // guild tags in scoreboard disabled
-//                        GamePlayer gp = GameAPI.getGamePlayer(player);
-//                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-//                        if (gp != null)
-//                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-//
-//                        player.getInventory().addItem(info.getCurrentBanner());
-//                        GameAPI.updatePlayerData(player.getUniqueId(), "guild");
-//
-//                    });
                 }
             });
-
-        }, null), 1L);
+        }), 1L);
     }
 
     /**
@@ -446,7 +288,7 @@ public class GuildMechanics {
      * @param player Player in dialogue interaction
      */
     public void startGuildCreationDialogue(Player player) {
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             player.sendMessage(ChatColor.RED + "You cannot create a guild on this shard.");
             return;
         }
@@ -476,26 +318,13 @@ public class GuildMechanics {
                 return;
             }
 
-
-            // Checks if they are already in a guild
-//            if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-//                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You are already part of a guild. You'll need to /gquit before creating another.");
-//                return;
-//            }
-
-            // 5000 gems is require to register a guild
-
             if (hisCurrentWrapper != null) {
                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You are already in a Guild! Leave it before creating a new one!");
                 return;
             }
 
-            if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
-                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
-                return;
-            }
-
-            if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+            // 5000 gems is require to register a guild
+            if ((BankMechanics.getGemsInInventory(player) < 5000)) {
                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                 return;
             }
@@ -581,32 +410,21 @@ public class GuildMechanics {
                                             }
 
                                             GuildDatabase.getAPI().doesTagExist(tag, guildTagIdChecking -> {
-                                                if (guildIDChecking == null) return;
                                                 if (guildTagIdChecking < 0) {
-
                                                     openGuildBannerCreator(player, guildName, tag, guildDisplayName, null);
-
-
-//                                                    info.setGuildName(guildName);
-//                                                    info.setTag(tag);
-//                                                    info.setOwner(player.getUniqueId());
-//                                                    info.setDisplayName(guildDisplayName);
                                                 } else
                                                     player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "I'm sorry, but a guild tag already exists. Please choose a different guild tag.");
 
                                             });
 
 
-                                        }, null), 1L);
+                                        }), 1L);
                             } else
                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "I'm sorry, but a guild with the name '" + ChatColor.GRAY + guildDisplayName + ChatColor.WHITE + "' already exists. Please choose a different name.");
                         });
 
-                    }
-                    , null), 1L);
-
-
-        }, null);
+                    }), 1L);
+        });
 
     }
 

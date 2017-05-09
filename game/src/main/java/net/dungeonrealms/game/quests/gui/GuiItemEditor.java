@@ -6,7 +6,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestItem;
 import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.DyeColor;

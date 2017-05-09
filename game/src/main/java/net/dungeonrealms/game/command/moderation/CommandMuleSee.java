@@ -1,23 +1,21 @@
 package net.dungeonrealms.game.command.moderation;
 
 import com.google.common.collect.Lists;
+
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,15 +47,14 @@ public class CommandMuleSee extends BaseCommand {
         Player player = Bukkit.getPlayer(playerName);
         if (player != null) {
 
-            Inventory muleInventory = MountUtils.inventories.get(player.getUniqueId());
-            if (muleInventory != null) {
-                sender.openInventory(muleInventory);
+            if (MountUtils.hasInventory(player)) {
+                sender.openInventory(MountUtils.getInventory(player));
             } else {
                 sender.sendMessage(ChatColor.RED + "No mule inventory loaded into memory from " + player.getName());
             }
         } else {
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+        	SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
                 if (uuid == null) {
                     sender.sendMessage(ChatColor.RED + "No UUID found in our database with that name..");
                     return;

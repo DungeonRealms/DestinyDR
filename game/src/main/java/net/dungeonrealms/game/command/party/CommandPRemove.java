@@ -2,6 +2,8 @@ package net.dungeonrealms.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,14 +11,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 /**
  * Created by Nick on 11/9/2015.
  */
 public class CommandPRemove extends BaseCommand {
-    public CommandPRemove(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandPRemove() {
+        super("premove", "/<command>", "Remove player from party.", "pkick");
     }
 
     @Override
@@ -26,28 +26,30 @@ public class CommandPRemove extends BaseCommand {
 
         Player player = (Player) s;
 
-        if (!Affair.getInstance().isInParty(player)) {
+        if (!Affair.isInParty(player)) {
             player.sendMessage(ChatColor.RED + "You must be in a party.");
             return true;
         }
-
-        if (args.length == 1) {
-            if (Affair.getInstance().isOwner(player)) {
-                if (Bukkit.getPlayer(args[0]) == null) {
-                    player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is offline.");
-                } else {
-                    Affair.getInstance().removeMember(Bukkit.getPlayer(args[0]), true);
-                }
-            } else {
-                player.sendMessage(new String[] {
-                        ChatColor.RED + "You are NOT the leader of your party.",
-                        ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
-                });
-            }
-            return true;
-        } else {
-            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Invalid Syntax." + ChatColor.RED + " /pkick <player>");
+        
+        if (args.length < 1) {
+        	player.sendMessage(ChatColor.RED + "Syntax: /pkick <player>");
+        	return true;
         }
-        return false;
+        
+        Party p = Affair.getParty(player);
+        
+        if (!p.isOwner(player)) {
+        	player.sendMessage(ChatColor.RED + "You are not the party leader!");
+        	return true;
+        }
+        
+        Player kick = Bukkit.getPlayer(args[0]);
+        if (kick == null) {
+        	player.sendMessage(ChatColor.RED + "Player not found.");
+        	return true;
+        }
+        
+        p.removePlayer(kick, true);
+        return true;
     }
 }

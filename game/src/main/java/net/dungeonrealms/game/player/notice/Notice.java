@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.notice;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -17,23 +18,19 @@ import org.bukkit.entity.Player;
 /**
  * Created by Nick on 10/11/2015.
  */
-@SuppressWarnings("unchecked")
 public class Notice {
 
-    static Notice instance = null;
-
-    public static Notice getInstance() {
-        if (instance == null) {
-            instance = new Notice();
-        }
-        return instance;
-    }
+	@Getter
+	private static Notice instance = new Notice();
 
     public Notice() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
             Bukkit.getOnlinePlayers().forEach(this::executeVoteReminder);
         }, 0L, 6000L);
-
+        
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
+        	Bukkit.getOnlinePlayers().forEach(GameAPI::sendStatNotification);
+        }, 0, (20 * 60) * 10);
     }
 
     //TODO: Friends, Guilds and clickable acceptance.
@@ -68,9 +65,9 @@ public class Notice {
     }
 
     private void executeBuildNotice(Player p, PlayerWrapper wrapper) {
-        final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
+        final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " â�¢ " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
         normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch", "");
-        normal.addText(ChatColor.GOLD + " ❢ ");
+        normal.addText(ChatColor.GOLD + " â�¢ ");
 
         p.sendMessage(" ");
         normal.sendToPlayer(p);
@@ -85,7 +82,7 @@ public class Notice {
 
     private void executeVoteReminder(Player p) {
         // No vote reminder on the event shard.
-        if (DungeonRealms.getInstance().isEventShard)
+        if (DungeonRealms.isEvent())
             return;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
@@ -96,8 +93,8 @@ public class Notice {
 
         if ((System.currentTimeMillis() - vote) >= 86_400_000) {
             int ecashAmount = 15;
-            if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
-            else if (Rank.isSubscriber(p)) ecashAmount = 20;
+            if (Rank.isSUBPlus(p)) ecashAmount = 25;
+            else if (Rank.isSUB(p)) ecashAmount = 20;
 
             GamePlayer gp = GameAPI.getGamePlayer(p);
             if (gp == null || gp.isStreamMode()) {

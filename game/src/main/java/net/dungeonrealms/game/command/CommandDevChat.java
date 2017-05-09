@@ -4,7 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -16,7 +16,6 @@ import java.util.Arrays;
 /**
  * Created by Brad on 16/06/2016.
  */
-
 public class CommandDevChat extends BaseCommand {
 
     public CommandDevChat() {
@@ -39,7 +38,7 @@ public class CommandDevChat extends BaseCommand {
             for (int arg = 1; arg < args.length; arg++)
                 message.append(" ").append(args[arg]);
 
-            GameAPI.sendIngameDevMessage(ChatColor.DARK_AQUA + "<DC> (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + ChatColor.DARK_AQUA + message);
+            GameAPI.sendIngameDevMessage(ChatColor.DARK_AQUA + "<DC> (" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper((Player) sender).getChatName() + ChatColor.DARK_AQUA + message);
         } else sender.sendMessage("/dc|devchat|d [message]");
 
         return true;

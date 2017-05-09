@@ -2,15 +2,19 @@ package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -20,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -65,9 +70,8 @@ public class SupportMenus {
                 PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                     //Load if doesnt exist?
 //                DatabaseAPI.getInstance().requestPlayer(uuid, false);
-                    String playerRank = Rank.getInstance().getRank(uuid);
-                    Rank.PlayerRank rank = Rank.getInstance().getPlayerRank(uuid);
-                    if (!Rank.isDev(player) && (rank == Rank.PlayerRank.GM || rank == Rank.PlayerRank.DEV)) {
+                    PlayerRank playerRank = Rank.getPlayerRank(uuid);
+                    if (!Rank.isDev(player) && (playerRank == Rank.PlayerRank.GM || playerRank == Rank.PlayerRank.DEV)) {
                         player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
                         return;
                     }
@@ -77,15 +81,15 @@ public class SupportMenus {
                     Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
                     item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid.toString() + ")", new String[]{
-                            ChatColor.WHITE + "Rank: " + Rank.PlayerRank.getFromInternalName(playerRank).getPrefix() +
-                                    (playerRank.equalsIgnoreCase("sub") || playerRank.equalsIgnoreCase("sub+") ?
+                            ChatColor.WHITE + "Rank: " + playerRank.getPrefix() +
+                                    (playerRank.isSUB() ?
                                             ChatColor.WHITE + " (" + Subscription.getInstance().checkSubscription(uuid, wrapper.getRankExpiration()) + " days remaining)" : ""),
                             ChatColor.WHITE + "Level: " + wrapper.getLevel(),
                             ChatColor.WHITE + "Experience: " + wrapper.getExperience(),
                             ChatColor.WHITE + "E-Cash: " + wrapper.getEcash(),
                             ChatColor.WHITE + "Bank Balance: " + wrapper.getGems(),
-                            ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst(wrapper.getHearthstone()).replace("_", " "),
-                            ChatColor.WHITE + "Alignment: " + Utils.ucfirst(wrapper.getPlayerAlignment().name()),
+                            ChatColor.WHITE + "Hearthstone Location: " + wrapper.getHearthstone().getDisplayName(),
+                            ChatColor.WHITE + "Alignment: " + Utils.ucfirst(wrapper.getAlignment().name()),
                             //ChatColor.WHITE + "Last Logout: " + Utils.formatTimeAgo((int) (System.currentTimeMillis() / 1000) - Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid).toString())) + " ago", @todo: Fix a bug with this.
                             ChatColor.WHITE + "Join Date: " + Utils.getDate(wrapper.getFirstLogin() * 1000)
                     });
@@ -95,7 +99,7 @@ public class SupportMenus {
                     if (!playerName.equalsIgnoreCase(player.getDisplayName())) {
                         item = editItem(new ItemStack(Material.DIAMOND), ChatColor.GOLD + "Rank Manager", new String[]{
                                 ChatColor.WHITE + "Modify the rank of " + playerName + ".",
-                                ChatColor.WHITE + "Current rank: " + rank.getPrefix()
+                                ChatColor.WHITE + "Current rank: " + playerRank.getPrefix()
                         });
                     } else {
                         item = editItem(new ItemStack(Material.BARRIER), ChatColor.RED + "Rank Manager", new String[]{
@@ -129,7 +133,7 @@ public class SupportMenus {
                     // Hearthstone Manager
                     item = editItem(new ItemStack(Material.QUARTZ_ORE), ChatColor.GOLD + "Hearthstone Manager", new String[]{
                             ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + ".",
-                            ChatColor.WHITE + "Current location: " + Utils.ucfirst(wrapper.getHearthstone()).replace("_", " ")
+                            ChatColor.WHITE + "Current location: " + wrapper.getHearthstone().getDisplayName()
                     });
                     inv.setItem(31, applySupportItemTags(item, playerName, uuid));
 
@@ -389,45 +393,15 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("cyrennica") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Cyrennica", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Cyrennica"
-        });
-        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("harrison_field") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Harrison Fields", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Harrison Fields"
-        });
-        inv.setItem(19, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("dark_oak") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Dark Oak Tavern", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Dark Oak Tavern"
-        });
-        inv.setItem(20, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("gloomy_hollows") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Gloomy Hollows", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Gloomy Hollows"
-        });
-        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("tripoli") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Tripoli", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Tripoli"
-        });
-        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("trollsbane") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Trollsbans Tavern", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Trollsbane Tavern"
-        });
-        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("crestguard") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Crestguard Keep", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Crestguard Keep"
-        });
-        inv.setItem(24, applySupportItemTags(item, playerName, uuid));
-
-        item = editItem(new ItemStack(Material.WOOL, 1, (wrapper.getHearthstone().equalsIgnoreCase("deadpeaks") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Deadpeaks Mountain", new String[]{
-                ChatColor.WHITE + "Set user hearthstone to: Deadpeaks Mountain"
-        });
-        inv.setItem(25, applySupportItemTags(item, playerName, uuid));
+        int slot = 17;
+        for (TeleportLocation tl : TeleportLocation.values()) {
+        	if (!tl.canBeABook())
+        		continue;
+        	
+        	boolean match = wrapper.getHearthstone() == tl;
+        	item = editItem(new ItemStack(Material.WOOL, 1, (match ? DyeColor.LIME : DyeColor.RED).getData()), ChatColor.GOLD + tl.getDisplayName(), ChatColor.WHITE + "Set user hearthstone to: Harrison Fields");
+        	inv.setItem(slot++, applySupportItemTags(item, playerName, uuid));
+        }
 
         player.openInventory(inv);
     }
@@ -473,12 +447,12 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        Set<String> unlockedPlayerTrails = wrapper.getTrails();
+        List<ParticleEffect> unlockedPlayerTrails = wrapper.getTrails();
         int i = 18;
         for (ParticleAPI.ParticleEffect trailType : ParticleAPI.ParticleEffect.values()) {
             boolean hasUnlockedPlayerTrail = false;
-            for (String unlockedTrails : unlockedPlayerTrails) {
-                if (unlockedTrails.equalsIgnoreCase(trailType.getRawName())) {
+            for (ParticleEffect unlockedTrails : unlockedPlayerTrails) {
+                if (unlockedTrails == trailType) {
                     hasUnlockedPlayerTrail = true;
                     break;
                 }
@@ -487,7 +461,7 @@ public class SupportMenus {
                     ChatColor.WHITE + "Click to " + (hasUnlockedPlayerTrail ? "lock" : "unlock") + " the " + trailType.getDisplayName().toLowerCase() + " player trail."
             });
 
-            item = addNbtTag(item, "trail", trailType.getRawName());
+            item = addNbtTag(item, "trail", trailType.name());
 
             inv.setItem(i, applySupportItemTags(item, playerName, uuid));
             i++;
@@ -531,7 +505,7 @@ public class SupportMenus {
         for (EnumPets petType : EnumPets.values()) {
             boolean hasUnlockedPet = unlockedPlayerPets.containsKey(petType);
 
-            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
+            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
                     ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."
             });
 
@@ -546,7 +520,7 @@ public class SupportMenus {
         return PlayerMenus.editItem(playerName, name, lore);
     }
 
-    private static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
+    private static ItemStack editItem(ItemStack itemStack, String name, String... lore) {
         return PlayerMenus.editItem(itemStack, name, lore);
     }
 

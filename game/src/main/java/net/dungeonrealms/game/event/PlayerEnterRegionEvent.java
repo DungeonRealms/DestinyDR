@@ -1,5 +1,10 @@
 package net.dungeonrealms.game.event;
 
+import lombok.Getter;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.handler.KarmaHandler.WorldZoneType;
+
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -11,26 +16,30 @@ public class PlayerEnterRegionEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Player player;
-    private String region;
+    @Getter private Player player;
+    private Location oldLoc;
+    private Location newLoc;
 
-    public PlayerEnterRegionEvent(Player player, String region) {
+    public PlayerEnterRegionEvent(Player player, Location oldLoc, Location newLoc) {
         this.player = player;
-        this.region = region;
+        this.oldLoc = oldLoc;
+        this.newLoc = newLoc;
+    }
+    
+    public String getOldRegion() {
+    	return GameAPI.getRegionName(oldLoc);
     }
 
-    public PlayerEnterRegionEvent(boolean isAsync, Player player, String region) {
-        super(isAsync);
-        this.player = player;
-        this.region = region;
+    public String getNewRegion() {
+        return GameAPI.getRegionName(newLoc);
     }
-
-    public Player getPlayer() {
-        return player;
+    
+    public WorldZoneType getOldZone() {
+    	return GameAPI.getZone(oldLoc);
     }
-
-    public String getRegion() {
-        return region;
+    
+    public WorldZoneType getNewZone() {
+    	return GameAPI.getZone(newLoc);
     }
 
     @Override

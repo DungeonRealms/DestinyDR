@@ -2,13 +2,13 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -55,17 +55,15 @@ public class CommandList extends BaseCommand {
         int onlinePlayers = 0; // Use an int that increments so we can refine the search.
         final JSONMessage message = new JSONMessage("", ChatColor.GREEN);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            String playerRank = Rank.getInstance().getRank(player.getUniqueId());
-
             // Searching for staff but player isn't staff, skip...
             if (staffOnly && !Rank.isPMOD(player)) continue;
             // Searching for mods only but player isn't a mod, skip...
-            if (pmodsOnly && !playerRank.equalsIgnoreCase("pmod")) continue;
+            if (pmodsOnly && !Rank.isPMOD(player)) continue;
 
             onlinePlayers++;
 
             // Format player name + rank properly.
-            String playerName = GameChat.getPreMessage(player, false, "local");
+            String playerName = PlayerWrapper.getWrapper(player).getChatName();
             playerName = playerName.substring(0, playerName.length() - 4);
 
             String messageString = ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " ");

@@ -2,7 +2,8 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.database.PlayerWrapper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,7 +27,7 @@ public class CommandClearChat extends BaseCommand {
         for (int i = 0; i < 100; i++)
         	Bukkit.broadcastMessage(" ");
         
-        Bukkit.broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + GameChat.getFormattedName((Player) sender));
+        Bukkit.broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + PlayerWrapper.getWrapper((Player) sender).getChatName());
         
         return true;
     }

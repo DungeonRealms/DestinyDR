@@ -2,8 +2,9 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.PlayerGameStats.StatColumn;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,11 +22,11 @@ public class CommandPlayed extends BaseCommand {
             if (args.length == 0) {
                 Player player = (Player) sender;
                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                if(wrapper == null) {
+                if(wrapper == null)
                     return false;
-                }
-                int minutesPlayed = wrapper.getPlayerGameStats().getTimePlayed();
-                player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "Time Played:" + ChatColor.YELLOW.toString() + " " + GameAPI.formatTime(minutesPlayed));
+                
+                int minutesPlayed = wrapper.getPlayerGameStats().getStat(StatColumn.TIME_PLAYED);
+                player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "Time Played: " + ChatColor.YELLOW + GameAPI.formatTime(minutesPlayed));
                 return true;
             }
         }

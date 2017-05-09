@@ -8,6 +8,10 @@ import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
+import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -16,7 +20,6 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 
@@ -76,8 +79,8 @@ public class AntiDuplication implements GenericMechanic, Listener {
     }
 
     public void handleLogin(Player p) {
-        Inventory muleInv = MountUtils.inventories.get(p.getUniqueId());
-        Storage storage = BankMechanics.getInstance().getStorage(p.getUniqueId());
+        Inventory muleInv = MountUtils.getInventory(p);
+        Storage storage = BankMechanics.getStorage(p.getUniqueId());
         AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }
 
@@ -112,7 +115,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     	itemDesc.put(name, 1);
                     
                     // GIVE THEM AN ORIGINAL //
-                    if (RepairAPI.isItemArmorOrWeapon(e.getValue().a())) {
+                    if (ItemGear.isCustomTool(e.getValue().a())) {
                         remove(e.getKey(), e.getValue().b());
                         // THIS WILL REMOVED THE DUPLICATE ITEMS //
                         if (traceCount(e.getKey(), e.getValue().b()) == 0)
@@ -166,9 +169,9 @@ public class AntiDuplication implements GenericMechanic, Listener {
                 if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
 
                 if (i.getAmount() <= 0) continue;
-                if (ItemManager.isScrap(i) || ItemManager.isPotion(i) || ItemManager.isTeleportBook(i)) continue;
+                if (ItemScrap.isScrap(i) || PotionItem.isPotion(i) || ItemTeleportBook.isTeleportBook(i)) continue;
 
-                String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
+                String uniqueEpochIdentifier = getUniqueEpochIdentifier(i);
                 if (uniqueEpochIdentifier != null) for (int ii = 0; ii < i.getAmount(); ii++)
                     gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
             }
@@ -182,7 +185,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
             if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
             if (i.getAmount() <= 0) continue;
             if (isRegistered(i))
-                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
+                if (getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
                     inventory.remove(i);
         }
     }
@@ -194,7 +197,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
             if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
             if (i.getAmount() <= 0) continue;
             if (isRegistered(i))
-                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
+                if (getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
                     amount += i.getAmount();
         }
         return amount;
@@ -207,7 +210,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
      * @return
      * @since 1.0
      */
-    public String getUniqueEpochIdentifier(ItemStack item) {
+    public static String getUniqueEpochIdentifier(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) return null;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         if (nmsStack == null) return null;
@@ -239,15 +242,19 @@ public class AntiDuplication implements GenericMechanic, Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || tag.hasKey("u")) return item;
-        tag.set("u", new NBTTagString(System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(99999) + "R"));
+        tag.set("u", new NBTTagString(createEpoch(item)));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     public ItemStack applyNewUID(ItemStack item) {
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("u", System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(999) + "R");
+        nbtItem.setString("u", createEpoch(item));
         return nbtItem.getItem();
+    }
+    
+    public static String createEpoch(ItemStack item) {
+    	return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(99999) + "R";
     }
 
     @EventHandler

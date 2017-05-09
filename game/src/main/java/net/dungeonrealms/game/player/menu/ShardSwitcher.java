@@ -3,12 +3,11 @@ package net.dungeonrealms.game.player.menu;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
-import net.dungeonrealms.common.game.menu.gui.VolatileGUI;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.common.game.updater.Updater;
-import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -16,13 +15,11 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
@@ -30,83 +27,72 @@ import java.util.*;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
  */
-public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
-    public static Map<String, Map<String, GUIButton>> CACHED_PING_SHARD_BUTTONS = new HashMap<>();
-    private final String playerHostName;
+public class ShardSwitcher extends AbstractMenu {
 
     public ShardSwitcher(Player player) {
         super(DungeonRealms.getInstance(), "DungeonRealms Shards", AbstractMenu.round(getFilteredServers().size()), player.getUniqueId());
         setDestroyOnExit(true);
 
-        this.playerHostName = player.getAddress().getHostName();
-
         List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
 
         Collections.sort(servers, (o1, o2) -> {
+
             if (!o1.getServerName().contains("us"))
                 return -1;
+
             int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
             int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
+
             return o1num - o2num;
         });
+        
+        PlayerRank rank = Rank.getRank(player);
 
         // DISPLAY AVAILABLE SHARDS //
         for (BungeeServerInfo info : servers) {
-            String bungeeName = info.getServerName();
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
+            ShardInfo shard = ShardInfo.getByPseudoName(info.getServerName());
+            
+            // Don't show shard if you aren't allowed to see them.
+            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB)
+            	continue;
 
-            // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
-                continue;
-
-            GUIButton button = new GUIButton(getShardItem(shardID)) {
+            GUIButton button = new GUIButton(shard.getType().getIcon()) {
 
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
-                    if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
-                        return;
-                    }
-                    if (Cooldown.hasCooldown(player.getUniqueId()))
-                        return;
-
-                    Cooldown.addCooldown(player.getUniqueId(), 1000L);
-
-                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !Rank.isSubscriber(player)) {
+                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !rank.isSUB()) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
                                 ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store" + ChatColor.RED + " to bypass this."
                         });
                     }
-
-                    if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
-                        player.sendMessage(new String[]{
-                                ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
-                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store"
-                        });
-                        return;
-                    } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
-                        player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
-                        return;
+                    
+                    if (!rank.isAtLeast(shard.getType().getMinRank())) {
+                    	player.sendMessage(ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getType().name() + " ONLY" + ChatColor.RED + " shard!");
+                    	
+                    	if (shard.getType().getMinRank() == PlayerRank.SUB)
+                    		player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store");
+                    	return;
                     }
+
                     GameAPI.getGamePlayer(player).setSharding(true);
                     // Fucking idiots, set the metadata value first
                     player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
+                    TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shard.getShardID() + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
                     player.sendMessage(" ");
-                    player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
+                    player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shard.getShardID() + ChatColor.YELLOW + " ...");
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
                     final Location startingLocation = player.getLocation();
 
                     if (GameAPI.isInSafeRegion(startingLocation) || Rank.isTrialGM(player)) {
-                        GameAPI.moveToShard(player, bungeeName);
+                        GameAPI.moveToShard(player, shard.getPseudoName());
                         return;
                     }
                     final int[] taskTimer = {5};
@@ -137,7 +123,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                             taskTimer[0]--;
 
                             if (taskTimer[0] <= 0) {
-                                GameAPI.moveToShard(player, bungeeName);
+                                GameAPI.moveToShard(player, shard.getPseudoName());
                                 cancel();
                             }
                         }
@@ -147,8 +133,8 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
             List<String> lore = new ArrayList<>();
 
-            if (!getServerType(shardID).equals(""))
-                lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + getServerType(shardID));
+            if (shard.getType().getDescription().length() > 0)
+                lore.add(ChatColor.RED + "" + ChatColor.ITALIC + shard.getType().getDescription());
 
 
             //final int slot = getServerType(shardID).equals("") ? getSize() : Math.min(getInventorySize(), getInventorySize() - 1) - (getSize() - getNormalServers());
@@ -167,93 +153,26 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                 if (data.length >= 3)
                     lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
-                button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
-            } catch (Exception e) {
-                Bukkit.getLogger().info("Error parsing MOTD: " + info.getMotd1() + " MOTD2: " + info.getMotd2() + " from " + info.getServerName());
+            } catch(Exception e){
+                Bukkit.getLogger().info("Problem parsing " + info.getServerName());
                 e.printStackTrace();
             }
+            button.setDisplayName(shard.getType().getColor() + "" + ChatColor.BOLD + shard.getShardID());
             button.setLore(lore);
-
-//            button.setSlot(slot);
-//            button.setGui(this);
-//
-//            if (!CACHED_PING_SHARD_BUTTONS.containsKey(playerHostName)) {
-//                Map<String, GUIButton> map = new HashMap<>();
-//                map.put(bungeeName, button);
-//
-//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
-//            } else {
-//                Map<String, GUIButton> map = CACHED_PING_SHARD_BUTTONS.get(playerHostName);
-//                map.put(bungeeName, button);
-//
-//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
-//            }
-//
-//            NetworkChannelListener.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
 
             set(getSize(), button);
         }
     }
 
-
-    private int getNormalServers() {
-        int count = 0;
-
-        for (String bungeeName : getFilteredServers().keySet()) {
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
-            if (getServerType(shardID).equals(""))
-                count++;
-        }
-
-        return count;
-    }
-
-    /**
-     * Returns the material associated with a shard.
-     *
-     * @param shardID
-     * @return Material
-     */
-    private ItemStack getShardItem(String shardID) {
-        shardID = shardID.toUpperCase();
-
-        if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
-        else if (shardID.startsWith("CS-")) return new ItemStack(Material.PRISMARINE_SHARD);
-        else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
-        else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
-        else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
-
-        return new ItemStack(Material.END_CRYSTAL);
-    }
-
-    /**
-     * Returns the chat colour associated with a shard.
-     *
-     * @param shardID
-     * @return ChatColor
-     */
-    private ChatColor getShardColour(String shardID) {
-        shardID = shardID.toUpperCase();
-
-        if (shardID.equals("US-0")) return ChatColor.AQUA;
-        else if (shardID.startsWith("CS-")) return ChatColor.BLUE;
-        else if (shardID.startsWith("YT-")) return ChatColor.RED;
-        else if (shardID.startsWith("SUB-")) return ChatColor.GREEN;
-
-        return ChatColor.YELLOW;
-    }
-
     private static Map<String, BungeeServerInfo> getFilteredServers() {
         Map<String, BungeeServerInfo> filteredServers = new HashMap<>();
 
-        for (Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
+        for (Map.Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
             String bungeeName = e.getKey();
             if (ShardInfo.getByPseudoName(bungeeName) == null) continue;
-
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getMotd1().contains("offline"))
+            if (!info.isOnline() || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);
@@ -289,7 +208,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
         }
 
         long lastShardTransfer = PlayerWrapper.getPlayerWrapper(player).getLastShardTransfer();
-//        long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
         if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
             if (GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
@@ -303,11 +221,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
 
         player.openInventory(inventory);
-    }
-
-    @Override
-    public void onDestroy(Event event) {
-        CACHED_PING_SHARD_BUTTONS.remove(playerHostName);
     }
 
 }

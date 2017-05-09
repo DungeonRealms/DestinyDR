@@ -4,7 +4,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,12 +26,11 @@ public class CommandMessage extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player))
             return false;
-        }
-        if (args.length < 2) {
+        
+        if (args.length < 2)
             return false;
-        }
 
         Player player = (Player) sender;
 
@@ -40,19 +41,23 @@ public class CommandMessage extends BaseCommand {
 
         String playerName = args[0];
         String message = String.join(" ", Arrays.asList(args));
-        message = message.replace(playerName, "");
-        if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
-            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PM_DEV);
-        }
-
+        message = message.substring(playerName.length() + 1);
+        
         if(Chat.containsIllegal(message)){
             player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
             return true;
         }
-
-        String finalMessage = message;
-
-        Chat.sendPrivateMessage(player, playerName, finalMessage.trim());
+        
+        
+        // Achievements
+        Achievements.getInstance().giveAchievement(player.getUniqueId(), EnumAchievements.SEND_A_PM);
+        if (args[0].equalsIgnoreCase(player.getName()))
+        	Achievements.getInstance().giveAchievement(player.getUniqueId(), EnumAchievements.MESSAGE_YOURSELF);
+        if (DungeonRealms.getInstance().getDevelopers().contains(playerName))
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), EnumAchievements.PM_DEV);
+        
+        Chat.sendPrivateMessage(player, playerName, message.trim());
+        
         return true;
     }
 

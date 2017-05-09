@@ -1,14 +1,15 @@
 package net.dungeonrealms.game.player.banks;
 
 import lombok.Getter;
-import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
+import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.miscellaneous.ScrapTier;
 import net.minecraft.server.v1_9_R2.ChatMessage;
 import net.minecraft.server.v1_9_R2.EntityPlayer;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
 import net.minecraft.server.v1_9_R2.PacketPlayOutOpenWindow;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -21,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 
 public class CurrencyTab {
@@ -58,30 +58,6 @@ public class CurrencyTab {
         }
         return this;
     }
-
-//    public void loadCurrencyTab(Consumer<CurrencyTab> doAfter) {
-//        if (scrapStorage.isEmpty()) {
-//            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//
-//                Boolean access = (Boolean) DatabaseAPI.getInstance().getData(EnumData.CURRENCY_TAB_ACCESS, owner);
-//
-//                if (access == null || !access) {
-//                    hasAccess = false;
-//                } else {
-//                    hasAccess = true;
-//                    for (ScrapTier tier : ScrapTier.values()) {
-//                        Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
-//                        scrapStorage.put(tier, found == null ? 0 : found);
-//                    }
-//                }
-//
-//                if (doAfter != null)
-//                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> doAfter.accept(this));
-//            });
-//        } else if (doAfter != null) {
-//            doAfter.accept(this);
-//        }
-//    }
 
 
     public String getSerializedScrapTab() {
@@ -140,7 +116,7 @@ public class CurrencyTab {
         int slot = 9;
         for (ScrapTier tier : ScrapTier.values()) {
 
-            ItemStack scrapPiece = ItemManager.createArmorScrap(tier.getTier());
+            ItemStack scrapPiece = new ItemScrap(tier).generateItem();
 
             int scrapCount = getScrapCount(tier);
             int scrap = Math.max(1, scrapCount);

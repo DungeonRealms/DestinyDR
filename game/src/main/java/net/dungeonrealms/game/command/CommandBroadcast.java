@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Alan Lu (dartaran) on 17-Jul-16.

@@ -22,20 +22,16 @@ import java.sql.ResultSet;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Created by Rar349 on 4/23/2017.
  */
 public class GuildWrapper {
 
-
-    @Getter
-    @Setter
+    @Getter @Setter
     private int guildID;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private String name, tag;
 
     @Setter
@@ -46,8 +42,7 @@ public class GuildWrapper {
     @Getter
     private HashMap<Integer, GuildMember> members = new HashMap<>();
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private ItemStack banner = new ItemStack(Material.BANNER, 1, (byte) 15);
 
     public GuildWrapper(int guildID) {
@@ -67,7 +62,8 @@ public class GuildWrapper {
     public Map<Integer, GuildMember> getMembersNoPending() {
         Map<Integer, GuildMember> toReturn = new HashMap<>();
         this.members.forEach((id, member) -> {
-            if (member.isAccepted()) toReturn.put(id, member);
+            if (member.isAccepted())
+            	toReturn.put(id, member);
         });
 
         return toReturn;
@@ -103,8 +99,7 @@ public class GuildWrapper {
     }
 
     public String getDisplayName() {
-        if (displayName == null || displayName.isEmpty()) return name;
-        return displayName;
+        return displayName == null || displayName.isEmpty() ? name : displayName;
     }
 
     public GuildMember getMember(UUID uuid) {
@@ -114,11 +109,6 @@ public class GuildWrapper {
     public boolean isOwner(UUID uuid) {
         GuildMember member = getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid));
         return member != null && member.getRank().equals(GuildMember.GuildRanks.OWNER);
-    }
-
-    private List<GuildMember> getList(String guildName, GuildMember.GuildRanks data) {
-        return getMembers().values().stream().filter(mem -> data == null || mem.getRank() == data).collect(Collectors.toList());
-
     }
 
     public void loadData(boolean async, Consumer<Boolean> callback) {
@@ -318,4 +308,7 @@ public class GuildWrapper {
     }
 
 
+    public String getChatPrefix() {
+    	return ChatColor.WHITE + "[" + getTag() + "] ";
+    }
 }

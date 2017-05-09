@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -16,16 +17,18 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
@@ -139,7 +142,7 @@ public class Realm {
             setHologram(realmHologram);
 
             updateWGFlags();
-            updateRealmHologram();
+            updateHologram();
 
             setState(RealmState.OPENED);
 
@@ -302,7 +305,7 @@ public class Realm {
 
         //Give achievement (if any)
         if (newTier.getAchievement() != null)
-            Achievements.getInstance().giveAchievement(getOwner(), newTier.getAchievement());
+            Achievements.giveAchievement(getOwner(), newTier.getAchievement());
 
         // Set data.
         setState(RealmState.UPGRADING);
@@ -327,14 +330,14 @@ public class Realm {
 
         int slot = GameAPI.getItemSlot(owner.getInventory(), "realmPortalRune");
         if (slot != -1)
-            owner.getInventory().setItem(slot, ItemManager.createRealmPortalRune(owner.getUniqueId()));
+            owner.getInventory().setItem(slot, new ItemPortalRune(owner).generateItem());
         owner.updateInventory();
     }
 
     /**
      * Updates the realm hologram.
      */
-    public void updateRealmHologram() {
+    public void updateHologram() {
         if (hologram == null || hologram.isDeleted()) return;
 
         hologram.clearLines();
@@ -388,7 +391,7 @@ public class Realm {
     }
 
     public void wipeRealm() throws IOException {
-        if (DungeonRealms.getInstance().isMasterShard) {
+        if (DungeonRealms.isMaster()) {
             File f = new File(getSaveFilePath());
             if (f.exists())
                 f.delete();
@@ -459,7 +462,7 @@ public class Realm {
         }
 
         // Realms are not allowed on this shard.
-        if (DungeonRealms.getInstance().isEventShard) {
+        if (DungeonRealms.isEvent()) {
             player.sendMessage(ChatColor.RED + "Realms are disabled on this shard.");
             return;
         }
@@ -515,7 +518,7 @@ public class Realm {
      */
     private boolean downloadRealm() throws IOException, ZipException {
         // Realms are stored locally on the master shard.
-        if (DungeonRealms.getInstance().isMasterShard) {
+        if (DungeonRealms.isMaster()) {
             File realm = new File(getSaveFilePath());
             if (!realm.exists())
                 return false;
@@ -630,14 +633,14 @@ public class Realm {
                 wrapper.setUploadingRealm(false);
             }
 
-            SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), "realm"),
+            SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), UpdateType.REALM),
                     QueryType.SET_REALM_UPLOADING.getQuery(0, characterID));
 
             setState(RealmState.CLOSED);
             Realms.getInstance().getRealmMap().remove(getOwner());
 
             try {
-                if (!DungeonRealms.getInstance().isMasterShard)
+                if (!DungeonRealms.isMaster())
                     FileUtils.forceDelete(new File(getSaveFilePath()));
 
                 if (deleteWorld)
@@ -743,7 +746,7 @@ public class Realm {
      * A seperate method so it can be called by Realms#startInitialization to upload broken realms.
      */
     static void uploadZippedRealm(File zipFile, String uuidName) {
-        if (DungeonRealms.getInstance().isMasterShard)
+        if (DungeonRealms.isMaster())
             return;
 
         InputStream inputStream = null;
@@ -770,7 +773,7 @@ public class Realm {
      * Uploads the local zipped realm to the remote FTP server.
      */
     private void uploadZippedRealm() {
-        if (DungeonRealms.getInstance().isMasterShard)
+        if (DungeonRealms.isMaster())
             return;
         Utils.log.info("[REALM] Started uploading " + getName() + "'s realm.");
         uploadZippedRealm(new File(getSaveFilePath()), String.valueOf(characterID));
@@ -787,7 +790,7 @@ public class Realm {
      * Get the file location to zip this realm to.
      */
     public String getSaveFilePath() {
-        return DungeonRealms.getInstance().getDataFolder().getAbsolutePath() + "/realms/" + (DungeonRealms.getInstance().isMasterShard ? "downloaded" : "uploading") + "/" + this.characterID + ".zip";
+        return DungeonRealms.getInstance().getDataFolder().getAbsolutePath() + "/realms/" + (DungeonRealms.isMaster() ? "downloaded" : "uploading") + "/" + this.characterID + ".zip";
     }
 
     /**

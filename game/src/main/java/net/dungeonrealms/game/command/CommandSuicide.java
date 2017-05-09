@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -59,21 +60,17 @@ public class CommandSuicide extends BaseCommand {
                 ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + "', if not, type '" + ChatColor
                 .RED.toString() + "cancel" + ChatColor.RED + "'.");
 
-        Chat.listenForMessage(p, event -> {
-            if (GameAPI.getGamePlayer(p) == null || !GameAPI.getGamePlayer(p).isAbleToDrop()) {
-                p.sendMessage(ChatColor.RED + "You cannot commit suicide at the moment.");
-                return;
-            }
-            if (event.getMessage().equalsIgnoreCase("y")) {
+        
+        Chat.promptPlayerConfirmation(p, () -> {
+        	if (!GameAPI.getGamePlayer(p).isAbleToDrop()) {
+        		p.sendMessage(ChatColor.RED + "You cannot commit suicide at the moment.");
+        		return;
+        	}
+        	p.removeMetadata("lastPlayerToDamageExpire", DungeonRealms.getInstance());
+            p.removeMetadata("lastPlayerToDamage", DungeonRealms.getInstance());
 
-                p.removeMetadata("lastPlayerToDamageExpire", DungeonRealms.getInstance());
-                p.removeMetadata("lastPlayerToDamage", DungeonRealms.getInstance());
-
-                HealthHandler.getInstance().handlePlayerDeath(p, null);
-            } else {
-                p.sendMessage(ChatColor.YELLOW + "Suicide - " + ChatColor.BOLD + "CANCELLED");
-            }
-        }, null);
+            HealthHandler.handlePlayerDeath(p, null);
+        }, () -> p.sendMessage(ChatColor.YELLOW + "Suicide - " + ChatColor.BOLD + "CANCELLED"));
         return true;
     }
 

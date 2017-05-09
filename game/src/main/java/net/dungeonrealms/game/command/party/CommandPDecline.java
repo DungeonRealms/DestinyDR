@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
  * Created by Kieran Quigley (Proxying) on 01-Jul-16.
  */
 public class CommandPDecline extends BaseCommand {
-    public CommandPDecline(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandPDecline() {
+        super("pdecline", "/<command>", "Decline a party invitation.");
     }
 
     @Override
@@ -22,17 +22,15 @@ public class CommandPDecline extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return true;
 
         Player player = (Player) s;
-
-        if (args.length == 0) {
-            if (Affair._invitations.containsKey(player) && Affair._invitations.get(player) != null) {
-                Player owner = Affair._invitations.get(player).getOwner();
-                Affair._invitations.remove(player);
-                owner.sendMessage(ChatColor.RED + player.getName() + " has declined your party invitation.");
-                player.sendMessage(ChatColor.GREEN + "You have declined " + owner.getName() + "(s) party invitation.");
-            } else {
-                player.sendMessage(ChatColor.RED + "You do not have any pending invitations!");
-            }
+        
+        if (!Affair.getInvitations().containsKey(player)) {
+        	player.sendMessage(ChatColor.RED + "You do not have an incoming invitation.");
+        	return true;
         }
+        
+        Affair.getInvitations().get(player).getOwner().sendMessage(ChatColor.RED + player.getName() + " declined your party invitation");
+        Affair.getInvitations().remove(player);
+        player.sendMessage(ChatColor.RED + "Party invitation declined.");
         return false;
     }
 }

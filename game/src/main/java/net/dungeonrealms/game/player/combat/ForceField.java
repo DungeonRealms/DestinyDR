@@ -67,7 +67,7 @@ public class ForceField implements Listener, GenericMechanic {
         if (gp == null) return;
 
         // check if we have to send blocks or remove them
-        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC &&
+        if (!gp.isPvPTagged() && wrapper.getAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC &&
                 !previousUpdates.containsKey(player.getUniqueId()))
             return;
 
@@ -127,7 +127,7 @@ public class ForceField implements Listener, GenericMechanic {
         if (gp == null) return locations;
 
         // Do nothing if player is not tagged or chaotic
-        if (!gp.isPvPTagged() && wrapper.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return locations;
+        if (!gp.isPvPTagged() && wrapper.getAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return locations;
 
         // Find the radius around the player
         int r = 10;

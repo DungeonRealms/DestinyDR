@@ -35,12 +35,6 @@ public class CommandPacketLog extends BaseCommand {
 			
 		}
 		
-		if(Rank.isDev(sender) && args[0].equals("uploadAll")){
-			sender.sendMessage(ChatColor.GREEN + "Uploading all packetlogs.");
-			PacketLogger.INSTANCE.uploadAll();
-			return true;
-		}
-		
 		Player player = Bukkit.getPlayer(args[0]);
 		
 		if(player == null){

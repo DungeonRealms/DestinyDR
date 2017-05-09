@@ -9,8 +9,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -19,6 +20,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
+import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.GuildMember;
@@ -26,6 +28,7 @@ import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -142,83 +145,74 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     break;
                 case "Update":
                     if (DungeonRealms.getInstance().isAlmostRestarting()) return;
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                         try {
                             UUID uuid = UUID.fromString(in.readUTF());
                             Player player1 = Bukkit.getPlayer(uuid);
-
-                            String updateField = in.readUTF();
-                            if (player1 != null) {
-
-                                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player1);
-                                String storedRank = wrapper.getRank();
-                                if (updateField.equals("mute")) {
-                                    long previousMute = wrapper.getMuteExpire();
-                                    wrapper.loadPunishment(true, expire -> {
-                                        if (expire != previousMute) {
-                                            //Something updated??
-                                            if (previousMute > 0 && expire <= 0) {
-                                                //Unmuted??
-                                                player1.sendMessage(ChatColor.RED + "You are no longer muted.");
-                                            }
-                                        }
-                                    });
-                                } else if (updateField.equals("unlockables")) {
-                                    //Reload their collection bin data...
-                                    SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_UNLOCKABLES.getQuery(wrapper.getAccountID()), rs -> {
-                                        if (rs == null) {
-                                            Bukkit.getLogger().info("Unable to get result set on unlockable upgrade, account ID: " + wrapper.getAccountID());
-                                            return;
-                                        }
-                                        try {
-                                            if (rs.first())
-                                                wrapper.loadUnlockables(rs);
-                                            Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
-
-                                            rs.close();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                } else {
-                                    UpdateType type = UpdateType.getFromName(updateField);
-                                    if (type != null) {
-                                        //Pull this data..
-                                        SQLDatabaseAPI.getInstance().executeQuery(type.getQuery(wrapper), rs -> {
-                                            if (rs == null)
-                                                return;
-                                            try {
-                                                if (rs.first()) {
-                                                    Object obj = rs.getObject(type.getColumnName());
-                                                    Field field = getField(type.getFieldName());
-                                                    if (type == UpdateType.GEMS) {
-                                                        wrapper.setGems((int) obj);
-                                                    } else {
-                                                        field.set(wrapper, obj);
-                                                    }
-                                                    if (type == UpdateType.RANK) {
-                                                        //Need to update cache..
-                                                        Rank.PlayerRank foundRank = Rank.PlayerRank.getFromInternalName(wrapper.getRank());
-                                                        Rank.getInstance().getCachedRanks().put(player1.getUniqueId(), foundRank);
-                                                        if (!wrapper.getRank().equals(storedRank)) {
-                                                            player1.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + foundRank.getPrefix());
-                                                            player1.playSound(player1.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-                                                        }
-                                                    }
-                                                    Bukkit.getLogger().info("Updating " + type.getFieldName() + " to " + obj + " for " + wrapper.getUsername());
-                                                }
-                                                rs.close();
-                                            } catch (SQLException | IllegalAccessException e) {
-                                                e.printStackTrace();
-                                            }
-                                        });
-                                    }
-                                }
+                            
+                            String updateType = in.readUTF();
+                            UpdateType update = UpdateType.getFromName(updateType);
+                            
+                            if (update == null) {
+                            	Bukkit.getLogger().warning("Unknown data update type '" + updateType + "'.");
+                            	return;
                             }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    });
+                            
+                            if (player1 == null)
+                            	return;
+
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player1);
+                            
+                            if (update == UpdateType.MUTE) {
+                            	long previousMute = wrapper.getMuteExpire();
+                            	wrapper.loadPunishment(true, expire -> {
+                            		// Verify their mute time changed, and that they are no longer muted.
+                            		if (expire != previousMute && previousMute > 0 && expire <= 0)
+                            			player1.sendMessage(ChatColor.RED + "You are no longer muted.");
+                            	});
+                            } else if (update == UpdateType.UNLOCKABLES) {
+                            	SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_UNLOCKABLES.getQuery(wrapper.getAccountID()), rs -> {
+                            		if (rs == null) {
+                            			Bukkit.getLogger().info("Unable to get result set on unlockable upgrade, account ID: " + wrapper.getAccountID());
+                            			return;
+                            		}
+                            		try {
+                            			if (rs.first())
+                            				wrapper.loadUnlockables(rs);
+                            			Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
+                            			
+                            			rs.close();
+                            		} catch (Exception e) {
+                            			e.printStackTrace();
+                            		}
+                            	});
+                            } else {
+                            	// Pull the data.
+                            	SQLDatabaseAPI.getInstance().executeQuery(update.getQuery(wrapper), rs -> {
+                            		if (rs == null)
+                            			return;
+                            		try {
+                            			if (rs.first()) {
+                            				Object obj = rs.getObject(update.getColumnName());
+                            				if (update == UpdateType.GEMS) {
+                            					wrapper.setGems((int) obj);
+                            				} else if (update == UpdateType.RANK) {
+                            					wrapper.setRank(PlayerRank.getFromInternalName((String) obj));
+                            				} else {
+                            					getField(update.getFieldName()).set(wrapper, obj);
+                            				}
+                            				Bukkit.getLogger().info("Updating " + update.getFieldName() + " to " + obj + " for " + wrapper.getUsername());
+                            			}
+                            			rs.close();
+                            		} catch (SQLException | IllegalAccessException e) {
+                            			e.printStackTrace();
+                            		}
+                            	});
+                            }
+                    	} catch (Exception ex) {
+                    		ex.printStackTrace();
+                    	}
+            		});
                     break;
                 case "IGN_GMMessage":
                     //This GMMessage will only show in-game and skip being show in discord.
@@ -274,20 +268,6 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 UUID uuid = UUID.fromString(uuidString);
 
                                 if (Bukkit.getPlayer(uuid) != null) {
-                                        /*Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                            ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
-                                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                                for (String s : list) {
-                                                    UUID friendUuid = UUID.fromString(s);
-                                                    Player friend = Bukkit.getPlayer(friendUuid);
-
-                                                    if (friend != null && !friendUuid.toString().equalsIgnoreCase(s)) {
-                                                        friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
-                                                        friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-                                                    }
-                                                }
-                                            });
-                                        });*/
 
                                     PlayerWrapper personWrapper = PlayerWrapper.getPlayerWrapper(uuid);
                                     if (personWrapper != null) {
@@ -365,19 +345,19 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             String playerName = in.readUTF();
                             String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                             Player player = Bukkit.getPlayer(playerName);
-                            if (player != null) {
-                                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                                GamePlayer gp = GameAPI.getGamePlayer(player);
-                                if (gp != null) {
-                                    gp.setLastMessager(fromPlayer);
-                                }
-
-                                if (wrapper != null && wrapper.getIgnoredFriends().containsKey(uuid)) {
-                                    return;
-                                }
-                                player.sendMessage(msg);
-                                GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "(AS " + player.getName() + ") " + msg));
+                            if (player == null)
+                            	return;
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                            GamePlayer gp = GameAPI.getGamePlayer(player);
+                            if (gp != null) {
+                            	gp.setLastMessager(fromPlayer);
                             }
+                            
+                            if (wrapper != null && wrapper.getIgnoredFriends().containsKey(uuid))
+                            	return;
+                            
+                            player.sendMessage(msg);
+                            GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "(AS " + player.getName() + ") " + msg));
                             break;
                         }
                         case "Shop": {
@@ -420,16 +400,11 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     pitch = 1f;
                                 }
                             }
-                            Sound sound = null;
-                            for (Sound s : Sound.values()) {
-                                if (Sound.valueOf(name).equals(s)) {
-                                    sound = s;
-                                }
-                            }
+                            
+                            Sound sound = Sound.valueOf(name);
                             if (sound != null)
-                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                for (Player p : Bukkit.getOnlinePlayers())
                                     p.playSound(p.getLocation(), sound, volume, pitch);
-                                }
                             break;
                         }
                         case "BroadcastSoundPlayer": {
@@ -453,37 +428,23 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     pitch = 1f;
                                 }
                             }
-                            Sound sound = null;
-                            for (Sound s : Sound.values()) {
-                                if (Sound.valueOf(name).equals(s)) {
-                                    sound = s;
-                                }
-                            }
+                            
+                            Sound sound = Sound.valueOf(name);
                             if (sound != null)
                                 player.playSound(player.getLocation(), sound, volume, pitch);
                             break;
                         }
                         case "buff":
                             // No buffs are allowed on this shard.
-                            if (DungeonRealms.getInstance().isEventShard)
+                            if (DungeonRealms.isEvent())
                                 break;
 
-                            String type = in.readUTF();
+                            EnumBuff buffType = EnumBuff.valueOf(in.readUTF());
                             int duration = Integer.parseInt(in.readUTF());
-                            int bonusAmount = Integer.parseInt(in.readUTF());
-                            String player_string = in.readUTF();
-                            String from_server = in.readUTF();
-                            switch (type) {
-                                case "loot":
-                                    DonationEffects.getInstance().activateNewLootBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                    break;
-                                case "profession":
-                                    DonationEffects.getInstance().activateNewProfessionBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                    break;
-                                case "level":
-                                    DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                                    break;
-                            }
+                            int buffPower = Integer.parseInt(in.readUTF());
+                            String originPlayer = in.readUTF();
+                            String originServer = in.readUTF();
+                            DonationEffects.getInstance().activateLocalBuff(new Buff(buffType, duration, buffPower, originPlayer, originServer));
                             break;
                         case "Stop":
                             DungeonRealms.getInstance().isDrStopAll = true;

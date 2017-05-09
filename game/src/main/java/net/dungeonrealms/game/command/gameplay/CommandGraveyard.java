@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.miscellaneous.Graveyard;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

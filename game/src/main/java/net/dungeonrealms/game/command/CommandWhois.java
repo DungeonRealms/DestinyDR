@@ -1,9 +1,10 @@
 package net.dungeonrealms.game.command;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -11,6 +12,7 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.punishment.PunishType;
 import net.dungeonrealms.database.punishment.Punishment;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -37,13 +39,13 @@ public class CommandWhois extends BaseCommand {
         Rank.PlayerRank rank;
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            rank = Rank.getInstance().getPlayerRank(player.getUniqueId());
+            rank = Rank.getPlayerRank(player.getUniqueId());
         } else {
             rank = Rank.PlayerRank.DEV;
         }
         if (args.length == 0) {
             if (sender instanceof Player) {
-                sender.sendMessage("Syntax. /whois <player>" + (rank.isAtleast(Rank.PlayerRank.GM) ? "/<ipAddress> -a (alts) -i (ip)" : ""));
+                sender.sendMessage("Syntax. /whois <player>" + (rank.isAtLeast(Rank.PlayerRank.GM) ? "/<ipAddress> -a (alts) -i (ip)" : ""));
                 return true;
             }
             sender.sendMessage("Syntax. /whois <player> ");
@@ -52,14 +54,14 @@ public class CommandWhois extends BaseCommand {
 
         List<String> argList = Lists.newArrayList(args);
 
-        boolean showAlts = argList.contains("-a") && rank.isAtleast(Rank.PlayerRank.GM);
-        boolean showIPs = argList.contains("-i") && rank.isAtleast(Rank.PlayerRank.HEADGM);
+        boolean showAlts = argList.contains("-a") && rank.isAtLeast(Rank.PlayerRank.GM);
+        boolean showIPs = argList.contains("-i") && rank.isAtLeast(Rank.PlayerRank.HEADGM);
 
         String p_name = args[0];
         Player online = Bukkit.getPlayer(p_name);
         if (p_name.contains(".")) {
 
-            if (showAlts || rank.isAtleast(Rank.PlayerRank.DEV)) {
+            if (showAlts || rank.isAtLeast(Rank.PlayerRank.DEV)) {
                 //its an ip
                 SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALTS.getQuery(p_name), true, (set) -> {
                     if (set == null) {

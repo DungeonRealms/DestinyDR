@@ -1,6 +1,7 @@
 package net.dungeonrealms.database.punishment;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -92,14 +93,13 @@ public class PunishAPI {
      */
     public static void unmute(UUID uuid) {
         if (uuid == null) return;
-//        if (!isMuted(uuid)) return;
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
             if (!wrapper.isMuted()) return;
             SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
                 //Update the playerData across shards.
                 if (wrapper.getPlayer() == null || !wrapper.getPlayer().isOnline())
-                    GameAPI.updatePlayerData(uuid, "mute");
+                    GameAPI.updatePlayerData(uuid, UpdateType.MUTE);
                 else {
                     wrapper.setMuteReason(null);
                     wrapper.setMuteExpire(0);
@@ -108,8 +108,6 @@ public class PunishAPI {
 
             }, QueryType.UNMUTE_PLAYER.getQuery(wrapper.getAccountID()));
         });
-//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, 0L, true);
-//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, "", true);
     }
 
     /**

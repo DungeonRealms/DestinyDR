@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.command;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -54,33 +56,33 @@ public class CommandSpawner extends BaseCommand {
                 int radius = hideAll ? 0 : Integer.parseInt(args[1]);
 
                 int found = 0;
-                for (MobSpawner spawner : SpawningMechanics.getAllSpawners()) {
+                for (MobSpawner spawner : SpawningMechanics.getSpawners()) {
 
-                    if (spawner.getLoc() != null && (hideAll || spawner.getLoc().distance(player.getLocation()) <= radius)) {
+                    if (spawner.getLocation() != null && (hideAll || spawner.getLocation().distance(player.getLocation()) <= radius)) {
 
                         if (showing) {
 
                             //Already showing?
-                            if (shownMobSpawners.containsKey(spawner.getLoc())) continue;
+                            if (shownMobSpawners.containsKey(spawner.getLocation())) continue;
 
 //                            if (spawner instanceof EliteMobSpawner)
 //                                holo.appendTextLine(ChatColor.GREEN + ChatColor.BOLD.toString() + "ELITE MOB");
 
 
-                            spawner.getLoc().getBlock().setType(Material.MOB_SPAWNER);
+                            spawner.getLocation().getBlock().setType(Material.MOB_SPAWNER);
 
                             spawner.createEditInformation();
-                            shownMobSpawners.put(spawner.getLoc(), spawner);
+                            shownMobSpawners.put(spawner.getLocation(), spawner);
                             found++;
                         } else {
-                            if (shownMobSpawners.containsKey(spawner.getLoc())) {
+                            if (shownMobSpawners.containsKey(spawner.getLocation())) {
                                 found++;
-                                if (spawner.getLoc().getBlock().getType() == Material.MOB_SPAWNER) {
-                                    spawner.getLoc().getBlock().setType(Material.AIR);
+                                if (spawner.getLocation().getBlock().getType() == Material.MOB_SPAWNER) {
+                                    spawner.getLocation().getBlock().setType(Material.AIR);
                                 }
                                 if (spawner.getEditHologram() != null) {
                                     spawner.getEditHologram().delete();
-                                    shownMobSpawners.remove(spawner.getLoc());
+                                    shownMobSpawners.remove(spawner.getLocation());
                                 }
                             }
 
