@@ -33,7 +33,6 @@ public enum EnumPets {
     WOLF(WolfPet.class, 95, Sound.ENTITY_WOLF_AMBIENT, 1.1D),
     ENDERMITE(EndermitePet.class, 67, Sound.ENTITY_ENDERMITE_AMBIENT, 1.5D),
     CAVE_SPIDER(SpiderPet.class, 59, Sound.ENTITY_SPIDER_AMBIENT, 1.3D),
-    BETA_ZOMBIE(BetaZombie.class, 54, Sound.ENTITY_ZOMBIE_AMBIENT, 1D),
     BABY_ZOMBIE(ZombiePet.class, 54, Sound.ENTITY_ZOMBIE_AMBIENT, 1D),
     BABY_PIG_ZOMBIE(ZombiePigPet.class, 57, Sound.ENTITY_ZOMBIE_PIG_AMBIENT, 1D),
     OCELOT(OcelotPet.class, 98, Sound.ENTITY_CAT_AMBIENT, 1D),
@@ -42,24 +41,26 @@ public enum EnumPets {
     BAT(BatPet.class, 65, Sound.ENTITY_BAT_TAKEOFF, -1D),
     SLIME(SlimePet.class, 55, Sound.ENTITY_SLIME_SQUISH, 1.25D),
     MAGMA_CUBE(MagmaPet.class, 62, Sound.ENTITY_MAGMACUBE_SQUISH, 1.25D),
-    ENDERMAN(EndermanPet.class, 54, Sound.ENTITY_ENDERMEN_SCREAM, 1D), //.45F
-    GUARDIAN(GuardianPet.class, 68, Sound.ENTITY_GUARDIAN_AMBIENT, 1D), //.3F
+    ENDERMAN(EndermanPet.class, 54, Sound.ENTITY_ENDERMEN_SCREAM, 1D, false), //.45F
+    GUARDIAN(GuardianPet.class, 68, Sound.ENTITY_GUARDIAN_AMBIENT, 1D, false), //.3F
     BABY_SHEEP(BabySheepPet.class, 91, Sound.ENTITY_SHEEP_AMBIENT, 1D), //.45F
-    RAINBOW_SHEEP(RainbowSheepPet.class, 91, Sound.ENTITY_SHEEP_AMBIENT, 1.0D), //.45F
-    
+    RAINBOW_SHEEP(RainbowSheepPet.class, 91, Sound.ENTITY_SHEEP_AMBIENT, 1.0D, false), //.45F
+    BETA_ZOMBIE(BetaZombie.class, 54, Sound.ENTITY_ZOMBIE_AMBIENT, 1D, false),
+
     // Event Pets:
-    SILVERFISH(SilverfishPet.class, 60, Sound.ENTITY_SILVERFISH_AMBIENT, 1.5D, true),
-    SNOWMAN(SnowmanPet.class, 56, Sound.ENTITY_SNOWMAN_AMBIENT, 1.8D, true), // Christmass
-    INDEPENDENCE_CREEPER(CreeperPet.class, 50, Sound.ENTITY_CREEPER_PRIMED, 1.25D, true), //Fourth of July.
+    SILVERFISH(SilverfishPet.class, 60, Sound.ENTITY_SILVERFISH_AMBIENT, 1.5D, false),
+    SNOWMAN(SnowmanPet.class, 56, Sound.ENTITY_SNOWMAN_AMBIENT, 1.8D, false), // Christmass
+    INDEPENDENCE_CREEPER(CreeperPet.class, 50, Sound.ENTITY_CREEPER_PRIMED, 1.25D, false), //Fourth of July.
     
     // Special "Pets"
-    STORAGE_MULE(null, 64, null, 1.8D, false, false, true);
+    STORAGE_MULE(null, 64, null, 1.8D, null, false, false, true);
 
     private Class<? extends EntityInsentient> clazz;
     private int eggShortData;
     private Sound sound;
     private double followSpeed;
-    
+    @Getter
+    private String description;
     private boolean subGetsFree;
     private boolean showInGui; //Pets we haven't released yet, or are disabled.
     private boolean special;
@@ -71,9 +72,11 @@ public enum EnumPets {
     EnumPets(Class<? extends EntityInsentient> cls, int eggData, Sound sound, double followSpeed, boolean subFree) {
     	this(cls, eggData, sound, followSpeed, subFree, true);
     }
-    
+    EnumPets(Class<? extends EntityInsentient> cls, int eggData, String description, Sound sound, double followSpeed, boolean subFree, boolean showGUI) {
+        this(cls, eggData, sound, followSpeed, description, subFree, showGUI, false);
+    }
     EnumPets(Class<? extends EntityInsentient> cls, int eggData, Sound sound, double followSpeed, boolean subFree, boolean showGUI) {
-    	this(cls, eggData, sound, followSpeed, subFree, showGUI, false);
+    	this(cls, eggData, sound, followSpeed, null, subFree, showGUI, false);
     }
     
     public String getDisplayName() {
@@ -164,6 +167,7 @@ public enum EnumPets {
     }
 
     public static EnumPets getByName(String rawName) {
+        if(rawName == null)return null;
         for (EnumPets ep : values())
             if (ep.getName().equalsIgnoreCase(rawName.replaceAll("_", "")) || ep.name().equalsIgnoreCase(rawName))
                 return ep;

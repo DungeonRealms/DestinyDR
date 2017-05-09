@@ -53,8 +53,10 @@ public class PlayerStats implements LoadableData, SaveableData {
     	tempStatMap.put(s, val);
     }
     
-    public int getTempStat(Stats s){ 
-    	return tempStatMap.get(s);
+    public int getTempStat(Stats s){
+        Integer stored = tempStatMap.get(s);
+        if(stored != null)return stored;
+    	return 0;
     }
     
     public void setStat(Stats s, int val) {

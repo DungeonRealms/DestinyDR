@@ -79,7 +79,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         UNLAWFUL_KILLS("unlawful_kills"),
         BOSS_KILLS_MAYEL("boss_kills_mayel"),
         BOSS_KILLS_BURICK("boss_kills_burick"),
-        BOSS_KILLS_INFERNALABYSS("boss_kills_infernal"),
+        BOSS_KILLS_INFERNALABYSS("boss_kills_infernal_abyss"),
         DUELS_WON("duels_won"),
         DUELS_LOST("duels_lost"),
         ORBS_USED("orbs_used"),

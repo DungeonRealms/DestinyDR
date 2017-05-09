@@ -57,43 +57,45 @@ public class PlayerToggles implements LoadableData, SaveableData {
 
     @AllArgsConstructor
     public enum Toggles {
-    	DEBUG("Toggles displaying combat debug messages", "Debug Messages"),
-    	TRADE("Toggles trading requests.", "Trade"),
-    	TRADE_CHAT("tradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
-    	GLOBAL_CHAT("globalchat", "Toggles talking only in global chat.", "Global Chat"),
-    	ENABLE_PMS("tells", "Toggles receiving NON-BUD /tell.", "NON-BUD Private Messages."),
-    	PVP("Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
-    	DUEL("Toggles dueling requests", "Dueling Requests"),
-    	CHAOTIC_PREVENTION("chaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
+    	DEBUG("debug_enabled", "Toggles displaying combat debug messages", "Debug Messages"),
+    	TRADE("trading_enabled", "Toggles trading requests.", "Trade"),
+    	TRADE_CHAT("trade_chat_enabled", "tradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
+    	GLOBAL_CHAT("default_global_chat", "globalchat", "Toggles talking only in global chat.", "Global Chat"),
+    	ENABLE_PMS("pms_enabled", "tells", "Toggles receiving NON-BUD /tell.", "NON-BUD Private Messages."),
+    	PVP("pvp_enabled", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
+    	DUEL("dueling_enabled", "Toggles dueling requests", "Dueling Requests"),
+    	CHAOTIC_PREVENTION("chaotic_prevention_enabled", "chaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
     	//SOUNDTRACK("sound", "Toggles the DungeonRealms Soundtrack.", "Soundtrack"),
-    	TIPS("Toggles the receiving of informative tips.", "Tip Display."),
-    	GLOW("Toggles rare items glowing.", "Item Glow"),
-    	DAMAGE_INDICATORS("floatdamage", "Toggles floating damage values.", "Damage Indicators"),
+    	TIPS("tips_enabled", "Toggles the receiving of informative tips.", "Tip Display."),
+    	GLOW("glowEnabled", "Toggles rare items glowing.", "Item Glow"),
+    	DAMAGE_INDICATORS("dmgIndicators", "floatdamage", "Toggles floating damage values.", "Damage Indicators"),
 
-    	GUILD_CHAT("guildchat", "Toggles talking only in guild chat.", "Guild Chat", false),
+    	GUILD_CHAT("guild_chat", "guildchat", "Toggles talking only in guild chat.", "Guild Chat", false),
 
-    	VANISH("Toggles your vanish-status.", "Vanish", PlayerRank.TRIALGM);
+    	VANISH("vanish", "Toggles your vanish-status.", "Vanish", PlayerRank.TRIALGM);
 
+    	@Getter
+    	private String columnName;
     	private String commandName;
     	@Getter private String description;
     	@Getter private String displayName;
     	@Getter private PlayerRank minRank;
     	@Getter private boolean saved;
 
-    	Toggles(String description, String display) {
-    		this(description, display, PlayerRank.DEFAULT);
+    	Toggles(String columnName, String description, String display) {
+    		this(columnName, description, display, PlayerRank.DEFAULT);
     	}
 
-    	Toggles(String description, String display, PlayerRank rank) {
-    		this(null, description, display, rank, true);
+    	Toggles(String columnName, String description, String display, PlayerRank rank) {
+    		this(columnName, null, description, display, rank, true);
     	}
 
-    	Toggles(String cmd, String description, String display) {
-    		this(cmd, description, display, true);
+    	Toggles(String columnName, String cmd, String description, String display) {
+    		this(columnName, cmd, description, display, true);
     	}
 
-    	Toggles(String cmd, String description, String display, boolean save) {
-    		this(cmd, description, display, PlayerRank.DEFAULT, true);
+    	Toggles(String columnName, String cmd, String description, String display, boolean save) {
+    		this(columnName, cmd, description, display, PlayerRank.DEFAULT, save);
     	}
 
     	public String getCommand() {
@@ -101,7 +103,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
     	}
 
     	public String getDBField() {
-    		return name().toLowerCase();
+    		return columnName;
     	}
 
     	public static List<Toggles> getToggles(Player player) {

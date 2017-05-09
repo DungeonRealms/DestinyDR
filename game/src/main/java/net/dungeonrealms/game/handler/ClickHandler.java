@@ -323,6 +323,7 @@ public class ClickHandler {
                 //}
                 break;
             case "Pet Selection":
+                System.out.println("Hello pet selector!");
                 event.setCancelled(true);
                 if (event.getCurrentItem().getType() == Material.LEASH) {
                 	PetUtils.removePet(player);

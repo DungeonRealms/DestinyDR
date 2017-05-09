@@ -40,7 +40,7 @@ public enum ShardInfo implements Serializable {
 
     // CS 1 SHARD //
     CS1("CS-1", new ServerAddress("158.69.121.40", 22965), ShardType.SUPPORT);
-//    CS1("CS-1", "cs1", new ServerAddress("158.69.121.48", 45521));
+//    CS1("CS-1", "cs1", new ServerAddress("158.69.121.48", 45521), ShardType.SUPPORT);
 
     private String shardID;
     private String pseudoName;

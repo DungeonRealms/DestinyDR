@@ -497,12 +497,14 @@ public class DungeonRealms extends JavaPlugin {
             e.printStackTrace();
         }
 
+        ItemGenerator.convertOldItemTemplates();
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             Constants.log.info("DungeonRealms - Now Accepting Players.");
 
             this.acceptPlayers = true;
             Bukkit.getServer().setWhitelist(false);
-        }, 240L);
+        }, DungeonRealms.isMaster() ? 20 : 240L);
 
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -537,6 +539,7 @@ public class DungeonRealms extends JavaPlugin {
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupPlayers, 0L, 12000L);
+
     }
 
     private static boolean isShard(ShardType type) {

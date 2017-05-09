@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 7/7/2016
- */
 public class Constants {
 
     public static Logger log = Logger.getLogger("DungeonRealms");
@@ -26,10 +23,10 @@ public class Constants {
     public static int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static String MASTER_SERVER_IP = "158.69.23.169";
-
+//    public static String MASTER_SERVER_IP = "158.69.23.169";
+    public static String MASTER_SERVER_IP = "158.69.121.40";
     // BACKEND SERVER SERVER PORT //
-    public static int MASTER_SERVER_PORT = 22964;
+    public static int MASTER_SERVER_PORT = 22965;
 
     public static int NET_READ_BUFFER_SIZE = 16384;
     public static int NET_WRITE_BUFFER_SIZE = 32768;
