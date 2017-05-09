@@ -237,9 +237,10 @@ public abstract class Dungeon {
         List<Player> players = getPlayers();
         Collections.shuffle(players);
         
-        //TODO: Make sure these dungeon mounts are added to your character, not just your inventory.
-        
         Player winner = players.get(0);
+        PlayerWrapper pw = PlayerWrapper.getWrapper(winner);
+        
+        pw.getMountsUnlocked().add(getType().getMount());
         
         winner.playSound(winner.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
         winner.getInventory().addItem(mount);

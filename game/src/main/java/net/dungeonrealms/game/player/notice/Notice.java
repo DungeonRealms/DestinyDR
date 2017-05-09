@@ -33,8 +33,6 @@ public class Notice {
         }, 0, (20 * 60) * 10);
     }
 
-    //TODO: Friends, Guilds and clickable acceptance.
-
     /**
      * This type handles notices per player.
      * E.g. A player logs in and has a guild invite,
@@ -58,7 +56,7 @@ public class Notice {
         }
         int noteSize = wrapper.getLastNoteSize();
         
-        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (PatchTools.getInstance().getSize() != noteSize)))
+        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (PatchTools.getSize() != noteSize)))
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player, wrapper), 150);
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeVoteReminder(player), 300);
@@ -77,7 +75,7 @@ public class Notice {
 
         // UPDATE LAST VIEWED BUILD NUMBER //
         wrapper.setLastViewedBuild(Constants.BUILD_NUMBER);
-        wrapper.setLastNoteSize(PatchTools.getInstance().getSize());
+        wrapper.setLastNoteSize(PatchTools.getSize());
     }
 
     private void executeVoteReminder(Player p) {

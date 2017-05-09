@@ -9,13 +9,9 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
+import net.minecraft.server.v1_9_R2.MojangsonParseException;
 import net.minecraft.server.v1_9_R2.MojangsonParser;
-import net.minecraft.server.v1_9_R2.NBTBase;
-import net.minecraft.server.v1_9_R2.NBTBase.NBTNumber;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagInt;
-import net.minecraft.server.v1_9_R2.NBTTagIntArray;
-import net.minecraft.server.v1_9_R2.NBTTagList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,6 +29,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ItemGenerator {
 
@@ -62,7 +60,7 @@ public class ItemGenerator {
     	try {
     		if (fullObj.has("tag")) {
     			net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-    			NBTTagCompound tag = MojangsonParser.parse(fullObj.get("tag").getAsString());
+    			NBTTagCompound tag = loadNBT(fullObj.get("tag").getAsString());
     			
     			// Apply Antidupe.
     			if (tag.hasKey("u"))
@@ -72,7 +70,6 @@ public class ItemGenerator {
     			if (template != null)
     				tag.setString("customId", template);
     			
-    			applyRNG(tag, true);
     			// Create Item
     			nms.setTag(tag);
     			item = CraftItemStack.asBukkitCopy(nms);
@@ -83,6 +80,20 @@ public class ItemGenerator {
     	}
     	
     	return PersistentItem.constructItem(item).generateItem();
+    }
+    
+    /**
+     * Loads an NBTTagCompound from a string.
+     * Applies RNG, so don't use this on anything a user can control.
+     */
+    public static NBTTagCompound loadNBT(String data) throws MojangsonParseException {
+    	
+    	
+    	//Format: <x,y> Generates a random value between <x,y>
+    	Pattern range = Pattern.compile("<\\d+,\\d+>");
+    	Matcher rangeMatch = range.matcher(data);
+    	
+    	return MojangsonParser.parse(data);
     }
     
     /**
@@ -122,56 +133,6 @@ public class ItemGenerator {
     	fullObj.addProperty("tag", toSave.getTag().toString());
     	
     	return fullObj;
-    }
-    
-    /**
-     * Applies the RNG to the ranges in an NBT tag.
-     * Does not apply to child tag compounds.
-     */
-    public static void applyRNG(NBTTagCompound tag) {
-    	applyRNG(tag, false);
-    }
-    
-    /**
-     * Applies RNG to the ranges in an NBT tag.
-     * Applies to child components.
-     */
-    public static void applyRNG(NBTTagCompound tag, boolean deep) {
-    	System.out.println("Trying to apply RNG to " + tag.toString());
-    	for (String key : tag.c()) {
-    		NBTBase base = tag.get(key);
-    		
-    		System.out.println("Trying to generate from " + base.toString());
-    		if (base instanceof NBTTagList || base instanceof NBTTagIntArray) {
-    			tag.set(key, applyRNG(base));
-    		} else if (base instanceof NBTTagCompound && deep) {
-    			applyRNG((NBTTagCompound) base, true);
-    		}
-    	}
-    }
-    
-    /**
-     * Loads a data range from an nbt int array or an nbt list.
-     */
-    private static NBTBase applyRNG(NBTBase data) {
-    	System.out.println("Trying to load " + data.toString());
-    	
-    	if (data instanceof NBTTagIntArray) {
-    		int[] d = ((NBTTagIntArray)data).c();
-    		return new NBTTagInt( d.length > 1 ? Utils.randInt(d[0], d[1]) : d[0]);
-    	} else if (data instanceof NBTTagList) {
-    		NBTTagList list = (NBTTagList) data;
-    		if (list.h(0) instanceof NBTNumber) {
-    			return new NBTTagInt(list.size() > 1 ? Utils.randInt(list.c(0), list.c(1)) : list.c(0));
-    		} else if (list.h(0) instanceof NBTTagList || list.h(0) instanceof NBTTagIntArray){
-    			NBTTagList newData = new NBTTagList();
-    			newData.add(applyRNG(list.h(0)));
-    			newData.add(applyRNG(list.h(1)));
-    			return newData;
-    		}
-    	}
-    	
-    	return data;
     }
     
     /**

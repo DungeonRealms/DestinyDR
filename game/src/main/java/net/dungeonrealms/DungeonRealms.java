@@ -243,7 +243,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new ShopMechanics());
         mm.registerMechanic(new EntityMechanics());
-        mm.registerMechanic(PatchTools.getInstance());
+        mm.registerMechanic(new PatchTools());
         mm.registerMechanic(new Mining());
         mm.registerMechanic(Realms.getInstance());
         mm.registerMechanic(Affair.getInstance());
@@ -331,7 +331,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandVote());
         cm.registerCommand(new CommandSend());
         cm.registerCommand(new CommandInterface());
-//        cm.registerCommand(new CommandTell());
         cm.registerCommand(new CommandISay());
         cm.registerCommand(new CommandModeration());
         cm.registerCommand(new CommandStaffChat());
@@ -450,7 +449,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
             cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu.", Arrays.asList("shop", "buy")));
-            cm.registerCommand(new CommandPatchNotes("patchnotes", "/<command>", "Shows patch for current build", Collections.singletonList("patch")));
+            cm.registerCommand(new CommandPatchNotes());
 
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Provides a player with the starter kit."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
@@ -478,7 +477,6 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         getServer().dispatchCommand(getServer().getConsoleSender(), "save-off");
-
         Bukkit.getServer().setWhitelist(false);
 
         // FIX PLAYERS //

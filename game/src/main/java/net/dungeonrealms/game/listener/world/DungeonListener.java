@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
  */
 public class DungeonListener implements Listener {
 	
-	//TODO: Mounts -> Database
 	//TODO: Mob nametag stuff.
 	// Lootchest particles better.
 	//TODO: Metadata

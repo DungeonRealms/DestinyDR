@@ -21,22 +21,11 @@ import java.util.List;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/9/2016
  */
-
 public class PatchTools implements GenericMechanic {
 
-    @Getter
-    private ItemStack patchBook;
-
-    private static PatchTools instance;
-
-    public static PatchTools getInstance() {
-        if (instance == null) {
-            instance = new PatchTools();
-        }
-        return instance;
-    }
+    @Getter private static ItemStack patchBook;
     
-    public int getSize(){
+    public static int getSize(){
     	try{
     		InputStream fileIn = DungeonRealms.getInstance().getResource("patchnotes.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(fileIn));
@@ -91,7 +80,7 @@ public class PatchTools implements GenericMechanic {
             e.printStackTrace();
         }
 
-        ItemStack patchBook = ItemManager.createItem(Material.WRITTEN_BOOK,
+        patchBook = ItemManager.createItem(Material.WRITTEN_BOOK,
                 ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
@@ -99,8 +88,6 @@ public class PatchTools implements GenericMechanic {
         bm.setPages(pages);
 
         patchBook.setItemMeta(bm);
-
-        this.patchBook = patchBook;
     }
 
 
