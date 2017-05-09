@@ -10,14 +10,14 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 
 public class StringUtils {
-	
+
 	public static <T extends Enum<T>> String serializeEnumList(List<T> values) {
 		String s = "";
 		for (T val : values)
 			s += val.name() + ",";
 		return s;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> List<T> deserializeEnumList(String s, Class<T> c) {
 		List<T> list = new ArrayList<>();
@@ -52,7 +52,7 @@ public class StringUtils {
         }
         return serializeList(string, delimeter);
     }
-    
+
     public static String serializeList(List<String> string, String delimeter){
         if(string == null || string.isEmpty())return null;
         StringBuilder builder = new StringBuilder();
@@ -62,7 +62,7 @@ public class StringUtils {
         String retr = builder.toString();
         if (retr.endsWith(delimeter))
             return retr.substring(0, retr.length() - delimeter.length());
-        
+
         return builder.toString();
     }
 

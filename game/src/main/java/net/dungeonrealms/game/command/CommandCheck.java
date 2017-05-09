@@ -34,7 +34,7 @@ public class CommandCheck extends BaseCommand {
 
 		if (!Rank.isGM(player))
 			return true;
-		
+
 
 		if (player.getInventory().getItemInMainHand() == null) {
 			player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
@@ -48,7 +48,7 @@ public class CommandCheck extends BaseCommand {
 		if (args.length == 1) {
 			if(args[0].equalsIgnoreCase("attribute")){
 				PersistentItem item = PersistentItem.constructItem(inHand);
-				
+
 				if (item instanceof ItemGear) {
 					ItemGear gear = (ItemGear)item;
 					player.sendMessage(ChatColor.GREEN + "" + gear.getAttributes().size() + " Item Attributes:");

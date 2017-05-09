@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * ShardInfo - Connection data for each shard.
- * 
+ *
  * Redone May 4th, 2017.
  * @author Kneesnap
  */
@@ -46,7 +46,7 @@ public enum ShardInfo implements Serializable {
     private String pseudoName;
     private ServerAddress address;
     private ShardType type;
-    
+
     ShardInfo(String shardId, ServerAddress address, ShardType type) {
     	this(shardId, shardId.toLowerCase().replaceAll("-", ""), address, type);
     }
@@ -72,10 +72,10 @@ public enum ShardInfo implements Serializable {
 
         return query.isPresent() ? query.get() : null;
     }
-    
+
     @AllArgsConstructor
     public enum ShardType {
-    	
+
     	DEFAULT("", ChatColor.YELLOW, Material.END_CRYSTAL),
     	YOUTUBE("YouTubers Only", ChatColor.RED, PlayerRank.YOUTUBER, Material.REDSTONE),
     	SUPPORT("Support Agents Only", ChatColor.BLUE, PlayerRank.SUPPORT, Material.PRISMARINE_SHARD),
@@ -85,25 +85,25 @@ public enum ShardInfo implements Serializable {
     	BRAZILLIAN("Brazilian Shard", ChatColor.YELLOW, PlayerRank.DEFAULT, Material.SAPLING, 3, new String[] {"The official language of this server is " + ChatColor.UNDERLINE + "Portuguese" + ChatColor.GRAY + "."}),
     	ROLEPLAY("Role-playing Shard", ChatColor.YELLOW, Material.BOOK),
     	EVENT("", ChatColor.YELLOW, Material.GOLD_INGOT, "Please be aware that data is not synchronized with the live game. ", "This shard is only accessible for a short amount of time.");
-    	
+
     	@Getter private String description;
     	@Getter private ChatColor color;
     	@Getter private PlayerRank minRank;
     	private Material icon;
     	private int meta;
     	@Getter private String[] info;
-    	
+
     	ShardType(String d, ChatColor c, Material m, String... info) {
     		this(d, c, PlayerRank.DEFAULT, m, info);
     	}
-    	
+
     	ShardType(String d, ChatColor c, PlayerRank rank, Material i, String... info) {
     		this(d, c, rank, i, 0, info);
     	}
-    	
+
     	public ItemStack getIcon(){
     		return new ItemStack(icon, (short)meta);
     	}
-    	
+
     }
 }

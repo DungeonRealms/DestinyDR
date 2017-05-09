@@ -18,9 +18,6 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/18/2016
- */
 
 public class ShardSelector extends AbstractMenu {
 

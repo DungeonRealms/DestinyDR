@@ -25,7 +25,7 @@ public class CommandGlobalChat extends BaseCommand {
             sender.sendMessage(ChatColor.RED + "Syntax: /gl <message>");
             return true;
         }
-        
+
         Chat.sendChatMessage((Player) sender, String.join(" ", args), true);
         return true;
     }

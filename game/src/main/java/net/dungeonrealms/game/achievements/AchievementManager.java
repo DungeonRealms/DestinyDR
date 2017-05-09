@@ -21,12 +21,12 @@ import java.util.HashMap;
 
 /**
  * AchievementManager - Manages Achievements.
- * 
+ *
  * Redone on May 7th, 2017.
  * @author Kneesnap
  */
 public class AchievementManager implements GenericMechanic, Listener {
-	
+
     private static HashMap<Player, Location> regionMap = new HashMap<>();
 
     @Override
@@ -59,19 +59,19 @@ public class AchievementManager implements GenericMechanic, Listener {
      * @since 1.0
      */
 	public static void handleLogin(Player player) {
-        
+
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null)
         	return;
-        
+
         if (wrapper.getPetsUnlocked().size() > 0)
             Achievements.giveAchievement(player, EnumAchievements.PET_COMPANION);
-        
+
         if (wrapper.getPetsUnlocked().size() >= 3)
         	Achievements.giveAchievement(player, EnumAchievements.ANIMAL_TAMER);
-        
+
         BankMechanics.checkBankAchievements(player);
-        
+
         if (wrapper.isInGuild())
             Achievements.giveAchievement(player, EnumAchievements.GUILD_MEMBER);
 

@@ -5,15 +5,14 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
-import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.Entity;
-
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -28,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class DonationEffects implements GenericMechanic {
 
-	@Getter
+    @Getter
     private static DonationEffects instance = new DonationEffects();
 
     //CLOSED BETA PAYERS = RED_DUST
@@ -50,67 +49,76 @@ public class DonationEffects implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-	@Override
+    @Override
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
-        
+
         SQLDatabaseAPI.getInstance().executeQuery("SELECT * FROM buffs LIMIT 1;", rs -> {
-        	try {
-        		if (rs.first()) {
-        			for (EnumBuff buffType : EnumBuff.values()) {
-                		this.buffMap.put(buffType, new LinkedList<Buff>());
-                		List<String> buffs = StringUtils.deserializeList(rs.getString(buffType.getDatabaseTag()), buffDelimeter);
-                		buffs.forEach(s -> {
-                			Buff buff = Buff.deserialize(s);
-                			buff.setType(buffType);
-                			buffMap.get(buffType).add(buff);
-                		});
-                	}
-        		}
-        		
-        		rs.close();
-        	} catch (Exception e) {
-        		e.printStackTrace();
-        	}
+            try {
+                if (rs.first()) {
+
+                    for (EnumBuff buffType : EnumBuff.values()) {
+                        LinkedList<Buff> buffs = new LinkedList<>();
+                        this.buffMap.put(buffType, buffs);
+                        Buff activeBuff = Buff.deserialize(rs.getString(buffType.getActiveColumn()));
+                        if (activeBuff != null)
+                            buffs.add(activeBuff);
+
+                        List<String> queuedBuffs = StringUtils.deserializeList(rs.getString(buffType.getQueuedColumn()), buffDelimeter);
+                        queuedBuffs.forEach(s -> {
+                            Buff buff = Buff.deserialize(s);
+                            buff.setType(buffType);
+                            buffs.add(buff);
+                        });
+                    }
+                }
+
+                rs.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
-        
+
         handleExpiry();
     }
-    
+
     private void handleExpiry() {
-    	boolean changed = false;
-    	for (EnumBuff buffType : EnumBuff.values()) {
-    		if (!hasBuff(buffType))
-    			continue;
-    		
-    		Buff buff = getBuff(buffType);
-    		
-    		//  Expired while offline D:
-    		if (System.currentTimeMillis() > buff.getTimeUntilExpiry()) {
-    			buff.deactivate();
-    			changed = true;
-    			continue;
-    		}
-    		
-    		//Set this buff to expire.
-    		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), buff::deactivate,
+        boolean changed = false;
+        for (EnumBuff buffType : EnumBuff.values()) {
+            if (!hasBuff(buffType))
+                continue;
+
+            Buff buff = getBuff(buffType);
+
+            //  Expired while offline D:
+            if (System.currentTimeMillis() > buff.getTimeUntilExpiry()) {
+                buff.deactivate();
+                changed = true;
+                continue;
+            }
+
+            //Set this buff to expire.
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), buff::deactivate,
                     (buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 50);
-    	}
-    	
-    	if (changed)
-    		saveBuffData();
+        }
+
+        if (changed)
+            saveBuffData();
     }
-    
+
     public void saveBuffData() {
-    	for (EnumBuff buffType : EnumBuff.values())
-    		updateLootBuff(buffType.getDatabaseTag(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
+        for (EnumBuff buffType : EnumBuff.values()) {
+            Buff current = getBuff(buffType);
+            updateLootBuff(buffType.getActiveColumn(), current != null ? current.serialize() : null);
+            updateLootBuff(buffType.getQueuedColumn(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
+        }
     }
-    
+
     private String serializeQueuedBuffs(Queue<? extends Buff> buffs) {
         if (buffs == null || buffs.isEmpty())
-        	return null;
+            return null;
         List<String> list = new ArrayList<>();
         buffs.forEach(b -> list.add(b.serialize()));
         return StringUtils.serializeList(list, buffDelimeter);
@@ -126,26 +134,27 @@ public class DonationEffects implements GenericMechanic {
     public void stopInvocation() {
         saveBuffData();
     }
-    
+
     /**
      * Gets all the queued buffs.
      */
     public Queue<Buff> getQueuedBuffs(EnumBuff type) {
-    	return buffMap.get(type);
+        return buffMap.get(type);
     }
-    
+
     /**
      * Gets the active buff of this type.
      */
     public Buff getBuff(EnumBuff buffType) {
-    	return hasBuff(buffType) ? buffMap.get(buffType).getFirst() : null;
+        return hasBuff(buffType) ? buffMap.get(buffType).getFirst() : null;
     }
-    
+
     /**
      * Returns if there is at least one buff of this type queued / active.
      */
     public boolean hasBuff(EnumBuff buffType) {
-    	return !buffMap.get(buffType).isEmpty();
+        LinkedList<Buff> buffs = buffMap.get(buffType);
+        return buffs != null && !buffs.isEmpty();
     }
 
     public void spawnPlayerParticleEffects(Location location) {
@@ -170,32 +179,32 @@ public class DonationEffects implements GenericMechanic {
     }
 
     public void doLogin(Player p) {
-    	for (EnumBuff buffType : EnumBuff.values()) {
-    		if (!hasBuff(buffType))
-    			continue;
-    		Buff buff = getBuff(buffType);
-    		int minutesLeft = (int) (((buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
-    		
-    		p.sendMessage("");
-    		p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + buff.getActivatingPlayer() + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + buff.getBonusAmount() + "% "
-    				+ ChatColor.stripColor(buff.getType().getDescription()) + ChatColor.GOLD + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
-    		p.sendMessage("");
-    	}
+        for (EnumBuff buffType : EnumBuff.values()) {
+            if (!hasBuff(buffType))
+                continue;
+            Buff buff = getBuff(buffType);
+            int minutesLeft = (int) (((buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
+
+            p.sendMessage("");
+            p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + buff.getActivatingPlayer() + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + buff.getBonusAmount() + "% "
+                    + ChatColor.stripColor(buff.getType().getDescription()) + ChatColor.GOLD + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
+            p.sendMessage("");
+        }
     }
-    
+
     public void activateLocalBuff(Buff buff) {
-    	boolean existingBuff = hasBuff(buff.getType());
-    	this.buffMap.get(buff.getType()).add(buff);
-    	saveBuffData();
-    	
-    	if (existingBuff) {
-    		Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + buff.getActivatingPlayer() + ChatColor
+        boolean existingBuff = hasBuff(buff.getType());
+        this.buffMap.get(buff.getType()).add(buff);
+        saveBuffData();
+
+        if (existingBuff) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + buff.getActivatingPlayer() + ChatColor
                     .GOLD + " has queued a " + buff.getType().getItemName() + " set for activation after the current one expires.");
             Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
-    		return;
-    	}
-    	
-    	buff.activate();
+            return;
+        }
+
+        buff.activate();
     }
 
     private void spawnPlayerParticleEffects() {
@@ -258,18 +267,18 @@ public class DonationEffects implements GenericMechanic {
     }
 
     public boolean removeECashFromPlayer(Player player, int amount) {
-    	if (amount <= 0)
+        if (amount <= 0)
             return true;
-        
+
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null) return false;
 
         int playerEcash = wrapper.getEcash();
-        if (playerEcash <= 0) 
+        if (playerEcash <= 0)
             return false;
-        
+
         if (playerEcash - amount >= 0) {
-        	wrapper.getPlayerGameStats().addStat(StatColumn.ECASH_SPENT, amount);
+            wrapper.getPlayerGameStats().addStat(StatColumn.ECASH_SPENT, amount);
 
             wrapper.setEcash(wrapper.getEcash() - amount);
 //            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);

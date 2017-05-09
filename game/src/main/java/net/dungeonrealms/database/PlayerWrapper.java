@@ -123,7 +123,7 @@ public class PlayerWrapper {
 
     @Getter @Setter
     private String lastIP;
-    
+
     @Getter @Setter
     private TeleportLocation hearthstone;
 
@@ -202,14 +202,14 @@ public class PlayerWrapper {
     @Getter
     private Storage pendingBankStorage;
 
-    
+
     // Non database data:
     @Setter private Player player;
-    
+
     @Getter private AttributeList attributes = new AttributeList();
     private String currentWeapon;
     @Getter private boolean attributesLoaded;
-    
+
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
     }
@@ -320,10 +320,10 @@ public class PlayerWrapper {
                 this.lastIP = result.getString("ip_addresses.ip_address");
                 this.lastTimeIPUsed = result.getLong("ip_addresses.last_used");
                 this.hearthstone = TeleportLocation.valueOf(result.getString("characters.currentHearthStone"));
-                
+
                 this.alignmentTime = result.getInt("characters.alignmentTime");
                 this.alignment = EnumPlayerAlignments.valueOf(result.getString("characters.alignment"));
-                
+
                 this.currencyTab = new CurrencyTab(this.uuid).deserializeCurrencyTab(result.getString("users.currencyTab"));
                 this.rankExpiration = result.getInt("ranks.expiration");
 
@@ -340,7 +340,7 @@ public class PlayerWrapper {
 
                 //Unlockables.
                 this.loadUnlockables(result);
-                
+
                 for (ShardTier tier : ShardTier.values())
                 	this.keyShards.put(tier, result.getInt(tier.getDBField()));
 
@@ -368,19 +368,19 @@ public class PlayerWrapper {
 
         SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 1, DungeonRealms.getShard().getPseudoName() != null ? "'" + DungeonRealms.getShard().getPseudoName() + "'" : null, accountID);
     }
-    
+
     public GuildWrapper getGuild() {
     	return getGuildID() != 0 ? GuildDatabase.getAPI().getGuildWrapper(getGuildID()) : null;
     }
-    
+
     public boolean isInGuild() {
     	return getGuild() != null;
     }
-    
+
     public int getPortalShards(ShardTier tier) {
     	return keyShards.containsKey(tier) ? keyShards.get(tier) : 0;
     }
-    
+
     public void setPortalShards(ShardTier tier, int amt) {
     	keyShards.put(tier, amt);
     }
@@ -389,23 +389,23 @@ public class PlayerWrapper {
         return Bukkit.getPlayer(this.uuid);
     }
 
-    
+
     public void setGems(int gems) {
     	if (gems < 0 || gems > 10000000) {
     		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
     		gems = 0;
     	}
-    	
+
     	if (gems != getGems())
     		SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, getCharacterID(), getGems());
     	this.gems = gems;
     }
-    
+
     public void addGems(int gems) {
     	assert gems >= 0;
     	setGems(getGems() + gems);
     }
-    
+
     public void subtractGems(int gems) {
     	assert gems >= 0;
     	setGems(getGems() - gems);
@@ -421,7 +421,7 @@ public class PlayerWrapper {
     	this.mountSkins = StringUtils.deserializeEnumList(result.getString("users.mountSkin"), EnumMountSkins.class);
     	this.particles = StringUtils.deserializeEnumList("users.particles", ParticleEffect.class);
     	this.trails = StringUtils.deserializeEnumList("users.trails", ParticleEffect.class);
-    	
+
         List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
         if (list != null) {
             for (String str : list) {
@@ -633,7 +633,7 @@ public class PlayerWrapper {
 
         String bankString = bankStorage != null && bankStorage.inv != null ? ItemSerialization.toString(bankStorage.inv) : null;
 
-        
+
         Inventory mule = MountUtils.getInventory(player);
         if (mule == null && player == null)
             mule = pendingMuleInventory;
@@ -643,57 +643,57 @@ public class PlayerWrapper {
 
 
         String locationString = player == null ? storedLocationString : getLocationString(player);
-        
+
         List<Object> data = Arrays.asList(getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(), player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
                 getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(),
                 getQuestData(), collectionBinString, player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
                 isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime());
-        
+
         for (ShardTier tier : ShardTier.values())
         	data.add(getPortalShards(tier));
-        
+
         data.add(getCharacterID());
         return getQuery(QueryType.CHARACTER_UPDATE, data);
     }
-    
-    public void runQuery(QueryType t, Object... args) {	
+
+    public void runQuery(QueryType t, Object... args) {
     	SQLDatabaseAPI.getInstance().addQuery(getQuery(t, args));
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	public String getQuery(QueryType t, Object... args) {
     	for (int i = 0; i < args.length; i++) {
     		Object obj = args[i];
-    		
+
     		if (obj instanceof Boolean)
     			obj = ((Boolean)obj) ? 1 : 0;
-    		
+
     		if (obj instanceof List<?>) {
     			List<?> list = (List<?>) obj;
-    			
+
     			if (list.isEmpty()) {
     				obj = "";
     			} else {
     				Object example = list.get(0);
-    			
+
     				if (example instanceof Enum)
     					obj = StringUtils.serializeEnumList((List<Enum>) list);
     			}
     		}
-    		
+
     		if (obj instanceof Enum)
     			obj = ((Enum<?>)obj).name();
-    		
+
     		if (obj instanceof Inventory)
     			obj = ItemSerialization.toString((Inventory) obj);
-    		
+
     		if (obj instanceof String)
     			obj = "'" + StringEscapeUtils.escapeSql((String)obj) + "'";
-    		
+
     		args[i] = obj;
     	}
-    	
+
     	return t.getQuery(args);
     }
 
@@ -706,11 +706,11 @@ public class PlayerWrapper {
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
 		}
     }
-    
+
     public PlayerRank getRank() {
     	return Rank.getPlayerRank(this.uuid);
     }
-    
+
     public void sendDebug(String str) {
     	if (getToggles().getState(Toggles.DEBUG)) {
     		getPlayer().sendMessage(str);
@@ -720,9 +720,9 @@ public class PlayerWrapper {
 
     private String getUsersUpdateQuery(Boolean isOnline) {
         if (isOnline == null) isOnline = isPlaying();
-        
+
         String currencyTab = getCurrencyTab() != null ? getCurrencyTab().getSerializedScrapTab() : null;
-        
+
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
         		getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
         		currencyTab, getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getTrails(), getAccountID());
@@ -786,7 +786,7 @@ public class PlayerWrapper {
     private boolean hasFriendData() {
         return !friendsList.isEmpty() || !ignoredFriends.isEmpty() || !pendingFriends.isEmpty();
     }
-    
+
     public static PlayerWrapper getWrapper(Player get) {
     	return getPlayerWrapper(get);
     }
@@ -823,7 +823,7 @@ public class PlayerWrapper {
         Bukkit.getLogger().info("Loading " + uuid.toString() + "'s offline wrapper.");
         wrapper.loadData(true, hadToLoadCallback);
     }
-    
+
     public boolean isOnline() {
     	Player p = getPlayer();
     	return p != null && p.isOnline();
@@ -887,7 +887,7 @@ public class PlayerWrapper {
             pendingArmor = ItemSerialization.fromString(pendingArmorString, 9);
         }
     }
-    
+
     /**
      * Update the held weapon stats, if changed.
      */
@@ -899,7 +899,7 @@ public class PlayerWrapper {
     	if(epoch == null || !epoch.equals(this.currentWeapon))
     		calculateAllAttributes();
     }
-    
+
     /**
      * Calculate all stat attributes from gear.
      */
@@ -907,12 +907,12 @@ public class PlayerWrapper {
     	if (!isOnline())
     		return;
     	getAttributes().clear(); // Reset stats.
-    	
+
     	//  CALCULATE FROM ITEMS  //
         getAttributes().addStats(getPlayer().getInventory().getItemInMainHand());
         for (ItemStack armor : getPlayer().getInventory().getArmorContents())
         	getAttributes().addStats(armor);
-        
+
         this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(getPlayer().getEquipment().getItemInMainHand());
 
         for(Stats stat : Stats.values())
@@ -927,7 +927,7 @@ public class PlayerWrapper {
         // so energy regen doesn't start before attributes have been loaded
         this.attributesLoaded = true;
     }
-    
+
     public void setAlignment(EnumPlayerAlignments alignmentTo) {
         if (alignmentTo == null)
             alignmentTo = EnumPlayerAlignments.LAWFUL;
@@ -940,27 +940,27 @@ public class PlayerWrapper {
         }
 
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
-        
+
         if (getAlignment() != alignmentTo) {
         	ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getColor(), getLevel());
         	this.alignment = alignmentTo;
         }
     }
-    
+
     public void setActiveTrail(ParticleEffect e) {
     	this.activeTrail = e;
-    	
+
     	if (e == null) {
     		disableTrail();
     	} else {
     		DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(getPlayer(), e);
     	}
     }
-    
+
     public void disableTrail() {
     	DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(getPlayer());
     }
-    
+
     /**
      * Gets our display name.
      * Contains our rank and our username, and alignment.
@@ -970,26 +970,26 @@ public class PlayerWrapper {
     	String alignment = rank.isAtLeast(PlayerRank.TRIALGM) ? "" : getAlignment().getAlignmentColor() + "";
     	return rank.getPrefix() + alignment + (isOnline() ? getPlayer().getName() : getPlayerName());
     }
-    
+
     /**
      * Gets the chat prefixed name.
      */
     public String getChatName() {
     	return getChatName(true);
     }
-    
+
     /**
      * Gets our prefixed chat name.
      * If false is supplied, the guild and channel tags will be skipped.
      */
     public String getChatName(boolean deep) {
     	String name = getDisplayName();
-    	
+
     	if (deep) {
     		if (isInGuild())
     			name = getGuild().getChatPrefix() + name;
     	}
-    	
+
     	return name;
     }
 
@@ -1022,7 +1022,7 @@ public class PlayerWrapper {
             itemsSaved++;
 
         toSave.setItem(4, player.getInventory().getItemInOffHand());
-        
+
         return itemsSaved == 0 ? null : ItemSerialization.toString(toSave);
     }
 
@@ -1133,7 +1133,7 @@ public class PlayerWrapper {
         int level = getLevel();
         if (level >= 100 || experienceToAdd <= 0)
         	return;
-        
+
         int experience = getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty)
@@ -1149,13 +1149,13 @@ public class PlayerWrapper {
 
         int futureExperience = experience + experienceToAdd + expBonus;
         int levelBuffBonus = 0;
-        
+
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LEVEL)) {
         	Buff levelBuff = DonationEffects.getInstance().getBuff(EnumBuff.LEVEL);
             levelBuffBonus = Math.round(experienceToAdd * (levelBuff.getBonusAmount() / 100f));
             experienceToAdd += levelBuffBonus;
         }
-        
+
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
             int continuedExperience = futureExperience - xpNeeded;
@@ -1167,7 +1167,7 @@ public class PlayerWrapper {
             	sendDebug(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
             	if (expBonus > 0)
             		getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + getRank().getPrefix() + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-            	
+
             	if (levelBuffBonus > 0)
             		getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
             				.toString() + ChatColor.BOLD + "XP BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
@@ -1177,11 +1177,11 @@ public class PlayerWrapper {
             }
         }
 	}
-	
+
 	public int getEXPNeeded() {
 		return getEXPNeeded(getLevel());
 	}
-	
+
 	public int getEXPNeeded(int level) {
         if (level >= 101) {
             return 0;
@@ -1196,10 +1196,10 @@ public class PlayerWrapper {
         } else if (level >= 80) {
             difficulty = 2.6;
         }
-        
+
         return (int) ((100 * Math.pow(level, 2)) * difficulty + 500);
     }
-	
+
 	/**
      * Updates a player's level. Can be called for a natural level up or for
      * an artificial change of a player's level via /set level or other means.
@@ -1234,7 +1234,7 @@ public class PlayerWrapper {
             Utils.sendCenteredMessage(getPlayer(), ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + getPlayerStats().getFreePoints());
             Utils.sendCenteredMessage(getPlayer(), ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             getPlayer().sendMessage("");
-            
+
         } else { // level was set
             setLevel(newLevel);
             Utils.sendCenteredMessage(getPlayer(), ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
@@ -1245,7 +1245,7 @@ public class PlayerWrapper {
 
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), getAlignment().getAlignmentColor(), newLevel);
         }
-        
+
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())
     		if (ael.getLevelRequirement() == newLevel)
     			Achievements.giveAchievement(player, ael.getAchievement());

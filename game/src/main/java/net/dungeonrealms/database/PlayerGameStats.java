@@ -23,7 +23,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
     public PlayerGameStats(int id){
         this.characterID = id;
     }
-    
+
     public int getStat(StatColumn s) {
     	return statMap.containsKey(s) ? statMap.get(s) : 0;
     }
@@ -34,30 +34,30 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         for (StatColumn s : StatColumn.values())
         	setStat(s, resultSet.getInt("statistics." + s.getColumnName()));
     }
-    
+
     public void addStat(StatColumn s) {
     	addStat(s, 1);
     }
-    
+
     public void addStat(StatColumn s, int amt) {
     	setStat(s, getStat(s) + amt);
     }
-    
+
     public void setStat(StatColumn s, int val) {
     	statMap.put(s, val);
     }
-    
+
     public int getTotalMobKills(){
     	return getStat(StatColumn.T1_MOB_KILLS) + getStat(StatColumn.T2_MOB_KILLS) + getStat(StatColumn.T3_MOB_KILLS)
     			+ getStat(StatColumn.T4_MOB_KILLS) + getStat(StatColumn.T5_MOB_KILLS);
     }
-    
+
     public String getUpdateStatement(){
     	String sql = "UPDATE statistics SET ";
-    	
+
     	for (StatColumn s : StatColumn.values())
     		sql += (s == StatColumn.values()[0] ? "" : ", ") + s.getColumnName() + " = '" + getStat(s) + "'";
-    	
+
     	return sql + " WHERE character_id = '" + characterID + "';";
     }
 
@@ -74,7 +74,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         LOOT_OPENED("loot_opened", "loot"),
         ORE_MINED("ore_mined", "mined"),
         FISH_CAUGHT("fish_caught", "fished"),
-        
+
         LAWFUL_KILLS("lawful_kills"),
         UNLAWFUL_KILLS("unlawful_kills"),
         BOSS_KILLS_MAYEL("boss_kills_mayel"),
@@ -88,18 +88,18 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         ECASH_SPENT("ecash_spent"),
         GEMS_EARNED("gems_earned"),
         GEMS_SPENT("gems_spent");
-        
+
         @Getter private String columnName;
         private String btlpVariableName;
-        
+
         StatColumn(String sqlName) {
         	this(sqlName, null);
         }
-        
+
         public Variable getVariable() {
         	if (btlpVariableName == null)
         		return null;
-        	
+
         	final StatColumn stat = this;
         	return new Variable(btlpVariableName) {
 				@Override

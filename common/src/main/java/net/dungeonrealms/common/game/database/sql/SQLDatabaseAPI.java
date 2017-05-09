@@ -170,7 +170,7 @@ public class SQLDatabaseAPI {
 
 
     }
-    
+
     public void addQuery(String query) {
     	if (query != null)
     		this.sqlQueries.add(query);

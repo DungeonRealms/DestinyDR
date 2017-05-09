@@ -24,7 +24,7 @@ public class CommandLocalChat extends BaseCommand {
             sender.sendMessage(ChatColor.RED + "/l <message>");
             return true;
         }
-        
+
         return true;
     }
 }

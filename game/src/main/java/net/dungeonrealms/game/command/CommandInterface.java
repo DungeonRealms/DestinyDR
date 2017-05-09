@@ -36,7 +36,7 @@ public class CommandInterface extends BaseCommand {
         			return true;
         		}
         	}
-        	
+
             switch (args[0].toLowerCase()) {
                 case "bank":
                     Storage storage = BankMechanics.getStorage(player.getUniqueId());

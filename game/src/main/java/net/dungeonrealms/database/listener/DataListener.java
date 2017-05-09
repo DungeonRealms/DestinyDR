@@ -76,12 +76,12 @@ public class DataListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         onDC(event.getPlayer());
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         onDC(event.getPlayer());
     }
-    
+
     private void onDC(Player player) {
     	PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
         if(wrapper == null)

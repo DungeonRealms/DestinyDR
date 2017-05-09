@@ -194,7 +194,7 @@ public class DungeonRealms extends JavaPlugin {
             Utils.log.info("IOException in shard config!");
         }
         shard = ShardInfo.getByShardID(shardid);
-        
+
         BungeeUtils.setPlugin(this);
         BungeeUtils.fetchServers();
 
@@ -540,27 +540,27 @@ public class DungeonRealms extends JavaPlugin {
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupPlayers, 0L, 12000L);
     }
-    
+
     private static boolean isShard(ShardType type) {
     	return shard.getType() == type;
     }
-    
+
     public static boolean isSupport() {
     	return isShard(ShardType.SUPPORT) ;
     }
-    
+
     public static boolean isMaster() {
     	return isShard(ShardType.DEVELOPMENT);
     }
-    
+
     public static boolean isYoutube() {
     	return isShard(ShardType.YOUTUBE);
     }
-    
+
     public static boolean isBeta() {
     	return isShard(ShardType.BETA);
     }
-    
+
     public static boolean isEvent() {
     	return isShard(ShardType.EVENT);
     }

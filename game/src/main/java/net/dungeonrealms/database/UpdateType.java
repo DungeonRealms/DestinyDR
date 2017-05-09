@@ -24,11 +24,11 @@ public enum UpdateType {
     private String fieldName;
     private String columnName;
     private String selectStatement;
-    
+
     UpdateType(String field) {
     	this(field, null, null); // Only used for special cases.
     }
-    
+
     UpdateType(String field, String sql) {
     	this(field, field, sql);
     }

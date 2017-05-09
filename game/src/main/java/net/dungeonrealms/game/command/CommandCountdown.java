@@ -44,7 +44,7 @@ public class CommandCountdown extends BaseCommand {
 			int length = Integer.parseInt(args[0]);
 			int interval = Integer.parseInt(args[1]);
 			boolean restart = Boolean.parseBoolean(args[2]);
-			
+
 			//  GETS THE BROADCAST MESSAGE  //
 			String message = "";
 			for(int i = 3; i < args.length; i++)

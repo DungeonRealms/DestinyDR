@@ -252,7 +252,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
         nbtItem.setString("u", createEpoch(item));
         return nbtItem.getItem();
     }
-    
+
     public static String createEpoch(ItemStack item) {
     	return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(99999) + "R";
     }

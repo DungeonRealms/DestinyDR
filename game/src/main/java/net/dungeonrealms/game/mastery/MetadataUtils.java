@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.mastery;
 
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -12,7 +10,6 @@ import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +17,8 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
+
+import java.util.UUID;
 
 /**
  * MetadataUtils - Registers basic entity metadata.
@@ -176,13 +175,12 @@ public class MetadataUtils {
     	Metadata.ENTITY_TYPE.set(entity, type);
     }
 
-    /**
-     * Sets projectile attributes from the weapon it was shot from.
-     */
+
     public static void registerProjectileMetadata(ItemGear dataFrom, Projectile projectile) {
     	registerProjectileMetadata(dataFrom.getAttributes(), dataFrom.getTier().getId(), projectile);
     }
-    
+
+    //why this so cancer
     /**
      * Saves attributes into projectile metadata.
      */

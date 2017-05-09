@@ -33,20 +33,20 @@ import java.util.stream.Collectors;
  * Created by Nick on 11/9/2015.
  */
 public class Affair implements GenericMechanic {
-	
+
 	@Getter private static Affair instance = new Affair();
 	@Getter private static List<UUID> partyChat = new ArrayList<>();
 	@Getter private static List<Party> parties = new CopyOnWriteArrayList<>();
 	@Getter private static Map<Player, Party> invitations = new ConcurrentHashMap<>();
-	
+
 	@Override
 	public EnumPriority startPriority() {
 		return EnumPriority.CATHOLICS;
 	}
-	
+
 	@Override
 	public void startInitialization() {
-		
+
 		// Update the party scoreboard.
 		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> getParties().forEach(Party::updateScoreboard), 0, 20L);
 	}
@@ -56,10 +56,10 @@ public class Affair implements GenericMechanic {
     		player.sendMessage(ChatColor.RED + "You are not in a party.");
     		return;
     	}
-    	
+
     	getParty(player).sendChat(player, message);
     }
-    
+
     public static boolean isPartyChat(Player player) {
     	return getPartyChat().contains(player.getUniqueId());
     }
@@ -78,7 +78,7 @@ public class Affair implements GenericMechanic {
     public static boolean areInSameParty(Player player1, Player player2) {
         return isInParty(player1) && isInParty(player2) && getParty(player1) == getParty(player2);
     }
-    
+
     public static Party getParty(Player player) {
     	for (Party party : getParties())
     		if (party.isMember(player))
@@ -95,7 +95,7 @@ public class Affair implements GenericMechanic {
     		player.sendMessage(ChatColor.RED + "You may not create a party on this shard.");
     		return;
     	}
-    	
+
     	getParties().add(new Party(player));
         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Your party has been created!");
         player.sendMessage(ChatColor.GRAY + "To invite more people to join your party, " + ChatColor.UNDERLINE
@@ -103,7 +103,7 @@ public class Affair implements GenericMechanic {
         		+ ChatColor.GRAY + ". To kick, use " + ChatColor.BOLD + "/pkick" + ChatColor.GRAY
         		+ ". To chat with party, use " + ChatColor.BOLD + "/p" + ChatColor.GRAY + ". To change the loot profile, use "
         		+ ChatColor.BOLD + "/ploot");
-        
+
         Achievements.giveAchievement(player, EnumAchievements.PARTY_MAKER);
     }
 
