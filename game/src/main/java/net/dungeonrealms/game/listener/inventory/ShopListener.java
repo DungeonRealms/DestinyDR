@@ -460,7 +460,7 @@ public class ShopListener implements Listener {
         shop.viewCount = shop.viewCount + 1;
         shop.uniqueViewers.add(event.getPlayer().getName());
         shop.hologram.removeLine(1);
-        shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " â�¤");
+        shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + Shop.HEART);
     }
     
     public ItemStack removePrice(ItemStack item) {

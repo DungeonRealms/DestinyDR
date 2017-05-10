@@ -49,13 +49,19 @@ public class CommandScrapTabSee extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "No PlayerWrapper found for " + name + " (" + uuid + ")");
                         return;
                     }
-
+                    if(wrapper.getCurrencyTab() == null) {
+                        player.sendMessage(ChatColor.RED + "Unlocked Access: false");
+                        return;
+                    }
+                    player.sendMessage(ChatColor.RED + "Unlocked Access: " + (wrapper.getCurrencyTab() != null ? wrapper.getCurrencyTab().hasAccess : "false"));
+                    if(!wrapper.getCurrencyTab().hasAccess) {
+                        return;
+                    }
                     for (ScrapTier tier : ScrapTier.values()) {
-                        Integer amount = wrapper.getCurrencyTab().getScrapCount(tier);
+                        Integer amount = wrapper.getCurrencyTab() == null ? -1 : wrapper.getCurrencyTab().getScrapCount(tier);
 
                         player.sendMessage(tier.getChatColor() + tier.getName() + " Scrap: " + (amount == -1 ? "Not Loaded" : amount));
                     }
-                    player.sendMessage(ChatColor.RED + "Unlocked Access: " + wrapper.getCurrencyTab().hasAccess);
                 });
             });
         }

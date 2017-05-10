@@ -148,7 +148,8 @@ public class BankListener implements Listener {
                     }
                 } else if (evt.getRawSlot() == 1) {
                     //  SCRAP TAB  //
-                    CurrencyTab tab = BankMechanics.getCurrencyTab(player.getUniqueId());
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player.getUniqueId());
+                    CurrencyTab tab = wrapper.getCurrencyTab();
                     if (tab == null || !(tab.hasAccess || Rank.isTrialGM(player))) {
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
                         player.sendMessage(ChatColor.RED + "You have not unlocked the Scrap Tab!");
@@ -497,8 +498,8 @@ public class BankListener implements Listener {
 
         if (CurrencyTab.isEnabled()) {
             List<String> currencyLore = Lists.newArrayList();
-
-            CurrencyTab tab = BankMechanics.getCurrencyTab(uuid);
+            PlayerWrapper pWrapper = PlayerWrapper.getPlayerWrapper(uuid);
+            CurrencyTab tab = pWrapper.getCurrencyTab();
             if (tab != null && tab.hasAccess) {
                 currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
                 currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");

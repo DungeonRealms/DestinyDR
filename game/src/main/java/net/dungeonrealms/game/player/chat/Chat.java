@@ -85,7 +85,7 @@ public class Chat {
     }
 
     public static void promptPlayerConfirmation(Player player, Runnable confirm, Runnable cancel) {
-        listenForMessage(player, (event) -> {
+        listenForMessage(player, event -> {
             String message = event.getMessage();
             if (message.equalsIgnoreCase("confirm") || message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y") || message.equalsIgnoreCase("accept")) {
                 confirm.run();
@@ -109,6 +109,7 @@ public class Chat {
      */
     public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback) {
         Chat.listenForMessage(player, (evt) -> {
+            evt.setCancelled(true);
         	int num;
 
             if (evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")) {
@@ -215,10 +216,10 @@ public class Chat {
     public void doMessageChatListener(AsyncPlayerChatEvent event) {
         Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
         if (messageListener != null) {
+            event.setCancelled(true);
             GameAPI.runAsSpectators(event.getPlayer(), (player) -> player.sendMessage(ChatColor.RED + event.getPlayer().getName() + " answered a chat prompt> " + event.getMessage()));
             messageListener.accept(event);
             orElseListeners.remove(event.getPlayer());
-            event.setCancelled(true);
             return;
         }
     }

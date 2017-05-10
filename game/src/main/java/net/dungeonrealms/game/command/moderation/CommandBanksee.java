@@ -69,8 +69,11 @@ public class CommandBanksee extends BaseCommand {
 
                     Storage storage = BankMechanics.getStorage(uuid);
                     if(storage == null) {
-                        sender.sendMessage(ChatColor.RED + "Something went wrong while loading the bank.");
-                        return;
+                        storage = wrapper.getPendingBankStorage();
+                        if(storage == null) {
+                            sender.sendMessage(ChatColor.RED + "Something went wrong while loading the bank.");
+                            return;
+                        }
                     }
                     sender.openInventory(storage.inv);
                     offline_bank_watchers.put(sender.getUniqueId(), uuid);

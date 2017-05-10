@@ -11,9 +11,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 
-/**
- * Created by Kieran Quigley (Proxying) on 14-Jun-16.
- */
 public class StaffZombie extends DRZombie implements IRangedEntity {
 
     public StaffZombie(World world) {

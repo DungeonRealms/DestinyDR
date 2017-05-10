@@ -4,9 +4,6 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by Chase on Nov 19, 2015
- */
 public class EnchantGlow extends EnchantmentWrapper {
 
 	public EnchantGlow(int id) {

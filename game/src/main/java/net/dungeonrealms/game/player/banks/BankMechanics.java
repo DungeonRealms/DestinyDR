@@ -23,16 +23,8 @@ import org.bukkit.inventory.ItemStack;
 public class BankMechanics {
 	
     public static HashMap<UUID, Storage> storage = new HashMap<>();
-    public static Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
     public static HashMap<String, ItemStack> shopPricing = new HashMap<>();
 
-    /**
-     * Gets a player's scrap tab.
-     */
-    public static CurrencyTab getCurrencyTab(UUID uuid) {
-    	return currencyTab.get(uuid);
-    }
-    
     /**
      * Gets the amount of gems the player has accumulated in their inventory.
      */
@@ -106,8 +98,4 @@ public class BankMechanics {
     public static void upgradeStorage(UUID uniqueId) {
         storage.get(uniqueId).upgrade();
     }
-
-	public static void setCurrencyTab(UUID uniqueId, CurrencyTab tab) {
-		currencyTab.put(uniqueId, tab);
-	}
 }
