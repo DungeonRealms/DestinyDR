@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
+
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -20,6 +21,7 @@ import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -38,6 +40,7 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -78,9 +81,10 @@ public class MainListener implements Listener {
     private Set<UUID> kickedIgnore = new HashSet<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
+    public void onCommand(PlayerCommandPreprocessEvent event) {
         GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
-        if (event.getPlayer().hasMetadata("sharding")) {
+        
+        if (Metadata.SHARDING.has(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
         }
@@ -276,15 +280,10 @@ public class MainListener implements Listener {
 
     private void onDisconnect(Player player, boolean performChecks) {
 
-        boolean sharding = player.hasMetadata("sharding");
-        if (player.hasMetadata("sharding")) {
-            player.removeMetadata("sharding", DungeonRealms.getInstance());
-        }
-
         if (GameAPI.IGNORE_QUIT_EVENT.contains(player.getUniqueId())) {
             //Still remove this shit..
             GameAPI.IGNORE_QUIT_EVENT.remove(player.getUniqueId());
-            if (!sharding) {
+            if (!Metadata.SHARDING.has(player)) {
                 Utils.log.info("Ignored quit event for player " + player.getName());
                 return;
             }
@@ -622,10 +621,9 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding"))
+        if (Metadata.SHARDING.has(event.getWhoClicked()))
             event.setCancelled(true);
     }
 
@@ -633,7 +631,7 @@ public class MainListener implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(player);
-        if (player.hasMetadata("sharding") || !gp.isAbleToOpenInventory() || gp.isSharding()) {
+        if (Metadata.SHARDING.has(player) || !gp.isAbleToOpenInventory() || gp.isSharding()) {
             if (!Rank.isTrialGM(player)) {
                 Bukkit.getLogger().info("Cancelling " + player.getName() + " from opening inventory");
                 event.setCancelled(true);

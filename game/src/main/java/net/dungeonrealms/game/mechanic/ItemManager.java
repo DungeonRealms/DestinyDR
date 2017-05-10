@@ -50,6 +50,7 @@ public class ItemManager {
 
     /**
      * Adds a starter kit to the player.
+     * TODO: Make this less bad.
      *
      * @param player
      * @param isNew
@@ -93,7 +94,6 @@ public class ItemManager {
             player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
 
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
-        HealthHandler.updatePlayerHP(player);
     }
 
 

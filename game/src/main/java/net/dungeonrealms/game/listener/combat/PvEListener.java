@@ -11,6 +11,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -76,17 +77,13 @@ public class PvEListener implements Listener {
         	return;
         
         //  ONLY HANDLE MOB ATTACKS  //
-        if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("type"))
-            	return;
-        } else if (EnumEntityType.BUFF.isType(event.getEntity())){
+        if (!(event.getEntity() instanceof LivingEntity && Metadata.ENTITY_TYPE.has(event.getEntity())))
             return;
-        }
 
         event.setDamage(0);
 
         if (DamageAPI.isInvulnerable(receiver)) {
-            if (receiver.hasMetadata("boss"))
+            if (EntityAPI.isBoss(receiver))
             	((DungeonBoss)EntityAPI.getMonster(receiver)).onBossAttacked(damager);
             event.setCancelled(true);
             damager.updateInventory();
@@ -98,7 +95,7 @@ public class PvEListener implements Listener {
         ItemStack held = damager.getEquipment().getItemInMainHand();
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(held));
         
-        if (!receiver.hasMetadata("boss"))
+        if (!EntityAPI.isBoss(receiver))
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
         
         if (!ItemWeapon.isWeapon(held)) {
@@ -130,11 +127,10 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
-        if (!event.getEntity().hasMetadata("type")) return;
-        if (!event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) return;
-        if (event.getEntity().hasMetadata("uuid") || event.getEntity().hasMetadata("boss")) return;
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-        LivingEntity monster = event.getEntity();
+    	LivingEntity monster = event.getEntity();
+    	if (!EnumEntityType.HOSTILE_MOB.isType(monster) || EntityAPI.isBoss(monster)) //Return if you have uuid too.
+    		return;
+        
         Player killer = monster.getKiller();
         Player highestDamage = null;
         if (HealthHandler.getMonsterTrackers().containsKey(monster.getUniqueId()))
@@ -212,14 +208,16 @@ public class PvEListener implements Listener {
     }
 
     private static void checkPowerMove(EntityDamageByEntityEvent event, LivingEntity receiver) {
-        if (!receiver.hasMetadata("tier")) return;
+    	if (!EntityAPI.isMonster(receiver))
+    		return;
+    	
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
             return;
 
-        int mobTier = receiver.getMetadata("tier").get(0).asInt();
+        int mobTier = EntityAPI.getTier(receiver);
         Random rand = new Random();
         int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
-        if (receiver.hasMetadata("elite")) {
+        if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                 PowerMove.doPowerMove("whirlwind", receiver, null);

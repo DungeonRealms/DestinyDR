@@ -65,12 +65,6 @@ public interface DRMonster {
     	setTier(tier);
     	setGear();
     	setSkullTexture();
-    	
-    	//  SET CUSTOM NAME  //
-    	String customName = getEnum().getPrefix() + " " + getEnum().getName() + " " + getEnum().getSuffix() + " ";
-        getNMS().setCustomName(customName);
-        Metadata.CUSTOM_NAME.set(getBukkit(), customName);
-        getBukkit().setCustomNameVisible(true);
         
         //  SET NMS DATA  //
         setupNMS();
@@ -257,7 +251,7 @@ public interface DRMonster {
     }
     
     default void calculateAttributes() {
-    	GameAPI.calculateAllAttributes(getBukkit());
+    	EntityAPI.calculateAttributes(this);
     }
     
     default int getHP() {

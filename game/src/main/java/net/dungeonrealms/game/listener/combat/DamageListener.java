@@ -22,6 +22,7 @@ import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -97,12 +98,8 @@ public class DamageListener implements Listener {
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
         
         //Armor Stand Spawner check.
-        if (event.getEntity().getType() != EntityType.ARMOR_STAND) return;
-        if (!event.getEntity().hasMetadata("type")) {
-            event.setCancelled(false);
-            event.getEntity().remove();
-            return;
-        }
+        if (event.getEntity().getType() != EntityType.ARMOR_STAND)
+        	return;
         
         event.setDamage(0);
         event.setCancelled(true);
@@ -166,7 +163,9 @@ public class DamageListener implements Listener {
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
         
-        if (!player.hasMetadata("loggingIn"))
+        // Players who are still logging in are invulnerable.
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        if (pw == null || !pw.isAttributesLoaded())
         	return;
         
         AttackResult res = new AttackResult(leDamageSource, (LivingEntity)event.getEntity(),
@@ -270,50 +269,34 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (event.getEntity().hasMetadata("type")) {
-            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
-            switch (metaValue) {
-                case "pet":
-                case "mount":
-                case "spawner":
-                	event.setCancelled(true);
-                    event.setDamage(0);
-                    event.getEntity().setFireTicks(0);
-                    break;
-                default:
-                    break;
-            }
-        }
+    	EnumEntityType e = Metadata.ENTITY_TYPE.getEnum(event.getEntity());
+    	if (e != null && !e.isCombat()) {
+    		event.setCancelled(true);
+            event.setDamage(0);
+            event.getEntity().setFireTicks(0);
+    	}
+    	
         if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
             event.setCancelled(true);
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
+        
+        boolean player = event.getEntity() instanceof Player;
 
-        if (event.getCause() == DamageCause.LAVA) {
-            if (event.getEntity() instanceof Player) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-        }
-
-        if (event.getCause() == DamageCause.FIRE) {
-            event.setDamage(0);
-            event.setCancelled(true);
+        if ((event.getCause() == DamageCause.LAVA && player) || event.getCause() == DamageCause.FIRE
+        		|| (!player && event.getCause() == DamageCause.FALL)) {
+        	event.setDamage(0);
+        	event.setCancelled(true);
         }
 
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
             //Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                 event.getEntity().teleport(TeleportLocation.CYRENNICA.getLocation());
                 event.getEntity().setFallDistance(0);
-            }, 1);
-        }
-
-        if (!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL) {
-            event.setDamage(0);
-            event.setCancelled(true);
+            });
         }
     }
 
@@ -462,14 +445,14 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCustomProjectileEntityLaunchProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
-        EntityType entityType = ((LivingEntity) event.getEntity().getShooter()).getType();
-        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH)
-            return;
+        if (!(event.getEntity().getShooter() instanceof LivingEntity))
+        	return;
 
         LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
-        if (!(leShooter.hasMetadata("type"))) return;
-        if (!ItemWeapon.isWeapon(leShooter.getEquipment().getItemInMainHand()) && entityType != EntityType.WITCH)
+        if (!EntityAPI.isMonster(leShooter))
+        	return;
+        
+        if (!ItemWeapon.isWeapon(leShooter.getEquipment().getItemInMainHand()) && leShooter.getType() != EntityType.WITCH)
             return;
         
         DRMonster monster = (DRMonster)((CraftLivingEntity)leShooter).getHandle();

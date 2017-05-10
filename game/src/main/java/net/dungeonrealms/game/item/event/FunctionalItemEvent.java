@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.event;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
@@ -46,6 +47,10 @@ public abstract class FunctionalItemEvent {
 		this.player = player;
 		setVanillaItem(item);
 		setUsage(usage);
+	}
+	
+	public PlayerWrapper getWrapper() {
+		return PlayerWrapper.getWrapper(getPlayer());
 	}
 	
 	protected void setVanillaItem(ItemStack item) {

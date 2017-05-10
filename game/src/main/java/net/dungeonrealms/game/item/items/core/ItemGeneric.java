@@ -16,7 +16,6 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -33,7 +32,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public abstract class ItemGeneric extends PersistentItem {
 
-	private Map<ItemData, Boolean> dataMap = new HashMap<>();
+	private Map<ItemData, Boolean> dataMap;
 	
 	private List<String> lore;
 	
@@ -77,8 +76,6 @@ public abstract class ItemGeneric extends PersistentItem {
 	public ItemGeneric(ItemStack item, ItemType type) {
 		super(item);
 		this.itemType = type;
-		this.lore = new ArrayList<>();
-		this.dataMap = new HashMap<>();
 		
 		//Alert us if anything goes awry. Attempts to delete the item. (It likely won't)
 		if (isEventItem() && !(DungeonRealms.isMaster() || DungeonRealms.isEvent())) {
@@ -178,17 +175,7 @@ public abstract class ItemGeneric extends PersistentItem {
 				this.soulboundAllowedTraders = Arrays.asList(getTagString("soulboundBypass").split(","));
 			}
 		}
-
-		if(getItem().getType().equals(Material.SADDLE)) {
-			System.out.println("The untradable saddle: " + getTagInt("untradeable"));
-		}
-		if(hasTag("puntradeable"))setPermUntradeable(true);
-
-		Bukkit.getLogger().info("Untradeable: " + getTagBool(ItemData.UNTRADEABLE.getNBTTag()));
-		if(hasTag("untradeable"))setUntradeable(true);
-		if(getItem().getType().equals(Material.SADDLE)) {
-			System.out.println("The untradable  saddle 2: " + isUntradeable());
-		}
+		
 		setPrice(getTagInt("price"));
 		setShowPrice(getTagBool("showPrice"));
 		setGlowing(EnchantmentAPI.isGlowing(getItem()));
@@ -294,6 +281,9 @@ public abstract class ItemGeneric extends PersistentItem {
 	}
 	
 	protected void addLore(String s, boolean reset) {
+		if (this.lore == null) // Can't put above constructor as it will override any values set in loadItem
+			this.lore = new ArrayList<>();
+		
 		if(reset) {
 			this.lore.clear();
 			resetLore = false;

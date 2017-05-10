@@ -10,6 +10,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -39,6 +40,7 @@ import net.dungeonrealms.game.handler.KarmaHandler.WorldZoneType;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
@@ -57,10 +59,8 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
-import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -78,6 +78,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -97,6 +98,7 @@ import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -128,8 +130,6 @@ public class GameAPI {
      */
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
     public static Set<Player> _hiddenPlayers = new HashSet<>();
-
-    //public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
 
     /**
      * Used to avoid double saving player data
@@ -234,16 +234,6 @@ public class GameAPI {
         }
         return -1;
     }
-
-    public static Item.ItemTier getItemTier(ItemStack stack) {
-        if (stack.getType() == Material.AIR || stack == null)
-            return null;
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if (!nms.hasTag() || nms.hasTag() && nms.getTag().hasKey("itemTier")) return null;
-
-        return Item.ItemTier.getByTier(nms.getTag().getInt("itemTier"));
-    }
-
     public static int getTierFromLevel(int level) {
         if (level < 10) {
             return 1;
@@ -688,6 +678,7 @@ public class GameAPI {
         wrapper.setHealth(HealthHandler.getHP(player));
         wrapper.setStoredFoodLevel(player.getFoodLevel());
         Realms.getInstance().handleLogout(player);
+        HealthHandler.handleLogout(player);
         Chat.listenForMessage(player, null);
 
         // Remove dungeonitems from inventory.
@@ -776,7 +767,7 @@ public class GameAPI {
 
         for (int i = 0; i < players.length; i++) {
             final Player player = players[i];
-            player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
+            Metadata.SHARDING.set(player, true);
             final boolean sub = Rank.isSUB(player);
 
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
@@ -788,7 +779,7 @@ public class GameAPI {
             }
 
             // Handle pvp log first
-            if (CombatLog.inPVP(player)) CombatLog.removeFromPVP(player);
+            CombatLog.removeFromPVP(player);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
@@ -796,8 +787,6 @@ public class GameAPI {
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.setInvulnerable(true);
                 player.setNoDamageTicks(10);
-                //Dont allow sharding when we are starting to transfer them..
-                player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
                 player.closeInventory();
                 player.setCanPickupItems(false);
 
@@ -818,8 +807,6 @@ public class GameAPI {
 
                 // upload data and send to server
                 GameAPI.handleLogout(player, true, consumer -> {
-                    if (CombatLog.isInCombat(player))
-                        CombatLog.removeFromCombat(player);
                     // Move
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 }, false);
@@ -854,22 +841,16 @@ public class GameAPI {
         }
 
 
-        try {
-            if (playerWrapper.isCombatLogged()) {
-                String lastShard = playerWrapper.getShardPlayingOn();
-                if (lastShard != null && !DungeonRealms.getShard().getPseudoName().equals(lastShard)) {
-                    player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
-                    return;
-                }
-            }
-        } catch (NullPointerException ignored) {
-
+        if (playerWrapper.isCombatLogged()) {
+        	String lastShard = playerWrapper.getShardPlayingOn();
+        	if (lastShard != null && !DungeonRealms.getShard().getPseudoName().equals(lastShard)) {
+        		player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
+        		return;
+        	}
         }
 
         PlayerRank rank = Rank.getRank(player);
-
-        if (player.hasMetadata("sharding"))
-            player.removeMetadata("sharding", DungeonRealms.getInstance());
+        Metadata.SHARDING.remove(player); // This player just logged in, they aren't sharding.
 
         GamePlayer gp = new GamePlayer(player);
 
@@ -1007,9 +988,9 @@ public class GameAPI {
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-            playerWrapper.calculateAllAttributes();
-            PlayerManager.checkInventory(player);
-        }, 20);
+        	HealthHandler.handleLogin(player);
+        	PlayerManager.checkInventory(player);
+        }, 5);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
 
@@ -1063,7 +1044,7 @@ public class GameAPI {
         player.setNoDamageTicks(10);
         player.closeInventory();
         player.setCanPickupItems(false);
-        player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+        Metadata.SHARDING.set(player, true);
 
         GamePlayer gp = GameAPI.getGamePlayer(player);
         gp.setAbleToSuicide(false);
@@ -1227,22 +1208,6 @@ public class GameAPI {
         return false;
     }
 
-    public static void calculateAllAttributes(LivingEntity ent) {
-        AttributeList attributes = EntityAPI.getMonster(ent).getAttributes();
-        ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
-
-        int tier = EntityAPI.getTier(ent);
-
-        // if we have a skull we need to generate a helmet so mob stats are calculated correctly
-        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier)))
-            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(ent))).generateItem();
-
-        attributes.addStats(ent.getEquipment().getItemInMainHand());
-        for (ItemStack armor : armorSet)
-            attributes.addStats(armor);
-        attributes.applyStatBonuses();
-    }
-
     public static String getCustomID(ItemStack i) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
         if (nms == null || nms.getTag() == null) return null;
@@ -1286,7 +1251,7 @@ public class GameAPI {
      * @param shard
      */
     public static void sendToShard(Player player, ShardInfo shard) {
-        player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+    	Metadata.SHARDING.set(player, true);
         GameAPI.getGamePlayer(player).setSharding(true);
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         handleLogout(player, true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -1616,5 +1581,14 @@ public class GameAPI {
         final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
+    }
+    
+    public static void addCooldown(Metadatable m, Metadata type, int ticks) {
+    	type.set(m, true);
+    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> type.remove(m), 20);
+    }
+    
+    public static boolean isCooldown(Metadatable m, Metadata type) {
+    	return type.get(m).asBoolean();
     }
 }

@@ -12,6 +12,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
@@ -80,8 +81,8 @@ public class ShardSwitcher extends AbstractMenu {
                     }
 
                     GameAPI.getGamePlayer(player).setSharding(true);
-                    // Fucking idiots, set the metadata value first
-                    player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                    Metadata.SHARDING.set(player, true);
+                    
                     TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shard.getShardID() + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
@@ -113,7 +114,7 @@ public class ShardSwitcher extends AbstractMenu {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
-                                player.removeMetadata("sharding", DungeonRealms.getInstance());
+                                Metadata.SHARDING.remove(player);
                                 GameAPI.getGamePlayer(player).setSharding(false);
                                 cancel();
                                 return;

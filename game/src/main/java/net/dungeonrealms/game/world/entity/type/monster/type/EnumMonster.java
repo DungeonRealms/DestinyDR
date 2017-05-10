@@ -155,11 +155,11 @@ public enum EnumMonster {
     }
 
     public String getPrefix() {
-    	return prefix.length > 0 ? prefix[new Random().nextInt(prefix.length)] : "";
+    	return prefix.length > 0 ? prefix[new Random().nextInt(prefix.length)] + " " : "";
     }
 
     public String getSuffix() {
-        return suffix.length > 0 ? suffix[new Random().nextInt(suffix.length)] : "";
+        return suffix.length > 0 ? " " + suffix[new Random().nextInt(suffix.length)] : "";
     }
 
 	public static EnumMonster getMonsterByString(String mob) {

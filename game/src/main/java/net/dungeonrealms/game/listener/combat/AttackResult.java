@@ -89,7 +89,7 @@ public class AttackResult {
         	//  REFLECT  //
         	if(getResult() == DamageResultType.REFLECT) {
         		AttackResult res = new AttackResult(receiver, getAttacker().getEntity());
-        		res.setDamage(receiver.hasMetadata("boss") || receiver.hasMetadata("elite") ? getDamage() * 0.4 : getDamage());
+        		res.setDamage(EntityAPI.isBoss(receiver) || EntityAPI.isElite(receiver) ? getDamage() * 0.4 : getDamage());
         		HealthHandler.damageEntity(res);
         	}
         	return;

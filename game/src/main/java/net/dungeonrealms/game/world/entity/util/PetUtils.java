@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.pet.CreeperPet;
@@ -120,9 +119,9 @@ public class PetUtils implements GenericMechanic {
                     goal.a(0, new PathfinderGoalFloat(e));
 
                 if (petType == EnumPets.SLIME || petType == EnumPets.MAGMA_CUBE) {
-                    goal.a(1, new PathfinderGoalSlimeFollowOwner(e, follow, petType.getFollowSpeed()));
+                    goal.a(1, new PathfinderGoalSlimeFollowOwner(e, follow, 1D));
                 } else {
-                    goal.a(1, new PathfinderGoalWalkToTile(e, follow, petType.getFollowSpeed()));
+                    goal.a(1, new PathfinderGoalWalkToTile(e, follow, 1D));
                 }
             } else {
                 throw new IllegalArgumentException(e.getCustomName() + " is not an instance of an EntityInsentient.");

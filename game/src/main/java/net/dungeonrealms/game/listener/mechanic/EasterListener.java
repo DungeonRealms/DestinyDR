@@ -182,11 +182,6 @@ public class EasterListener implements Listener {
     }
 
     @EventHandler
-    public void onPLayerPickup(PlayerPickupItemEvent event) {
-        if (event.getItem().hasMetadata("no_pickup")) event.setCancelled(true);
-    }
-
-    @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         //fuck yea
         easterRabbits.removeIf(rab -> rab.getRoller() != null && rab.getRoller().equals(event.getPlayer()));

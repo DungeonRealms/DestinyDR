@@ -12,8 +12,6 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.handler.KarmaHandler;
-import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
@@ -41,12 +39,12 @@ import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -64,24 +62,6 @@ import java.util.UUID;
 public class RestrictionListener implements Listener {
 
     private static CooldownProvider ANTI_COMMAND_SPAM = new CooldownProvider();
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPotionThrow(ProjectileLaunchEvent event) {
-        if (event.getEntity().getType() == EntityType.SPLASH_POTION) {
-            if (event.getEntity().getShooter() != null) {
-                if (event.getEntity().getShooter() instanceof Player) {
-                    Player player = (Player) event.getEntity().getShooter();
-                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                    if (wrapper != null) {
-                        if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
-                            event.setCancelled(true);
-                            player.sendMessage(ChatColor.RED + "You cannot use a potion whilst " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " or " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "NEUTRAL");
-                        }
-                    }
-                }
-            }
-        }
-    }
     
     public static boolean canPlayerUseItem(Player p, ItemStack item) {
     	if(!ItemGear.isCustomTool(item))
@@ -214,12 +194,6 @@ public class RestrictionListener implements Listener {
             event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
-        if (Metadata.NO_PICKUP.get(event.getItem()).asBoolean())
-        	event.setCancelled(true);
-    }
-
     //TODO: What is the point of this? If the server has crashed, events shouldn't be firing?
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onCrash(PlayerInteractEvent event) {
@@ -235,7 +209,6 @@ public class RestrictionListener implements Listener {
         }
 
         if (event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())) {
-            //Dont let them
             if (!Rank.isTrialGM(((Player) event.getRemover()))) {
                 event.setCancelled(true);
             }
@@ -318,9 +291,6 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onCropGrowth(BlockGrowEvent event) {
-        if (!GameAPI.isMainWorld(event.getBlock().getWorld())) return;
-
-        //Disable in realms and everywhere else.
         event.setCancelled(true);
     }
 
@@ -328,15 +298,17 @@ public class RestrictionListener implements Listener {
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
-        if (i == null || i.getType() == Material.AIR) return;
+        if (!ItemWeapon.isWeapon(i))
+        	return;
         
-        if (ItemWeapon.isWeapon(i)) {
-        	if(!canPlayerUseItem(p, i)) {
-        		event.setCancelled(true);
-                p.updateInventory();
-        	}
-        	p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
+        if(!canPlayerUseItem(p, i)) {
+        	event.setCancelled(true);
+        	p.updateInventory();
+        	return;
         }
+        
+        // Play the noise.
+        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -423,112 +395,47 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void playerJoinEventDelayed(PlayerJoinEvent event) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (event.getPlayer() != null && event.getPlayer().isOnline()) {
+            if (event.getPlayer() != null && event.getPlayer().isOnline())
                 checkPlayersArmorIsValid(event.getPlayer());
-            }
         }, 150L);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void loggingOutOpenInventory(InventoryOpenEvent event) {
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
-            event.getPlayer().closeInventory();
-        }
     }
 
     private List<UUID> loggedOutCombat = Lists.newArrayList();
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void loggingOutDropItem(PlayerDropItemEvent event) {
-        if (CrashDetector.crashDetected)
-            event.setCancelled(true);
-
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName()) && !loggedOutCombat.contains(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-            try {
-                loggedOutCombat.add(event.getPlayer().getUniqueId());
-                event.getPlayer().closeInventory();
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void loggingOutPickupItem(PlayerPickupItemEvent event) {
-        if (CrashDetector.crashDetected)
-            event.setCancelled(true);
-
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
-            try {
-                event.getPlayer().closeInventory();
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLeave(PlayerQuitEvent event) {
-        closedShardingInventories.remove(event.getPlayer().getUniqueId());
         loggedOutCombat.remove(event.getPlayer().getUniqueId());
     }
 
-    private List<UUID> closedShardingInventories = Lists.newArrayList();
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void shardingExtraSafetyCheckDrop(PlayerDropItemEvent event) {
-        if (event.getPlayer().hasMetadata("sharding")) {
+        if (shouldBlock(event.getPlayer()))
             event.setCancelled(true);
-            try {
-                //Only close their inventory once since this seems to be recursive and causing a dead lock.
-                if (event.getPlayer() != null && event.getPlayer().isOnline() && !closedShardingInventories.contains(event.getPlayer().getUniqueId())) {
-                    closedShardingInventories.add(event.getPlayer().getUniqueId());
-                    event.getPlayer().closeInventory();
-                }
-            } catch (Exception ignored) {
-            }
-        }
     }
 
+    /**
+     * Prevents players from picking up items when they're sharding, can't pickup items, or if those items can't be picked up.
+     */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void shardingExtraSafetyCheckPickup(PlayerPickupItemEvent event) {
-        if (event.getPlayer().hasMetadata("sharding")) {
+    public void checkPickup(PlayerPickupItemEvent event) {
+    	Player p = event.getPlayer();
+        GamePlayer gp = GameAPI.getGamePlayer(p);
+        if ((gp != null && !gp.isAbleToDrop()) || shouldBlock(p) || Metadata.NO_PICKUP.has(event.getItem()))
             event.setCancelled(true);
-            try {
-                if (event.getPlayer() != null && event.getPlayer().isOnline()) {
-                    event.getPlayer().closeInventory();
-                }
-            } catch (Exception ignored) {
-            }
-        }
     }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPickup(PlayerPickupItemEvent event) {
-        GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
-        if (gp != null && !gp.isAbleToDrop()) {
+    
+    /**
+     * Prevents items that can't be picked up from going into hoppers.
+     */
+    @EventHandler
+    public void onHopperPickup(InventoryPickupItemEvent event) {
+        if(event.getItem() != null && Metadata.NO_PICKUP.has(event.getItem()))
             event.setCancelled(true);
-        }
     }
-
-    /*
-        @EventHandler
-    	public void onPlayerMove(PlayerMoveEvent event) {
-        	Player pl = event.getPlayer();
-        	Location from = event.getFrom();
-        	if (GameAPI.getRegionName(from).equalsIgnoreCase("tutorial")) {
-            	if (!Achievements.getInstance().hasAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA)) {
-                	Location to = event.getTo();
-                	if (!GameAPI.getRegionName(to).equalsIgnoreCase("tutorial") && !GameAPI.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
-                    	event.setCancelled(true);
-                    	pl.teleport(from);
-                    	pl.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "must" + ChatColor.RED + " either finish the tutorial or skip it with /skip to get off tutorial island.");
-                	}
-            	}
-        	}
-    	}*/
+    
+    private boolean shouldBlock(Player p) {
+    	return Metadata.SHARDING.has(p) || DungeonRealms.getInstance().getLoggingOut().contains(p.getName()) || CrashDetector.crashDetected;
+    }
 
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
@@ -576,17 +483,9 @@ public class RestrictionListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            if (event.getEntity() instanceof LivingEntity) {
-                if (!event.getEntity().hasMetadata("type")) return;
-            } else {
-                if (event.getEntity().hasMetadata("type")) {
-                    if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
-                } else {
-                    return;
-                }
-            }
-        }
+    	if (!(event.getEntity() instanceof LivingEntity))
+    		return;
+    	
         Entity damager = event.getDamager();
         Entity receiver = event.getEntity();
         boolean isAttackerPlayer = false;
@@ -703,18 +602,6 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-            if (ProtectionHandler.getInstance().hasNewbieProtection(pReceiver)) {
-                pDamager.sendMessage(net.md_5.bungee.api.ChatColor.RED + "The player you are attempting to attack has newbie protection! You cannot attack them.");
-                event.getEntity().sendMessage(net.md_5.bungee.api.ChatColor.GREEN + "Your " + net.md_5.bungee.api.ChatColor.UNDERLINE + "NEWBIE " + "PROTECTION" + net.md_5.bungee.api.ChatColor.GREEN + " has prevented " + pDamager.getName() +
-                        net.md_5.bungee.api.ChatColor.GREEN + " from attacking you!");
-                event.getEntity();
-                event.setCancelled(true);
-                event.setDamage(0);
-                pDamager.updateInventory();
-                pReceiver.updateInventory();
-                return;
-            }
-
             if (Affair.areInSameParty(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -722,6 +609,7 @@ public class RestrictionListener implements Listener {
                 pReceiver.updateInventory();
                 return;
             }
+            
             if (GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -730,5 +618,4 @@ public class RestrictionListener implements Listener {
             }
         }
     }
-    //TODO: Prevent players entering realms
 }

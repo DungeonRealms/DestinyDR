@@ -2,17 +2,17 @@ package net.dungeonrealms.game.mastery;
 
 import lombok.AllArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -51,6 +51,12 @@ public class MetadataUtils {
 		CURRENT_HP(50),
 		MAX_HP(50),
 		HP_REGEN(5),
+		INVULNERABLE(false),
+		
+		// Players
+		SHARDING(false),
+		PRICING(false), // Is a player already in a chat prompt to buy an item?
+		REALM_COOLDOWN(false),
 		
 		// Items
 		WHITELIST(""),
@@ -67,17 +73,15 @@ public class MetadataUtils {
 		SPAWN_TYPE(null),
 		
 		// General
-		TIER(1);
+		TIER(-1);
 		
 		private Object defaultValue;
 		
+		/**
+		 * Gets the value of this key, or the default value (Enums = null).
+		 */
 		public MetadataValue get(Metadatable m) {
-			if (!has(m)) { //If the value isn't set
-				if (isDefClass()) // A class will only be set if there is no value.
-					return null;
-				setDefault(m);
-			}
-			return m.getMetadata(getKey()).get(0);
+			return has(m) ? m.getMetadata(getKey()).get(0) : (isDefClass() ? null : getDefaultValue());
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -142,6 +146,10 @@ public class MetadataUtils {
 		private boolean isDefClass() {
 			return defaultValue instanceof Class<?>;
 		}
+		
+		private MetadataValue getDefaultValue() {
+			return new FixedMetadataValue(DungeonRealms.getInstance(), defaultValue);
+		}
 	}
 	
 	public interface MetaValue {
@@ -169,7 +177,7 @@ public class MetadataUtils {
     		Metadata.TIER.set(entity, tier);
     		Metadata.LEVEL.set(entity, level);
     		if (type == EnumEntityType.HOSTILE_MOB)
-    			GameAPI.calculateAllAttributes((LivingEntity) entity);
+    			EntityAPI.calculateAttributes(EntityAPI.getMonster(entity));
     	}
     	
     	Metadata.ENTITY_TYPE.set(entity, type);
@@ -179,10 +187,10 @@ public class MetadataUtils {
     public static void registerProjectileMetadata(ItemGear dataFrom, Projectile projectile) {
     	registerProjectileMetadata(dataFrom.getAttributes(), dataFrom.getTier().getId(), projectile);
     }
-
-    //why this so cancer
+    
     /**
      * Saves attributes into projectile metadata.
+     * TODO: Is there a better way to do this?
      */
     public static void registerProjectileMetadata(AttributeList attributes, int tier, Projectile projectile) {
     	Metadata.DR_PROJECTILE.set(projectile, true);

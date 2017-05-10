@@ -28,7 +28,6 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
 	
 	public ItemMount(ItemStack item) {
 		super(item);
-		setUntradeable(true);
 	}
 	
 	public static void attemptSummonMount(Player player) {

@@ -3,7 +3,6 @@ package net.dungeonrealms.game.mastery;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 
@@ -43,10 +42,6 @@ public class GamePlayer {
         this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
-    }
-
-    public boolean hasNewbieProtection() {
-        return ProtectionHandler.getInstance().hasNewbieProtection(getPlayer());
     }
 
     public void setInvulnerable(boolean flag) {

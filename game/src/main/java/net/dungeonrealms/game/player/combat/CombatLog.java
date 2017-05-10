@@ -169,14 +169,12 @@ public class CombatLog implements GenericMechanic {
      * @param player The player
      */
     public static void removeFromPVP(Player player) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
-        if (inPVP(player)) {
-            PVP_COMBAT.remove(player);
-            //Removes all arrows from player.
-            ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
-            TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
-        }
+        if (!inPVP(player))
+        	return;
+        PVP_COMBAT.remove(player);
+        //Removes all arrows from player.
+        ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
+        TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
     }
 
     /**
@@ -230,6 +228,7 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static void handleCombatLogger(Player player) {
+    	// If we ever re-enable this, redo it.
         final World world = player.getWorld();
         final Location loc = player.getLocation();
         CombatLogger combatLogger = new CombatLogger(player.getUniqueId());

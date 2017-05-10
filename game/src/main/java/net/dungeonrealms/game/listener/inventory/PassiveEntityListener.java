@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.PassiveDRChicken;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Creature;
@@ -46,7 +48,7 @@ public class PassiveEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity().hasMetadata("passive") && event.getDamager() instanceof Player) {
+        if (Metadata.PASSIVE.get(event.getEntity()).asBoolean() && event.getDamager() instanceof Player) {
             //Anger?
             angerLevels.put(event.getEntity(), 40);
 
@@ -61,28 +63,9 @@ public class PassiveEntityListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onEntityTarget(EntityTargetLivingEntityEvent event) {
-        if (event.getTarget() != null && event.getTarget() instanceof Player) {
-            if (event.getEntity().hasMetadata("passive")) {
-                Integer angerLevel = angerLevels.get(event.getEntity());
-                if (angerLevel != null && angerLevel > 0)
-                    return;
-
-                event.setCancelled(true);
-                event.setTarget(null);
-
-                Creature creature = (Creature) event.getEntity();
-                creature.setTarget(null);
-
-            }
-        }
-
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.getTarget() != null && event.getTarget() instanceof Player) {
-            if (event.getEntity().hasMetadata("passive")) {
+            if (Metadata.PASSIVE.get(event.getEntity()).asBoolean()) {
                 Integer angerLevel = angerLevels.get(event.getEntity());
                 if (angerLevel != null && angerLevel > 0)
                     return;

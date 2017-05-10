@@ -16,7 +16,6 @@ import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -26,7 +25,6 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.util.Vector;
 
-import java.text.DecimalFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -237,55 +235,6 @@ public class EntityMechanics implements GenericMechanic {
                         entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
                     }
                 });
-    }
-    
-    
-
-    public int getBarLength(int tier) {
-    	return 20 + (tier * 5) + (tier >= 5 ? 5 : 0);
-    }
-
-    public String generateOverheadBar(org.bukkit.entity.Entity ent, double cur_hp, double max_hp, int tier, boolean elite) {
-        boolean boss = EntityAPI.isBoss(ent);
-        int maxBar = boss ? getBarLength(tier) : 60;
-        ChatColor cc = boss ? ChatColor.GOLD : ChatColor.GREEN;
-
-        DecimalFormat df = new DecimalFormat("##.#");
-        double hpPercent = (double) (Math.round(100.0D * Double.parseDouble((df.format((cur_hp / max_hp)))))); // EX: 0.5054134131
-        hpPercent = Math.max(1, hpPercent);
-
-        double percent_interval = (100.0D / maxBar);
-        int bar_count = 0;
-
-        if (hpPercent <= 45)
-        	cc = ChatColor.YELLOW;
-        
-        if (hpPercent <= 20)
-        	cc = ChatColor.RED;
-
-        if (PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId()))
-            cc = ChatColor.LIGHT_PURPLE;
-
-        String formatted = cc + "" + ChatColor.BOLD + "║" + ChatColor.RESET + "" + cc + (elite || boss ? ChatColor.BOLD : "");
-
-        while (bar_count < maxBar) {
-            hpPercent -= percent_interval;
-            bar_count++;
-            formatted += "|";
-        }
-
-        formatted += ChatColor.BLACK;
-        if (elite)
-        	formatted += ChatColor.BOLD;
-
-        while (bar_count < maxBar) {
-        	formatted += "|";
-            bar_count++;
-        }
-
-        formatted = formatted + cc + ChatColor.BOLD.toString() + "║";
-        
-        return formatted;
     }
 }
 

@@ -16,6 +16,7 @@ import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ItemRealmChest;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -53,13 +54,11 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -302,14 +301,6 @@ public class RealmListener implements Listener {
             event.getItem().setType(Material.AIR);
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler
-    public void onHopperPickup(InventoryPickupItemEvent event) {
-        if(event.getItem() != null && event.getItem().hasMetadata("no_pickup")) {
-            event.setCancelled(true);
-        }
-
     }
 
     private void createDoubleHelix(Location loc) {
@@ -700,22 +691,19 @@ public class RealmListener implements Listener {
             // Teleports them inside the realm.
             event.setTo(realm.getWorld().getSpawnLocation().clone().add(0, 2, 0));
 
-            event.getPlayer().setMetadata("realmcd", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-
         } else if (Realms.getInstance().isInRealm(event.getPlayer())) {
             // Player is exiting a realm.
-            if (event.getPlayer().hasMetadata("realmcd")) {
-                Long timer = event.getPlayer().getMetadata("realmcd").get(0).asLong();
-                if (System.currentTimeMillis() - timer <= TimeUnit.SECONDS.toMillis(3)) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-
-            event.getPlayer().setMetadata("realmcd", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        	if (GameAPI.isCooldown(event.getPlayer(), Metadata.REALM_COOLDOWN)) {
+        		event.setCancelled(true);
+        		return;
+        	}
+            
+            //Metadata;
+            
             Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }
+        GameAPI.addCooldown(event.getPlayer(), Metadata.REALM_COOLDOWN, 60);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

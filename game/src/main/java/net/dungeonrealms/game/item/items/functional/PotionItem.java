@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
@@ -79,13 +80,20 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 
 	@Override
 	public void onClick(ItemClickEvent evt) {
-		if (HealthHandler.getHP(evt.getPlayer()) < HealthHandler.getMaxHP(evt.getPlayer())) {
-			evt.setUsed(true);
-			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
-			HealthHandler.heal(evt.getPlayer(), getHealAmount());
-		} else {
-			evt.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
+		
+		if (evt.getWrapper().getAlignment() == EnumPlayerAlignments.CHAOTIC) {
+			evt.getPlayer().sendMessage(ChatColor.RED + "You may not use potions whilst chaotic.");
+			return;
 		}
+		
+		if (HealthHandler.getHP(evt.getPlayer()) >= HealthHandler.getMaxHP(evt.getPlayer())) {
+			evt.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
+			return;
+		}
+		
+		evt.setUsed(true);
+		Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
+		HealthHandler.heal(evt.getPlayer(), getHealAmount());
 	}
 	
 	private void findNextPotion(Player player, EquipmentSlot slot) {

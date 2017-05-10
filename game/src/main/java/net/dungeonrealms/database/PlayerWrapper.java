@@ -981,9 +981,7 @@ public class PlayerWrapper {
 
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses();
-
-        if (!attributesLoaded)
-            HealthHandler.getInstance().handleLoginEvents(getPlayer());
+        HealthHandler.updatePlayerHP(getPlayer());
 
         // so energy regen doesn't start before attributes have been loaded
         this.attributesLoaded = true;

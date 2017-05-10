@@ -21,7 +21,7 @@ public enum EnumEntityType implements EnumMetaValue {
 	FRIENDLY_MOB(true),
 	HOSTILE_MOB(true),
 	BUFF,
-	SPAWNER(true);
+	SPAWNER;
 
 	@Getter private boolean combat;
 	

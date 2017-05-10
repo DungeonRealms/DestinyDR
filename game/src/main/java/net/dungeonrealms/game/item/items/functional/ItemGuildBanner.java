@@ -28,7 +28,6 @@ public class ItemGuildBanner extends FunctionalItem implements ItemClickListener
 	
 	public ItemGuildBanner(ItemStack item) {
 		super(item);
-		setUntradeable(true);
 	}
 
 	@Override

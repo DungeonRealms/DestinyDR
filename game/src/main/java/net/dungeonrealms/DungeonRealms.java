@@ -232,7 +232,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(CombatLog.getInstance());
         MechanicManager.registerMechanic(EnergyHandler.getInstance());
         MechanicManager.registerMechanic(DonationEffects.getInstance());
-        MechanicManager.registerMechanic(HealthHandler.getInstance());
+        MechanicManager.registerMechanic(new HealthHandler());
         MechanicManager.registerMechanic(new KarmaHandler());
         MechanicManager.registerMechanic(BungeeChannelListener.getInstance());
         MechanicManager.registerMechanic(ScoreboardHandler.getInstance());

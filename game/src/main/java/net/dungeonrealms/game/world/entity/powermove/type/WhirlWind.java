@@ -6,6 +6,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.PowerMove;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
 
@@ -70,7 +71,7 @@ public class WhirlWind extends PowerMove {
                             EntityMechanics.setVelocity(p, unitVector);
                         
                         // * 4 for whirlwind
-                        double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;
+                        double multiplier = EntityAPI.isBoss(entity) ? 1.3 : 4;
                         AttackResult res = new AttackResult(entity, p);
                         DamageAPI.calculateWeaponDamage(res, true);
                         res.setDamage(res.getDamage() * multiplier);

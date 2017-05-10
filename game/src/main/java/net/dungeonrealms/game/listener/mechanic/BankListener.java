@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
@@ -11,6 +12,7 @@ import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemGemPouch;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.EnumUpgrade;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
@@ -20,6 +22,7 @@ import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.entity.util.MiscUtils;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -70,10 +73,8 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 
-        if (event.getItem().hasMetadata("whitelist") && event.getItem().getTicksLived() < 60 * 20 * 2) {
-            //Whitelisted item, dont let them pick it up.
-            String allowed = event.getItem().getMetadata("whitelist").get(0).asString();
-            if (!allowed.equals(event.getPlayer().getName())) {
+        if (Metadata.WHITELIST.has(event.getItem()) && event.getItem().getTicksLived() < 60 * 20) {
+            if (!event.getPlayer().getName().equals(Metadata.WHITELIST.get(event.getItem()).asBoolean())) {
                 event.setCancelled(true);
                 return;
             }
@@ -94,7 +95,7 @@ public class BankListener implements Listener {
             Player p = event.getPlayer();
             PlayerWrapper pw = PlayerWrapper.getWrapper(p);
             p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-            pw.sendDebug("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
+            pw.sendDebug(ChatColor.GREEN + "                      " + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
 
             pw.getPlayerGameStats().addStat(StatColumn.GEMS_EARNED, gem.getGemValue());
 

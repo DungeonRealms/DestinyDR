@@ -35,12 +35,14 @@ public class DungeonListener implements Listener {
 	//TODO: Convert all toggles to toggles.
 	//TODO: Move to PreparedStatement.
 	//TODO: Stop using GamePlayer
+	//TODO: Mechanics should have their own events, like handleLogin, etc.
 	
 	//TODO: Fix Attributes
 	//TODO: Fix Lootchests
 	//TODO: Convert items.
 	//TODO: Skeletons don't work fully or something
 	//TODO: Fix Chat
+	//TODO: How are achievements saved / loaded?
 	
 	
     @EventHandler(priority = EventPriority.MONITOR)

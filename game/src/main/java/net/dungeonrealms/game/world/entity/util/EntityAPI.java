@@ -15,6 +15,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
@@ -47,6 +48,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * EntityAPI - Basic Entity utilities.
@@ -57,7 +59,7 @@ public class EntityAPI {
 
     private static Random random = new Random();
     
-    @Getter //TODO: Prevent memory leaks.
+    @Getter //TODO: Prevent memory leaks, on death, on despawn. Every few minutes go through this list and clean up the trash.
     private static Map<DRMonster, AttributeList> entityAttributes = new ConcurrentHashMap<>();
     
     public static Entity spawnElite(Location loc, EnumNamedElite elite) {
@@ -330,6 +332,8 @@ public class EntityAPI {
     
     public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName) {
     	DRMonster monster = null;
+    	if (displayName == null)
+    		displayName = mType.getPrefix() + mType.getName() + mType.getSuffix();
     	
     	try {
     		// Setup monster.
@@ -361,15 +365,86 @@ public class EntityAPI {
         			Metadata.DUNGEON.set(le, true);
         			DungeonManager.getDungeon(loc.getWorld()).getTrackedMonsters().put(le, loc);
         		}
-        		
-        		GameAPI.calculateAllAttributes(le);
     		}
     		
+    		calculateAttributes(monster);
     		return le;
     	} catch (Exception e) {
     		e.printStackTrace();
     		Bukkit.getLogger().warning("Failed to create " + type.getClazz().getSimpleName());
     	}
     	return null;
+    }
+
+    /**
+     * Recalculates a monster's attributes.
+     * @param ent
+     */
+    public static void calculateAttributes(DRMonster m) {
+        AttributeList attributes = m.getAttributes();
+        attributes.clear();
+        
+        ItemStack[] armorSet = m.getBukkit().getEquipment().getArmorContents().clone(); 
+        int tier = EntityAPI.getTier(m.getBukkit());
+
+        // if we have a skull we need to generate a helmet so mob stats are calculated correctly
+        // TODO: Verify 3 is the correct slot.
+        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier)))
+            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(m.getBukkit()))).generateItem();
+
+        attributes.addStats(m.getBukkit().getEquipment().getItemInMainHand());
+        for (ItemStack armor : armorSet)
+            attributes.addStats(armor);
+        attributes.applyStatBonuses();
+    }
+    
+    private static int getBarLength(int tier) {
+    	return 20 + (tier * 5) + (tier >= 5 ? 5 : 0);
+    }
+
+    public static void showHPBar(DRMonster monster) {
+    	Entity ent = monster.getBukkit();
+        boolean boss = isBoss(ent);
+        boolean elite = isElite(ent);
+        int maxBar = boss ? getBarLength(getTier(ent)) : 60;
+        ChatColor cc = boss ? ChatColor.GOLD : ChatColor.GREEN;
+
+        double hpPercent = HealthHandler.getHPPercent(ent) * 100D;
+        hpPercent = Math.max(1, hpPercent);
+
+        double percent_interval = (100.0D / maxBar);
+        int bar_count = 0;
+
+        if (hpPercent <= 45)
+        	cc = ChatColor.YELLOW;
+        
+        if (hpPercent <= 20)
+        	cc = ChatColor.RED;
+
+        if (PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId()))
+            cc = ChatColor.LIGHT_PURPLE;
+
+        String formatted = cc + "" + ChatColor.BOLD + "║" + ChatColor.RESET + "" + cc + (elite || boss ? ChatColor.BOLD : "");
+
+        while (bar_count < maxBar) {
+            hpPercent -= percent_interval;
+            bar_count++;
+            formatted += "|";
+        }
+
+        formatted += ChatColor.BLACK;
+        if (elite)
+        	formatted += ChatColor.BOLD;
+
+        while (bar_count < maxBar) {
+        	formatted += "|";
+            bar_count++;
+        }
+
+        formatted = formatted + cc + ChatColor.BOLD + "║";
+        
+        // Apply name to entity.
+        ent.setCustomName(formatted);
+        ent.setCustomNameVisible(true);
     }
 }

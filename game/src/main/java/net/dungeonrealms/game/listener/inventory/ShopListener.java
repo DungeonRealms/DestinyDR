@@ -12,6 +12,7 @@ import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
@@ -42,24 +43,22 @@ public class ShopListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void playerOpenShopInventory(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+        	return;
+        
         Block block = event.getClickedBlock();
         Player p = event.getPlayer();
-        if (block == null) return;
-        if (block.getType() != Material.CHEST) return;
-        if (p.isSneaking()) return;
+        
+        if (block == null || block.getType() != Material.CHEST || p.isSneaking())
+        	return;
+        
         Shop shop = ShopMechanics.getShop(block);
-        if (shop == null) return;
-        if (p.hasMetadata("pricing")) return;
+        if (shop == null || Metadata.PRICING.has(p) || Metadata.SHARDING.has(p)) // Don't allow people buying items or sharding to open it.
+        	return;
 
         if (Chat.listened(p)) {
             p.sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
             event.setCancelled(true);
-            return;
-        }
-
-        if (p.hasMetadata("sharding")) {
-            p.sendMessage(ChatColor.RED + "You cannot open a shop whiling changing shards.");
             return;
         }
 
@@ -264,17 +263,17 @@ public class ShopListener implements Listener {
             }
 
             boolean shiftClick = event.isShiftClick();
-            if (!clicker.hasMetadata("pricing")) {
+            if (!Metadata.PRICING.has(clicker)) {
                 int itemPrice = new VanillaItem(itemClicked).getPrice();
                 if (itemPrice <= 0)
                 	return;
                 
                 if (!shiftClick) {
-                    clicker.setMetadata("pricing", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                	Metadata.PRICING.set(clicker, true);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
                     clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
                     Chat.listenForNumber(clicker, 1, 64, quantity -> {
-                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                    	Metadata.PRICING.remove(clicker);
 
                         //  PREVENT PURCHASING FROM AN INVALID SHOP  //
                         if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
@@ -297,7 +296,7 @@ public class ShopListener implements Listener {
 
                         attemptPurchaseItem(clicker, shop, event.getRawSlot(), itemClicked, quantity);
                     }, () -> {
-                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                    	Metadata.PRICING.remove(clicker);
                         clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                     });
                 } else if (event.isShiftClick()) {
@@ -384,7 +383,7 @@ public class ShopListener implements Listener {
         }
 
         //  DONT ALLOW BUYING ITEMS WHILE SHARDING  //
-        if (player.hasMetadata("sharding")) {
+        if (Metadata.SHARDING.has(player)) {
             player.sendMessage(ChatColor.RED + "You cannot purchase an item while sharding.");
             return;
         }

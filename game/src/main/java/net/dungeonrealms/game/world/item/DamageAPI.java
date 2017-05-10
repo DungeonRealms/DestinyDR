@@ -20,6 +20,7 @@ import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
@@ -84,13 +85,12 @@ public class DamageAPI {
         			int durabilityLoss = 1;
         			
         			//  EXTRA DAMAGE FOR TIER GAPS  //
-        			if (defender.getEntity().hasMetadata("tier")) {
-        				int mobTier = defender.getEntity().getMetadata("tier").get(0).asInt();
-        				int tierDif = weaponTier - mobTier;
-        				
-        				if (tierDif > 1)
-        					durabilityLoss = 2 * (tierDif - 1);
-        			}
+        			int mobTier = EntityAPI.getTier(defender.getEntity());
+        			
+        			int tierDif = weaponTier - mobTier;
+        			if (tierDif > 1)
+        				durabilityLoss = 2 * (tierDif - 1);
+        			
         			weapon.damageItem(attacker.getPlayer(), durabilityLoss);
         		}
         		
@@ -108,8 +108,7 @@ public class DamageAPI {
                 	damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue() * 0.23);
                 }
         	}
-        } else if (res.getProjectile().hasMetadata("itemTier")){
-        	weaponTier = res.getProjectile().getMetadata("itemTier").get(0).asInt();
+        } else {
         	
         	//  STAT BONUS  //
             switch (res.getProjectile().getType()) {
@@ -128,9 +127,6 @@ public class DamageAPI {
                     break;
             }
         	
-        } else {
-        	res.setDamage(1);
-        	return;
         }
         
         //  CRIT  //
@@ -205,7 +201,7 @@ public class DamageAPI {
         //  LEVEL DAMAGE  //
         if (defender.isPlayer() && !attacker.isPlayer()) {
         	// add 5% damage per level difference
-        	int attackerLevel = attacker.getEntity().getMetadata("level").get(0).asInt();
+        	int attackerLevel = EntityAPI.getLevel(attacker.getEntity());
         	int defenderLevel = PlayerWrapper.getWrapper(defender.getPlayer()).getLevel();
         	if (attackerLevel > defenderLevel)
         		damage = addLevelDamage(attackerLevel, defenderLevel, damage);
@@ -258,12 +254,10 @@ public class DamageAPI {
     }
 
     public static void applySlow(LivingEntity defender) {
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	int tickLength = 100;
-            if (defender.hasMetadata("type") && defender.getMetadata("tier").get(0).asInt() >= 4)
-                tickLength = 40;
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+        	int tickLength = EntityAPI.getTier(defender) >= 4 ? 100 : 40;
             defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 1));
-        }, 1);
+        });
     }
 
     public static void applyBlind(LivingEntity defender, int weaponTier) {
@@ -357,13 +351,10 @@ public class DamageAPI {
             return damage;
         
         //  ELITE DMG BOOST  //
-        if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
-            int tier = attacker.getMetadata("tier").get(0).asInt();
-            
-            if(tier <= 2)
-            	return damage *= 2.5f;
+        if (EntityAPI.isElite(attacker)) {
+            int tier = EntityAPI.getTier(attacker);
             return damage * (tier <= 2 ? 2.5f : (3 + (tier - 3) * 2));
-        } else if (attacker.hasMetadata("boss")) {
+        } else if (EntityAPI.isBoss(attacker)) {
             return damage * 3;
         }
         return damage;
@@ -710,15 +701,15 @@ public class DamageAPI {
     }
 
     public static void setInvulnerable(Entity ent) {
-        ent.setMetadata("invulnerable", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+    	Metadata.INVULNERABLE.set(ent, true);
     }
 
     public static boolean isInvulnerable(Entity ent) {
-        return ent.hasMetadata("invulnerable");
+        return Metadata.INVULNERABLE.get(ent).asBoolean();
     }
 
     public static void removeInvulnerable(Entity ent) {
-        if (ent.hasMetadata("invulnerable")) ent.removeMetadata("invulnerable", DungeonRealms.getInstance());
+    	Metadata.INVULNERABLE.remove(ent);
     }
 
     public static void createDamageHologram(Player createFor, Location createAround, double hp) {

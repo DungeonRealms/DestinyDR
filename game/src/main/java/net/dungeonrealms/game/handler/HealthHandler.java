@@ -52,12 +52,8 @@ import java.util.UUID;
  * Created by Kieran on 10/3/2015.
  */
 public class HealthHandler implements GenericMechanic {
-
-    @Getter
-    private static HashMap<UUID, DamageTracker> monsterTrackers = new HashMap<>();
-
-    @Getter
-    private static HealthHandler instance = new HealthHandler();
+	
+    @Getter private static HashMap<UUID, DamageTracker> monsterTrackers = new HashMap<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -79,20 +75,14 @@ public class HealthHandler implements GenericMechanic {
     /**
      * Calculates the player's stats on login.
      */
-    public void handleLoginEvents(Player player) {
-        player.setMetadata("loggingIn", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
+    public static void handleLogin(Player player) {
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        pw.calculateAllAttributes();
         
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-        	pw.calculateAllAttributes();
-            updatePlayerHP(player);
-            
-            setHP(player, pw.getHealth()); // Load health from db
-            
-            //  MARK PLAYER AS DONE.  //
-            player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-            player.removeMetadata("loggingIn", DungeonRealms.getInstance());
-        }, 5l);
+        setHP(player, pw.getHealth()); // Load health from db
+        
+        //  MARK PLAYER AS DONE.  //
+        player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
 
     /**
@@ -100,7 +90,7 @@ public class HealthHandler implements GenericMechanic {
      * removes potion effects and
      * updates database for web usage.
      */
-    public void handleLogoutEvents(Player player) {
+    public static void handleLogout(Player player) {
     	player.getActivePotionEffects().clear();
     	PlayerWrapper.getWrapper(player).setHealth(getHP(player));
     }
@@ -293,7 +283,8 @@ public class HealthHandler implements GenericMechanic {
     	if (!(e instanceof Player))
     		return;
     	
-    	int newHP = getHP(e);
+    	//int newHP = getHP(e);
+    	//TODO: Re-enable this, but make it not show if you're getting it from gear hp/s.
 //    	PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
 //    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
     }
@@ -633,11 +624,8 @@ public class HealthHandler implements GenericMechanic {
         convHPToDisplay = Math.max(1, convHPToDisplay);
         convHPToDisplay = Math.min(convHPToDisplay, (int) defender.getMaxHealth());
         
-        if (defender.hasMetadata("type") && defender.hasMetadata("level") && defender.hasMetadata("tier")) {
-            int tier = defender.getMetadata("tier").get(0).asInt();
-            boolean elite = defender.hasMetadata("elite");
-            defender.setCustomName(EntityMechanics.getInstance().generateOverheadBar(defender, newHP, maxHP, tier, elite));
-            defender.setCustomNameVisible(true);
+        if (EntityAPI.isMonster(defender)) {
+        	EntityAPI.showHPBar(EntityAPI.getMonster(defender));
             defender.setHealth(convHPToDisplay);
             if (!EntityMechanics.MONSTERS_LEASHED.contains(defender))
                 EntityMechanics.MONSTERS_LEASHED.add(defender);

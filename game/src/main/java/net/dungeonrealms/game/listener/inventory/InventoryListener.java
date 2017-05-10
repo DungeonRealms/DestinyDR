@@ -295,11 +295,9 @@ public class InventoryListener implements Listener {
         
         if (!CombatLog.isInCombat(player)) {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
-            // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
-            // TODO: Remove this delay, it allows armor stacking.
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-            	handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
-            }, 10L);
+            
+            // Wait a tick so the armor is actually in the slot first.
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player));
         } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
             player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
                     "cannot" + ChatColor.RED + " switch armor right now.");
@@ -321,7 +319,6 @@ public class InventoryListener implements Listener {
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
         // recalculate attributes
     	PlayerWrapper wp = PlayerWrapper.getWrapper(p);
-    	wp.calculateAllAttributes();
     	
     	boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
     	boolean hasNewArmor = ItemArmor.isArmor(newArmor);
@@ -357,7 +354,7 @@ public class InventoryListener implements Listener {
         }
         
         wp.getAttributes().addStats(armorChanges);
-        System.out.println("New player stats:");
+        System.out.println("Final player stats:");
     	System.out.println(wp.getAttributes().toString());
         
         for (AttributeType t : armorChanges.keySet()) {
@@ -370,6 +367,7 @@ public class InventoryListener implements Listener {
         			+ newVal.getValue() + t.getSuffix() + "]");
         }
         
+        //wp.calculateAllAtributes(); // 100% sure way to prevent armor stacking. Issue with this is it cancels any buffs eg/fish.
         HealthHandler.updatePlayerHP(p);
     }
 
