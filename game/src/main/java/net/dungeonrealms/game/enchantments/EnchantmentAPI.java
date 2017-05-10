@@ -6,42 +6,39 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 
-/**
- * Created by Chase on Nov 19, 2015
- */
 public class EnchantmentAPI {
 
-	private static Enchantment glowEnchant;
+    private static Enchantment glowEnchant;
 
-	public static Enchantment getGlowEnchant() {
-		if (glowEnchant == null)
-			registerEnchant();
-		return glowEnchant;
-	}
+    public static Enchantment getGlowEnchant() {
+        if (glowEnchant == null)
+            registerEnchant();
+        return glowEnchant;
+    }
 
-	public static void addGlow(org.bukkit.inventory.ItemStack stack) {
-		stack.addUnsafeEnchantment(getGlowEnchant(), 1);
-	}
+    public static void addGlow(org.bukkit.inventory.ItemStack stack) {
+        stack.addUnsafeEnchantment(getGlowEnchant(), 1);
+    }
 
-	public static void removeGlow(ItemStack stack) {
-		stack.removeEnchantment(getGlowEnchant());
-	}
-	
-	public static boolean isGlowing(ItemStack item) {
-		return item.getEnchantments().containsKey(getGlowEnchant());
-	}
+    public static void removeGlow(ItemStack stack) {
+        stack.removeEnchantment(getGlowEnchant());
+    }
 
-	private static void registerEnchant() {
-		org.bukkit.enchantments.Enchantment glow = new EnchantGlow(120);
-		try {
-			/* Adding the new enchant */
-			Field f = Enchantment.class.getDeclaredField("acceptingNew");
-			f.setAccessible(true);
-			f.set(null, true);
-			EnchantmentWrapper.registerEnchantment(glow);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		glowEnchant = glow;
-	}
+    public static boolean isGlowing(ItemStack item) {
+        return item.getEnchantments().containsKey(getGlowEnchant());
+    }
+
+    private static void registerEnchant() {
+        org.bukkit.enchantments.Enchantment glow = new EnchantGlow(120);
+        try {
+            /* Adding the new enchant */
+            Field f = Enchantment.class.getDeclaredField("acceptingNew");
+            f.setAccessible(true);
+            f.set(null, true);
+            EnchantmentWrapper.registerEnchantment(glow);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        glowEnchant = glow;
+    }
 }

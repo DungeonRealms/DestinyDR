@@ -28,6 +28,7 @@ public class BabySheepPet extends EntitySheep {
         super(world);
         setAge(-1, false); // Set as baby.
         setColor(EnumColor.values()[ThreadLocalRandom.current().nextInt(EnumColor.values().length)]);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
         this.ageLocked = true; // Never become an adult.
         if (taskID == 0) {
             taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {

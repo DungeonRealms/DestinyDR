@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.pet;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EntitySheep;
 import net.minecraft.server.v1_9_R2.EnumColor;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.DyeColor;
@@ -17,6 +18,7 @@ public class RainbowSheepPet extends EntitySheep {
         setAge(0);
         this.ageLocked = true;
         randomColor();
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 
     @Override //On Tick.

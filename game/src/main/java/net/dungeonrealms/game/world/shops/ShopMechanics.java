@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.world.shops;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
@@ -15,7 +15,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.Quests;
-
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +42,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Chase on Nov 17, 2015
  */
 public class ShopMechanics implements GenericMechanic, Listener {
+
+
+    //Stores all the recently sold items on this.
+    @Getter
+    private LinkedList<SoldShopItem> recentlySoldItems = new LinkedList<>();
 
     public static ConcurrentHashMap<String, Shop> ALLSHOPS = new ConcurrentHashMap<>();
 
@@ -106,18 +112,18 @@ public class ShopMechanics implements GenericMechanic, Listener {
         ALLSHOPS.clear();
         return statement;
     }
-    
+
     public static void deleteShop(Player player, boolean shutdown) {
-    	deleteShop(player.getName(), shutdown);
+        deleteShop(player.getName(), shutdown);
     }
-    
+
     public static void deleteShop(String name, boolean shutdown) {
-    	if (ALLSHOPS.containsKey(name))
-    		getShop(name).deleteShop(shutdown, null);
+        if (ALLSHOPS.containsKey(name))
+            getShop(name).deleteShop(shutdown, null);
     }
 
     public static boolean isItemSellable(ItemStack i) {
-    	return ItemManager.isItemTradeable(i) && !ItemMoney.isMoney(i);
+        return ItemManager.isItemTradeable(i) && !ItemMoney.isMoney(i);
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
@@ -150,16 +156,16 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     if (wrapper == null) return;
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
-                    
-                    if(Chat.containsIllegal(shopName)){
+
+                    if (Chat.containsIllegal(shopName)) {
                         player.sendMessage(ChatColor.RED + "Shop name contains illegal characters.");
                         return;
                     }
-                    
+
                     Shop shop = new Shop(uniqueId, b.getLocation(), wrapper.getCharacterID(), Chat.getInstance().checkForBannedWords(shopName));
                     wrapper.setShopOpened(true);
                     SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, 1, wrapper.getCharacterID());
-                    
+
                     ALLSHOPS.put(player.getName(), shop);
                     player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
                     player.sendMessage("");
@@ -170,15 +176,15 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     //  LOAD ITEMS FROM COLLECTION BIN  //
                     Storage storage = BankMechanics.getStorage(player);
                     if (storage.collection_bin != null) {
-                    	for(ItemStack i : storage.collection_bin.getContents()) {
-                    		if(i != null && i.getType() != Material.AIR) {
-                    			VanillaItem vi = new VanillaItem(i);
-                    			if (vi.getPrice() <= 0)
-                    				continue;
-                    			vi.setShowPrice(true);
-                    			shop.inventory.addItem(vi.generateItem()); 
-                    		}
-                    	}
+                        for (ItemStack i : storage.collection_bin.getContents()) {
+                            if (i != null && i.getType() != Material.AIR) {
+                                VanillaItem vi = new VanillaItem(i);
+                                if (vi.getPrice() <= 0)
+                                    continue;
+                                vi.setShowPrice(true);
+                                shop.inventory.addItem(vi.generateItem());
+                            }
+                        }
                         player.sendMessage(ChatColor.GREEN + "The items from your collection bin have been loaded into your shop.");
                         storage.clearCollectionBin();
                     }
@@ -214,6 +220,6 @@ public class ShopMechanics implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
-    	
+
     }
 }

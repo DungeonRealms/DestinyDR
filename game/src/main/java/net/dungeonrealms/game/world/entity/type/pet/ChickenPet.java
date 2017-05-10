@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.pet;
 
 import net.minecraft.server.v1_9_R2.EntityChicken;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 /**
@@ -15,5 +16,6 @@ public class ChickenPet extends EntityChicken {
         super(world);
         setAge(-1);
         this.ageLocked = true;
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 }

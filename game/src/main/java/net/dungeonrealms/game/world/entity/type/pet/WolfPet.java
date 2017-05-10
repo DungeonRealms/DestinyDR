@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.pet;
 
 import net.minecraft.server.v1_9_R2.EntityWolf;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 /**
@@ -19,6 +20,7 @@ public class WolfPet extends EntityWolf {
         this.ageLocked = true;
         setAge(0);
         setHealth(getMaxHealth()); //TODO: ???
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 
     @Override

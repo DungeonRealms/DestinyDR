@@ -16,6 +16,7 @@ public class GuardianPet extends EntityGuardian implements Ownable {
     public GuardianPet(World world) {
         super(world);
         setElder(false);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
     
     @Override

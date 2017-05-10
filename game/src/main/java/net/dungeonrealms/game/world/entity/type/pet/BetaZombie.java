@@ -20,6 +20,7 @@ public class BetaZombie extends ZombiePet implements Ownable {
 
     public BetaZombie(World world) {
         super(world);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 
     @Override

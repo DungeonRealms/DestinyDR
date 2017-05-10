@@ -17,6 +17,7 @@ public class EndermanPet extends EntityEnderman implements Ownable {
 	
     public EndermanPet(World world) {
         super(world);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 
     @Override

@@ -15,6 +15,7 @@ public class SnowmanPet extends EntitySnowman {
 
     public SnowmanPet(World world) {
         super(world);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
 
     @Override //Places snow behind it. TODO: Why do we override this? What's wrong with the default method? This looks like it's just a modified version of n().

@@ -11,8 +11,9 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -23,7 +24,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -49,6 +49,8 @@ public class Shop {
     public int viewCount;
     public List<String> uniqueViewers = new ArrayList<>();
 
+    public static final String HEART = "❤";
+
     public Shop(UUID uuid, Location loc, int characterID, String shopName) {
         this.ownerUUID = uuid;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
@@ -59,7 +61,7 @@ public class Shop {
         this.shopName = shopName;
         hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc.add(0, 1.5, .5));
         hologram.insertTextLine(0, ChatColor.RED + shopName);
-        hologram.insertTextLine(1, "0 " + ChatColor.RED + "â�¤");
+        hologram.insertTextLine(1, "0 " + ChatColor.RED + HEART);
         hologram.getVisibilityManager().setVisibleByDefault(true);
         isopen = false;
         inventory = createNewInv(ownerUUID);
@@ -68,31 +70,24 @@ public class Shop {
         this.uniqueViewers = new ArrayList<>();
     }
 
+    private ItemStack getOpenShopButton(){
+        return new NBTWrapper(ItemManager.createItem(Material.INK_SACK,
+                ChatColor.GREEN.toString() + "Click to OPEN Shop", DyeColor.GRAY.getDyeData(),
+                ChatColor.GRAY + "This will open your shop to the public.")).setString("status", "off").build();
+    }
+
+    private ItemStack getDeleteShopButton(){
+        return new NBTWrapper(ItemManager.createItem(Material.BARRIER,
+                ChatColor.GREEN.toString() + "Click to DELETE Shop",
+                ChatColor.GRAY + "This will safely delete your shop")).setString("statusClose", "disabledInventorySessionChecker")
+                .build();
+    }
     private Inventory createNewInv(UUID uuid) {
         int invSize = getInvSize();
         Inventory inv = Bukkit.createInventory(null, invSize, shopName + " - @" + Bukkit.getPlayer(uuid).getName());
-        ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
-        ItemMeta meta = button.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "This will open your shop to the public.");
-        meta.setLore(lore);
-        button.setItemMeta(meta);
-        net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
-        nmsButton.getTag().setString("status", "off");
-        inv.setItem(invSize - 1, CraftItemStack.asBukkitCopy(nmsButton));
+        inv.setItem(invSize - 1, getOpenShopButton());
 
-        // Close shop button
-        ItemStack button1 = new ItemStack(Material.BARRIER);
-        ItemMeta meta1 = button1.getItemMeta();
-        meta1.setDisplayName(ChatColor.GREEN.toString() + "Click to DELETE shop");
-        ArrayList<String> lore1 = new ArrayList<>();
-        lore1.add(ChatColor.GRAY + "This will safely delete your shop");
-        meta1.setLore(lore1);
-        button1.setItemMeta(meta1);
-        net.minecraft.server.v1_9_R2.ItemStack nmsButton1 = CraftItemStack.asNMSCopy(button1);
-        nmsButton1.getTag().setString("statusClose", "disabledInventorySessionChecker");
-        inv.setItem(invSize - 2, CraftItemStack.asBukkitCopy(nmsButton1));
+        inv.setItem(invSize - 2, getDeleteShopButton());
         return inv;
     }
 
@@ -185,7 +180,7 @@ public class Shop {
             Storage storage = BankMechanics.getStorage(ownerUUID);
             if (storage != null)
                 storage.collection_bin = inv;
-            
+
             String invToString = ItemSerialization.toString(inv);
             //Only save on shutdown / logout, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
 
@@ -228,33 +223,18 @@ public class Shop {
             }
             viewers.forEach(HumanEntity::closeInventory);
             viewers.clear();
-            ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
-            ItemMeta meta = button.getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
-            ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "This will open your shop to the public.");
-            meta.setLore(lore);
-            button.setItemMeta(meta);
-            net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
-            nmsButton.getTag().setString("status", "off");
-            inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
+            inventory.setItem(inventory.getSize() - 1, getOpenShopButton());
             hologram.clearLines();
             hologram.insertTextLine(0, ChatColor.RED + shopName);
-            hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " â�¤");
+            hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " " + HEART);
         } else {
-            ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
-            ItemMeta meta = button.getItemMeta();
-            meta.setDisplayName(ChatColor.RED.toString() + "Click to CLOSE Shop");
-            ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "This will allow you to edit your stock.");
-            meta.setLore(lore);
-            button.setItemMeta(meta);
-            net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
-            nmsButton.getTag().setString("status", "on");
-            inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
+            inventory.setItem(inventory.getSize() - 1,  new NBTWrapper(ItemManager.createItem(Material.INK_SACK,
+                    ChatColor.RED.toString() + "Click to " + ChatColor.BOLD + "CLOSE" + ChatColor.RED + " Shop",
+                    DyeColor.LIME.getDyeData(), ChatColor.GRAY + "This will allow you to edit your stock.")).setString("status", "on")
+                    .build());
             hologram.clearLines();
             hologram.insertTextLine(0, ChatColor.GREEN + "[S] " + shopName);
-            hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " â�¤");
+            hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " " + HEART);
         }
     }
 

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.pet;
 
 import net.minecraft.server.v1_9_R2.EntityBat;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -19,6 +20,7 @@ public class BatPet extends EntityBat {
     public BatPet(World world, Player owner) {
         super(world);
         this.target = owner;
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
     
     public BatPet(World world) {

@@ -33,7 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public abstract class ItemGeneric extends PersistentItem {
 
-	private Map<ItemData, Boolean> dataMap = new HashMap<>();
+	private Map<ItemData, Boolean> dataMap;
 	
 	private List<String> lore;
 	
@@ -179,13 +179,13 @@ public abstract class ItemGeneric extends PersistentItem {
 			}
 		}
 
-		if(getItem().getType().equals(Material.SADDLE)) {
-			System.out.println("The untradable saddle: " + getTagInt("untradeable"));
-		}
-		if(hasTag("puntradeable"))setPermUntradeable(true);
+//		if(getItem().getType().equals(Material.SADDLE)) {
+//			System.out.println("The untradable saddle: " + getTagInt("untradeable"));
+//		}
+//		if(hasTag("puntradeable"))setPermUntradeable(true);
 
-		Bukkit.getLogger().info("Untradeable: " + getTagBool(ItemData.UNTRADEABLE.getNBTTag()));
-		if(hasTag("untradeable"))setUntradeable(true);
+//		Bukkit.getLogger().info("Untradeable: " + getTagBool(ItemData.UNTRADEABLE.getNBTTag()));
+//		if(hasTag("untradeable"))setUntradeable(true);
 		if(getItem().getType().equals(Material.SADDLE)) {
 			System.out.println("The untradable  saddle 2: " + isUntradeable());
 		}

@@ -127,7 +127,7 @@ public class InventoryListener implements Listener {
         if (target == null) return;
 
         if (!(event.getPlayer() instanceof Player)) return;
-        if (!event.getInventory().getName().contains("Bank Storage")) return;
+        if (!event.getInventory().getName().contains("Storage Chest")) return;
         Player viewer = (Player) event.getPlayer();
         PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {

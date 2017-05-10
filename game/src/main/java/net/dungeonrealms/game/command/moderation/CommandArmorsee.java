@@ -65,6 +65,10 @@ public class CommandArmorsee extends BaseCommand {
                         return;
                     }
 
+                    if(wrapper.getPendingArmor() == null) {
+                        sender.sendMessage(ChatColor.GREEN + "This player is not wearing any armor!");
+                        return;
+                    }
                     sender.openInventory(wrapper.getPendingArmor());
                     offline_armor_watchers.put(sender.getUniqueId(), uuid);
 

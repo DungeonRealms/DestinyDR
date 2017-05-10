@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.pet;
 
 
 import net.minecraft.server.v1_9_R2.EntityCaveSpider;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 /**
@@ -14,6 +15,7 @@ public class SpiderPet extends EntityCaveSpider {
 
     public SpiderPet(World world) {
         super(world);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.45F);
     }
     
     @Override
