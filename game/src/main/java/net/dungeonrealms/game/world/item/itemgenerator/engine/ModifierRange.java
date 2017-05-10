@@ -5,10 +5,11 @@ import net.minecraft.server.v1_9_R2.NBTBase;
 import net.minecraft.server.v1_9_R2.NBTBase.NBTNumber;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagIntArray;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import lombok.Getter;
 
-//TODO: This is bad, might be worthwhile to redo this using multiple classes.
+//TODO: This is bad, might be worthwhile to redo this.
 public class ModifierRange implements Cloneable {
 
 	@Getter private ModifierType modifierType;
@@ -24,6 +25,11 @@ public class ModifierRange implements Cloneable {
 			NBTTagList range = (NBTTagList)loadFrom;
 			valLow = range.c(0);
 			valHigh = range.c(1);
+			this.modifierType = ModifierType.RANGE;
+		} else if (loadFrom instanceof NBTTagIntArray) {
+			NBTTagIntArray arr = (NBTTagIntArray) loadFrom;
+			valLow = arr.c()[0];
+			valHigh = arr.c()[1];
 			this.modifierType = ModifierType.RANGE;
 		} else {
 			Utils.log.info("Tried to load unknown NBT type as ModifierRange!. Id = " + loadFrom.getTypeId());

@@ -29,13 +29,18 @@ public class DungeonListener implements Listener {
 	//TODO: Mob nametag stuff.
 	// Lootchest particles better.
 	//TODO: Metadata
-	//TODO: Write a .item converter.
 	//TODO: Prevent using items while sharding.
 	//TODO: Integrate new drops to dungeons.
 	//TODO: Finish support tools
 	//TODO: Convert all toggles to toggles.
 	//TODO: Move to PreparedStatement.
 	//TODO: Stop using GamePlayer
+	
+	//TODO: Fix Attributes
+	//TODO: Fix Lootchests
+	//TODO: Convert items.
+	//TODO: Skeletons don't work fully or something
+	//TODO: Fix Chat
 	
 	
     @EventHandler(priority = EventPriority.MONITOR)

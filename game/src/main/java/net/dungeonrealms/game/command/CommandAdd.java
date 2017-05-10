@@ -103,7 +103,7 @@ public class CommandAdd extends BaseCommand {
                 	player.sendMessage(ChatColor.GREEN + "Player Attributes:");
                 	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
                 	for (AttributeType at : pw.getAttributes().getAttributes())
-                		player.sendMessage(at.getNBTName() + " - " + pw.getAttributes().getAttribute(at).toString());
+                		player.sendMessage(ChatColor.YELLOW + at.getNBTName() + ": " + ChatColor.RED + pw.getAttributes().getAttribute(at).toString());
                 	break;
                 case "uuid":
                     player.sendMessage(Bukkit.getPlayer(GameAPI.getUUIDFromName(player.getName())).getDisplayName());
@@ -261,7 +261,7 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "stats":
                 	PlayerWrapper.getWrapper(player).calculateAllAttributes();
-                	player.sendMessage("Recalculated.");
+                	player.sendMessage(ChatColor.GREEN + "Recalculated.");
                 	break;
                 case "einfo":
                 	target = getEntity(player, args);
@@ -309,7 +309,8 @@ public class CommandAdd extends BaseCommand {
     		search += ( i == startIndex ? "" : " ") + args[i];
     	
     	final String finalSearch = search;
-    	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity && ChatColor.stripColor(e.getCustomName()).contains(finalSearch)).findAny().get();
+    	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity
+    			&& ChatColor.stripColor(e.getCustomName()).contains(finalSearch)).findAny().orElse(null);
     	if (target == null)
     		player.sendMessage(ChatColor.RED + "Entity not found.");
     	return target;

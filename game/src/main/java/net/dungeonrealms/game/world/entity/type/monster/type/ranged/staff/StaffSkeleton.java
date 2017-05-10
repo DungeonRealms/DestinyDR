@@ -2,12 +2,10 @@ package net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff;
 
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.entity.LivingEntity;
-import sun.reflect.Reflection;
 
 import java.lang.reflect.Field;
 

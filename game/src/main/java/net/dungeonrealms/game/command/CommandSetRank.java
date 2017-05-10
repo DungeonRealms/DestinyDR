@@ -11,9 +11,7 @@ import net.dungeonrealms.database.UpdateType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
 
 /**
  * Created by Brad on 09/06/2016.
@@ -25,7 +23,8 @@ public class CommandSetRank extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof ConsoleCommandSender) && !(Rank.isGM((Player) sender))) return false;
+        if (sender instanceof Player && !Rank.isGM((Player) sender))
+        	return false;
         
         PlayerWrapper executor = PlayerWrapper.getWrapper((Player) sender);
         PlayerRank newRank = PlayerRank.getFromPrefix(args[1]);
