@@ -6,11 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.Packet;
 import net.minecraft.server.v1_9_R2.PacketPlayOutWorldParticles;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
@@ -19,13 +15,15 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Kieran on 9/20/2015.
  */
 public class ParticleAPI {
 
-	@Getter
+    @Getter
     public enum ParticleEffect {
         FIREWORKS_SPARK(Material.FIREWORK, "Fireworks"),
         WATER_BUBBLE(Material.WATER_BUCKET, "Bubble", -1),
@@ -53,14 +51,14 @@ public class ParticleAPI {
         private String displayName;
         private ChatColor color;
         private int price;
-        
-        
+
+
         ParticleEffect(Material mat, String displayName) {
-        	this(mat, displayName, 650);
+            this(mat, displayName, 650);
         }
-        
+
         ParticleEffect(Material mat, String displayName, int price) {
-        	this(mat, displayName, ChatColor.WHITE, price);
+            this(mat, displayName, ChatColor.WHITE, price);
         }
 
         ParticleEffect(Material mat, String displayName, ChatColor color, int price) {
@@ -69,13 +67,13 @@ public class ParticleAPI {
             this.color = color;
             this.price = price;
         }
-        
+
         public EnumParticle getParticle() {
-        	return EnumParticle.valueOf(name());
+            return EnumParticle.valueOf(name());
         }
-        
+
         public int getId() {
-        	return ordinal();
+            return ordinal();
         }
 
         public static ParticleEffect getById(int id) {
@@ -158,6 +156,11 @@ public class ParticleAPI {
      * @since 1.0
      */
     public static void sendParticleToLocationAsync(final ParticleEffect particleEffect, final Location location, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
+        if (Bukkit.isPrimaryThread()) {
+            //Dont send sync..
+            CompletableFuture.runAsync(() -> sendParticleToLocationAsync(particleEffect, location, xOffset, yOffset, zOffset, particleSpeed, particleCount), ForkJoinPool.commonPool());
+            return;
+        }
         Object packet = null;
         try {
             packet = newPacket(particleEffect, location, xOffset, yOffset, zOffset, particleSpeed, particleCount);
@@ -173,14 +176,14 @@ public class ParticleAPI {
             }
         }
     }
-    
+
     public static void spawnParticle(Particle p, Location loc, int count, float speed) {
-    	Random r = new Random();
-    	spawnParticle(p, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), count, speed);
+        Random r = new Random();
+        spawnParticle(p, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), count, speed);
     }
-    
+
     public static void spawnParticle(Particle p, Location loc, double xOff, double yOff, double zOff, int count, float speed) {
-    	GameAPI.getNearbyPlayers(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
+        GameAPI.getNearbyPlayers(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
     }
 
     /**

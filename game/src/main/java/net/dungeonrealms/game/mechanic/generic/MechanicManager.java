@@ -3,9 +3,6 @@ package net.dungeonrealms.game.mechanic.generic;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Nick on 10/23/2015.
- */
 public class MechanicManager {
 
 	private static List<GenericMechanic> mechanics = new ArrayList<>();
@@ -20,7 +17,7 @@ public class MechanicManager {
     public static void loadMechanics() {
     	for (EnumPriority ep : EnumPriority.values())
     		if (ep != EnumPriority.NO_STARTUP)
-    			mechanics.stream().filter(gm -> gm.startPriority() == ep).forEach(GenericMechanic::stopInvocation);
+    			mechanics.stream().filter(gm -> gm.startPriority() == ep).forEach(GenericMechanic::startInitialization);
     }
 
     /**

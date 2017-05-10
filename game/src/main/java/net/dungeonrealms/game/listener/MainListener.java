@@ -11,6 +11,7 @@ import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
+import net.dungeonrealms.game.command.moderation.CommandMobDebug;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -677,6 +678,11 @@ public class MainListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
+
+
+        if(event.getPlayer().hasMetadata("mob_debug")){
+            CommandMobDebug.debugEntity(event.getPlayer(), event.getRightClicked());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -842,12 +848,15 @@ public class MainListener implements Listener {
             return;
         if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
             event.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling target to " + event.getEntity().getName());
             return;
         }
 
         GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
-        if (gp != null && !gp.isTargettable())
+        if (gp != null && !gp.isTargettable()) {
             event.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling target to from GPLAYER " + event.getEntity().getName());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

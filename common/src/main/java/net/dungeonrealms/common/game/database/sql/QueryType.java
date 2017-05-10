@@ -48,6 +48,7 @@ public enum QueryType {
     USER_UPDATE("UPDATE users SET username = %s, selected_character_id = %s, ecash = %s, joined = %s, last_login = %s, last_logout = %s, last_free_ecash = %s, last_shard_transfer = %s, is_online = %s, currentShard = %s, currencyTab = %s, firstLogin = %s, lastViewedBuild = %s, lastNoteSize = %s, lastVote = %s, " +
             "mounts = %s, pets = %s, particles = %s, mountSkin = %s, trails = %s WHERE account_id = %s"),
     DELETE_GUILD_MEMBER("DELETE FROM guild_members WHERE account_id = %s"),
+    BACKUP_CHARACTER("UPDATE characters SET level = %s, experience = %s, location = %s, inventory_storage = %s, armour_storage = %s, gems = %s, bank_storage = %s, mule_storage = %s, mule_level = %s WHERE character_id = %s;"),
     SELECT_ALTS("SELECT `ip_addresses`.`account_id`, `ip_addresses`.`last_used`,`users`.`username`, users.last_login FROM `ip_addresses` LEFT JOIN users ON `ip_addresses`.`account_id` = `users`.`account_id` WHERE `ip_addresses`.`ip_address` = %s;"),
     SELECT_ALTS_FROM_ACCOUNT_ID("SELECT `ip_addresses`.`ip_address`, `ip_addresses`.`last_used` FROM `ip_addresses` WHERE `ip_addresses`.`account_id` = %s;");
 

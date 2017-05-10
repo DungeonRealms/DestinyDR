@@ -20,12 +20,13 @@ public class ItemMuleMount extends FunctionalItem implements ItemClickListener {
 	public ItemMuleMount(MuleTier tier) {
 		super(ItemType.MULE);
 		this.tier = tier;
+		setUntradeable(true);
 	}
 	
 	public ItemMuleMount(Player player) {
 		super(ItemType.MULE);
 		setUntradeable(true);
-		
+
 		PlayerWrapper pw = PlayerWrapper.getWrapper(player);
 		
 		if (pw.getMuleLevel() == 0)
@@ -36,6 +37,7 @@ public class ItemMuleMount extends FunctionalItem implements ItemClickListener {
 	
 	public ItemMuleMount(ItemStack item) {
 		super(item);
+		setUntradeable(true);
 	}
 
 	@Override

@@ -282,9 +282,9 @@ public abstract class MobSpawner {
         System.out.println("Spawning " + getMonsterType().getIdName() + ". Tier = " + getTier() + ", Level = " + level);
         if (this instanceof EliteMobSpawner) {
             EliteMobSpawner ms = (EliteMobSpawner) this;
-            entity = EntityAPI.spawnElite(getLocation(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
+            entity = EntityAPI.spawnElite(spawn, ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
         } else {
-            entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
+            entity = EntityAPI.spawnCustomMonster(spawn, getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
         }
 
         getSpawnedMonsters().add(entity);

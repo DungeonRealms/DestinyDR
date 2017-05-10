@@ -113,7 +113,6 @@ public class DungeonRealms extends JavaPlugin {
     private boolean almostRestarting = false;
 
     // Shard Config
-    public MechanicManager mm = null;
     public boolean isInstanceServer = false;
     public String bungeeName = "Lobby";
     public int realmnumber = -1;
@@ -362,6 +361,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
 
+        cm.registerCommand(new CommandMobDebug());
         cm.registerCommand(new CommandWarp());
         cm.registerCommand(new CommandMonSpawn());
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));

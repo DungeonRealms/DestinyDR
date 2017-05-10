@@ -3,9 +3,11 @@ package net.dungeonrealms.game.world.entity.type.mounts;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -52,12 +54,13 @@ public class MountData {
         lore.addAll(getLore());
 
         lore.add(ChatColor.DARK_RED + "Soulbound");
-        return AntiDuplication.getInstance().applyAntiDupe(new NBTWrapper(new ItemBuilder().setItem(mount.getSelectionItem().clone())
+        ItemMount saddle = new ItemMount(AntiDuplication.getInstance().applyAntiDupe(new NBTWrapper(new ItemBuilder().setItem(mount.getSelectionItem().clone())
                 .setName(getNameColor() + ChatColor.BOLD.toString() + getName() + " Mount").setLore(lore).build())
                 .setString("mount", mount.name())
                 .setString("speed", "" + getSpeed())
                 .set("soulbound", new NBTTagInt(1))
                 .set("untradeable", new NBTTagInt(1))
-                .set("puntradeable", new NBTTagInt(1)).build());
+                .set("puntradeable", new NBTTagInt(1)).set("type", new NBTTagString("mount")).build()));
+        return saddle.generateItem();
     }
 }

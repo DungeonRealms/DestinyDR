@@ -116,6 +116,6 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 	
 	@Override
 	protected String getDisplayName() {
-		return EnumTier.getTier(getTier()).getColor() + getTier().getName() + "Elixir of " + (isSplash() ? "Splash" : "Singular") + " Healing";
+		return EnumTier.getTier(getTier()).getColor() + getTier().getName() + " Elixir of " + (isSplash() ? "Splash" : "Singular") + " Healing";
 	}
 }

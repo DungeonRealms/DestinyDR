@@ -197,15 +197,19 @@ public abstract class PersistentItem {
 	
 	public static PersistentItem constructItem(ItemStack item) {
 		ItemType type = getType(item);
-		if (type == null)
+		if (type == null) {
+			System.out.println("constructItem debug 1");
 			return new VanillaItem(item);
-		
+		}
+		System.out.println("constructItem debug 2: " + type.getItemClass().getName());
 		try {
 			return type.getItemClass().getDeclaredConstructor(ItemStack.class).newInstance(item);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Utils.log.info("Failed to construct " + type.getItemClass().getName() + ". Is it missing a constructor accepting only ItemStack?");
 		}
+
+		System.out.println("constructItem debug 3");
 		
 		return new VanillaItem(item);
 	}
