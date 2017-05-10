@@ -8,7 +8,7 @@ public class Constants {
 
     public static Logger log = Logger.getLogger("DungeonRealms");
 
-    public static boolean debug;
+    public static boolean debug = true;
 
     public static List<String> DEVELOPERS = Arrays.asList("Bradez1571", "Kneesnap", "iFamasssxD", "Ingot");
 
@@ -34,6 +34,7 @@ public class Constants {
     // BUILD NUMBER //
     public static String BUILD_NUMBER = "#0";
 
+    public static String STORE_URL = "www.dungeonrealms.net/oldshop";
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
     }

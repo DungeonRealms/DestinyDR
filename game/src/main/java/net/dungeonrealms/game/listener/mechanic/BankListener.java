@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Chase, by fixed by Proxying and under inspection of xFinityPro. Later it was changed by Kneesnap. Probably it will be changed sometime in the future.
+ * Created by Chase, by fixed by Proxying and under inspection of xFinityPro. Later it was changed by Kneesnap and then iFamasssxD, Probably it will be changed sometime in the future.
  */
 public class BankListener implements Listener {
 
@@ -128,10 +128,13 @@ public class BankListener implements Listener {
     		return;
     	Player player = (Player) evt.getWhoClicked();
     	evt.setCancelled(true);
-    	
+    	Bukkit.getLogger().info("Bank chest click!");
     	if (evt.getRawSlot() < 9) {
-    		if (evt.getCursor() == null) {
+            Bukkit.getLogger().info("Opening bank -1!");
+    		if (evt.getCursor() == null || evt.getCursor().getType() == Material.AIR) {
+                Bukkit.getLogger().info("Opening bank 1");
     			if (evt.getRawSlot() == 0) {
+                    Bukkit.getLogger().info("Opening bank! 0");
     				//  OPEN STORAGE  //
     				Storage storage = BankMechanics.getStorage(player.getUniqueId());
                     if (storage == null) {
@@ -140,9 +143,12 @@ public class BankListener implements Listener {
                     }
 
                     if (evt.isLeftClick()) {
+                        Bukkit.getLogger().info("Opening bank!");
                         storage.openBank(player);
                     } else if (evt.getClick() == ClickType.MIDDLE || evt.getClick() == ClickType.RIGHT) {
                         promptUpgradeBank(player);
+                    }else {
+                        Bukkit.getLogger().info("No click found!: " + evt.getClick());
                     }
     			} else if (evt.getRawSlot() == 1) {
     				//  SCRAP TAB  //

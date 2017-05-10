@@ -4,9 +4,6 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
 
-/**
- * Created by Chase on Sep 19, 2015
- */
 public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     protected EnumMonster monsterType;
     
@@ -24,7 +21,17 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
 
     @Override
     public void collide(Entity e) {}
-    
+
+    @Override
+    protected void r() {
+        this.goalSelector.a(1, new PathfinderGoalFloat(this));
+        this.goalSelector.a(2, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.goalSelector.a(3, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.goalSelector.a(4, new PathfinderGoalRandomLookaround(this));
+        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+    }
+
     @Override
     public void setMonster(EnumMonster m) {
     	this.monsterType = m;

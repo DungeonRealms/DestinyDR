@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.core;
 import lombok.Setter;
 import net.dungeonrealms.game.item.ItemType;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -15,7 +16,7 @@ public class VanillaItem extends ItemGeneric {
 	
 	public VanillaItem(ItemStack item) {
 		super(item);
-		if (item == null)
+		if (item == null || item.getType() == Material.AIR)
 			return;
 		ItemMeta meta = item.getItemMeta();
 		if (meta.hasLore())

@@ -19,9 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-/**
- * Created by Kieran Quigley (Proxying) on 03-Jul-16.
- */
 public class PvPListener implements Listener {
     
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -32,7 +29,7 @@ public class PvPListener implements Listener {
     	Projectile projectile = isProjectile ? (Projectile)event.getDamager() : null;
     	
     	//  DONT HANDLE IF IT'S NOT PLAYER VS PLAYER  //
-    	if ((!isProjectile || !GameAPI.isPlayer((Player)projectile.getShooter())) && !isPlayer)
+    	if ((!isProjectile || !isPlayer))
     		return;
     	
     	Player attacker = isProjectile ? (Player)projectile.getShooter() : (Player)event.getDamager();

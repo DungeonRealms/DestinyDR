@@ -68,7 +68,7 @@ public class ModifierRange implements Cloneable {
 		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
 			
 			if (modifierType == ModifierType.TRIPLE)
-				valLow = Utils.randInt(low, lowHigh); //Or low if < 0.
+				valLow = lowHigh < low ? low : Utils.randInt(low, lowHigh); //Or low if < 0.
 			
 			if (high - valLow > 0)
 				valHigh = Utils.randInt(valLow, high);

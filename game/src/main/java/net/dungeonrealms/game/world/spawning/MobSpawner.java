@@ -2,7 +2,6 @@ package net.dungeonrealms.game.world.spawning;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -13,7 +12,6 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,74 +24,88 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base for a DR Mob Spawner.
- * 
+ *
  * @author Unknown
  */
 public abstract class MobSpawner {
 
     @Getter //Where do we spawn them?
     private Location location;
-    
-    @Getter @Setter //What tier monster are we spawning?
+
+    @Getter
+    @Setter //What tier monster are we spawning?
     private int tier;
-    
+
     @Getter //List of monsters we have spawned.
     private List<Entity> spawnedMonsters = new CopyOnWriteArrayList<>();
 
-    @Getter @Setter //How many do we spawn
+    @Getter
+    @Setter //How many do we spawn
     private int spawnAmount;
-    
-    @Setter @Getter //The timer that attempts to spawn in entities.
+
+    @Setter
+    @Getter //The timer that attempts to spawn in entities.
     private int timerID = -1;
-    
+
     @Getter //"high" or "low". How powerful this entity is.
     private String lvlRange;
-    
-    @Setter @Getter //Custom name
+
+    @Setter
+    @Getter //Custom name
     private String customName;
-    
-    @Setter @Getter //Monster type
+
+    @Setter
+    @Getter //Monster type
     private EnumMonster monsterType;
-    
-    @Setter @Getter // Should we ignore spawn conditions?
+
+    @Setter
+    @Getter // Should we ignore spawn conditions?
     private boolean firstSpawn = true;
 
     @Getter
     private int initialRespawnDelay;
-    
+
     @Setter //Delay between spawns.
     private int respawnDelay;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private int counter;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private int minimumXZ;
-    @Setter @Getter
+    @Setter
+    @Getter
     private int maximumXZ;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Hologram editHologram;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private ItemType weaponType;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private ElementalAttribute element;
-   
-    @Getter @Setter
+
+    @Getter
+    @Setter
     private double elementChance;
 
     @Getter
     private ArmorStand armorStand;
-    
-    @Getter @Setter
+
+    @Getter
+    @Setter
     private boolean dungeon;
-    
+
     public MobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
-    	setCustomName(name);
-    	setMonsterType(type);
-    	setSpawnAmount(Math.min(spawnAmount, 8));
+        setCustomName(name);
+        setMonsterType(type);
+        setSpawnAmount(Math.min(spawnAmount, 8));
 
         this.lvlRange = lvlRange;
         this.initialRespawnDelay = respawnDelay;
@@ -108,27 +120,27 @@ public abstract class MobSpawner {
         setMaximumXZ(maximumXZ);
         spawnArmorStand();
     }
-    
+
     private void spawnArmorStand() {
-    	ArmorStand as = getLocation().getWorld().spawn(getLocation(), ArmorStand.class);
-    	
-    	// Remove old stands. (Shouldn't happen.)
-    	List<org.bukkit.entity.Entity> list = as.getNearbyEntities(1, 1, 1);
-    	list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
-    		entity.remove();
-    		if (as.getWorld().getBlockAt(getLocation()).getType() == Material.ARMOR_STAND)
-    			as.getWorld().getBlockAt(getLocation()).setType(Material.AIR);
-    	});
-    	
-    	as.setVisible(false);
-    	as.setGravity(false);
-    	as.setInvulnerable(true);
+        ArmorStand as = getLocation().getWorld().spawn(getLocation(), ArmorStand.class);
+
+        // Remove old stands. (Shouldn't happen.)
+        List<org.bukkit.entity.Entity> list = as.getNearbyEntities(1, 1, 1);
+        list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
+            entity.remove();
+            if (as.getWorld().getBlockAt(getLocation()).getType() == Material.ARMOR_STAND)
+                as.getWorld().getBlockAt(getLocation()).setType(Material.AIR);
+        });
+
+        as.setVisible(false);
+        as.setGravity(false);
+        as.setInvulnerable(true);
     }
 
     public void createEditInformation() {
-        if(this.editHologram != null && !this.editHologram.isDeleted())
+        if (this.editHologram != null && !this.editHologram.isDeleted())
             this.editHologram.delete();
-        
+
         Hologram holo = HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().clone().add(.5, 3.5, .5));
 
         if (this instanceof EliteMobSpawner) {
@@ -140,7 +152,7 @@ public abstract class MobSpawner {
 
             holo.appendTextLine(ChatColor.GREEN + "Elite Type: " + (elite != null ? elite.toString() : "N/A"));
         }
-        
+
         holo.appendTextLine(ChatColor.GREEN + "Mob Type: " + (getMonsterType() != null ? getMonsterType().name() : "N/A"));
 
         holo.appendTextLine(ChatColor.GREEN + "Tier: " + this.getTier());
@@ -154,95 +166,96 @@ public abstract class MobSpawner {
 
         if (this.weaponType != null)
             holo.appendTextLine(ChatColor.GREEN + "Weapon Type: " + this.weaponType);
-        
+
         if (getElement() != null)
-        	holo.appendTextLine(getElement().getColor() + "" + (getElementChance() != 0 ? getElementChance() : "100") + "% chance for " + getElement().getPrefix() + " damage");
-        
+            holo.appendTextLine(getElement().getColor() + "" + (getElementChance() != 0 ? getElementChance() : "100") + "% chance for " + getElement().getPrefix() + " damage");
+
         this.editHologram = holo;
     }
-    
+
     public int getRespawnDelay() {
-    	int delay = respawnDelay;
-    	if (delay < 25)
-    		delay = getDelays()[getTier() - 1];
-    	delay += delay / 10;
-    	return delay;
+        int delay = respawnDelay;
+        if (delay < 25)
+            delay = getDelays()[getTier() - 1];
+        delay += delay / 10;
+        return delay;
     }
-    
+
     public int[] getDelays() {
-    	return new int[] {40, 80, 105, 145, 200};
+        return new int[]{40, 80, 105, 145, 200};
     }
-    
+
     public boolean hasCustomName() {
-    	return this.getCustomName() != null;
+        return this.getCustomName() != null;
     }
 
     public String getSerializedString() {
         StringBuilder builder = new StringBuilder();
         Location loc = getLocation();
-        
+
         builder.append(loc.getX()).append(",")
-        		.append(loc.getY()).append(",")
-        		.append(loc.getZ()).append("=");
-        
+                .append(loc.getY()).append(",")
+                .append(loc.getZ()).append("=");
+
         builder.append(getMonsterType().getIdName());
 
         if (hasCustomName())
-        	builder.append("(").append(getCustomName()).append(")");
+            builder.append("(").append(getCustomName()).append(")");
 
         builder.append(":");
-        
+
         // Tier
         builder.append(getTier()).append(";")
-        	.append(getSpawnAmount()).append(getLvlRange().equals("high") ? "+" : "-")
-        	.append("@");
-        
+                .append(getSpawnAmount()).append(getLvlRange().equals("high") ? "+" : "-")
+                .append("@");
+
         builder.append(this.initialRespawnDelay).append("#")
-        	.append(getMinimumXZ()).append("-").append(getMaximumXZ()).append("$");
+                .append(getMinimumXZ()).append("-").append(getMaximumXZ()).append("$");
 
         if (this.weaponType != null)
             builder.append("@WEP@").append(weaponType.name()).append("@WEP@");
 
         // Set element.
         if (getElement() != null) {
-        	builder.append("@ELEM@").append(getElement().name());
-        	
-        	if (getElementChance() > 0 && getElementChance() <= 100)
-        		builder.append("%").append(getElementChance());
-        	
-        	builder.append("@ELEM@");
+            builder.append("@ELEM@").append(getElement().name());
+
+            if (getElementChance() > 0 && getElementChance() <= 100)
+                builder.append("%").append(getElementChance());
+
+            builder.append("@ELEM@");
         }
-        
+
         return builder.toString();
     }
 
     public void spawnIn() {
-    	getSpawnedMonsters().stream().filter(Entity::isDead).forEach(getSpawnedMonsters()::remove);
-    	
-    	if (getSpawnedMonsters().size() >= getSpawnAmount() || !canSpawnMobs())
-    		return;
-    	
-    	createMobs();
-    	setFirstSpawn(false);
-    	setCounter(0);
+        getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(getSpawnedMonsters()::remove);
+
+        if (getSpawnedMonsters().size() >= getSpawnAmount() || !canSpawnMobs())
+            return;
+
+        createMobs();
+        setFirstSpawn(false);
+        setCounter(0);
     }
-    
+
     protected void createMobs() {
-    	spawn();
+        spawn();
     }
-    
+
     protected boolean canSpawnMobs() {
-    	setCounter(getCounter() + 1);
-    	return isFirstSpawn() || getCounter() >= getRespawnDelay() || isDungeon();
+        setCounter(getCounter() + 1);
+        return isFirstSpawn() || getCounter() >= getRespawnDelay() || isDungeon();
     }
 
     public abstract void init();
 
     public void kill() {
-    	getSpawnedMonsters().forEach(Entity::remove);
-    	getSpawnedMonsters().clear();
-    	
-    	getArmorStand().remove();
+        getSpawnedMonsters().forEach(Entity::remove);
+        getSpawnedMonsters().clear();
+
+        if (getArmorStand() != null)
+            getArmorStand().remove();
     }
 
     public void remove() {
@@ -252,41 +265,41 @@ public abstract class MobSpawner {
         SpawningMechanics.getSpawners().remove(this);
         SpawningMechanics.saveConfig();
     }
-    
+
     protected Entity spawn() {
-    	Location spawn = spray();
-    	
-    	if (GameAPI.isInSafeRegion(spawn))
-    		return null;
-    	
-    	if (getMonsterType() == null) {
-    		Utils.log.info("Could not spawn non-existant monster-type.");
-    		return null;
-    	}
-    	
-    	Entity entity;
-    	int level = Utils.getRandomFromTier(getTier(), getLvlRange());
-    	System.out.println("Spawning " + getMonsterType().getIdName() + ". Tier = " + getTier() + ", Level = " + level);
-    	if (this instanceof EliteMobSpawner) {
-    		EliteMobSpawner ms = (EliteMobSpawner) this;
-    		entity = EntityAPI.spawnElite(getLocation(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
-    	} else {
-    		entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
-    	}
-    	
-    	getSpawnedMonsters().add(entity);
-    	return entity;
-    }
-    
-    protected void setTimer(Runnable r, int delay) {
-    	Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
-    		if (getTimerID() == -1)
-    			setTimerID(Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), r, 0L, (long) delay).getTaskId());
-    	}, 0L, 40L);
+        Location spawn = spray();
+
+        if (GameAPI.isInSafeRegion(spawn))
+            return null;
+
+        if (getMonsterType() == null) {
+            Utils.log.info("Could not spawn non-existant monster-type.");
+            return null;
+        }
+
+        Entity entity;
+        int level = Utils.getRandomFromTier(getTier(), getLvlRange());
+        System.out.println("Spawning " + getMonsterType().getIdName() + ". Tier = " + getTier() + ", Level = " + level);
+        if (this instanceof EliteMobSpawner) {
+            EliteMobSpawner ms = (EliteMobSpawner) this;
+            entity = EntityAPI.spawnElite(getLocation(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
+        } else {
+            entity = EntityAPI.spawnCustomMonster(getLocation(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
+        }
+
+        getSpawnedMonsters().add(entity);
+        return entity;
     }
 
-    public boolean doesLineMatchLocation(String line){
-        if(!line.contains("="))return false;
+    protected void setTimer(Runnable r, int delay) {
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
+            if (getTimerID() == -1)
+                setTimerID(Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), r, 0L, (long) delay).getTaskId());
+        }, 0L, 40L);
+    }
+
+    public boolean doesLineMatchLocation(String line) {
+        if (!line.contains("=")) return false;
         String[] coords = line.split("=")[0].split(",");
 
         double x = Double.parseDouble(coords[0]);
@@ -295,16 +308,16 @@ public abstract class MobSpawner {
 
         return getLocation().getX() == x && getLocation().getY() == y && getLocation().getZ() == z;
     }
-    
+
     public Location spray() {
-    	Location loc = getLocation();
-    	double bound = getMinimumXZ() + getMaximumXZ();
-    	int xMin = (int) (loc.getX() - bound);
-    	int xMax = (int) (loc.getX() + bound);
-    	int zMin = (int) (loc.getZ() - bound);
-    	int zMax = (int) (loc.getZ() + bound);
-    	
-    	// Add 0.5 so they spawn in the middle of the block.
+        Location loc = getLocation();
+        double bound = getMinimumXZ() + getMaximumXZ();
+        int xMin = (int) (loc.getX() - bound);
+        int xMax = (int) (loc.getX() + bound);
+        int zMin = (int) (loc.getZ() - bound);
+        int zMax = (int) (loc.getZ() + bound);
+
+        // Add 0.5 so they spawn in the middle of the block.
         double x = Utils.randInt(xMin, xMax) + 0.5D;
         double y = loc.getY() + 3D;
         double z = Utils.randInt(zMin, zMax) + 0.5D;
@@ -312,8 +325,8 @@ public abstract class MobSpawner {
         // Raise mobs out of ground if they spawn in it.
         Location ret = new Location(loc.getWorld(), x, y, z);
         while (ret.getBlock().getType() != Material.AIR && ret.getY() < 250)
-        	ret.add(0, 1, 0);
-        
+            ret.add(0, 1, 0);
+
         return ret;
     }
 }

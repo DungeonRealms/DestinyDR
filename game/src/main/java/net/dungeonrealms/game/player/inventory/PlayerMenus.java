@@ -4,38 +4,37 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements.AchievementCategory;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemPetSelector;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenProfile;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/29/2015.
@@ -117,52 +116,53 @@ public class PlayerMenus {
 
     }
 
-    public static void openPlayerPetMenu(Player player) {
+    public static void openPlayerPetMenu(Player player, InventoryAction action) {
     	
         if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
             Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
             player.openInventory(jailed);
             return;
         }
-
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-
-        Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
-
-        int size = EnumPets.values().length + 2; //Add 2 for the buttons
-        size -= size % 9;
-
-        Inventory inv = Bukkit.createInventory(null, size, "Pet Selection");
-        inv.setItem(size - 2, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-        inv.setItem(size -1, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
-
-
-        for(EnumPets pets : EnumPets.values()) {
-            if(!pets.isShowInGui() && !Rank.isGM(player))
-            	continue;
-            
-            PetData hisData = playerPets.get(pets);
-            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
-            boolean isLocked = hisData == null || !hisData.isUnlocked();
-            if(pets.isSubGetsFree() && wrapper.getRank().isSUB()) 
-                isLocked = false;
-            
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("pet", new NBTTagString(pets.getName()));
-            tag.set("petName", new NBTTagString(hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
-            nmsStack.setTag(tag);
-            inv.addItem(new ItemPetSelector(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
-                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
-                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
-                    "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
-                    (isLocked ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked ? "" : "UN") + "LOCKED",
-                    ChatColor.GRAY + "Display Item"
-            })).getItem());
-        }
-        player.openInventory(inv);
+        new PetSelectionGUI(player).open(player, action);
+//
+//        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+//        if (wrapper == null) return;
+//
+//        Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
+//
+//        int size = EnumPets.values().length + 2; //Add 2 for the buttons
+//        size -= size % 9;
+//
+//        Inventory inv = Bukkit.createInventory(null, size, "Pet Selection");
+//        inv.setItem(size - 2, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+//        inv.setItem(size -1, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
+//
+//
+//        for(EnumPets pets : EnumPets.values()) {
+//            if(!pets.isShowInGui() && !Rank.isGM(player))
+//            	continue;
+//
+//            PetData hisData = playerPets.get(pets);
+//            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
+//            boolean isLocked = hisData == null || !hisData.isUnlocked();
+//            if(pets.isSubGetsFree() && wrapper.getRank().isSUB())
+//                isLocked = false;
+//
+//            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+//            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+//            tag.set("pet", new NBTTagString(pets.name()));
+//            tag.set("petName", new NBTTagString(hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
+//            nmsStack.setTag(tag);
+//            inv.addItem(new ItemPetSelector(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), ChatColor.WHITE + pets.getDisplayName(), new String[]{
+//                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
+//                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
+//                    "",
+//                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
+//                    (isLocked ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked ? "" : "UN") + "LOCKED",
+//                    ChatColor.GRAY + "Display Item"
+//            })).generateItem());
+//        }
+//        player.openInventory(inv);
     }
 
     public static void openPlayerMountMenu(Player player) {

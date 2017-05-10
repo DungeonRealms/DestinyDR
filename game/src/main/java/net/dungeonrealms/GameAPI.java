@@ -118,10 +118,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -321,7 +318,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
+        final long restartTime = Bukkit.getOnlinePlayers().size() <= 5 && DungeonRealms.isMaster() ? 10 : (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
 
         try {
             Bukkit.getLogger().info("Saving all shops sync...");
@@ -1228,7 +1225,7 @@ public class GameAPI {
     	int tier = EntityAPI.getTier(ent);
     	
     	// if we have a skull we need to generate a helmet so mob stats are calculated correctly
-        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || new Random().nextInt(10) <= (6 + tier)))
+        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier)))
             armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(ent))).generateItem();
         
         attributes.addStats(ent.getEquipment().getItemInMainHand());

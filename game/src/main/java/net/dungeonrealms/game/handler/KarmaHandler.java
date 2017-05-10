@@ -44,7 +44,7 @@ public class KarmaHandler implements GenericMechanic, Listener {
 
     @AllArgsConstructor @Getter
     public enum EnumPlayerAlignments {
-        LAWFUL(ChatColor.WHITE, "-30% Durability Keep Arm/Wep on Death", 0, 0, "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die."),
+        LAWFUL(ChatColor.GREEN, "-30% Durability Keep Arm/Wep on Death", 0, 0, "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die."),
         NEUTRAL(ChatColor.YELLOW, "25%/50% Lose Arm/Wep on Death", 120, 120, "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death."),
         CHAOTIC(ChatColor.RED, "Inventory LOST on Death", 1200, 1800, "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.");
 

@@ -58,14 +58,6 @@ public class DamageAPI {
 
     private static HashMap<Player, HashMap<Hologram, Integer>> DAMAGE_HOLOGRAMS = new HashMap<Player, HashMap<Hologram, Integer>>();
 
-    /**
-     * Calculates the weapon damage based on the nbt tag of an item, the attacker and defender
-     * Formerly calculateWeaponDamage
-     *
-     * @param attacker
-     * @param defender
-     * @since 1.0
-     */
     public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
         CombatEntity attacker = res.getAttacker();
         CombatEntity defender = res.getDefender();
@@ -573,7 +565,9 @@ public class DamageAPI {
                 ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
         }
+        System.out.println("Staff projectile debug 1");
         if (projectile == null) return null;
+		System.out.println("Staff projectile debug 2");
         projectile.setBounce(false);
         projectile.setShooter(attacker);
         MetadataUtils.registerProjectileMetadata(attributes, staff.getTier().getId(), projectile);
