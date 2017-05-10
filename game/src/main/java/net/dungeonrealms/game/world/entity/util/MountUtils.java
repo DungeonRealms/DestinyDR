@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
@@ -194,7 +193,6 @@ public class MountUtils {
     		p.eject();
     	mount.remove();
     	getMounts().remove(p);
-    	DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(mount);
     	p.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
     }
 

@@ -43,6 +43,7 @@ import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
@@ -337,8 +338,6 @@ public class GameAPI {
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
-        PacketLogger.INSTANCE.onDisable();
-
 
         GameAPI.logoutAllPlayers();
 
@@ -349,15 +348,11 @@ public class GameAPI {
             SQLDatabaseAPI.getInstance().executeUpdate(done ->
                     Bukkit.getLogger().info("Set " + done + " players with shard " + DungeonRealms.getInstance().bungeeName + " to offline in " + (System.currentTimeMillis() - start) + "ms"),
             QueryType.FIX_WHOLE_SHARD.getQuery(DungeonRealms.getShard().getPseudoName()), false);
-//            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
-//                    Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-            DungeonRealms.getInstance().mm.stopInvocation();
 
+            MechanicManager.stopMechanics();
             AsyncUtils.pool.shutdown();
-//            DatabaseInstance.mongoClient.close();
             Bukkit.shutdown();
         }, restartTime);
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, restartTime + 20 * 5);
     }
 
 
@@ -418,19 +413,13 @@ public class GameAPI {
                 IGNORE_QUIT_EVENT.add(uuid);
                 GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
             });
-//            savePlayerData(uuid, false, doAfter -> {
-//                IGNORE_QUIT_EVENT.add(uuid);
-//                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
-//                GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
-//            }));
         });
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> DungeonRealms.getInstance().mm.stopInvocation());
+        MechanicManager.stopMechanics();
         AsyncUtils.pool.shutdown();
         SQLDatabaseAPI.getInstance().shutdown();
-//        DatabaseInstance.mongoClient.close();
     }
 
     /**

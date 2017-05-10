@@ -43,19 +43,19 @@ public class CommandPacketLog extends BaseCommand {
 		}
 		
 		if(time > 0){
-			PacketLogger.INSTANCE.logPlayerTime(player, time);
+			PacketLogger.logPlayerTime(player, time);
 			sender.sendMessage(ChatColor.AQUA + "Logging " + player.getName() + " for " + time + " seconds.");
 			Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-				if(PacketLogger.INSTANCE.isLogging(player))
+				if(PacketLogger.isLogging(player))
 					sender.sendMessage(ChatColor.AQUA + "Capture complete for " + player.getName() + ".");
 			}, (20 * time) - 1);
 		}else{
-			if(PacketLogger.INSTANCE.isLogging(player)){
+			if(PacketLogger.isLogging(player)){
 				sender.sendMessage(ChatColor.AQUA + "Stopped logging " + player.getName() + ".");
-				PacketLogger.INSTANCE.stopLogging(player, "Manually stopped by " + sender.getName());
+				PacketLogger.stopLogging(player, "Manually stopped by " + sender.getName());
 			}else{
 				sender.sendMessage(ChatColor.AQUA + "Started logging " + player.getName() + ".");
-				PacketLogger.INSTANCE.startLogging(player);
+				PacketLogger.startLogging(player);
 			}
 		}
 		return true;

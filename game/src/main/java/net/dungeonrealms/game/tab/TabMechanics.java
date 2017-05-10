@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.tab;
 
 import codecrafter47.bungeetablistplus.api.bukkit.BungeeTabListPlusBukkitAPI;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -9,10 +10,6 @@ import net.dungeonrealms.game.tab.column.CharacterTabColumn;
 import net.dungeonrealms.game.tab.column.FriendTabColumn;
 import net.dungeonrealms.game.tab.column.GuildTabColumn;
 import net.dungeonrealms.game.tab.column.StatisticsTabColumn;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,22 +20,13 @@ import java.util.Set;
 public class TabMechanics implements GenericMechanic {
 
     // INSTANCE //
-    protected static TabMechanics instance = null;
+	@Getter private static TabMechanics instance = new TabMechanics();
 
     private Set<Column> COLUMNS = new HashSet<>();
-
-    private final long TRANSITION_TIME = 2000L;
 
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.BISHOPS;
-    }
-
-    public static TabMechanics getInstance() {
-        if (instance == null) {
-            instance = new TabMechanics();
-        }
-        return instance;
     }
 
     @Override

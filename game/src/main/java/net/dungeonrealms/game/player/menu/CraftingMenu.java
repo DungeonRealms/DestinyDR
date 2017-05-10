@@ -18,6 +18,8 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleTrail;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.generic.EnumPriority;
+import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -29,13 +31,14 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.CraftingInventory;
+
 import static com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND;
 
-public class CraftingMenu implements Listener {
+public class CraftingMenu implements GenericMechanic, Listener {
 
     private static PacketListener listener;
 
-    public void onEnable() {
+    public void startInitialization() {
         listener = new PacketAdapter(DungeonRealms.getInstance(), CLIENT_COMMAND) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
@@ -59,7 +62,7 @@ public class CraftingMenu implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
     }
 
-    public void onDisable() {
+    public void stopInvocation() {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         HandlerList.unregisterAll(this);
     }
@@ -98,5 +101,9 @@ public class CraftingMenu implements Listener {
     	player.getInventory().addItem(new ItemParticleTrail().generateItem());
     }
 
+	@Override
+	public EnumPriority startPriority() {
+		return EnumPriority.CARDINALS;
+	}
 }
 

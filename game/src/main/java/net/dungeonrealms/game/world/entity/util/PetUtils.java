@@ -252,7 +252,6 @@ public class PetUtils implements GenericMechanic{
     	Entity pet = getPets().get(p);
     	pet.remove();
     	getPets().remove(p);
-    	DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(pet);
     	p.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
     }
 }

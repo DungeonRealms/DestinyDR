@@ -270,8 +270,6 @@ public class RealmListener implements Listener {
 
                 if (Rank.isTrialGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                     createDoubleHelix(loc);
-                else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
-                    DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
 
                 //loc.subtract(.5D, 2D, .5D);
                 if (realm.getProperty("peaceful"))

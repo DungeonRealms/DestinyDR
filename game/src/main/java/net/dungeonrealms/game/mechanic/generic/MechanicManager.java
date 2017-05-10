@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.mechanic.generic;
 
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,44 +8,28 @@ import java.util.List;
  */
 public class MechanicManager {
 
-    List<GenericMechanic> Mechanics = new ArrayList<>();
+	private static List<GenericMechanic> mechanics = new ArrayList<>();
 
-    @Getter
-    private boolean isShutdown = false;
-
-    public void registerMechanic(GenericMechanic genericMechanic) {
-        Mechanics.add(genericMechanic);
+    public static void registerMechanic(GenericMechanic genericMechanic) {
+    	mechanics.add(genericMechanic);
     }
 
     /**
-     * Method thats called on mechanics startInitialization()
-     *
-     * @since 1.0
+     * Loads all of our game mechanics.
      */
-    public void loadMechanics() {
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.POPE).forEach(GenericMechanic::startInitialization);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.CARDINALS).forEach(GenericMechanic::startInitialization);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.ARCHBISHOPS).forEach(GenericMechanic::startInitialization);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.BISHOPS).forEach(GenericMechanic::startInitialization);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.PRIESTS).forEach(GenericMechanic::startInitialization);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.CATHOLICS).forEach(GenericMechanic::startInitialization);
+    public static void loadMechanics() {
+    	for (EnumPriority ep : EnumPriority.values())
+    		if (ep != EnumPriority.NO_STARTUP)
+    			mechanics.stream().filter(gm -> gm.startPriority() == ep).forEach(GenericMechanic::stopInvocation);
     }
 
     /**
-     * Method thats called before the plugin shutsdown!
-     *
-     * @since 1.0
+     * Shutdown all of our mechanics.
      */
-    public void stopInvocation() {
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.POPE).forEach(GenericMechanic::stopInvocation);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.CARDINALS).forEach(GenericMechanic::stopInvocation);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.ARCHBISHOPS).forEach(GenericMechanic::stopInvocation);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.BISHOPS).forEach(GenericMechanic::stopInvocation);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.PRIESTS).forEach(GenericMechanic::stopInvocation);
-        Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.CATHOLICS).forEach(GenericMechanic::stopInvocation);
-
-        isShutdown = true;
+    public static void stopMechanics() {
+    	for (EnumPriority ep : EnumPriority.values())
+    		mechanics.stream().filter(gm -> gm.startPriority() == ep).forEach(GenericMechanic::stopInvocation);
+    	mechanics.clear(); // We don't need to track these anymore, and it prevents the shutdown from being called twice.
     }
-
 }
 

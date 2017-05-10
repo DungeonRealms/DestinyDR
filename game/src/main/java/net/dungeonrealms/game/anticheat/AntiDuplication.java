@@ -2,19 +2,18 @@ package net.dungeonrealms.game.anticheat;
 
 import com.google.common.collect.HashMultimap;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
-import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -45,20 +44,10 @@ import java.util.stream.Collectors;
 
 public class AntiDuplication implements GenericMechanic, Listener {
 
-    static AntiDuplication instance = null;
-
+	@Getter private static AntiDuplication instance = new AntiDuplication();
     public static Set<UUID> EXCLUSIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private static CooldownProvider WARNING_SUPPRESSOR = new CooldownProvider();
-
     private final static long CHECK_TICK_FREQUENCY = 10L;
-
-    public static AntiDuplication getInstance() {
-        if (instance == null) {
-            instance = new AntiDuplication();
-        }
-        return instance;
-    }
 
     @Override
     public EnumPriority startPriority() {
@@ -69,7 +58,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
     @Override
     public void startInitialization() {
     	Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(),
                 () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
     }
 

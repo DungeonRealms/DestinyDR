@@ -47,7 +47,6 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -732,7 +731,7 @@ public class PlayerWrapper {
                 obj = ItemSerialization.toString((Inventory) obj);
 
             if (obj instanceof String)
-                obj = "'" + StringEscapeUtils.escapeSql((String) obj) + "'";
+                obj = SQLDatabaseAPI.escape((String) obj);
 
             if(obj instanceof Number)
                 obj = String.valueOf(obj);

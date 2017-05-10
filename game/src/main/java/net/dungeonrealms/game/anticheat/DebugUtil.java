@@ -24,6 +24,6 @@ public class DebugUtil {
         		+ "Packetlog Started for 30 seconds.";
         
         GameAPI.sendDevMessage(playerReport);
-        PacketLogger.INSTANCE.logPlayerTime(p, 30);
+        PacketLogger.logPlayerTime(p, 30);
 	}
 }

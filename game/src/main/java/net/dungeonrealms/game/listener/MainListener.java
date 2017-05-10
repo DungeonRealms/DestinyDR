@@ -115,17 +115,25 @@ public class MainListener implements Listener {
     
     @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
-
+    	
+    	if ((e.getChatMessage().startsWith("/") && !Rank.isTrialGM(e.getPlayer())) || e.getChatMessage().startsWith("@")) {
+    		e.getTabCompletions().clear();
+    		return;
+    	}
+    	
         if (e.getChatMessage().length() > 200)
             return;
-
+        
         int index = e.getChatMessage().indexOf("/");
         if (index > 0 && index < 3 && Rank.isTrialGM(e.getPlayer())) {
             e.getPlayer().sendMessage(ChatColor.RED + "Woah there! You sure you want to send that in global?");
             return;
         }
-        Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
-        e.getPlayer().closeInventory(); // Closes the chat after it grabs it!
+        
+        if (index != 0) {
+        	Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
+        	e.getPlayer().closeInventory(); // Closes the chat after it grabs it!
+        }
     }
 
     /**

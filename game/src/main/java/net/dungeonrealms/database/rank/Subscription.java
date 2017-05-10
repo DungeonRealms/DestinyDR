@@ -72,5 +72,4 @@ public class Subscription {
     public void showSubscriptionExpiry(Player player, int daysRemaining) {
         player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.UNDERLINE + (daysRemaining == -1 ? "UNLIMITED" : daysRemaining) + " day" + (daysRemaining != 1 ? "s" : "") + ChatColor.GOLD + " left until your subscription expires.");
     }
-
 }

@@ -34,6 +34,8 @@ public class DungeonListener implements Listener {
 	//TODO: Integrate new drops to dungeons.
 	//TODO: Finish support tools
 	//TODO: Convert all toggles to toggles.
+	//TODO: Move to PreparedStatement.
+	//TODO: Stop using GamePlayer
 	
 	
     @EventHandler(priority = EventPriority.MONITOR)

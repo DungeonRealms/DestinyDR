@@ -7,12 +7,12 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.minecraft.server.v1_9_R2.Entity;
+
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -20,19 +20,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Getter
-@Setter
+@Getter @Setter
 public class DonationEffects implements GenericMechanic {
 
-    @Getter
-    private static DonationEffects instance = new DonationEffects();
-
-    //CLOSED BETA PAYERS = RED_DUST
-    //HALLOWEEN PLAYERS = SMALL_SMOKE
-    //CHRISTMAS PLAYERS = SNOW_SHOVEL
+    @Getter private static DonationEffects instance = new DonationEffects();
 
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
-    public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
@@ -49,7 +42,6 @@ public class DonationEffects implements GenericMechanic {
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
 
         SQLDatabaseAPI.getInstance().executeQuery("SELECT * FROM buffs LIMIT 1;", rs -> {
@@ -72,9 +64,9 @@ public class DonationEffects implements GenericMechanic {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            handleExpiry();
         });
-
-        handleExpiry();
     }
 
     private void handleExpiry() {
@@ -102,10 +94,8 @@ public class DonationEffects implements GenericMechanic {
     }
 
     public void saveBuffData() {
-        for (EnumBuff buffType : EnumBuff.values()) {
-            Buff current = getBuff(buffType);
-            updateLootBuff(buffType.getColumnName(), serializeQueuedBuffs(getQueuedBuffs(buffType)));
-        }
+        for (EnumBuff buffType : EnumBuff.values())
+            updateBuff(buffType, serializeQueuedBuffs(getQueuedBuffs(buffType)));
     }
 
     private String serializeQueuedBuffs(Queue<? extends Buff> buffs) {
@@ -116,10 +106,10 @@ public class DonationEffects implements GenericMechanic {
         return StringUtils.serializeList(list, buffDelimeter);
     }
 
-    private void updateLootBuff(String lootColumnName, String value) {
+    private void updateBuff(EnumBuff buffType, String value) {
         SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
-            Bukkit.getLogger().info("SET " + lootColumnName + " to " + value + " for loot buff.");
-        }, "UPDATE buffs SET " + lootColumnName + " = " + (value == null ? null : "'" + value + "'") + ";");
+            Bukkit.getLogger().info("SET " + buffType.getColumnName() + " to " + value + " for loot buff.");
+        }, "UPDATE buffs SET " + buffType.getColumnName() + " = " + SQLDatabaseAPI.escape(value) + ";");
     }
 
     @Override
@@ -147,27 +137,6 @@ public class DonationEffects implements GenericMechanic {
     public boolean hasBuff(EnumBuff buffType) {
         LinkedList<Buff> buffs = buffMap.get(buffType);
         return buffs != null && !buffs.isEmpty();
-    }
-
-    public void spawnPlayerParticleEffects(Location location) {
-        if (PLAYER_PARTICLE_EFFECTS.isEmpty()) return;
-        for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
-            if (!player.isOnline()) {
-                PLAYER_PARTICLE_EFFECTS.remove(player);
-                continue;
-            }
-            float moveSpeed = 0.02F;
-            ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
-            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
-                moveSpeed = -1F;
-            }
-            try {
-                ParticleAPI.sendParticleToLocation(particleEffect, location.clone().add(0, 0.22, 0), (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, moveSpeed, 6);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Utils.log.warning("[Donations] Could not spawn donation particle " + particleEffect.name() + " for player " + player.getName());
-            }
-        }
     }
 
     public void doLogin(Player p) {
@@ -200,23 +169,14 @@ public class DonationEffects implements GenericMechanic {
     }
 
     private void spawnPlayerParticleEffects() {
-        if (PLAYER_PARTICLE_EFFECTS.isEmpty()) return;
         for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
             if (!player.isOnline()) {
                 PLAYER_PARTICLE_EFFECTS.remove(player);
                 continue;
             }
-            float moveSpeed = 0.02F;
-            ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
-            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
-                moveSpeed = -1F;
-            }
-            try {
-                ParticleAPI.sendParticleToLocation(particleEffect, player.getLocation().add(0, 0.22, 0), (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, moveSpeed, 6);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Utils.log.warning("[Donations] Could not spawn donation particle " + particleEffect.name() + " for player " + player.getName());
-            }
+            ParticleEffect effect = PLAYER_PARTICLE_EFFECTS.get(player);
+            ParticleAPI.sendParticleToLocation(effect, player.getLocation().add(0, 0.22, 0), random.nextFloat() - 0.4F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, 
+            		(effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F), 6);
         }
     }
 
@@ -236,34 +196,13 @@ public class DonationEffects implements GenericMechanic {
         }
     }
 
-    private void spawnEntityParticleEffects() {
-        if (ENTITY_PARTICLE_EFFECTS.isEmpty()) return;
-        for (Entity entity : ENTITY_PARTICLE_EFFECTS.keySet()) {
-            if (!entity.isAlive()) {
-                ENTITY_PARTICLE_EFFECTS.remove(entity);
-                continue;
-            }
-            float moveSpeed = 0.02F;
-            ParticleAPI.ParticleEffect particleEffect = ENTITY_PARTICLE_EFFECTS.get(entity);
-            if (particleEffect == ParticleAPI.ParticleEffect.REDSTONE || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
-                moveSpeed = -1F;
-            }
-            Location location = new Location(Bukkit.getWorlds().get(0), entity.locX, entity.locY, entity.locZ);
-            try {
-                ParticleAPI.sendParticleToLocation(particleEffect, location.add(0, 0.22, 0), (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, moveSpeed, 6);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Utils.log.warning("[Donations] Could not spawn donation particle " + particleEffect.name() + " for entity " + entity.getName());
-            }
-        }
-    }
-
     public boolean removeECashFromPlayer(Player player, int amount) {
         if (amount <= 0)
             return true;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return false;
+        if (wrapper == null)
+        	return false;
 
         int playerEcash = wrapper.getEcash();
         if (playerEcash <= 0)
@@ -273,10 +212,8 @@ public class DonationEffects implements GenericMechanic {
             wrapper.getPlayerGameStats().addStat(StatColumn.ECASH_SPENT, amount);
 
             wrapper.setEcash(wrapper.getEcash() - amount);
-//            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

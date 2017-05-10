@@ -3,12 +3,15 @@ package net.dungeonrealms.common.game.database.sql;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.util.UUIDFetcher;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -427,4 +430,11 @@ public class SQLDatabaseAPI {
     public static String filterSQLInjection(String string) {
         return string.replaceAll("'", "").replace("\"", "");
     }
+
+    /**
+     * Escape a string sent to the database.
+     */
+	public static String escape(String str) {
+		return str != null ? "'" + StringEscapeUtils.escapeSql((String) str) + "'" : null;
+	}
 }

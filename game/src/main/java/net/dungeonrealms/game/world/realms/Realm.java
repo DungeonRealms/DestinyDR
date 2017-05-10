@@ -620,18 +620,9 @@ public class Realm {
             if (deleteWorld)
                 Utils.log.info("[REALM] Deleting " + getName() + "'s realm locally.");
 
-//        	PlayerWrapper.getPlayerWrapper(getOwner(), false, true, (wrapper) -> {
-//        		if(wrapper == null) return;
-//        		wrapper.setUploadingRealm(false);
-//        		//Done uploading realm.
-//				SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), "realm"),
-//						QueryType.SET_REALM_UPLOADING.getQuery(0, wrapper.getCharacterID()));
-//			});
-
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(getOwner());
-            if (wrapper != null) {
+            if (wrapper != null)
                 wrapper.setUploadingRealm(false);
-            }
 
             SQLDatabaseAPI.getInstance().executeUpdate(updates -> GameAPI.updatePlayerData(getOwner(), UpdateType.REALM),
                     QueryType.SET_REALM_UPLOADING.getQuery(0, characterID));

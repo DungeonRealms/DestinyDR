@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;

@@ -41,7 +41,6 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.*;
 import net.dungeonrealms.game.item.FunctionalItemListener;
 import net.dungeonrealms.game.listener.MainListener;
-import net.dungeonrealms.game.listener.TabCompleteCommands;
 import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
@@ -108,8 +107,6 @@ public class DungeonRealms extends JavaPlugin {
     @Getter private static GameClient client;
 
     private static DungeonRealms instance = null;
-    private static CraftingMenu cm;
-    private static TabCompleteCommands tcc;
 
     public static int rebooterID;
     @Getter @Setter
@@ -228,44 +225,45 @@ public class DungeonRealms extends JavaPlugin {
 
         Utils.log.info("DungeonRealms - Loading Mechanics");
 
-        mm = new MechanicManager();
-        mm.registerMechanic(NetworkClientListener.getInstance());
-        mm.registerMechanic(DungeonManager.getInstance());
-        mm.registerMechanic(AntiDuplication.getInstance());
-        mm.registerMechanic(new TipHandler());
-        mm.registerMechanic(PetUtils.getInstance());
-        mm.registerMechanic(CombatLog.getInstance());
-        mm.registerMechanic(EnergyHandler.getInstance());
-        mm.registerMechanic(DonationEffects.getInstance());
-        mm.registerMechanic(HealthHandler.getInstance());
-        mm.registerMechanic(new KarmaHandler());
-        mm.registerMechanic(BungeeChannelListener.getInstance());
-        mm.registerMechanic(ScoreboardHandler.getInstance());
-        mm.registerMechanic(new ShopMechanics());
-        mm.registerMechanic(new EntityMechanics());
-        mm.registerMechanic(new PatchTools());
-        mm.registerMechanic(new Mining());
-        mm.registerMechanic(Realms.getInstance());
-        mm.registerMechanic(Affair.getInstance());
-        mm.registerMechanic(new AchievementManager());
-        mm.registerMechanic(new LootManager());
-        mm.registerMechanic(Quests.getInstance());
-        mm.registerMechanic(new PacketModifier());
-        mm.registerMechanic(new Fishing());
-        mm.registerMechanic(TutorialIsland.getInstance());
-        mm.registerMechanic(new TradeManager());
+        MechanicManager.registerMechanic(NetworkClientListener.getInstance());
+        MechanicManager.registerMechanic(DungeonManager.getInstance());
+        MechanicManager.registerMechanic(AntiDuplication.getInstance());
+        MechanicManager.registerMechanic(new TipHandler());
+        MechanicManager.registerMechanic(PetUtils.getInstance());
+        MechanicManager.registerMechanic(CombatLog.getInstance());
+        MechanicManager.registerMechanic(EnergyHandler.getInstance());
+        MechanicManager.registerMechanic(DonationEffects.getInstance());
+        MechanicManager.registerMechanic(HealthHandler.getInstance());
+        MechanicManager.registerMechanic(new KarmaHandler());
+        MechanicManager.registerMechanic(BungeeChannelListener.getInstance());
+        MechanicManager.registerMechanic(ScoreboardHandler.getInstance());
+        MechanicManager.registerMechanic(new ShopMechanics());
+        MechanicManager.registerMechanic(new EntityMechanics());
+        MechanicManager.registerMechanic(new PatchTools());
+        MechanicManager.registerMechanic(new Mining());
+        MechanicManager.registerMechanic(Realms.getInstance());
+        MechanicManager.registerMechanic(Affair.getInstance());
+        MechanicManager.registerMechanic(new AchievementManager());
+        MechanicManager.registerMechanic(new LootManager());
+        MechanicManager.registerMechanic(Quests.getInstance());
+        MechanicManager.registerMechanic(new PacketModifier());
+        MechanicManager.registerMechanic(new Fishing());
+        MechanicManager.registerMechanic(TutorialIsland.getInstance());
+        MechanicManager.registerMechanic(new TradeManager());
+        MechanicManager.registerMechanic(new CraftingMenu());
+        MechanicManager.registerMechanic(new PacketLogger());
 
         if (!isInstanceServer) {
-            mm.registerMechanic(Teleportation.getInstance());
-            mm.registerMechanic(new ForceField());
-            mm.registerMechanic(CrashDetector.getInstance());
-            mm.registerMechanic(new SpawningMechanics());
-            mm.registerMechanic(TabMechanics.getInstance());
-            mm.registerMechanic(new BuffMechanics());
-            mm.registerMechanic(new GraveyardMechanic());
+            MechanicManager.registerMechanic(Teleportation.getInstance());
+            MechanicManager.registerMechanic(new ForceField());
+            MechanicManager.registerMechanic(CrashDetector.getInstance());
+            MechanicManager.registerMechanic(new SpawningMechanics());
+            MechanicManager.registerMechanic(TabMechanics.getInstance());
+            MechanicManager.registerMechanic(new BuffMechanics());
+            MechanicManager.registerMechanic(new GraveyardMechanic());
         }
 
-        mm.loadMechanics();
+        MechanicManager.loadMechanics();
 
         // START UPDATER TASK //
         new UpdateTask(this);
@@ -286,7 +284,6 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new RestrictionListener(), this);
         pm.registerEvents(new PvPListener(), this);
         pm.registerEvents(new PvEListener(), this);
-        pm.registerEvents(new PacketLogger(), this);
         pm.registerEvents(new CurrencyTabListener(), this);
 
         if (!isInstanceServer) {
@@ -296,10 +293,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(TutorialIsland.getInstance(), this);
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new PassiveEntityListener(), this);
-            cm = new CraftingMenu();
-            tcc = new TabCompleteCommands();
-            cm.onEnable();
-            tcc.onEnable();
         }
 
         Utils.log.info("DungeonRealms - Registering Commands");
@@ -570,12 +563,12 @@ public class DungeonRealms extends JavaPlugin {
         rebootTime = nextReboot;
         if (rebooterID != 0)
             Bukkit.getScheduler().cancelTask(rebooterID);
-        rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (rebootTime - 300000L)) {
+        rebooterID = Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            if (System.currentTimeMillis() >= rebootTime - 300000L) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
-        }, 0, 100);
+        }, 0, 100).getTaskId();
     }
 
     public long getRebootTime() {
@@ -583,41 +576,28 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     private void scheduleRestartTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Realms.getInstance().removeAllRealms(true));
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setAcceptPlayers(false);
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                        () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")));
-            }
-        }, 240000L);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), GameAPI::stopGame);
-            }
-        }, 300000L);
+    	Bukkit.getScheduler().runTask(this, () -> {
+    		TitleAPI.broadcast("", ChatColor.YELLOW + "" + ChatColor.BOLD + "WARNING: " + ChatColor.RED
+    				+ "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES", 1, 60, 1);
+    		Realms.getInstance().removeAllRealms(true);
+    	});
+        
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+        	setAcceptPlayers(false);
+        	TitleAPI.broadcast("", ChatColor.YELLOW + "" + ChatColor.BOLD + "WARNING: " + ChatColor.RED + "A SCHEDULED  "
+        				+ ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE", 1, 60, 1);
+        }, 30 * 20L);
+        
+        Bukkit.getScheduler().runTaskLater(this, GameAPI::stopGame, 60 * 20L);
     }
 
     public void onDisable() {
         if (!isAlmostRestarting() && !CrashDetector.crashDetected) {
-//            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " failed to load.");
             Utils.log.info("DungeonRealms - Failed to load.");
             //Shutdown?
         } else {
-            cm.onDisable();
-            tcc.onDisable();
-            if (!mm.isShutdown())
-                mm.stopInvocation();
-
+            MechanicManager.stopMechanics();
             SQLDatabaseAPI.getInstance().shutdown();
-//            DatabaseAPI.getInstance().stopInvocation();
-
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         }
     }

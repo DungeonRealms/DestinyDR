@@ -65,6 +65,10 @@ public class TitleAPI implements Listener {
             return null;
         }
     }
+    
+    public static void broadcast(String title, String subtitle, Integer fadeIn, Integer stay, Integer fadeOut) {
+    	Bukkit.getOnlinePlayers().forEach(p -> sendTitle(p, fadeIn, stay, fadeOut, title, subtitle));
+    }
 
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
         TitleSendEvent titleSendEvent = new TitleSendEvent(player, title, subtitle);
