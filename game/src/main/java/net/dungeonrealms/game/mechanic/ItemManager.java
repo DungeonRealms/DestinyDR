@@ -251,6 +251,7 @@ public class ItemManager {
             System.out.println("Returning tradable debug 3");
             return false;
         }
+        System.out.println("Returning tradable debug 4");
         return true;
     }
 

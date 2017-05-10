@@ -18,11 +18,13 @@ public class ItemPlayerProfile extends FunctionalItem implements ItemInventoryLi
 	
 	public ItemPlayerProfile(ItemStack item) {
 		this((Player)null);
+		setUntradeable(true);
 	}
 	
 	public ItemPlayerProfile(Player player) {
 		super(ItemType.OPEN_PROFILE);
 		setUndroppable(true);
+		setUntradeable(true);
 		this.player = player;
 	}
 	

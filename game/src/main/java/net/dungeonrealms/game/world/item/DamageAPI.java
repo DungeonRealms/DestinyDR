@@ -536,13 +536,18 @@ public class DamageAPI {
 
     //TODO: Modularize.
     public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
+    	System.out.println("Fire staff projectile method!");
         double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
+		Bukkit.getLogger().info("Yaw: " + attacker.getLocation().getYaw() + " Pitch: " + attacker.getLocation().getPitch());
 
+		System.out.println("Attackers direction: " + attacker.getLocation().getDirection());
         Projectile projectile = null;
         switch (staff.getTier()) {
             case TIER_1:
                 projectile = attacker.launchProjectile(Snowball.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.15));
+                System.out.println("Snowballs Yaw: " + projectile.getLocation().getYaw() + " Pitch: " + projectile.getLocation().getPitch());
+                System.out.println("Snowballs direction: " + projectile.getLocation().getDirection());
                 break;
             case TIER_2:
                 projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity)attacker, null, SmallFireball.class, accuracy);

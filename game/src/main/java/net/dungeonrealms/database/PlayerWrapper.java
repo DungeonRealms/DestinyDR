@@ -247,6 +247,9 @@ public class PlayerWrapper {
     @Getter
     private boolean attributesLoaded;
 
+    @Getter
+    private boolean loadedSuccessfully = false;
+
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
     }
@@ -273,7 +276,6 @@ public class PlayerWrapper {
         }
 
         try {
-
             long start = System.currentTimeMillis();
             @Cleanup PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(
                     "SELECT * FROM `users` LEFT JOIN `ranks` ON `users`.`account_id` = `ranks`.`account_id` " +
@@ -315,8 +317,6 @@ public class PlayerWrapper {
                 this.loadLocation(result);
 
                 this.guildID = result.getInt("guilds.guild_id");
-                System.out.println("The guildID: " + guildID);
-
 
                 this.lastLogin = result.getLong("users.last_login");
                 this.lastLogout = result.getLong("users.last_logout");
@@ -389,15 +389,16 @@ public class PlayerWrapper {
                 if (Constants.debug)
                     Bukkit.getLogger().info("Loaded " + this.username + "'s PlayerWrapper data in " + (System.currentTimeMillis() - start) + "ms.");
 
-
                 if (callback != null) {
+                    loadedSuccessfully = true;
                     callback.accept(this);
                     return;
                 }
             }
-
+            loadedSuccessfully = true;
         } catch (Exception e) {
             e.printStackTrace();
+            loadedSuccessfully = false;
         }
 
         if (callback != null)
@@ -584,10 +585,19 @@ public class PlayerWrapper {
     }
 
     private String getLocationString(Player player) {
-        if (!GameAPI.isMainWorld(player.getWorld())) {
+        return getLocationString(player.getLocation());
+    }
+
+    /**
+     * Used to get the location to store. If they are in a realm or some other world it will returned the last saved valid location.
+     * @param location
+     * @return
+     */
+    public String getLocationString(Location location) {
+        if (!GameAPI.isMainWorld(location.getWorld())) {
             return storedLocationString;
         }
-        return new StringBuilder().append(player.getLocation().getX()).append(',').append(player.getLocation().getY() + 0.3).append(',').append(player.getLocation().getZ()).append(',').append(player.getLocation().getYaw()).append(',').append(player.getLocation().getPitch()).toString();
+        return new StringBuilder().append(location.getX()).append(',').append(location.getY() + 0.3).append(',').append(location.getZ()).append(',').append(location.getYaw()).append(',').append(location.getPitch()).toString();
     }
 
     public String getFormattedShardName() {
@@ -637,9 +647,12 @@ public class PlayerWrapper {
             statement.addBatch(getQuery(QueryType.UPDATE_REALM, getRealmTitle(), getRealmDescription(), isUploadingRealm(), isUpgradingRealm(), getRealmTier(), isEnteringRealm(), getLastRealmReset(), getCharacterID()));
 
             long start = System.currentTimeMillis();
-            Bukkit.getLogger().info("Preparing to execute batch: " + toString(((StatementImpl) statement).getBatchedArgs()));
+            if (Constants.debug)
+                Bukkit.getLogger().info("Preparing to execute batch: " + toString(((StatementImpl) statement).getBatchedArgs()));
             statement.executeBatch();
-            Bukkit.getLogger().info("Batch executed in " + (System.currentTimeMillis() - start));
+
+            if (Constants.debug)
+                Bukkit.getLogger().info("Batch executed in " + (System.currentTimeMillis() - start));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -724,6 +737,9 @@ public class PlayerWrapper {
                 }
             }
 
+            if (obj instanceof Location)
+                obj = getLocationString((Location) obj);
+
             if (obj instanceof Enum)
                 obj = ((Enum<?>) obj).name();
 
@@ -733,14 +749,11 @@ public class PlayerWrapper {
             if (obj instanceof String)
                 obj = SQLDatabaseAPI.escape((String) obj);
 
-            if(obj instanceof Number)
-                obj = String.valueOf(obj);
-
             args[i] = obj;
-            if(t == QueryType.CHARACTER_UPDATE)System.out.println("finalArgs[" + i + "]: " + args[i]);
+            if (t == QueryType.CHARACTER_UPDATE) System.out.println("finalArgs[" + i + "]: " + args[i]);
         }
 
-        if(t == QueryType.CHARACTER_UPDATE)System.out.println("finalArgs Elements: " + args.length);
+        if (t == QueryType.CHARACTER_UPDATE) System.out.println("finalArgs Elements: " + args.length);
 
         return t.getQuery(args);
     }
@@ -1055,7 +1068,7 @@ public class PlayerWrapper {
         }
     }
 
-    private String getEquipmentString(Player player) {
+    public String getEquipmentString(Player player) {
 
         int itemsSaved = 0;
         Inventory toSave = Bukkit.createInventory(null, 9);

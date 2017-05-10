@@ -10,7 +10,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -32,21 +31,22 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumRankAchievement;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.WorldZoneType;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.*;
-import net.dungeonrealms.game.mechanic.data.ShardTier;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
-import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.generic.MechanicManager;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
@@ -77,13 +77,10 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_9_R2.EnumHand;
-import net.minecraft.server.v1_9_R2.MinecraftServer;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.PacketDataSerializer;
-import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
-
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -96,10 +93,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -121,6 +115,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 
 /**
  * Created by Nick on 9/17/2015.
@@ -343,8 +338,8 @@ public class GameAPI {
             //Do sync..
             long start = System.currentTimeMillis();
             SQLDatabaseAPI.getInstance().executeUpdate(done ->
-                    Bukkit.getLogger().info("Set " + done + " players with shard " + DungeonRealms.getInstance().bungeeName + " to offline in " + (System.currentTimeMillis() - start) + "ms"),
-            QueryType.FIX_WHOLE_SHARD.getQuery(DungeonRealms.getShard().getPseudoName()), false);
+                            Bukkit.getLogger().info("Set " + done + " players with shard " + DungeonRealms.getInstance().bungeeName + " to offline in " + (System.currentTimeMillis() - start) + "ms"),
+                    QueryType.FIX_WHOLE_SHARD.getQuery(DungeonRealms.getShard().getPseudoName()), false);
 
             MechanicManager.stopMechanics();
             AsyncUtils.pool.shutdown();
@@ -458,7 +453,7 @@ public class GameAPI {
 
 
     @SuppressWarnings("deprecation")
-	public static String getServerLoad() {
+    public static String getServerLoad() {
         double tps = MinecraftServer.getServer().recentTps[0];
         return ((tps >= 19.99) ? ChatColor.GREEN + "Extremely Low" : (tps >= 19.90) ? ChatColor.GREEN + "Very Low" : (tps > 19.0) ? ChatColor.GREEN + "Low" : (tps > 15.0) ? ChatColor.YELLOW + "Medium" : ChatColor.RED + "High");
     }
@@ -473,7 +468,7 @@ public class GameAPI {
     public static void updatePlayerData(UUID uuid, UpdateType updateType) {
         // CHECK IF LOCAL //
         if (Bukkit.getPlayer(uuid) != null)
-        	return; // their player data has already been updated in PLAYERS
+            return; // their player data has already been updated in PLAYERS
 
         // SENDS PACKET TO MASTER SERVER //
         sendNetworkMessage("Update", uuid.toString(), updateType.getFieldName());
@@ -498,11 +493,11 @@ public class GameAPI {
      * @since 1.0
      */
     public static void sendNetworkMessage(String task, String message, String... contents) {
-    	//Not Catching this could result in a crash handle failure.
-    	if(getClient() == null) {
-    		Utils.log.info("Not sending " + task + ", we haven't connected.");
-    		return;
-    	}
+        //Not Catching this could result in a crash handle failure.
+        if (getClient() == null) {
+            Utils.log.info("Not sending " + task + ", we haven't connected.");
+            return;
+        }
         getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
     }
 
@@ -579,23 +574,23 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
-        if(location == null)return false;
+        if (location == null) return false;
         RegionManager regionManager = getWorldGuard().getRegionManager(location.getWorld());
-        if(regionManager == null)return false;
+        if (regionManager == null) return false;
         ApplicableRegionSet region = regionManager.getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
                 && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
 
     public static boolean isNonPvPRegion(Location location) {
-        if(location == null)return false;
+        if (location == null) return false;
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
                 .getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
     }
 
     public static boolean isNonMobDamageRegion(Location location) {
-        if(location == null)return false;
+        if (location == null) return false;
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
                 .getApplicableRegions(location);
         return region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
@@ -667,19 +662,11 @@ public class GameAPI {
 
     public static void handleLogout(Player player, boolean async, Consumer<Boolean> doAfter) {
         handleLogout(player, async, doAfter, true);
-	}
+    }
 
-    /**
-     * Safely logs out the player, updates their database inventories etc.
-     *
-     * @param uuid
-     * @param async should always be true unless you need a callback from this method and are asyncing it via a
-     *              different method.
-     * @since 1.0
-     */
     public static void handleLogout(Player player, boolean async, Consumer<Boolean> doAfter, boolean remove) {
         if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId()))
-        	return;
+            return;
 
         if (player.hasMetadata("saved")) {
             //Already saved... just call callback so it can remove them..
@@ -705,7 +692,7 @@ public class GameAPI {
 
         // Remove dungeonitems from inventory.
         DungeonManager.removeDungeonItems(player);
-        
+
         player.setMetadata("saved", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
         wrapper.setLastLogout(System.currentTimeMillis());
         System.out.println("Starting the save data!");
@@ -717,12 +704,12 @@ public class GameAPI {
 
             if (GameAPI._hiddenPlayers.contains(player))
                 GameAPI._hiddenPlayers.remove(player);
-            
+
             MountUtils.getInventories().remove(player.getUniqueId());
             Quests.getInstance().handleLogoutEvents(player);
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> 
-                ScoreboardHandler.getInstance().removePlayerScoreboard(player));
-            
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () ->
+                    ScoreboardHandler.getInstance().removePlayerScoreboard(player));
+
             PetUtils.removePet(player);
             MountUtils.removeMount(player);
 
@@ -742,9 +729,37 @@ public class GameAPI {
     }
 
     public static void backupPlayers() {
-    	//TODO:
+        //TODO:
+        //We need to save all players inventories and locations?
+        try {
+            long start = System.currentTimeMillis();
+            PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
+            int online = PlayerWrapper.getPlayerWrappers().size();
+            for (PlayerWrapper wrapper : PlayerWrapper.getPlayerWrappers().values()) {
+                //Dont save these ijots.
+                if (wrapper.getPlayer() == null || !wrapper.getPlayer().isOnline() || !wrapper.isLoadedSuccessfully()) continue;
+
+                Player player = wrapper.getPlayer();
+                if (Constants.debug)
+                    Bukkit.getLogger().info("Backing up " + player.getUniqueId().toString() + "(" + player.getName() + ")");
+
+                Storage bank = BankMechanics.getStorage(player.getUniqueId());
+                statement.addBatch(wrapper.getQuery(QueryType.BACKUP_CHARACTER, wrapper.getLevel(), wrapper.getExperience(),
+                        wrapper.getLocationString(player.getLocation()), player.getInventory(), wrapper.getEquipmentString(player), wrapper.getGems(), bank != null ? bank.inv : null,
+                        MountUtils.getInventory(player), wrapper.getMuleLevel(), wrapper.getCharacterID()));
+            }
+            int[] args = statement.executeBatch();
+            int completed = 0;
+            for (int complete : args) {
+                completed += complete;
+            }
+            statement.close();
+            Bukkit.getLogger().info("Backed up " + completed + " Player Wrappers successfully out of " + online + " loaded wrappers in " + (System.currentTimeMillis() - start) + "ms");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     /**
      * Safely logs out all players when the server restarts. Saves their data async before.
      *
@@ -752,13 +767,13 @@ public class GameAPI {
      */
     public static void logoutAllPlayers() {
         Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-        
+
         try {
-        	ShopMechanics.deleteAllShops(true);
+            ShopMechanics.deleteAllShops(true);
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
-        
+
         for (int i = 0; i < players.length; i++) {
             final Player player = players[i];
             player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
@@ -804,7 +819,7 @@ public class GameAPI {
                 // upload data and send to server
                 GameAPI.handleLogout(player, true, consumer -> {
                     if (CombatLog.isInCombat(player))
-                    	CombatLog.removeFromCombat(player);
+                        CombatLog.removeFromCombat(player);
                     // Move
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 }, false);
@@ -825,16 +840,17 @@ public class GameAPI {
             return;
         }
         player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
-        
+
         if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
-        	player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
-        	return;
+            player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
+            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+            return;
         }
-        
+
         ShardType type = DungeonRealms.getShard().getType();
         if (!playerWrapper.getRank().isAtLeast(type.getMinRank()) && type != ShardType.DEVELOPMENT) {
-        	player.kickPlayer(ChatColor.RED + "You are not authorized to connect to this shard.");
-        	return;
+            player.kickPlayer(ChatColor.RED + "You are not authorized to connect to this shard.");
+            return;
         }
 
 
@@ -847,13 +863,13 @@ public class GameAPI {
                 }
             }
         } catch (NullPointerException ignored) {
-        	
+
         }
-        
+
         PlayerRank rank = Rank.getRank(player);
 
         if (player.hasMetadata("sharding"))
-        	player.removeMetadata("sharding", DungeonRealms.getInstance());
+            player.removeMetadata("sharding", DungeonRealms.getInstance());
 
         GamePlayer gp = new GamePlayer(player);
 
@@ -872,11 +888,11 @@ public class GameAPI {
 
         TeleportAPI.addPlayerHearthstoneCD(player.getUniqueId(), 150);
         PlayerManager.checkInventory(player);
-        
+
         if (playerWrapper.isFirstTimePlaying()) {
             playerWrapper.setFirstLogin(System.currentTimeMillis());
             sendNetworkMessage("IGN_GMMessage", ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!");
-            
+
             ItemManager.giveStarter(player, true);
             player.teleport((DungeonRealms.isEvent() ? TeleportLocation.EVENT_AREA : TeleportLocation.STARTER).getLocation());
         }
@@ -885,33 +901,33 @@ public class GameAPI {
 
         for (int j = 0; j < 20; j++)
             player.sendMessage("");
-        
+
         player.setMaximumNoDamageTicks(0);
         player.setNoDamageTicks(0);
 
         Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Build " + String.valueOf(Constants.BUILD_NUMBER));
         Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
         Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
-        
+
         player.sendMessage("");
         player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Type " + ChatColor.YELLOW + "" + ChatColor.ITALIC + "/shard" + ChatColor.GRAY + ChatColor.ITALIC + " to change shards at any time.");
 
         ShardInfo shard = DungeonRealms.getShard();
         ShardType shardType = shard.getType();
         if (shardType != ShardType.DEFAULT) {
-        	player.sendMessage("");
-        	player.sendMessage(ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + shardType.name() + ChatColor.DARK_AQUA + " shard.");
-        	for (String s : shardType.getInfo())
-        		player.sendMessage(ChatColor.GRAY + s);
+            player.sendMessage("");
+            player.sendMessage(ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + shardType.name() + ChatColor.DARK_AQUA + " shard.");
+            for (String s : shardType.getInfo())
+                player.sendMessage(ChatColor.GRAY + s);
         }
 
         player.sendMessage("");
-        
+
         // Give rank achievements.
         for (EnumRankAchievement r : EnumRankAchievement.values())
-        	if (rank.isAtLeast(r.getMinRank()))
-        		Arrays.asList(r.getAchievements()).forEach(a -> Achievements.giveAchievement(player, a));
-        
+            if (rank.isAtLeast(r.getMinRank()))
+                Arrays.asList(r.getAchievements()).forEach(a -> Achievements.giveAchievement(player, a));
+
         // Alert mechanics.
         Quests.getInstance().handleLogin(player);
         EnergyHandler.getInstance().handleLoginEvents(player);
@@ -946,7 +962,7 @@ public class GameAPI {
 
         Utils.log.info("Fetched information for uuid: " + player.getUniqueId().toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.handleLogin(player), 70L);
-        
+
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(1024.0D);
@@ -991,10 +1007,10 @@ public class GameAPI {
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	playerWrapper.calculateAllAttributes();
-        	PlayerManager.checkInventory(player);
+            playerWrapper.calculateAllAttributes();
+            PlayerManager.checkInventory(player);
         }, 20);
-        
+
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
 
         if (Rank.isTrialGM(player)) {
@@ -1198,32 +1214,32 @@ public class GameAPI {
     }
 
     public static boolean removePortalShardsFromPlayer(Player player, ShardTier tier, int amount) {
-    	if (amount <= 0)
+        if (amount <= 0)
             return amount == 0;
-        
-    	PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-    	int shardAmt = wrapper.getPortalShards(tier);
-    	if (shardAmt > amount) {
-    		wrapper.setPortalShards(tier, shardAmt - amount);
-    		return true;
-    	}
-    	
-    	return false;
-    }
-    
-    public static void calculateAllAttributes(LivingEntity ent) {
-    	AttributeList attributes = EntityAPI.getMonster(ent).getAttributes();
-    	ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
-    	int tier = EntityAPI.getTier(ent);
-    	
-    	// if we have a skull we need to generate a helmet so mob stats are calculated correctly
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        int shardAmt = wrapper.getPortalShards(tier);
+        if (shardAmt > amount) {
+            wrapper.setPortalShards(tier, shardAmt - amount);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void calculateAllAttributes(LivingEntity ent) {
+        AttributeList attributes = EntityAPI.getMonster(ent).getAttributes();
+        ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
+
+        int tier = EntityAPI.getTier(ent);
+
+        // if we have a skull we need to generate a helmet so mob stats are calculated correctly
         if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier)))
             armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(ent))).generateItem();
-        
+
         attributes.addStats(ent.getEquipment().getItemInMainHand());
         for (ItemStack armor : armorSet)
-        	attributes.addStats(armor);
+            attributes.addStats(armor);
         attributes.applyStatBonuses();
     }
 
@@ -1233,7 +1249,7 @@ public class GameAPI {
         NBTTagCompound tag = nms.getTag();
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
     }
-    
+
     public static boolean isPlayerHidden(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         return player != null && _hiddenPlayers.contains(player);
@@ -1280,14 +1296,14 @@ public class GameAPI {
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
         }), false);
     }
-    
+
     public static WorldZoneType getZone(Location loc) {
-    	if (GameAPI.isInSafeRegion(loc)) {
-    		return WorldZoneType.SAFE;
-    	} else if (GameAPI.isNonPvPRegion(loc)) {
-    		return WorldZoneType.WILD;
-    	}
-    	return WorldZoneType.CHAOTIC;
+        if (GameAPI.isInSafeRegion(loc)) {
+            return WorldZoneType.SAFE;
+        } else if (GameAPI.isNonPvPRegion(loc)) {
+            return WorldZoneType.WILD;
+        }
+        return WorldZoneType.CHAOTIC;
     }
 
     /**
@@ -1369,17 +1385,17 @@ public class GameAPI {
         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         message.sendToPlayer(player);
     }
-    
+
     public static boolean isMainWorld(World world) {
-		return world.equals(getMainWorld());
-	}
-    
-    public static boolean isMainWorld(Block block) {
-    	return isMainWorld(block.getWorld());
+        return world.equals(getMainWorld());
     }
-    
+
+    public static boolean isMainWorld(Block block) {
+        return isMainWorld(block.getWorld());
+    }
+
     public static boolean isMainWorld(Entity ent) {
-    	return isMainWorld(ent.getWorld());
+        return isMainWorld(ent.getWorld());
     }
 
     /**
@@ -1412,49 +1428,49 @@ public class GameAPI {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
         player.getInventory().setItemInMainHand(savedItem);
     }
-    
-	public static boolean isMainWorld(Location location) {
-		return isMainWorld(location.getWorld());
-	}
-	
-	/**
-	 * Remove a supplied armor piece from the player's inventory.
-	 * Returns the dropped piece or null.
-	 */
-	public static ItemStack removeArmor(Player player, ItemStack is) {
-		GeneratedItemType type = GeneratedItemType.getType(is.getType());
-		ItemStack item = null;
-		EntityEquipment e = player.getEquipment();
-		
-		switch (type) {
-			case HELMET:
-				item = e.getHelmet();
-				e.setHelmet(new ItemStack(Material.AIR));
-				break;
-			case CHESTPLATE:
-				item = e.getChestplate();
-				e.setChestplate(new ItemStack(Material.AIR));
-				break;
-			case LEGGINGS:
-				item = e.getLeggings();
-				e.setLeggings(new ItemStack(Material.AIR));
-				break;
-			case BOOTS:
-				item = e.getBoots();
-				e.setBoots(new ItemStack(Material.AIR));
-				break;
-			default:
-				Utils.printTrace();
-				GameAPI.sendDevMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Attempted to remove " + type + " from " + player.getName() + " as armor on {SERVER}!");
-				break;
-		}
-		
-		return item;
-	}
-	
-	public static void createZipFile(String inputFolder, String outputFile) throws ZipException {
-		// Init zip file.
-    	ZipParameters parameters = new ZipParameters();
+
+    public static boolean isMainWorld(Location location) {
+        return isMainWorld(location.getWorld());
+    }
+
+    /**
+     * Remove a supplied armor piece from the player's inventory.
+     * Returns the dropped piece or null.
+     */
+    public static ItemStack removeArmor(Player player, ItemStack is) {
+        GeneratedItemType type = GeneratedItemType.getType(is.getType());
+        ItemStack item = null;
+        EntityEquipment e = player.getEquipment();
+
+        switch (type) {
+            case HELMET:
+                item = e.getHelmet();
+                e.setHelmet(new ItemStack(Material.AIR));
+                break;
+            case CHESTPLATE:
+                item = e.getChestplate();
+                e.setChestplate(new ItemStack(Material.AIR));
+                break;
+            case LEGGINGS:
+                item = e.getLeggings();
+                e.setLeggings(new ItemStack(Material.AIR));
+                break;
+            case BOOTS:
+                item = e.getBoots();
+                e.setBoots(new ItemStack(Material.AIR));
+                break;
+            default:
+                Utils.printTrace();
+                GameAPI.sendDevMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Attempted to remove " + type + " from " + player.getName() + " as armor on {SERVER}!");
+                break;
+        }
+
+        return item;
+    }
+
+    public static void createZipFile(String inputFolder, String outputFile) throws ZipException {
+        // Init zip file.
+        ZipParameters parameters = new ZipParameters();
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
         parameters.setIncludeRootFolder(false);
@@ -1468,102 +1484,105 @@ public class GameAPI {
             zipFile.addFolder(targetFile, parameters);
         else
             System.out.println("[ZIPPER] - Don't know how to handle " + targetFile.getName());
-	}
-	
-	public static ItemStack getItem(Player player, EquipmentSlot slot) {
-		EntityEquipment e = player.getEquipment();
-		switch (slot) {
-			case HAND:
-				return e.getItemInMainHand();
-			case OFF_HAND:
-				return e.getItemInOffHand();
-			case CHEST:
-				return e.getChestplate();
-			case FEET:
-				return e.getBoots();
-			case HEAD:
-				return e.getHelmet();
-			case LEGS:
-				return e.getLeggings();
-		}
-		return null;
-	}
-	
-	/**
-	 * Sets the item in the given equipment slot. There is no built-in spigot method for this.
-	 */
-	public static void setItem(LivingEntity livingEntity, EquipmentSlot slot, ItemStack stack) {
-		EntityEquipment e = livingEntity.getEquipment();
-		switch (slot) {
-			case HAND:
-				e.setItemInMainHand(stack);
-				break;
-			case OFF_HAND:
-				e.setItemInOffHand(stack);
-				break;
-			case CHEST:
-				e.setChestplate(stack);
-				break;
-			case FEET:
-				e.setBoots(stack);
-				break;
-			case HEAD:
-				e.setHelmet(stack);
-				break;
-			case LEGS:
-				e.setLeggings(stack);
-				break;
-		}
-	}
-	
-	/**
-	 * Return the main world.
-	 * @return
-	 */
-	public static World getMainWorld() {
-		return Bukkit.getWorlds().get(0);
-	}
+    }
 
-	public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {
-		if (slot != EquipmentSlot.HAND && slot != EquipmentSlot.OFF_HAND) {
-			Utils.log.info("Could not set hand item of " + player.getName() + ". Tried to set hand " + slot.name() + ".");
-			return;
-		}
-		setItem(player, slot, stack);
-	}
-	
-	public static void sendStatNotification(Player p) {
-		PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-		if (pw.getPlayerStats().getFreePoints() > 0) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-						"To allocate click ", ChatColor.WHITE);
-				normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
-				normal.addText(ChatColor.GREEN + "*");
-				normal.sendToPlayer(pw.getPlayer());
-			});
-		}
-	}
-	
-	public static String getDataFolder() {
-		return DungeonRealms.getInstance().getDataFolder().getPath();
-	}
-	
-	public static File getRoot() {
-		return new File(System.getProperty("user.dir"));
-	}
-	
-	public static void mkDir(String s) {
-		File f = new File(DungeonRealms.getInstance().getDataFolder() + File.separator + Utils.sanitizeFileName(s));
-		if (!f.exists() || !f.isDirectory())
-			f.mkdirs();
-	}
+    public static ItemStack getItem(Player player, EquipmentSlot slot) {
+        EntityEquipment e = player.getEquipment();
+        switch (slot) {
+            case HAND:
+                return e.getItemInMainHand();
+            case OFF_HAND:
+                return e.getItemInOffHand();
+            case CHEST:
+                return e.getChestplate();
+            case FEET:
+                return e.getBoots();
+            case HEAD:
+                return e.getHelmet();
+            case LEGS:
+                return e.getLeggings();
+        }
+        return null;
+    }
 
-	public static void announceVote(Player player) {
-    	if (player == null)
-    		return;
-    	
-    	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+    /**
+     * Sets the item in the given equipment slot. There is no built-in spigot method for this.
+     */
+    public static void setItem(LivingEntity livingEntity, EquipmentSlot slot, ItemStack stack) {
+        EntityEquipment e = livingEntity.getEquipment();
+        switch (slot) {
+            case HAND:
+                e.setItemInMainHand(stack);
+                break;
+            case OFF_HAND:
+                e.setItemInOffHand(stack);
+                break;
+            case CHEST:
+                e.setChestplate(stack);
+                break;
+            case FEET:
+                e.setBoots(stack);
+                break;
+            case HEAD:
+                e.setHelmet(stack);
+                break;
+            case LEGS:
+                e.setLeggings(stack);
+                break;
+
+        }
+    }
+
+    /**
+     * Return the main world.
+     *
+     * @return
+     */
+
+    public static World getMainWorld() {
+        return Bukkit.getWorlds().get(0);
+    }
+
+    public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {
+        if (slot != EquipmentSlot.HAND && slot != EquipmentSlot.OFF_HAND) {
+            Utils.log.info("Could not set hand item of " + player.getName() + ". Tried to set hand " + slot.name() + ".");
+            return;
+        }
+        setItem(player, slot, stack);
+    }
+
+    public static void sendStatNotification(Player p) {
+        PlayerWrapper pw = PlayerWrapper.getWrapper(p);
+        if (pw.getPlayerStats().getFreePoints() > 0) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                        "To allocate click ", ChatColor.WHITE);
+                normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
+                normal.addText(ChatColor.GREEN + "*");
+                normal.sendToPlayer(pw.getPlayer());
+            });
+        }
+    }
+
+    public static String getDataFolder() {
+        return DungeonRealms.getInstance().getDataFolder().getPath();
+    }
+
+    public static File getRoot() {
+        return new File(System.getProperty("user.dir"));
+    }
+
+    public static void mkDir(String s) {
+        File f = new File(DungeonRealms.getInstance().getDataFolder() + File.separator + Utils.sanitizeFileName(s));
+        if (!f.exists() || !f.isDirectory())
+            f.mkdirs();
+    }
+
+    public static void announceVote(Player player) {
+        if (player == null)
+            return;
+
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         int expToLevel = pw.getEXPNeeded();
         int expToGive = expToLevel / 20;
         expToGive += 100;

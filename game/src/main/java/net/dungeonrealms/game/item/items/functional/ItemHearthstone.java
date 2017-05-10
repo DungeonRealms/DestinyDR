@@ -19,12 +19,14 @@ public class ItemHearthstone extends FunctionalItem implements ItemInventoryList
 	
 	public ItemHearthstone(ItemStack item) {
 		this((Player)null);
+		setUntradeable(true);
 	}
 	
 	public ItemHearthstone(Player player) {
 		super(ItemType.HEARTHSTONE);
 		this.player = player;
 		setUndroppable(true);
+		setUntradeable(true);
 	}
 	
 	@Override

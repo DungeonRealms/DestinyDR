@@ -32,18 +32,19 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
     @Override
     public void o() {
         Bukkit.getLogger().info("Clearing goals in o()!");
-        EntityAPI.clearAI(goalSelector, targetSelector);
-        this.goalSelector.a(0, new PathfinderGoalFloat(this));
-        this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, 1.0));
-        this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
-        this.goalSelector.a(3, new PathfinderGoalArrowAttack(this, 1.0D, 15, 60, 15.0F));
-        r();
+//        EntityAPI.clearAI(goalSelector, targetSelector);
+//        this.goalSelector.a(0, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+//        this.goalSelector.a(2, new PathfinderGoalFloat(this));
+//        this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 1.0));
+//        this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
+//        r();
+
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 15, 40, 25.0F));
     }
 
-    @Override
-    protected void r() {
-        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
-        this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-    }
+//    @Override
+//    protected void r() {
+//        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, EntityHuman.class));
+//        this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+//    }
 }

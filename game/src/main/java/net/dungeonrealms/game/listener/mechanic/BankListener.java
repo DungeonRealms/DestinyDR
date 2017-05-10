@@ -19,9 +19,11 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.entity.util.MiscUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -264,8 +266,11 @@ public class BankListener implements Listener {
                 attemptAdd = evt.getView().getBottomInventory().getItem(evt.getHotbarButton());
         }
 
+        MiscUtils.debugItem(attemptAdd);
         if (attemptAdd == null || !canItemBeStored(attemptAdd)) {
             evt.setCancelled(true);
+            evt.setResult(Event.Result.DENY);
+
             return;
         }
         Bukkit.getLogger().info("Can be stored: " + canItemBeStored(attemptAdd) + " for " + attemptAdd);

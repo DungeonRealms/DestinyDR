@@ -350,9 +350,12 @@ public class DamageListener implements Listener {
             //  KEEP ARMOR  //
             for(ItemStack item : p.getEquipment().getArmorContents()) {
             	if (dontSave == null || !dontSave.equals(item)) {
-            		ItemGear gear = (ItemGear)PersistentItem.constructItem(item);
-            		gear.damageItem(p, durabilityLoss);
-            		gearToSave.add(gear.generateItem());
+            	    PersistentItem persis = PersistentItem.constructItem(item);
+            	    if(persis instanceof ItemGear) {
+                        ItemGear gear = (ItemGear) PersistentItem.constructItem(item);
+                        gear.damageItem(p, durabilityLoss);
+                    }
+                    gearToSave.add(persis.generateItem());
             	}
             }
             
