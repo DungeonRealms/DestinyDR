@@ -329,18 +329,21 @@ public class ClickHandler {
                 	PetUtils.removePet(player);
                     return;
                 }
-                
+
+                System.out.println("Hello pet selector!2");
+
                 ItemStack petSelector = event.getCurrentItem();
                 
                 if (ItemPetSelector.isType(petSelector, ItemType.PET_SELECTOR)) {
+                    System.out.println("Hello pet selector!3");
                 	ItemPetSelector selector = (ItemPetSelector) PersistentItem.constructItem(petSelector);
                 	if (event.getClick() == ClickType.LEFT) {
                         PetUtils.removePet(player);
                         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
                         pw.setActivePet(selector.getPet());
                         PetUtils.spawnPet(player, selector.getPet(), pw.getPetName(selector.getPet()));
-                    } else if (event.getClick() == ClickType.MIDDLE) {
-                    	ItemPet.renamePet(player);
+                    } else if (event.getClick() == ClickType.RIGHT) {
+                    	ItemPet.renamePet(player, null);
                     }
                 }
                 break;
@@ -410,7 +413,7 @@ public class ClickHandler {
                         if (event.getClick() == ClickType.RIGHT)
                         	CraftingMenu.addPetItem(player);
                         else
-                        	PlayerMenus.openPlayerPetMenu(player);
+                        	PlayerMenus.openPlayerPetMenu(player, event.getAction());
                         break;
                     case 16: {
                         if (event.getClick() == ClickType.RIGHT)

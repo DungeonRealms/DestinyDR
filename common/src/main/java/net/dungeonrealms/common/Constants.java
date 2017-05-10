@@ -8,7 +8,7 @@ public class Constants {
 
     public static Logger log = Logger.getLogger("DungeonRealms");
 
-    public static boolean debug;
+    public static boolean debug = true;
 
     public static List<String> DEVELOPERS = Arrays.asList("Bradez1571", "Kneesnap", "iFamasssxD", "Ingot");
 

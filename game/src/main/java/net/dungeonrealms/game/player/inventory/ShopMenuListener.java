@@ -8,6 +8,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.core.ShopItem;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.inventory.menus.GUIItem;
+import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Material;
@@ -35,19 +37,34 @@ public class ShopMenuListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent evt) {
 		Player p = (Player) evt.getWhoClicked();
 		
-		if(!inShopGUI(p))
-			return;
-		
-		evt.setCancelled(true);
-		
+
 		ItemStack clicked = evt.getCurrentItem();
 		ShopMenu menu = getMenu(p);
-		if (clicked == null || clicked.getType() == Material.AIR
-				|| evt.getRawSlot() >= evt.getInventory().getSize() || !menu.getItems().containsKey(evt.getRawSlot()))
+		if(menu == null)
 			return;
-		
+
+		evt.setCancelled(true);
+		if (clicked == null || clicked.getType() == Material.AIR
+				|| evt.getRawSlot() >= evt.getInventory().getSize())
+			return;
+
+		if(menu instanceof GUIMenu){
+			GUIMenu guiMenu = (GUIMenu)menu;
+			ShopItem item = guiMenu.getItems().get(evt.getRawSlot());
+			if(item == null)return;
+
+			if(item instanceof GUIItem){
+				GUIItem guiItem = (GUIItem)item;
+				if(guiItem.getClickCallback() != null){
+					guiItem.getClickCallback().accept(evt);
+				}
+			}
+			return;
+		}
+
 		ShopItem shop = menu.getItems().get(evt.getRawSlot());
-		
+
+		if(shop == null)return;
 		PlayerWrapper pw = PlayerWrapper.getPlayerWrapper(p);
 		int playerEcash = pw.getEcash();
 		

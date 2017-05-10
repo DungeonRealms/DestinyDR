@@ -29,7 +29,7 @@ public class BaseMobSpawner extends MobSpawner {
     protected void createMobs() {
     	// The delay of when monsters should spawn is set after a monster dies.
 		// We don't want excess monsters spawning.
-    	getSpawnedMonsters().stream().filter(Entity::isDead).forEach(monster -> 
+    	getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(monster ->
 			respawnTimes.put(monster, getRespawnDelay() + (new Random().nextInt(getRespawnDelay() / 2) + 15)));
     	
     	if (isFirstSpawn())

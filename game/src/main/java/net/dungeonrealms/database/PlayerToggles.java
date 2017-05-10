@@ -27,7 +27,8 @@ public class PlayerToggles implements LoadableData, SaveableData {
     }
 
     public boolean getState(Toggles t) {
-    	return toggles.get(t) && wrapper.getRank().isAtLeast(t.getMinRank());
+    	Boolean bool = toggles.get(t);
+		return bool != null && bool && wrapper.getRank().isAtLeast(t.getMinRank());
     }
 
     public void setState(Toggles t, boolean b) {

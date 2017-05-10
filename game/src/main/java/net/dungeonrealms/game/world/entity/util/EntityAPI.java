@@ -354,7 +354,7 @@ public class EntityAPI {
     		
     		// Register monster data.
     		if (!mType.isFriendly()) {
-    			registerMonster(le, tier, level, armor, weapon, displayName);
+    			registerMonster(le, level, tier, armor, weapon, displayName);
     		
     			// Mark as dungeon mob.
         		if (dungeon) {

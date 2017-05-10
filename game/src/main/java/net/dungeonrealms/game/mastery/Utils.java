@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -99,7 +100,7 @@ public class Utils {
     }
 
     public static int randInt(int min, int max) {
-        return new Random().nextInt((max - min) + 1) + min;
+        return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
     }
 
     public static boolean isInt(String s) {

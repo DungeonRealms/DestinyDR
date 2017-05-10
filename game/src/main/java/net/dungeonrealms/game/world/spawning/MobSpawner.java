@@ -217,7 +217,7 @@ public abstract class MobSpawner {
     }
 
     public void spawnIn() {
-    	getSpawnedMonsters().stream().filter(Entity::isDead).forEach(getSpawnedMonsters()::remove);
+    	getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(getSpawnedMonsters()::remove);
     	
     	if (getSpawnedMonsters().size() >= getSpawnAmount() || !canSpawnMobs())
     		return;
