@@ -239,7 +239,19 @@ public class ItemManager {
      */
     public static boolean isItemTradeable(ItemStack item) {
         ItemGeneric ig = get(item);
-        return !(ig.isUntradeable() || ig.isSoulbound() || ig.isPermanentUntradeable());
+        if(ig.isUntradeable()) {
+            System.out.println("Returning tradable debug 1");
+            return false;
+        }
+        if(ig.isSoulbound()) {
+            System.out.println("Returning tradable debug 2");
+            return false;
+        }
+        if(ig.isPermanentUntradeable()) {
+            System.out.println("Returning tradable debug 3");
+            return false;
+        }
+        return true;
     }
 
     /**

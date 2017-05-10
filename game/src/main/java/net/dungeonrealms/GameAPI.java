@@ -658,14 +658,7 @@ public class GameAPI {
     public static volatile Set<Player> asyncTracker = new ConcurrentSet<>();
 
     public static Set<Player> getNearbyPlayersAsync(Location location, int radius) {
-        Set<Player> playersNearby = new HashSet<>();
-        for (Player player : asyncTracker) {
-            if (!player.isOnline()) continue;
-            if (player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= radius * radius) {
-                playersNearby.add(player);
-            }
-        }
-        return playersNearby;
+        return asyncTracker.stream().filter(OfflinePlayer::isOnline).filter(player -> player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= radius * radius).collect(Collectors.toSet());
     }
 
     public static boolean arePlayersNearby(Location location, int radius) {

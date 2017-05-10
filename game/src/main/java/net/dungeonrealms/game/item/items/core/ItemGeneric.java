@@ -177,7 +177,15 @@ public abstract class ItemGeneric extends PersistentItem {
 				this.soulboundAllowedTraders = Arrays.asList(getTagString("soulboundBypass").split(","));
 			}
 		}
-		
+
+		if(getItem().getType().equals(Material.SADDLE)) {
+			System.out.println("The untradable saddle: " + getTagInt("untradeable"));
+		}
+		setPermUntradeable(getTagInt("puntradeable") == 1);
+		setUntradeable(getTagInt("untradeable") == 1);
+		if(getItem().getType().equals(Material.SADDLE)) {
+			System.out.println("The untradable  saddle 2: " + isUntradeable());
+		}
 		setPrice(getTagInt("price"));
 		setShowPrice(getTagBool("showPrice"));
 		setGlowing(EnchantmentAPI.isGlowing(getItem()));
@@ -265,12 +273,7 @@ public abstract class ItemGeneric extends PersistentItem {
 	public void removePrice() {
 		setPrice(0);
 	}
-	
-	/**
-	 * Allows this item to be traded to a specified player for X minutes.
-	 * @param Player
-	 * @param time (In Seconds)
-	 */
+
 	public void addSoulboundBypass(Player p, int time) {
 		this.soulboundTrade = System.currentTimeMillis() + time * 1000;
 		this.soulboundAllowedTraders.add(p.getName());

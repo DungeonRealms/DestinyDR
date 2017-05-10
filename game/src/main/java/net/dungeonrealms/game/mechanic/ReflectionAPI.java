@@ -7,11 +7,19 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Kieran on 9/27/2015.
- * Based from some Bukkit GameAPI from 2014.
  */
 public class ReflectionAPI {
 
+    public static Field getDeclaredField(Class<?> target, String fieldName) {
+        try{
+            Field field = target.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *
@@ -23,7 +31,6 @@ public class ReflectionAPI {
     public static Field findField(Class<?> target, Class<?> fieldType, int index) {
         return findField(target, fieldType, index, false);
     }
-
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *

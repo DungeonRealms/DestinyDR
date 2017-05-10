@@ -78,7 +78,7 @@ public interface DRMonster {
     
     default void setupNMS() {
     	getNMS().getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
-        getNMS().getAttributeInstance(GenericAttributes.c).setValue(1.00d);
+        getNMS().getAttributeInstance(GenericAttributes.c).setValue(.75D);
         getNMS().noDamageTicks = 0;
         getNMS().maxNoDamageTicks = 0;
     }

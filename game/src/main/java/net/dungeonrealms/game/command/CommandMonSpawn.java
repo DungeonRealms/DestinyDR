@@ -16,9 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * Created by Nick on 9/17/2015.
- */
 public class CommandMonSpawn extends BaseCommand {
 
     public CommandMonSpawn() {

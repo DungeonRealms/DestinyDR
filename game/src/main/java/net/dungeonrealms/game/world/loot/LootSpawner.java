@@ -6,6 +6,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.game.mastery.Utils;
 
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -103,11 +104,9 @@ public class LootSpawner {
 		
 		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 		wrapper.getPlayerGameStats().addStat(StatColumn.LOOT_OPENED);
-		
-		for (int i = 0; i < 6; i++)
-			for (double yOffset = 0.2; yOffset <= 0.5; yOffset += 0.15)
-        		world.playEffect(getLocation().clone().add(i, yOffset, i), Effect.TILE_BREAK, 25, 12);
-        
+
+		world.playEffect(getLocation().clone().add(0.5, 0, .5), Effect.STEP_SOUND, Material.CHEST.getId());
+
 		world.playSound(getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
 		getLocation().getBlock().getDrops().clear();
 		getLocation().getBlock().setType(Material.AIR);
@@ -121,7 +120,9 @@ public class LootSpawner {
 	 * Draws enchantment particles around it.
 	 */
 	public void showParticles() {
-		getLocation().getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, getLocation(), 20, .2D, .2D, .2D);
+		Location half = getLocation().clone().add(0.5, 0, 0.5);
+		ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.ENCHANTMENT_TABLE, half, .2F, .2F, .2F, .01F, 15);
+//		getLocation().getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, getLocation(), 20, .2D, .2D, .2D);
 	}
 	
 	@Override
