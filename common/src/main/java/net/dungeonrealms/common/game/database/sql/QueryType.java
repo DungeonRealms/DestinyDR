@@ -40,7 +40,7 @@ public enum QueryType {
     SELECT_IP_BANS("SELECT expiration FROM punishments LEFT JOIN `ip_addresses` ON `punishments`.`account_id` = `ip_addresses`.`account_id` WHERE `ip_addresses`.`ip_address` = '%s' AND `punishments`.`quashed` <> 1 AND (`punishments`.`expiration` > UNIX_TIMESTAMP() OR `punishments`.`expiration` <= -1) AND `punishments`.`type` = 'ban' LIMIT 1;"),
     SELECT_BANS("SELECT issued, expiration, punisher_id, reason, quashed FROM punishments LEFT JOIN users ON punishments.account_id = users.account_id WHERE type = 'ban' AND users.uuid = '%s' AND quashed = 0 AND (expiration > UNIX_TIMESTAMP() OR expiration = 0) ORDER BY issued DESC LIMIT 1;"),
     //PLAYER WRAPPER QUERIES
-    UPDATE_REALM("UPDATE realm SET title = '%s', description = %s, uploading = %s, upgrading = %s, tier = %s, enteringRealm = %s, lastReset = %s WHERE character_id = %s;"),
+    UPDATE_REALM("UPDATE realm SET title = %s, description = %s, uploading = %s, upgrading = %s, tier = %s, enteringRealm = %s, lastReset = %s WHERE character_id = %s;"),
     CHARACTER_UPDATE("UPDATE characters SET created = %s, level = %s, experience = %s, alignment = %s, inventory_storage = %s, armour_storage = %s, gems = %s, bank_storage = %s, bank_level = %s, " +
             "shop_level = %s, mule_storage = %s, mule_level = %s, health = %s, location = %s, " +
             "activeMount = %s, activePet = %s, activeTrail = %s, activeMountSkin = %s, questData = %s, collection_storage = %s, " +

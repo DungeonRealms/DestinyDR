@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory.menus.guis;
 
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
@@ -64,7 +65,7 @@ public class PetSelectionGUI extends GUIMenu {
 
                 if (isLocked.get()) {
                     player.sendMessage(ChatColor.RED + "You do " + ChatColor.BOLD + "NOT" + ChatColor.RED + " have access to this pet!");
-                    player.sendMessage(ChatColor.GRAY + "You can unlock access at " + ChatColor.UNDERLINE + "www.dungeonrealms.net/store" + ChatColor.GRAY + "!");
+                    player.sendMessage(ChatColor.GRAY + "You can unlock access at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
                     return;
                 }
 

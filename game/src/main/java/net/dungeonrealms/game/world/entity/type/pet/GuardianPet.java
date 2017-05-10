@@ -9,13 +9,13 @@ import javax.annotation.Nullable;
 import org.bukkit.entity.Player;
 
 /**
- * Created by Rar349 on 4/30/2017.
+ * Created by Rar349 and iFamassxD on 4/30/2017.
  */
 public class GuardianPet extends EntityGuardian implements Ownable {
 
     public GuardianPet(World world) {
         super(world);
-        setElder(true);
+        setElder(false);
     }
     
     @Override

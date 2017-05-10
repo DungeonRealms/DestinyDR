@@ -1,14 +1,13 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.common.game.util.Cooldown;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
@@ -19,6 +18,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -37,7 +37,6 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -68,19 +67,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Nick on 9/17/2015.
  */
 public class MainListener implements Listener {
 
-	private Set<UUID> kickedIgnore = new HashSet<>();
-	
+    private Set<UUID> kickedIgnore = new HashSet<>();
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
         GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
@@ -93,10 +88,12 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
-            if(event.getEntity().hasMetadata("type")) {
-                MetadataValue value = event.getEntity().getMetadata("type").get(0);
-                if (value != null && value.asString().equals("pet")) return;
-            }
+
+            MetadataValue value = MetadataUtils.Metadata.ENTITY_TYPE.get(event.getEntity());
+            if(value == null) System.out.println("The value is null on enderman teleport!");
+            else System.out.println("The value on enderman teleport is: " + value.asString());
+            if (value != null && value.asString().equalsIgnoreCase("pet")) return;
+
             event.setCancelled(true);
         }
     }
@@ -110,9 +107,9 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPing(ServerListPingEvent event) {
-    	event.setMotd(DungeonRealms.getInstance().canAcceptPlayers() ? DungeonRealms.getShard().getShardID() + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER : "offline");
+        event.setMotd(DungeonRealms.getInstance().canAcceptPlayers() ? DungeonRealms.getShard().getShardID() + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER : "offline");
     }
-    
+
     @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
 
@@ -137,7 +134,7 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (Chat.containsIllegal(event.getMessage())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "Message contains illegal characters.");
@@ -146,7 +143,7 @@ public class MainListener implements Listener {
 
         Chat.getInstance().doMessageChatListener(event);
         Chat.sendChatMessage(event.getPlayer(), event.getMessage(), false);
-        
+
         event.setCancelled(true);
     }
 
@@ -184,7 +181,7 @@ public class MainListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                if(wrapper == null) return;
+                if (wrapper == null) return;
                 if (wrapper.isLoggerDied()) {
                     player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, your doppelganger was killed and alas your items are gone.");
                     wrapper.setLoggerDied(false);
@@ -203,9 +200,9 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
-    	GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
+        GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
         if (gp != null && !gp.isAbleToDrop())
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
 
     /**
@@ -227,12 +224,12 @@ public class MainListener implements Listener {
                 event.getExited().remove();
             return;
         }
-        
+
         Player p = (Player) event.getExited();
         if (MountUtils.hasActiveMount(p)) {
-        	event.getVehicle().remove();
-        	MountUtils.removeMount(p);
-        	event.getExited().sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "For its own safety, your mount has returned to the stable.");
+            event.getVehicle().remove();
+            MountUtils.removeMount(p);
+            event.getExited().sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "For its own safety, your mount has returned to the stable.");
         }
     }
 
@@ -506,7 +503,7 @@ public class MainListener implements Listener {
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000L);
 
         NPCMenu menu = NPCMenu.getMenu(npcNameStripped);
-        
+
         // Event NPCs and Restrictions
         if (DungeonRealms.isEvent()) {
             if ((menu != null && !menu.isAllowedOnEvent()) || npcNameStripped.equalsIgnoreCase("Merchant")) {
@@ -514,25 +511,25 @@ public class MainListener implements Listener {
                 return;
             }
         }
-        
+
         if (menu != null)
-        	menu.open(event.getPlayer());
-        
+            menu.open(event.getPlayer());
+
         if (npcNameStripped.equalsIgnoreCase("Merchant")) {
             NPCMenus.openMerchantMenu(event.getPlayer());
             return;
         }
-        
+
         if (npcNameStripped.equalsIgnoreCase("Wizard")) {
             NPCMenus.openWizardMenu(event.getPlayer());
             return;
         }
-        
+
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             GuildMechanics.getInstance().startGuildCreationDialogue(event.getPlayer());
             return;
         }
-        
+
         if (npcNameStripped.equalsIgnoreCase("Banker") || npcNameStripped.equalsIgnoreCase("Roaming Banker")
                 || npcNameStripped.equalsIgnoreCase("Wandering Banker") || npcNameStripped.equalsIgnoreCase("Hallen")
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
@@ -572,7 +569,7 @@ public class MainListener implements Listener {
                 continue;
             }
             if (itemStack.getType() == Material.EMERALD) {
-            	itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
+                itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
             }
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
@@ -648,23 +645,23 @@ public class MainListener implements Listener {
             player.closeInventory();
         });
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity().getType() != EntityType.ITEM_FRAME)
-        	return;
-        
+            return;
+
         ItemFrame is = (ItemFrame) event.getEntity();
         event.setCancelled(true);
         if (!(event.getDamager() instanceof Player) || is.getItem().getType() != Material.MAP)
-        	return;
-        
+            return;
+
         Player p = (Player) event.getDamager();
         ItemStack map = new VanillaItem(is.getItem()).setUntradeable(true).generateItem();
         if (!p.getInventory().contains(map)) {
-        	p.getInventory().addItem(map);
-        	p.playSound(p.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
-        	Achievements.giveAchievement(p, EnumAchievements.CARTOGRAPHER);
+            p.getInventory().addItem(map);
+            p.playSound(p.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
+            Achievements.giveAchievement(p, EnumAchievements.CARTOGRAPHER);
         }
     }
 
@@ -689,7 +686,7 @@ public class MainListener implements Listener {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
 
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
         Player trader = TradeManager.getTarget(pl);
         if (trader == null)
@@ -734,30 +731,30 @@ public class MainListener implements Listener {
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
         if (trade == null)
             return;
-        
+
         trader.playSound(trader.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
         pl.playSound(pl.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUnload(ChunkUnloadEvent event) {
-    	if (!DungeonManager.isDungeon(event.getWorld()))
-    		removeEntities(event.getChunk());
+        if (!DungeonManager.isDungeon(event.getWorld()))
+            removeEntities(event.getChunk());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkLoad(ChunkLoadEvent event) {
-    	removeEntities(event.getChunk());
+        removeEntities(event.getChunk());
     }
-    
+
     /**
      * Removes entites on chunk load / unload
      */
     private void removeEntities(Chunk chunk) {
-    	boolean mainWorld = GameAPI.isMainWorld(chunk.getWorld());
-    	Arrays.stream(chunk.getEntities())
-				.filter(e -> !(e instanceof Player || e instanceof Hanging || (mainWorld && e instanceof Item)))
-				.forEach(Entity::remove);
+        boolean mainWorld = GameAPI.isMainWorld(chunk.getWorld());
+        Arrays.stream(chunk.getEntities())
+                .filter(e -> !(e instanceof Player || e instanceof Hanging || (mainWorld && e instanceof Item)))
+                .forEach(Entity::remove);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -767,13 +764,13 @@ public class MainListener implements Listener {
             event.getItem().remove();
             return;
         }
-        
+
         if (event.getItem().getItemStack().getType() == Material.ARROW) {
             event.setCancelled(true);
             event.getItem().remove();
             return;
         }
-        
+
         if (event.getItem().getItemStack().getType() != Material.EMERALD)
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
     }
@@ -790,15 +787,15 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerInteractMule(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof Horse))
-        	return;
+            return;
         Horse horse = (Horse) event.getRightClicked();
         event.setCancelled(true);
         if (horse.getVariant() != Variant.MULE)
-        	return;
-        
+            return;
+
         Player p = event.getPlayer();
         if (!p.equals(horse.getOwner()))
-        	return;
+            return;
         horse.setLeashHolder(p);
         p.openInventory(MountUtils.getInventory(p));
     }
@@ -822,7 +819,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void chickenLayEgg(ItemSpawnEvent event) {
         if (event.getEntityType() == EntityType.EGG)
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -833,28 +830,28 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityTarget(EntityTargetEvent event) {
-    	if (event.getTarget() == null)
-    		return;
-    	if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
+        if (event.getTarget() == null)
+            return;
+        if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
             event.setCancelled(true);
             return;
         }
 
-    	GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
-    	if (gp != null && !gp.isTargettable())
-    		event.setCancelled(true);
+        GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
+        if (gp != null && !gp.isTargettable())
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void explosionDungeon(EntityExplodeEvent event) {
-    	if (!DungeonManager.isDungeon(event.getEntity()))
-    		return;
-    	event.blockList().forEach(block -> block.setType(Material.AIR));
-    	event.setYield(0);
-    	event.blockList().clear();
-    	event.getEntity().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
-    	event.getEntity().remove();
-    	event.setCancelled(true);
+        if (!DungeonManager.isDungeon(event.getEntity()))
+            return;
+        event.blockList().forEach(block -> block.setType(Material.AIR));
+        event.setYield(0);
+        event.blockList().clear();
+        event.getEntity().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
+        event.getEntity().remove();
+        event.setCancelled(true);
     }
 
     @EventHandler

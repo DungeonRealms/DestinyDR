@@ -42,7 +42,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
             // Dismiss Pet
             PetUtils.removePet(player);
-            player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
+//            player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
             return;
         }
 

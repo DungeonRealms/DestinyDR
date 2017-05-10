@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
@@ -31,27 +32,27 @@ import java.lang.reflect.Constructor;
 @AllArgsConstructor
 @Getter
 public enum EnumPets {
-    WOLF(WolfPet.class, 95, Sound.ENTITY_WOLF_AMBIENT, 1.1D),
-    ENDERMITE(EndermitePet.class, 67, Sound.ENTITY_ENDERMITE_AMBIENT, 1.5D),
-    CAVE_SPIDER(SpiderPet.class, 59, Sound.ENTITY_SPIDER_AMBIENT, 1.3D),
-    BABY_ZOMBIE(ZombiePet.class, 54, Sound.ENTITY_ZOMBIE_AMBIENT, 1D),
-    BABY_PIG_ZOMBIE(ZombiePigPet.class, 57, Sound.ENTITY_ZOMBIE_PIG_AMBIENT, 1D),
-    OCELOT(OcelotPet.class, 98, Sound.ENTITY_CAT_AMBIENT, 1D),
-    RABBIT(RabbitPet.class, 101, Sound.ENTITY_RABBIT_AMBIENT, 1.5D), //.4F
-    CHICKEN(ChickenPet.class, 93, Sound.ENTITY_CHICKEN_AMBIENT, 1.1D),
-    BAT(BatPet.class, 65, Sound.ENTITY_BAT_TAKEOFF, -1D),
-    SLIME(SlimePet.class, 55, Sound.ENTITY_SLIME_SQUISH, 1.25D),
-    MAGMA_CUBE(MagmaPet.class, 62, Sound.ENTITY_MAGMACUBE_SQUISH, 1.25D),
-    ENDERMAN(EndermanPet.class, 54, Sound.ENTITY_ENDERMEN_SCREAM, 1D, false), //.45F
-    GUARDIAN(GuardianPet.class, 68, Sound.ENTITY_GUARDIAN_AMBIENT, 1D, false), //.3F
-    BABY_SHEEP(BabySheepPet.class, 91, Sound.ENTITY_SHEEP_AMBIENT, 1D), //.45F
-    RAINBOW_SHEEP(RainbowSheepPet.class, 91, Sound.ENTITY_SHEEP_AMBIENT, 1.0D, false), //.45F
-    BETA_ZOMBIE(BetaZombie.class, 54, Sound.ENTITY_ZOMBIE_AMBIENT, 1D, false),
+    WOLF(WolfPet.class, EntityType.WOLF.getTypeId(), Sound.ENTITY_WOLF_AMBIENT, 1.1D),
+    ENDERMITE(EndermitePet.class, EntityType.ENDERMITE.getTypeId(), Sound.ENTITY_ENDERMITE_AMBIENT, 1.5D),
+    CAVE_SPIDER(SpiderPet.class, EntityType.CAVE_SPIDER.getTypeId(), Sound.ENTITY_SPIDER_AMBIENT, 1.3D),
+    BABY_ZOMBIE(ZombiePet.class, EntityType.ZOMBIE.getTypeId(), Sound.ENTITY_ZOMBIE_AMBIENT, 1D),
+    BABY_PIG_ZOMBIE(ZombiePigPet.class, EntityType.PIG_ZOMBIE.getTypeId(), Sound.ENTITY_ZOMBIE_PIG_AMBIENT, 1D),
+    OCELOT(OcelotPet.class, EntityType.OCELOT.getTypeId(), Sound.ENTITY_CAT_AMBIENT, 1D),
+    RABBIT(RabbitPet.class, EntityType.RABBIT.getTypeId(), Sound.ENTITY_RABBIT_AMBIENT, 1.5D), //.4F
+    CHICKEN(ChickenPet.class, EntityType.CHICKEN.getTypeId(), Sound.ENTITY_CHICKEN_AMBIENT, 1.1D),
+    BAT(BatPet.class, EntityType.BAT.getTypeId(), Sound.ENTITY_BAT_TAKEOFF, -1D),
+    SLIME(SlimePet.class, EntityType.SLIME.getTypeId(), Sound.ENTITY_SLIME_SQUISH, 1.25D),
+    MAGMA_CUBE(MagmaPet.class, EntityType.MAGMA_CUBE.getTypeId(), Sound.ENTITY_MAGMACUBE_SQUISH, 1.25D),
+    ENDERMAN(EndermanPet.class, EntityType.ENDERMAN.getTypeId(), Sound.ENTITY_ENDERMEN_SCREAM, 1D, false), //.45F
+    GUARDIAN(GuardianPet.class, EntityType.GUARDIAN.getTypeId(), Sound.ENTITY_GUARDIAN_AMBIENT, 1D, false), //.3F
+    BABY_SHEEP(BabySheepPet.class, EntityType.SHEEP.getTypeId(), Sound.ENTITY_SHEEP_AMBIENT, 1D), //.45F
+    RAINBOW_SHEEP(RainbowSheepPet.class, EntityType.SHEEP.getTypeId(), Sound.ENTITY_SHEEP_AMBIENT, 1.0D, false), //.45F
+    BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE.getTypeId(), Sound.ENTITY_ZOMBIE_AMBIENT, 1D, false),
 
     // Event Pets:
-    SILVERFISH(SilverfishPet.class, 60, Sound.ENTITY_SILVERFISH_AMBIENT, 1.5D, false),
-    SNOWMAN(SnowmanPet.class, 56, Sound.ENTITY_SNOWMAN_AMBIENT, 1.8D, false), // Christmass
-    INDEPENDENCE_CREEPER(CreeperPet.class, 50, Sound.ENTITY_CREEPER_PRIMED, 1.25D, false), //Fourth of July.
+    SILVERFISH(SilverfishPet.class, EntityType.SILVERFISH.getTypeId(), Sound.ENTITY_SILVERFISH_AMBIENT, 1.5D, false),
+    SNOWMAN(SnowmanPet.class, EntityType.SNOWMAN.getTypeId(), Sound.ENTITY_SNOWMAN_AMBIENT, 1.8D, false), // Christmass
+    INDEPENDENCE_CREEPER(CreeperPet.class, EntityType.CREEPER.getTypeId(), Sound.ENTITY_CREEPER_PRIMED, 1.25D, false), //Fourth of July.
 
     // Special "Pets"
     STORAGE_MULE(null, 64, null, 1.8D, null, false, false, true);

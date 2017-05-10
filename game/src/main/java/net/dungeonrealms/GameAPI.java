@@ -317,7 +317,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
+        final long restartTime = Bukkit.getOnlinePlayers().size() <= 5 && DungeonRealms.isMaster() ? 10 : (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
 
         try {
             Bukkit.getLogger().info("Saving all shops sync...");

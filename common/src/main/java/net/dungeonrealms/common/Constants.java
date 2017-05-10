@@ -34,6 +34,7 @@ public class Constants {
     // BUILD NUMBER //
     public static String BUILD_NUMBER = "#0";
 
+    public static String STORE_URL = "www.dungeonrealms.net/oldshop";
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
     }
