@@ -9,7 +9,9 @@ import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.Quest;
@@ -57,6 +59,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         evt.setCancelled(true);
     }
 
+    private static final int MAX_LENGTH = 20;
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         InventoryClickEvent event = evt.getEvent();
@@ -74,12 +77,10 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
             evt.setUsed(false);
             evt.setResultItem(null);
             evt.setSwappedItem(null);
+            player.setItemOnCursor(null);
             player.updateInventory();
 
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                player.closeInventory();
-            }, 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.closeInventory(), 1);
 
             Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Item Rename Started");
             Utils.sendCenteredMessage(player, ChatColor.GRAY + "Are you sure you want to rename this item?");
@@ -91,7 +92,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADING, 3, .6F);
             Chat.listenForMessage(player, chat -> {
                 String msg = Chat.checkForBannedWords(ChatColor.stripColor(SQLDatabaseAPI.filterSQLInjection(chat.getMessage())));
-                Item.ItemTier tier = GameAPI.getItemTier(current);
+                Item.ItemTier tier = Item.ItemTier.getByTier(new VanillaItem(current).getTagInt(TIER));
 
                 if (Chat.containsIllegal(msg)) {
                     player.sendMessage(ChatColor.RED + "Your desired name contained illegal characters!");
@@ -106,6 +107,11 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
 
                 String newItemName = color + msg;
 
+                if(newItemName.length() - 2 >= MAX_LENGTH){
+                    player.sendMessage(ChatColor.RED + "Your desired item name exceeds " + MAX_LENGTH + " characters!");
+                    returnItem(player, item);
+                    return;
+                }
                 player.sendMessage("");
                 player.sendMessage("");
                 player.sendMessage("");
@@ -149,6 +155,6 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
     }
 
     public boolean canRenameItem(ItemStack item) {
-        return ItemArmor.isCustomTool(item);
+        return ItemArmor.isCustomTool(item) || item.getType().isEdible() || PotionItem.isPotion(item);
     }
 }
