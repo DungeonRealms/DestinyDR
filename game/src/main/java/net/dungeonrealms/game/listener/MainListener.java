@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listener;
 
 import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
-
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -21,7 +20,6 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -36,8 +34,6 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
-import net.dungeonrealms.game.player.inventory.ShopMenu;
-import net.dungeonrealms.game.player.inventory.ShopMenuListener;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
@@ -48,7 +44,6 @@ import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -93,7 +88,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
-        
+
         if (Metadata.SHARDING.has(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
@@ -165,9 +160,12 @@ public class MainListener implements Listener {
         }
 
         Chat.getInstance().doMessageChatListener(event);
-        Chat.sendChatMessage(event.getPlayer(), event.getMessage(), false);
 
-        event.setCancelled(true);
+        //Check if we cancelled it..
+        if (!event.isCancelled()) {
+            Chat.sendChatMessage(event.getPlayer(), event.getMessage(), false);
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

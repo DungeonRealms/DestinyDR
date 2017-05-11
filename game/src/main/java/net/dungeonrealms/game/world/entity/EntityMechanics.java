@@ -194,12 +194,13 @@ public class EntityMechanics implements GenericMechanic {
     		
     		if (lastAttack == 11) {
     			// Teleport back to spawnpoint if too far away.
-    			Location target = ei.getGoalTarget().getBukkitEntity().getLocation();
-    			if (target != null && target.getWorld() == entity.getWorld()) {
-    				double distance = target.distance(entity.getLocation());
+    			Location target = ei.getGoalTarget() != null ? ei.getGoalTarget().getBukkitEntity().getLocation() : null;
+    			if (target != null && target.getWorld().equals(entity.getWorld())) {
+    			    //Distance squared
+    				double distance = target.distanceSquared(entity.getLocation());
     				
     				// If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
-    				if (distance >= 2 && distance <= 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
+    				if (distance >= 4 && distance <= 6 * 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
     					entity.teleport(target);
     					MONSTER_LAST_ATTACK.put(entity, 15);
     				}

@@ -32,17 +32,18 @@ public class CategoryGUI extends GUIMenu {
                 .setClick(e -> player.sendMessage("Back button click!")));
 
         for(WebstoreCategories cat : WebstoreCategories.values()) {
-            ItemStack toDisplay = new ItemStack(cat.getDisplayItem());
-            ItemMeta meta = toDisplay.getItemMeta();
-            meta.setDisplayName(cat.getName());
-            meta.setLore(cat.getDescription());
-            toDisplay.setItemMeta(meta);
-            setItem(slot++, new GUIItem(toDisplay).setClick((evt) -> {
+            setItem(slot++, new GUIItem(cat.getDisplayItem()).setName(cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {
                 if(evt.getClick() == ClickType.LEFT) {
                     WebstoreCategories.getGUI(cat,player).open(player,evt.getAction());
                 }
             }));
         }
+
+        setItem(slot++, new GUIItem(cat.getDisplayItem()).setName(cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {
+            if(evt.getClick() == ClickType.LEFT) {
+                WebstoreCategories.getGUI(cat,player).open(player,evt.getAction());
+            }
+        }));
 
     }
 }

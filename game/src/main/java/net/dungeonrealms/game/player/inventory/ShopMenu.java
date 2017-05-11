@@ -205,6 +205,10 @@ public abstract class ShopMenu {
         return stack;
     }
 
+    public void onRemove() {
+
+    }
+
     private static void createStaticItems() {
         BACK = new ShopItem(new VanillaItem(createItem(Material.BARRIER, ChatColor.GREEN + "Return")), (player, item) -> {
             ShopMenu menu = ShopMenuListener.getMenu(player);

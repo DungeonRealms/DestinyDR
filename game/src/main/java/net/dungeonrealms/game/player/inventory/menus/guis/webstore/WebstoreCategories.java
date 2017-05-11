@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +15,7 @@ import java.util.List;
 @Getter
 public enum WebstoreCategories {
 
-    LOOT_BUFFS("Loot Buffs", "Click here to view loot buffs!", Material.GOLDEN_CARROT);
+    GLOBAL_BUFFS("Global Buffs", "Click here to view all global buffs!", Material.DIAMOND);
 
     private String name;
     private String description;
@@ -34,7 +33,7 @@ public enum WebstoreCategories {
     }
 
     public static GUIMenu getGUI(WebstoreCategories category, Player player) {
-        if(category == LOOT_BUFFS) return new LootBuffGUI(player);
+        if(category == GLOBAL_BUFFS) return new GlobalBuffGUI(player);
         return null;
     }
 

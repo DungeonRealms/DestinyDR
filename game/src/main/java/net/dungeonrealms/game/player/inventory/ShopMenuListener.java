@@ -108,7 +108,8 @@ public class ShopMenuListener implements Listener {
 	}
 	
 	public void removeGui(Player player) {
-		getMenus().remove(player);
+		ShopMenu menu = getMenus().remove(player);
+		if(menu!= null) menu.onRemove();
 	}
 	
 	/**

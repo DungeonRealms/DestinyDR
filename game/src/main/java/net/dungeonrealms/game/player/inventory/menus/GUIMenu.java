@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
 import net.dungeonrealms.game.player.inventory.ShopMenuListener;
@@ -19,9 +21,15 @@ import java.util.function.Consumer;
 
 public abstract class GUIMenu extends ShopMenu {
 
+    @Getter
+    @Setter
+    private boolean shouldOpenPreviousOnClose;
+
     public GUIMenu(Player player, int size, String title) {
         super(player, size, title);
+        shouldOpenPreviousOnClose = false;
     }
+
 
     @Override
     protected abstract void setItems();
@@ -66,15 +74,18 @@ public abstract class GUIMenu extends ShopMenu {
                 setItems();
                 return;
             }
+
             //Delay the next inventory click by 1.
             if (action != null && action.name().startsWith("PICKUP_")) {
                 //CAnt close the inventory on a pickup_all action etc otherwise throws exceptions.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    this.setItems();
                     player.closeInventory();
                     reopenWithDelay(player);
                 });
                 return;
             }
+            this.setItems();
             reopenWithDelay(player);
             return;
         }
@@ -82,6 +93,17 @@ public abstract class GUIMenu extends ShopMenu {
         this.setItems();
         player.openInventory(getInventory());
         ShopMenuListener.getMenus().put(player, this);
+    }
+
+    public GUIMenu getPreviousGUI() {
+        return null;
+    }
+
+    @Override
+    public void onRemove() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if(isShouldOpenPreviousOnClose()) getPreviousGUI().open(player,null);
+        });
     }
 
     public void updateWindowTitle(final Player player, String title) {
