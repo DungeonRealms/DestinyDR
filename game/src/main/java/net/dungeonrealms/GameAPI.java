@@ -646,6 +646,17 @@ public class GameAPI {
         return asyncTracker.stream().filter(OfflinePlayer::isOnline).filter(player -> player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= radius * radius).collect(Collectors.toSet());
     }
 
+    /**
+     * Async thread safe method.
+     * @param location
+     * @param radius
+     * @return
+     */
+    public static boolean arePlayersNearbyAsync(Location location, int radius){
+        int finalRadius = radius * radius;
+        return asyncTracker.stream().anyMatch(player -> player.isOnline() && player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= finalRadius);
+    }
+
     public static boolean arePlayersNearby(Location location, int radius) {
         return location.getWorld().getPlayers().stream().filter(player -> !(!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player))).anyMatch(player -> location.distanceSquared(player.getLocation()) <= radius * radius);
     }

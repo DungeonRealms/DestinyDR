@@ -4,12 +4,15 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
+import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import static net.dungeonrealms.game.player.inventory.PlayerMenus.editItem;
 
 
 /**
@@ -39,9 +42,17 @@ public class CategoryGUI extends GUIMenu {
             }));
         }
 
-        setItem(slot++, new GUIItem(cat.getDisplayItem()).setName(cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {
+        ItemStack petCategory = editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pets", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel with a cute companion.",
+                "",
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View available pets.",
+                ChatColor.GRAY + "Display Item"
+        });
+
+        setItem(slot++, new GUIItem(petCategory).setClick((evt) -> {
             if(evt.getClick() == ClickType.LEFT) {
-                WebstoreCategories.getGUI(cat,player).open(player,evt.getAction());
+                new PetSelectionGUI(player).open(player,evt.getAction());
             }
         }));
 

@@ -333,13 +333,14 @@ public class DamageListener implements Listener {
             
             //  KEEP ARMOR  //
             for(ItemStack item : p.getEquipment().getArmorContents()) {
+                if(item == null || item.getType() == Material.AIR)continue;
             	if (dontSave == null || !dontSave.equals(item)) {
             	    PersistentItem persis = PersistentItem.constructItem(item);
             	    if(persis instanceof ItemGear) {
-                        ItemGear gear = (ItemGear) PersistentItem.constructItem(item);
+                        ItemGear gear = (ItemGear) persis;
                         gear.damageItem(p, durabilityLoss);
+                        gearToSave.add(persis.generateItem());
                     }
-                    gearToSave.add(persis.generateItem());
             	}
             }
             
@@ -348,10 +349,13 @@ public class DamageListener implements Listener {
             //  KEEP PROFESSION ITEMS AND MAIN WEAPON  //
             new ArrayList<>(event.getDrops()).forEach(is -> {
             	if(ProfessionItem.isProfessionItem(is) ||
-            			(!skipWeapon && is.equals(p.getInventory().getItem(p.getInventory().getHeldItemSlot())))) {
-            		ItemGear gear = (ItemGear)PersistentItem.constructItem(is);
-            		gear.damageItem(p, durabilityLoss);
-            		gearToSave.add(gear.generateItem());
+                        !skipWeapon && is.equals(p.getInventory().getItem(p.getInventory().getHeldItemSlot()))) {
+            		PersistentItem item = PersistentItem.constructItem(is);
+            		if(item instanceof ItemGear){
+                        ItemGear gear = (ItemGear)item;
+                        gear.damageItem(p, durabilityLoss);
+                        gearToSave.add(gear.generateItem());
+                    }
             	}
             });
             

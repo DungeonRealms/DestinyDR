@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
@@ -20,7 +21,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -42,7 +42,7 @@ public class Quests implements GenericMechanic {
         npcStore.load();
         questStore.load();
 
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> spawnQuestParticles(), 0, 10);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> spawnQuestParticles(), 0, 10);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkQuestZones(), 0, 40);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> sendActionBar(), 0, 30);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> updateAllGlow(), 0, 30);
@@ -59,8 +59,9 @@ public class Quests implements GenericMechanic {
     }
 
     private void spawnQuestParticles() {
-        for (QuestNPC npc : this.npcStore.getList())
-            npc.getLocation().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), 6, 0.5, 1, 0.5);
+        for (QuestNPC npc : this.npcStore.getList()){
+            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, npc.getLocation(), 0.5F, 1, 0.5F, .01F, 6);
+        }
     }
 
     public void updateGlow(Player player) {

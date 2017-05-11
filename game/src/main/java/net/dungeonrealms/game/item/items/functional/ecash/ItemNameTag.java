@@ -26,12 +26,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemClickListener, ItemInventoryEvent.ItemInventoryListener {
 
     public ItemNameTag(ItemStack item) {
-        super(ItemType.ITEM_NAME_TAG);
+        this();
     }
 
     public ItemNameTag() {
         super(ItemType.ITEM_NAME_TAG);
-        setPermUntradeable(true);
+        setSoulbound(true);
+        setUndroppable(true);
     }
 
     @Override

@@ -18,7 +18,13 @@ public enum Purchaseables {
     PROFESSION_BUFF_20("Profession Buff", "20% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, true, WebstoreCategories.GLOBAL_BUFFS,4),
     PROFESSION_BUFF_40("Profession Buff", "40% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, true, WebstoreCategories.GLOBAL_BUFFS,13),
     LEVEL_BUFF_20("Level Buff", "20% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, true, WebstoreCategories.GLOBAL_BUFFS,8),
-    LEVEL_BUFF_40("Level Buff", "40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, true, WebstoreCategories.GLOBAL_BUFFS,17);
+    LEVEL_BUFF_40("Level Buff", "40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, true, WebstoreCategories.GLOBAL_BUFFS,17),
+
+    SUB("Sub Rank", "In-game Subscriber rank!", Material.EMERALD, false, WebstoreCategories.SUBSCRIPTIONS, 0),
+    SUB_PLUS("Sub+ Rank", "In-game Subscriber+ rank!", Material.EMERALD, false, WebstoreCategories.SUBSCRIPTIONS, 4),
+    SUB_PLUS_PLUS("Sub++ Rank", "In-game Subscriber++ rank!", Material.EMERALD, false, WebstoreCategories.SUBSCRIPTIONS, 8),
+
+    SCRAP_TAB("Scrap Tab", "In-game storage for your scrap!", Material.INK_SACK, false, WebstoreCategories.MISCELLANEOUS, 0);
 
     private String name;
     private boolean canHaveMultiple;

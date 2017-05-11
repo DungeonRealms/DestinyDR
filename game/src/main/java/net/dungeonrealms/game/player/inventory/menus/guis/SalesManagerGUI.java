@@ -25,7 +25,7 @@ public class SalesManagerGUI extends GUIMenu {
     private int page = 1;
 
     public SalesManagerGUI(Player player) {
-        super(player, 54 + 9, "Sales Manager (1 / " + (int) Math.ceil(ShopMechanics.getRecentlySoldItems().size() / (double) (ShopMechanics.getRecentlySoldItems().size() > 54 ? 53 : 54)) + ")");
+        super(player, 54 + 9, "Sales Manager (1 / " + Math.max(1, (int) Math.ceil(ShopMechanics.getRecentlySoldItems().size() / (double) (ShopMechanics.getRecentlySoldItems().size() > 54 ? 53 : 54))) + ")");
     }
 
     @Override

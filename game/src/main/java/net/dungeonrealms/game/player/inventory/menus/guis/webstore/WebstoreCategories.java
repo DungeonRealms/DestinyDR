@@ -15,7 +15,9 @@ import java.util.List;
 @Getter
 public enum WebstoreCategories {
 
-    GLOBAL_BUFFS("Global Buffs", "Click here to view all global buffs!", Material.DIAMOND);
+    SUBSCRIPTIONS("Subscriptions", "Click here to view all subscription ranks!", Material.EMERALD),
+    GLOBAL_BUFFS("Global Buffs", "Click here to view all global buffs!", Material.DIAMOND),
+    MISCELLANEOUS("Misc Items", "Click here to view all miscellaneous items!", Material.BLAZE_ROD);
 
     private String name;
     private String description;
@@ -34,6 +36,8 @@ public enum WebstoreCategories {
 
     public static GUIMenu getGUI(WebstoreCategories category, Player player) {
         if(category == GLOBAL_BUFFS) return new GlobalBuffGUI(player);
+        if(category == SUBSCRIPTIONS) return new SubscriptionsGUI(player);
+        if(category == MISCELLANEOUS) return new MiscGUI(player);
         return null;
     }
 

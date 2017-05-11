@@ -43,8 +43,8 @@ public class BaseMobSpawner extends MobSpawner {
      * Initialize spawner
      */
     public void init() {
-    	Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
-    		boolean nearby = GameAPI.arePlayersNearby(getLocation(), 32);
+    	Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
+    		boolean nearby = GameAPI.arePlayersNearbyAsync(getLocation(), 32);
     		
     		if (nearby) {
     			// Spawn some monsters in.
