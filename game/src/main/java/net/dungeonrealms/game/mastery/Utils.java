@@ -280,6 +280,6 @@ public class Utils {
 		if (meta.hasDisplayName())
 			return meta.getDisplayName();
 		
-		return capitalizeWords(item.getType().name().replaceAll("_", " "));
+		return capitalizeWords(item.getType().name().toLowerCase().replaceAll("_", " "));
 	}
 }

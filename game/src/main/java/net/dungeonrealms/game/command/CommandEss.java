@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -143,6 +144,9 @@ public class CommandEss extends BaseCommand {
                         return false;
                     }
                     break;
+                case "nametag":
+                    GameAPI.giveOrDropItem((Player)commandSender, new ItemNameTag().generateItem());
+                    return true;
                 case "mount":
                     if (args.length == 3) {
                         String playerName = args[1];

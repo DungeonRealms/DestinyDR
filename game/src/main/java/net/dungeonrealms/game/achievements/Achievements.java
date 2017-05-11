@@ -221,8 +221,10 @@ public class Achievements {
         SHOP_CREATOR("Shop Creator", "Create your own shop.", 250, AchievementCategory.MONEY),
         SHOP_UPGRADE_I("Shop Upgrade I", "Upgrade your shop.", 250, AchievementCategory.MONEY),
         SHOP_MERCHANT("Merchant", "Sell an item from your shop.", 250, AchievementCategory.MONEY),
-        
-        
+
+		//Store related
+		RENAME_ITEM("Rename an Item", "Rename an item with an Item Name Tag!", 500, AchievementCategory.SOCIAL),
+
         // Combat
         INFECTED("Infected!", "Killed someone who was infected.", 500, AchievementCategory.COMBAT),
         MONSTER_HUNTER_I("Monster Hunter I", "Defeated 100 monsters.", 250, AchievementCategory.COMBAT),

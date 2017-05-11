@@ -71,7 +71,8 @@ public enum ItemType {
 
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),
-	
+	ITEM_NAME_TAG("itemNameTag", ItemNameTag.class),
+
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),
 	PORTAL_RUNE("portalRune", ItemPortalRune.class),
