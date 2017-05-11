@@ -265,7 +265,7 @@ public class Quest implements ISaveable {
 		data.startQuest(this);
 	}
 	
-	private void spawnFirework(Location l, FireworkEffect... effects){
+	public static void spawnFirework(Location l, FireworkEffect... effects){
 		Firework fw = (Firework) l.getWorld().spawnEntity(l, EntityType.FIREWORK);
         FireworkMeta fwm = fw.getFireworkMeta();
         fwm.setPower(0);

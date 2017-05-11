@@ -51,6 +51,7 @@ public class DungeonListener implements Listener {
 	//TODO: Anvils are broken supposedly.
 	//TODO: Armor sets generated shouldn't all have the same stats.
 	//TODO: Items should not roll stats until after params are supplied.
+	//TODO: Fix Armor stacking.
 	
 	
 	

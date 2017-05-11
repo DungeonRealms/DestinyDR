@@ -7,6 +7,7 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -56,6 +57,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
         if (petType == null) {
             player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
             player.closeInventory();
+            new PetSelectionGUI(player).open(player, null);
             return;
         }
 

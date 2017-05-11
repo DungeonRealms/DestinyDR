@@ -154,6 +154,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
         for (Inventory inv : inventories) {
             if (inv == null) continue;
 
+            if(inv.getName().startsWith("Sales Manager"))continue;
             for (ItemStack i : inv.getContents()) {
                 if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
 

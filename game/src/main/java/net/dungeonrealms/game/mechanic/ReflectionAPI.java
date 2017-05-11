@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanic;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +14,18 @@ public class ReflectionAPI {
     public static Field getDeclaredField(Class<?> target, String fieldName) {
         try{
             Field field = target.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static Method getDeclaredMethod(Class<?> target, String fieldName, Class<?>... params) {
+        try{
+            Method field = target.getDeclaredMethod(fieldName, params);
             field.setAccessible(true);
             return field;
         }catch(Exception e){

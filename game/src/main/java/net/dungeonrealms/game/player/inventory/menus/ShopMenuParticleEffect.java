@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class ShopMenuParticleEffect extends ShopMenu {
             
             addItem(new ItemParticleSelector(effect)).setOnClick((p, s) -> {
             	PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-            	List<ParticleEffect> effects = pw.getParticles();
+            	Set<ParticleEffect> effects = pw.getParticles();
             	
             	if (effects.contains(effect)) {
             		p.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + effect.getDisplayName() + ChatColor.RED + " effect.");

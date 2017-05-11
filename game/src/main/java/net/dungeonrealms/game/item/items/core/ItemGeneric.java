@@ -229,8 +229,13 @@ public abstract class ItemGeneric extends PersistentItem {
 				setTagBool("showPrice", true);
 				addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
 			}
+		}else {
+			if(getTagBool("price")){
+				//Remove..
+
+			}
 		}
-		
+
 		if (isGlowing())
 			EnchantmentAPI.addGlow(getItem());
 		

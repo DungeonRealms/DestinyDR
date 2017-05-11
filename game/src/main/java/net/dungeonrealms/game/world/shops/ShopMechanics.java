@@ -46,7 +46,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
 
     //Stores all the recently sold items on this.
     @Getter
-    private LinkedList<SoldShopItem> recentlySoldItems = new LinkedList<>();
+    public static LinkedList<SoldShopItem> recentlySoldItems = new LinkedList<>();
 
     public static ConcurrentHashMap<String, Shop> ALLSHOPS = new ConcurrentHashMap<>();
 

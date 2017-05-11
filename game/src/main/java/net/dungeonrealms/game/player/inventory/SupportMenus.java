@@ -447,7 +447,7 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        List<ParticleEffect> unlockedPlayerTrails = wrapper.getTrails();
+        Set<ParticleEffect> unlockedPlayerTrails = wrapper.getTrails();
         int i = 18;
         for (ParticleAPI.ParticleEffect trailType : ParticleAPI.ParticleEffect.values()) {
             boolean hasUnlockedPlayerTrail = false;

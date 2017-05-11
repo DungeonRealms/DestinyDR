@@ -239,15 +239,15 @@ public class ItemManager {
      */
     public static boolean isItemTradeable(ItemStack item) {
         ItemGeneric ig = get(item);
-        if(ig.isUntradeable()) {
+        if (ig.isUntradeable()) {
             System.out.println("Returning tradable debug 1");
             return false;
         }
-        if(ig.isSoulbound()) {
+        if (ig.isSoulbound()) {
             System.out.println("Returning tradable debug 2");
             return false;
         }
-        if(ig.isPermanentUntradeable()) {
+        if (ig.isPermanentUntradeable()) {
             System.out.println("Returning tradable debug 3");
             return false;
         }
@@ -306,6 +306,14 @@ public class ItemManager {
 
     public static CombatItem createRandomCombatItem() {
         return new Random().nextBoolean() ? new ItemWeapon() : new ItemArmor();
+    }
+
+    public static ItemStack createItem(Material mat, short data, String name) {
+        ItemStack stack = new ItemStack(mat, 1, data);
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(name);
+        stack.setItemMeta(meta);
+        return stack;
     }
 
     public static ItemStack createItem(Material mat, String name, String... lore) {

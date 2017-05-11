@@ -215,6 +215,6 @@ public abstract class ShopMenu {
     }
 
     public static int fitSize(int size) {
-    	return Math.min(6, 1 + ((size - 1) / 9));
+    	return Math.min(6, 1 + ((size - 1) / 9)) * 9;
     }
 }

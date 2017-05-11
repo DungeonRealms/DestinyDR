@@ -1377,7 +1377,8 @@ public class GameAPI {
         }
 
         if (player.getInventory().firstEmpty() == -1) {
-            player.getWorld().dropItem(player.getLocation(), item);
+            org.bukkit.entity.Item droppedItem = player.getWorld().dropItem(player.getLocation(), item);
+            ItemManager.whitelistItemDrop(player, droppedItem);
             player.sendMessage(ChatColor.RED + "There was not enough space in your inventory for this item, so it has dropped.");
         } else {
             player.getInventory().addItem(item);

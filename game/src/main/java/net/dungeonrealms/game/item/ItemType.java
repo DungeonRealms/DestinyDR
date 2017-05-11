@@ -67,10 +67,12 @@ public enum ItemType {
 	PET_SELECTOR("petSelector", ItemPetSelector.class),
 	PARTICLE_SELECTOR("particleSelector", ItemParticleSelector.class),
 	HEARTHSTONE_RELOCATE("hearthstoneRelocator", ItemHearthStoneRelocator.class),
-	
+	MOUNT_SELECTION("mountSelector", ItemMountSelection.class),
+
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),
-	
+	ITEM_NAME_TAG("itemNameTag", ItemNameTag.class),
+
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),
 	PORTAL_RUNE("portalRune", ItemPortalRune.class),
