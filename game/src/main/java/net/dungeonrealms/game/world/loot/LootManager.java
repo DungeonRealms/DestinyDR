@@ -236,6 +236,6 @@ public class LootManager implements GenericMechanic, Listener {
 	}
 
 	public static LootSpawner getSpawner(Location location) {
-		return getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny().get();
+		return getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny().orElse(null);
 	}
 }

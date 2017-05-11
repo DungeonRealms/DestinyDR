@@ -332,8 +332,6 @@ public class EntityAPI {
     
     public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName) {
     	DRMonster monster = null;
-    	if (displayName == null)
-    		displayName = mType.getPrefix() + mType.getName() + mType.getSuffix();
     	
     	try {
     		// Setup monster.

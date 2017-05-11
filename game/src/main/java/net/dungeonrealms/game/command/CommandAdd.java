@@ -34,6 +34,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -105,12 +106,6 @@ public class CommandAdd extends BaseCommand {
                 	for (AttributeType at : pw.getAttributes().getAttributes())
                 		player.sendMessage(ChatColor.YELLOW + at.getNBTName() + ": " + ChatColor.RED + pw.getAttributes().getAttribute(at).toString());
                 	break;
-                case "uuid":
-                    player.sendMessage(Bukkit.getPlayer(GameAPI.getUUIDFromName(player.getName())).getDisplayName());
-                    break;
-                case "name":
-                    player.sendMessage(GameAPI.getNameFromUUID(player.getUniqueId()));
-                    break;
                 case "armor":
                 case "weapon":
                 	//TODO: Attribute editor.
@@ -310,9 +305,13 @@ public class CommandAdd extends BaseCommand {
     	
     	final String finalSearch = search;
     	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity
-    			&& ChatColor.stripColor(e.getCustomName()).contains(finalSearch)).findAny().orElse(null);
+    			&& getName(e).contains(finalSearch)).findAny().orElse(null);
     	if (target == null)
     		player.sendMessage(ChatColor.RED + "Entity not found.");
     	return target;
+    }
+    
+    private String getName(Entity e) {
+    	return e.getName() != null && e.getName().length() > 0 ? ChatColor.stripColor(e.getCustomName()) : "";
     }
 }

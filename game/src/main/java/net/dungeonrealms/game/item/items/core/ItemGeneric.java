@@ -160,14 +160,12 @@ public abstract class ItemGeneric extends PersistentItem {
 	
 	@Override
 	protected void loadItem() {
-		if (dataMap == null)
-			dataMap = new HashMap<>();
 		
 		this.meta = getItem().getItemMeta();
 		
 		for(ItemData data : ItemData.values())
-			dataMap.put(data, getTagBool(data.getNBTTag()));
-
+			setData(data, getTagBool(data.getNBTTag()));
+			
 		if (isSoulbound() && hasTag("soulboundTrade")) {
 			long time = getTag().getLong("soulboundTrade");
 			if (time > System.currentTimeMillis()) {
@@ -305,10 +303,12 @@ public abstract class ItemGeneric extends PersistentItem {
 	}
 	
 	protected boolean getSData(ItemData data) {
-		return dataMap.containsKey(data) && dataMap.get(data);
+		return dataMap != null && dataMap.containsKey(data) && dataMap.get(data);
 	}
 	
 	protected void setData(ItemData data, boolean enabled) {
+		if (dataMap == null)
+			dataMap = new HashMap<>();
 		dataMap.put(data, enabled);
 	}
 	

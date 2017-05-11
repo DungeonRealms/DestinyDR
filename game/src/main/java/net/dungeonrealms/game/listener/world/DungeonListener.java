@@ -43,6 +43,15 @@ public class DungeonListener implements Listener {
 	//TODO: Skeletons don't work fully or something
 	//TODO: Fix Chat
 	//TODO: How are achievements saved / loaded?
+	//TODO: Fix Death
+	//TODO: Entity AI.
+	//TODO: Fix orbs.
+	//TODO: Fix gems.
+	//TODO: Block hotbar swapping items out of crafting menu.
+	//TODO: Anvils are broken supposedly.
+	//TODO: Armor sets generated shouldn't all have the same stats.
+	//TODO: Items should not roll stats until after params are supplied.
+	
 	
 	
     @EventHandler(priority = EventPriority.MONITOR)

@@ -13,11 +13,15 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public class VanillaItem extends ItemGeneric {
 	@Setter private String displayName;
+	private boolean empty;
 	
 	public VanillaItem(ItemStack item) {
 		super(item);
-		if (item == null || item.getType() == Material.AIR)
+		if (item == null || item.getType() == Material.AIR) {
+			empty = true;
 			return;
+		}
+		
 		ItemMeta meta = item.getItemMeta();
 		if (meta.hasLore())
 			meta.getLore().forEach(this::addLore); // Lore gets wiped when an item is generated, don't let that happen.
@@ -39,7 +43,7 @@ public class VanillaItem extends ItemGeneric {
 	
 	@Override
 	protected ItemStack getStack() {
-		return getItem();
+		return empty ? new ItemStack(Material.AIR) : getItem();
 	}
 	
 	@Override

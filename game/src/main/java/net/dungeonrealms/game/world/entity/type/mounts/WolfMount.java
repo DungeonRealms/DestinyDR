@@ -42,7 +42,9 @@ public class WolfMount extends EntityWolf implements JumpingMount {
     
     @Override
     public void g(float sideMotion, float forwardMotion) {
-        MountUtils.handleMountLogic(this, this.player);
+        float[] motion = MountUtils.handleMountLogic(this, this.player);
+        if (motion != null)
+        	super.g(motion[0], motion[1]);
     }
 
 	@Override

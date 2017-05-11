@@ -29,7 +29,9 @@ public class EnderDragonMount extends EntityEnderDragon implements JumpingMount 
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
-    	MountUtils.handleMountLogic(this, owner);
+    	float[] motion = MountUtils.handleMountLogic(this, owner);
+    	if (motion != null)
+    		super.g(motion[0], motion[1]);
     }
 
 	@Override

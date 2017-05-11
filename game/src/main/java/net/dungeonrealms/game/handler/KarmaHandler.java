@@ -58,6 +58,10 @@ public class KarmaHandler implements GenericMechanic, Listener {
         	return getAlignmentColor();
         }
         
+        public ChatColor getNameColor() {
+        	return this == LAWFUL ? ChatColor.GRAY : getColor();
+        }
+        
         public String getName() {
         	return name().toLowerCase();
         }

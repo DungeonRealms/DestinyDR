@@ -53,7 +53,6 @@ public class SQLDatabase {
             props.setProperty("autoReconnect", "true");
             props.setProperty("continueBatchOnError", "true");
             props.setProperty("rewriteBatchStatements", "true");
-            Bukkit.getLogger().info("Going to grab new connection with " + props.get("user") + " Pass: " + props.get("password") + " Database: " + props.get("database"));
 //            connection = DriverManager.getConnection(url, props);
             connection = DriverManager.getConnection(url, username, password);
             Bukkit.getLogger().info("Connection created..");

@@ -302,6 +302,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handlePlayerDeath(PlayerDeathEvent event) {
+    	System.out.println("Fired player death event.");
         event.setDeathMessage("");
         final Player p = event.getEntity();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);

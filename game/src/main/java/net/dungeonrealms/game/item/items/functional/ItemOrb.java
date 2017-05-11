@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
 
     private static final String LAST_ORB = "lastOrbUsed";
@@ -63,8 +61,7 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
         pw.getPlayerGameStats().addStat(StatColumn.ORBS_USED);
         if (oldOrbSize < gear.getAttributes().getAttributes().size()) {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, player.getLocation().add(0, 2.5, 0),
-                    ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 100);
+            ParticleAPI.spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 2.5, 0), 100, .75F);
             Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
             FireworkMeta fwm = fw.getFireworkMeta();
             FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
@@ -74,8 +71,7 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
         } else {
             // Orb failed. (Enchant had less than or equal to the number of ones it had before.)
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LAVA, player.getLocation().add(0, 2.5, 0),
-                    ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 75);
+            ParticleAPI.spawnParticle(Particle.LAVA, player.getLocation().add(0, 2.5, 0), 75, 1F);
         }
 
         player.updateInventory();

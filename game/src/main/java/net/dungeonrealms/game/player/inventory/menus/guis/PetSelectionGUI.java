@@ -13,24 +13,22 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PetSelectionGUI extends GUIMenu {
     public PetSelectionGUI(Player player) {
-//        int size = EnumPets.values().length + 2; //Add 2 for the buttons
-//        size -= size % 9;
         super(player, fitSize(EnumPets.values().length + 2), "Pet Selection");
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void setItems() {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
@@ -49,13 +47,13 @@ public class PetSelectionGUI extends GUIMenu {
                 continue;
 
             PetData hisData = playerPets.get(pets);
-            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
+            
             AtomicBoolean isLocked = new AtomicBoolean(hisData == null || !hisData.isUnlocked());
             if (pets.isSubGetsFree() && wrapper.getRank().isSUB())
                 isLocked.set(false);
 
             NBTTagCompound compound = new NBTTagCompound();
-            compound.setString("id", EntityType.fromId(pets.getEggShortData()).getName());
+            compound.setString("id", pets.getEntityType().getName());
             setItem(i++, new GUIItem(new NBTWrapper(ItemManager.createItem(Material.MONSTER_EGG, ChatColor.WHITE + pets.getDisplayName(), (short) pets.getEggShortData(),
                     ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
                     ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",

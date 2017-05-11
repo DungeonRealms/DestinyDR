@@ -217,8 +217,8 @@ public class DamageAPI {
         }
         
         //  DAMAGE CAP  //
-        if (!attacker.isPlayer() && damage >= weaponTier * 600)
-        	damage = weaponTier * 600;
+        if (!attacker.isPlayer())
+        	damage = Math.min(damage, weaponTier * 600);
 
         res.setDamage(damage);
         return;
@@ -380,6 +380,7 @@ public class DamageAPI {
 
     public static void applyArmorReduction(AttackResult res, boolean takeDura) {
         
+    	System.out.println("Applying armor reduction to" + res.getDamage());
     	CombatEntity attacker = res.getAttacker();
     	CombatEntity defender = res.getDefender();
     	double originalDamage = res.getDamage();
@@ -438,8 +439,7 @@ public class DamageAPI {
     	ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
     	if (!res.hasProjectile() && range.getValue() > 0) {
     		totalArmor -= range.getValue();
-    		if (totalArmor < 0)
-    			totalArmor = 0;
+    		totalArmor = Math.max(0, totalArmor);
     	}
     	
     	//  THORNS  //
@@ -506,6 +506,8 @@ public class DamageAPI {
     		if(potionTier < LEVEL_REDUCTION.length)
     			totalArmorReduction *= LEVEL_REDUCTION[potionTier];
     	}
+    	
+    	System.out.println("Final dmg = " + res.getDamage());
     	
     	res.setDamage(damage);
     	res.setTotalArmor(totalArmor);

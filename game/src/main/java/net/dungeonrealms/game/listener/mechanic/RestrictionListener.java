@@ -194,25 +194,11 @@ public class RestrictionListener implements Listener {
             event.setCancelled(true);
     }
 
-    //TODO: What is the point of this? If the server has crashed, events shouldn't be firing?
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onCrash(PlayerInteractEvent event) {
-        if (CrashDetector.crashDetected)
-            event.setCancelled(true);
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityHangingBreak(HangingBreakByEntityEvent event) {
-        if (!(event.getRemover() instanceof Player)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())) {
-            if (!Rank.isTrialGM(((Player) event.getRemover()))) {
-                event.setCancelled(true);
-            }
-        }
+        if (!(event.getRemover() instanceof Player) || 
+        		(GameAPI.isMainWorld(event.getEntity().getWorld()) && !Rank.isTrialGM((Player) event.getRemover())))
+        	event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -234,12 +220,6 @@ public class RestrictionListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onCraftItem(CraftItemEvent event) {
         ItemStack result = event.getRecipe().getResult();
-
-        if (result.getType() == Material.FIREWORK_CHARGE)
-            if (!event.getWhoClicked().getWorld().getName().contains("fireydungeon")) {
-                event.setCancelled(true);
-                return;
-            }
 
         if (result.getType() == Material.WHEAT || result.getType() == Material.BREAD || result.getType() == Material.WOOD_SWORD || result.getType() == Material.BUCKET || result.getType() == Material.FURNACE
                 || result.getType() == Material.ARMOR_STAND || result.getType() == Material.ENDER_CHEST || result.getType() == Material.SHIELD

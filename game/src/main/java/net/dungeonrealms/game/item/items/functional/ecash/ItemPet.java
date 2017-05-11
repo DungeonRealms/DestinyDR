@@ -31,7 +31,6 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
     public void onClick(ItemClickEvent evt) {
         Player player = evt.getPlayer();
 
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if ( PetUtils.hasActivePet(player)) {
             Entity entity = PetUtils.getPets().get(player);
 
@@ -42,7 +41,6 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
             // Dismiss Pet
             PetUtils.removePet(player);
-//            player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
             return;
         }
 
@@ -76,13 +74,8 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
             PlayerWrapper pw = PlayerWrapper.getWrapper(player);
             Entity pet = PetUtils.getPets().get(player);
 
-//    		if (pet == null) { // No Pet?
-//    			player.sendMessage(ChatColor.RED + "You have no active pet to rename.");
-//    			return;
-//    		}
-
             // Cancel
-            String name = mess.getMessage().replaceAll("@", "_");
+            String name = mess.getMessage().replaceAll("@", "_").replaceAll(",", ".");
             if (name.equalsIgnoreCase("cancel") || name.equalsIgnoreCase("exit")) {
                 player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
                 return;

@@ -46,7 +46,11 @@ public class SpiderMount extends EntitySpider implements JumpingMount {
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
-    	MountUtils.handleMountLogic(this, this.player);
+    	float[] motion = MountUtils.handleMountLogic(this, this.player);
+    	if (motion == null)
+    		return;
+    	
+    	super.g(motion[0], motion[1]);
     	
         if (this.floatCooldown != -1 && this.floatCooldown < System.currentTimeMillis()) {
         	floatCooldown = -1;

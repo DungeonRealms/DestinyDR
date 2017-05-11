@@ -169,7 +169,7 @@ public class HealthHandler implements GenericMechanic {
     public static int getRegen(Player player) {
     	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
     	if (!Metadata.HP_REGEN.has(player) && pw != null)
-    		Metadata.HP_REGEN.set(player, pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 5);
+    		Metadata.HP_REGEN.set(player, pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 10);
     	return Metadata.HP_REGEN.get(player).asInt();
     }
 
@@ -452,6 +452,7 @@ public class HealthHandler implements GenericMechanic {
         
         PlayerWrapper dead = PlayerWrapper.getWrapper(player);
         String deadPlayerName = dead.getChatName();
+        deathMessage = deadPlayerName + ChatColor.WHITE + " was killed by ";
         
         if (leAttacker instanceof Player) {
         	PlayerWrapper killer = PlayerWrapper.getWrapper((Player) leAttacker);
@@ -463,10 +464,14 @@ public class HealthHandler implements GenericMechanic {
         	ItemStack item = player.getInventory().getItemInMainHand();
         	String suffix = item != null ? " with a(n) " + Utils.getItemName(item) : "";
         	
-        	deathMessage = deadPlayerName + " was killed by " + killerName + ChatColor.WHITE + suffix + ChatColor.WHITE + ".";
+        	deathMessage += killerName + ChatColor.WHITE + suffix;
+        } else if (leAttacker != null && Metadata.CUSTOM_NAME.has(leAttacker)) {
+        	deathMessage += ChatColor.GRAY + Metadata.CUSTOM_NAME.get(leAttacker).asString();
         } else {
-        	deathMessage = deadPlayerName + " was killed by The World.";
+        	deathMessage += "The World";
         }
+        
+        deathMessage += ChatColor.WHITE + ".";
         
         //  ANNOUNCE MESSAGE  //
         final String finalDeathMessage = deathMessage;
@@ -485,8 +490,7 @@ public class HealthHandler implements GenericMechanic {
             
             PlayerWrapper.getWrapper(player).calculateAllAttributes();
             CombatLog.removeFromCombat(player);
-            if (CombatLog.inPVP(player))
-                CombatLog.removeFromPVP(player);
+            CombatLog.removeFromPVP(player);
         });
         return true;
     }
@@ -534,6 +538,7 @@ public class HealthHandler implements GenericMechanic {
      * Damages a monster.
      */
     public static void damageMonster(AttackResult res) {
+    	System.out.println("Damage -> Monster = " + res.getDamage());
     	if (res.getDamage() <= 0)
     		return;
     	
@@ -541,8 +546,10 @@ public class HealthHandler implements GenericMechanic {
     	LivingEntity attacker = res.getAttacker().getEntity();
     	double damage = res.getWeightedDamage();
     	
-    	if (!(res.getDefender() instanceof LivingEntity) || res.getDefender() instanceof ArmorStand)
+    	if (!EntityAPI.isMonster(defender)) {
+    		System.out.println("Not living.");
     		return;
+    	}
     	
     	if (attacker != null && GameAPI.isPlayer(attacker) && damage > 3000) {
     		res.getAttacker().getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
@@ -560,6 +567,7 @@ public class HealthHandler implements GenericMechanic {
     	double newHP = currentHP - damage;
     	
     	if (currentHP <= 0) {
+    		System.out.println("Current HP = " + currentHP);
     		if (!defender.isDead())
             	defender.setHealth(0);
             return;
@@ -581,6 +589,8 @@ public class HealthHandler implements GenericMechanic {
         		atk.sendDebug(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + GameAPI.getTierColor(EntityAPI.getTier(defender)) + customNameAppended + npcTierColor + " [" + (int) (newHP < 0 ? 0 : newHP) + "HP]");
         	}
         }
+        
+        System.out.println("Setting HP = " + newHP);
 
         if (newHP <= 0) {
         	//  KILL ENTITY  //
@@ -636,7 +646,7 @@ public class HealthHandler implements GenericMechanic {
      * Calculates an entities max HP from their gear.
      */
     public static void calculateHP(LivingEntity entity) {
-        int totalHP = 0; // base hp
+        int totalHP = 50; // base hp
         
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();

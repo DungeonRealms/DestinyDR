@@ -158,7 +158,6 @@ public class Rank {
             if(callback != null)
                 callback.accept(null);
         }, QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)));
-
     }
 
     @AllArgsConstructor
@@ -175,7 +174,7 @@ public class Rank {
         GM("GM", ChatColor.AQUA, "Game Master"),
         HEADGM("GM", ChatColor.AQUA, "Head Game Master"),
         SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
-        DEV("DEV", ChatColor.AQUA, "Developer");
+        DEV("DEV", ChatColor.DARK_AQUA, "Developer");
 
         private String prefix;
         @Getter private ChatColor chatColor;
@@ -208,6 +207,14 @@ public class Rank {
         
         /**
          * Get the prefix that displays in chat.
+         * @return
+         */
+        public String getChatPrefix() {
+        	return this.prefix.length() > 0 ? getPrefix() + " " : "";
+        }
+        
+        /**
+         * Gets this rank's prefix without an added .
          * @return
          */
         public String getPrefix() {

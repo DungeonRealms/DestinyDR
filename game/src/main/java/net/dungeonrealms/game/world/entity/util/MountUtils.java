@@ -32,7 +32,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,18 @@ public class MountUtils {
 
     @Getter private static Map<UUID, Inventory> inventories = new ConcurrentHashMap<>();
     @Getter private static Map<Player, Entity> mounts = new HashMap<>();
+    
+    private static Field JUMP;
+    
+    static {
+    	try {
+    		JUMP = EntityLiving.class.getDeclaredField("bd");
+    		JUMP.setAccessible(true);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		Bukkit.getLogger().warning("Failed to cache mount jump field.");
+    	}
+    }
 
     public static boolean hasMountPrerequisites(EnumMounts mountType, List<EnumMounts> playerMounts) {
     	if (mountType == EnumMounts.TIER1_HORSE || !mountType.name().contains("HORSE"))
@@ -127,10 +138,10 @@ public class MountUtils {
     /**
      * Handles custom mount tick logic.
      */
-    public static boolean handleMountLogic(EntityLiving mount, Player owner) {
+    public static float[] handleMountLogic(EntityLiving mount, Player owner) {
     	if (!mount.isVehicle() || mount.passengers.isEmpty() || !(mount.passengers.get(0) instanceof EntityHuman)) {
     		removeMount(owner);
-    		return false;
+    		return null;
     	}
     	
     	// Sync where the mount is looking with where the player is looking.
@@ -149,14 +160,8 @@ public class MountUtils {
     	
     	// Handle jumping.
         try {
-            Field jump = EntityLiving.class.getDeclaredField("bd");
-            
-            if (jump != null && mount.onGround) { //Is someone jumping and still on the ground?
-            	jump.setAccessible(true);
-            	
-            	if (jump.getBoolean(mount) && mount instanceof JumpingMount)
-            		((JumpingMount)mount).customJump(); //Entity has jumped.
-            }
+            if (mount instanceof JumpingMount && mount.onGround && JUMP.getBoolean(mount)) //Is someone jumping and still on the ground?
+            	((JumpingMount)mount).customJump(); //Entity has jumped.
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,21 +169,9 @@ public class MountUtils {
 
         mount.P = 1; // Set step height.
         mount.aR = mount.cl() * 0.1F; //Set jump movement factor to the land movement factor / 10
-        
         mount.l((float) mount.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue()); // Set the land movement factor to the movement speed.
         
-        // Handle vanilla movement.
-        // We have to call the superclass method otherwise we'll deadlock.
-        // Since there isn't anything like mount.super.g(sideMotion, forwardMotion);
-        // We gotta use reflection or an interface all mounts implement. this sadly is cleaner.
-        try {
-        	Method m = mount.getClass().getSuperclass().getDeclaredMethod("g", Float.class, Float.class);
-        	m.setAccessible(true);
-        	m.invoke(mount, sideMotion, forwardMotion);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        return true;
+        return new float[] {sideMotion, forwardMotion};
     }
     
     public static boolean hasActiveMount(Player p) {

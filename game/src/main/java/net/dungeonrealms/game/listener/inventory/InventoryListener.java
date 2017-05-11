@@ -285,7 +285,8 @@ public class InventoryListener implements Listener {
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
         
-        if (!ItemArmor.isArmor(event.getNewArmorPiece()) && !ItemArmor.isArmor(event.getOldArmorPiece())) return;
+        if ((!ItemArmor.isArmor(event.getNewArmorPiece()) && !ItemArmor.isArmor(event.getOldArmorPiece())) || event.isCancelled())
+        	return;
         
         if (!RestrictionListener.canPlayerUseItem(event.getPlayer(), event.getNewArmorPiece())) {
         	event.setCancelled(true);
@@ -296,8 +297,11 @@ public class InventoryListener implements Listener {
         if (!CombatLog.isInCombat(player)) {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             
-            // Wait a tick so the armor is actually in the slot first.
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player));
+            final ItemStack old = event.getOldArmorPiece();
+            final ItemStack newArmor = event.getNewArmorPiece();
+            
+            // Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> handleArmorDifferences(old, newArmor, player));
         } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
             player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
                     "cannot" + ChatColor.RED + " switch armor right now.");

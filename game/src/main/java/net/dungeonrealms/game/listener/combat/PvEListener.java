@@ -69,18 +69,23 @@ public class PvEListener implements Listener {
         	return;
         }
         
+        System.out.println(damager.getName() + " -> Melee attacking ?");
+        
         //  THIS ONLY HANDLES PvE  //
-        if (event.getEntity() instanceof Player) return;
+        if (event.getEntity() instanceof Player)
+        	return;
         
         // Don't attack pets!
         if (PetUtils.getPets().containsValue(event.getEntity()) || MountUtils.getMounts().containsValue(event.getEntity()))
         	return;
         
         //  ONLY HANDLE MOB ATTACKS  //
-        if (!(event.getEntity() instanceof LivingEntity && Metadata.ENTITY_TYPE.has(event.getEntity())))
+        if (!Metadata.ENTITY_TYPE.has(event.getEntity()))
             return;
 
         event.setDamage(0);
+        
+        System.out.println("Hooray we're firing.");
 
         if (DamageAPI.isInvulnerable(receiver)) {
             if (EntityAPI.isBoss(receiver))
@@ -99,6 +104,7 @@ public class PvEListener implements Listener {
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
         
         if (!ItemWeapon.isWeapon(held)) {
+        	System.out.println(held.getType() + " is not a wepaon.");
         	AttackResult res = new AttackResult(damager, receiver);
         	res.setDamage(1);
         	HealthHandler.damageMonster(res);
@@ -107,12 +113,16 @@ public class PvEListener implements Listener {
         }
 
         if(!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
+        	System.out.println("It's da bow");
         	int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
         	event.setCancelled(true);
         	DamageAPI.knockbackEntity(damager, receiver, 1D + (.2D * tier));
         	damager.updateInventory();
         	return;
         }
+        
+        System.out.println("We need to apply our damage.");
+        
         //  CALCULATE DAMAGE  //
         AttackResult res = new AttackResult(damager, receiver, projectile);
     	DamageAPI.calculateWeaponDamage(res, true);

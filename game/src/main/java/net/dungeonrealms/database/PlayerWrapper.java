@@ -161,34 +161,27 @@ public class PlayerWrapper {
     @Getter
     private EnumPlayerAlignments alignment = EnumPlayerAlignments.LAWFUL;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private int alignmentTime = 0;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private Location storedLocation;
 
-    @Setter
-    @Getter
+    @Setter @Getter
     private CurrencyTab currencyTab;
 
     private Map<ShardTier, Integer> keyShards = new HashMap<>();
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private long muteExpire = -1, banExpire = -1;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private String muteReason, banReason;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private Integer whoBannedMeID, whoMutedMeID;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private boolean firstTimePlaying = false;
 
     @Getter
@@ -1026,28 +1019,17 @@ public class PlayerWrapper {
      */
     public String getDisplayName() {
         PlayerRank rank = getRank();
-        String alignment = rank.isAtLeast(PlayerRank.TRIALGM) ? "" : getAlignment().getAlignmentColor() + "";
-        return rank.getPrefix() + alignment + (isOnline() ? getPlayer().getName() : getPlayerName());
-    }
-
-    /**
-     * Gets the chat prefixed name.
-     */
-    public String getChatName() {
-        return getChatName(true);
+        ChatColor nameColor = rank.isAtLeast(PlayerRank.TRIALGM) ? ChatColor.AQUA : getAlignment().getNameColor();
+        return rank.getChatPrefix() + nameColor + (isOnline() ? getPlayer().getName() : getPlayerName());
     }
 
     /**
      * Gets our prefixed chat name.
-     * If false is supplied, the guild and channel tags will be skipped.
      */
-    public String getChatName(boolean deep) {
+    public String getChatName() {
         String name = getDisplayName();
-
-        if (deep) {
-            if (isInGuild())
-                name = getGuild().getChatPrefix() + name;
-        }
+        if (isInGuild())
+        	name = getGuild().getChatPrefix() + name;
 
         return name;
     }

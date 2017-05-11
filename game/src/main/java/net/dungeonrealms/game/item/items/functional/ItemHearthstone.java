@@ -19,11 +19,11 @@ public class ItemHearthstone extends FunctionalItem implements ItemInventoryList
 	
 	public ItemHearthstone(ItemStack item) {
 		this((Player)null);
-		setUndroppable(true);
 	}
 	
 	public ItemHearthstone(Player player) {
 		super(ItemType.HEARTHSTONE);
+		setUndroppable(true);
 		this.player = player;
 	}
 	

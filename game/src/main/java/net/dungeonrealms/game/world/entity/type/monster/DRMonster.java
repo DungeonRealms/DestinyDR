@@ -65,7 +65,14 @@ public interface DRMonster {
     	setTier(tier);
     	setGear();
     	setSkullTexture();
-        
+    	
+    	if (getEnum() != null) {
+    		String displayName = getEnum().getPrefix() + getEnum().getName() + getEnum().getSuffix();
+        	Metadata.CUSTOM_NAME.set(getBukkit(), displayName);
+        	getBukkit().setCustomName(displayName);
+        	getBukkit().setCustomNameVisible(true);
+    	}
+    	
         //  SET NMS DATA  //
         setupNMS();
     }
