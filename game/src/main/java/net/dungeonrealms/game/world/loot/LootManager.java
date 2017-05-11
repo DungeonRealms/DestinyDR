@@ -29,11 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * LootManager - Handles loot being spawned across the world.
@@ -236,6 +232,7 @@ public class LootManager implements GenericMechanic, Listener {
 	}
 
 	public static LootSpawner getSpawner(Location location) {
-		return getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny().get();
+		Optional<LootSpawner> ops = getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny();
+		return ops.isPresent() ? ops.get() : null;
 	}
 }

@@ -109,10 +109,12 @@ public class ItemPlayerJournal extends FunctionalItem implements ItemClickListen
                     player.sendMessage(ChatColor.RED + "Please wait for your storage bin to load...");
                     return;
                 }
-                
+
                 ShopMechanics.setupShop(evt.getClickedBlock(), player.getUniqueId());
+                return;
             } else {
-                player.sendMessage(ChatColor.RED + "You have a shop open already! It may be on another shard.");
+                player.sendMessage(ChatColor.RED + "You have a shop open already! It may be on another shard?");
+                player.sendMessage(ChatColor.GRAY + "You can use " + ChatColor.UNDERLINE + "/closeshop" + ChatColor.GRAY + " to close it across shards!");
             }
 		}
 		

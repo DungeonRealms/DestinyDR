@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class PersistentItem {
 	
-	private ItemStack item;
+	protected ItemStack item;
 	
 	private NBTTagCompound tag;
 	

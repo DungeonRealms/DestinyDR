@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -17,7 +18,6 @@ import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenProfile;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -31,10 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Nick on 9/29/2015.
@@ -164,45 +161,45 @@ public class PlayerMenus {
 //        }
 //        player.openInventory(inv);
     }
-
-    public static void openPlayerMountMenu(Player player) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if (wrapper == null) return;
-
-        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
-            Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
-            player.openInventory(jailed);
-            return;
-        }
-
-        List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
-                    
-        if (playerMounts.isEmpty()) {
-            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
-            player.openInventory(noMounts);
-            return;
-        }
-
-        Inventory inv = Bukkit.createInventory(null, 27, "Mount Selection");
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-        inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
-        
-        for (EnumMounts m : playerMounts) {
-        	VanillaItem mount = new VanillaItem(m.getSelectionItem());
-        	mount.setTagString("mountType", m.name());
-        	mount.setDisplay(true);
-        	mount.setDisplayName(ChatColor.GREEN + m.getDisplayName());
-        	if (m.getMountData() != null)
-        		m.getMountData().getLore().forEach(mount::addLore);
-        	inv.addItem(mount.generateItem());
-        }
-
-        player.openInventory(inv);
-    }
+//
+//    public static void openPlayerMountMenu(Player player) {
+//        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+//        if (wrapper == null) return;
+//
+//        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+//            Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
+//            player.openInventory(jailed);
+//            return;
+//        }
+//
+//        List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
+//
+//        if (playerMounts.isEmpty()) {
+//            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
+//            player.openInventory(noMounts);
+//            return;
+//        }
+//
+//        Inventory inv = Bukkit.createInventory(null, 27, "Mount Selection");
+//        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+//        inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
+//
+//        for (EnumMounts m : EnumMounts.values()) {
+//        	VanillaItem mount = new VanillaItem(m.getSelectionItem());
+//        	mount.setTagString("mountType", m.name());
+//        	mount.setDisplay(true);
+//        	mount.setDisplayName(ChatColor.GREEN + m.getDisplayName());
+//        	if (m.getMountData() != null)
+//        		m.getMountData().getLore().forEach(mount::addLore);
+//        	inv.addItem(mount.generateItem());
+//        }
+//
+//        player.openInventory(inv);
+//    }
 
     public static void openPlayerParticleMenu(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
-        List<ParticleEffect> trails = Rank.isSUB(player) ? Arrays.asList(ParticleEffect.values()) : wrapper.getTrails();
+        Set<ParticleEffect> trails = Rank.isSUB(player) ? new HashSet<>(Lists.newArrayList(ParticleEffect.values())) : wrapper.getTrails();
 
         if (trails.isEmpty()) {
             Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Effects!");
@@ -226,7 +223,7 @@ public class PlayerMenus {
     }
 
     public static void openPlayerMountSkinMenu(Player player) {
-    	List<EnumMountSkins> skins = PlayerWrapper.getWrapper(player).getMountSkins();
+    	Set<EnumMountSkins> skins = PlayerWrapper.getWrapper(player).getMountSkins();
 
         if (skins.isEmpty()) {
             Inventory noSkins = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mount Skins!");

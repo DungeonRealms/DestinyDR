@@ -14,10 +14,10 @@ public class SpiderMount extends EntitySpider implements JumpingMount {
     private long floatCooldown = -1;
 	
 	public SpiderMount(World world) {
-		this(world, null, null);
+		this(world, null);
 	}
 
-    public SpiderMount(World world, Player owner, EnumMounts mount) {
+    public SpiderMount(World world, Player owner) {
         super(world);
         
         this.player = owner;
@@ -46,12 +46,13 @@ public class SpiderMount extends EntitySpider implements JumpingMount {
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
-    	MountUtils.handleMountLogic(this, this.player);
-    	
+    	float[] floats = MountUtils.handleMountLogic(this, this.player);
+    	if(floats == null)return;
         if (this.floatCooldown != -1 && this.floatCooldown < System.currentTimeMillis()) {
         	floatCooldown = -1;
         	this.floatTicks = 0;
         }
+        super.g(floats[0], floats[1]);
     }
 
 	@Override

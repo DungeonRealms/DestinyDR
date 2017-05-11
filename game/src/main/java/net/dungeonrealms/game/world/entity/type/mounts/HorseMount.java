@@ -18,10 +18,10 @@ public class HorseMount extends EntityHorse {
 		super(world);
 	}
 	
-    public HorseMount(World world, Player player, EnumMounts mount) {
+    public HorseMount(World world, Player player) {
         super(world);
         setTame(true);
-        setType(null);
+        setType(EnumHorseType.HORSE);
         setOwnerUUID(player.getUniqueId());
         setTemper(100);
         this.jumpPower *= 2;

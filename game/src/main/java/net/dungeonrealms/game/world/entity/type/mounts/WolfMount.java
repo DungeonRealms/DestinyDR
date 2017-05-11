@@ -11,10 +11,10 @@ public class WolfMount extends EntityWolf implements JumpingMount {
 	private Player player;
 	
 	public WolfMount(World world) {
-		this(world, null, null);
+		this(world, null);
 	}
 	
-    public WolfMount(World world, Player owner, EnumMounts mount) {
+    public WolfMount(World world, Player owner) {
         super(world);
 
         this.player = owner;
@@ -42,7 +42,9 @@ public class WolfMount extends EntityWolf implements JumpingMount {
     
     @Override
     public void g(float sideMotion, float forwardMotion) {
-        MountUtils.handleMountLogic(this, this.player);
+        float[] motions = MountUtils.handleMountLogic(this, this.player);
+        if(motions == null)return;
+        super.g(motions[0], motions[1]);
     }
 
 	@Override

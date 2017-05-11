@@ -13,10 +13,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.functional.ItemHearthstone;
 import net.dungeonrealms.game.item.items.functional.ItemPlayerProfile;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleTrail;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
+import net.dungeonrealms.game.item.items.functional.ecash.*;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -50,6 +47,8 @@ public class CraftingMenu implements GenericMechanic, Listener {
                     if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
                     	player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).generateItem());
                         player.getOpenInventory().getTopInventory().setItem(2, new ItemHearthstone(player).generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(3, new ItemPetSelector(player).generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(4, new ItemMountSelection(null).generateItem());
                     }
                     GameAPI.runAsSpectators(player, (spectator) -> {
                     	spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");
@@ -73,6 +72,8 @@ public class CraftingMenu implements GenericMechanic, Listener {
         if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
             player.getOpenInventory().getTopInventory().setItem(1, null);
             player.getOpenInventory().getTopInventory().setItem(2, null);
+            player.getOpenInventory().getTopInventory().setItem(3, null);
+            player.getOpenInventory().getTopInventory().setItem(4, null);
         }
     }
     

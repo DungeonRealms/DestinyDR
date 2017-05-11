@@ -14,7 +14,6 @@ import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,6 +22,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -47,12 +47,12 @@ public class CommandEss extends BaseCommand {
             if (!Rank.isGM(player) && Rank.isSupport(player))
                 if (!DungeonRealms.isSupport())
                     return false;
-            
-            // Extended Permission Check
-            else if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
-                commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
-                return false;
-            }
+
+                    // Extended Permission Check
+                else if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
+                    commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
+                    return false;
+                }
         } else if (!(commandSender instanceof ConsoleCommandSender)) {
             return false;
         }
@@ -167,32 +167,27 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Something went wrong loading the data");
                                     return;
                                 }
-
-                                Player found = Bukkit.getPlayer(uuid);
-                                if (found != null) {
-                                    if (mount.getMountData() != null) {
-                                        found.getInventory().addItem(mount.getMountData().createMountItem(mount));
-                                        commandSender.sendMessage(ChatColor.RED + "Mount given to " + found.getName());
-                                        return;
-                                    }
+                                Set<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
+//                                Player found = Bukkit.getPlayer(uuid);
+//                                if (found != null) {
+//                                    if (mount.getMountData() != null) {
+//                                        found.getInventory().addItem(mount.getMountData().createMountItem(mount));
+//                                        commandSender.sendMessage(ChatColor.RED + "Mount given to " + found.getName());
+//                                        return;
+//                                    }
+//                                }
+                                if (playerMounts.contains(mount)) {
+                                    commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " mount.");
+                                    return;
                                 }
 
-                                List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
-                                if (!playerMounts.isEmpty()) {
-                                    if (playerMounts.contains(mountType.toUpperCase())) {
-                                        commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " mount.");
-                                        return;
-                                    }
+                                playerMounts.add(mount);
+                                wrapper.setActiveMount(mount);
 
-                                    playerMounts.add(mount);
-                                    wrapper.setActiveMount(mount);
-
-                                    wrapper.saveData(true, null, (wrappa) -> {
-                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                        GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
-                                    });
-                                }
-
+                                wrapper.saveData(true, null, (wrappa) -> {
+                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                    GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
+                                });
                             });
                         });
 
@@ -225,7 +220,7 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Could not load player data!");
                                     return;
                                 }
-                                List<ParticleEffect> playerTrails = wrapper.getTrails();
+                                Set<ParticleEffect> playerTrails = wrapper.getTrails();
                                 if (!playerTrails.isEmpty()) {
                                     if (playerTrails.contains(trailType.toUpperCase())) {
                                         commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
@@ -301,7 +296,7 @@ public class CommandEss extends BaseCommand {
                                 }
 
                                 PlayerRank currentRank = wrapper.getRank();
-                                
+
                                 int days = Integer.parseInt(args[4]) * 86400;
                                 int subscriptionLength = wrapper.getRankExpiration();
 

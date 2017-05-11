@@ -24,6 +24,7 @@ public class MountData {
     @Getter
     float speed;
 
+    @Getter
     private int speedPercent;
 
     @Getter

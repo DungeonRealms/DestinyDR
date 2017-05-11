@@ -2,6 +2,7 @@ package net.dungeonrealms.game.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -32,6 +33,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.inventory.menus.AchievementMenu;
+import net.dungeonrealms.game.player.inventory.menus.guis.MountSelectionGUI;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
@@ -322,20 +324,20 @@ public class ClickHandler {
                 }
                 //}
                 break;
-            case "Mount Selection":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null)
-                	return;
-                if (event.getCurrentItem().getType() == Material.BARRIER) {
-                    PlayerMenus.openPlayerProfileMenu(player);
-                    return;
-                } else if (event.getCurrentItem().getType() == Material.LEASH) {
-                	MountUtils.removeMount(player);
-                    return;
-                } else {
-                	ItemMount.attemptSummonMount(player);
-                }
-                break;
+//            case "Mount Selection":
+//                event.setCancelled(true);
+//                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null)
+//                	return;
+//                if (event.getCurrentItem().getType() == Material.BARRIER) {
+//                    PlayerMenus.openPlayerProfileMenu(player);
+//                    return;
+//                } else if (event.getCurrentItem().getType() == Material.LEASH) {
+//                	MountUtils.removeMount(player);
+//                    return;
+//                } else {
+//                	ItemMount.attemptSummonMount(player);
+//                }
+//                break;
             case "Player Effect Selection":
             	event.setCancelled(true);
             	if (event.getCurrentItem().getType() == Material.BARRIER) {
@@ -382,7 +384,7 @@ public class ClickHandler {
                         if (event.getClick() == ClickType.RIGHT)
                         	CraftingMenu.addMountItem(player);
                         else
-                        	PlayerMenus.openPlayerMountMenu(player);
+                            new MountSelectionGUI(player).open(player, event.getAction());
                         break;
                     case 8:
                         if (event.getClick() == ClickType.RIGHT)
@@ -394,7 +396,7 @@ public class ClickHandler {
                         if (event.getClick() == ClickType.RIGHT)
                         	return;
                         
-                        List<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
+                        Set<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
                         if (!playerMounts.contains(EnumMounts.MULE)) {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
                             return;

@@ -25,21 +25,24 @@ import org.bukkit.inventory.ItemStack;
  */
 @Getter
 public enum EnumMounts {
-    TIER1_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.SADDLE, 1), 0, "Old Horse"),
-    TIER2_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.IRON_BARDING, 1), 0, "Squire's Horse"),
-    TIER3_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.DIAMOND_BARDING, 1), 0, "Traveler's Horse"),
-    TIER4_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.GOLD_BARDING, 1), 0, "Knight's Horse"),
-    MULE(null, EntityType.HORSE, new ItemStack(Material.CHEST, 1), 0, "Mule"), //This is a bukkit entity, not a custom one. It has a special case :( in MountUtils
+    TIER1_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.SADDLE, 1), 0, "Old Horse", ChatColor.WHITE),
+    TIER2_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.IRON_BARDING, 1), 0, "Squire's Horse", ChatColor.AQUA),
+    TIER3_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.DIAMOND_BARDING, 1), 0, "Traveler's Horse", ChatColor.DARK_PURPLE),
+    TIER4_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.GOLD_BARDING, 1), 0, "Knight's Horse", ChatColor.YELLOW),
+    MULE(null, EntityType.HORSE, new ItemStack(Material.CHEST, 1), 0, "Mule", ChatColor.YELLOW), //This is a bukkit entity, not a custom one. It has a special case :( in MountUtils
+
+    WOLF(WolfMount.class, EntityType.WOLF, new ItemStack(Material.BONE, 1), 0, "Wolf Mount",
+            new MountData("Wolf", ChatColor.WHITE, 0.245F, 140,
+                    "A ferocious beast, said to have", "slept at the side of Mayel The Cruel."), 5, ChatColor.YELLOW),
+
+    SLIME(SlimeMount.class, EntityType.SLIME, new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount",
+            new MountData("Slime", ChatColor.GREEN, 0.35F, 170, "A quick slime found deep", "in the Varenglade Ruins"), 3, ChatColor.YELLOW),
 
     SPIDER(SpiderMount.class, EntityType.SPIDER, new ItemStack(Material.STRING, 1), 0, "Spider Mount",
-    		new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, 190), 5),
-    
-    WOLF(WolfMount.class, EntityType.WOLF, new ItemStack(Material.BONE, 1), 0, "Wolf Mount",
-            new MountData("Wolf", ChatColor.WHITE, 0.245F, 140, "A ferocious beast, said to have", "slept at the side of Mayel The Cruel."), 5),
-                            
-    SLIME(SlimeMount.class, EntityType.SLIME, new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount",
-    		new MountData("Slime", ChatColor.GREEN, 0.35F, 170, "A quick slime found deep", "in the Varenglade Ruins"), 3);
-                    
+    		new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, 190), 5, ChatColor.YELLOW);
+
+
+
     private Class<? extends EntityInsentient> clazz;
     private ItemStack selectionItem;
     private int entityId;
@@ -47,19 +50,21 @@ public enum EnumMounts {
     private String displayName;
     private int chance;
     private MountData mountData;
-    
+    private ChatColor displayColor;
+
     @SuppressWarnings("deprecation")
-	EnumMounts(Class<? extends EntityInsentient> cls, EntityType t, ItemStack selectionItem, int shortID, String displayName) {
+	EnumMounts(Class<? extends EntityInsentient> cls, EntityType t, ItemStack selectionItem, int shortID, String displayName, ChatColor displayColor) {
     	this.clazz = cls;
         this.selectionItem = selectionItem;
         this.shortID = (short) shortID;
         this.displayName = displayName;
         this.entityId = t.getTypeId();
-        
+        this.displayColor = displayColor;
+
     }
 
-    EnumMounts(Class<? extends EntityInsentient> e, EntityType t, ItemStack selectionItem, int shortID, String displayName, MountData data, int chance) {
-	    this(e, t, selectionItem, shortID, displayName);
+    EnumMounts(Class<? extends EntityInsentient> e, EntityType t, ItemStack selectionItem, int shortID, String displayName, MountData data, int chance, ChatColor displayColor) {
+	    this(e, t, selectionItem, shortID, displayName, displayColor);
         this.mountData = data;
         this.chance = chance;
     }
@@ -108,7 +113,7 @@ public enum EnumMounts {
     	World world = ((CraftWorld)player.getWorld()).getHandle();
     	
     	try {
-    		EntityInsentient e = getClazz().getDeclaredConstructor(world.getClass(), Player.class, EnumMounts.class).newInstance(world, player, this);
+    		EntityInsentient e = getClazz().getDeclaredConstructor(World.class, Player.class).newInstance(world, player);
     		e.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(getSpeed());
     		
     		Location l = player.getLocation();

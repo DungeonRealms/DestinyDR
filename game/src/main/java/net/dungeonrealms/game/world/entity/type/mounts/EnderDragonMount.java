@@ -17,10 +17,10 @@ public class EnderDragonMount extends EntityEnderDragon implements JumpingMount 
 	private Player owner;
 	
 	public EnderDragonMount(World world) {
-		this(world, null, null);
+		this(world, null);
 	}
 	
-    public EnderDragonMount(World world, Player player, EnumMounts mount) {
+    public EnderDragonMount(World world, Player player) {
         super(world);
         this.owner = player;
         EntityAPI.clearAI(this.goalSelector, this.targetSelector);
@@ -30,6 +30,7 @@ public class EnderDragonMount extends EntityEnderDragon implements JumpingMount 
     @Override
     public void g(float sideMotion, float forwardMotion) {
     	MountUtils.handleMountLogic(this, owner);
+        super.g(sideMotion, forwardMotion);
     }
 
 	@Override

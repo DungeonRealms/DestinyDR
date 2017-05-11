@@ -195,15 +195,15 @@ public class PlayerWrapper {
     private HashMap<UUID, Integer> friendsList = new HashMap<>(), ignoredFriends = new HashMap<>(), pendingFriends = new HashMap<>();
 
     @Getter
-    private List<EnumAchievements> achievements = new ArrayList<>();
+    private Set<EnumAchievements> achievements = new HashSet<>();
     @Getter
-    private List<ParticleEffect> particles = new ArrayList<>();
+    private Set<ParticleEffect> particles = new HashSet<>();
     @Getter
-    private List<ParticleEffect> trails = new ArrayList<>();
+    private Set<ParticleEffect> trails = new HashSet<>();
     @Getter
-    private List<EnumMountSkins> mountSkins = new ArrayList<>();
+    private Set<EnumMountSkins> mountSkins = new HashSet<>();
     @Getter
-    private List<EnumMounts> mountsUnlocked = new ArrayList<>();
+    private Set<EnumMounts> mountsUnlocked = new HashSet<>();
     @Getter
     private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
 
@@ -345,7 +345,7 @@ public class PlayerWrapper {
                 this.activePet = EnumPets.getByName(result.getString("characters.activePet"));
                 this.activeTrail = ParticleEffect.getByName(result.getString("characters.activeTrail"));
                 this.activeMountSkin = EnumMountSkins.getByName(result.getString("characters.activeMountSkin"));
-                this.achievements = StringUtils.deserializeEnumList(result.getString("characters.achievements"), EnumAchievements.class);
+                this.achievements = StringUtils.deserializeEnumListToSet(result.getString("characters.achievements"), EnumAchievements.class);
 
                 this.questData = result.getString("characters.questData");
                 this.shopLevel = result.getInt("characters.shop_level");
@@ -455,10 +455,10 @@ public class PlayerWrapper {
     }
 
     public void loadUnlockables(ResultSet result) throws SQLException {
-        this.mountsUnlocked = StringUtils.deserializeEnumList(result.getString("users.mounts"), EnumMounts.class);
-        this.mountSkins = StringUtils.deserializeEnumList(result.getString("users.mountSkin"), EnumMountSkins.class);
-        this.particles = StringUtils.deserializeEnumList(result.getString("users.particles"), ParticleEffect.class);
-        this.trails = StringUtils.deserializeEnumList(result.getString("users.trails"), ParticleEffect.class);
+        this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("users.mounts"), EnumMounts.class);
+        this.mountSkins = StringUtils.deserializeEnumListToSet(result.getString("users.mountSkin"), EnumMountSkins.class);
+        this.particles = StringUtils.deserializeEnumListToSet(result.getString("users.particles"), ParticleEffect.class);
+        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
 
         List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
         if (list != null) {
@@ -734,6 +734,19 @@ public class PlayerWrapper {
 
                     if (example instanceof Enum)
                         obj = StringUtils.serializeEnumList((List<Enum>) list);
+                }
+            }
+
+            if(obj instanceof Set<?>) {
+                Set<?> set = (Set<?>) obj;
+
+                if (set.isEmpty()) {
+                    obj = "";
+                } else {
+                    Object example = set.stream().findFirst().get();
+
+                    if (example instanceof Enum)
+                        obj = StringUtils.serializeEnumList((Set<Enum>) set);
                 }
             }
 

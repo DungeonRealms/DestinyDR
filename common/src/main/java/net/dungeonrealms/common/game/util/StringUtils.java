@@ -19,7 +19,16 @@ public class StringUtils {
 		return s;
 	}
 
-	@SuppressWarnings("unchecked")
+    public static <T extends Enum<T>> String serializeEnumList(Set<T> values) {
+        if(values == null)return "";
+        String s = "";
+        for (T val : values)
+            s += val.name() + ",";
+        return s;
+    }
+
+
+    @SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> List<T> deserializeEnumList(String s, Class<T> c) {
 		List<T> list = new ArrayList<>();
 		if(s == null)return list;
@@ -34,6 +43,22 @@ public class StringUtils {
 		}
 		return list;
 	}
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Enum<T>> Set<T> deserializeEnumListToSet(String s, Class<T> c) {
+        Set<T> list = new HashSet<T>();
+        if(s == null)return list;
+        for (String str : s.split(",")) {
+            try {
+                if (!str.equals(""))
+                    list.add((T) c.getMethod("valueOf", String.class).invoke(null, str));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().warning("Failed to deserialize " + str + " as " + c.getSimpleName() + ".");
+            }
+        }
+        return list;
+    }
 
     public static List<String> deserializeList(String string, String delimeter){
         List<String> retr = Lists.newArrayList();

@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
-import java.util.List;
-
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.achievements.Achievements.AchievementCategory;
+import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
+import net.dungeonrealms.game.player.inventory.ShopMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.achievements.Achievements.*;
-import net.dungeonrealms.game.player.inventory.ShopMenu;
+import java.util.Set;
 
 public class AchievementMenu extends ShopMenu {
 
@@ -26,7 +26,7 @@ public class AchievementMenu extends ShopMenu {
 	@Override
 	protected void setItems() {
 		PlayerWrapper pw = PlayerWrapper.getWrapper(getPlayer());
-		List<EnumAchievements> playerAchievements = pw.getAchievements();
+		Set<EnumAchievements> playerAchievements = pw.getAchievements();
         addItem(createItem(Material.BARRIER, ChatColor.GREEN + "Back")).setOnClick((player, shop) -> false);
 
         for (EnumAchievements achievement : EnumAchievements.getByCategory(this.category)) {

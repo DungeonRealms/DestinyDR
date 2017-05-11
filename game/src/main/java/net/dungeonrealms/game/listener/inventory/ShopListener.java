@@ -17,6 +17,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 
+import net.dungeonrealms.game.world.shops.SoldShopItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -415,6 +416,8 @@ public class ShopListener implements Listener {
         } else {
             BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + item.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + player.getName());
         }
+
+        ShopMechanics.getRecentlySoldItems().add(new SoldShopItem(shop.ownerUUID, shop.ownerName, toGive, totalPrice, player.getName()));
 
         Player onlineOwner = shop.getOwner();
         if (onlineOwner != null) {

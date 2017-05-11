@@ -14,10 +14,10 @@ public class SlimeMount extends EntitySlime implements JumpingMount {
 	private int mountJumpTicks = 0;
 	
 	public SlimeMount(World world) {
-		this(world, null, null);
+		this(world, null);
 	}
 	
-    public SlimeMount(World world, Player player, EnumMounts mount) {
+    public SlimeMount(World world, Player player) {
         super(world);
 
         this.player = player;
@@ -28,8 +28,8 @@ public class SlimeMount extends EntitySlime implements JumpingMount {
     @Override
     public void g(float sideMotion, float forwardMotion) {
     	this.jumped = false;
-    	MountUtils.handleMountLogic(this, this.player);
-    	
+    	float[] motions = MountUtils.handleMountLogic(this, this.player);
+    	if(motions == null)return;
         if (!jumped && mountJumpTicks >= 24 && this.onGround) {
             this.motY = .6D;
             mountJumpTicks = 0;
@@ -38,6 +38,7 @@ public class SlimeMount extends EntitySlime implements JumpingMount {
         } else {
             mountJumpTicks++;
         }
+        super.g(motions[0], motions[1]);
     }
 
 	@Override

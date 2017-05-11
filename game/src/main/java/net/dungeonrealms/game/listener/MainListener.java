@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener;
 
+import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
@@ -31,6 +32,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -75,6 +77,7 @@ import java.util.*;
  */
 public class MainListener implements Listener {
 
+    private static List<String> alwaysCancel = Lists.newArrayList("Sales Manager");
     private Set<UUID> kickedIgnore = new HashSet<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -521,6 +524,10 @@ public class MainListener implements Listener {
             }
         }
 
+        if(npcNameStripped.equalsIgnoreCase("Sales Manager")){
+            new SalesManagerGUI(event.getPlayer()).open(event.getPlayer(), null);
+            return;
+        }
         if (menu != null)
             menu.open(event.getPlayer());
 
@@ -625,7 +632,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding"))
+        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding") || alwaysCancel.contains(event.getInventory().getName()))
             event.setCancelled(true);
     }
 

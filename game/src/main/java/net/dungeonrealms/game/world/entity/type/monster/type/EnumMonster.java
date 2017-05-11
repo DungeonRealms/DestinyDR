@@ -11,6 +11,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.*;
+import net.dungeonrealms.game.world.entity.type.mounts.HorseMount;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.minecraft.server.v1_9_R2.*;
 
@@ -249,8 +250,10 @@ public enum EnumMonster {
         //  BOSSES  //
         MAYEL(Mayel.class, EntityType.SKELETON),
         BURICK(Burick.class, EntityType.SKELETON),
-        INFERNAL(InfernalAbyss.class, EntityType.SKELETON);
- 		
+        INFERNAL(InfernalAbyss.class, EntityType.SKELETON),
+        // MOUNTS //
+        HORSE(HorseMount.class, EntityType.HORSE);
+
  		private Class<? extends EntityInsentient> clazz;
  		private int entityId;
  		
