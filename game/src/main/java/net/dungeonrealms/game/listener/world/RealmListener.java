@@ -219,7 +219,7 @@ public class RealmListener implements Listener {
         for (Realm realm : Realms.getInstance().getRealms()) {
         	if (!realm.isOpen())
         		continue;
-        	
+
         	Player owner = Bukkit.getPlayer(realm.getOwner());
             if (owner != null && owner.isOnline()) {
                 if (realm.isChaotic() && realm.getProperty("flight")) {
@@ -516,7 +516,7 @@ public class RealmListener implements Listener {
 
         if (b.getType() == Material.CHEST)
             loot = new ItemRealmChest().generateItem();
-        
+
         //Get data from bukkit drops.
         for (ItemStack i : b.getDrops())
             if (i.getType() == b.getType())
@@ -665,7 +665,7 @@ public class RealmListener implements Listener {
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
     	PetUtils.removePet(event.getPlayer());
     	MountUtils.removeMount(event.getPlayer());
-        
+
         if (GameAPI.isMainWorld(event.getPlayer().getLocation())) {
             // Player is entering a realm.
             if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
@@ -697,9 +697,9 @@ public class RealmListener implements Listener {
         		event.setCancelled(true);
         		return;
         	}
-            
+
             //Metadata;
-            
+
             Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }

@@ -3,8 +3,11 @@ package net.dungeonrealms.game.item;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ecash.*;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import lombok.Getter;
+import org.bukkit.block.Jukebox;
 
 /**
  * A registry of all persistent items.
@@ -72,6 +75,7 @@ public enum ItemType {
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),
 	ITEM_NAME_TAG("itemNameTag", ItemNameTag.class),
+	JUKE_BOX("jukebox", ItemJukebox.class),
 
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),

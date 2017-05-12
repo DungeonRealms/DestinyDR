@@ -10,6 +10,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -22,7 +23,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -144,8 +144,11 @@ public class CommandEss extends BaseCommand {
                         return false;
                     }
                     break;
-                case "nametag":
-                    GameAPI.giveOrDropItem((Player)commandSender, new ItemNameTag().generateItem());
+                case "namtag":
+                case "storeitems":
+                case "store":
+                    GameAPI.giveOrDropItem((Player) commandSender, new ItemNameTag().generateItem());
+                    GameAPI.giveOrDropItem((Player) commandSender, new ItemJukebox().generateItem());
                     return true;
                 case "mount":
                     if (args.length == 3) {
