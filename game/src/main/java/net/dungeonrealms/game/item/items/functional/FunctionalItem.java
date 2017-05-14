@@ -5,6 +5,7 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.FunctionalItemEvent;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -60,14 +61,15 @@ public abstract class FunctionalItem extends ItemGeneric {
             return;
 
         //Check that the FunctionalItem is not null, and that the usagetype supplied is allowed for this item.
-        if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage()))
+        if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage())) {
             return;
+        }
 
         try {
             ice.handle();
         } catch (Exception e) {
             e.printStackTrace();
-            GameAPI.sendDevMessage(ChatColor.RED + "Error using " + ice.getPlayer().getName() + "'s " + ice.getItem().getClass().getSimpleName());
+            GameAPI.sendIngameDevMessage(ChatColor.RED + "Error using " + ice.getPlayer().getName() + "'s " + ice.getItem().getClass().getSimpleName());
             ice.getPlayer().sendMessage(ChatColor.RED + "There was an error while using this item. The developers have been notified.");
         }
     }

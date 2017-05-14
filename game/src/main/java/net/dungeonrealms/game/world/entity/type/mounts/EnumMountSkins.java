@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Horse;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -11,13 +12,15 @@ import org.bukkit.inventory.ItemStack;
  */
 @AllArgsConstructor @Getter
 public enum EnumMountSkins {
-    SKELETON_HORSE(new ItemStack(Material.SKULL_ITEM, 1, (short) 0), "Skeleton Horse", 4),
-    ZOMBIE_HORSE(new ItemStack(Material.SKULL_ITEM, 1, (short) 2), "Zombie Horse", 3);
+    SKELETON_HORSE(new ItemStack(Material.SKULL_ITEM, 1, (short) 0), "Skeleton Horse Skin", "Transforms your horse into a conjured skeletal beast.", 4, Horse.Variant.SKELETON_HORSE),
+    ZOMBIE_HORSE(new ItemStack(Material.SKULL_ITEM, 1, (short) 2), "Zombie Horse Skin", "Transforms your horse into a demonic death charger.", 3, Horse.Variant.UNDEAD_HORSE);
 
     private ItemStack selectionItem;
     private String displayName;
+    private String description;
     private int meta;
-    
+    private Horse.Variant variant;
+
     public int getId() {
     	return ordinal();
     }

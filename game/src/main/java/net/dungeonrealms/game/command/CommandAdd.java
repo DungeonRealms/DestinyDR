@@ -237,7 +237,7 @@ public class CommandAdd extends BaseCommand {
                         }
                     }
                 break;
-                case "ecash_buff":
+                /*case "ecash_buff":
                     if (args.length >= 2) {
                         int buffDuration = 1800;
                         int buffBonus = 20;
@@ -249,11 +249,11 @@ public class CommandAdd extends BaseCommand {
                             buffBonus = Integer.parseInt(args[3]);
                         }
 
-                        player.getInventory().addItem(new ItemBuff(EnumBuff.valueOf(args[1].toUpperCase()), buffDuration, buffBonus).generateItem());
+                        player.getInventory().addItem(new ItemBuff(EnumBuff.valueOf(args[1].toUpperCase()), buffDuration, buffBonus,false).generateItem());
                     } else {
                         player.sendMessage(ChatColor.RED + "Invalid usage! /add ecash_buff <LOOT|PROFESSION|LEVEL>");
                     }
-                    break;
+                    break;*/
                 case "stats":
                 	PlayerWrapper.getWrapper(player).calculateAllAttributes();
                 	player.sendMessage(ChatColor.GREEN + "Recalculated.");

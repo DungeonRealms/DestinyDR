@@ -31,30 +31,35 @@ public class ParticleAPI {
         CRIT(Material.NETHER_STAR, "Light Stars"),
         CRIT_MAGIC(Material.FIREWORK_CHARGE, "Dark Stars"),
         SPELL_WITCH(Material.CAULDRON_ITEM, "Magic"),
-        NOTE(Material.NOTE_BLOCK, "Notes", 1250),
-        PORTAL(Material.EYE_OF_ENDER, "Portal", 1250),
+        NOTE(Material.NOTE_BLOCK, "Notes", 1000),
+        PORTAL(Material.EYE_OF_ENDER, "Portal", 1000),
         ENCHANTMENT_TABLE(Material.ENCHANTMENT_TABLE, "Enchantment"),
-        FLAME(Material.FIREBALL, "Flames", 1250),
+        FLAME(Material.FIREBALL, "Flames", 1000),
         LAVA(Material.LAVA_BUCKET, "Lava", -1),
         WATER_SPLASH(Material.WATER_BUCKET, "Splash"),
         SMOKE_LARGE(Material.MELON, "Thick Smoke", -1),
-        REDSTONE(Material.CAKE, "Birthday", ChatColor.RED, 1250),
+        REDSTONE(Material.CAKE, "Birthday", ChatColor.RED, 1000),
         SNOWBALL(Material.SNOW_BALL, "Snowball"),
-        SMOKE_NORMAL(Material.SUGAR, "Thin Smoke", 1250),
-        CLOUD(Material.BEACON, "Cloudy", 1250),
-        VILLAGER_HAPPY(Material.SPIDER_EYE, "Poison", ChatColor.DARK_GREEN, 650),
+        SMOKE_NORMAL(Material.SUGAR, "Thin Smoke", 1000),
+        CLOUD(Material.BEACON, "Cloudy", 1150),
+        VILLAGER_HAPPY(Material.SPIDER_EYE, "Poison", ChatColor.DARK_GREEN, 1000),
         SPELL(Material.BLAZE_POWDER, "Potion", -1),
         SNOW_SHOVEL(Material.SNOW, "Snowfall"),
-        HEART(Material.APPLE, "Hearts", -1);
+        HEART(Material.APPLE, "Hearts", 1000),
+        GOLD_BLOCK(Material.GOLD_BLOCK, "Golden Curse", true);
 
         private ItemStack selectionItem;
         private String displayName;
         private ChatColor color;
         private int price;
-
+        private boolean isTrail;
 
         ParticleEffect(Material mat, String displayName) {
             this(mat, displayName, 650);
+        }
+        ParticleEffect(Material mat, String displayName, boolean isTrail) {
+            this(mat, displayName, -1);
+            this.isTrail = isTrail;
         }
 
         ParticleEffect(Material mat, String displayName, int price) {

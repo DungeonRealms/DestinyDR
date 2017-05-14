@@ -2,11 +2,14 @@ package net.dungeonrealms.game.player.inventory.menus;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ShopItem;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,6 +22,7 @@ public class GUIItem extends ShopItem {
     public GUIItem(ItemStack item) {
         super(item);
     }
+
     public GUIItem(Material material) {
         super(new ItemStack(material, 1));
     }
@@ -27,8 +31,37 @@ public class GUIItem extends ShopItem {
     public void loadItem() {
     }
 
+    public GUIItem setEnchanted(boolean enchant) {
+
+        if (enchant)
+            this.item.addUnsafeEnchantment(EnchantmentAPI.getGlowEnchant(), 1);
+        else if (item.containsEnchantment(EnchantmentAPI.getGlowEnchant()))
+            this.item.removeEnchantment(EnchantmentAPI.getGlowEnchant());
+
+        return this;
+    }
+
     public GUIItem setClick(Consumer<InventoryClickEvent> event) {
         this.clickCallback = event;
+        return this;
+    }
+
+    public GUIItem setECashCost(int ecash) {
+        this.setECash(ecash);
+        ItemMeta im = item.getItemMeta();
+        List<String> lore = im.getLore() == null ? Lists.newArrayList() : im.getLore();
+        lore.add(ChatColor.WHITE.toString() + ecash + ChatColor.GREEN + " E-Cash");
+        im.setLore(lore);
+        item.setItemMeta(im);
+        return this;
+    }
+
+    public GUIItem setSkullOwner(String name) {
+        ItemMeta im = item.getItemMeta();
+        if (!(im instanceof SkullMeta)) return this;
+        SkullMeta sm = (SkullMeta) im;
+        sm.setOwner(name);
+        item.setItemMeta(sm);
         return this;
     }
 

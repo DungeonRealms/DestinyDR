@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class MobileJukeboxGUI extends GUIMenu {
         this.jukebox = jukebox;
     }
 
-    private static Set<Material> records = new HashSet<>();
+    private static Set<Material> records = new LinkedHashSet<>();
 
     static {
         //Record 3 - 12, gold, green

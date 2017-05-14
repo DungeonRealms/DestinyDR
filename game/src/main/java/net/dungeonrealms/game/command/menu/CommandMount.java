@@ -26,7 +26,7 @@ public class CommandMount extends BaseCommand {
         Player player = (Player) sender;
         if (args.length == 0) {
             MountUtils.removeMount(player);
-            ItemMount.attemptSummonMount(player);
+            ItemMount.attemptSummonMount(player, null);
         } else if (args.length == 1) {
         	CraftingMenu.addMountItem(player);
         }

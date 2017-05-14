@@ -25,6 +25,7 @@ import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.anticheat.PacketModifier;
 import net.dungeonrealms.game.command.*;
 import net.dungeonrealms.game.command.content.*;
+import net.dungeonrealms.game.command.donation.CommandDonation;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
 import net.dungeonrealms.game.command.friend.AddCommand;
@@ -308,6 +309,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandInvsee());
         cm.registerCommand(new CommandBanksee());
         cm.registerCommand(new CommandArmorsee());
+        cm.registerCommand(new CommandDonation());
         cm.registerCommand(new CommandGemsee());
         cm.registerCommand(new CommandBinsee());
         cm.registerCommand(new CommandMuleSee());

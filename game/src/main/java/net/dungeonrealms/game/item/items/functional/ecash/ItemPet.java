@@ -21,7 +21,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
     public ItemPet() {
         super(ItemType.PET);
-        setUntradeable(true);
+        setPermUntradeable(true);
     }
 
     public ItemPet(ItemStack item) {
@@ -57,7 +57,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
         if (petType == null) {
             player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
             player.closeInventory();
-            new PetSelectionGUI(player).open(player, null);
+            new PetSelectionGUI(player, null).open(player, null);
             return;
         }
 

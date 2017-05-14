@@ -26,33 +26,24 @@ public class CategoryGUI extends GUIMenu {
 
     @Override
     protected void setItems() {
-        int slot = 0;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null) return;
 
 
-        setItem(getSize() - 1, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back"))
-                .setClick(e -> player.sendMessage("Back button click!")));
 
         for(WebstoreCategories cat : WebstoreCategories.values()) {
-            setItem(slot++, new GUIItem(cat.getDisplayItem()).setName(cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {
+            ItemStack displayStack = new ItemStack(cat.getDisplayItem());
+            if(cat.equals(WebstoreCategories.HATS)) displayStack.setDurability((short)4);
+            setItem(cat.getGuiSlot(), new GUIItem(displayStack).setName(cat.getDisplayNameColor().toString() + ChatColor.BOLD + cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {
                 if(evt.getClick() == ClickType.LEFT) {
                     WebstoreCategories.getGUI(cat,player).open(player,evt.getAction());
                 }
             }));
         }
 
-        ItemStack petCategory = editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pets", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel with a cute companion.",
-                "",
-                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View available pets.",
-                ChatColor.GRAY + "Display Item"
-        });
-
-        setItem(slot++, new GUIItem(petCategory).setClick((evt) -> {
+        setItem(3, new GUIItem(Material.NAME_TAG).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Pets").setLore("", ChatColor.GRAY + "Click here to display all pets!").setClick((evt) -> {
             if(evt.getClick() == ClickType.LEFT) {
-                new PetSelectionGUI(player).open(player,evt.getAction());
+                new PetSelectionGUI(player, this).open(player,evt.getAction());
             }
         }));
 

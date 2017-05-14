@@ -40,7 +40,7 @@ public class MobileJukebox {
             this.timeoutTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
             jukebox.setType(Material.JUKEBOX);
             jukebox.getWorld().playEffect(jukebox.getLocation().clone().add(0.5, .5, 0.5), Effect.STEP_SOUND, Material.JUKEBOX.getId());
-            ItemJukebox.setJukebox(this.jukebox, this);
+            ItemJukebox.getMobileJukeboxes().put(this.jukebox, this);
             ItemJukebox.attemptTaskStart();
 
             this.hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), jukebox.getLocation().add(0.5, 1.9, 0.5));

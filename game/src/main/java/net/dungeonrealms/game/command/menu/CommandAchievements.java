@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.command.menu;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.inventory.menus.guis.AchievementGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,8 +23,7 @@ public class CommandAchievements extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
-        PlayerMenus.openPlayerAchievementsMenu(player);
-
+        new AchievementGUI(player, null).open();
         return true;
     }
 }

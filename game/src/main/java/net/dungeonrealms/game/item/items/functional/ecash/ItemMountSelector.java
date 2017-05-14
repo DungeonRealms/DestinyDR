@@ -7,6 +7,7 @@ import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemMountSelector extends ItemGeneric {
@@ -23,9 +24,10 @@ public class ItemMountSelector extends ItemGeneric {
 		super(ItemType.MOUNT_SELECTOR);
 		setTier(tier);
 	}
-	
+
 	@Override
 	public void updateItem() {
+		super.updateItem();
 		if (getTier().getSpeed() != 100)
 			addLore("Speed " + getTier().getSpeed() + "%");
 		if (getTier().getJump() != 100)
@@ -33,7 +35,7 @@ public class ItemMountSelector extends ItemGeneric {
 		addLore(ChatColor.ITALIC + getTier().getDescription());
 		addLore(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + getTier().getDescription());
 		setTagInt(TIER, getTier().getId());
-		super.updateItem();
+		Bukkit.getLogger().info("updateItem on Mount Selector!");
 	}
 
 	@Override

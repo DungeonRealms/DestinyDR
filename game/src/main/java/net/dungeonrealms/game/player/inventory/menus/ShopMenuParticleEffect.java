@@ -1,11 +1,5 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleSelector;
@@ -13,6 +7,10 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleTrail;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.Set;
 
 public class ShopMenuParticleEffect extends ShopMenu {
 
@@ -25,7 +23,8 @@ public class ShopMenuParticleEffect extends ShopMenu {
 		for (ParticleEffect effect : ParticleEffect.values()) {
 			if (effect.getPrice() < 0)
 				continue;
-            
+			if(effect.isTrail() || effect.getPrice() < 0)continue;
+
             addItem(new ItemParticleSelector(effect)).setOnClick((p, s) -> {
             	PlayerWrapper pw = PlayerWrapper.getWrapper(p);
             	Set<ParticleEffect> effects = pw.getParticles();

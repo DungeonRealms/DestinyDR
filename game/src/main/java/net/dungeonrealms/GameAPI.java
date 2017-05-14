@@ -10,7 +10,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -32,6 +31,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumRankAchievement;
 import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.EnergyHandler;
@@ -39,8 +39,11 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.WorldZoneType;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
-import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mastery.DamageTracker;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mastery.UUIDHelper;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
@@ -78,7 +81,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.*;
-
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -114,7 +116,10 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -129,12 +134,12 @@ public class GameAPI {
      * CopyOnWriteArrayList
      */
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
-    public static Set<Player> _hiddenPlayers = new HashSet<>();
+    public static Set<Player> _hiddenPlayers = new ConcurrentSet<>();
 
     /**
      * Used to avoid double saving player data
      */
-    public static Set<UUID> IGNORE_QUIT_EVENT = new HashSet<>();
+    public static Set<UUID> IGNORE_QUIT_EVENT = new ConcurrentSet<>();
 
 
     private static class PlayerLogoutWatchdog extends BukkitRunnable {
@@ -198,8 +203,9 @@ public class GameAPI {
     public static String getRegionName(Location location) {
 
         try {
-            ApplicableRegionSet set = WorldGuardPlugin.inst().getRegionManager(location.getWorld())
-                    .getApplicableRegions(location);
+            RegionManager regionManager = WorldGuardPlugin.inst().getRegionManager(location.getWorld());
+            if (regionManager == null) return "";
+            ApplicableRegionSet set = regionManager.getApplicableRegions(location);
             if (set.size() == 0)
                 return "";
 
@@ -234,6 +240,7 @@ public class GameAPI {
         }
         return -1;
     }
+
     public static int getTierFromLevel(int level) {
         if (level < 10) {
             return 1;
@@ -568,6 +575,7 @@ public class GameAPI {
         RegionManager regionManager = getWorldGuard().getRegionManager(location.getWorld());
         if (regionManager == null) return false;
         ApplicableRegionSet region = regionManager.getApplicableRegions(location);
+        if (region == null) return false;
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
                 && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
@@ -648,11 +656,12 @@ public class GameAPI {
 
     /**
      * Async thread safe method.
+     *
      * @param location
      * @param radius
      * @return
      */
-    public static boolean arePlayersNearbyAsync(Location location, int radius){
+    public static boolean arePlayersNearbyAsync(Location location, int radius) {
         int finalRadius = radius * radius;
         return asyncTracker.stream().anyMatch(player -> player.isOnline() && player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= finalRadius);
     }
@@ -701,32 +710,33 @@ public class GameAPI {
         wrapper.saveData(async, false, wrap -> {
             System.out.println("Save data callback!");
             wrapper.setPlayingStatus(false);
-            for (DamageTracker tracker : HealthHandler.getMonsterTrackers().values())
-                tracker.removeDamager(player);
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                for (DamageTracker tracker : HealthHandler.getMonsterTrackers().values())
+                    tracker.removeDamager(player);
 
-            if (GameAPI._hiddenPlayers.contains(player))
-                GameAPI._hiddenPlayers.remove(player);
+                if (GameAPI._hiddenPlayers.contains(player))
+                    GameAPI._hiddenPlayers.remove(player);
 
-            MountUtils.getInventories().remove(player.getUniqueId());
-            Quests.getInstance().handleLogoutEvents(player);
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () ->
-                    ScoreboardHandler.getInstance().removePlayerScoreboard(player));
+                MountUtils.getInventories().remove(player.getUniqueId());
+                Quests.getInstance().handleLogoutEvents(player);
+                ScoreboardHandler.getInstance().removePlayerScoreboard(player);
+                PetUtils.removePet(player);
+                MountUtils.removeMount(player);
 
-            PetUtils.removePet(player);
-            MountUtils.removeMount(player);
+                Party party = Affair.getParty(player);
+                if (party != null)
+                    party.removePlayer(player, false);
 
-            if (Affair.isInParty(player))
-                Affair.getParty(player).removePlayer(player, false);
+                DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                if (remove) {
+                    PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+                    GAMEPLAYERS.remove(player.getName());
+                }
+                Utils.log.info("Saved information for uuid: " + player.getName() + " on their logout.");
 
-            DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-            if (remove) {
-                PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
-                GAMEPLAYERS.remove(player.getName());
-            }
-            Utils.log.info("Saved information for uuid: " + player.getName() + " on their logout.");
-
-            if (doAfter != null)
-                doAfter.accept(true);
+                if (doAfter != null)
+                    doAfter.accept(true);
+            });
         });
     }
 
@@ -739,7 +749,8 @@ public class GameAPI {
             int online = PlayerWrapper.getPlayerWrappers().size();
             for (PlayerWrapper wrapper : PlayerWrapper.getPlayerWrappers().values()) {
                 //Dont save these ijots.
-                if (wrapper.getPlayer() == null || !wrapper.getPlayer().isOnline() || !wrapper.isLoadedSuccessfully()) continue;
+                if (wrapper.getPlayer() == null || !wrapper.getPlayer().isOnline() || !wrapper.isLoadedSuccessfully())
+                    continue;
 
                 Player player = wrapper.getPlayer();
                 if (Constants.debug)
@@ -853,11 +864,11 @@ public class GameAPI {
 
 
         if (playerWrapper.isCombatLogged()) {
-        	String lastShard = playerWrapper.getShardPlayingOn();
-        	if (lastShard != null && !DungeonRealms.getShard().getPseudoName().equals(lastShard)) {
-        		player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
-        		return;
-        	}
+            String lastShard = playerWrapper.getShardPlayingOn();
+            if (lastShard != null && !DungeonRealms.getShard().getPseudoName().equals(lastShard)) {
+                player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
+                return;
+            }
         }
 
         PlayerRank rank = Rank.getRank(player);
@@ -999,8 +1010,8 @@ public class GameAPI {
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        	HealthHandler.handleLogin(player);
-        	PlayerManager.checkInventory(player);
+            HealthHandler.handleLogin(player);
+            PlayerManager.checkInventory(player);
         }, 5);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
@@ -1262,7 +1273,7 @@ public class GameAPI {
      * @param shard
      */
     public static void sendToShard(Player player, ShardInfo shard) {
-    	Metadata.SHARDING.set(player, true);
+        Metadata.SHARDING.set(player, true);
         GameAPI.getGamePlayer(player).setSharding(true);
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         handleLogout(player, true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -1594,13 +1605,13 @@ public class GameAPI {
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
     }
-    
+
     public static void addCooldown(Metadatable m, Metadata type, int ticks) {
-    	type.set(m, true);
-    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> type.remove(m), 20);
+        type.set(m, true);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> type.remove(m), 20);
     }
-    
+
     public static boolean isCooldown(Metadatable m, Metadata type) {
-    	return type.get(m).asBoolean();
+        return type.get(m).asBoolean();
     }
 }

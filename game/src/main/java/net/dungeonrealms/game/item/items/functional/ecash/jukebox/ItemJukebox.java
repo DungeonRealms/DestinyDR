@@ -41,10 +41,6 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
         setSoulbound(true);
     }
 
-    public static void setJukebox(Block block, MobileJukebox box) {
-        mobileJukeboxes.put(block, box);
-    }
-
     public static MobileJukebox getPlacedJukebox(UUID uuid) {
         return mobileJukeboxes.values().stream().filter(box -> box.getUuid().equals(uuid)).findFirst().orElse(null);
     }
@@ -71,20 +67,8 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                     taskID = -1;
                 } else {
                     mobileJukeboxes.forEach((block, juke) -> {
-                        if (!block.getChunk().isLoaded()) {
+                        if (!block.getChunk().isLoaded() || block.getType() != Material.JUKEBOX || juke.getTimeoutTime() > 0 && juke.getTimeoutTime() <= System.currentTimeMillis()) {
                             //Remove to not keep processing..
-                            juke.breakJukebox();
-                            return;
-                        }
-
-                        //How??
-                        if (block.getType() != Material.JUKEBOX) {
-                            mobileJukeboxes.remove(block);
-                            return;
-                        }
-
-                        if (juke.getTimeoutTime() > 0 && juke.getTimeoutTime() <= System.currentTimeMillis()) {
-                            //Expired??
                             juke.breakJukebox();
                             return;
                         }
@@ -121,7 +105,8 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                 MobileJukebox box = getPlacedJukebox(player.getUniqueId());
                 if (box != null) {
                     Location l = box.getJukebox().getLocation();
-                    player.sendMessage(ChatColor.RED + "You already have a Jukebox placed at " + ChatColor.BOLD + l.getBlockX() + "x, " + l.getBlockY() + "y, " + l.getBlockZ() + "z!");
+                    player.sendMessage(ChatColor.RED + "It seems you already have a Mobile Musicbox summoned.");
+                    player.sendMessage(ChatColor.GRAY + "You can find it at these coordinates: " + ChatColor.BOLD + l.getBlockX() + "x " + l.getBlockY() + "y " + l.getBlockZ() + "z");
                     return;
                 }
                 //can be placed?
@@ -142,7 +127,7 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                 }
 
 
-                jukeboxCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 10_000);
+                jukeboxCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 5_000);
                 MobileJukebox jukebox = new MobileJukebox(block, player.getUniqueId(), player.getName(), null);
                 new MobileJukeboxGUI(player, jukebox).open(player, null);
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
+import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 public class DungeonManager implements GenericMechanic {
 
 	@Getter private static DungeonManager instance = new DungeonManager();
-	@Getter private static List<Dungeon> dungeons = new CopyOnWriteArrayList<>();
+	@Getter private static Set<Dungeon> dungeons = new ConcurrentSet<>();
 	@Getter private static Map<DungeonType, List<MobSpawner>> dungeonSpawns = new ConcurrentHashMap<>();
 	
     private static int MAX_DUNGEON_TIME = 120; // 2 Hours
@@ -134,8 +135,9 @@ public class DungeonManager implements GenericMechanic {
 
     }
     
-    public static List<MobSpawner> getSpawns(World w, DungeonType type) {
-    	List<MobSpawner> spawns = new ArrayList<>(getDungeonSpawns().get(type));
+    public static Set<MobSpawner> getSpawns(World w, DungeonType type) {
+		Set<MobSpawner> spawns = new ConcurrentSet<>();
+		spawns.addAll(getDungeonSpawns().get(type));
     	spawns.forEach(ms -> ms.getLocation().setWorld(w));
     	return spawns;
     }

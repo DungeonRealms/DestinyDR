@@ -19,7 +19,7 @@ public class ItemMuleMount extends FunctionalItem implements ItemClickListener {
 	
 	public ItemMuleMount(MuleTier tier) {
 		super(ItemType.MULE);
-		setUntradeable(true);
+		setPermUntradeable(true);
 		this.tier = tier;
 	}
 	
@@ -33,7 +33,7 @@ public class ItemMuleMount extends FunctionalItem implements ItemClickListener {
 
 	@Override
 	public void onClick(ItemClickEvent evt) {
-		ItemMount.attemptSummonMount(evt.getPlayer());
+		ItemMount.attemptSummonMount(evt.getPlayer(), getDisplayName());
 	}
 
 	@Override

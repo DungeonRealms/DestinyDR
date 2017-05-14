@@ -2,10 +2,7 @@ package net.dungeonrealms.common.game.util;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 
@@ -19,12 +16,56 @@ public class StringUtils {
 		return s;
 	}
 
+    public static String serializeEnumNumberMap(Map<Enum,Number> values) {
+        if(values == null || values.isEmpty())return "";
+        String s = "";
+        for (Map.Entry<Enum,Number> val : values.entrySet()) {
+            s += val.getKey().toString() + ";" + val.getValue().toString();
+            s += ",";
+        }
+        return s;
+    }
+
     public static <T extends Enum<T>> String serializeEnumList(Set<T> values) {
-        if(values == null)return "";
+        if (values == null) return "";
         String s = "";
         for (T val : values)
             s += val.name() + ",";
         return s;
+
+    }
+
+    public static <T extends Enum<T>, E extends Number> Map<T,E> deserializeNumberMap(String s, Class<T> c, Class<E> numClass) {
+        Map<T,E> map = new HashMap<>();
+        if(s == null || s.isEmpty())return map;
+        for (String str : s.split(",")) {
+            try {
+                if(!str.isEmpty()) {
+                    String[] components = str.split(";");
+                    String key = components[0];
+                    String value = components[1];
+                    Number valNum = getNumberWrapperFromString(value, numClass);
+                    if(valNum == null) continue;
+                    map.put((T) c.getMethod("valueOf", String.class).invoke(null, key), (E)valNum);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().warning("Failed to deserialize " + str + " as " + c.getSimpleName() + ".");
+            }
+        }
+        return map;
+    }
+
+    private static <E extends Number> Number getNumberWrapperFromString(String numString, Class<E> format) {
+	    try {
+	        if(format.equals(Integer.class))return new Integer(numString);
+            if(format.equals(Long.class))return new Long(numString);
+            if(format.equals(Float.class))return new Float(numString);
+            if(format.equals(Double.class))return new Double(numString);
+        } catch(Exception e) {
+	        e.printStackTrace();
+        }
+        return null;
     }
 
 

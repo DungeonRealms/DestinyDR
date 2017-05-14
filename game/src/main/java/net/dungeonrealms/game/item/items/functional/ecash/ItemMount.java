@@ -1,12 +1,6 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
@@ -15,111 +9,158 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 public class ItemMount extends FunctionalItem implements ItemClickListener {
-	
-	public ItemMount() {
-		super(ItemType.MOUNT);
-		setUntradeable(true);
-	}
-	
-	public ItemMount(ItemStack item) {
-		super(item);
-	}
-	
-	public static void attemptSummonMount(Player player) {
-		if (!canSummonMount(player))
-        	return;
+
+    public HorseTier horseTier = HorseTier.TIER_1;
+
+    public ItemMount(HorseTier tier) {
+        super(ItemType.MOUNT);
+        setPermUntradeable(true);
+        setTagString("tier", tier.name());
+        this.horseTier = tier;
+        Bukkit.getLogger().info("Given Tier: " + tier);
+    }
+
+    public ItemMount(ItemStack item) {
+        super(item);
+        if (hasTag("tier")) {
+            this.horseTier = HorseTier.valueOf(getTagString("tier"));
+            Bukkit.getLogger().info("Horse Tier from load: " + horseTier);
+        }
+    }
+
+    @Override
+    protected void loadItem() {
+        super.loadItem();
+        if (hasTag("tier")) {
+            this.horseTier = HorseTier.valueOf(getTagString("tier"));
+            Bukkit.getLogger().info("Horse Tier: " + horseTier);
+        }
+    }
+
+    @Override
+    public void updateItem() {
+        setTagString("tier", horseTier.name());
+        super.updateItem();
+    }
+
+    public static void attemptSummonMount(Player player, String name) {
+        if (!canSummonMount(player))
+            return;
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-		EnumMounts mountType = pw.getActiveMount();
-        
+        EnumMounts mountType = pw.getActiveMount();
+
         if (mountType == null) {
             player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
             player.closeInventory();
             return;
         }
-        
+
         if (!pw.getMountsUnlocked().contains(mountType)) {
             player.sendMessage(ChatColor.RED + "You do not own this mount.");
+            pw.setActiveMount(null);
             return;
         }
-        
-        player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
-        final int[] count = {0};
-        Location startingLocation = player.getLocation();
-        final boolean[] cancelled = {false};
-        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-        	boolean cancel = !canSummonMount(player);
-        	if (player.getLocation().distanceSquared(startingLocation) > 4) {
-        		cancel = true;
-        		player.sendMessage(ChatColor.RED + "You're too far away.");
-        	}
-        	
-        	if (cancel) {
-        		cancelled[0] = true;
-        		count[0] = 0;
-        	}
-        	
-        	if (cancelled[0])
-        		return;
-        	
-        	if (count[0] < 3) {
-                count[0]++;
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
-            } else {
-            	MountUtils.spawnMount(player, mountType, pw.getActiveMountSkin());
-            }
-        	
-        }, 0L, 20L);
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
-	}
 
-	private static boolean canSummonMount(Player player) {
-		// Dismiss existing mount.
-		if (MountUtils.hasActiveMount(player)) {
-			MountUtils.removeMount(player);
-			player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
-			return false;
-		}
-		
-		if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+        if (name == null) name = mountType.getDisplayName();
+        int max = 5;
+        player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING " + ChatColor.UNDERLINE + name
+                + ChatColor.WHITE + " ... " + max + ChatColor.BOLD + "s");
+        Location startingLocation = player.getLocation().clone();
+
+        new BukkitRunnable() {
+            int count = 0;
+
+            public void run() {
+                if (!player.isOnline() || player.isDead() || player.getLocation().distanceSquared(startingLocation) > 4) {
+                    player.sendMessage(ChatColor.RED + "You're too far away.");
+                    cancel();
+                    return;
+                }
+                count++;
+                if (count < max) {
+                    player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING" + ChatColor.WHITE + " ... " + (max - count) + ChatColor.BOLD + "s");
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
+                } else {
+                    MountUtils.spawnMount(player, mountType, pw.getActiveMountSkin());
+                    cancel();
+                }
+            }
+        }.runTaskTimer(DungeonRealms.getInstance(), 20, 20);
+    }
+
+    private static boolean canSummonMount(Player player) {
+        // Dismiss existing mount.
+        if (MountUtils.hasActiveMount(player)) {
+            MountUtils.removeMount(player);
+            player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
+            return false;
+        }
+
+        if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
             return false;
         }
-		
-		if (CombatLog.isInCombat(player)) {
+
+        if (CombatLog.isInCombat(player)) {
             player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
             return false;
         }
-		
-		return true;
-	}
-	
-	@Override
-	public void onClick(ItemClickEvent evt) {
-        attemptSummonMount(evt.getPlayer());
-	}
 
-	@Override
-	protected String getDisplayName() {
-		return ChatColor.GREEN + "Mount";
-	}
+        return true;
+    }
 
-	@Override
-	protected String[] getLore() {
-		return new String[] { ChatColor.DARK_GRAY + "Summons your active Mount." };
-	}
+    @Override
+    public void onClick(ItemClickEvent evt) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
 
-	@Override
-	protected ItemUsage[] getUsage() {
-		return INTERACT_RIGHT_CLICK;
-	}
+        EnumMounts mount = horseTier.getMount();
+        if (mount == null) {
+            evt.getPlayer().sendMessage(ChatColor.RED + "Unable to find horse tier: " + horseTier.name());
+            return;
+        }
 
-	@Override
-	protected ItemStack getStack() {
-		return new ItemStack(Material.SADDLE);
-	}
+        Bukkit.getLogger().info("Horse TIer: " + mount + " TIer: " + horseTier);
+        wrapper.setActiveMount(mount);
+        attemptSummonMount(evt.getPlayer(), getDisplayName());
+    }
+
+    @Override
+    protected String getDisplayName() {
+        return horseTier.getColor() + horseTier.getName();
+    }
+
+    @Override
+    protected String[] getLore() {
+        List<String> lore = Lists.newArrayList(ChatColor.RED + "Speed: " + horseTier.getSpeed() + "%");
+        if (horseTier.getJump() > 100) {
+            lore.add(ChatColor.RED + "Jump: " + horseTier.getJump() + "%");
+        }
+        lore.add(ChatColor.GRAY + ChatColor.ITALIC.toString() + horseTier.getDescription());
+        return lore.toArray(new String[lore.size()]);
+    }
+
+    @Override
+    protected ItemUsage[] getUsage() {
+        return INTERACT_RIGHT_CLICK;
+    }
+
+    @Override
+    protected ItemStack getStack() {
+        return new ItemStack(Material.SADDLE);
+    }
 }

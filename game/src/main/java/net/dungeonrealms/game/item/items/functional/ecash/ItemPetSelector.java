@@ -56,6 +56,6 @@ public class ItemPetSelector extends FunctionalItem implements ItemInventoryEven
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         evt.setCancelled(true);
-        new PetSelectionGUI(evt.getPlayer()).open(evt.getPlayer(), evt.getEvent().getAction());
+        new PetSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction());
     }
 }

@@ -13,6 +13,7 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
@@ -227,15 +228,18 @@ public class CommandEss extends BaseCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Could not load player data!");
                                     return;
                                 }
-                                Set<ParticleEffect> playerTrails = wrapper.getTrails();
+                                Set<ParticleEffect> playerTrails = wrapper.getParticles();
                                 if (!playerTrails.isEmpty()) {
-                                    if (playerTrails.contains(trailType.toUpperCase())) {
-                                        commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
-                                        return;
-                                    }
+//                                    if (playerTrails.contains(trail)) {
+//                                        commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
+//                                        return;
+//                                    }
                                 }
 
-                                wrapper.getTrails().add(trail);
+                                if (trail == ParticleEffect.GOLD_BLOCK) {
+                                    Purchaseables.GOLDEN_CURSE.setNumberOwned(wrapper, 1);
+                                }
+                                wrapper.getParticles().add(trail);
                                 wrapper.setActiveTrail(trail);
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                 GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
