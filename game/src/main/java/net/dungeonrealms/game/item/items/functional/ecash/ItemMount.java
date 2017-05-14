@@ -8,6 +8,7 @@ import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -32,14 +33,12 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
         setPermUntradeable(true);
         setTagString("tier", tier.name());
         this.horseTier = tier;
-        Bukkit.getLogger().info("Given Tier: " + tier);
     }
 
     public ItemMount(ItemStack item) {
         super(item);
         if (hasTag("tier")) {
             this.horseTier = HorseTier.valueOf(getTagString("tier"));
-            Bukkit.getLogger().info("Horse Tier from load: " + horseTier);
         }
     }
 
@@ -48,7 +47,6 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
         super.loadItem();
         if (hasTag("tier")) {
             this.horseTier = HorseTier.valueOf(getTagString("tier"));
-            Bukkit.getLogger().info("Horse Tier: " + horseTier);
         }
     }
 
@@ -76,18 +74,25 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
             return;
         }
 
+        int currentlySummoning = MetadataUtils.Metadata.SUMMONING.get(player).asInt();
+        if (currentlySummoning != -1 && (Bukkit.getScheduler().isCurrentlyRunning(currentlySummoning) || Bukkit.getScheduler().isQueued(currentlySummoning))) {
+            player.sendMessage(ChatColor.RED + "You are already summoning a mount!");
+            return;
+        }
+
         if (name == null) name = mountType.getDisplayName();
         int max = 5;
+
         player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING " + ChatColor.UNDERLINE + name
                 + ChatColor.WHITE + " ... " + max + ChatColor.BOLD + "s");
         Location startingLocation = player.getLocation().clone();
 
-        new BukkitRunnable() {
+        BukkitRunnable run = new BukkitRunnable() {
             int count = 0;
 
             public void run() {
                 if (!player.isOnline() || player.isDead() || player.getLocation().distanceSquared(startingLocation) > 4) {
-                    player.sendMessage(ChatColor.RED + "You're too far away.");
+                    player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
                     cancel();
                     return;
                 }
@@ -100,14 +105,16 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
                     cancel();
                 }
             }
-        }.runTaskTimer(DungeonRealms.getInstance(), 20, 20);
+        };
+        run.runTaskTimer(DungeonRealms.getInstance(), 20, 20);
+        int id = run.getTaskId();
+        MetadataUtils.Metadata.SUMMONING.set(player, id);
     }
 
     private static boolean canSummonMount(Player player) {
         // Dismiss existing mount.
         if (MountUtils.hasActiveMount(player)) {
             MountUtils.removeMount(player);
-            player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
             return false;
         }
 
@@ -130,11 +137,9 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
 
         EnumMounts mount = horseTier.getMount();
         if (mount == null) {
-            evt.getPlayer().sendMessage(ChatColor.RED + "Unable to find horse tier: " + horseTier.name());
             return;
         }
 
-        Bukkit.getLogger().info("Horse TIer: " + mount + " TIer: " + horseTier);
         wrapper.setActiveMount(mount);
         attemptSummonMount(evt.getPlayer(), getDisplayName());
     }

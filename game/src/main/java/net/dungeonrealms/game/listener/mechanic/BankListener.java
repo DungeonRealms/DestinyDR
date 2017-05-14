@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
@@ -119,6 +120,7 @@ public class BankListener implements Listener {
     }
 
     private boolean canItemBeStored(ItemStack item) {
+        if(item == null)return true;
         if(ItemManager.isItemSoulbound(item)) return true;
         if(ItemMoney.isMoney(item)) return false;
         return ItemManager.isItemTradeable(item);
@@ -128,6 +130,11 @@ public class BankListener implements Listener {
     public void handleBankClick(InventoryClickEvent evt) {
         if (!evt.getInventory().getTitle().equalsIgnoreCase("Bank Chest"))
             return;
+        if(DungeonRealms.getInstance().isAlmostRestarting()){
+            evt.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling " + evt.getWhoClicked().getName() + " click due to restart...");
+            return;
+        }
         Player player = (Player) evt.getWhoClicked();
         evt.setCancelled(true);
         if (evt.getRawSlot() < 9) {
@@ -251,31 +258,41 @@ public class BankListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handleStorageClick(InventoryClickEvent evt) {
-        if (!evt.getInventory().getTitle().equalsIgnoreCase("Storage Chest"))
+        if (!evt.getInventory().getTitle().equalsIgnoreCase("Storage Chest") && !evt.getInventory().getTitle().equalsIgnoreCase("Mule Storage"))
             return;
 
+        boolean muleStorage = evt.getInventory().getTitle().equalsIgnoreCase("Mule Storage");
+        //No thanks..
+        if(DungeonRealms.getInstance().isAlmostRestarting()){
+            evt.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling " + evt.getWhoClicked().getName() + " click due to restart...");
+            return;
+        }
         Inventory inv = evt.getInventory();
         int slot = evt.getRawSlot();
         ItemStack attemptAdd = null;
         InventoryAction action = evt.getAction();
 
+        boolean bottomInventory = false;
         if (evt.isShiftClick() && slot >= inv.getSize()) {
             attemptAdd = evt.getCurrentItem();
-        } else if (slot < inv.getSize()) {
+        } else if (bottomInventory = slot < inv.getSize()) {
+            //Clicking below
+
+            //Item we are placing down into OUR inventory?
             attemptAdd = evt.getCursor();
             if (action == InventoryAction.HOTBAR_MOVE_AND_READD || action == InventoryAction.HOTBAR_SWAP)
                 attemptAdd = evt.getView().getBottomInventory().getItem(evt.getHotbarButton());
         }
 
-        if (attemptAdd == null || !canItemBeStored(attemptAdd)) {
+        if (!canItemBeStored(attemptAdd)) {
             evt.setCancelled(true);
             evt.setResult(Event.Result.DENY);
-
             return;
         }
         Bukkit.getLogger().info("Can be stored: " + canItemBeStored(attemptAdd) + " for " + attemptAdd);
 
-        if (ItemMoney.isMoney(attemptAdd))
+        if (ItemMoney.isMoney(attemptAdd) && !muleStorage)
             handleMoneyDeposit(evt);
     }
 

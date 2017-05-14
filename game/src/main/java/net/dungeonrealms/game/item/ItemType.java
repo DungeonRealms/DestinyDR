@@ -46,7 +46,7 @@ public enum ItemType {
 	REALM_CHEST("realmChest", ItemRealmChest.class),
 	GUILD_BANNER("guildBanner", ItemGuildBanner.class),
 	SHOP("shopItem", ShopItem.class),
-	MOUNT_SELECTOR("mountSelect", ItemMountSelector.class),
+//	MOUNT_SELECTOR("mountSelect", ItemMountSelector.class),
 	MOUNT_SKIN_SELECTOR("mountSkinSel", ItemMountSkin.class),
 	
 	//  ORBS  //

@@ -27,34 +27,48 @@ public class ShopAnimalTamer extends GUIMenu {
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         for (HorseTier horse : HorseTier.values()) {
             List<String> lore = Lists.newArrayList();
-            lore.add(ChatColor.ITALIC + horse.getDescription());
+            EnumMounts mount = horse == HorseTier.MULE ? EnumMounts.MULE : horse.getMount();
+            if (mount.name().contains("HORSE")) {
+                lore.add(ChatColor.RED + "Speed: " + horse.getSpeed() + "%");
+                if (horse.getJump() > 100)
+                    lore.add(ChatColor.RED + "Jump: " + horse.getJump() + "%");
+            }
+
+            lore.add("");
+            lore.addAll(horse.getDescription());
 
             HorseTier req = horse.getRequirement();
 
             if (req != null)
-                lore.add(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + req.getName());
+                lore.add(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + req.getNameWithColor());
 
-            lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + horse.getPrice() + "g");
-            setItem(horse == HorseTier.MULE ? 9 : index++, new GUIItem(horse.getMount().getSelectionItem())
-                    .setLore(lore).setName(horse.getColor() + horse.getName()).setClick(e -> {
-                if (pw.getGems() < horse.getPrice()) {
-                    player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
-                    return;
-                }
+            lore.add("");
+            if (pw.getMountsUnlocked().contains(mount)) {
+                lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED");
+            } else {
+                lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + horse.getPrice() + "g");
+            }
+            setItem(horse == HorseTier.MULE ? 9 : index++, new GUIItem(mount.getSelectionItem())
+                    .setLore(lore).setName(horse.getNameWithColor()).setClick(e -> {
 
-                if (pw.getMountsUnlocked().contains(horse.getMount())) {
-                    player.sendMessage(ChatColor.RED + "You already own this mount!");
-                    return;
-                }
+                        if (pw.getMountsUnlocked().contains(mount)) {
+                            player.sendMessage(ChatColor.RED + "You already own this mount!");
+                            return;
+                        }
 
-                if (!MountUtils.hasMountPrerequisites(horse.getMount(), pw.getMountsUnlocked())) {
-                    player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
-                    return;
-                }
 
-                pw.withdrawGems(horse.getPrice());
-                buyMount(player, horse.getMount());
-            }));
+                        if (pw.getGems() < horse.getPrice()) {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
+                            return;
+                        }
+                        if (!MountUtils.hasMountPrerequisites(mount, pw.getMountsUnlocked())) {
+                            player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
+                            return;
+                        }
+
+                        pw.withdrawGems(horse.getPrice());
+                        buyMount(player, mount);
+                    }));
         }
     }
 

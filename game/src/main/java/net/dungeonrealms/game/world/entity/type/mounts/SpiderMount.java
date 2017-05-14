@@ -46,6 +46,10 @@ public class SpiderMount extends EntitySpider implements JumpingMount {
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
+        if(!isVehicle()){
+            die();
+            return;
+        }
     	float[] motion = MountUtils.handleMountLogic(this, this.player);
     	if (motion == null)
     		return;

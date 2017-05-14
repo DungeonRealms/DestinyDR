@@ -44,6 +44,9 @@ public class Utils {
         return dateFormat.format(new Date(time));
     }
 
+    public static String translate(String string){
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
     public static void printTrace() {
         StackTraceElement trace = new Exception().getStackTrace()[2];
 

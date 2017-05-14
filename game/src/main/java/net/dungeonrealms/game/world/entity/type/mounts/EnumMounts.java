@@ -28,17 +28,17 @@ public enum EnumMounts {
     TIER2_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.IRON_BARDING, 1), 0, 2),
     TIER3_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.DIAMOND_BARDING, 1), 0, 3),
     TIER4_HORSE(HorseMount.class, EntityType.HORSE, new ItemStack(Material.GOLD_BARDING, 1), 0, 4),
-    MULE(null, EntityType.HORSE, new ItemStack(Material.CHEST, 1), 0, HorseTier.MULE.getName(), ChatColor.YELLOW), //This is a bukkit entity, not a custom one. It has a special case :( in MountUtils
+    MULE(null, EntityType.HORSE, new ItemStack(Material.LEASH, 1), 0, HorseTier.MULE.getName(), ChatColor.GREEN), //This is a bukkit entity, not a custom one. It has a special case :( in MountUtils
 
     WOLF(WolfMount.class, EntityType.WOLF, new ItemStack(Material.BONE, 1), 0, "Wolf Mount",
             new MountData("Wolf", ChatColor.WHITE, 0.245F, 140,
-                    "A ferocious beast, said to have", "slept at the side of Mayel The Cruel."), 5, ChatColor.YELLOW),
+                    "A ferocious beast, said to have", "slept at the side of Mayel The Cruel."), 5, ChatColor.WHITE),
 
     SLIME(SlimeMount.class, EntityType.SLIME, new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount",
-            new MountData("Slime", ChatColor.GREEN, 0.35F, 170, "A quick slime found deep", "in the Varenglade Ruins"), 3, ChatColor.YELLOW),
+            new MountData("Slime", ChatColor.GREEN, 0.35F, 170, "A quick slime found deep", "in the Varenglade Ruins"), 3, ChatColor.AQUA),
 
     SPIDER(SpiderMount.class, EntityType.SPIDER, new ItemStack(Material.STRING, 1), 0, "Spider Mount",
-            new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, 190), 5, ChatColor.YELLOW);
+            new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, 190), 5, ChatColor.LIGHT_PURPLE);
 
 
     private Class<? extends EntityInsentient> clazz;

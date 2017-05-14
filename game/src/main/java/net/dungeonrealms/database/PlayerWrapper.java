@@ -1190,6 +1190,11 @@ public class PlayerWrapper {
         return mounts.stream().filter(mount -> mount.getHorseTier() != null && getMountsUnlocked().contains(mount)).findFirst().orElse(null);
     }
 
+    public MuleTier getMuleTier() {
+        MuleTier tier = MuleTier.getByTier(getMuleLevel());
+        return tier == null ? MuleTier.OLD : tier;
+    }
+
     public void saveFriends(boolean async, Consumer<Boolean> afterSave) {
         if (friendsList.size() == 0 && ignoredFriends.size() == 0 && pendingFriends.size() == 0) return;
         if (async && Bukkit.isPrimaryThread()) {

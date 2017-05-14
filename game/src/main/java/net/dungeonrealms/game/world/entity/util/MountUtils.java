@@ -96,6 +96,7 @@ public class MountUtils {
 
             MuleTier tier = MuleTier.getByTier(Math.min(pw.getMuleLevel(), MuleTier.values().length));
 
+            mule.setLeashHolder(player);
             mule.setCustomName(tier.getColor() + player.getName() + "'s " + tier.getName());
             mule.setCustomNameVisible(true);
             player.closeInventory();

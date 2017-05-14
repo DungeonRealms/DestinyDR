@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -23,11 +22,11 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -40,11 +39,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -62,19 +57,19 @@ import java.util.UUID;
 public class RestrictionListener implements Listener {
 
     private static CooldownProvider ANTI_COMMAND_SPAM = new CooldownProvider();
-    
+
     public static boolean canPlayerUseItem(Player p, ItemStack item) {
-    	if(!ItemGear.isCustomTool(item))
-    		return true;
-    	ItemGear gear = (ItemGear)PersistentItem.constructItem(item);
-    	
-    	if(!canPlayerUseTier(p, gear.getTier())) {
-    		p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
+        if (!ItemGear.isCustomTool(item))
+            return true;
+        ItemGear gear = (ItemGear) PersistentItem.constructItem(item);
+
+        if (!canPlayerUseTier(p, gear.getTier())) {
+            p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                     + gear.getTier().getLevelRequirement() + " to use this weapon.");
-    		return false;
-    	}
-    	
-    	return true;
+            return false;
+        }
+
+        return true;
     }
 
     public static boolean canPlayerUseTier(Player p, ItemTier tier) {
@@ -114,10 +109,10 @@ public class RestrictionListener implements Listener {
         for (ItemStack is : p.getInventory().getArmorContents()) {
             if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
                 continue;
-         
+
             if (!p.isOnline())
-            	return;
-            
+                return;
+
             if (!canPlayerUseItem(p, is)) {
                 hadIllegalArmor = true;
                 GameAPI.giveOrDropItem(p, GameAPI.removeArmor(p, is));
@@ -196,9 +191,9 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityHangingBreak(HangingBreakByEntityEvent event) {
-        if (!(event.getRemover() instanceof Player) || 
-        		(GameAPI.isMainWorld(event.getEntity().getWorld()) && !Rank.isTrialGM((Player) event.getRemover())))
-        	event.setCancelled(true);
+        if (!(event.getRemover() instanceof Player) ||
+                (GameAPI.isMainWorld(event.getEntity().getWorld()) && !Rank.isTrialGM((Player) event.getRemover())))
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -279,14 +274,14 @@ public class RestrictionListener implements Listener {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
         if (!ItemWeapon.isWeapon(i))
-        	return;
-        
-        if(!canPlayerUseItem(p, i)) {
-        	event.setCancelled(true);
-        	p.updateInventory();
-        	return;
+            return;
+
+        if (!canPlayerUseItem(p, i)) {
+            event.setCancelled(true);
+            p.updateInventory();
+            return;
         }
-        
+
         // Play the noise.
         p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
     }
@@ -315,8 +310,8 @@ public class RestrictionListener implements Listener {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             ItemStack held = player.getEquipment().getItemInMainHand();
-            if(ItemWeapon.isWeapon(held)) {
-            	if (!canPlayerUseItem(player, held)) {
+            if (ItemWeapon.isWeapon(held)) {
+                if (!canPlayerUseItem(player, held)) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
@@ -398,23 +393,23 @@ public class RestrictionListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void checkPickup(PlayerPickupItemEvent event) {
-    	Player p = event.getPlayer();
+        Player p = event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(p);
         if ((gp != null && !gp.isAbleToDrop()) || shouldBlock(p) || Metadata.NO_PICKUP.has(event.getItem()))
             event.setCancelled(true);
     }
-    
+
     /**
      * Prevents items that can't be picked up from going into hoppers.
      */
     @EventHandler
     public void onHopperPickup(InventoryPickupItemEvent event) {
-        if(event.getItem() != null && Metadata.NO_PICKUP.has(event.getItem()))
+        if (event.getItem() != null && Metadata.NO_PICKUP.has(event.getItem()))
             event.setCancelled(true);
     }
-    
+
     private boolean shouldBlock(Player p) {
-    	return Metadata.SHARDING.has(p) || DungeonRealms.getInstance().getLoggingOut().contains(p.getName()) || CrashDetector.crashDetected;
+        return Metadata.SHARDING.has(p) || DungeonRealms.getInstance().getLoggingOut().contains(p.getName()) || CrashDetector.crashDetected;
     }
 
     @EventHandler
@@ -448,8 +443,20 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttackHorse(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;
-        if (GameAPI.isInSafeRegion(event.getEntity().getLocation()) && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile))
-            return;
+        if (GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
+            if (event.getDamager() instanceof Projectile) return;
+            if (event.getDamager() instanceof Player) {
+
+                //Check if its ours?
+                //Remove?
+                Player damager = (Player) event.getDamager();
+                Entity currentMount = MountUtils.getMounts().get(damager);
+                if (currentMount != null && currentMount.equals(event.getEntity())) {
+                    MountUtils.removeMount(damager);
+                }
+                return;
+            }
+        }
         Horse horse = (Horse) event.getEntity();
         LivingEntity passenger = (LivingEntity) horse.getPassenger();
         horse.eject();
@@ -463,9 +470,9 @@ public class RestrictionListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
-    	if (!(event.getEntity() instanceof LivingEntity))
-    		return;
-    	
+        if (!(event.getEntity() instanceof LivingEntity))
+            return;
+
         Entity damager = event.getDamager();
         Entity receiver = event.getEntity();
         boolean isAttackerPlayer = false;
@@ -574,7 +581,7 @@ public class RestrictionListener implements Listener {
 
             PlayerWrapper damagerWrapper = PlayerWrapper.getPlayerWrapper(pDamager);
             if (!damagerWrapper.getToggles().getState(Toggles.PVP)) {
-            	damagerWrapper.sendDebug(ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                damagerWrapper.sendDebug(ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();
@@ -589,7 +596,7 @@ public class RestrictionListener implements Listener {
                 pReceiver.updateInventory();
                 return;
             }
-            
+
             if (GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
