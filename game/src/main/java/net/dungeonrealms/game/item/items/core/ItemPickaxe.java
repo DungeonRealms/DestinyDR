@@ -31,7 +31,14 @@ public class ItemPickaxe extends ProfessionItem {
 	public void onLevelUp(Player p) {
 		Achievements.giveAchievement(p, MiningTier.getTierByLevel(getLevel()).getAchievement());
 	}
-	
+
+	@Override
+	public void updateItem() {
+		MiningTier tier = MiningTier.getTierFromPickaxe(this);
+		this.setCustomDisplayName(tier == null ? "Error" : tier.getItemName(this));
+		super.updateItem();
+	}
+
 	/**
 	 * Returns the chance of the ore breaking.
 	 */

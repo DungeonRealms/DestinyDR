@@ -307,6 +307,7 @@ public abstract class ItemGeneric extends PersistentItem {
     }
 
     protected void clearLore() {
+        if(this.lore != null)
         this.lore.clear();
     }
 

@@ -43,6 +43,11 @@ public class CommandTrade extends BaseCommand {
             return true;
         }
 
+        if(player.getLocation().getWorld() != other.getLocation().getWorld()) {
+            player.sendMessage("This player is too far away!");
+            return true;
+        }
+
         if(player.getLocation().distanceSquared(other.getLocation()) > 10) {
             player.sendMessage("This player is too far away!");
             return true;

@@ -185,7 +185,6 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-        player.setResourcePack(Constants.RESOURCE_PACK);
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);

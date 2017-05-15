@@ -500,7 +500,7 @@ public class PlayerWrapper {
         if (this.petsUnlocked.isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
 
-        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + data.isUnlocked()).append(","));
+        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + (data != null && data.isUnlocked())).append(","));
 
         return builder.toString();
     }

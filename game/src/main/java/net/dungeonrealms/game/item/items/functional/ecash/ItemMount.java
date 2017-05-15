@@ -155,7 +155,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
         if (horseTier.getJump() > 100) {
             lore.add(ChatColor.RED + "Jump: " + horseTier.getJump() + "%");
         }
-        lore.add(ChatColor.GRAY + ChatColor.ITALIC.toString() + horseTier.getDescription());
+        lore.addAll(horseTier.getDescription());
         return lore.toArray(new String[lore.size()]);
     }
 

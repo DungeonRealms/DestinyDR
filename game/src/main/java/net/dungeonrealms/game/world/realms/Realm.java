@@ -8,7 +8,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -28,7 +27,6 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
@@ -548,10 +546,9 @@ public class Realm {
             }
 
             return false;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if (fos != null) fos.close();
             FileUtils.forceDelete(tempLocation);
 
@@ -644,6 +641,41 @@ public class Realm {
         }
     }
 
+    public void sendInformation(Player player) {
+        PlayerWrapper realmOwner = PlayerWrapper.getPlayerWrapper(player);
+        if (realmOwner == null) return;
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "This portal teleports to " + ChatColor.BOLD + realmOwner.getDisplayName() + "'s" + ChatColor.LIGHT_PURPLE + " Realm");
+
+        if (!isChaotic()) {
+
+            boolean flight = getProperty("flight");
+
+            int safeSeconds = getSecondsOfSafezoneLeft();
+            int flySeconds = getSecondsOfFlyingLeft();
+
+            if (flight) {
+                player.sendMessage(ChatColor.GRAY.toString() + "Realm Type: " + ChatColor.GREEN + "SAFE" +
+                        (safeSeconds > 1 ? ChatColor.GRAY + " for " + safeSeconds + "s" : "") + " │ " + ChatColor.GRAY + "Flying " + ChatColor.AQUA + "" + ChatColor.UNDERLINE
+                        + "ENABLED" + (flySeconds > 1 ? ChatColor.GRAY + " for " + flySeconds + "s" : ""));
+            } else {
+                player.sendMessage(ChatColor.GRAY.toString() + "Realm Type: " + ChatColor.GREEN + "SAFE" + (safeSeconds > 1 ? ChatColor.GRAY + "for "
+                        + safeSeconds + "s" : ""));
+            }
+        } else {
+            player.sendMessage(ChatColor.GRAY.toString() + "Realm Type: " + ChatColor.RED + "CHAOTIC");
+        }
+
+        if (getWorld() != null) {
+            player.sendMessage(ChatColor.GRAY + "Realm Population: " + getWorld().getPlayers().size() + " player(s)");
+        }
+
+        if (getTitle() != null && !getTitle().trim().equalsIgnoreCase("null")) {
+            player.sendMessage(ChatColor.GRAY + getTitle());
+        } else {
+            player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "No description.");
+        }
+    }
+
     /**
      * Setup realm before opening.
      */
@@ -676,6 +708,22 @@ public class Realm {
         world.getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
 
         Utils.log.info("[REALM] Finished setting up " + getName() + "'s realm.");
+    }
+
+    public int getSecondsOfSafezoneLeft() {
+        RealmProperty<Boolean> peaceful = (RealmProperty<Boolean>) getRealmProperties().get("peaceful");
+        if (peaceful == null || peaceful.hasExpired()) return 0;
+        long o_time = peaceful.getExpiry();
+        long seconds_left = (o_time - System.currentTimeMillis()) / 1000;
+        return (int) seconds_left;
+    }
+
+    public int getSecondsOfFlyingLeft() {
+        RealmProperty<Boolean> flight = (RealmProperty<Boolean>) getRealmProperties().get("flight");
+        if (flight == null || flight.hasExpired()) return 0;
+        long o_time = flight.getExpiry();
+        long seconds_left = (o_time - System.currentTimeMillis()) / 1000;
+        return (int) seconds_left;
     }
 
     /**

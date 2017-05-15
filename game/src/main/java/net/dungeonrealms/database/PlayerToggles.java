@@ -66,7 +66,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
     	DUEL("dueling_enabled", "duel","Toggles dueling requests", "Dueling Requests"),
     	CHAOTIC_PREVENTION("chaotic_prevention_enabled", "chaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
     	//SOUNDTRACK("sound", "Toggles the DungeonRealms Soundtrack.", "Soundtrack"),
-    	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display."),
+    	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display"),
     	GLOW("glowEnabled", "glow","Toggles rare items glowing.", "Item Glow"),
     	DAMAGE_INDICATORS("dmgIndicators","indicators", "Toggles floating damage values.", "Damage Indicators"),
 

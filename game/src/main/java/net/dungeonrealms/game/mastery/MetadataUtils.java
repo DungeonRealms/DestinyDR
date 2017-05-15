@@ -74,7 +74,8 @@ public class MetadataUtils {
 		SPAWN_TYPE(null),
 		
 		// General
-		TIER(-1);
+		TIER(-1),
+		PORTAL_COOLDOWN(-1);
 		
 		private Object defaultValue;
 		

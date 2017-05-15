@@ -188,6 +188,10 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "Leave your party"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll "
                 + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/trade "
+                + "\n" + ChatColor.BLACK.toString() + "Allows you to trade with a person near you."
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/vote "
+                + "\n" + ChatColor.BLACK.toString() + "Allows you to vote for eCash!"
         );
 
 
@@ -321,8 +325,10 @@ public class ItemManager {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(name);
         List<String> l = new ArrayList<>();
-        for (String s : lore)
-            l.add(ChatColor.GRAY + s);
+        if(lore != null) {
+            for (String s : lore)
+                l.add(ChatColor.GRAY + s);
+        }
         meta.setLore(l);
         stack.setItemMeta(meta);
         return stack;

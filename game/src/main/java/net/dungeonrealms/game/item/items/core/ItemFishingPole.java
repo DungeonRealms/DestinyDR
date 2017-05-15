@@ -29,6 +29,8 @@ public class ItemFishingPole extends ProfessionItem {
 	
 	@Override
 	public void updateItem() {
+		FishingTier tier = FishingTier.getTierByLevel(getLevel());
+		setCustomDisplayName(tier == null ? "Error" : tier.getItemName(this));
 		getMeta().addEnchant(Enchantment.LURE, 3, false);
         getItem().addEnchantment(Enchantment.LURE, 3);
 		super.updateItem();

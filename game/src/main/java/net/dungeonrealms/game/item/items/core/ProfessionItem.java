@@ -55,6 +55,7 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	@Override
 	public void updateItem() {
+		clearLore();
 		setTagInt("level", getLevel());
 		setTagInt("xp", getXP());
 		addLore();
@@ -78,12 +79,16 @@ public abstract class ProfessionItem extends ItemGear {
 	//Adds the level lore.
 	private void addLore() {
 		// Generate XP bar
-		String expBar = ChatColor.RED + "||||||||||||||||||||||||||||||||||||||||||||||||||";
+		String expBar = "||||||||||||||||||||||||||||||||||||||||||||||||||";
 		double percentDone = (100.0 * getXP()) / getNeededXP();
         int display = (int) (percentDone / 2D);
         display = Math.max(1, Math.min(display, 50));
-		String formattedXPBar = ChatColor.GREEN + expBar.substring(0, display) + ChatColor.RED + expBar.substring(display, expBar.length());
-        
+		String formattedXPBar;
+		if(percentDone == 0) {
+			formattedXPBar = ChatColor.RED + expBar;
+		} else {
+			formattedXPBar = ChatColor.GREEN + expBar.substring(0, display) + ChatColor.RED + expBar.substring(display, expBar.length());
+		}
 		// Add Lore
 		addLore("Level: " + getTier().getColor() + getLevel());
         addLore(getXP() + " / " + getNeededXP());
@@ -149,7 +154,7 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	@Override
 	public ItemTier getTier() {
-		return ItemTier.getByTier(Math.max(ItemTier.values().length, (getLevel() / 20) + 1));
+		return ItemTier.getByTier(Math.max(1, (getLevel() / 20) + 1));
 	}
 	
 	/**
