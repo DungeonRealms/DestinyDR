@@ -59,6 +59,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
     public void onClick(ItemClickEvent evt) {
         //In world right clicked?
         evt.setCancelled(true);
+        evt.getPlayer().updateInventory();
     }
 
     private static final int MAX_LENGTH = 20;

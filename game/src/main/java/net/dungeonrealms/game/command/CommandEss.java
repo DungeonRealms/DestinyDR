@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
@@ -60,7 +61,11 @@ public class CommandEss extends BaseCommand {
         }
 
         if (args.length > 0) {
+
             switch (args[0]) {
+                case "pack":
+                    ((Player) commandSender).setResourcePack(Constants.RESOURCE_PACK);
+                    break;
                 case "currencytab":
                 case "scraptab":
 

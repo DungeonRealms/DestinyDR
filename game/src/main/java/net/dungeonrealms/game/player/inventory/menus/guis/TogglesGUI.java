@@ -23,8 +23,8 @@ public class TogglesGUI extends GUIMenu {
                 continue;
             boolean toggle = wrapper.getToggles().getState(t);
 
-            setItem(i++, new GUIItem(ItemManager.createItem(Material.INK_SACK, (short) (toggle ? 10 : 8), (toggle ? ChatColor.GREEN : ChatColor.RED) + "/" + t.getCommand()))
-                    .setLore(t.getDescription())
+            setItem(i++, new GUIItem(ItemManager.createItem(Material.INK_SACK, (short) (toggle ? 10 : 8), (toggle ? ChatColor.GREEN : ChatColor.RED) + ChatColor.BOLD.toString() + t.getDisplayName()))
+                    .setLore(ChatColor.GRAY + t.getDescription(),"", ChatColor.YELLOW + ChatColor.BOLD.toString() + "Click to " + (toggle ? ChatColor.RED + ChatColor.BOLD.toString() + "DISABLE" : ChatColor.GREEN + ChatColor.BOLD.toString() + "ENABLE"), ChatColor.YELLOW + "Or use /" + t.getCommand())
                     .setClick(e -> {
                         wrapper.getToggles().toggle(t);
                         setItems();

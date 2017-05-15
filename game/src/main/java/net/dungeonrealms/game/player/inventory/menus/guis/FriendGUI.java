@@ -30,7 +30,7 @@ public class FriendGUI extends GUIMenu {
 
 
         if (showFriends) {
-            setItem(0, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back",
+            setItem(getSize() - 1, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to go back!")).setClick(e -> {
                 showFriends = false;
                 clear();

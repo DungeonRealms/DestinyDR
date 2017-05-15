@@ -21,10 +21,12 @@ public class AchievementGUI extends GUIMenu {
 
         int i = 0;
         for (Achievements.AchievementCategory cat : Achievements.AchievementCategory.values()) {
-            setItem(i++, new GUIItem(ItemManager.createItem(cat.getIcon(), ChatColor.GOLD + cat.getName(),
+            setItem(i++, new GUIItem(ItemManager.createItem(cat.getIcon(), ChatColor.GOLD + ChatColor.BOLD.toString() + cat.getName(),
                     "",
-                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to " + cat.getDescription() + ".", "")).setClick(e -> {
-                new AchievementMenu(player, cat);
+                    ChatColor.GRAY.toString() + "View achievements related to " + cat.getDescription() + ".")).setClick(e -> {
+                player.closeInventory();
+                AchievementMenu gui = new AchievementMenu(player, cat,this);
+                gui.open(player,null);
                 player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, .3F, 1.8F);
             }));
         }

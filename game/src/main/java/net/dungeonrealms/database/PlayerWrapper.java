@@ -1143,6 +1143,9 @@ public class PlayerWrapper {
         if (this.pendingMuleInventory != null)
             MountUtils.getInventories().put(uuid, pendingMuleInventory);
 
+        if (this.activeTrail != null) {
+            setActiveTrail(this.activeTrail);
+        }
     }
 
     public void loadPlayerInventory(Player player) {
@@ -1186,8 +1189,18 @@ public class PlayerWrapper {
 
     public EnumMounts getHighestHorseUnlocked() {
         List<EnumMounts> mounts = Lists.newArrayList(EnumMounts.values());
-        Collections.reverse(mounts);
-        return mounts.stream().filter(mount -> mount.getHorseTier() != null && getMountsUnlocked().contains(mount)).findFirst().orElse(null);
+        EnumMounts currentHighest = null;
+        for (EnumMounts mount : mounts) {
+            if (mount.getHourseTierNumber() <= 0) continue;
+            if (!getMountsUnlocked().contains(mount)) continue;
+            if (currentHighest == null) {
+                currentHighest = mount;
+                continue;
+            }
+            if (mount.getHourseTierNumber() <= currentHighest.getHourseTierNumber()) continue;
+            currentHighest = mount;
+        }
+        return currentHighest;
     }
 
     public MuleTier getMuleTier() {

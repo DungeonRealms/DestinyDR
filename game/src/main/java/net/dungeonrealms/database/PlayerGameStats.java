@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import net.dungeonrealms.game.mastery.Utils;
 
@@ -105,6 +106,13 @@ public class PlayerGameStats implements LoadableData, SaveableData {
 				@Override
 				public String getReplacement(Player player) {
 					PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+					if(wrapper == null) return null;
+					if(stat.equals(TIME_PLAYED)) {
+					    int seconds = wrapper.getPlayerGameStats().getStat(stat);
+					    long hours = TimeUnit.SECONDS.toHours((long) seconds);
+					    long minutes = (seconds / 60) - (hours * 60);
+					    return hours + "H " + minutes + "M";
+                    }
                     return wrapper != null ? Utils.format(wrapper.getPlayerGameStats().getStat(stat)) : null;
 				}
         	};

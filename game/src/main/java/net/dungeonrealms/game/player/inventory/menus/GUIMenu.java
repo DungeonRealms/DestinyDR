@@ -138,6 +138,8 @@ public abstract class GUIMenu extends ShopMenu {
                         player.closeInventory();
                         return;
                     }
+                    setShouldOpenPreviousOnClose(false);
+                    player.closeInventory();
                     getPreviousGUI().open(player, null);
                 });
     }
@@ -147,7 +149,6 @@ public abstract class GUIMenu extends ShopMenu {
         if (isShouldOpenPreviousOnClose()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 getPreviousGUI().open(player, null);
-                Bukkit.getLogger().info("Opening on close!");
             });
         }
     }

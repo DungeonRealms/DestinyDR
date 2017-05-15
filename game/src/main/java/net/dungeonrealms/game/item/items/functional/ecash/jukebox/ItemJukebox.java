@@ -109,6 +109,11 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                     player.sendMessage(ChatColor.GRAY + "You can find it at these coordinates: " + ChatColor.BOLD + l.getBlockX() + "x " + l.getBlockY() + "y " + l.getBlockZ() + "z");
                     return;
                 }
+
+                if(player.getWorld() != Bukkit.getWorlds().get(0)) {
+                    player.sendMessage(ChatColor.RED + "You can only use this in Andalucia!");
+                    return;
+                }
                 //can be placed?
                 //Open menu?
                 MobileJukebox closest = getNearbyJukebox(block.getLocation());

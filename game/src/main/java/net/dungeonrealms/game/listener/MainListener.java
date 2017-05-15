@@ -185,6 +185,7 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+        player.setResourcePack(Constants.RESOURCE_PACK);
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
@@ -213,6 +214,8 @@ public class MainListener implements Listener {
                 }
             }
         });
+
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -418,6 +421,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if(player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
@@ -425,11 +429,10 @@ public class MainListener implements Listener {
 
             if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m)) {
 
-                Location under = player.getLocation().subtract(0, 1, 0);
-                under.getBlock().setType(Material.GOLD_BLOCK);
+                block.setType(Material.GOLD_BLOCK);
                 DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
-                        .put(under.getBlock().getLocation(), m);
-                under.getBlock().setMetadata("time",
+                        .put(block.getLocation(), m);
+                block.setMetadata("time",
                         new FixedMetadataValue(DungeonRealms.getInstance(), 30));
             }
         }
@@ -711,6 +714,11 @@ public class MainListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
+
+        if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
+            event.setCancelled(true);
+            event.getPlayer().updateInventory();
+        }
 
 
         if (event.getPlayer().hasMetadata("mob_debug")) {

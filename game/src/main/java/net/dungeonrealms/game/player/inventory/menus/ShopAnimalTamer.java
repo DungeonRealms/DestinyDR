@@ -6,6 +6,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -56,17 +57,25 @@ public class ShopAnimalTamer extends GUIMenu {
                             return;
                         }
 
-
-                        if (pw.getGems() < horse.getPrice()) {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
-                            return;
-                        }
                         if (!MountUtils.hasMountPrerequisites(mount, pw.getMountsUnlocked())) {
                             player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
                             return;
                         }
+                        boolean usedGems = false;
+                        if (pw.getGems() < horse.getPrice()) {
+                            if (BankMechanics.getGemsInInventory(player) < horse.getPrice()) { //No gems no money.
+                                player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
+                                return;
+                            } else {
+                                //Buy with this.
+                                usedGems = true;
+                                BankMechanics.takeGemsFromInventory(player, horse.getPrice());
+                            }
+                        }
 
-                        pw.withdrawGems(horse.getPrice());
+                        if (!usedGems)
+                            pw.withdrawGems(horse.getPrice());
+
                         buyMount(player, mount);
                     }));
         }

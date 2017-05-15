@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
+import net.dungeonrealms.game.player.inventory.menus.ShopECashVendor;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenProfile;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -154,7 +155,14 @@ public class PlayerProfileGUI extends GUIMenu {
                 ChatColor.GRAY + "http://dungeonrealms.net/shop",
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor."
-        )).setClick(e -> NPCMenu.ECASH_VENDOR.open(player)));
+        )).setClick(e -> {
+            player.closeInventory();
+            //NPCMenu.ECASH_VENDOR.open(player)
+            ShopECashVendor gui = new ShopECashVendor(player);
+            gui.setPreviousGUI(this);
+            gui.setShouldOpenPreviousOnClose(true);
+            gui.open();
+        }));
 
         setItem(24, new GUIItem(ItemManager.createItem(Material.COMPASS, ChatColor.GOLD + "Achievements",
                 "",

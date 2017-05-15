@@ -57,18 +57,18 @@ public class PlayerToggles implements LoadableData, SaveableData {
 
     @AllArgsConstructor
     public enum Toggles {
-    	DEBUG("debug_enabled", "Toggles displaying combat debug messages", "Debug Messages"),
-    	TRADE("trading_enabled", "Toggles trading requests.", "Trade"),
+    	DEBUG("debug_enabled", "debug","Toggles displaying combat debug messages", "Debug Messages"),
+    	TRADE("trading_enabled", "trade","Toggles trading requests.", "Trade"),
     	TRADE_CHAT("trade_chat_enabled", "tradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
     	GLOBAL_CHAT("default_global_chat", "globalchat", "Toggles talking only in global chat.", "Global Chat"),
     	ENABLE_PMS("pms_enabled", "tells", "Toggles receiving NON-BUD /tell.", "NON-BUD Private Messages."),
-    	PVP("pvp_enabled", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
-    	DUEL("dueling_enabled", "Toggles dueling requests", "Dueling Requests"),
+    	PVP("pvp_enabled", "pvp","Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
+    	DUEL("dueling_enabled", "duel","Toggles dueling requests", "Dueling Requests"),
     	CHAOTIC_PREVENTION("chaotic_prevention_enabled", "chaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
     	//SOUNDTRACK("sound", "Toggles the DungeonRealms Soundtrack.", "Soundtrack"),
-    	TIPS("tips_enabled", "Toggles the receiving of informative tips.", "Tip Display."),
-    	GLOW("glowEnabled", "Toggles rare items glowing.", "Item Glow"),
-    	DAMAGE_INDICATORS("dmgIndicators", "floatdamage", "Toggles floating damage values.", "Damage Indicators"),
+    	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display."),
+    	GLOW("glowEnabled", "glow","Toggles rare items glowing.", "Item Glow"),
+    	DAMAGE_INDICATORS("dmgIndicators","indicators", "Toggles floating damage values.", "Damage Indicators"),
 
     	GUILD_CHAT("guild_chat", "guildchat", "Toggles talking only in guild chat.", "Guild Chat", false),
 

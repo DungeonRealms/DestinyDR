@@ -746,6 +746,9 @@ public class DamageListener implements Listener {
             }
         }
 
+        if(event.getCause().equals(DamageCause.FALL)) {
+            System.out.println("The fall damage: " + dmg);
+        }
         res.setDamage(dmg);
         HealthHandler.damageEntity(res);
     }

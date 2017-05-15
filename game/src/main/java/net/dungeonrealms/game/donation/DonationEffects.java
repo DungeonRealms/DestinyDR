@@ -220,11 +220,10 @@ public class DonationEffects implements GenericMechanic {
 
     public static boolean isGoldenCursable(Material material) {
         return material == Material.DIRT || material == Material.GRASS || material == Material.STONE
-                || material == Material.COBBLESTONE || material == Material.GRAVEL || material == Material.LOG
+                || material == Material.COBBLESTONE || material == Material.GRAVEL
                 || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
                 || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF
                 || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
-                || material == Material.SNOW_BLOCK || material == Material.CLAY || material == Material.STAINED_CLAY
-                || material == Material.WOOL;
+                || material == Material.SNOW_BLOCK || material == Material.CLAY;
     }
 }

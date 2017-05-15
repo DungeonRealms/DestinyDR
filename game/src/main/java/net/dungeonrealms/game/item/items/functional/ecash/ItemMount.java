@@ -135,7 +135,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
     public void onClick(ItemClickEvent evt) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
 
-        EnumMounts mount = horseTier.getMount();
+        EnumMounts mount = wrapper.getHighestHorseUnlocked();
         if (mount == null) {
             return;
         }

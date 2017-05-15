@@ -44,7 +44,10 @@ public class BankMechanics {
     	while (gems > 0) {
     		int give = Math.min(64, gems);
     		ItemGem gem = new ItemGem(give);
-    		GameAPI.giveOrDropItem(player, gem.generateItem());
+    		gem.setGemValue(give);
+    		ItemStack stack = gem.generateItem();
+    		stack.setAmount(give);
+    		GameAPI.giveOrDropItem(player, stack);
     		gems -= give;
         }
     }

@@ -74,6 +74,10 @@ public enum EnumMounts {
         return displayColor;
     }
 
+    public int getHourseTierNumber() {
+        return this.horseTier;
+    }
+
     public HorseTier getHorseTier() {
         if (horseTier != -1) {
             return HorseTier.values()[horseTier - 1];

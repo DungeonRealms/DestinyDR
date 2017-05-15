@@ -116,6 +116,15 @@ public class Achievements {
 		private String name;
 		private String description;
 		private Material icon;
+
+		public int getNumberOfAchievements() {
+			int toReturn = 0;
+			for(EnumAchievements achievement : EnumAchievements.values()) {
+				if(achievement.getCategory() == this) toReturn++;
+			}
+
+			return toReturn;
+		}
 	}
 
     @AllArgsConstructor @Getter
@@ -273,9 +282,10 @@ public class Achievements {
         
         public static List<EnumAchievements> getByCategory(AchievementCategory category) {
         	List<EnumAchievements> list = new ArrayList<>();
-        	for (EnumAchievements ach : values())
-        		if (ach.getCategory() == category)
-        			list.add(ach);
+        	for (EnumAchievements ach : values()) {
+				if (ach.getCategory() == category)
+					list.add(ach);
+			}
         	return list;
         }
     }
