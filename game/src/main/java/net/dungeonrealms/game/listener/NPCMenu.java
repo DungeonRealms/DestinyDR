@@ -23,7 +23,7 @@ public enum NPCMenu {
 	INNKEEPER("Innkeeper", ShopHearthstoneLocation.class, false),
 	ECASH_VENDOR("E-Cash Vendor", ShopECashVendor.class, false),
 	PET_VENDOR("Pet Vendor", PetSelectionGUI.class, false),
-	ECASH_MISC("E-Cash Miscellaneous", ShopMenuMisc.class, false),
+//	ECASH_MISC("E-Cash Miscellaneous", ShopMenuMisc.class, false),
 	SKIN_VENDOR("Skin Vendor", ShopMenuMountSkin.class, false),
 	EFFECT_VENDOR("Effect Vendor", ShopMenuParticleEffect.class, false),
 	SALES_MANAGER("Sales Manager", SalesManagerGUI.class, false);

@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.player.inventory.menus.guis;
 
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -13,7 +13,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -23,8 +22,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MountSelectionGUI extends GUIMenu {
-    public MountSelectionGUI(Player player) {
-        super(player, fitSize(EnumMounts.values().length + 2), "Mount Selection");
+
+    public MountSelectionGUI(Player player, GUIMenu previous) {
+        super(player, fitSize(EnumMounts.values().length + 2), "Mount Selection", previous);
     }
 
     @Override
@@ -35,27 +35,32 @@ public class MountSelectionGUI extends GUIMenu {
 
         Set<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
 
-        setItem(getSize() - 2, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back"))
-                .setClick(e -> PlayerMenus.openPlayerProfileMenu(player)));
+        if (this.previousGUI != null)
+            setItem(getSize() - 2, getBackButton());
+
         setItem(getSize() - 1, new GUIItem(ItemManager.createItem(Material.LEASH, ChatColor.GREEN + "Dismiss Mount"))
                 .setClick(e -> MountUtils.removeMount(player)));
 
         for (EnumMounts mounts : EnumMounts.values()) {
             AtomicBoolean unlocked = new AtomicBoolean(playerMounts.contains(mounts));
-            setItem(slot++, new GUIItem(getDisplayItem(mounts,unlocked.get())).setClick((evt) -> {
+            setItem(slot++, new GUIItem(getDisplayItem(wrapper, mounts, unlocked.get())).setClick((evt) -> {
                 if (!unlocked.get()) {
                     player.sendMessage(ChatColor.RED + "You do " + ChatColor.BOLD + "NOT" + ChatColor.RED + " have access to this mount!");
                     return;
                 }
 
-                if(evt.getClick() == ClickType.LEFT) {
-                    MountUtils.spawnMount(player, mounts, wrapper.getActiveMountSkin());
+                if (evt.getClick() == ClickType.LEFT) {
+                    //Need to go through attemptSummon for proper checks.
+                    wrapper.setActiveMount(mounts);
+
+                    String name = mounts == EnumMounts.MULE ? wrapper.getMuleTier().getName() : mounts.getDisplayName();
+                    ItemMount.attemptSummonMount(player, name);
                 }
             }));
         }
     }
 
-    public ItemStack getDisplayItem(EnumMounts mount, boolean unlocked) {
+    public ItemStack getDisplayItem(PlayerWrapper wrapper, EnumMounts mount, boolean unlocked) {
         MountData data = mount.getMountData();
         Material mat = mount.getSelectionItem().getType();
         String name = mount.getDisplayName();
@@ -63,22 +68,25 @@ public class MountSelectionGUI extends GUIMenu {
 
         ItemStack toReturn = new ItemStack(mat);
         ItemMeta stackMeta = toReturn.getItemMeta();
-        stackMeta.setDisplayName(ChatColor.BOLD.toString() + displayColor + name);
+        stackMeta.setDisplayName(displayColor + (mount == EnumMounts.MULE ? wrapper.getMuleTier().getName() : name));
         List<String> lore = new ArrayList<>();
-        if(data != null) {
-            lore.add(ChatColor.RED + "Speed: " + data.getSpeedPercent());
-            lore.add(ChatColor.RED + "Jump: 100%");
+        if (data != null) {
+            lore.add(ChatColor.RED + "Speed: " + data.getSpeedPercent() + "%");
+//            lore.add(ChatColor.RED + "Jump: 100%");
             lore.addAll(data.getLore());
         } else {
             HorseTier tier = HorseTier.getByMount(mount);
-            if(tier != null) {
+            if (tier != null) {
                 lore.add(ChatColor.RED + "Speed: " + tier.getSpeed() + "%");
-                lore.add(ChatColor.RED + "Jump: " + tier.getJump() + "%");
-                lore.add(ChatColor.GRAY + tier.getDescription());
-            } else {
-                lore.add("ERROR");
+                if (tier.getJump() > 100)
+                    lore.add(ChatColor.RED + "Jump: " + tier.getJump() + "%");
+                lore.addAll(tier.getDescription());
+            }else{
+                //Storage mule I guess?
+                lore.addAll(HorseTier.MULE.getDescription(wrapper.getMuleTier()));
             }
         }
+        lore.add("");
         lore.add(unlocked ? ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "UNLOCKED" : ChatColor.RED.toString() + ChatColor.BOLD.toString() + "LOCKED");
         stackMeta.setLore(lore);
         toReturn.setItemMeta(stackMeta);

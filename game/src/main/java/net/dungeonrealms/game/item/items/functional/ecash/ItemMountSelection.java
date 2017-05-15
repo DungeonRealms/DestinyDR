@@ -38,6 +38,6 @@ public class ItemMountSelection extends FunctionalItem implements ItemInventoryE
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         evt.setCancelled(true);
-        new MountSelectionGUI(evt.getPlayer()).open(evt.getPlayer(), evt.getEvent().getAction());
+        new MountSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction());
     }
 }

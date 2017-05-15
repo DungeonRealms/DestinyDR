@@ -28,7 +28,7 @@ public class ItemPortalRune extends FunctionalItem implements ItemClickListener 
 	
 	public ItemPortalRune(Player player) {
 		super(ItemType.PORTAL_RUNE);
-		setUntradeable(true);
+		setPermUntradeable(true);
 		this.owner = player;
 	}
 	

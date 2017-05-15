@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.affair.party;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
@@ -87,7 +88,7 @@ public class Party {
         if (this.lootMode == lootMode) return;
         this.lootMode = lootMode;
 
-        List<String> lore = Arrays.asList(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Party Loot Mode", "");
+        List<String> lore = Lists.newArrayList(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Party Loot Mode", "");
         for (String l : lootMode.getLore())
             lore.add(l.replace("{LEADER}", getOwner().getName()));
 
@@ -103,7 +104,7 @@ public class Party {
     }
 
     public List<Player> getAllMembers() {
-        List<Player> pls = Arrays.asList(getOwner());
+        List<Player> pls = Lists.newArrayList(getOwner());
         pls.addAll(getMembers());
         return pls;
     }

@@ -4,6 +4,7 @@ import net.minecraft.server.v1_9_R2.EntityHorse;
 import net.minecraft.server.v1_9_R2.EnumHorseType;
 import net.minecraft.server.v1_9_R2.World;
 
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 
 /**
@@ -29,5 +30,6 @@ public class HorseMount extends EntityHorse {
     
     public void setSkin(EnumMountSkins skin) {
     	setType(EnumHorseType.a(skin == null ? 0 : skin.getMeta()));
+    	setVariant(skin == null ? 0 : skin.getVariant().ordinal());
     }
 }

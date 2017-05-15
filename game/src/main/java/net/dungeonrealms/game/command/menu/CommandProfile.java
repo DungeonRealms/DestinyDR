@@ -1,8 +1,12 @@
 package net.dungeonrealms.game.command.menu;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.player.inventory.ShopMenu;
+import net.dungeonrealms.game.player.inventory.menus.guis.PlayerProfileGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.CategoryGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchasesGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -22,15 +26,17 @@ public class CommandProfile extends BaseCommand {
             return false;
         }
 
-        if(sender.getName().equalsIgnoreCase("ingot")) {
-            new CategoryGUI((Player)sender).open((Player)sender, null);
+        if (sender.getName().equalsIgnoreCase("ingot") || sender.getName().equalsIgnoreCase("ifamasssxd") && args.length <= 2) {
+            if(args.length == 2){
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player)sender);
+                new PendingPurchasesGUI((Player)sender, ShopMenu.fitSize(wrapper.getPendingPurchaseablesUnlocked().size() + 2)).open((Player)sender,null);
+                return true;
+            }
+            new CategoryGUI((Player) sender).open((Player) sender, null);
             return true;
         }
-        if (args.length == 0) {
-            PlayerMenus.openPlayerProfileMenu((Player) sender);
-            return true;
-        } else {
-            return true;
-        }
+        Player player = (Player)sender;
+        new PlayerProfileGUI(player).open(player, null);
+        return true;
     }
 }

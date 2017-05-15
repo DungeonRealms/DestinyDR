@@ -49,7 +49,7 @@ public enum EnumPets {
     GUARDIAN(GuardianPet.class, EntityType.GUARDIAN, Sound.ENTITY_GUARDIAN_AMBIENT, .3F, false),
     BABY_SHEEP(BabySheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT),
     RAINBOW_SHEEP(RainbowSheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT, false),
-    BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE, Sound.ENTITY_ZOMBIE_AMBIENT, false),
+    BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE, Sound.ENTITY_ZOMBIE_AMBIENT,.3F, false),
 
     // Event Pets:
     SILVERFISH(SilverfishPet.class, EntityType.SILVERFISH, Sound.ENTITY_SILVERFISH_AMBIENT, false),

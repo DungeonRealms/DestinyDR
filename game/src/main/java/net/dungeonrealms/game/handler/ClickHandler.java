@@ -33,6 +33,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.inventory.menus.AchievementMenu;
+import net.dungeonrealms.game.player.inventory.menus.guis.AchievementGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.MountSelectionGUI;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.support.Support;
@@ -280,36 +281,6 @@ public class ClickHandler {
                     player.updateInventory();
                 }
                 break;
-            case "Friend Management":
-                event.setCancelled(true);
-                if (slot >= 44) return;
-                if (slot == 1) {
-                    PlayerMenus.openFriendsMenu(player);
-                }
-                if (slot == 0) {
-                    player.sendMessage(ChatColor.GREEN + "Please enter the name of the player you would like to add...");
-                    Chat.listenForMessage(player, chat -> {
-                        Player target = Bukkit.getPlayer(chat.getMessage());
-                        if (target != null) {
-                            FriendHandler.getInstance().sendRequest(player, target);
-                            player.sendMessage(ChatColor.GREEN + "Friend request sent to " + ChatColor.BOLD + target.getName() + ChatColor.GREEN + ".");
-                        } else {
-                            player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
-                        }
-                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
-                    return;
-                }
-                FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
-                break;
-            case "Friends":
-                event.setCancelled(true);
-                if (slot >= 54) return;
-                if (slot == 0) {
-                    PlayerMenus.openFriendInventory(player);
-                    return;
-                }
-                FriendHandler.getInstance().remove(player, event.getClick(), event.getCurrentItem());
-                break;
             case "Mailbox":
                 event.setCancelled(true);
                 /*if (slot == 0) { // @todo: Enable this code when we allow sending items.
@@ -324,162 +295,6 @@ public class ClickHandler {
                 }
                 //}
                 break;
-//            case "Mount Selection":
-//                event.setCancelled(true);
-//                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null)
-//                	return;
-//                if (event.getCurrentItem().getType() == Material.BARRIER) {
-//                    PlayerMenus.openPlayerProfileMenu(player);
-//                    return;
-//                } else if (event.getCurrentItem().getType() == Material.LEASH) {
-//                	MountUtils.removeMount(player);
-//                    return;
-//                } else {
-//                	ItemMount.attemptSummonMount(player);
-//                }
-//                break;
-            case "Player Effect Selection":
-            	event.setCancelled(true);
-            	if (event.getCurrentItem().getType() == Material.BARRIER) {
-                    PlayerMenus.openPlayerProfileMenu(player);
-                    return;
-                }
-                if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
-                    if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
-                        DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.GREEN + "You have disabled your effect.");
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You don't have a player effect currently activated.");
-                    }
-                    return;
-                }
-                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack.getTag() == null || nmsStack.getTag().getString("playerTrailType") == null) {
-                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your player effect! Please inform a developer! [PTS-NBT]");
-                        player.closeInventory();
-                        return;
-                    }
-                    wrapper.setActiveTrail(ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
-                    DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
-                    player.sendMessage(ChatColor.GREEN + "The " + ChatColor.BOLD + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName().toLowerCase() + ChatColor.GREEN + " trail has been activated.");
-                }
-                break;
-            case "Profile":
-                event.setCancelled(true);
-                switch (slot) {
-                    case 0:
-                    	PlayerWrapper.getWrapper(player).getPlayerStats().openMenu(player);
-                        break;
-                    case 1:
-                        PlayerMenus.openFriendInventory(player);
-                        break;
-                    case 6:
-                        if (event.getClick() == ClickType.RIGHT)
-                        	CraftingMenu.addTrailItem(player);
-                        else
-                        	PlayerMenus.openPlayerParticleMenu(player);
-                        break;
-                    case 7:
-                        if (event.getClick() == ClickType.RIGHT)
-                        	CraftingMenu.addMountItem(player);
-                        else
-                            new MountSelectionGUI(player).open(player, event.getAction());
-                        break;
-                    case 8:
-                        if (event.getClick() == ClickType.RIGHT)
-                        	CraftingMenu.addPetItem(player);
-                        else
-                        	PlayerMenus.openPlayerPetMenu(player, event.getAction());
-                        break;
-                    case 16: {
-                        if (event.getClick() == ClickType.RIGHT)
-                        	return;
-                        
-                        Set<EnumMounts> playerMounts = wrapper.getMountsUnlocked();
-                        if (!playerMounts.contains(EnumMounts.MULE)) {
-                            player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
-                            return;
-                        }
-                        MountUtils.removeMount(player);
-                        PetUtils.removePet(player);
-                        if (CombatLog.isInCombat(player)) {
-                            player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in combat!");
-                            return;
-                        }
-                        wrapper.setActiveMount(EnumMounts.MULE);
-                        ItemMount.attemptSummonMount(player);
-                        player.closeInventory();
-                        break;
-                    }
-                    case 17:
-                        PlayerMenus.openPlayerMountSkinMenu(player);
-                        break;
-                    case 18:
-                    	NPCMenu.ECASH_VENDOR.open(player);
-                        break;
-                    case 24:
-                        PlayerMenus.openPlayerAchievementsMenu(player);
-                        break;
-                    case 26:
-                        PlayerMenus.openToggleMenu(player);
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case "Toggles":
-                event.setCancelled(true);
-                VanillaItem vi = new VanillaItem(event.getCurrentItem());
-                if (!vi.hasTag("toggle"))
-                	return;
-
-                Toggles t = Toggles.valueOf(vi.getTagString("toggle"));
-                wrapper.getToggles().toggle(t);
-                PlayerMenus.openToggleMenu(player);
-                break;
-            case "Mount Skin Selection":
-            	event.setCancelled(true);
-                if (event.getCurrentItem().getType() == Material.BARRIER) {
-                    PlayerMenus.openPlayerProfileMenu(player);
-                    return;
-                }
-                
-                if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
-                	MountUtils.removeMount(player);
-                    wrapper.setActiveMountSkin(null);
-                    return;
-                }
-                
-                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
-                    MountUtils.removeMount(player);
-                    VanillaItem vai = new VanillaItem(event.getCurrentItem());
-                    wrapper.setActiveMountSkin(EnumMountSkins.getByName(vai.getTagString("skinType")));
-                    player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed. Please re-summon your mount.");
-                }
-                break;
-            case "Achievements":
-                event.setCancelled(true);
-                if (slot == 0)
-                	PlayerMenus.openPlayerProfileMenu(player);
-                
-                if (slot > 2 && 2 + AchievementCategory.values().length > slot)
-                	new AchievementMenu(player, AchievementCategory.values()[slot - 2]);
-                break;
-            case "Exploration Achievements":
-            case "Character Achievements":
-            case "Social Achievements":
-            case "Combat Achievements":
-            case "Currency Achievements":
-            case "Realm Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
-
-
             // CUSTOMER SUPPORT @todo: Move to own class to clean up & take advantage of own methods for reusing vars.
             case "Support Tools":
                 event.setCancelled(true);

@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.item;
 
+import lombok.Setter;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,7 +14,11 @@ import org.bukkit.inventory.ItemStack;
 public abstract class PersistentItem {
 	
 	protected ItemStack item;
-	
+
+	//Custom display name
+	@Setter
+	protected String customDisplayName;
+
 	private NBTTagCompound tag;
 	
 	private boolean generating;

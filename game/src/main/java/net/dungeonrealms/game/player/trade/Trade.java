@@ -53,8 +53,8 @@ public class Trade {
         Bukkit.getPlayer(p2.getUniqueId()).closeInventory();
         p1.setCanPickupItems(false);
         p2.setCanPickupItems(false);
-        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP", null);
-        item.setDurability(DyeColor.GREEN.getDyeData());
+        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP");
+        item.setDurability(DyeColor.GRAY.getDyeData());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("status", "notready");
@@ -68,7 +68,7 @@ public class Trade {
     }
     
     public void setDividerColor(DyeColor dye){
-    	ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ", null);
+    	ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ");
     	separator.setDurability(dye.getData());
     	inv.setItem(4, separator);
         inv.setItem(13, separator);
@@ -235,8 +235,8 @@ public class Trade {
     }
 
     public void changeReady() {
-        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP", null);
-        item.setDurability(DyeColor.GRAY.getDyeData());
+        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP");
+        item.setDurability(DyeColor.LIME.getWoolData());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("status", "notready");

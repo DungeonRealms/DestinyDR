@@ -23,7 +23,7 @@ public class ItemGuildBanner extends FunctionalItem implements ItemClickListener
 	public ItemGuildBanner(GuildWrapper guild) {
 		super(ItemType.GUILD_BANNER);
 		setGuild(guild);
-		setUntradeable(true);
+		setPermUntradeable(true);
 	}
 	
 	public ItemGuildBanner(ItemStack item) {

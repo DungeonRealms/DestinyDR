@@ -84,4 +84,12 @@ public enum MiningTier {
 				return tier;
 		return null;
 	}
+
+	public static MiningTier getTierFromPickaxe(ItemPickaxe pick) {
+		Material mat = pick.getItem().getType();
+		for (MiningTier tier : values())
+			if (tier.getPickaxeType() == mat)
+				return tier;
+		return null;
+	}
 }

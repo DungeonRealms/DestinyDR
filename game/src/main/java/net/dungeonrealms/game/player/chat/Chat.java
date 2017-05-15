@@ -68,7 +68,7 @@ public class Chat {
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
 
         if (player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")) {
-//            player.closeInventory();
+            player.closeInventory();
         }
 
         if (chatListeners.remove(player) != null) {

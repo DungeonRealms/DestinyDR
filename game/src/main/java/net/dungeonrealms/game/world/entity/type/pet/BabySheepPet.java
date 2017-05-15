@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.pet;
 
+import io.netty.util.internal.ConcurrentSet;
 import io.netty.util.internal.ThreadLocalRandom;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -11,16 +12,27 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Set;
+
 /**
  * Created by Rar349 and iFamasssxD on 5/2/2017.
  */
 public class BabySheepPet extends EntitySheep {
-
+    private static Set<Item> gems = new ConcurrentSet<>();
+    private static int taskID, maxGemTicks = 100;
     public BabySheepPet(World world) {
         super(world);
         setAge(-1, false); // Set as baby.
         setColor(EnumColor.values()[ThreadLocalRandom.current().nextInt(EnumColor.values().length)]);
         this.ageLocked = true; // Never become an adult.
+        if (taskID == 0) {
+            taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                gems.stream().filter(gem -> gem.getTicksLived() >= maxGemTicks).forEach(gem -> {
+                    gem.remove();
+                    gems.remove(gem);
+                });
+            }, 20, 20);
+        }
     }
 
 
@@ -55,6 +67,6 @@ public class BabySheepPet extends EntitySheep {
         Item gem = loc.getWorld().dropItem(loc, new ItemStack(Material.EMERALD));
         Metadata.NO_PICKUP.set(gem, true);
         gem.setPickupDelay(Integer.MAX_VALUE);
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), gem::remove, 100L);
+        gems.add(gem);
     }
 }

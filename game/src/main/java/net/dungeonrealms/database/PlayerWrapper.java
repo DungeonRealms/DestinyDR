@@ -40,6 +40,8 @@ import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -87,10 +89,10 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
-    private int health, level, ecash, experience;
+    private int health, level, experience;
 
     @Getter
-    private int gems;
+    private int gems, ecash;
 
     @Getter
     @Setter
@@ -161,27 +163,34 @@ public class PlayerWrapper {
     @Getter
     private EnumPlayerAlignments alignment = EnumPlayerAlignments.LAWFUL;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int alignmentTime = 0;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Location storedLocation;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private CurrencyTab currencyTab;
 
     private Map<ShardTier, Integer> keyShards = new HashMap<>();
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private long muteExpire = -1, banExpire = -1;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String muteReason, banReason;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Integer whoBannedMeID, whoMutedMeID;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean firstTimePlaying = false;
 
     @Getter
@@ -191,14 +200,20 @@ public class PlayerWrapper {
     private Set<EnumAchievements> achievements = new HashSet<>();
     @Getter
     private Set<ParticleEffect> particles = new HashSet<>();
-    @Getter
-    private Set<ParticleEffect> trails = new HashSet<>();
+    //    @Getter
+//    private Set<ParticleEffect> trails = new HashSet<>();
     @Getter
     private Set<EnumMountSkins> mountSkins = new HashSet<>();
     @Getter
     private Set<EnumMounts> mountsUnlocked = new HashSet<>();
     @Getter
     private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
+
+    @Getter
+    private Map<Purchaseables, Integer> purchaseablesUnlocked = new HashMap<>();
+
+    @Getter
+    private List<PendingPurchaseable> pendingPurchaseablesUnlocked = new ArrayList<>();
 
     @Getter
     @Setter
@@ -428,7 +443,7 @@ public class PlayerWrapper {
         }
 
         if (gems != getGems())
-            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, getCharacterID(), getGems());
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_GEMS, gems, getCharacterID());
         this.gems = gems;
     }
 
@@ -451,7 +466,9 @@ public class PlayerWrapper {
         this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("users.mounts"), EnumMounts.class);
         this.mountSkins = StringUtils.deserializeEnumListToSet(result.getString("users.mountSkin"), EnumMountSkins.class);
         this.particles = StringUtils.deserializeEnumListToSet(result.getString("users.particles"), ParticleEffect.class);
-        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
+//        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
+        this.purchaseablesUnlocked = StringUtils.deserializeNumberMap(result.getString("users.purchaseables"), Purchaseables.class, Integer.class);
+        loadPendingPurchaseables(result.getString("users.pending_purchaseables"));
 
         List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
         if (list != null) {
@@ -460,9 +477,10 @@ public class PlayerWrapper {
                 String name = null;
                 boolean unlocked = false;
                 if (str.contains("@")) {
-                    type = str.split("@")[0];
-                    name = str.split("@")[1];
-                    unlocked = Boolean.valueOf(str.split("@")[2]);
+                    String[] contents = str.split("@");
+                    type = contents[0];
+                    name = contents[1];
+                    unlocked = Boolean.valueOf(contents[2]);
                 } else {
                     type = str;
                 }
@@ -482,7 +500,7 @@ public class PlayerWrapper {
         if (this.petsUnlocked.isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
 
-        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + data.isUnlocked()).append(","));
+        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + (data != null && data.isUnlocked())).append(","));
 
         return builder.toString();
     }
@@ -583,6 +601,7 @@ public class PlayerWrapper {
 
     /**
      * Used to get the location to store. If they are in a realm or some other world it will returned the last saved valid location.
+     *
      * @param location
      * @return
      */
@@ -730,7 +749,21 @@ public class PlayerWrapper {
                 }
             }
 
-            if(obj instanceof Set<?>) {
+            if (obj instanceof Map<?, ?>) {
+                Map<?, ?> theMap = (Map) obj;
+                if (theMap.isEmpty()) obj = "";
+                else {
+                    Map.Entry<?, ?> entry = theMap.entrySet().iterator().next();
+                    Object exampleKey = entry.getKey();
+                    Object exampleValue = entry.getValue();
+                    if ((exampleKey instanceof Enum) && (exampleValue instanceof Number)) {
+                        obj = StringUtils.serializeEnumNumberMap((Map<Enum, Number>) obj);
+                    }
+                }
+            }
+
+
+            if (obj instanceof Set<?>) {
                 Set<?> set = (Set<?>) obj;
 
                 if (set.isEmpty()) {
@@ -792,7 +825,7 @@ public class PlayerWrapper {
 
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
                 getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
-                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getTrails(), getAccountID());
+                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
     }
 
     @SneakyThrows
@@ -1026,6 +1059,10 @@ public class PlayerWrapper {
         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(getPlayer());
     }
 
+    public boolean hasEffectUnlocked(ParticleEffect effect) {
+        return getParticles().contains(effect) || effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB();
+    }
+
     /**
      * Gets our display name.
      * Contains our rank and our username, and alignment.
@@ -1042,7 +1079,7 @@ public class PlayerWrapper {
     public String getChatName() {
         String name = getDisplayName();
         if (isInGuild())
-        	name = getGuild().getChatPrefix() + name;
+            name = getGuild().getChatPrefix() + name;
 
         return name;
     }
@@ -1106,6 +1143,9 @@ public class PlayerWrapper {
         if (this.pendingMuleInventory != null)
             MountUtils.getInventories().put(uuid, pendingMuleInventory);
 
+        if (this.activeTrail != null) {
+            setActiveTrail(this.activeTrail);
+        }
     }
 
     public void loadPlayerInventory(Player player) {
@@ -1145,6 +1185,27 @@ public class PlayerWrapper {
             SQLDatabaseAPI.getInstance().addQuery(QueryType.INSERT_FRIENDS, this.accountID, accountID, "blocked", "blocked");
 
         }
+    }
+
+    public EnumMounts getHighestHorseUnlocked() {
+        List<EnumMounts> mounts = Lists.newArrayList(EnumMounts.values());
+        EnumMounts currentHighest = null;
+        for (EnumMounts mount : mounts) {
+            if (mount.getHourseTierNumber() <= 0) continue;
+            if (!getMountsUnlocked().contains(mount)) continue;
+            if (currentHighest == null) {
+                currentHighest = mount;
+                continue;
+            }
+            if (mount.getHourseTierNumber() <= currentHighest.getHourseTierNumber()) continue;
+            currentHighest = mount;
+        }
+        return currentHighest;
+    }
+
+    public MuleTier getMuleTier() {
+        MuleTier tier = MuleTier.getByTier(getMuleLevel());
+        return tier == null ? MuleTier.OLD : tier;
     }
 
     public void saveFriends(boolean async, Consumer<Boolean> afterSave) {
@@ -1254,14 +1315,30 @@ public class PlayerWrapper {
         return (int) ((100 * Math.pow(level, 2)) * difficulty + 500);
     }
 
-    /**
-     * Updates a player's level. Can be called for a natural level up or for
-     * an artificial change of a player's level via /set level or other means.
-     *
-     * @param newLevel - the new level
-     * @param levelUp  - if the level change is natural
-     * @param levelSet - if the level change is set artificially
-     */
+    public void withdrawEcash(int ecash) {
+        setEcash(getEcash() - ecash);
+        if (player != null)
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "- " + ChatColor.RED + ecash + ChatColor.BOLD + " E-Cash");
+    }
+
+    public void withdrawGems(int cash) {
+        setGems(getGems() - cash);
+        if (player != null)
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "- " + ChatColor.RED + gems + ChatColor.BOLD + " GEM(s)");
+    }
+
+    public void setEcash(int ecash) {
+        if (ecash < 0 || ecash > 1_000_000) {
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s E-Cash to " + ecash + " on shard {SERVER}.");
+            ecash = 0;
+        }
+
+        if (ecash != getEcash())
+            SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ECASH, ecash, getAccountID());
+
+        this.ecash = ecash;
+    }
+
     public void updateLevel(int newLevel, boolean natural) {
         setExperience(0);
         setLevel(getLevel() + 1);
@@ -1303,5 +1380,46 @@ public class PlayerWrapper {
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())
             if (ael.getLevelRequirement() == newLevel)
                 Achievements.giveAchievement(player, ael.getAchievement());
+    }
+
+    public String getSerializedPendingPurchaseables() {
+        StringBuilder toReturn = new StringBuilder("");
+        for (int k = 0; k < getPendingPurchaseablesUnlocked().size(); k++) {
+            PendingPurchaseable item = getPendingPurchaseablesUnlocked().get(k);
+            toReturn.append(item.toString());
+            if (k < (getPendingPurchaseablesUnlocked().size() - 1)) toReturn.append("%^&%");
+        }
+        for (PendingPurchaseable item : getPendingPurchaseablesUnlocked()) {
+        }
+
+        System.out.println("The pending we are saving: " + toReturn.toString());
+
+        return toReturn.toString();
+    }
+
+    public boolean loadPendingPurchaseables(String serialized) {
+        List<PendingPurchaseable> purchases = new ArrayList<>();
+        if (serialized == null || serialized.isEmpty() || serialized == "null") {
+            this.pendingPurchaseablesUnlocked = purchases;
+            return true;//They dont have any.
+        }
+        String[] contents = serialized.split("%^&%");
+        for (String part : contents) {
+            if (part == null || part.isEmpty()) continue;
+            try {
+                PendingPurchaseable toAdd = PendingPurchaseable.fromString(part);
+                if (toAdd == null) {
+                    Constants.log.info("An error occurred while parsing " + getPlayerName() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
+                    return false;
+                }
+                purchases.add(toAdd);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Constants.log.info("2 An error occurred while parsing " + getPlayerName() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
+                return false;
+            }
+        }
+        this.pendingPurchaseablesUnlocked = purchases;
+        return true;
     }
 }

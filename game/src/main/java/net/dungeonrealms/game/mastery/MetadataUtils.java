@@ -57,6 +57,7 @@ public class MetadataUtils {
 		SHARDING(false),
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
 		REALM_COOLDOWN(false),
+		SUMMONING(-1),
 		
 		// Items
 		WHITELIST(""),
@@ -73,7 +74,8 @@ public class MetadataUtils {
 		SPAWN_TYPE(null),
 		
 		// General
-		TIER(-1);
+		TIER(-1),
+		PORTAL_COOLDOWN(-1);
 		
 		private Object defaultValue;
 		

@@ -65,7 +65,7 @@ public abstract class ItemGear extends ItemGeneric {
 	
 	@Getter
 	private GeneratedItemType generatedItemType;
-	
+
 	public static final int MAX_DURABILITY = 1500;
 	
 	//Enchant Success Chances
@@ -212,29 +212,32 @@ public abstract class ItemGear extends ItemGeneric {
 	
 	private String generateItemName() {
 		String name = getTier().getColor().toString();
-		
-		List<AttributeType> sorted = new ArrayList<>(this.attributes.keySet());
-		sorted.sort((a1, a2) -> a2.getDisplayPriority() - a1.getDisplayPriority());
-		
-		GeneratedItemType itemType = this.getGeneratedItemType();
-		String rawItemName = itemType.getTierName(getTier());
-		
-		//  ADD PREFIXES  //
-		for (AttributeType type : sorted)
-			if (!type.getDisplayPrefix().equals(""))
-				name += type.getDisplayPrefix() + " ";
-		
-		//  ADD SUFFIXES  //
-		for (AttributeType type : sorted) {
-			boolean contains = name.contains(rawItemName);
-			String suffix = type.getDisplaySuffix(contains);
-			if(!suffix.equals(""))
-				name += (contains ? "" : rawItemName + " of") + " " + suffix;
+
+		if(customDisplayName != null){
+			name += customDisplayName;
+		}else {
+			List<AttributeType> sorted = new ArrayList<>(this.attributes.keySet());
+			sorted.sort((a1, a2) -> a2.getDisplayPriority() - a1.getDisplayPriority());
+
+			GeneratedItemType itemType = this.getGeneratedItemType();
+			String rawItemName = itemType.getTierName(getTier());
+
+			//  ADD PREFIXES  //
+			for (AttributeType type : sorted)
+				if (!type.getDisplayPrefix().equals(""))
+					name += type.getDisplayPrefix() + " ";
+
+			//  ADD SUFFIXES  //
+			for (AttributeType type : sorted) {
+				boolean contains = name.contains(rawItemName);
+				String suffix = type.getDisplaySuffix(contains);
+				if (!suffix.equals(""))
+					name += (contains ? "" : rawItemName + " of") + " " + suffix;
+			}
+
+			if (!name.contains(rawItemName))
+				name += rawItemName;
 		}
-		
-		if(!name.contains(rawItemName))
-			name += rawItemName;
-		
 		if (getEnchantCount() > 0)
 			name = ChatColor.RED + "[+" + getEnchantCount() + "] " + name;
 		return name;

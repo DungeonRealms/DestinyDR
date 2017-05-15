@@ -7,9 +7,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.functional.ItemHearthstone;
 import net.dungeonrealms.game.item.items.functional.ItemPlayerProfile;
@@ -17,8 +17,8 @@ import net.dungeonrealms.game.item.items.functional.ecash.*;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -45,14 +45,14 @@ public class CraftingMenu implements GenericMechanic, Listener {
                 PacketType type = packet.getType();
                 if (type == CLIENT_COMMAND && packet.getClientCommands().read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
                     if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-                    	player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).generateItem());
                         player.getOpenInventory().getTopInventory().setItem(2, new ItemHearthstone(player).generateItem());
                         player.getOpenInventory().getTopInventory().setItem(3, new ItemPetSelector(player).generateItem());
                         player.getOpenInventory().getTopInventory().setItem(4, new ItemMountSelection(null).generateItem());
                     }
                     GameAPI.runAsSpectators(player, (spectator) -> {
-                    	spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");
-                    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> spectator.openInventory(player.getInventory()));
+                        spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> spectator.openInventory(player.getInventory()));
                     });
                 }
             }
@@ -65,7 +65,7 @@ public class CraftingMenu implements GenericMechanic, Listener {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         HandlerList.unregisterAll(this);
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCraftingInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
@@ -76,35 +76,40 @@ public class CraftingMenu implements GenericMechanic, Listener {
             player.getOpenInventory().getTopInventory().setItem(4, null);
         }
     }
-    
+
     public static void addMountItem(Player player) {
-    	if (PlayerManager.hasItem(player.getInventory(), ItemType.MOUNT))
-    		return;
-        player.getInventory().addItem(new ItemMount().generateItem());
+        if (PlayerManager.hasItem(player.getInventory(), ItemType.MOUNT))
+            return;
+
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+
+        EnumMounts highestHorse = wrapper.getHighestHorseUnlocked();
+        if (highestHorse == null || highestHorse.getHorseTier() == null) highestHorse = EnumMounts.TIER1_HORSE;
+        player.getInventory().addItem(new ItemMount(highestHorse.getHorseTier()).generateItem());
     }
 
     public static void addPetItem(Player player) {
-    	if (PlayerManager.hasItem(player.getInventory(), ItemType.PET))
-    		return;
+        if (PlayerManager.hasItem(player.getInventory(), ItemType.PET))
+            return;
         player.getInventory().addItem(new ItemPet().generateItem());
     }
 
     public static void addMuleItem(Player player) {
         if (PlayerManager.hasItem(player.getInventory(), ItemType.MULE))
-        	return;
+            return;
         player.getInventory().addItem(new ItemMuleMount(player).generateItem());
     }
 
     public static void addTrailItem(Player player) {
-    	if (PlayerManager.hasItem(player.getInventory(), ItemType.PARTICLE_TRAIL))
-    		return;
-    	
-    	player.getInventory().addItem(new ItemParticleTrail().generateItem());
+        if (PlayerManager.hasItem(player.getInventory(), ItemType.PARTICLE_TRAIL))
+            return;
+
+        player.getInventory().addItem(new ItemParticleTrail().generateItem());
     }
 
-	@Override
-	public EnumPriority startPriority() {
-		return EnumPriority.CARDINALS;
-	}
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CARDINALS;
+    }
 }
 

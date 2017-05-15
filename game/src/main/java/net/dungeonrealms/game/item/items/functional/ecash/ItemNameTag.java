@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
@@ -25,12 +26,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemClickListener, ItemInventoryEvent.ItemInventoryListener {
 
     public ItemNameTag(ItemStack item) {
-        super(ItemType.ITEM_NAME_TAG);
+        this();
     }
 
     public ItemNameTag() {
         super(ItemType.ITEM_NAME_TAG);
-        setPermUntradeable(true);
+        setSoulbound(true);
+        setUndroppable(true);
     }
 
     @Override
@@ -57,9 +59,11 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
     public void onClick(ItemClickEvent evt) {
         //In world right clicked?
         evt.setCancelled(true);
+        evt.getPlayer().updateInventory();
     }
 
     private static final int MAX_LENGTH = 20;
+
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         InventoryClickEvent event = evt.getEvent();
@@ -91,7 +95,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
                     "cancel" + ChatColor.GRAY + " to cancel the item rename.");
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADING, 3, .6F);
             Chat.listenForMessage(player, chat -> {
-                String msg = Chat.checkForBannedWords(ChatColor.stripColor(SQLDatabaseAPI.filterSQLInjection(chat.getMessage())));
+                String msg = Chat.checkForBannedWords(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', SQLDatabaseAPI.filterSQLInjection(chat.getMessage()))));
                 Item.ItemTier tier = Item.ItemTier.getByTier(new VanillaItem(current).getTagInt(TIER));
 
                 if (Chat.containsIllegal(msg)) {
@@ -107,7 +111,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
 
                 String newItemName = color + msg;
 
-                if(newItemName.length() - 2 >= MAX_LENGTH){
+                if (newItemName.length() - 2 >= MAX_LENGTH) {
                     player.sendMessage(ChatColor.RED + "Your desired item name exceeds " + MAX_LENGTH + " characters!");
                     returnItem(player, item);
                     return;
@@ -129,8 +133,11 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
                         ItemMeta im = newItem.getItemMeta();
                         im.setDisplayName(newItemName);
                         newItem.setItemMeta(im);
+
+                        PersistentItem item = PersistentItem.constructItem(newItem);
+                        item.setCustomDisplayName(newItemName);
                         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                            GameAPI.giveOrDropItem(player, newItem);
+                            GameAPI.giveOrDropItem(player, item.generateItem());
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.5F);
                             Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Item Rename Successful!");
                             Utils.sendCenteredMessage(player, ChatColor.GRAY.toString() + "New Item Name: " + newItemName);

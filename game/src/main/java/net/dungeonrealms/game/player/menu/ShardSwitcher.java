@@ -16,12 +16,12 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -47,18 +47,18 @@ public class ShardSwitcher extends AbstractMenu {
 
             return o1num - o2num;
         });
-        
+
         PlayerRank rank = Rank.getRank(player);
 
         // DISPLAY AVAILABLE SHARDS //
         for (BungeeServerInfo info : servers) {
             ShardInfo shard = ShardInfo.getByPseudoName(info.getServerName());
-            
+
             // Don't show shard if you aren't allowed to see them.
             if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB)
-            	continue;
+                continue;
 
-            GUIButton button = new GUIButton(shard.getType().getIcon()) {
+            GUIButton button = new GUIButton(new ItemStack(Material.getMaterial(shard.getType().getIcon()), 1, (short) shard.getType().getMeta())) {
 
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
@@ -71,18 +71,18 @@ public class ShardSwitcher extends AbstractMenu {
                                 ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store" + ChatColor.RED + " to bypass this."
                         });
                     }
-                    
+
                     if (!rank.isAtLeast(shard.getType().getMinRank())) {
-                    	player.sendMessage(ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getType().name() + " ONLY" + ChatColor.RED + " shard!");
-                    	
-                    	if (shard.getType().getMinRank() == PlayerRank.SUB)
-                    		player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store");
-                    	return;
+                        player.sendMessage(ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getType().name() + " ONLY" + ChatColor.RED + " shard!");
+
+                        if (shard.getType().getMinRank() == PlayerRank.SUB)
+                            player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store");
+                        return;
                     }
 
                     GameAPI.getGamePlayer(player).setSharding(true);
                     Metadata.SHARDING.set(player, true);
-                    
+
                     TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shard.getShardID() + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
@@ -154,7 +154,7 @@ public class ShardSwitcher extends AbstractMenu {
                 if (data.length >= 3)
                     lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
-            } catch(Exception e){
+            } catch (Exception e) {
                 Bukkit.getLogger().info("Problem parsing " + info.getServerName());
                 e.printStackTrace();
             }

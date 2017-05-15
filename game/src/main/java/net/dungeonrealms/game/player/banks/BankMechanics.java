@@ -12,6 +12,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
 
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -43,11 +44,18 @@ public class BankMechanics {
     	while (gems > 0) {
     		int give = Math.min(64, gems);
     		ItemGem gem = new ItemGem(give);
-    		GameAPI.giveOrDropItem(player, gem.generateItem());
+    		gem.setGemValue(give);
+    		ItemStack stack = gem.generateItem();
+    		stack.setAmount(give);
+    		GameAPI.giveOrDropItem(player, stack);
     		gems -= give;
         }
     }
-    
+
+    public static boolean bankContainsItemStack(Player player, ItemStack stack) {
+		return BankMechanics.getStorage(player).inv.contains(stack);
+    }
+
     /**
      * Removes a given amount of gems from a player's inventory.
      * If there are not enough gems, it does not remove any and returns false.

@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listener;
 
 import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
-
 import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -21,13 +20,13 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -36,8 +35,6 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
-import net.dungeonrealms.game.player.inventory.ShopMenu;
-import net.dungeonrealms.game.player.inventory.ShopMenuListener;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
@@ -48,8 +45,8 @@ import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
-
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -58,6 +55,7 @@ import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
@@ -93,7 +91,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
-        
+
         if (Metadata.SHARDING.has(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
@@ -165,9 +163,12 @@ public class MainListener implements Listener {
         }
 
         Chat.getInstance().doMessageChatListener(event);
-        Chat.sendChatMessage(event.getPlayer(), event.getMessage(), false);
 
-        event.setCancelled(true);
+        //Check if we cancelled it..
+        if (!event.isCancelled()) {
+            Chat.sendChatMessage(event.getPlayer(), event.getMessage(), false);
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -212,6 +213,8 @@ public class MainListener implements Listener {
                 }
             }
         });
+
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -394,29 +397,44 @@ public class MainListener implements Listener {
                 }
             }
         }
-        if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
-            return;
+
         Player player = event.getPlayer();
-        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0))))
-            return;
-        if (player.getLocation().getBlock().getType() != Material.AIR)
+        ParticleAPI.ParticleEffect effect = DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.get(player);
+        if (effect == null || effect != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
+        if (!player.getWorld().equals(Bukkit.getWorlds().get(0)) || player.getLocation().getBlock().getType() != Material.AIR)
             return;
         Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
-        if (material == Material.DIRT || material == Material.GRASS || material == Material.STONE
-                || material == Material.COBBLESTONE || material == Material.GRAVEL || material == Material.LOG
-                || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
-                || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF
-                || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
-                || material == Material.SNOW_BLOCK || material == Material.CLAY || material == Material.STAINED_CLAY
-                || material == Material.WOOL) {
+        if (DonationEffects.isGoldenCursable(material)) {
             DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
                     .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
-                    new FixedMetadataValue(DungeonRealms.getInstance(), 10));
+                    new FixedMetadataValue(DungeonRealms.getInstance(), 20));
         }
+    }
 
+    @EventHandler
+    public void onPlayerInteractGoldenCurse(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        Player player = event.getPlayer();
 
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if(player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
+            Block top_block = block.getLocation().add(0, 1, 0).getBlock();
+            Material m = block.getType();
+
+            if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m)) {
+
+                block.setType(Material.GOLD_BLOCK);
+                DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
+                        .put(block.getLocation(), m);
+                block.setMetadata("time",
+                        new FixedMetadataValue(DungeonRealms.getInstance(), 30));
+            }
+        }
     }
 
     /**
@@ -695,6 +713,11 @@ public class MainListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
+
+        if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
+            event.setCancelled(true);
+            event.getPlayer().updateInventory();
+        }
 
 
         if (event.getPlayer().hasMetadata("mob_debug")) {

@@ -114,7 +114,8 @@ public class PetUtils implements GenericMechanic {
             if (e instanceof EntityInsentient) {
                 // Register Pet follow AIs.
                 PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
-
+                //No AI should be present.
+                EntityAPI.clearAI(goal, null);
                 if (e.getNavigation() instanceof Navigation)
                     goal.a(0, new PathfinderGoalFloat(e));
 
@@ -123,6 +124,9 @@ public class PetUtils implements GenericMechanic {
                 } else {
                     goal.a(1, new PathfinderGoalWalkToTile(e, follow, 1D));
                 }
+
+                e.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(petType.getFollowSpeed());
+                goal.a(2, new PathfinderGoalLookAtPlayer(e, EntityHuman.class, 20F));
             } else {
                 throw new IllegalArgumentException(e.getCustomName() + " is not an instance of an EntityInsentient.");
             }

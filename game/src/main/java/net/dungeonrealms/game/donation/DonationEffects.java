@@ -12,7 +12,6 @@ import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -20,15 +19,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Getter @Setter
+@Getter
+@Setter
 public class DonationEffects implements GenericMechanic {
 
-    @Getter private static DonationEffects instance = new DonationEffects();
+    @Getter
+    private static DonationEffects instance = new DonationEffects();
 
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
-    public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
-
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";
 
@@ -64,7 +63,7 @@ public class DonationEffects implements GenericMechanic {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             handleExpiry();
         });
     }
@@ -169,14 +168,16 @@ public class DonationEffects implements GenericMechanic {
     }
 
     private void spawnPlayerParticleEffects() {
-        for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
-            if (!player.isOnline()) {
-                PLAYER_PARTICLE_EFFECTS.remove(player);
+        for (Map.Entry<Player, ParticleEffect> entry : PLAYER_PARTICLE_EFFECTS.entrySet()) {
+            if (!entry.getKey().isOnline()) {
+                PLAYER_PARTICLE_EFFECTS.remove(entry.getKey());
                 continue;
             }
-            ParticleEffect effect = PLAYER_PARTICLE_EFFECTS.get(player);
-            ParticleAPI.sendParticleToLocation(effect, player.getLocation().add(0, 0.22, 0), random.nextFloat() - 0.4F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, 
-            		(effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F), 6);
+
+            ParticleEffect effect = entry.getValue();
+            if (effect == ParticleEffect.GOLD_BLOCK) continue;
+            ParticleAPI.sendParticleToLocation(effect, entry.getKey().getLocation().add(0, 0.22, 0), random.nextFloat() - 0.4F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F,
+                    effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F, 6);
         }
     }
 
@@ -202,7 +203,7 @@ public class DonationEffects implements GenericMechanic {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null)
-        	return false;
+            return false;
 
         int playerEcash = wrapper.getEcash();
         if (playerEcash <= 0)
@@ -215,5 +216,14 @@ public class DonationEffects implements GenericMechanic {
             return true;
         }
         return false;
+    }
+
+    public static boolean isGoldenCursable(Material material) {
+        return material == Material.DIRT || material == Material.GRASS || material == Material.STONE
+                || material == Material.COBBLESTONE || material == Material.GRAVEL
+                || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
+                || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF
+                || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
+                || material == Material.SNOW_BLOCK || material == Material.CLAY;
     }
 }

@@ -6,14 +6,12 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,12 +21,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PetSelectionGUI extends GUIMenu {
-    public PetSelectionGUI(Player player) {
-        super(player, fitSize(EnumPets.values().length + 2), "Pet Selection");
+    public PetSelectionGUI(Player player, GUIMenu gui) {
+        super(player, fitSize(EnumPets.values().length + 2), "Pet Selection", gui);
     }
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     protected void setItems() {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
@@ -36,8 +34,8 @@ public class PetSelectionGUI extends GUIMenu {
 
         Map<EnumPets, PetData> playerPets = wrapper.getPetsUnlocked();
 
-        setItem(getSize() - 2, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back"))
-                .setClick(e -> PlayerMenus.openPlayerProfileMenu(player)));
+        if (this.previousGUI != null)
+            setItem(getSize() - 2, getBackButton());
         setItem(getSize() - 1, new GUIItem(ItemManager.createItem(Material.LEASH, ChatColor.GREEN + "Dismiss Pet"))
                 .setClick(e -> PetUtils.removePet(player)));
 
@@ -47,7 +45,7 @@ public class PetSelectionGUI extends GUIMenu {
                 continue;
 
             PetData hisData = playerPets.get(pets);
-            
+
             AtomicBoolean isLocked = new AtomicBoolean(hisData == null || !hisData.isUnlocked());
             if (pets.isSubGetsFree() && wrapper.getRank().isSUB())
                 isLocked.set(false);

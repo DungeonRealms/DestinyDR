@@ -27,6 +27,10 @@ public class SlimeMount extends EntitySlime implements JumpingMount {
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
+	    if(!isVehicle()){
+	        die();
+	        return;
+        }
     	this.jumped = false;
     	
     	float[] motion = MountUtils.handleMountLogic(this, this.player);

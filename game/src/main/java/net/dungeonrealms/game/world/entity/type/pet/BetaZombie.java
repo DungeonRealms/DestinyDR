@@ -40,8 +40,8 @@ public class BetaZombie extends ZombiePet implements Ownable {
         if (lastTick++ % 10 != 0)
         	return;
 
-        if (lastTick % 15 == 0) { // If we're too far away or in a different world, teleport.
-            if (owner.getWorld() != this.getBukkitEntity().getWorld() || getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 15) {
+        if (lastTick % 4 == 0) { // If we're too far away or in a different world, teleport.
+            if (!owner.getWorld().equals(this.getBukkitEntity().getWorld()) || getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 15) {
                 if (this.isPassenger())
                     this.getBukkitEntity().eject();
                 this.getBukkitEntity().teleport(owner.getLocation());
@@ -61,10 +61,16 @@ public class BetaZombie extends ZombiePet implements Ownable {
         }
         
         // Try to chomp nearby players.
-        GameAPI.getNearbyPlayers(getBukkitEntity().getLocation(), 5).forEach(p -> {
-        	if (p != owner && p.getPassenger() == null && getBukkitEntity().getVehicle() == null && ThreadLocalRandom.current().nextInt(50) == 0)
-        		p.setPassenger(getBukkitEntity());
-        });
+
+        for(org.bukkit.entity.Entity ent : getBukkitEntity().getNearbyEntities(5, 5, 5)) {
+            if(!(ent instanceof Player)) continue;
+            Player player = (Player) ent;
+            if(player.equals(owner)) continue;
+            if(ThreadLocalRandom.current().nextInt(50) == 5) {
+                player.setPassenger(getBukkitEntity());
+                return;
+            }
+        }
     }
 
 }

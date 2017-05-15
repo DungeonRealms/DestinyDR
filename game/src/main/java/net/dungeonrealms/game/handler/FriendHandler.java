@@ -6,14 +6,10 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -36,81 +32,50 @@ public class FriendHandler {
     /**
      * for "Friends" GUI.
      *
-     * @param player
-     * @param type
-     * @param itemStack
      * @since 1.0
      */
-    public void remove(Player player, ClickType type, ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == null || !(itemStack.getType().equals(Material.SKULL_ITEM)))
-            return;
-        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
-        UUID friend = UUID.fromString(tag.getString("info"));
+    public void remove(Player player, PlayerWrapper wrapper, UUID uuid, int accountID) {
+        //Remove Pending request
+        wrapper.getFriendsList().remove(uuid);
+        PlayerWrapper friendWrap = PlayerWrapper.getPlayerWrapper(uuid);
+        if (friendWrap != null)
+            friendWrap.getFriendsList().remove(player.getUniqueId());
 
-        switch (type) {
-            case RIGHT:
-                //Remove Pending request
-                player.closeInventory();
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                wrapper.getFriendsList().remove(friend);
-
-                PlayerWrapper friendWrap = PlayerWrapper.getPlayerWrapper(friend);
-                if (friendWrap != null) {
-                    friendWrap.getFriendsList().remove(player.getUniqueId());
-                }
-
-
-                SQLDatabaseAPI.getInstance().executeBatch(updated -> {
-
-                });
-//                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
-//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
-                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friends list!");
-                PlayerMenus.openFriendInventory(player);
-
-                break;
-        }
+        SQLDatabaseAPI.getInstance().executeBatch(updated -> {
+                },
+                QueryType.DELETE_FRIEND.getQuery(wrapper.getAccountID(), accountID),
+                QueryType.DELETE_FRIEND.getQuery(uuid, wrapper.getAccountID()));
+        GameAPI.sendNetworkMessage("Friends", "removeFriend:" + player.getUniqueId().toString() +
+                ":" + player.getName() + ":" + uuid.toString());
     }
 
     /**
      * for "Friend Management" Gui.
      *
-     * @param player
-     * @param type
-     * @param itemStack
      * @since 1.0
      */
-    public void addOrRemove(Player player, ClickType type, ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == null || !(itemStack.getType().equals(Material.SKULL_ITEM)))
-            return;
-        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
-        UUID friend = UUID.fromString(tag.getString("info").split(",")[0]);
+    public void addOrRemove(Player player, ClickType type, UUID friend, String name) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         switch (type) {
             case RIGHT:
-                if(wrapper.getPendingFriends().containsKey(friend)) {
+                if (wrapper.getPendingFriends().containsKey(friend)) {
                     //Remove Pending request
                     player.closeInventory();
-//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
                     wrapper.getPendingFriends().remove(friend);
-                    player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
-                    PlayerMenus.openFriendInventory(player);
-                }else{
+                    player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+                    //PlayerMenus.openFriendInventory(player);
+                } else {
                     player.sendMessage(ChatColor.RED + "That player has not sent you a friend request!");
                 }
                 break;
             case LEFT:
                 //Add Friend
                 player.closeInventory();
-//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
-//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
-                String name = itemStack.getItemMeta().getDisplayName().split("'")[0];
                 player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
 
                 GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + friend.toString() + "," + PlayerWrapper.getPlayerWrapper(player).getAccountID());
 
                 acceptFriend(wrapper, friend, name);
-//                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
         }
     }
@@ -118,14 +83,12 @@ public class FriendHandler {
     /**
      * Send a friend request, ALREADY PERFORMS CHECKS.
      *
-     * @param player The invoker.
-     * @param friend Wanting to add.
      * @since 1.0
      */
     public void sendRequest(Player sender, Player receiver) {
-    	sendRequest(sender, PlayerWrapper.getWrapper(sender).getAccountID(), receiver);
+        sendRequest(sender, PlayerWrapper.getWrapper(sender).getAccountID(), receiver);
     }
-    
+
     public void sendRequest(Player player, int accountID, Player friend) {
         if (player.getDisplayName().equalsIgnoreCase(friend.getDisplayName())) {
             player.sendMessage(ChatColor.RED + "You cannot add yourself.");

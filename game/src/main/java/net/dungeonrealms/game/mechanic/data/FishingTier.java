@@ -49,7 +49,7 @@ public enum FishingTier {
 	}
 	
 	public static FishingTier getTierByLevel(int level) {
-		for (int i = values().length; i >= 0; i--)
+		for (int i = values().length - 1; i >= 0; i--)
 			if (MiningTier.values()[i].getLevel() <= level)
 				return FishingTier.values()[i];
 		return FishingTier.TIER_1;

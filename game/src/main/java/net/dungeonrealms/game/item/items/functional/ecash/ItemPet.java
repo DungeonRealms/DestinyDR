@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
@@ -21,7 +22,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
     public ItemPet() {
         super(ItemType.PET);
-        setUntradeable(true);
+        setPermUntradeable(true);
     }
 
     public ItemPet(ItemStack item) {
@@ -32,7 +33,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
     public void onClick(ItemClickEvent evt) {
         Player player = evt.getPlayer();
 
-        if ( PetUtils.hasActivePet(player)) {
+        if (PetUtils.hasActivePet(player)) {
             Entity entity = PetUtils.getPets().get(player);
 
             if (evt.hasEntity() && evt.getClickedEntity().equals(entity)) {
@@ -57,7 +58,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
         if (petType == null) {
             player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
             player.closeInventory();
-            new PetSelectionGUI(player).open(player, null);
+            new PetSelectionGUI(player, null).open(player, null);
             return;
         }
 
@@ -90,7 +91,13 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
                 return;
             }
 
-            String checkedPetName = Chat.checkForBannedWords(name);
+            String checkedPetName = SQLDatabaseAPI.filterSQLInjection(Chat.checkForBannedWords(name));
+
+            if (Chat.containsIllegal(checkedPetName)) {
+                player.sendMessage(ChatColor.RED + "Your pet name contains illegal characters!");
+                return;
+            }
+
             PetData pt = pw.getPetsUnlocked().computeIfAbsent(toRename, data -> new PetData(null, false));
             pt.setPetName(checkedPetName);
             if (pet != null)

@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -22,13 +21,13 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -41,7 +40,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -60,7 +59,7 @@ public class InventoryListener implements Listener {
 
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR))
             if (event.getSlotType() == InventoryType.SlotType.ARMOR)
-            	return;
+                return;
 
         ClickHandler.getInstance().doClick(event);
     }
@@ -204,7 +203,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDragItemInDuelWager(InventoryDragEvent event) {
-    	String title = event.getInventory().getTitle();
+        String title = event.getInventory().getTitle();
         if (title.contains("VS.") || title.contains("Bank")
                 || GameAPI.isShop(event.getInventory()) || title.contains("Trade")
                 || title.contains("Merchant"))
@@ -284,22 +283,22 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
-        
+
         if ((!ItemArmor.isArmor(event.getNewArmorPiece()) && !ItemArmor.isArmor(event.getOldArmorPiece())) || event.isCancelled())
-        	return;
-        
+            return;
+
         if (!RestrictionListener.canPlayerUseItem(event.getPlayer(), event.getNewArmorPiece())) {
-        	event.setCancelled(true);
-        	player.updateInventory();
-        	return;
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
         }
-        
+
         if (!CombatLog.isInCombat(player)) {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
-            
+
             final ItemStack old = event.getOldArmorPiece();
             final ItemStack newArmor = event.getNewArmorPiece();
-            
+
             // Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> handleArmorDifferences(old, newArmor, player));
         } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
@@ -322,55 +321,55 @@ public class InventoryListener implements Listener {
 
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
         // recalculate attributes
-    	PlayerWrapper wp = PlayerWrapper.getWrapper(p);
-    	
-    	boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
-    	boolean hasNewArmor = ItemArmor.isArmor(newArmor);
-    	
+        PlayerWrapper wp = PlayerWrapper.getWrapper(p);
+
+        boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
+        boolean hasNewArmor = ItemArmor.isArmor(newArmor);
+
         String oldArmorName = Utils.getItemName(oldArmor);
         String newArmorName = Utils.getItemName(newArmor);
-        
-        
+
+
         // display differences to player
         p.sendMessage(ChatColor.GRAY + oldArmorName + ChatColor.WHITE +
                 ChatColor.BOLD + " -> " + ChatColor.GRAY + newArmorName);
-        
+
         //TODO: Don't show the same stat twice, combine the messages.
         AttributeList armorChanges = new AttributeList();
-        
+
         System.out.println("Old player stats:");
-    	System.out.println(wp.getAttributes().toString());
-        
+        System.out.println(wp.getAttributes().toString());
+
         // Show stats for the armor being removed.
         if (hasOldArmor) {
-        	ItemArmor removedArmor = (ItemArmor)PersistentItem.constructItem(oldArmor);
-        	armorChanges.removeStats(removedArmor.getAttributes());
-        	System.out.println("Applied old armor:");
-        	System.out.println(armorChanges.toString());
+            ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
+            armorChanges.removeStats(removedArmor.getAttributes());
+            System.out.println("Applied old armor:");
+            System.out.println(armorChanges.toString());
         }
-        
+
         // Show stats for the armor being equipped.
         if (hasNewArmor) {
-        	ItemArmor addedArmor = (ItemArmor)PersistentItem.constructItem(newArmor);
-        	armorChanges.addStats(addedArmor.getAttributes());
-        	System.out.println("Applied new armor:");
-        	System.out.println(armorChanges.toString());
+            ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
+            armorChanges.addStats(addedArmor.getAttributes());
+            System.out.println("Applied new armor:");
+            System.out.println(armorChanges.toString());
         }
-        
+
         wp.getAttributes().addStats(armorChanges);
         System.out.println("Final player stats:");
-    	System.out.println(wp.getAttributes().toString());
-        
+        System.out.println(wp.getAttributes().toString());
+
         for (AttributeType t : armorChanges.keySet()) {
-        	ModifierRange armorVal = armorChanges.getAttribute(t);
-        	ModifierRange newVal = wp.getAttributes().getAttribute(t);
-        	
-        	p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+": ChatColor.RED + "")
-        			+ armorVal.getValue() + t.getSuffix()
-        			+ " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
-        			+ newVal.getValue() + t.getSuffix() + "]");
+            ModifierRange armorVal = armorChanges.getAttribute(t);
+            ModifierRange newVal = wp.getAttributes().getAttribute(t);
+
+            p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED + "")
+                    + armorVal.getValue() + t.getSuffix()
+                    + " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
+                    + newVal.getValue() + t.getSuffix() + "]");
         }
-        
+
         //wp.calculateAllAtributes(); // 100% sure way to prevent armor stacking. Issue with this is it cancels any buffs eg/fish.
         HealthHandler.updatePlayerHP(p);
     }
@@ -384,7 +383,7 @@ public class InventoryListener implements Listener {
     public void onInventoryClosed(InventoryCloseEvent event) {
         if (GameAPI.isShop(event.getInventory())) return;
         Player p = (Player) event.getPlayer();
-        
+
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getStorage(event.getPlayer().getUniqueId());
             //Not loaded yet?
@@ -414,15 +413,15 @@ public class InventoryListener implements Listener {
             int i = 0;
             for (ItemStack stack : bin.getContents())
                 if (stack != null && stack.getType() != Material.AIR)
-                	i++;
-            
+                    i++;
+
             if (i == 0)
                 storage.clearCollectionBin();
         }
     }
 
 
-    @EventHandler
+    @EventHandler()
     public void onInventoryClick(InventoryClickEvent event) {
 
         //Basically any inventory.
@@ -436,14 +435,19 @@ public class InventoryListener implements Listener {
 
             //Check for soulbound item?
             ItemStack item = event.getClick() == ClickType.NUMBER_KEY ? event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();
-            
+
             if (item == null || item.getType() == Material.AIR)
-            	return;
+                return;
 
             if (ItemManager.isItemSoulbound(item)) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }
+        }
+
+        if (GUIMenu.alwaysCancelInventories.contains(event.getInventory().getName()) && !event.isCancelled()) {
+            event.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling " + event.getInventory().getName() + " Click for " + event.getWhoClicked().getName() + ", hasnt been cancelled in menu.");
         }
     }
 
@@ -453,7 +457,7 @@ public class InventoryListener implements Listener {
      */
 
     @SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onTradeInvClicked(InventoryClickEvent event) {
         if (GameAPI.isShop(event.getInventory())) return;
         Player player = (Player) event.getWhoClicked();
@@ -473,7 +477,7 @@ public class InventoryListener implements Listener {
             Trade trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
             if (trade == null)
                 return;
-            
+
             int slot = event.getRawSlot();
 
             if (trade.isLeftSlot(slot)) {
@@ -491,10 +495,10 @@ public class InventoryListener implements Listener {
 
             if (event.getCurrentItem() == null)
                 return;
-            
+
             VanillaItem vi = new VanillaItem(event.getCurrentItem());
             if (!vi.isSoulboundBypass(trade.getOppositePlayer(player)) || vi.isUntradeable()) {
-            	player.sendMessage(ChatColor.RED + "You can't trade this item.");
+                player.sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);
             }
 
@@ -503,10 +507,10 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            
+
             if (slot >= 36)
                 return;
-            
+
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
                 return;
 
@@ -515,7 +519,7 @@ public class InventoryListener implements Listener {
             if (nms.hasTag() && nms.getTag().hasKey("status")) {
                 String status = nms.getTag().getString("status");
                 event.setCancelled(true);
-                
+
                 boolean ready = status.equalsIgnoreCase("ready");
                 trade.updateReady(event.getWhoClicked().getUniqueId());
                 ItemStack item = new ItemStack(Material.INK_SACK);
@@ -566,7 +570,7 @@ public class InventoryListener implements Listener {
                     p.sendMessage(ChatColor.GREEN + "Type a custom allocated amount.");
                     stats.reset = false;
                     int currentFreePoints = stats.getFreePoints();
-                    
+
                     Chat.listenForNumber(p, 0, currentFreePoints, num -> {
                         for (int i = 0; i < num; i++)
                             stats.allocatePoint(stat, inv);

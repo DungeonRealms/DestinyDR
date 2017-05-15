@@ -34,6 +34,7 @@ public class Constants {
     // BUILD NUMBER //
     public static String BUILD_NUMBER = "#0";
 
+    public static String RESOURCE_PACK = "https://www.dropbox.com/s/5czkvn6j527g5n9/DungeonRealmsPack.zip?dl=1";
     public static String STORE_URL = "www.dungeonrealms.net/oldshop";
     public static void build() {
         log = Logger.getLogger("DungeonRealms");

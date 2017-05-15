@@ -7,19 +7,20 @@ import net.dungeonrealms.game.player.inventory.ShopMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 
-import java.util.Set;
+import java.util.*;
 
-public class AchievementMenu extends ShopMenu {
+public class AchievementMenu extends GUIMenu {
 
 	private AchievementCategory category;
 	
 	public AchievementMenu(Player player) {
-		this(player, AchievementCategory.values()[0]);
+		this(player, AchievementCategory.values()[0],null);
 	}
 
-	public AchievementMenu(Player player, AchievementCategory ac) {
-		super(player, ac.getName() + " Achievements", 4);
+	public AchievementMenu(Player player, AchievementCategory ac, GUIMenu previous) {
+		super(player, fitSize(ac.getNumberOfAchievements() + 1),"Achievements",previous);
 		this.category = ac;
 	}
 	
@@ -27,18 +28,25 @@ public class AchievementMenu extends ShopMenu {
 	protected void setItems() {
 		PlayerWrapper pw = PlayerWrapper.getWrapper(getPlayer());
 		Set<EnumAchievements> playerAchievements = pw.getAchievements();
-        addItem(createItem(Material.BARRIER, ChatColor.GREEN + "Back")).setOnClick((player, shop) -> false);
 
-        for (EnumAchievements achievement : EnumAchievements.getByCategory(this.category)) {
+		setItem(getSize() - 1, getBackButton());
+
+
+		int slot = 0;
+		for (EnumAchievements achievement : playerAchievements) {
+			if (achievement.isHide())
+				continue;
+			if (achievement.getCategory() != category) continue;
+			setItem(slot++, new GUIItem(Material.SLIME_BALL).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + achievement.getName()).setLore("",ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage(),ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP", "", ChatColor.GREEN.toString() + ChatColor.BOLD + "COMPLETE"));
+		}
+		//Lets show the unlocked ones first. Gui looks like shit all random.
+        for (EnumAchievements achievement : EnumAchievements.values()) {
         	if (achievement.isHide())
         		continue;
+        	if(achievement.getCategory() != category) continue;
         	boolean has = playerAchievements.contains(achievement);
-        	Material mat = has ? Material.SLIME_BALL : Material.MAGMA_CREAM;
-        	ChatColor color = has ? ChatColor.GREEN : ChatColor.RED;
-        	addItem(createItem(mat, color + achievement.getName(), "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage(),
-                ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP", "",
-                color + "" + ChatColor.BOLD + (has ? "Complete" : "Incomplete")));
+        	if(has) continue;
+        	setItem(slot++, new GUIItem(Material.MAGMA_CREAM).setName(ChatColor.RED + ChatColor.BOLD.toString() + achievement.getName()).setLore("",ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage(),ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP","", ChatColor.RED + ChatColor.BOLD.toString() + "INCOMPLETE"));
         }
 	}
 }

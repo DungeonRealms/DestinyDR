@@ -2,10 +2,13 @@ package net.dungeonrealms.game.listener.world;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukeboxGUI;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -13,7 +16,6 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
-
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -24,10 +26,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -35,9 +41,9 @@ import java.util.*;
 public class BlockListener implements Listener {
 
     private Map<Location, Repair> repairMap = new HashMap<>();
-    
+
     private static final List<Material> CANCEL_OPEN = Arrays.asList(Material.HOPPER, Material.FURNACE, Material.HOPPER_MINECART,
-    		Material.TRAPPED_CHEST, Material.BREWING_STAND, Material.ENCHANTMENT_TABLE);
+            Material.TRAPPED_CHEST, Material.BREWING_STAND, Material.ENCHANTMENT_TABLE);
 
     /**
      * Disable placing blocks in the main world.
@@ -45,7 +51,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE || event.getItemInHand() == null)
-        	return;
+            return;
         if (!Realms.getInstance().isRealm(event.getPlayer().getWorld()))
             event.setCancelled(true);
 
@@ -59,35 +65,74 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void breakBlock(BlockBreakEvent e) {
         if (!e.getPlayer().isOp() && !Realms.getInstance().isRealm(e.getBlock().getWorld()))
-        	e.setCancelled(true);
+            e.setCancelled(true);
+
+
+        if (e.getBlock().getType() == Material.JUKEBOX && ItemJukebox.getJukebox(e.getBlock()) != null) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerCLickJukebox(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        if (event.hasBlock()) {
+            Block block = event.getClickedBlock();
+
+            if (block.getType() != Material.JUKEBOX) return;
+
+            MobileJukebox box = ItemJukebox.getJukebox(block);
+            if (box != null) {
+                event.setCancelled(true);
+
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK && box.getUuid().equals(player.getUniqueId())) {
+                    //Owner?? Break?
+                    box.breakJukebox();
+                    player.sendMessage(ChatColor.RED + "Your Mobile Musicbox has been destroyed!");
+                    player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1.4F);
+                } else {
+                    new MobileJukeboxGUI(player, box).open(player, null);
+                }
+            }
+
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        MobileJukebox box = ItemJukebox.getPlacedJukebox(event.getPlayer().getUniqueId());
+        if (box != null) {
+            box.breakJukebox();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void cancelPlayersBlockOpen(PlayerInteractEvent event) {
-    	Block block = event.getClickedBlock();
+        Block block = event.getClickedBlock();
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || block == null)
             return;
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)
-        	return;
-        
+            return;
+
         Material mat = block.getType();
-        
+
         if (mat == Material.DISPENSER && Realms.getInstance().getRealm(block.getWorld()) == null)
-        	event.setCancelled(true);
-        
+            event.setCancelled(true);
+
         if (CANCEL_OPEN.contains(mat))
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null || block.getType() != Material.ANVIL)
-        	return;
+            return;
         event.setCancelled(true);
-        
+
         if (!GameAPI.isMainWorld(block.getLocation()))
-        	return;
+            return;
 
 
         Player player = event.getPlayer();
@@ -99,24 +144,24 @@ public class BlockListener implements Listener {
         ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
         if (!ItemGear.isCustomTool(item))
             return;
-        
-        ItemGear gear = (ItemGear)PersistentItem.constructItem(item);
+
+        ItemGear gear = (ItemGear) PersistentItem.constructItem(item);
         if (ProfessionItem.isProfessionItem(item)) {
-        	ProfessionItem prof = (ProfessionItem)gear;
-        	if (prof.getLevel() >= 100) {
-        		player.sendMessage(ChatColor.RED + "This item is much too warn to be repaired.");
-        		return;
-        	}
+            ProfessionItem prof = (ProfessionItem) gear;
+            if (prof.getLevel() >= 100) {
+                player.sendMessage(ChatColor.RED + "This item is much too warn to be repaired.");
+                return;
+            }
         }
-        
+
         if (!gear.canRepair()) {
-        	player.sendMessage(ChatColor.YELLOW + "This item is " + ChatColor.UNDERLINE + "NOT" + ChatColor.YELLOW + " damaged.");
-        	return;
+            player.sendMessage(ChatColor.YELLOW + "This item is " + ChatColor.UNDERLINE + "NOT" + ChatColor.YELLOW + " damaged.");
+            return;
         }
-        
+
         if (repairMap.containsKey(block.getLocation())) {
-        	Repair repair = repairMap.get(block.getLocation());
-        	for (Entity nearby : player.getNearbyEntities(20, 20, 20)) {
+            Repair repair = repairMap.get(block.getLocation());
+            for (Entity nearby : player.getNearbyEntities(20, 20, 20)) {
                 if (nearby instanceof Player) {
                     Player pl = (Player) nearby;
                     if (pl.getName().equals(repair.getRepairing())) {
@@ -125,33 +170,33 @@ public class BlockListener implements Listener {
                     }
                 }
             }
-        	
-        	//Return the item?
+
+            //Return the item?
             Player pl = Bukkit.getPlayer(repair.getRepairing());
             if (pl != null) {
-            	//They are too far away.
-            	pl.sendMessage(ChatColor.RED + "You were > 10 blocks from the anvil.");
+                //They are too far away.
+                pl.sendMessage(ChatColor.RED + "You were > 10 blocks from the anvil.");
                 Chat.listenForMessage(pl, null);
             }
         }
 
         int newCost = gear.getRepairCost();
         if (BankMechanics.getGemsInInventory(player) < newCost) {
-        	player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
-        	player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
-        	return;
+            player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
+            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
+            return;
         }
 
         Location middle = block.getLocation().add(.5, 1.3, .5);
         //Set the item on the anvil
         player.getEquipment().setItemInMainHand(null);
         player.updateInventory();
-        
+
         Item itemEntity = block.getWorld().dropItem(middle, item);
         itemEntity.teleport(middle);
         itemEntity.setVelocity(new Vector());
         itemEntity.setPickupDelay(Integer.MAX_VALUE);
-        
+
         Repair repair = new Repair(item, itemEntity, player.getName());
         repairMap.put(block.getLocation(), repair);
 
@@ -160,38 +205,38 @@ public class BlockListener implements Listener {
         player.setCanPickupItems(false);
         player.sendMessage(ChatColor.YELLOW + "It will cost " + ChatColor.GREEN + ChatColor.BOLD.toString() + newCost + "G" + ChatColor.YELLOW + " to repair '" + name + ChatColor.YELLOW + "'");
         player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
-        
+
         //  CHAT PROMPT  //
         Chat.promptPlayerConfirmation(player, () -> {
-        	if (BankMechanics.takeGemsFromInventory(player, newCost)) {
-        		gear.repair(); // Repair Item
-        		
-        		// Remove from anvil.
-        		itemEntity.remove();
-        		middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
-        		middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
-        		
-        		player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
-        		player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
-        		
-        		// Return item.
-        		GameAPI.giveOrDropItem(player, gear.generateItem());
-        		player.setCanPickupItems(true);
-        		player.updateInventory();
-        		
-        		repairMap.remove(block.getLocation());
-        		Quests.getInstance().triggerObjective(player, ObjectiveUseAnvil.class);
-        	} else {
-        		player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
-    			player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
-        	}
+            if (BankMechanics.takeGemsFromInventory(player, newCost)) {
+                gear.repair(); // Repair Item
+
+                // Remove from anvil.
+                itemEntity.remove();
+                middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
+                middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
+
+                player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
+                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
+
+                // Return item.
+                GameAPI.giveOrDropItem(player, gear.generateItem());
+                player.setCanPickupItems(true);
+                player.updateInventory();
+
+                repairMap.remove(block.getLocation());
+                Quests.getInstance().triggerObjective(player, ObjectiveUseAnvil.class);
+            } else {
+                player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
+                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
+            }
         }, () -> {
-        	// Return item.
-        	itemEntity.remove();
-        	repairMap.remove(block.getLocation());
-        	player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
-        	GameAPI.giveOrDropItem(player, item);
-        	player.setCanPickupItems(true);
+            // Return item.
+            itemEntity.remove();
+            repairMap.remove(block.getLocation());
+            player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+            GameAPI.giveOrDropItem(player, item);
+            player.setCanPickupItems(true);
         });
     }
 

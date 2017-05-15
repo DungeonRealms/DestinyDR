@@ -16,6 +16,10 @@ import net.dungeonrealms.game.player.chat.Chat;
 
 public class ItemRetrainingBook extends FunctionalItem implements ItemClickListener {
 
+	public ItemRetrainingBook(ItemStack item) {
+		super(ItemType.RETRAINING_BOOK);
+		setPermUntradeable(true);
+	}
 	public ItemRetrainingBook() {
 		super(ItemType.RETRAINING_BOOK);
 		setPermUntradeable(true);
@@ -46,7 +50,8 @@ public class ItemRetrainingBook extends FunctionalItem implements ItemClickListe
 		return new String[] {
 				"Right click to reset your stat",
 				"allocated points to free points.",
-				ChatColor.DARK_GRAY + "One time use."
+				"",
+				ChatColor.RED + "One time use."
 		};
 	}
 

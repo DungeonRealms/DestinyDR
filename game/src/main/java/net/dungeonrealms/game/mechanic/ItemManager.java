@@ -321,8 +321,10 @@ public class ItemManager {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(name);
         List<String> l = new ArrayList<>();
-        for (String s : lore)
-            l.add(ChatColor.GRAY + s);
+        if(lore != null) {
+            for (String s : lore)
+                l.add(ChatColor.GRAY + s);
+        }
         meta.setLore(l);
         stack.setItemMeta(meta);
         return stack;

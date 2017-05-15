@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -338,7 +339,7 @@ public class HealthHandler implements GenericMechanic {
         
         double currentHP = getHP(player);
         double newHP = currentHP - damage;
-
+        PlayerWrapper defender = PlayerWrapper.getWrapper(player);
         if (cause == null || cause != EntityDamageEvent.DamageCause.FALL) {
             if (updateCombat) {
                 if (!(attacker instanceof Player)) {
@@ -365,8 +366,7 @@ public class HealthHandler implements GenericMechanic {
             }
             
             PlayerWrapper pw = PlayerWrapper.getWrapper((Player) attacker);
-            PlayerWrapper defender = PlayerWrapper.getWrapper(player);
-            
+
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), attacker.getUniqueId())) {
                 if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK && !isReflectedDamage)
                     if (!(attacker.hasMetadata("duelCooldown") && attacker.getMetadata("duelCooldown").size() > 0 && attacker.getMetadata("duelCooldown").get(0).asLong() > System.currentTimeMillis()))
@@ -388,20 +388,22 @@ public class HealthHandler implements GenericMechanic {
             }
 
             pw.sendDebug(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
-            player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
-            
-            if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-        		defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
-        				+ (int)res.getTotalArmor() + "%A -> -" + (int)res.getTotalArmorReduction() + ChatColor.BOLD + "DMG" +
-        				ChatColor.GRAY
-        				+ "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-        	} else { // foreign damage
-        		DamageType type = DamageType.getByReason(cause);
-        		defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-            }
+
         }
-        
-        Random r = new Random();
+
+        player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
+
+        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+                    + (int)res.getTotalArmor() + "%A -> -" + (int)res.getTotalArmorReduction() + ChatColor.BOLD + "DMG" +
+                    ChatColor.GRAY
+                    + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        } else { // foreign damage
+            DamageType type = DamageType.getByReason(cause);
+            defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
+
+        Random r = ThreadLocalRandom.current();
         player.getWorld().spawnParticle(Particle.BLOCK_DUST, player.getLocation().clone().add(0, 1, 0), 10,
         		r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
         

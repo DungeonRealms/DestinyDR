@@ -29,7 +29,14 @@ public class ItemGem extends ItemMoney {
 		super.setGemValue(amount); //Performs checks
 		getItem().setAmount(amount);
 	}
-	
+
+	/*@Override
+	public ItemStack generateItem() {
+		ItemStack toReturn = super.generateItem();
+		toReturn.setAmount(getGemValue());
+		return toReturn;
+	}*/
+
 	@Override
 	public int getMaxStorage() {
 		return getItem().getMaxStackSize();
