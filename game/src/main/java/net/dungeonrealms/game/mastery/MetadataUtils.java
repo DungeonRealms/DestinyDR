@@ -56,7 +56,6 @@ public class MetadataUtils {
 		// Players
 		SHARDING(false),
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
-		REALM_COOLDOWN(false),
 		SUMMONING(-1),
 		
 		// Items
@@ -75,6 +74,9 @@ public class MetadataUtils {
 		
 		// General
 		TIER(-1),
+
+		//Cooldowns
+		REALM_COOLDOWN(-1),
 		PORTAL_COOLDOWN(-1);
 		
 		private Object defaultValue;

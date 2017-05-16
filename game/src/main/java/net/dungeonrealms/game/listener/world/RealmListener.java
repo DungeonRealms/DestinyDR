@@ -135,15 +135,14 @@ public class RealmListener implements Listener {
                         //Check portal clicks?
                         Realm portal = Realms.getInstance().getRealm(event.getClickedBlock().getLocation());
                         if (portal != null) {
-                            long data = Metadata.PORTAL_COOLDOWN.get(player).asLong();
-                            if (data != -1 && System.currentTimeMillis() <= data) {
+                            if (GameAPI.isCooldown(player, Metadata.PORTAL_COOLDOWN)) {
                                 event.setCancelled(true);
                                 return;
                             }
 
-                            Metadata.PORTAL_COOLDOWN.set(player, System.currentTimeMillis() + 500);
                             event.setCancelled(true);
                             portal.sendInformation(player);
+                            GameAPI.addCooldown(player, Metadata.PORTAL_COOLDOWN, 1);
                         }
                     }
                     return;

@@ -116,10 +116,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -1606,12 +1603,11 @@ public class GameAPI {
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
     }
 
-    public static void addCooldown(Metadatable m, Metadata type, int ticks) {
-        type.set(m, true);
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> type.remove(m), 20);
+    public static void addCooldown(Metadatable m, Metadata type, int seconds) {
+        type.set(m, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
     }
 
     public static boolean isCooldown(Metadatable m, Metadata type) {
-        return type.get(m).asBoolean();
+        return type.get(m).asLong() > System.currentTimeMillis();
     }
 }
