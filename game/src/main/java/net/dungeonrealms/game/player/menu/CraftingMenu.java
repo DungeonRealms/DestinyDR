@@ -21,6 +21,7 @@ import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,6 +29,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.ItemStack;
 
 import static com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND;
 
@@ -85,7 +87,8 @@ public class CraftingMenu implements GenericMechanic, Listener {
 
         EnumMounts highestHorse = wrapper.getHighestHorseUnlocked();
         if (highestHorse == null || highestHorse.getHorseTier() == null) highestHorse = EnumMounts.TIER1_HORSE;
-        player.getInventory().addItem(new ItemMount(highestHorse.getHorseTier()).generateItem());
+
+        addOrReplace(player, new ItemMount(highestHorse.getHorseTier()).generateItem(), Material.SADDLE);
     }
 
     public static void addPetItem(Player player) {
@@ -97,7 +100,8 @@ public class CraftingMenu implements GenericMechanic, Listener {
     public static void addMuleItem(Player player) {
         if (PlayerManager.hasItem(player.getInventory(), ItemType.MULE))
             return;
-        player.getInventory().addItem(new ItemMuleMount(player).generateItem());
+
+        addOrReplace(player, new ItemMuleMount(player).generateItem(), Material.LEASH);
     }
 
     public static void addTrailItem(Player player) {
@@ -105,6 +109,16 @@ public class CraftingMenu implements GenericMechanic, Listener {
             return;
 
         player.getInventory().addItem(new ItemParticleTrail().generateItem());
+    }
+
+    private static void addOrReplace(Player player, ItemStack itemStack, Material material) {
+        int slot = player.getInventory().first(material);
+        if (slot == -1) {
+            player.getInventory().addItem(itemStack);
+        } else {
+            //Overwrite.
+            player.getInventory().setItem(slot, itemStack);
+        }
     }
 
     @Override

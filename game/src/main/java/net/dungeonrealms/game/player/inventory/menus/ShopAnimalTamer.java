@@ -8,10 +8,11 @@ import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -93,10 +94,13 @@ public class ShopAnimalTamer extends GUIMenu {
         } else {
             CraftingMenu.addMuleItem(player);
         }
-
-        player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
+        player.updateInventory();
+        player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount!");
+        player.sendMessage(ChatColor.GRAY + "You can access all of your unlocked mounts with " + ChatColor.UNDERLINE + "/mounts" + ChatColor.GRAY + "!");
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
-
+        Quest.spawnFirework(player.getLocation(), FireworkEffect.builder().flicker(true).withColor(Color.GREEN).withColor(Color.PURPLE).trail(true).build());
+        TitleAPI.sendTitle(player, 5, 30, 4, mount.getDisplayName(), ChatColor.GREEN.toString() + ChatColor.BOLD + "Mount Unlocked");
         return true;
     }
 }
