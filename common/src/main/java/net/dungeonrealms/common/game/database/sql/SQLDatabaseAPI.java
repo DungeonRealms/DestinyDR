@@ -36,11 +36,10 @@ public class SQLDatabaseAPI {
 
     private Cache<String, UUID> cachedNames = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-
-    private Runnable saveRunnable;
-
     @Getter
     private Map<Integer, UUIDName> accountIdNames = new HashMap<>();
+    private Runnable saveRunnable;
+
 
     public void shutdown() {
         Bukkit.getLogger().info("Shutting down SQL Server Executor Thread...");

@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -16,10 +17,12 @@ import net.dungeonrealms.game.command.moderation.CommandMobDebug;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -39,7 +42,9 @@ import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -714,17 +719,30 @@ public class MainListener implements Listener {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
 
+
         if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
         }
 
-
         if (event.getPlayer().hasMetadata("mob_debug")) {
             CommandMobDebug.debugEntity(event.getPlayer(), event.getRightClicked());
         }
+
+
     }
 
+    @EventHandler
+    public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event){
+        if (EnumEntityType.DPS_DUMMY.isType(event.getRightClicked())) {
+            event.setCancelled(true);
+            //Show damage dealt?
+            DamageTracker tracker = HealthHandler.getMonsterTrackers().get(event.getRightClicked().getUniqueId());
+            if(tracker != null){
+                //Send tracker message.
+            }
+        }
+    }
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerEnchant(EnchantItemEvent event) {
         event.setCancelled(true);

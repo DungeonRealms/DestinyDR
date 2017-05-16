@@ -21,6 +21,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -475,8 +476,10 @@ public class RestrictionListener implements Listener {
 
         Entity damager = event.getDamager();
         Entity receiver = event.getEntity();
+        Bukkit.getLogger().info("Damage event: " + damager + " rec: " + receiver + " cancelled: " + event.isCancelled());
         boolean isAttackerPlayer = false;
         boolean isDefenderPlayer = false;
+        boolean isDefenderDummy = EnumEntityType.DPS_DUMMY.isType(receiver);
         Player pDamager = null;
         Player pReceiver = null;
 
@@ -497,13 +500,14 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        if (!isAttackerPlayer || !isDefenderPlayer) {
-            if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
-                event.setCancelled(true);
-                return;
+        if(!isDefenderDummy) {
+            if (!isAttackerPlayer || !isDefenderPlayer) {
+                if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
-
         if (isAttackerPlayer) {
             if (GameAPI.getGamePlayer(pDamager) == null) {
                 event.setCancelled(true);

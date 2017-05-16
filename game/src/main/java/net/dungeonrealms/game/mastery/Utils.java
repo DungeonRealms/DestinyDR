@@ -44,9 +44,10 @@ public class Utils {
         return dateFormat.format(new Date(time));
     }
 
-    public static String translate(String string){
+    public static String translate(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
+
     public static void printTrace() {
         StackTraceElement trace = new Exception().getStackTrace()[2];
 
@@ -81,6 +82,8 @@ public class Utils {
         return retr.toString();
     }
 
+    private static Map<UUID, ItemStack> headCopies = new HashMap<>();
+
     /**
      * Get a players head.
      *
@@ -89,11 +92,15 @@ public class Utils {
      * @since 1.0
      */
     public static ItemStack getPlayerHead(Player player) {
-        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        meta.setOwner(player.getName());
-        head.setItemMeta(meta);
-        return head;
+        ItemStack current = headCopies.get(player.getUniqueId());
+        if (current == null) {
+            current = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+            SkullMeta meta = (SkullMeta) current.getItemMeta();
+            meta.setOwner(player.getName());
+            current.setItemMeta(meta);
+            headCopies.put(player.getUniqueId(), current);
+        }
+        return current.clone();
     }
 
     public static double round(double value, int places) {
@@ -121,6 +128,7 @@ public class Utils {
         }
         return true;
     }
+
     public static boolean hasItem(Player player, Material material) {
         return containsItem(BankMechanics.getStorage(player).inv, material) || containsItem(player.getInventory(), material);
     }

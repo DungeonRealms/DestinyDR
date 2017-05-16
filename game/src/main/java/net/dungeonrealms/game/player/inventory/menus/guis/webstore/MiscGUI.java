@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -10,6 +11,7 @@ import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -62,8 +64,7 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                 player.sendMessage(ChatColor.GREEN + "Enjoy your Music Box!");
 
                             } else {
-                                player.sendMessage(ChatColor.RED + "You do not own this item!");
-                                player.sendMessage(ChatColor.GRAY + "You can get it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                                sendNotUnlocked(player);
                             }
 
                             setShouldOpenPreviousOnClose(false);
@@ -84,14 +85,31 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                 }
                                 setItems();
                             } else {
-                                player.sendMessage(ChatColor.RED + "You do not own this item!");
-                                player.sendMessage(ChatColor.GRAY + "You can get it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                                sendNotUnlocked(player);
+                            }
+                        } else if (webItem == Purchaseables.DPS_DUMMY) {
+                            if (unlocked) {
+                                //Activate / de-activate
+                                if (Utils.hasItem(player, Material.ARMOR_STAND)) {
+                                    // Turn it OFF.
+                                    player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You already have a DPS Dummy!");
+                                    return;
+                                }
+
+                                player.getInventory().addItem(new ItemDPSDummy(null).generateItem());
+                                player.sendMessage(ChatColor.GREEN + "DPS Dummy has been added to your inventory.");
+                            } else {
+                                sendNotUnlocked(player);
                             }
                         }
                     }));
         }
     }
 
+    private void sendNotUnlocked(Player player) {
+        player.sendMessage(ChatColor.RED + "You do not own this item!");
+        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+    }
 
     @Override
     public GUIMenu getPreviousGUI() {
