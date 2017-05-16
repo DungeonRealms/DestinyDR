@@ -872,7 +872,7 @@ public class MainListener implements Listener {
                 horse.teleport((Entity) horse.getOwner());
             }
         }
-        horse.setLeashHolder((Player) horse.getOwner());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
