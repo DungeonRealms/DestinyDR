@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.spawning;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -19,7 +20,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -37,7 +40,7 @@ public abstract class MobSpawner {
     private int tier;
 
     @Getter //List of monsters we have spawned.
-    private List<Entity> spawnedMonsters = new CopyOnWriteArrayList<>();
+    private Set<Entity> spawnedMonsters = new ConcurrentSet<>();
 
     @Getter
     @Setter //How many do we spawn
@@ -251,7 +254,7 @@ public abstract class MobSpawner {
     public abstract void init();
 
     public void kill() {
-        getSpawnedMonsters().forEach(Entity::remove);
+        getSpawnedMonsters().stream().filter(e -> e != null).forEach(ent -> ent.remove());
         getSpawnedMonsters().clear();
 
         if (getArmorStand() != null)
@@ -287,6 +290,10 @@ public abstract class MobSpawner {
             entity = EntityAPI.spawnCustomMonster(spawn, getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
         }
 
+        if(entity == null){
+            Bukkit.getLogger().info("Unable to create entity: " + level + " At: " + spawn);
+            return null;
+        }
         getSpawnedMonsters().add(entity);
         return entity;
     }

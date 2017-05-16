@@ -1,166 +1,159 @@
 package net.dungeonrealms.game.world.item.itemgenerator;
 
 import com.google.common.collect.Lists;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.items.core.*;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
-import net.minecraft.server.v1_9_R2.MojangsonParseException;
-import net.minecraft.server.v1_9_R2.MojangsonParser;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagInt;
-import net.minecraft.server.v1_9_R2.NBTTagList;
-import net.minecraft.server.v1_9_R2.NBTTagString;
-
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemGenerator {
 
     public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<>();
     public static List<ItemModifier> modifierObjects = new ArrayList<>();
-    
+
     private static File getFile(String itemName) {
-    	return new File(GameAPI.getDataFolder() + "/custom_items/" + Utils.sanitizeFileName(itemName) + ".item");
+        return new File(GameAPI.getDataFolder() + "/custom_items/" + Utils.sanitizeFileName(itemName) + ".item");
     }
 
     public static ItemStack createItem(JsonObject fullObj) {
-    	return createItem(fullObj, null);
+        return createItem(fullObj, null);
     }
 
     /**
      * Creates an ItemStack from a JsonObject, with a set custom ID.
      * The custom Id is usually used so quests can identify items.
+     *
      * @param fullObj
      * @param template
      */
     public static ItemStack createItem(JsonObject fullObj, String template) {
-    	ItemStack item = new ItemStack(Material.valueOf(fullObj.get("id").getAsString()), fullObj.get("count").getAsInt(), fullObj.get("damage").getAsShort());
-    	try {
-    		if (fullObj.has("tag")) {
-    			net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-    			NBTTagCompound tag = loadNBT(fullObj.get("tag").getAsString());
-    			
-    			// Apply Antidupe.
-    			if (tag.hasKey("u"))
-    				tag.setString("u", AntiDuplication.createEpoch(item));
+        ItemStack item = new ItemStack(Material.valueOf(fullObj.get("id").getAsString()), fullObj.get("count").getAsInt(), fullObj.get("damage").getAsShort());
+        try {
+            if (fullObj.has("tag")) {
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+                NBTTagCompound tag = loadNBT(fullObj.get("tag").getAsString());
 
-    			// Apply Custom ID
-    			if (template != null)
-    				tag.setString("customId", template);
-    			
-    			// Create Item
-    			nms.setTag(tag);
-    			item = CraftItemStack.asBukkitCopy(nms);
-    		}
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		Utils.log.info("NBT Json is formatted incorrectly. (ID = " + template + ")");
-    	}
+                // Apply Antidupe.
+                if (tag.hasKey("u"))
+                    tag.setString("u", AntiDuplication.createEpoch(item));
 
-    	return PersistentItem.constructItem(item).generateItem();
+                //Dont show thanks..
+                tag.set("AttributeModifiers", new NBTTagList());
+
+                // Apply Custom ID
+                if (template != null)
+                    tag.setString("customId", template);
+
+                // Create Item
+                nms.setTag(tag);
+                item = CraftItemStack.asBukkitCopy(nms);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Utils.log.info("NBT Json is formatted incorrectly. (ID = " + template + ")");
+        }
+
+        return PersistentItem.constructItem(item).generateItem();
     }
-    
+
     /**
      * Loads an NBTTagCompound from a string.
      * Applies RNG, so don't use this on anything a user can control.
      */
     public static NBTTagCompound loadNBT(String data) throws MojangsonParseException {
-    	//Format: <x,y> Generates a random value between <x,y>
-    	Matcher rangeMatch =  Pattern.compile("<\\d+,\\d+>").matcher(data);
+        //Format: <x,y> Generates a random value between <x,y>
+        Matcher rangeMatch = Pattern.compile("<\\d+,\\d+>").matcher(data);
         while (rangeMatch.find()) {
-          String found = rangeMatch.group();
-          String[] range = found.substring(1, found.length() - 1).split(",");
-          data = data.replace(found, Utils.randInt(Integer.parseInt(range[0]), Integer.parseInt(range[1])) + "");
+            String found = rangeMatch.group();
+            String[] range = found.substring(1, found.length() - 1).split(",");
+            data = data.replace(found, Utils.randInt(Integer.parseInt(range[0]), Integer.parseInt(range[1])) + "");
         }
-    	
-    	return MojangsonParser.parse(data);
+
+        return MojangsonParser.parse(data);
     }
 
     /**
      * Loads a custom item from disk.
+     *
      * @param templateName
      */
     public static ItemStack getNamedItem(String templateName) {
-    	File file = getFile(templateName);
+        File file = getFile(templateName);
         if (!file.exists()) {
             Utils.log.warning("[ItemGenerator] Custom item " + templateName + " not found!");
             return new ItemStack(Material.AIR); // No such custom template!
         }
 
         try {
-        	BufferedReader br = new BufferedReader(new FileReader(file)); //Read from file
-        	return createItem(new JsonParser().parse(br).getAsJsonObject(), templateName); //Create Item
+            BufferedReader br = new BufferedReader(new FileReader(file)); //Read from file
+            return createItem(new JsonParser().parse(br).getAsJsonObject(), templateName); //Create Item
         } catch (IOException e) {
-        	e.printStackTrace();
-        	Utils.log.info("[ItemGenerator] Failed to load " + templateName + ".");
+            e.printStackTrace();
+            Utils.log.info("[ItemGenerator] Failed to load " + templateName + ".");
         }
-        
+
         return new ItemStack(Material.AIR);
     }
-    
+
     /**
      * Converts an item into a json object for saving.
+     *
      * @param item
      */
     public static JsonObject toJson(ItemStack item) {
-    	VanillaItem toSave = new VanillaItem(item);
-    	JsonObject fullObj = new JsonObject();
-    	
-    	// Save Data.
-    	fullObj.addProperty("count", item.getAmount());
-    	fullObj.addProperty("damage", item.getDurability());
-    	fullObj.addProperty("id", item.getType().name());
-    	fullObj.addProperty("tag", toSave.getTag().toString());
-    	
-    	return fullObj;
+        VanillaItem toSave = new VanillaItem(item);
+        JsonObject fullObj = new JsonObject();
+
+        // Save Data.
+        fullObj.addProperty("count", item.getAmount());
+        fullObj.addProperty("damage", item.getDurability());
+        fullObj.addProperty("id", item.getType().name());
+        fullObj.addProperty("tag", toSave.getTag().toString());
+
+        return fullObj;
     }
-    
+
     /**
      * Saves a custom item to disk
      * Silently fails if non US0
      */
     public static void saveItem(ItemStack item, String itemName) {
-    	if (!DungeonRealms.isMaster())
-    		return;
-    	
-    	try {
-			FileWriter file = new FileWriter(getFile(itemName));
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			file.write(gson.toJson(toJson(item)));
-			file.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-			Bukkit.getLogger().warning("Failed to save " + itemName + ".item");
-		}
+        if (!DungeonRealms.isMaster())
+            return;
+
+        try {
+            FileWriter file = new FileWriter(getFile(itemName));
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            file.write(gson.toJson(toJson(item)));
+            file.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getLogger().warning("Failed to save " + itemName + ".item");
+        }
     }
 
     public static void loadModifiers() {
@@ -207,7 +200,7 @@ public class ItemGenerator {
         am.new Thorns();
     }
 
-    private static String stripExtension (String str) {
+    private static String stripExtension(String str) {
         // Handle null case specially.
 
         if (str == null) return null;
@@ -228,22 +221,23 @@ public class ItemGenerator {
     public static void convertOldItemTemplates() {
         System.out.println("Attemtping to convert old file templates!");
         File directory = new File("plugins/DungeonRealms/custom_items_old");
-        if(directory == null || !directory.exists()) {
+        if (directory == null || !directory.exists()) {
             System.out.println("Nothing to convert!");
             return;
         }
         File[] inDir = directory.listFiles();
         System.out.println("We found " + inDir.length + " items to convert!");
-        fileLoop: for(File oldFile : inDir) {
-            if(oldFile == null || !oldFile.exists()) {
+        fileLoop:
+        for (File oldFile : inDir) {
+            if (oldFile == null || !oldFile.exists()) {
                 System.out.println("ItemTemplate File iteration error code 1");
                 continue;
             }
-            if(oldFile.isDirectory()) {
+            if (oldFile.isDirectory()) {
                 System.out.println("ItemTemplate File iteration error code 2");
                 continue;
             }
-            if(!oldFile.getName().endsWith(".item"))  {
+            if (!oldFile.getName().endsWith(".item")) {
                 System.out.println("ItemTemplate File iteration error code 3");
                 continue;
             }
@@ -396,7 +390,7 @@ public class ItemGenerator {
             }
 
             if (rarity == null) {
-                if(!foundStats)continue fileLoop;
+                if (!foundStats) continue fileLoop;
                 // Add rarity if needed.
                 rarity = Item.ItemRarity.UNIQUE; // default to unique
                 item_lore.add(rarity.getName());
@@ -469,7 +463,7 @@ public class ItemGenerator {
             nmsStack.setTag(tag);
 
             System.out.println("Successfully converted the old template named '" + template_name + ".item'");
-            saveItem(is,template_name);
+            saveItem(is, template_name);
 
             //return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
@@ -488,11 +482,11 @@ public class ItemGenerator {
     }
 
     public static int getTierFromMaterial(Material m) {
-        if(m.name().toLowerCase().contains("leather")) return 1;
-        if(m.name().toLowerCase().contains("chain")) return 2;
-        if(m.name().toLowerCase().contains("iron")) return 3;
-        if(m.name().toLowerCase().contains("diamond")) return 4;
-        if(m.name().toLowerCase().contains("gold")) return 5;
+        if (m.name().toLowerCase().contains("leather")) return 1;
+        if (m.name().toLowerCase().contains("chain")) return 2;
+        if (m.name().toLowerCase().contains("iron")) return 3;
+        if (m.name().toLowerCase().contains("diamond")) return 4;
+        if (m.name().toLowerCase().contains("gold")) return 5;
         return 1;
     }
 }

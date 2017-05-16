@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Base Mob Spawner - Spawns regular custom entities.
- * 
+ *
  * Redone by Kneesnap on April 20th, 2017.
  */
 public class BaseMobSpawner extends MobSpawner {
@@ -31,11 +31,11 @@ public class BaseMobSpawner extends MobSpawner {
 		// We don't want excess monsters spawning.
     	getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(monster ->
 			respawnTimes.put(monster, getRespawnDelay() + (new Random().nextInt(getRespawnDelay() / 2) + 15)));
-    	
+
     	if (isFirstSpawn())
     		for (int i = 0; i < 2; i++)
     			spawn();
-    	
+
     	super.createMobs();
     }
 
@@ -45,10 +45,10 @@ public class BaseMobSpawner extends MobSpawner {
     public void init() {
     	Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
     		boolean nearby = GameAPI.arePlayersNearbyAsync(getLocation(), 32);
-    		
+
     		if (nearby) {
     			// Spawn some monsters in.
-    			if (getTimerID() == -1) //Confirm we're not already spawning monsters. 
+    			if (getTimerID() == -1) //Confirm we're not already spawning monsters.
     				setTimerID(Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::spawnIn, 35L).getTaskId());
     		}else if (getTimerID() != -1) {
     			// If no players are around
@@ -65,7 +65,7 @@ public class BaseMobSpawner extends MobSpawner {
     		respawnTimes.clear();
     		return true;
     	}
-    	
+
     	if (!respawnTimes.isEmpty()) {
     		for (Entity e : respawnTimes.keySet()) {
     			int newTime = respawnTimes.get(e) - 1;
@@ -78,7 +78,7 @@ public class BaseMobSpawner extends MobSpawner {
     		}
     		return false;
     	}
-    	
+
     	return super.canSpawnMobs();
     }
 }

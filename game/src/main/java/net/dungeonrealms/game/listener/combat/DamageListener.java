@@ -119,19 +119,6 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
     }
 
-    /**
-     * Makes mobs untarget a player after they have entered a safezone.
-     *
-     * @param event
-     */
-    public void onPlayerEnterSafezone(PlayerEnterRegionEvent event) {
-        if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
-            for (Entity ent : event.getPlayer().getNearbyEntities(10, 10, 10)) {
-                if (!(ent instanceof Creature)) continue;
-                ((Creature) ent).setTarget(null);
-            }
-        }
-    }
 
     /**
      * Listen for the monsters hitting a player
