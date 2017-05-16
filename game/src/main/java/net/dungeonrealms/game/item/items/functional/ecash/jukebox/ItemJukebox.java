@@ -2,11 +2,15 @@ package net.dungeonrealms.game.item.items.functional.ecash.jukebox;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -96,6 +100,14 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
     public void onClick(ItemClickEvent evt) {
         Player player = evt.getPlayer();
         evt.setCancelled(true);
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (Purchaseables.JUKEBOX.getNumberOwned(wrapper) <= 0) {
+            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "(!) " + ChatColor.RED + "You do NOT own a Mobile Musicbox!");
+            player.sendMessage(ChatColor.GRAY + "You can unlock one at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+            GameAPI.sendIngameDevMessage("Removed Mobile music box from " + player.getName());
+            evt.setResultItem(null);
+            return;
+        }
         if (evt.hasBlock()) {
             //Trying to place?
             Block clicked = evt.getClickedBlock();
@@ -110,7 +122,7 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                     return;
                 }
 
-                if(player.getWorld() != Bukkit.getWorlds().get(0)) {
+                if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                     player.sendMessage(ChatColor.RED + "You can only use this in Andalucia!");
                     return;
                 }

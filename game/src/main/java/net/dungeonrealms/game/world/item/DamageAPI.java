@@ -61,17 +61,15 @@ public class DamageAPI {
         if (!ItemWeapon.isWeapon(item))
             return;
 
-        int weaponTier = 0;
 
+        ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
+        int weaponTier = weapon.getTier().getId();
         //  BASE DAMAGE  //
         double damage = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getValueInRange();
         int critHit = 0;
 
         if (!res.hasProjectile()) {
             //  MELEE WEAPON  //
-            ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
-            weaponTier = weapon.getTier().getId();
-
             if (attacker.isPlayer()) {
 
                 //  DAMAGE WEAPON  //
@@ -108,7 +106,7 @@ public class DamageAPI {
             switch (res.getProjectile().getType()) {
                 case ARROW:
                 case TIPPED_ARROW:
-                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.15);
+                    damage += (damage / 100D) * (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.15);
                     break;
                 case SNOWBALL:
                 case SMALL_FIREBALL:
@@ -120,7 +118,6 @@ public class DamageAPI {
                 default:
                     break;
             }
-
         }
 
         //  CRIT  //
@@ -138,7 +135,6 @@ public class DamageAPI {
 
         //  DPS  //
         damage += damage * ((double) attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100);
-
         //  KNOCKBACK  //
         if (attacker.isPlayer() && getChance(attacker.getAttributes(), WeaponAttributeType.KNOCKBACK))
             knockbackEntity(attacker.getPlayer(), defender.getEntity(), 1.5);
@@ -184,7 +180,7 @@ public class DamageAPI {
 
         //  STRENGTH BUFF  //
         damage = applyIncreaseDamagePotion(attacker.getEntity(), damage);
-
+        
         //  ADD DAMAGE BONUS  //
         if (attacker.getEntity().hasMetadata("damageBonus"))
             damage += (damage * (attacker.getEntity().getMetadata("damageBonus").get(0).asDouble() / 100.));
@@ -208,8 +204,8 @@ public class DamageAPI {
                 defender.getEntity().getWorld().playSound(attacker.getEntity().getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             damage *= 2;
-        }
 
+        }
         //  DAMAGE CAP  //
         if (!attacker.isPlayer())
             damage = Math.min(damage, weaponTier * 600);

@@ -681,11 +681,12 @@ public class DamageListener implements Listener {
                     //OB Algoritm
                     if (blocks >= (ent.isInsideVehicle() ? 6 : 2))
                         dmg = maxHP * 0.02D * dmg;
+
                     Player p = (Player) event.getEntity();
                     int hp = HealthHandler.getHP(p);
 
                     //  PREVENT DYING  //
-                    dmg = Math.max(dmg, hp - 1);
+                    dmg = Math.min(dmg, hp - 1);
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);

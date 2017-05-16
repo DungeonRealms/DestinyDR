@@ -27,17 +27,18 @@ public class CommandSetRank extends BaseCommand {
         	return false;
         
         PlayerWrapper executor = PlayerWrapper.getWrapper((Player) sender);
-        PlayerRank newRank = PlayerRank.getFromPrefix(args[1]);
+        PlayerRank newRank = PlayerRank.getFromInternalName(args[1]);
         
         if (newRank == null) {
         	sender.sendMessage(ChatColor.RED + "Invalid usage: /setrank <name> <rank>");
         	String ranks = "";
         	for (int i = 0; i <= executor.getRank().ordinal(); i++) {
         		PlayerRank r = PlayerRank.values()[i];
-        		ranks += r.getChatColor() + (r == PlayerRank.DEFAULT ? "DEFAULT" : r.getPrefix()) + ChatColor.GREEN + " | ";
+        		ranks += r.getChatColor() + (r == PlayerRank.DEFAULT ? "DEFAULT" : r.getInternalName()) + ChatColor.GREEN + " | ";
         	}
         	
             sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Ranks: " + ranks);
+        	return true;
         }
         
         if (newRank.ordinal() > executor.getRank().ordinal()) {
@@ -63,7 +64,7 @@ public class CommandSetRank extends BaseCommand {
                 if (newRank.isSUB())
                 	wrapper.setRankExpiration(0);
 
-                sender.sendMessage(ChatColor.GREEN + "Setting rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + (newRank == PlayerRank.DEFAULT ? "DEFAULT" : newRank.getPrefix()) + ChatColor.GREEN + ".");
+                sender.sendMessage(ChatColor.GREEN + "Setting rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + (newRank == PlayerRank.DEFAULT ? "DEFAULT" : newRank.getInternalName()) + ChatColor.GREEN + ".");
                 wrapper.setRank(newRank);
 
                 Rank.setRank(uuid, newRank.getInternalName(), done -> GameAPI.updatePlayerData(uuid, UpdateType.RANK));

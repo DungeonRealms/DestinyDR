@@ -888,7 +888,8 @@ public class ClickHandler {
 
                         boolean newVal = !gp.isInvulnerable();
                         gp.setInvulnerable(newVal);
-                        gp.setTargettable(newVal);
+                        //If we are invunerable = true, then targetable = false.
+                        gp.setTargettable(!newVal);
 
                         if (!gp.isTargettable())
                             EntityAPI.untargetEntity(player, 20);

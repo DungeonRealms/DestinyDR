@@ -439,7 +439,6 @@ public class EntityAPI {
 
         int greenBars = (int) Math.ceil(hpPercentDecimal * maxBar);
         int redBars = maxBar - greenBars;
-        Bukkit.getLogger().info("Green: " + greenBars + " Red: " + redBars);
         for (int i = 0; i < greenBars; i++) {
             formatted += "|";
         }

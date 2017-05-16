@@ -420,7 +420,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if(player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
+            if (player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
@@ -714,7 +714,7 @@ public class MainListener implements Listener {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
 
-        if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
+        if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
         }
@@ -859,15 +859,20 @@ public class MainListener implements Listener {
         if (!(event.getEntity() instanceof Horse)) return;
         Horse horse = (Horse) event.getEntity();
         if (horse.getVariant() != Variant.MULE) return;
-        if (!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)) {
-            horse.remove();
-            return;
-        }
+
         if (horse.getOwner() == null) {
             horse.remove();
             return;
         }
-        horse.setLeashHolder((Player) horse.getOwner());
+
+        //If we're too far away, teleport back.
+        if (event.getReason() == UnleashReason.DISTANCE) {
+            //Teleport host?
+            if (horse.getOwner() != null) {
+                horse.teleport((Entity) horse.getOwner());
+            }
+        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
