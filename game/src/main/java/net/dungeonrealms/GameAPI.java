@@ -10,6 +10,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -59,9 +60,11 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
@@ -81,6 +84,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -260,7 +264,7 @@ public class GameAPI {
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         int level = wrapper.getLevel();
-        int mob_level = kill.getMetadata("level").get(0).asInt();
+        int mob_level = EntityAPI.getLevel(kill);
         int xp;
         double amplifier = 1.0;
         if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
@@ -1161,8 +1165,7 @@ public class GameAPI {
      */
     public static List<Entity> getNearbyMonsters(Location location, int radius) {
         return location.getWorld().getEntities().stream()
-                .filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type")
-                        && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))
+                .filter(mons -> mons.getLocation().distance(location) <= radius && EnumEntityType.HOSTILE_MOB.isType(mons))
                 .collect(Collectors.toList());
     }
 

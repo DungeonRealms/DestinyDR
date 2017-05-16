@@ -5,13 +5,12 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.game.mastery.Utils;
-
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -94,6 +93,7 @@ public class LootSpawner {
 	/**
 	 * Attempt to break this loot spawner.
 	 */
+	@SuppressWarnings("deprecation")
 	public void attemptBreak(Player player) {
 		if (getInventory().getContents().length > 0)
 			for (ItemStack stack : getInventory().getContents())

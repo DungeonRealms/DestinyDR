@@ -27,8 +27,7 @@ import java.util.stream.Collectors;
 public class DungeonListener implements Listener {
 	
 	//TODO: Mob nametag stuff.
-	// Lootchest particles better.
-	//TODO: Metadata
+	//TODO: Lootchest particles better.
 	//TODO: Prevent using items while sharding.
 	//TODO: Integrate new drops to dungeons.
 	//TODO: Finish support tools
@@ -36,9 +35,10 @@ public class DungeonListener implements Listener {
 	//TODO: Move to PreparedStatement.
 	//TODO: Stop using GamePlayer
 	//TODO: Mechanics should have their own events, like handleLogin, etc.
+	//TODO: Fix Durability.
+	//TODO: Fix /stats
 	
 	//TODO: Fix Attributes
-	//TODO: Fix Lootchests
 	//TODO: Convert items.
 	//TODO: Skeletons don't work fully or something
 	//TODO: Fix Chat

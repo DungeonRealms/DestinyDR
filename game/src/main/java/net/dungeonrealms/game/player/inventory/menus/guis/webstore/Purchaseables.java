@@ -1,11 +1,12 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Created by Rar349 on 5/10/2017.
  */
-@Getter
+@AllArgsConstructor @Getter
 public enum Purchaseables {
 
     LOOT_BUFF_20("Loot Buff", "\n20% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 0, true, true, ChatColor.AQUA),
@@ -30,42 +31,34 @@ public enum Purchaseables {
     SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, false, ChatColor.GOLD),
     SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, false, ChatColor.GOLD),
 
-    WIZARD_HAT("Wizard Hat", "\nEvery helmet you wear will look like\na wizard hat!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE),
-    CROWN("Gold Crown", "\nEvery helmet you wear will look like\na kings crown!", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD),
+    WIZARD_HAT("Wizard Hat", "\nEvery helmet you wear will look like\na wizard hat!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
+    CROWN("Gold Crown", "\nEvery helmet you wear will look like\na kings crown!", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD, true, 2),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 2, false, true, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, false, false, ChatColor.GREEN),
-    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 1, false, true, ChatColor.GOLD, ChatColor.GRAY,true);
+    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 1, false, true, ChatColor.GOLD, true, 0);
 
     private String name;
-    private boolean canHaveMultiple, shouldStore;
     private String description;
-    private WebstoreCategories category;
     private Material itemType;
+    private WebstoreCategories category;
     private int guiSlot;
-    private ChatColor displayNameColor, displayDescriptionColor;
+    private boolean canHaveMultiple, shouldStore;
+    private ChatColor displayNameColor;
     private boolean enabled;
+    private int meta;
 
     Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore) {
         this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, ChatColor.WHITE);
     }
 
     Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, ChatColor displayNameColor) {
-        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, displayNameColor, ChatColor.GRAY,true);
+        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, displayNameColor, true, 0);
     }
-
-    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, ChatColor displayNameColor, ChatColor displayDescColor, boolean enabled) {
-        this.name = name;
-        this.canHaveMultiple = hasMultiples;
-        this.description = description;
-        this.category = category;
-        this.itemType = itemType;
-        this.guiSlot = guiSlot;
-        this.displayNameColor = displayNameColor;
-        this.displayDescriptionColor = displayDescColor;
-        this.shouldStore = shouldStore;
-        this.enabled = enabled;
+    
+    public ChatColor getDisplayDescriptionColor() {
+    	return ChatColor.GRAY; // Until we ever have a perk that has a different one, we can keep it like this.
     }
 
     public List<String> getDescription(boolean showColors) {
@@ -74,7 +67,7 @@ public enum Purchaseables {
         if (showColors) {
             for (int index = 0; index < toReturn.size(); index++) {
                 String line = toReturn.get(index);
-                toReturn.set(index, displayDescriptionColor.toString() + line);
+                toReturn.set(index, getDisplayDescriptionColor() + line);
             }
         }
         return toReturn;
