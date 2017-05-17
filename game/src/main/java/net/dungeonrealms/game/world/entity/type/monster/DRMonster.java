@@ -26,10 +26,7 @@ import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.EntityLiving;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -53,6 +50,7 @@ public interface DRMonster {
 				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
 				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}};
 
+	public static final Class[] untargettable = new Class[] {EntityZombie.class, EntitySkeleton.class, EntitySilverfish.class, EntitySpider.class, EntityCaveSpider.class, DRMonster.class};
     default void onMonsterAttack(Player p) {
     	
     }
