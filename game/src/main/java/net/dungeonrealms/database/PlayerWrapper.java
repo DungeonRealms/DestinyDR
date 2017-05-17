@@ -1087,7 +1087,7 @@ public class PlayerWrapper {
     @SneakyThrows
     public void loadMuleInventory(ResultSet set) {
         String invString = set.getString("characters.mule_storage");
-        muleLevel = Math.max(set.getInt("characters.mule_level"), 3);
+        muleLevel = Math.max(set.getInt("characters.mule_level"), 1);
         MuleTier tier = MuleTier.getByTier(muleLevel);
         if (tier != null) {
             this.pendingMuleInventory = Bukkit.createInventory(null, tier.getSize(), "Mule Storage");

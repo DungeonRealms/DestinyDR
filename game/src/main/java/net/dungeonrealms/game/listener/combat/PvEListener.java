@@ -25,7 +25,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -50,86 +50,95 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackMob(EntityDamageByEntityEvent event) {
-    	if (!(event.getEntity() instanceof LivingEntity))
-    		return;
-    	
-    	Player damager = null;
-    	Projectile projectile = null;
-    	LivingEntity receiver = (LivingEntity) event.getEntity();
-    	
+
+        Bukkit.getLogger().info("Entity: " + (event.getEntity() instanceof LivingEntity));
+        if (!(event.getEntity() instanceof LivingEntity))
+            return;
+
+        Player damager = null;
+        Projectile projectile = null;
+        LivingEntity receiver = (LivingEntity) event.getEntity();
+
         if (GameAPI.isPlayer(event.getDamager())) {
-        	damager = (Player) event.getDamager();
-        } else if(DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager())) {
-        	ProjectileSource shooter = ((Projectile)event.getDamager()).getShooter();
-        	if(!(shooter instanceof Player))
-        		return;
-        	damager = (Player) shooter;
-        	projectile = (Projectile) event.getDamager();
+            damager = (Player) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager())) {
+            ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
+            if (!(shooter instanceof Player))
+                return;
+            damager = (Player) shooter;
+            projectile = (Projectile) event.getDamager();
         } else {
-        	return;
+            return;
         }
-        
+
         System.out.println(damager.getName() + " -> Melee attacking ?");
-        
+
         //  THIS ONLY HANDLES PvE  //
         if (event.getEntity() instanceof Player)
-        	return;
-        
+            return;
+
         // Don't attack pets!
         if (PetUtils.getPets().containsValue(event.getEntity()) || MountUtils.getMounts().containsValue(event.getEntity()))
-        	return;
-        
+            return;
+
         //  ONLY HANDLE MOB ATTACKS  //
         if (!Metadata.ENTITY_TYPE.has(event.getEntity()))
             return;
 
         event.setDamage(0);
-        
+
         System.out.println("Hooray we're firing.");
 
         if (DamageAPI.isInvulnerable(receiver)) {
             if (EntityAPI.isBoss(receiver))
-            	((DungeonBoss)EntityAPI.getMonster(receiver)).onBossAttacked(damager);
+                ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked(damager);
             event.setCancelled(true);
             damager.updateInventory();
             return;
         }
 
         CombatLog.updateCombat(damager);
-        
+
+        boolean dpsDummy = EnumEntityType.DPS_DUMMY.isType(event.getEntity());
         ItemStack held = damager.getEquipment().getItemInMainHand();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(held));
-        
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
+
         if (!EntityAPI.isBoss(receiver))
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
-        
+
+        AttackResult res = null;
         if (!ItemWeapon.isWeapon(held)) {
-        	System.out.println(held.getType() + " is not a wepaon.");
-        	AttackResult res = new AttackResult(damager, receiver);
-        	res.setDamage(1);
-        	HealthHandler.damageMonster(res);
-            checkPowerMove(event, receiver);
+            res = new AttackResult(damager, receiver);
+            res.setDamage(1);
+            System.out.println(held.getType() + " is not a wepaon.");
+            if (dpsDummy) {
+                res.applyDamage();
+            } else {
+                HealthHandler.damageMonster(res);
+                checkPowerMove(event, receiver);
+            }
             return;
         }
 
-        if(!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
-        	System.out.println("It's da bow");
-        	int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
-        	event.setCancelled(true);
-        	DamageAPI.knockbackEntity(damager, receiver, 1D + (.2D * tier));
-        	damager.updateInventory();
-        	return;
+        if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
+            System.out.println("It's da bow");
+            int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
+            event.setCancelled(true);
+            DamageAPI.knockbackEntity(damager, receiver, 1D + (.2D * tier));
+            damager.updateInventory();
+            return;
         }
-        
+
         System.out.println("We need to apply our damage.");
-        
+
         //  CALCULATE DAMAGE  //
-        AttackResult res = new AttackResult(damager, receiver, projectile);
-    	DamageAPI.calculateWeaponDamage(res, true);
-    	DamageAPI.applyArmorReduction(res, true);
-        
+        res = new AttackResult(damager, receiver, projectile);
+
+        DamageAPI.calculateWeaponDamage(res, !dpsDummy);
+        DamageAPI.applyArmorReduction(res, true);
+
         res.applyDamage();
-        
+
         //  EXTRA WEAPON ONLY DAMAGE  //
         DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, damager);
         checkPowerMove(event, receiver);
@@ -137,15 +146,15 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
-    	LivingEntity monster = event.getEntity();
-    	if (!EnumEntityType.HOSTILE_MOB.isType(monster) || EntityAPI.isBoss(monster)) //Return if you have uuid too.
-    		return;
-        
+        LivingEntity monster = event.getEntity();
+        if (!EnumEntityType.HOSTILE_MOB.isType(monster) || EntityAPI.isBoss(monster)) //Return if you have uuid too.
+            return;
+
         Player killer = monster.getKiller();
         Player highestDamage = null;
         if (HealthHandler.getMonsterTrackers().containsKey(monster.getUniqueId()))
             highestDamage = HealthHandler.getMonsterTrackers().get(monster.getUniqueId()).findHighestDamageDealer();
-        
+
         if (highestDamage == null || !highestDamage.isOnline()) {
             if (killer != null) {
                 highestDamage = killer;
@@ -153,11 +162,11 @@ public class PvEListener implements Listener {
                 return;
             }
         }
-        
-        for(int i = 0; i < 3; i++)
-        	DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
+
+        for (int i = 0; i < 3; i++)
+            DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
         HealthHandler.getMonsterTrackers().remove(monster.getUniqueId());
-        
+
         DRMonster drMonster = EntityAPI.getMonster(monster);
         EntityAPI.getEntityAttributes().remove(drMonster);
         drMonster.onMonsterDeath(highestDamage);
@@ -194,7 +203,7 @@ public class PvEListener implements Listener {
                     nearbyPartyMembers.add(highestDamage);
                     //  ADD BOOST  //
                     if (nearbyPartyMembers.size() > 2 && nearbyPartyMembers.size() <= 8)
-                    	exp *= 1.1 + (((double)nearbyPartyMembers.size() - 2) / 10);
+                        exp *= 1.1 + (((double) nearbyPartyMembers.size() - 2) / 10);
                     //  DISTRIBUTE EVENLY  //
                     exp /= nearbyPartyMembers.size();
                     for (Player player : nearbyPartyMembers)
@@ -208,19 +217,19 @@ public class PvEListener implements Listener {
         } else {
             wrapper.addExperience(exp, false, true);
         }
-        
-        StatColumn[] tierStats = new StatColumn[] {StatColumn.T1_MOB_KILLS, StatColumn.T2_MOB_KILLS, StatColumn.T3_MOB_KILLS, StatColumn.T4_MOB_KILLS, StatColumn.T5_MOB_KILLS};
+
+        StatColumn[] tierStats = new StatColumn[]{StatColumn.T1_MOB_KILLS, StatColumn.T2_MOB_KILLS, StatColumn.T3_MOB_KILLS, StatColumn.T4_MOB_KILLS, StatColumn.T5_MOB_KILLS};
         wrapper.getPlayerGameStats().addStat(tierStats[EntityAPI.getTier(monster) - 1]);
-        
+
         for (EnumAchievementMonsterKill ach : EnumAchievementMonsterKill.values())
-        	if (wrapper.getPlayerGameStats().getTotalMobKills() == ach.getKillRequirement())
-        		Achievements.giveAchievement(highestDamage, ach.getAchievement());
+            if (wrapper.getPlayerGameStats().getTotalMobKills() == ach.getKillRequirement())
+                Achievements.giveAchievement(highestDamage, ach.getAchievement());
     }
 
     private static void checkPowerMove(EntityDamageByEntityEvent event, LivingEntity receiver) {
-    	if (!EntityAPI.isMonster(receiver))
-    		return;
-    	
+        if (!EntityAPI.isMonster(receiver))
+            return;
+
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
             return;
 
@@ -233,8 +242,8 @@ public class PvEListener implements Listener {
                 PowerMove.doPowerMove("whirlwind", receiver, null);
             }
         } else if (EntityAPI.isBoss(receiver)) {
-        	if (event.getDamager() instanceof Player)
-        		((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked((Player) event.getDamager());
+            if (event.getDamager() instanceof Player)
+                ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked((Player) event.getDamager());
             powerChance = 3;
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);

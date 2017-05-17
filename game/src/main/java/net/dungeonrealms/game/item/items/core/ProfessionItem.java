@@ -154,7 +154,7 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	@Override
 	public ItemTier getTier() {
-		return ItemTier.getByTier(Math.max(ItemTier.values().length, (getLevel() / 20) + 1));
+		return ItemTier.getByTier(Math.max(1, (getLevel() / 20) + 1));
 	}
 	
 	/**

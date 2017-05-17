@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -23,6 +24,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.EntityInsentient;
 import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
@@ -134,7 +136,7 @@ public class EntityAPI {
         LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName);
 
         // Register mob element.
-        if (!monster.isFriendly() && new Random().nextInt(100) < monster.getElementalChance())
+        if (!monster.isFriendly() && ThreadLocalRandom.current().nextInt(100) < monster.getElementalChance())
             setMobElement(e, monster.getRandomElement());
 
         if (monster.isPassive())
@@ -339,17 +341,19 @@ public class EntityAPI {
         try {
             // Setup monster.
             World nmsWorld = ((CraftWorld) loc.getWorld()).getHandle();
-            monster = (DRMonster) type.getClazz().getDeclaredConstructor(World.class).newInstance(nmsWorld);
-            getEntityAttributes().put(monster, new AttributeList());
-            monster.setMonster(mType);
-            monster.setupMonster(tier);
-
-            // Add to world.
-            monster.getNMS().setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
-            nmsWorld.addEntity(monster.getNMS(), SpawnReason.CUSTOM);
+            EntityInsentient entity = type.getClazz().getDeclaredConstructor(World.class).newInstance(nmsWorld);
+            if (entity instanceof DRMonster) {
+                monster = (DRMonster) entity;
+                getEntityAttributes().put(monster, new AttributeList());
+                monster.setMonster(mType);
+                monster.setupMonster(tier);
+                // Add to world.
+                monster.getNMS().setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
+            }
+            nmsWorld.addEntity(monster == null ? entity : monster.getNMS(), SpawnReason.CUSTOM);
 
             // Setup bukkit data and return.
-            LivingEntity le = monster.getBukkit();
+            LivingEntity le = (LivingEntity) entity.getBukkitEntity();
             le.teleport(loc);
             le.setCollidable(true);
 
@@ -364,11 +368,14 @@ public class EntityAPI {
                 // Mark as dungeon mob.
                 if (dungeon) {
                     Metadata.DUNGEON.set(le, true);
-                    DungeonManager.getDungeon(loc.getWorld()).getTrackedMonsters().put(le, loc);
+                    Dungeon dung = DungeonManager.getDungeon(loc.getWorld());
+                    if (dung != null)
+                        dung.getTrackedMonsters().put(le, loc);
                 }
             }
 
-            calculateAttributes(monster);
+            if (monster != null)
+                calculateAttributes(monster);
             return le;
         } catch (Exception e) {
             e.printStackTrace();
@@ -411,7 +418,8 @@ public class EntityAPI {
         int maxBar = boss ? getBarLength(getTier(ent)) : 60;
         ChatColor cc = boss ? ChatColor.GOLD : ChatColor.GREEN;
 
-        double hpPercent = HealthHandler.getHPPercent(ent) * 100D;
+        double hpPercentDecimal = HealthHandler.getHPPercent(ent);
+        double hpPercent = hpPercentDecimal * 100D;
         hpPercent = Math.max(1, hpPercent);
 
         double percent_interval = (100.0D / maxBar);
@@ -428,9 +436,10 @@ public class EntityAPI {
 
         String formatted = cc + "" + ChatColor.BOLD + "║" + ChatColor.RESET + "" + cc + (elite || boss ? ChatColor.BOLD : "");
 
-        while (bar_count < maxBar) {
-            hpPercent -= percent_interval;
-            bar_count++;
+
+        int greenBars = (int) Math.ceil(hpPercentDecimal * maxBar);
+        int redBars = maxBar - greenBars;
+        for (int i = 0; i < greenBars; i++) {
             formatted += "|";
         }
 
@@ -438,10 +447,8 @@ public class EntityAPI {
         if (elite)
             formatted += ChatColor.BOLD;
 
-        while (bar_count < maxBar) {
+        for (int i = 0; i < redBars; i++)
             formatted += "|";
-            bar_count++;
-        }
 
         formatted = formatted + cc + ChatColor.BOLD + "║";
 

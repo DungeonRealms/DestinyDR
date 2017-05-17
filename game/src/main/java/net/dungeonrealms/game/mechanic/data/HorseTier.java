@@ -75,6 +75,7 @@ public enum HorseTier {
     }
 
     public List<String> getDescription() {
+        if(this == MULE)return getDescription(MuleTier.OLD);
 
         String color = ChatColor.GRAY + ChatColor.ITALIC.toString();
         List<String> retr = Lists.newArrayList();

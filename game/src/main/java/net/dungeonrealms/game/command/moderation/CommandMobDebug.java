@@ -48,7 +48,7 @@ public class CommandMobDebug extends BaseCommand {
 
         if (handle instanceof EntityInsentient) {
             EntityInsentient ent = (EntityInsentient) handle;
-            player.sendMessage(ChatColor.AQUA + "EntityInsentient");
+            player.sendMessage(ChatColor.AQUA + "Entity Class: " + handle.getClass());
             player.sendMessage(ChatColor.GREEN + "Alive Time: " + entity.getTicksLived());
             player.sendMessage(ChatColor.AQUA + "Attributes:");
             AttributeList list = EntityAPI.getAttributes(entity);

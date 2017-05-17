@@ -22,6 +22,7 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
@@ -116,10 +117,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -296,7 +294,9 @@ public class GameAPI {
     }
 
     public static ChatColor getTierColor(int tier) {
-        return ItemTier.getByTier(tier).getColor();
+        ItemTier retr = ItemTier.getByTier(tier);
+        if (retr == null) return ItemTier.TIER_1.getColor();
+        return retr.getColor();
     }
 
     public static GameClient getClient() {
@@ -1606,12 +1606,17 @@ public class GameAPI {
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
     }
 
-    public static void addCooldown(Metadatable m, Metadata type, int ticks) {
-        type.set(m, true);
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> type.remove(m), 20);
+    public static void addCooldown(Metadatable m, Metadata type, int seconds) {
+        type.set(m, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
+    }
+
+    public static String getFormattedCooldown(Metadatable m, Metadata type) {
+        long val = type.get(m).asLong();
+        if (val <= System.currentTimeMillis()) return null;
+        return TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000);
     }
 
     public static boolean isCooldown(Metadatable m, Metadata type) {
-        return type.get(m).asBoolean();
+        return type.get(m).asLong() > System.currentTimeMillis();
     }
 }

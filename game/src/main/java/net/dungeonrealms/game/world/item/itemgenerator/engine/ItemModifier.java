@@ -31,6 +31,8 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
         this.possibleApplicants = Arrays.asList(possibleItems);
         this.possibleAttributes = attributes;
         this.currentAttribute = attributes[0];
+
+
         ItemGenerator.modifiers.put(this.getClass(), this);
         ItemGenerator.modifierObjects.add(this);
     }
@@ -58,6 +60,7 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 				return condition;
 		return null;
 	}
+
 
 	public void rollAttribute() {
 		if (this.possibleAttributes.length > 1)

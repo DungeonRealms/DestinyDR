@@ -885,9 +885,11 @@ public class ClickHandler {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) break;
                         // invert invulnerable flag
-                        gp.setInvulnerable(!gp.isInvulnerable());
-                        // targettable should always be the opposite of invulnerable for allowfight
-                        gp.setTargettable(!gp.isInvulnerable());
+
+                        boolean newVal = !gp.isInvulnerable();
+                        gp.setInvulnerable(newVal);
+                        //If we are invunerable = true, then targetable = false.
+                        gp.setTargettable(!newVal);
 
                         if (!gp.isTargettable())
                             EntityAPI.untargetEntity(player, 20);

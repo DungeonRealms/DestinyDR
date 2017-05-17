@@ -8,7 +8,6 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
-import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -17,6 +16,7 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -99,6 +99,8 @@ public class DamageListener implements Listener {
         if (event.getEntity().getType() != EntityType.ARMOR_STAND)
             return;
 
+        if(EnumEntityType.DPS_DUMMY.isType(event.getEntity()))return;
+
         event.setDamage(0);
         event.setCancelled(true);
     }
@@ -119,19 +121,6 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
     }
 
-    /**
-     * Makes mobs untarget a player after they have entered a safezone.
-     *
-     * @param event
-     */
-    public void onPlayerEnterSafezone(PlayerEnterRegionEvent event) {
-        if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
-            for (Entity ent : event.getPlayer().getNearbyEntities(10, 10, 10)) {
-                if (!(ent instanceof Creature)) continue;
-                ((Creature) ent).setTarget(null);
-            }
-        }
-    }
 
     /**
      * Listen for the monsters hitting a player
@@ -636,6 +625,13 @@ public class DamageListener implements Listener {
             if (EntityAPI.isElite(e))
                 return;
 
+            if (MountUtils.isMount(e) && e instanceof Horse) {
+                Horse horse = (Horse) e;
+                if (horse.getOwner() != null) {
+                    MountUtils.removeMount((Player) horse.getOwner());
+                    return;
+                }
+            }
             Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name());
             e.remove();
             return;
@@ -694,11 +690,12 @@ public class DamageListener implements Listener {
                     //OB Algoritm
                     if (blocks >= (ent.isInsideVehicle() ? 6 : 2))
                         dmg = maxHP * 0.02D * dmg;
+
                     Player p = (Player) event.getEntity();
                     int hp = HealthHandler.getHP(p);
 
                     //  PREVENT DYING  //
-                    dmg = Math.max(dmg, hp - 1);
+                    dmg = Math.min(dmg, hp - 1);
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);
@@ -746,7 +743,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        if(event.getCause().equals(DamageCause.FALL)) {
+        if (event.getCause().equals(DamageCause.FALL)) {
             System.out.println("The fall damage: " + dmg);
         }
         res.setDamage(dmg);

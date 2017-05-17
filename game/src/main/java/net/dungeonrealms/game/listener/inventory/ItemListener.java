@@ -13,8 +13,10 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +25,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,10 +44,10 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent event) {
-    	Player player = event.getPlayer();
-    	Party p = Affair.getParty(player);
-    	if (p != null)
-    		Affair.getInstance().handlePartyPickup(event, p);
+        Player player = event.getPlayer();
+        Party p = Affair.getParty(player);
+        if (p != null)
+            Affair.getInstance().handlePartyPickup(event, p);
     }
 
     /**
@@ -51,6 +55,12 @@ public class ItemListener implements Listener {
      */
     @EventHandler
     public void onItemSpawn(ItemSpawnEvent event) {
+        //Remove those shitty leashes..
+        if (event.getEntity().getItemStack() != null && event.getEntity().getItemStack().getType() == Material.LEASH && !event.getEntity().getItemStack().hasItemMeta()) {
+            event.setCancelled(true);
+            event.getEntity().remove();
+            return;
+        }
         this.applyRarityGlow(event.getEntity());
     }
 
@@ -62,16 +72,16 @@ public class ItemListener implements Listener {
         for (ItemRarity rarity : ItemRarity.values()) {
             for (String s : lore) {
                 if (s.contains(rarity.getName())) {
-                	Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
-                		//Filter out players who have toggle glow off.
-                		List<Player> sendTo = GameAPI.getNearbyPlayersAsync(entity.getLocation(), 10).stream().filter(p -> {
-                		    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+                    Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
+                        //Filter out players who have toggle glow off.
+                        List<Player> sendTo = GameAPI.getNearbyPlayersAsync(entity.getLocation(), 10).stream().filter(p -> {
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
                             return wrapper != null && wrapper.getToggles().getState(Toggles.GLOW);
                         }).collect(Collectors.toList());
-                		//Set the item as glowing.
-                		GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), sendTo);
-                	});
-                	return;
+                        //Set the item as glowing.
+                        GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), sendTo);
+                    });
+                    return;
                 }
             }
         }
@@ -88,8 +98,8 @@ public class ItemListener implements Listener {
         if (event.isCancelled()) return;
         Player p = event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(p);
-        if(gp != null && !gp.isAbleToDrop())
-        	return;
+        if (gp != null && !gp.isAbleToDrop())
+            return;
         ItemStack item = event.getItemDrop().getItemStack();
 
         //  SOULBOUND ITEM DESTRUCTION PROMPT  //
@@ -99,88 +109,91 @@ public class ItemListener implements Listener {
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor.RED + " this Soulbound item? ");
             p.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N" + ChatColor.GRAY + " to confirm.");
             p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1.2F);
-            
-            if(p.getItemOnCursor().equals(item))
-            	p.setItemOnCursor(null);
-            
+
+            if (p.getItemOnCursor().equals(item))
+                p.setItemOnCursor(null);
+
             Chat.promptPlayerConfirmation(p, () -> {
-            	p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
+                p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
             }, () -> {
-            	p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
+                p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
                 GameAPI.giveOrDropItem(p, item.clone());
             });
 
             return;
         }
-        
+
         //  PREVENT DROPPING PERMANENTLY UNTRADEABLE ITEMS  //
-        if(ItemManager.isItemPermanentlyUntradeable(item)) {
-        	event.setCancelled(true);
-        	event.getItemDrop().remove();
-        	event.getPlayer().sendMessage(ChatColor.GRAY + "This item is " + ChatColor.UNDERLINE + "not" + ChatColor.GRAY + " droppable.");
-        	return;
+        if (ItemManager.isItemPermanentlyUntradeable(item)) {
+            event.setCancelled(true);
+            event.getItemDrop().remove();
+            event.getPlayer().sendMessage(ChatColor.GRAY + "This item is " + ChatColor.UNDERLINE + "not" + ChatColor.GRAY + " droppable.");
+            return;
         }
 
         //  PREVENT DROPPING UNTRADEABLE ITEMS  //
-        if (!ItemManager.isItemTradeable(item)) { 
-        	event.getItemDrop().remove();
-        	p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
-        	p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-        	return;
+        if (!ItemManager.isItemTradeable(item)) {
+            event.getItemDrop().remove();
+            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+            return;
         }
-        
+
         PlayerManager.checkInventory(event.getPlayer());
-        
+
         //  SILENTLY REMOVE UNDROPPABLE ITEMS  //
-        if(!ItemManager.isItemDroppable(item)) {
-        	event.getItemDrop().remove();
-        	event.setCancelled(true);
-        	return;
+        if (!ItemManager.isItemDroppable(item)) {
+            event.getItemDrop().remove();
+            event.setCancelled(true);
+            return;
         }
     }
-    
+
     @EventHandler //Prevents dropping undroppable items and having the pop back up in your inventory.
     public void onInventoryClick(InventoryClickEvent evt) {
-    	if (evt.getAction() != InventoryAction.DROP_ALL_SLOT && evt.getAction() != InventoryAction.DROP_ONE_SLOT)
-    		return;
-    	
-    	if (!(new VanillaItem(evt.getCurrentItem()).isUndroppable()))
-    		return;
-    	
-    	evt.setCancelled(true);
+        if (evt.getAction() != InventoryAction.DROP_ALL_SLOT && evt.getAction() != InventoryAction.DROP_ONE_SLOT)
+            return;
+
+        if (!(new VanillaItem(evt.getCurrentItem()).isUndroppable()))
+            return;
+
+        evt.setCancelled(true);
     }
-    
+
     /**
      * This is a prank for the people who are supposedly using vanilla potions in pvp.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     private void playPotionPrank(PlayerInteractEvent evt) {
-    	ItemStack item = evt.getItem();
-    	Player player = evt.getPlayer();
-    	if(item == null || item.getType() == Material.AIR || PotionItem.isPotion(item) || (item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION))
-    		return;
-    	evt.setCancelled(true);
-    	player.getInventory().remove(item);
-    	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removing vanilla potion from " + player.getName() + ".");
-    	
-    	player.sendMessage(ChatColor.GRAY + " *Glug* *Glug* *Glug*");
-    	player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, 1);
-    	
-    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-    		player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 375, 2));
-    		player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 350, 2));
-    		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 350, 2));
-    	}, 5);
-    	
-    	for(int second = 0; second < 15; second++) { 
-    		for(int i = 0; i < 4; i++) {
-    			final int in = i;
-    			Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> { if(player.isOnline()) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_DEATH, 0.17f + 0.33f * in, 0.25f * in + 0.25f);}, (second * 20) + 1 + i * 5);
-    		}
-    	}
-    	
-    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-    		player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Regret shoots through you as vomit pours from your mouth.");
-    	}, 16);
+        ItemStack item = evt.getItem();
+        Player player = evt.getPlayer();
+        if (item == null || item.getType() == Material.AIR || PotionItem.isPotion(item) || (item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION))
+            return;
+        evt.setCancelled(true);
+        player.getInventory().remove(item);
+        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removing vanilla potion from " + player.getName() + ".");
+
+        player.sendMessage(ChatColor.GRAY + " *Glug* *Glug* *Glug*");
+        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, 1);
+
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 375, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 350, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 350, 2));
+        }, 5);
+
+        for (int second = 0; second < 15; second++) {
+            for (int i = 0; i < 4; i++) {
+                final int in = i;
+                Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                    if (player.isOnline())
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_DEATH, 0.17f + 0.33f * in, 0.25f * in + 0.25f);
+                }, (second * 20) + 1 + i * 5);
+            }
+        }
+
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Regret shoots through you as vomit pours from your mouth.");
+        }, 16);
     }
 }

@@ -73,7 +73,7 @@ public class DataListener implements Listener {
         wrapper.loadPlayerAfterLogin(event.getPlayer());
         //Overwrite whatever we have in there.
         SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().setResourcePack(Constants.RESOURCE_PACK), 1);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().setResourcePack(Constants.RESOURCE_PACK), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

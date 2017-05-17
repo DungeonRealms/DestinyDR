@@ -418,7 +418,7 @@ public class Item {
     }
 
     public enum WeaponAttributeType implements AttributeType {
-        DAMAGE("DMG: ", "", "damage", 100, false, true, "", "", 0),
+        DAMAGE("DMG: ", "", "damage", 100, true, true, "", "", -1),
         VS_MONSTERS("vs. MONSTERS: +", "% DMG", "vsMonsters", "", "Slaying", 9),
         VS_PLAYER("vs. PLAYERS: +", "% DMG", "vsPlayers", "", "Slaughter", 10),
         PRECISION("PRECISION: ", "%", "precision", "Precise", "", 1),
@@ -450,7 +450,7 @@ public class Item {
         }
         
         WeaponAttributeType(String prefix, String suffix, String nbtName, int chance, String displayPrefix, String displaySuffix, int displayPriority) {
-        	this(prefix, suffix, nbtName, chance, true, displayPrefix, displaySuffix, displayPriority);
+        	this(prefix, suffix, nbtName, chance, false, displayPrefix, displaySuffix, displayPriority);
         }
         
         WeaponAttributeType(String prefix, String suffix, String nbtName, int chance, boolean reRoll, String displayPrefix, String displaySuffix, int displayPriority) {
@@ -506,11 +506,11 @@ public class Item {
     }
 
     public enum ArmorAttributeType implements AttributeType {
-    	DAMAGE("DPS: ", "%", "dps", 50, false, true, "", "", -1), 
-    	ARMOR("ARMOR: ", "%", "armor", 100, false, true, "", "", -1),
-    	HEALTH_POINTS("HP: +", "", "healthPoints", 100, false, "", "Fortitude", "Fortitude", -1),
-    	ENERGY_REGEN("ENERGY REGEN: +", "%", "energyRegen", 50, false, "", "", "", 4),
-    	HEALTH_REGEN("HP REGEN: +", " HP/s", "healthRegen", 100, false, "Mending", "", "", 2),
+    	DAMAGE("DPS: ", "%", "dps", 50, true, true, "", "", -1),
+    	ARMOR("ARMOR: ", "%", "armor", 100, true, true, "", "", -1),
+    	HEALTH_POINTS("HP: +", "", "healthPoints", 100, true, "", "Fortitude", "Fortitude", -1),
+    	ENERGY_REGEN("ENERGY REGEN: +", "%", "energyRegen", 50, true, "", "", "", 4),
+    	HEALTH_REGEN("HP REGEN: +", " HP/s", "healthRegen", 100, true, "Mending", "", "", 2),
     	STRENGTH("STR: +", "", "strength"),
     	DEXTERITY("DEX: +", "", "dexterity"),
     	VITALITY("VIT: +", "", "vitality"),
@@ -554,7 +554,7 @@ public class Item {
         }
 
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {
-            this(prefix, suffix, NBTName, chance, true, displayPrefix, displaySuffix, secondaryDisplaySuffix, displayPriority);
+            this(prefix, suffix, NBTName, chance, false, displayPrefix, displaySuffix, secondaryDisplaySuffix, displayPriority);
         }
 
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {

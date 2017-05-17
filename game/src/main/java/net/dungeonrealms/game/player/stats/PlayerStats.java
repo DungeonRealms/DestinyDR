@@ -78,6 +78,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     	Inventory inv = Bukkit.createInventory(null, 18, "Stat Points");
     	inv.setItem(0, loadStatsInfoItem());
     	inv.setItem(6, loadConfirmItem());
+    	updateItems(inv);
     	player.openInventory(inv);
     }
 
