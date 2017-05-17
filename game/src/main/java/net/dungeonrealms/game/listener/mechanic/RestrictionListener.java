@@ -319,6 +319,15 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
+
+        if (event.getEntity() instanceof ArmorStand) {
+            if (EnumEntityType.DPS_DUMMY.isType(event.getEntity())) {
+                if (!(event.getDamager() instanceof Player || event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -500,7 +509,7 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        if(!isDefenderDummy) {
+        if (!isDefenderDummy) {
             if (!isAttackerPlayer || !isDefenderPlayer) {
                 if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
                     event.setCancelled(true);

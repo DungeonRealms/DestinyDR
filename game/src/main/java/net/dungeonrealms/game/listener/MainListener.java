@@ -651,7 +651,8 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
-        if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
+        evt.setCancelled(true);
+        /*if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
             evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
                 if (ent instanceof ItemFrame) {
                     ItemFrame itemFrame = (ItemFrame) ent;
@@ -660,7 +661,7 @@ public class MainListener implements Listener {
                 }
             });
             evt.setCancelled(true);
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

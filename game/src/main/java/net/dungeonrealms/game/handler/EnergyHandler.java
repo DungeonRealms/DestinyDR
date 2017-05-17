@@ -16,6 +16,7 @@ import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -333,27 +334,30 @@ public class EnergyHandler implements GenericMechanic {
     public static float getWeaponSwingEnergyCost(ItemStack itemStack) {
         switch (itemStack.getType()) {
             case AIR:
-                return 0.025f;
+                return 0.05f;
             case WOOD_SWORD:
-                return 0.06F * 2F;
+                return 0.06F;
             case STONE_SWORD:
-                return 0.071F * 1.0F;
+                return 0.071F;
             case IRON_SWORD:
-                return 0.0833F * 1.0F;
+                return 0.0833F;
             case DIAMOND_SWORD:
-                return 0.125F * 1.0F;
+                return 0.125F;
             case GOLD_SWORD:
-                return 0.135F * 1.0F;
+                return 0.135F;
+
             case WOOD_AXE:
-                return 0.0721F * 1.3F;
+                return 0.09373F;
             case STONE_AXE:
-                return 0.0833F * 1.2F;
+                return 0.09996F;
             case IRON_AXE:
-                return 0.10F * 1.2F;
+                return 0.12F;
             case DIAMOND_AXE:
-                return 0.125F * 1.2F;
+                return 0.15F;
             case GOLD_AXE:
-                return 0.135F * 1.2F;
+                return 0.162F;
+
+
             case WOOD_SPADE:
                 return 0.0721F;
             case STONE_SPADE:
@@ -365,15 +369,15 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_SPADE:
                 return 0.135F;
             case WOOD_HOE:
-                return 0.10F / 1.1F;
+                return 0.09090909F;
             case STONE_HOE:
-                return 0.12F / 1.1F;
+                return 0.10909091F;
             case IRON_HOE:
-                return 0.13F / 1.1F;
+                return 0.11818182F;
             case DIAMOND_HOE:
-                return 0.14F / 1.1F;
+                return 0.12727273F;
             case GOLD_HOE:
-                return 0.15F / 1.1F;
+                return 0.13636364F;
             case BOW:
             	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
             	return 0.105F + (gear.getTier().getId() * 0.2F);
