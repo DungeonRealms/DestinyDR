@@ -48,6 +48,27 @@ public class Utils {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
+    public static <T extends Comparable> LinkedHashMap<UUID, T> sortMap(Map<UUID, T> unsortMap) {
+        List<Map.Entry<UUID, T>> list = new LinkedList<>(unsortMap.entrySet());
+
+        // Sorting the list based on values
+        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        // Maintaining insertion order with the help of LinkedList
+        LinkedHashMap<UUID, T> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<UUID, T> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
+    }
+
+    private static DecimalFormat dFormat = new DecimalFormat("#,###.##");
+
+    public static String formatCommas(double val) {
+        return dFormat.format(val);
+    }
+
     public static void printTrace() {
         StackTraceElement trace = new Exception().getStackTrace()[2];
 

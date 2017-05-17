@@ -44,7 +44,6 @@ import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -84,6 +83,7 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -733,16 +733,42 @@ public class MainListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event){
+    public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event) {
         if (EnumEntityType.DPS_DUMMY.isType(event.getRightClicked())) {
             event.setCancelled(true);
             //Show damage dealt?
             DamageTracker tracker = HealthHandler.getMonsterTrackers().get(event.getRightClicked().getUniqueId());
-            if(tracker != null){
+            Player player = event.getPlayer();
+            if (tracker != null) {
                 //Send tracker message.
+                if (GameAPI.isCooldown(player, Metadata.DUMMY_INFO)) {
+                    return;
+                }
+                GameAPI.addCooldown(player, Metadata.DUMMY_INFO, 5);
+
+                if (tracker.getDamagers().isEmpty()) {
+                    player.sendMessage(ChatColor.RED + "No damage has been dealt to this DPS Dummy!");
+                    return;
+                }
+
+                LinkedHashMap<UUID, Double> sorted = Utils.sortMap(tracker.getDamagers());
+
+                int showing = Math.min(10, sorted.size());
+
+                Utils.sendCenteredMessage(player, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DAMAGE TRACKER");
+                AtomicInteger index = new AtomicInteger(1);
+                sorted.forEach((id, damage) -> {
+                    if (damage > 0.0) {
+                        if (index.get() > 10) return;
+                        String name = SQLDatabaseAPI.getInstance().getNameFromUUID(id);
+                        if (name == null) return;
+                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + index.getAndIncrement() + ". " + ChatColor.GRAY + name + " - " + ChatColor.GREEN + ChatColor.BOLD + Utils.formatCommas(Math.round(damage)) + " DMG");
+                    }
+                });
             }
         }
     }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerEnchant(EnchantItemEvent event) {
         event.setCancelled(true);

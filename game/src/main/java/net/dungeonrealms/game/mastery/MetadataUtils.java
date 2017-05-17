@@ -78,7 +78,8 @@ public class MetadataUtils {
 		//Cooldowns
 		REALM_COOLDOWN(-1),
 		PORTAL_COOLDOWN(-1),
-		DPS_DUMMY(-1);
+		DPS_DUMMY(-1),
+		DUMMY_INFO(-1);
 		
 		private Object defaultValue;
 		
