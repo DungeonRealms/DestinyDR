@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.item.itemgenerator.engine;
 
+import lombok.Getter;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -7,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModifierCondition {
-	
+
+	@Getter
 	private Item.ItemTier tier;
 	private Item.ItemRarity rarity;
 	private ModifierRange range;

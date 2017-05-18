@@ -10,6 +10,7 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.listener.combat.DamageType;
@@ -17,13 +18,13 @@ import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -45,11 +46,10 @@ import org.inventivetalent.bossbar.BossBarAPI.Style;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Created by Kieran on 10/3/2015.
- */
 public class HealthHandler implements GenericMechanic {
 
     @Getter
@@ -205,7 +205,7 @@ public class HealthHandler implements GenericMechanic {
         } else if (GameAPI.isNonPvPRegion(player.getLocation())) {
             hpColor = ChatColor.YELLOW;
         }
-        String playerHPInfo = hpColor + "" + ChatColor.BOLD + "HP " + hpColor + currentHP
+        String playerHPInfo = hpColor.toString() + ChatColor.BOLD + "HP " + hpColor + currentHP
                 + (currentHP != maxHP ? ChatColor.BOLD + " / " + hpColor + (int) maxHP : "");
 
         //  GENERATE XP STRING  //
@@ -265,42 +265,28 @@ public class HealthHandler implements GenericMechanic {
                 continue;
 
             PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-            if (pw != null && pw.isAttributesLoaded())
-                heal(player, getRegen(player), false);
+            if (pw == null || !pw.isAttributesLoaded())
+                continue;
+
+            heal(player, getRegen(player));
         }
     }
-    
-    /**
-     * Heal an entity.
-     * @param e
-     * @param amount
-     */
+
     public static void heal(Entity e, int amount) {
-    	heal(e, amount, true);
-    }
-    
-    /**
-     * Heal an entity.
-     * @param e
-     * @param amount
-     * @param showDebug
-     */
-    public static void heal(Entity e, int amount, boolean showDebug) {
-    	int currentHP = getHP(e);
-    	int maxHP = getMaxHP(e);
-    	if (currentHP >= maxHP || amount <= 0)
-    		return; // Don't bother
-    	setHP(e, currentHP + amount);
-    	
-    	// Show message to players only.
-    	if (!(e instanceof Player))
-    		return;
-    	
-    	if (showDebug) {
-    		int newHP = getHP(e);
-    		PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
-    				+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
-    	}
+        int currentHP = getHP(e);
+        int maxHP = getMaxHP(e);
+        if (currentHP >= maxHP || amount <= 0)
+            return; // Don't bother
+        setHP(e, currentHP + amount);
+
+        // Show message to players only.
+        if (!(e instanceof Player))
+            return;
+
+        //int newHP = getHP(e);
+        //TODO: Re-enable this, but make it not show if you're getting it from gear hp/s.
+//    	PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
+//    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
     }
 
     /**
@@ -417,8 +403,10 @@ public class HealthHandler implements GenericMechanic {
             defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
-        ParticleAPI.spawnBlockParticles(player.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
-        
+        Random r = ThreadLocalRandom.current();
+        player.getWorld().spawnParticle(Particle.BLOCK_DUST, player.getLocation().clone().add(0, 1, 0), 10,
+                r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
+
         //  DISABLE DEATH FROM FIRE TICK  //
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
             return;
@@ -440,7 +428,7 @@ public class HealthHandler implements GenericMechanic {
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
 
         //  PERMA DEATH ON EVENT SHARDS  //
-        if (DungeonRealms.isEvent()) {
+        /*if (DungeonRealms.isEvent()) {
             if (Rank.isTrialGM(player)) {
                 player.sendMessage(ChatColor.GOLD + "Death has acknowledged your identity and chosen to spare your life.");
             } else {
@@ -450,7 +438,7 @@ public class HealthHandler implements GenericMechanic {
                     PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "You have been eliminated", null);
                 }, 5);
             }
-        }
+        }*/
 
         if (player.hasMetadata("lastDeathTime") && System.currentTimeMillis() - player.getMetadata("lastDeathTime").get(0).asLong() <= 100)
             return false;
@@ -590,12 +578,20 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
-        ParticleAPI.spawnBlockParticles(defender.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
+        Random r = new Random();
+        defender.getWorld().spawnParticle(Particle.BLOCK_DUST, defender.getLocation().clone().add(0, 1, 0), 10,
+                r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
 
         if (attacker != null && GameAPI.isPlayer(attacker)) {
             handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);
             checkForNewTarget(defender);
 
+            if(isDPSDummy){
+                DPSDummy dummy = ItemDPSDummy.dpsDummies.get(defender);
+                if(dummy != null){
+                    dummy.trackDamage(attacker.getUniqueId(), damage);
+                }
+            }
             if (!defender.hasMetadata("uuid")) {
                 PlayerWrapper atk = PlayerWrapper.getWrapper((Player) attacker);
                 String customNameAppended = Metadata.CUSTOM_NAME.get(defender).asString();

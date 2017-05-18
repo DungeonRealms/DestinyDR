@@ -1,14 +1,23 @@
 package net.dungeonrealms.game.command.donation;
 
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 
 /**
@@ -25,6 +34,7 @@ public class CommandDonation extends BaseCommand {
         if(!hasPerms) return true;
 
         if(args.length < 1) return false;
+
 
         String action = args[0];
         if(action.equalsIgnoreCase("help")) {
@@ -67,6 +77,64 @@ public class CommandDonation extends BaseCommand {
                     sender.sendMessage(removed ? "Successfully removed the transaction!" : "Could not find any pending purchases with that transaction id");
                     return;
                 });
+            });
+
+            return true;
+        } else if(action.equalsIgnoreCase("chargeback")) {
+            if(args.length < 3) {
+                sender.sendMessage("Please use /drdonation chargeback <uuid> <transactionID>");
+                return true;
+            }
+            UUID playerId;
+
+            try {
+                playerId = UUID.fromString(args[1]);
+            } catch(Exception e) {
+                sender.sendMessage("Invalid uuid specified!");
+                Constants.log.info("/drdonation chargeback was used with an invalid UUID. The UUID: " + args[1]);
+                return true;
+            }
+
+            int transactionID;
+            try {
+                transactionID = Integer.parseInt(args[2]);
+            } catch(Exception e) {
+                sender.sendMessage("The transactionID must be an integer!");
+                return true;
+            }
+
+            PlayerWrapper.getPlayerWrapper(playerId, false, true, (wrapper) -> {
+                if(wrapper == null) {
+                    Constants.log.info("/drdonation chargeback was used with a UUID that has never logged in. The UUID: " + args[1]);
+                    sender.sendMessage("/drdonation chargeback was used with a UUID that has never logged in. The UUID: " + args[1]);
+                    return;
+                }
+
+
+                for(PendingPurchaseable pending : wrapper.getPendingPurchaseablesUnlocked()) {
+                    if(pending == null) continue;
+                    if(pending.getTransactionId() == transactionID) {
+                        Constants.log.info("The UUID '" + args[1] + "' charged back a pending purchase so we didn't punish him!");
+                        sender.sendMessage("The UUID '" + args[1] + "' charged back a pending purchase so we didn't punish him!");
+                        return;
+                    }
+                }
+
+                StringBuilder discordMessage = new StringBuilder(wrapper.getPlayerName());
+                discordMessage.append(" has been perm banned for charging back!");
+
+                //It's not in his pending so he must of claimed it so ban him.
+                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + discordMessage);
+
+                Player online = Bukkit.getPlayer(playerId);
+                if (online != null) {
+                    CombatLog.removeFromCombat(online);
+                    CombatLog.removeFromPVP(online);
+                }
+
+                sender.sendMessage(discordMessage.toString());
+                PunishAPI.ban(playerId, wrapper.getPlayerName(), 0, 0, "Charge Back", null);
+
             });
 
             return true;
@@ -119,6 +187,24 @@ public class CommandDonation extends BaseCommand {
                 return true;
             }
 
+            int transactionID = -1;
+
+            if(isAdd && fromPending) {
+                if(args.length < 6) {
+                    sender.sendMessage("No transaction ID specified. Using -1 as a default.");
+                    sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID>'");
+                } else {
+                    try {
+                        transactionID = Integer.parseInt(args[5]);
+                    } catch (Exception e) {
+                        sender.sendMessage("The transaction ID must be an integer!");
+                        return true;
+                    }
+                }
+            }
+
+            final int realTransactionID = transactionID;
+
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false, (uuid) -> {
                 if(uuid == null) {
                     sender.sendMessage("That player has never logged onto Dungeon Realms!");
@@ -150,8 +236,8 @@ public class CommandDonation extends BaseCommand {
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
-                    }else if(isAdd && fromPending) {
-                        int returnCode = item.addNumberPending(wrapper,amount,sender.getName(),Utils.getDateString(),-1,true);
+                    } else if(isAdd && fromPending) {
+                        int returnCode = item.addNumberPending(wrapper,amount,sender.getName(),Utils.getDateString(),realTransactionID,true);
                         if (returnCode == Purchaseables.NO_MULTIPLES) {
                             sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
                         } else if (returnCode == Purchaseables.SUCCESS) {

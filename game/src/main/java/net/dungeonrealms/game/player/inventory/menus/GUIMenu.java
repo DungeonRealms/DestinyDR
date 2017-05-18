@@ -160,4 +160,10 @@ public abstract class GUIMenu extends ShopMenu {
         entityPlayer.updateInventory(entityPlayer.activeContainer);
     }
 
+    public void reconstructGUI(Player player) {
+        clear();
+        setItems();
+        player.updateInventory();
+    }
+
 }
