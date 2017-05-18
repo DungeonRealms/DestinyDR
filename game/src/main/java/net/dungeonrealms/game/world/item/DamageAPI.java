@@ -180,7 +180,7 @@ public class DamageAPI {
 
         //  STRENGTH BUFF  //
         damage = applyIncreaseDamagePotion(attacker.getEntity(), damage);
-        
+
         //  ADD DAMAGE BONUS  //
         if (attacker.getEntity().hasMetadata("damageBonus"))
             damage += (damage * (attacker.getEntity().getMetadata("damageBonus").get(0).asDouble() / 100.));
@@ -606,7 +606,7 @@ public class DamageAPI {
     }
 
     public static void knockbackEntity(Player p, Entity ent, double speed) {
-        if (ent instanceof Horse) {
+        if (ent instanceof Horse || ent instanceof ArmorStand) {
             return;
         }
         // Get velocity unit vector:

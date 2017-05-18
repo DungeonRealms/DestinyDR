@@ -4,9 +4,6 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
 
-/**
- * Created by Xwaffle on 8/29/2015.
- */
 public abstract class DRZombie extends EntityZombie implements DRMonster {
 
     protected EnumMonster monsterType;

@@ -2,9 +2,9 @@ package net.dungeonrealms.game.profession;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
 import net.dungeonrealms.game.item.PersistentItem;
@@ -23,8 +23,10 @@ import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,42 +37,45 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Fishing Profession - Contains all the code for the fishing mechanic.
- * 
+ * <p>
  * Redone by Kneesnap on April 8th, 2017.
  */
 public class Fishing implements GenericMechanic, Listener {
 
-	private Random random = new Random();
-	private static HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
-	private static HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
-	private static int splashCounter = 10;
+    private Random random = new Random();
+    private static HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
+    private static HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
+    private static int splashCounter = 10;
 
     @Override
     public void startInitialization() {
         loadFishingLocations();
         FISHING_LOCATIONS.keySet().forEach(Fishing::generateParticles);
         Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
-        
+
         DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
             int chance = splashCounter * splashCounter;
             if (splashCounter == 1)
                 splashCounter = 21;
-            
+
             splashCounter--;
             if (FISHING_PARTICLES.isEmpty())
                 return;
-            
+
             try {
+                Random random = ThreadLocalRandom.current();
                 for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
                     Location epicenter = data.getKey();
-                    ParticleAPI.spawnParticle(Particle.WATER_SPLASH, epicenter, 20, 1.4F);
+                    ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.WATER_SPLASH, epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20);
                     data.getValue().stream().filter(loc -> random.nextInt(chance) == 1).forEach(
-                    		loc -> ParticleAPI.spawnParticle(Particle.WATER_SPLASH, loc, 20, 1.4F));
+                            loc -> ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.WATER_SPLASH, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20));
                 }
             } catch (ConcurrentModificationException cme) {
+                cme.printStackTrace();
                 Utils.log.info("[Professions] [ASYNC] Something went wrong checking a fishing spot and adding particles!");
             }
         }, 200L, 15L);
@@ -78,89 +83,90 @@ public class Fishing implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
-    	
+
     }
-    
+
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.CATHOLICS;
     }
-    
+
     public static void addLocation(Location l, int tier) {
-    	FISHING_LOCATIONS.put(l, tier);
-    	updateConfig();
-    	CommandFishing.createHologram(l, tier);
-    	generateParticles(l);
+        FISHING_LOCATIONS.put(l, tier);
+        updateConfig();
+        CommandFishing.createHologram(l, tier);
+        generateParticles(l);
     }
-    
+
     public static void removeLocation(Block block) {
-    	FISHING_LOCATIONS.remove(block.getLocation());
-    	CommandFishing.removeHologram(block.getLocation());
-    	updateConfig();
+        FISHING_LOCATIONS.remove(block.getLocation());
+        CommandFishing.removeHologram(block.getLocation());
+        updateConfig();
     }
-    
+
     private static void updateConfig() {
-    	List<String> locations = new ArrayList<>();
-    	for (Location l : FISHING_LOCATIONS.keySet())
-    		locations.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + FISHING_LOCATIONS.get(l));
-    	DungeonRealms.getInstance().getConfig().set("fishingspawns", locations);
-    	DungeonRealms.getInstance().saveConfig();
+        List<String> locations = new ArrayList<>();
+        for (Location l : FISHING_LOCATIONS.keySet())
+            locations.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + FISHING_LOCATIONS.get(l));
+        DungeonRealms.getInstance().getConfig().set("fishingspawns", locations);
+        DungeonRealms.getInstance().saveConfig();
     }
-	
-	public static FishBuff loadBuff(NBTTagCompound tag) {
-		FishBuffType fbt = FishBuffType.valueOf(tag.getString("buffType"));
-		try {
-			Class<? extends FishBuff> buffCls = fbt.getBuffClass();
-			FishingTier tier = FishingTier.values()[tag.getInt("itemTier") - 1];
-			return buffCls.getConstructor(tag.getClass(), tier.getClass()).newInstance(tag, tier);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Failed to construct " + fbt.name());
-		}
-		return null;
-	}
-	
-	public static FishBuff getRandomBuff(FishingTier tier) {
-		int roll = new Random().nextInt(100);
-		int check = 0;
-		for (FishBuffType bType : FishBuffType.values()) {
-			try {
-				Class<? extends FishBuff> buffCls = bType.getBuffClass();
-				FishBuff buff = buffCls.getConstructor(tier.getClass()).newInstance(tier);
-				if (roll >= check && roll < check + buff.getChance())
-					return buff;
-				check += buff.getChance();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Failed to construct " + bType.name());
-			}
-		}
-		return null;
-	}
-	
-	@AllArgsConstructor @Getter
+
+    public static FishBuff loadBuff(NBTTagCompound tag) {
+        FishBuffType fbt = FishBuffType.valueOf(tag.getString("buffType"));
+        try {
+            Class<? extends FishBuff> buffCls = fbt.getBuffClass();
+            FishingTier tier = FishingTier.values()[tag.getInt("itemTier") - 1];
+            return buffCls.getConstructor(tag.getClass(), tier.getClass()).newInstance(tag, tier);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to construct " + fbt.name());
+        }
+        return null;
+    }
+
+    public static FishBuff getRandomBuff(FishingTier tier) {
+        int roll = new Random().nextInt(100);
+        int check = 0;
+        for (FishBuffType bType : FishBuffType.values()) {
+            try {
+                Class<? extends FishBuff> buffCls = bType.getBuffClass();
+                FishBuff buff = buffCls.getConstructor(tier.getClass()).newInstance(tier);
+                if (roll >= check && roll < check + buff.getChance())
+                    return buff;
+                check += buff.getChance();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Failed to construct " + bType.name());
+            }
+        }
+        return null;
+    }
+
+    @AllArgsConstructor
+    @Getter
     public enum EnumFish {
-		
-		//  TIER 1  //
+
+        //  TIER 1  //
         Shrimp(1, "A raw and pink crustacean"),
         Anchovie(1, "A small blue, oily fish"),
         Crayfish(1, "A lobster-like and brown crustacean"),
-        
+
         //  TIER 2  //
         Carp(2, "A Large, silver-scaled fish"),
         Herring(2, "A colourful and medium-sized fish"),
         Sardine(2, "A small and oily green fish"),
-        
+
         //  TIER 3  //
         Salmon(3, "A beautiful jumping fish"),
         Trout(3, "A non-migrating Salmon"),
         Cod(3, "A cold-water, deep sea fish"),
-        
+
         //  TIER 4  //
         Lobster(4, "A Large, red crustacean"),
         Tuna(4, "A large, sapphire blue fish"),
         Bass(4, "A very large and white fish"),
-        
+
         //  TIER 5  //
         Shark(5, "A terrifying and massive predator"),
         Swordfish(5, "An elongated fish with a long bill"),
@@ -169,67 +175,68 @@ public class Fishing implements GenericMechanic, Listener {
 
         private int tier;
         private String desciption;
-        
+
         public String getName() {
-        	return name();
+            return name();
         }
 
         public static EnumFish getRandomFish(int tier) {
             List<EnumFish> fishList = new ArrayList<>();
             for (EnumFish fish : values())
-            	if (fish.getTier() == tier)
-            		fishList.add(fish);
+                if (fish.getTier() == tier)
+                    fishList.add(fish);
             return fishList.get(new Random().nextInt(fishList.size() - 1));
         }
     }
-	
-	@AllArgsConstructor @Getter
-	public enum FishBuffType {
-		DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
-		HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
-		REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
-		SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
-		HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
-		ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
-		VISION(FishVisionBuff.class, "NIGHTVISION BUFF", "", "", "", 0),
-		BLOCK(FishBlockBuff.class, "+", "% BLOCK", "", "Blocking", 0);
-		
-		private Class<? extends FishBuff> buffClass;
-		private String buffPrefix;
-		private String buffSuffix;
-		private String prefix;
-		private String baseSuffix;
-		private int fishMeta;
-		
-		
-		public static FishBuffType getByName(String str) {
-			for (FishBuffType t : values())
-				if (t.name().equals(str))
-					return t;
-			return null;
-		}
-	}
-    
+
+    @AllArgsConstructor
+    @Getter
+    public enum FishBuffType {
+        DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
+        HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
+        REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
+        SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
+        HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
+        ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
+        VISION(FishVisionBuff.class, "NIGHTVISION BUFF", "", "", "", 0),
+        BLOCK(FishBlockBuff.class, "+", "% BLOCK", "", "Blocking", 0);
+
+        private Class<? extends FishBuff> buffClass;
+        private String buffPrefix;
+        private String buffSuffix;
+        private String prefix;
+        private String baseSuffix;
+        private int fishMeta;
+
+
+        public static FishBuffType getByName(String str) {
+            for (FishBuffType t : values())
+                if (t.name().equals(str))
+                    return t;
+            return null;
+        }
+    }
+
     private static void generateParticles(Location l) {
-    	List<Location> lfishingParticles = new ArrayList<>();
-    	 	
-    	int radius = 10;
-    	 
-    	for (int x = -radius; x <= radius; x++) {
-    		for (int y = -radius; y <= radius; y++) {
-    			for (int z = -radius; z <= radius; z++) {
-    				Location loc = l.clone().add(x, y, z);
-    				
-    				// Add to the list of particles to show if it's in the water.
-    				if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER)
-    					if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR && !lfishingParticles.contains(loc))
-    						lfishingParticles.add(loc);
-    			}
-    		}
-    	}
-    	
-    	Collections.reverse(lfishingParticles);
-    	FISHING_PARTICLES.put(l, lfishingParticles);
+        List<Location> lfishingParticles = new ArrayList<>();
+
+        int radius = 10;
+
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    Location loc = l.clone().add(x, y, z);
+
+                    // Add to the list of particles to show if it's in the water.
+                    if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER)
+                        if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR && !lfishingParticles.contains(loc))
+                            lfishingParticles.add(loc);
+                }
+            }
+        }
+
+        Collections.reverse(lfishingParticles);
+        FISHING_PARTICLES.put(l, lfishingParticles);
     }
 
     public static Location getFishingSpot(Location loc) {
@@ -245,9 +252,9 @@ public class Fishing implements GenericMechanic, Listener {
                 return FISHING_LOCATIONS.get(fishLoc);
         return -1;
     }
-    
+
     public static int getExactTier(Block bk) {
-    	return FISHING_LOCATIONS.containsKey(bk.getLocation()) ? FISHING_LOCATIONS.get(bk.getLocation()) : -1;
+        return FISHING_LOCATIONS.containsKey(bk.getLocation()) ? FISHING_LOCATIONS.get(bk.getLocation()) : -1;
     }
 
     private void loadFishingLocations() {
@@ -267,7 +274,7 @@ public class Fishing implements GenericMechanic, Listener {
         }
         Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
     }
-    
+
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {
         final Player pl = e.getPlayer();
@@ -279,14 +286,13 @@ public class Fishing implements GenericMechanic, Listener {
         }
 
         e.setExpToDrop(0);
-        
+
         ItemStack held = pl.getEquipment().getItemInMainHand();
         if (!ItemFishingPole.isFishingPole(held)) {
             e.setCancelled(true);
             return;
         }
-        
-        ItemFishingPole pole = (ItemFishingPole)PersistentItem.constructItem(held);
+        ItemFishingPole pole = (ItemFishingPole) PersistentItem.constructItem(held);
 
         if (e.getState().equals(State.FISHING)) {
             Location loc = getFishingSpot(e.getPlayer().getLocation());
@@ -296,7 +302,7 @@ public class Fishing implements GenericMechanic, Listener {
                 e.setCancelled(true);
                 return;
             }
-            
+
             int areaTier = getFishingSpotTier(loc);
             if (areaTier > pole.getTier().getId()) {
                 e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
@@ -319,121 +325,121 @@ public class Fishing implements GenericMechanic, Listener {
             }
 
             int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue();
-            
+
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 int fishRoll = new Random().nextInt(100);
                 int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
                 if (pole.getTier().getId() == spotTier)
-                	successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
+                    successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
 
                 successRate += pole.getAttributes().getAttribute(FishingAttributeType.CATCH_SUCCESS).getValue();
 
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     if (new Random().nextInt(100) > duraBuff)
-                    	pole.damageItem(pl, 1);
+                        pole.damageItem(pl, 1);
                     return;
                 }
-                
+
                 FishingTier fTier = FishingTier.getTierByLevel(pole.getLevel());
                 ItemStack fish = new ItemFish(fTier, EnumFish.getRandomFish(fTier.getTier())).generateItem();
                 int fishDrop = 1;
-                
+
                 if (new Random().nextInt(100) > duraBuff)
-                	pole.damageItem(pl, 2);
-                
+                    pole.damageItem(pl, 2);
+
                 pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
-                
+
                 int exp = fTier.getXP();
                 pole.addExperience(pl, exp);
-                
-                
+
+
                 PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
                 pw.addExperience(exp / 8, false, true);
                 pw.getPlayerGameStats().addStat(StatColumn.FISH_CAUGHT);
-                
+
                 if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() >= random.nextInt(100) + 1) {
-                	fishDrop *= 2;
-                	pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
+                    fishDrop *= 2;
+                    pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                 }
-                
+
                 if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() >= random.nextInt(100) + 1) {
-                	fishDrop *= 3;
-                	pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
+                    fishDrop *= 3;
+                    pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
-                
+
                 pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
                 GameAPI.giveOrDropItem(pl, fish);
-                
+
                 //  Junk Find.
                 if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= new Random().nextInt(100) + 1) {
-                	int junkType = new Random().nextInt(100) + 1; // 0, 1, 2
-                	ItemStack junk = null;
-                	
-                	if (junkType < 70) {
-                		junk = new PotionItem(PotionTier.getById(spotTier)).generateItem();
-                		junk.setAmount(Math.max(1, 6 - spotTier) + random.nextInt(3));
-                	} else if (junkType < 95) {
-                		junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
-                		junk.setAmount(Math.max(2, 25 - (spotTier * 5)) + random.nextInt(7));
-                	} else {
-                		int tierRoll = random.nextInt(100);
-                		int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
-                		junkTier = Math.max(junkTier, spotTier);
-                		junk = ItemManager.createRandomCombatItem().setRarity(ItemRarity.COMMON)
-                				.setTier(ItemTier.getByTier(junkTier)).generateItem();
-                	}
-                	
-                	if (junk != null) {
-                		int itemCount = junk.getAmount();
-                		if (junk.getType() == Material.POTION) {
-                			int amount = junk.getAmount();
-                			junk.setAmount(1);
-                			while (amount > 0) {
-                				amount--;
-                				GameAPI.giveOrDropItem(pl, junk);
-                			}
-                		} else {
-                			GameAPI.giveOrDropItem(pl, junk);
-                		}
-                		
-                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + itemCount + "x "
-                				+ junk.getItemMeta().getDisplayName());
-                	}
+                    int junkType = new Random().nextInt(100) + 1; // 0, 1, 2
+                    ItemStack junk = null;
+
+                    if (junkType < 70) {
+                        junk = new PotionItem(PotionTier.getById(spotTier)).generateItem();
+                        junk.setAmount(Math.max(1, 6 - spotTier) + random.nextInt(3));
+                    } else if (junkType < 95) {
+                        junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
+                        junk.setAmount(Math.max(2, 25 - (spotTier * 5)) + random.nextInt(7));
+                    } else {
+                        int tierRoll = random.nextInt(100);
+                        int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
+                        junkTier = Math.max(junkTier, spotTier);
+                        junk = ItemManager.createRandomCombatItem().setRarity(ItemRarity.COMMON)
+                                .setTier(ItemTier.getByTier(junkTier)).generateItem();
+                    }
+
+                    if (junk != null) {
+                        int itemCount = junk.getAmount();
+                        if (junk.getType() == Material.POTION) {
+                            int amount = junk.getAmount();
+                            junk.setAmount(1);
+                            while (amount > 0) {
+                                amount--;
+                                GameAPI.giveOrDropItem(pl, junk);
+                            }
+                        } else {
+                            GameAPI.giveOrDropItem(pl, junk);
+                        }
+
+                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + itemCount + "x "
+                                + junk.getItemMeta().getDisplayName());
+                    }
                 }
-                
+
                 // Treasure Find.
                 if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= new Random().nextInt(300) + 1) {
-                	// Give em treasure!
-                	int treasureType = new Random().nextInt(3); // 0, 1
-                	ItemStack treasure = null;
-                	if (treasureType == 0) {
-                		treasure = new ItemOrb().generateItem();
-                	} else if (treasureType == 1) {
-                		int tierRoll = random.nextInt(100);
-                		int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
-                		treasureTier = Math.max(treasureTier, spotTier);
-                		ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : ItemRarity.RARE;
-                		treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
-                				.setRarity(rarity).generateItem();
-                	} else if (treasureType == 2) {
-                		treasure = new ItemFlightOrb().generateItem();
-                	}
-                	
-                	if (treasure != null) {
-                		GameAPI.giveOrDropItem(pl, treasure);
-                		pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                				+ treasure.getItemMeta().getDisplayName());
-                	}
+                    // Give em treasure!
+                    int treasureType = new Random().nextInt(3); // 0, 1
+                    ItemStack treasure = null;
+                    if (treasureType == 0) {
+                        treasure = new ItemOrb().generateItem();
+                    } else if (treasureType == 1) {
+                        int tierRoll = random.nextInt(100);
+                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
+                        treasureTier = Math.max(treasureTier, spotTier);
+                        ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : ItemRarity.RARE;
+                        treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
+                                .setRarity(rarity).generateItem();
+                    } else if (treasureType == 2) {
+                        treasure = new ItemFlightOrb().generateItem();
+                    }
+
+                    if (treasure != null) {
+                        GameAPI.giveOrDropItem(pl, treasure);
+                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                + treasure.getItemMeta().getDisplayName());
+                    }
                 }
             }, 10);
         }
     }
-    
+
     public static Map<Location, Integer> getLocations() {
-    	return FISHING_LOCATIONS;
+        return FISHING_LOCATIONS;
     }
 }

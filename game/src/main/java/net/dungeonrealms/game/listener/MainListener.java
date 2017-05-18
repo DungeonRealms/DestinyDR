@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -16,10 +17,12 @@ import net.dungeonrealms.game.command.moderation.CommandMobDebug;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
@@ -39,6 +42,7 @@ import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
@@ -79,6 +83,7 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -646,7 +651,8 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
-        if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
+        evt.setCancelled(true);
+        /*if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
             evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
                 if (ent instanceof ItemFrame) {
                     ItemFrame itemFrame = (ItemFrame) ent;
@@ -655,7 +661,7 @@ public class MainListener implements Listener {
                 }
             });
             evt.setCancelled(true);
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -714,14 +720,53 @@ public class MainListener implements Listener {
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !event.getPlayer().isOp())
             event.setCancelled(true);
 
+
         if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.NAME_TAG)) {
             event.setCancelled(true);
             event.getPlayer().updateInventory();
         }
 
-
         if (event.getPlayer().hasMetadata("mob_debug")) {
             CommandMobDebug.debugEntity(event.getPlayer(), event.getRightClicked());
+        }
+
+
+    }
+
+    @EventHandler
+    public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event) {
+        if (EnumEntityType.DPS_DUMMY.isType(event.getRightClicked())) {
+            event.setCancelled(true);
+            //Show damage dealt?
+            DamageTracker tracker = HealthHandler.getMonsterTrackers().get(event.getRightClicked().getUniqueId());
+            Player player = event.getPlayer();
+            if (tracker != null) {
+                //Send tracker message.
+                if (GameAPI.isCooldown(player, Metadata.DUMMY_INFO)) {
+                    return;
+                }
+                GameAPI.addCooldown(player, Metadata.DUMMY_INFO, 5);
+
+                if (tracker.getDamagers().isEmpty()) {
+                    player.sendMessage(ChatColor.RED + "No damage has been dealt to this DPS Dummy!");
+                    return;
+                }
+
+                LinkedHashMap<UUID, Double> sorted = Utils.sortMap(tracker.getDamagers());
+
+                int showing = Math.min(10, sorted.size());
+
+                Utils.sendCenteredMessage(player, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DAMAGE TRACKER");
+                AtomicInteger index = new AtomicInteger(1);
+                sorted.forEach((id, damage) -> {
+                    if (damage > 0.0) {
+                        if (index.get() > 10) return;
+                        String name = SQLDatabaseAPI.getInstance().getNameFromUUID(id);
+                        if (name == null) return;
+                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + index.getAndIncrement() + ". " + ChatColor.GRAY + name + " - " + ChatColor.GREEN + ChatColor.BOLD + Utils.formatCommas(Math.round(damage)) + " DMG");
+                    }
+                });
+            }
         }
     }
 

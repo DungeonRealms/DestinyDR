@@ -16,6 +16,7 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -97,6 +98,8 @@ public class DamageListener implements Listener {
         //Armor Stand Spawner check.
         if (event.getEntity().getType() != EntityType.ARMOR_STAND)
             return;
+
+        if(EnumEntityType.DPS_DUMMY.isType(event.getEntity()))return;
 
         event.setDamage(0);
         event.setCancelled(true);
@@ -622,6 +625,13 @@ public class DamageListener implements Listener {
             if (EntityAPI.isElite(e))
                 return;
 
+            if (MountUtils.isMount(e) && e instanceof Horse) {
+                Horse horse = (Horse) e;
+                if (horse.getOwner() != null) {
+                    MountUtils.removeMount((Player) horse.getOwner());
+                    return;
+                }
+            }
             Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name());
             e.remove();
             return;
@@ -733,7 +743,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        if(event.getCause().equals(DamageCause.FALL)) {
+        if (event.getCause().equals(DamageCause.FALL)) {
             System.out.println("The fall damage: " + dmg);
         }
         res.setDamage(dmg);

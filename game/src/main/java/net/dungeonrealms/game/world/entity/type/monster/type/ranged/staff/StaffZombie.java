@@ -23,6 +23,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
 
+        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, untargettable));
         this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 

@@ -76,6 +76,7 @@ public enum ItemType {
 	BUFF("buff", ItemBuff.class),
 	ITEM_NAME_TAG("nameTag", ItemNameTag.class),
 	JUKE_BOX("jukebox", ItemJukebox.class),
+	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),
 
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),

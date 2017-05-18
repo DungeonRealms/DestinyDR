@@ -23,6 +23,7 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
@@ -301,7 +302,8 @@ public class GameAPI {
     }
 
     public static org.bukkit.ChatColor getTierColor(int tier) {
-        return ItemTier.getByTier(tier).getColor();
+        ItemTier retr = ItemTier.getByTier(tier);
+        return (retr != null ? retr : ItemTier.TIER_1).getColor();
     }
 
     public static GameClient getClient() {
@@ -1622,6 +1624,12 @@ public class GameAPI {
 
     public static void addCooldown(Metadatable m, Metadata type, int seconds) {
         type.set(m, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
+    }
+
+    public static String getFormattedCooldown(Metadatable m, Metadata type) {
+        long val = type.get(m).asLong();
+        if (val <= System.currentTimeMillis()) return null;
+        return TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000);
     }
 
     public static boolean isCooldown(Metadatable m, Metadata type) {
