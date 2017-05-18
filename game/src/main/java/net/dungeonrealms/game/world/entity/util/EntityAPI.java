@@ -410,8 +410,52 @@ public class EntityAPI {
     private static int getBarLength(int tier) {
         return 20 + (tier * 5) + (tier >= 5 ? 5 : 0);
     }
-
+    
     public static void showHPBar(DRMonster monster) {
+    	Entity ent = monster.getBukkit();
+    	boolean boss = isBoss(ent);
+    	boolean bold = boss || isElite(ent);
+    	int barSize = (boss ? 15 : 10) * 2;
+    	
+    	double hpPercentDecimal = HealthHandler.getHPPercent(ent);
+        double hpPercent = hpPercentDecimal * 100D;
+        hpPercent = Math.max(1, hpPercent);
+        
+        String fullBar = new String(new char[barSize]).replace("\0", "|");
+
+        String full = ChatColor.GREEN + (bold ? ChatColor.BOLD + "" : "");
+        String empty = ChatColor.DARK_RED + (bold ? ChatColor.BOLD + "" : "");
+
+        // Apply color.
+        int greenBars = (int) Math.ceil(hpPercentDecimal * barSize);
+        fullBar = full + fullBar.substring(0, greenBars) + empty + fullBar.substring(greenBars);
+        
+        // Apply name to entity.
+        String[] bar = splitHalfColor(fullBar, bold);
+        ent.setCustomName("[" + bar[0] + " " + ChatColor.WHITE + monster.getHP() + " " + bar[1] + ChatColor.GRAY + "]");
+        ent.setCustomNameVisible(true);
+    }
+    
+    private static String[] splitHalfColor(String spl, boolean bold) {
+    	int splitIndex = spl.length() / 2;
+    	
+    	// Add any color.
+    	ChatColor lastColor = null;
+    	String colorChar = ChatColor.WHITE.toString().substring(0, 1);
+    	for (int i = 0; i < splitIndex; i++) {
+    		if (spl.substring(i).startsWith(colorChar)) {
+    			splitIndex += 2;
+    			ChatColor c = ChatColor.getByChar(spl.charAt(i + 1));
+    			if (c != null && c != ChatColor.BOLD)
+    				lastColor = c;
+    		}
+    	}
+    	
+    	return new String[] {spl.substring(0, splitIndex), (lastColor != null ? lastColor + (bold ? ChatColor.BOLD + "" : "") : "") + spl.substring(splitIndex)};
+    }
+
+    // Legacy HP Bar (Removed May 17th, 2017.)
+    /*public static void oldHPBar(DRMonster monster) {
         Entity ent = monster.getBukkit();
         boolean boss = isBoss(ent);
         boolean elite = isElite(ent);
@@ -421,9 +465,6 @@ public class EntityAPI {
         double hpPercentDecimal = HealthHandler.getHPPercent(ent);
         double hpPercent = hpPercentDecimal * 100D;
         hpPercent = Math.max(1, hpPercent);
-
-        double percent_interval = (100.0D / maxBar);
-        int bar_count = 0;
 
         if (hpPercent <= 45)
             cc = ChatColor.YELLOW;
@@ -455,5 +496,5 @@ public class EntityAPI {
         // Apply name to entity.
         ent.setCustomName(formatted);
         ent.setCustomNameVisible(true);
-    }
+    }*/
 }
