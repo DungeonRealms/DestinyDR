@@ -418,8 +418,7 @@ public class Chat {
         if (meta.hasLore())
             hoveredChat.addAll(meta.getLore());
         
-        final JSONMessage normal = new JSONMessage("", org.bukkit.ChatColor.WHITE);
-        normal.addText(before + "");
+        final JSONMessage normal = new JSONMessage(before, org.bukkit.ChatColor.WHITE);
         normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
         normal.addText(after);
         

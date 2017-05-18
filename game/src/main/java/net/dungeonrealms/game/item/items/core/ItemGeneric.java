@@ -9,7 +9,6 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -33,25 +32,19 @@ public abstract class ItemGeneric extends PersistentItem {
 
     private List<String> lore;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private boolean antiDupe;
 
     @Getter
     private ItemType itemType;
 
-    @Getter
-    @Setter //Whether or not this item should be removed.
+    @Getter @Setter //Whether or not this item should be removed.
     private boolean destroyed;
 
-    private boolean resetLore; //This marks whether lore should be reset. This is used so lore isn't added from a previous item update.
-
-    @Setter
-    @Getter
+    @Setter @Getter
     private int price; //The price of this item. 0 marks no price.
 
-    @Setter
-    @Getter
+    @Setter @Getter
     private boolean showPrice = true; //Whether or not lore should be created for this price.
 
     private long soulboundTrade = 0;
@@ -62,6 +55,9 @@ public abstract class ItemGeneric extends PersistentItem {
 
     @Getter
     private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
+    
+    @Setter @Getter // EC - Name
+    private String customName;
 
     //Tier should share the same name for consistency.
     protected static final String TIER = "itemTier";
@@ -179,6 +175,10 @@ public abstract class ItemGeneric extends PersistentItem {
         setPrice(getTagInt("price"));
         setShowPrice(getTagBool("showPrice"));
         setGlowing(EnchantmentAPI.isGlowing(getItem()));
+        setType(ItemType.getType(getTagString("type")));
+     
+        if (hasTag("ecName"))
+        	setCustomName(getTagString("ecName"));
     }
 
     /**
@@ -231,20 +231,22 @@ public abstract class ItemGeneric extends PersistentItem {
                 setTagBool("showPrice", true);
                 addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
             }
-        } else {
-            if (getTagBool("price")) {
-                //Remove..
-
-            }
         }
 
         if (isGlowing())
             EnchantmentAPI.addGlow(getItem());
 
-        saveMeta();
-        resetLore = true;
-    }
+        // Ecash Name - Overrides custom names by other items.
+        String ecashName = getCustomName();
+        if (ecashName != null)
+        	getMeta().setDisplayName(ecashName);
 
+        if (this.customName != null) // Set the custom name into the lore. Don't use the getter since we want the raw name, regardless of what items override.
+        	setTagString("ecName", this.customName);
+        
+        saveMeta();
+    }
+    
     /**
      * Saves data in meta to NBT.
      * Just using setItemMeta will override NBT tags, so we set them manually.
@@ -289,11 +291,8 @@ public abstract class ItemGeneric extends PersistentItem {
         if (this.lore == null) // Can't put above constructor as it will override any values set in loadItem
             this.lore = new ArrayList<>();
 
-        if (reset) {
+        if (reset)
             this.lore.clear();
-            resetLore = false;
-            Bukkit.getLogger().info("Resetting lore: " + s);
-        }
         this.lore.add(ChatColor.GRAY + s);
     }
 
@@ -307,8 +306,8 @@ public abstract class ItemGeneric extends PersistentItem {
     }
 
     protected void clearLore() {
-        if(this.lore != null)
-        this.lore.clear();
+        if (this.lore != null)
+        	this.lore.clear();
     }
 
     protected boolean getSData(ItemData data) {

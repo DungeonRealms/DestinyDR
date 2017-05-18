@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.Packet;
 import net.minecraft.server.v1_9_R2.PacketPlayOutWorldParticles;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -181,14 +182,53 @@ public class ParticleAPI {
             }
         }
     }
+    
+    /**
+     * Spawn the block step particles for a given block.
+     * @param loc
+     * @param mat
+     */
+    @SuppressWarnings("deprecation")
+	public static void spawnBlockParticles(Location loc, Material mat) {
+    	loc.getWorld().playEffect(loc, Effect.STEP_SOUND, mat.getId());
+    }
+    
+    /**
+     * Spawns a particle at the given location. Async Safe.
+     * @param p
+     * @param loc
+     * @param count
+     * @param offset
+     * @param speed
+     */
+    public static void spawnParticle(Particle p, Location loc, int count, float offset, float speed) {
+        spawnParticle(p, loc, offset, offset, offset, count, speed);
+    }
 
+    /**
+     * Spawns a particle at the given location. Async Safe.
+     * @param p
+     * @param loc
+     * @param count
+     * @param speed
+     */
     public static void spawnParticle(Particle p, Location loc, int count, float speed) {
         Random r = new Random();
         spawnParticle(p, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), count, speed);
     }
 
+    /**
+     * Spawns a particle at the given location. Async Safe.
+     * @param p
+     * @param loc
+     * @param xOff
+     * @param yOff
+     * @param zOff
+     * @param count
+     * @param speed
+     */
     public static void spawnParticle(Particle p, Location loc, double xOff, double yOff, double zOff, int count, float speed) {
-        GameAPI.getNearbyPlayers(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
+        GameAPI.getNearbyPlayersAsync(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
     }
 
     /**

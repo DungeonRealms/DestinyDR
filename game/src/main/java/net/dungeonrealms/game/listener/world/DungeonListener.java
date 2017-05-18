@@ -26,35 +26,6 @@ import java.util.stream.Collectors;
  */
 public class DungeonListener implements Listener {
 	
-	//TODO: Mob nametag stuff.
-	//TODO: Lootchest particles better.
-	//TODO: Prevent using items while sharding.
-	//TODO: Integrate new drops to dungeons.
-	//TODO: Finish support tools
-	//TODO: Convert all toggles to toggles.
-	//TODO: Move to PreparedStatement.
-	//TODO: Stop using GamePlayer
-	//TODO: Mechanics should have their own events, like handleLogin, etc.
-	//TODO: Fix Durability.
-	//TODO: Fix /stats
-	
-	//TODO: Fix Attributes
-	//TODO: Convert items.
-	//TODO: Skeletons don't work fully or something
-	//TODO: Fix Chat
-	//TODO: How are achievements saved / loaded?
-	//TODO: Fix Death
-	//TODO: Entity AI.
-	//TODO: Fix orbs.
-	//TODO: Fix gems.
-	//TODO: Block hotbar swapping items out of crafting menu.
-	//TODO: Anvils are broken supposedly.
-	//TODO: Armor sets generated shouldn't all have the same stats.
-	//TODO: Items should not roll stats until after params are supplied.
-	//TODO: Fix Armor stacking.
-	
-	
-	
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeaveDungeon(PlayerEnterRegionEvent evt) {
     	if (!DungeonManager.isDungeon(evt.getPlayer()) || !evt.getNewRegion().toLowerCase().startsWith("exit_instance"))

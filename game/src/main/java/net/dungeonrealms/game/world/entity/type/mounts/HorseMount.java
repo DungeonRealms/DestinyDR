@@ -4,7 +4,6 @@ import net.minecraft.server.v1_9_R2.EntityHorse;
 import net.minecraft.server.v1_9_R2.EnumHorseType;
 import net.minecraft.server.v1_9_R2.World;
 
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 
 /**

@@ -43,11 +43,7 @@ public abstract class FunctionalItem extends ItemGeneric {
             for (String line : lore)
                 addLore(line);
 
-        //We have a custom renamed item, dont overwrite.
-        if (customDisplayName != null)
-            getMeta().setDisplayName(customDisplayName);
-        else
-            getMeta().setDisplayName(getDisplayName());
+        getMeta().setDisplayName(getDisplayName());
 
         super.updateItem();
     }

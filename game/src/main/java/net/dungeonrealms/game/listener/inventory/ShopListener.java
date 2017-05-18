@@ -13,12 +13,13 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-
 import net.dungeonrealms.game.world.shops.SoldShopItem;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,7 +36,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -56,10 +56,16 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null || Metadata.PRICING.has(p) || Metadata.SHARDING.has(p)) // Don't allow people buying items or sharding to open it.
         	return;
-
+        
+        event.setCancelled(true);
+        
+        if (!GameAPI.isNonPvPRegion(p.getLocation())) {
+        	p.sendMessage(ChatColor.RED + "You cannot access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
+        	return;
+        }
+        
         if (Chat.listened(p)) {
             p.sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
-            event.setCancelled(true);
             return;
         }
 
@@ -72,8 +78,8 @@ public class ShopListener implements Listener {
 
     @EventHandler
     public void playerCloseShopInventory(InventoryCloseEvent event) {
-        if (!GameAPI.isShop(event.getInventory())) return;
-        event.getPlayer().setCanPickupItems(true);
+        if (GameAPI.isShop(event.getInventory()))
+        	event.getPlayer().setCanPickupItems(true);
     }
 
     /**
@@ -408,13 +414,7 @@ public class ShopListener implements Listener {
         }
 
         //  GIVE THE SELLER WHAT THEY'VE EARNED  //
-//        DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true);
-
-        if (shop.hasCustomName(item)) {
-            BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + item.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + player.getName());
-        } else {
-            BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + item.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + player.getName());
-        }
+        BungeeUtils.sendPlayerMessage(shop.ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + Utils.getItemName(item) + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + player.getName());
 
         ShopMechanics.getRecentlySoldItems().add(new SoldShopItem(shop.ownerUUID, shop.ownerName, toGive, totalPrice, player.getName()));
 

@@ -61,7 +61,7 @@ public class ItemProtectionScroll extends ItemEnchantScroll {
 		}
             
 		evt.setUsed(true);
-		gear.protectItem();
+		gear.setProtected(true);
 		evt.setSwappedItem(gear.generateItem());
 		p.sendMessage(ChatColor.GREEN + "Your " + prot.getItemMeta().getDisplayName() + ChatColor.GREEN + " is now protected -- even if an enchant scroll fails, it will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GREEN + " be destroyed up to +8 status.");
 		

@@ -437,7 +437,7 @@ public class DamageAPI {
         if (mr.getValue() != 0 && !res.hasProjectile()) { // Only applies to Melee
             int damageFromThorns = Math.max(1, (int) Math.round(damage * (mr.getValue() / 100f)));
             res.setDamage(damageFromThorns);
-            attacker.getEntity().getWorld().playEffect(attacker.getEntity().getLocation(), Effect.STEP_SOUND, 18);
+            ParticleAPI.spawnBlockParticles(attacker.getEntity().getLocation(), Material.LEAVES);
             HealthHandler.damageEntity(res);
             return;
         }

@@ -10,6 +10,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
@@ -17,11 +18,11 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.world.item.Item;
+
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemClickListener, ItemInventoryEvent.ItemInventoryListener {
 
@@ -104,18 +105,15 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
                     returnItem(player, item);
                     return;
                 }
-                ChatColor color = ChatColor.WHITE;
-                if (tier != null) {
-                    color = tier.getColor();
-                }
 
-                String newItemName = color + msg;
+                String newItemName = (tier != null ? tier.getColor() : ChatColor.WHITE) + msg;
 
                 if (newItemName.length() - 2 >= MAX_LENGTH) {
                     player.sendMessage(ChatColor.RED + "Your desired item name exceeds " + MAX_LENGTH + " characters!");
                     returnItem(player, item);
                     return;
                 }
+                
                 player.sendMessage("");
                 player.sendMessage("");
                 player.sendMessage("");
@@ -126,28 +124,19 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
                 Utils.sendCenteredMessage(player, ChatColor.GRAY + "Enter " + ChatColor.RED + ChatColor.BOLD + "CANCEL" + ChatColor.GRAY + " to cancel the item rename.");
                 player.sendMessage("");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3, .85F);
-                Chat.listenForMessage(player, confirm -> {
-
-                    if (confirm.getMessage().toLowerCase().equals("confirm")) {
-                        ItemStack newItem = current.clone();
-                        ItemMeta im = newItem.getItemMeta();
-                        im.setDisplayName(newItemName);
-                        newItem.setItemMeta(im);
-
-                        PersistentItem item = PersistentItem.constructItem(newItem);
-                        item.setCustomDisplayName(newItemName);
-                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                            GameAPI.giveOrDropItem(player, item.generateItem());
-                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.5F);
-                            Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Item Rename Successful!");
-                            Utils.sendCenteredMessage(player, ChatColor.GRAY.toString() + "New Item Name: " + newItemName);
-                            Achievements.giveAchievement(player, Achievements.EnumAchievements.RENAME_ITEM);
-                            Quest.spawnFirework(player.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.RED).build());
-                        });
-                    } else {
-                        returnItem(player, current);
-                    }
-                }, denied -> returnItem(player, current));
+                
+                Chat.promptPlayerConfirmation(player, () -> {
+                    ItemGeneric item = (ItemGeneric) PersistentItem.constructItem(current);
+                    item.setCustomName(newItemName);
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                        GameAPI.giveOrDropItem(player, item.generateItem());
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.5F);
+                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Item Rename Successful!");
+                        Utils.sendCenteredMessage(player, ChatColor.GRAY.toString() + "New Item Name: " + newItemName);
+                        Achievements.giveAchievement(player, Achievements.EnumAchievements.RENAME_ITEM);
+                        Quest.spawnFirework(player.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.RED).build());
+                    });
+                }, () -> returnItem(player, current));
             }, orElse -> returnItem(player, current));
         }
     }

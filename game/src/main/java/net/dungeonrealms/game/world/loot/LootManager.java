@@ -85,11 +85,19 @@ public class LootManager implements GenericMechanic, Listener {
 		
 	}
 	
+	/**
+	 * Register a LootSpawner.
+	 * @param s
+	 */
 	public static void addSpawner(LootSpawner s) {
 		getSpawners().add(s);
 		updateConfig();
 	}
 	
+	/**
+	 * Remove a lootspawner.
+	 * @param s
+	 */
 	public static void removeSpawner(LootSpawner s) {
 		CommandLootChest.removeHologram(s.getLocation());
 		getSpawners().remove(s);
@@ -104,7 +112,7 @@ public class LootManager implements GenericMechanic, Listener {
 		DungeonRealms.getInstance().saveConfig();
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Ignore the event if it was already cancelled. (Shop or such.)
 	public void playerOpenChest(PlayerInteractEvent e) {
 		Block block = e.getClickedBlock();
 		
@@ -227,10 +235,20 @@ public class LootManager implements GenericMechanic, Listener {
 		return Math.max(0.2D, (150D - (Bukkit.getOnlinePlayers().size() * 1.75D)));
 	}
 
+	/**
+	 * Is there a lootspawner within 2 blocks of this location?
+	 * @param location
+	 * @return
+	 */
 	public static boolean checkLocationForLootSpawner(Location location) {
 		return getSpawners().stream().filter(l -> l.getLocation().distanceSquared(location) <= 2).count() > 0;
 	}
 
+	/**
+	 * Gets the spawner at a given location.
+	 * @param location
+	 * @return
+	 */
 	public static LootSpawner getSpawner(Location location) {
 		return getSpawners().stream().filter(l -> l.getLocation().equals(location)).findAny().orElse(null);
 	}

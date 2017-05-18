@@ -5,13 +5,12 @@ import java.util.Random;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
-import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 
 import org.bukkit.ChatColor;
 
 @AllArgsConstructor
-public enum FishingTier {
+public enum FishingTier implements ProfessionTier {
 
 	TIER_1(0, 20, 10, 250, EnumAchievements.FISHINGROD_LEVEL_I, "Basic", "wood and thread"),
 	TIER_2(20, 25, 20, 430, EnumAchievements.FISHINGROD_LEVEL_II,  "Advanced", "oak wood and thread"),
@@ -32,8 +31,8 @@ public enum FishingTier {
 		return ordinal() + 1;
 	}
 	
-	public String getItemName(ItemFishingPole rod) {
-		return getColor() + (rod.getLevel() == 100 ? "Grand " : "") + this.name + " Rod";
+	public String getItemName() {
+		return this.name + " Rod";
 	}
 	
 	public String getDescription() {

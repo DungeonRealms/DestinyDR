@@ -79,50 +79,6 @@ public class JSONMessage {
         getExtra().add(o);
     }
 
-    public void addItem(ItemStack item, String text) {
-        addItem(item, text, ChatColor.WHITE);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void addItem(ItemStack item, String text, ChatColor color) {
-        if (item == null) return;
-
-        JsonObject o = new JsonObject();
-        o.addProperty("text", text);
-        o.addProperty("color", color.name().toLowerCase());
-
-        JsonObject a = new JsonObject();
-        a.addProperty("action", "show_item");
-
-        JsonObject i = new JsonObject();
-        i.addProperty("id", item.getTypeId());
-        i.addProperty("Damage", item.getDurability());
-
-        if (item.getItemMeta() != null && (item.getItemMeta().getDisplayName() != null || (item.getItemMeta().getLore() != null && item.getItemMeta().getLore().size() > 0))) {
-            JsonObject x = new JsonObject();
-            JsonObject v = new JsonObject();
-
-            ItemMeta m = item.getItemMeta();
-            if (m.getDisplayName() != null) v.addProperty("Name", m.getDisplayName());
-            if (m.getLore() != null) v.addProperty("Lore", "%LORE%");
-
-            x.add("display", v);
-            i.add("tag", x);
-        }
-
-        String is = i.toString();
-        if (is.contains("%LORE%")) {
-            String lore = JSONArray.toJSONString(item.getItemMeta().getLore());
-            lore = lore.replace(":", "|");
-            lore = lore.replace("\\", "");
-            is = is.replace("%LORE%", lore);
-        }
-
-        a.addProperty("value", is);
-        o.add("hoverEvent", a);
-        getExtra().add(o);
-    }
-
     public void addHoverText(List<String> lines, String hoveredText) {
         JsonObject o = new JsonObject();
         o.addProperty("text", hoveredText);

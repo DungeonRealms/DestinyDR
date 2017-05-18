@@ -160,17 +160,17 @@ public class TradeCalculator {
         	int scrapAmt = scraps.get(tier);
         	ItemTier currTier = ItemTier.getByTier(tier.getTier());
         	
-        	while (scrapAmt > tier.getWepEnchPrice() && tier.getWepEnchPrice() > 0) {
+        	while (scrapAmt > tier.getWepEnchPrice() && tier.getWepEnchPrice() >= 0) {
         		scrapAmt -= tier.getWepEnchPrice();
         		merchantOffer.add(new ItemEnchantWeapon(currTier));
         	}
         	
-        	while (scrapAmt > tier.getArmEnchPrice() && tier.getArmEnchPrice() > 0) {
+        	while (scrapAmt > tier.getArmEnchPrice() && tier.getArmEnchPrice() >= 0) {
         		scrapAmt -= tier.getArmEnchPrice();
         		merchantOffer.add(new ItemEnchantArmor(currTier));
         	}
         	
-        	while (scrapAmt > tier.getOrbPrice() && tier.getOrbPrice() > 0) {
+        	while (scrapAmt > tier.getOrbPrice() && tier.getOrbPrice() >= 0) {
         		scrapAmt -= tier.getOrbPrice();
         		merchantOffer.add(new ItemOrb());
         	}

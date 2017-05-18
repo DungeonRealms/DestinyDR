@@ -285,6 +285,7 @@ public class Fishing implements GenericMechanic, Listener {
             e.setCancelled(true);
             return;
         }
+        
         ItemFishingPole pole = (ItemFishingPole)PersistentItem.constructItem(held);
 
         if (e.getState().equals(State.FISHING)) {

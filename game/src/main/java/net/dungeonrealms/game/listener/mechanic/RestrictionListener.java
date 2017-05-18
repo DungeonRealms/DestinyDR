@@ -25,8 +25,6 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.shops.Shop;
-import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -125,7 +123,7 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler //TODO: Modularize when command system is better.
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
 
@@ -194,21 +192,6 @@ public class RestrictionListener implements Listener {
         if (!(event.getRemover() instanceof Player) ||
                 (GameAPI.isMainWorld(event.getEntity().getWorld()) && !Rank.isTrialGM((Player) event.getRemover())))
             event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
-        if (event.getPlayer().getOpenInventory() == null) return;
-        if (!GameAPI.isShop(event.getPlayer().getOpenInventory())) return;
-        if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
-            String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
-            if (ownerName == null) return;
-            Shop shop = ShopMechanics.getShop(ownerName);
-            if (shop == null) return;
-            event.setCancelled(true);
-        } else {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
-        }
     }
 
     @SuppressWarnings("deprecation")
@@ -426,8 +409,8 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
-        if (gamePlayer.isTargettable()) return;
-        event.setCancelled(true);
+        if (!gamePlayer.isTargettable())
+        	event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -589,15 +572,7 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-            if (Affair.areInSameParty(pDamager, pReceiver)) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                pDamager.updateInventory();
-                pReceiver.updateInventory();
-                return;
-            }
-
-            if (GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver)) {
+            if (Affair.areInSameParty(pDamager, pReceiver) || GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();

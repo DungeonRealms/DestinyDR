@@ -8,9 +8,9 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -93,7 +93,6 @@ public class LootSpawner {
 	/**
 	 * Attempt to break this loot spawner.
 	 */
-	@SuppressWarnings("deprecation")
 	public void attemptBreak(Player player) {
 		if (getInventory().getContents().length > 0)
 			for (ItemStack stack : getInventory().getContents())
@@ -105,7 +104,7 @@ public class LootSpawner {
 		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 		wrapper.getPlayerGameStats().addStat(StatColumn.LOOT_OPENED);
 
-		world.playEffect(getLocation().clone().add(0.5, 0, .5), Effect.STEP_SOUND, Material.CHEST.getId());
+		ParticleAPI.spawnBlockParticles(getLocation().clone().add(.5, .5, .5), Material.CHEST);
 
 		world.playSound(getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
 		getLocation().getBlock().getDrops().clear();
@@ -121,8 +120,7 @@ public class LootSpawner {
 	 */
 	public void showParticles() {
 		Location half = getLocation().clone().add(0.5, 0, 0.5);
-		ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.ENCHANTMENT_TABLE, half, .2F, .2F, .2F, .01F, 15);
-//		getLocation().getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, getLocation(), 20, .2D, .2D, .2D);
+		ParticleAPI.spawnParticle(Particle.ENCHANTMENT_TABLE, half, 15, .2F, .01F);
 	}
 	
 	@Override

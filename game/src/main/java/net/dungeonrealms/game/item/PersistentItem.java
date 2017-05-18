@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.item;
 
-import lombok.Setter;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,13 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class PersistentItem {
 	
 	protected ItemStack item;
-
-	//Custom display name
-	@Setter
-	protected String customDisplayName;
-
 	private NBTTagCompound tag;
-	
 	private boolean generating;
 	
 	public PersistentItem() {
@@ -148,11 +142,34 @@ public abstract class PersistentItem {
 	}
 	
 	/**
+	 * Set an enum value int NBT.
+	 * @param key
+	 * @param val
+	 */
+	public <T extends Enum<T>> void setEnum(String key, Enum<T> val) {
+		setTagString(key, val.name());
+	}
+	
+	/**
 	 * Sets an integer nbt value.
 	 */
 	public void setTagInt(String key, int val) {
-		NBTTagCompound tag = getTag();
-		tag.setInt(key, val);
+		getTag().setInt(key, val);
+	}
+	
+	/**
+	 * Get an enum from the nbt.
+	 * @param key
+	 * @param fallback
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "static-access" })
+	public <T extends Enum<T>> T getEnum(String key, T fallback) {
+		try {
+			return (T) fallback.valueOf(fallback.getClass(), getTagString(key));
+		} catch (Exception e) {
+			return fallback;
+		}
 	}
 	
 	/**

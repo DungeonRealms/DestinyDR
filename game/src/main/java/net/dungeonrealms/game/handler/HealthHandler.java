@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -45,9 +46,7 @@ import org.inventivetalent.bossbar.BossBarAPI.Style;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -269,11 +268,26 @@ public class HealthHandler implements GenericMechanic {
             if (pw == null || !pw.isAttributesLoaded())
                 continue;
             
-            heal(player, getRegen(player));
+            heal(player, getRegen(player), false);
         }
     }
     
+    /**
+     * Heal an entity.
+     * @param e
+     * @param amount
+     */
     public static void heal(Entity e, int amount) {
+    	heal(e, amount, true);
+    }
+    
+    /**
+     * Heal an entity.
+     * @param e
+     * @param amount
+     * @param showDebug
+     */
+    public static void heal(Entity e, int amount, boolean showDebug) {
     	int currentHP = getHP(e);
     	int maxHP = getMaxHP(e);
     	if (currentHP >= maxHP || amount <= 0)
@@ -284,10 +298,11 @@ public class HealthHandler implements GenericMechanic {
     	if (!(e instanceof Player))
     		return;
     	
-    	//int newHP = getHP(e);
-    	//TODO: Re-enable this, but make it not show if you're getting it from gear hp/s.
-//    	PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
-//    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+    	if (showDebug) {
+    		int newHP = getHP(e);
+    		PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
+    				+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+    	}
     }
     /**
      * Damages an entity.
@@ -403,9 +418,7 @@ public class HealthHandler implements GenericMechanic {
             defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
-        Random r = ThreadLocalRandom.current();
-        player.getWorld().spawnParticle(Particle.BLOCK_DUST, player.getLocation().clone().add(0, 1, 0), 10,
-        		r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
+        ParticleAPI.spawnBlockParticles(player.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
         
         //  DISABLE DEATH FROM FIRE TICK  //
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
@@ -576,9 +589,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
-        Random r = new Random();
-        defender.getWorld().spawnParticle(Particle.BLOCK_DUST, defender.getLocation().clone().add(0, 1, 0), 10,
-        		r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
+        ParticleAPI.spawnBlockParticles(defender.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
 
         if (attacker != null && GameAPI.isPlayer(attacker)) {
         	handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);
