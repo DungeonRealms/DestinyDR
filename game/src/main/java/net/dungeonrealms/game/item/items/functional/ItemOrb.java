@@ -74,6 +74,8 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
             ParticleAPI.spawnParticle(Particle.LAVA, player.getLocation().add(0, 2.5, 0), 75, 1F);
         }
 
+        pw.calculateAllAttributes();
+
         player.updateInventory();
     }
 

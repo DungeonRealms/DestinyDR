@@ -281,21 +281,6 @@ public class ClickHandler {
                     player.updateInventory();
                 }
                 break;
-            case "Mailbox":
-                event.setCancelled(true);
-                /*if (slot == 0) { // @todo: Enable this code when we allow sending items.
-                    player.sendMessage(ChatColor.RED + "You cannot send mail yet, this feature is coming soon...");
-                    return;
-                } else if (slot == 8) {
-                    return;
-                } else {*/
-                if (event.getCurrentItem() != null) {
-                    ItemStack clickedItem = event.getCurrentItem();
-                    //MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
-                }
-                //}
-                break;
-            // CUSTOMER SUPPORT @todo: Move to own class to clean up & take advantage of own methods for reusing vars.
             case "Support Tools":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))

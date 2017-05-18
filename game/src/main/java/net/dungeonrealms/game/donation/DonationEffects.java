@@ -26,7 +26,7 @@ public class DonationEffects implements GenericMechanic {
     @Getter
     private static DonationEffects instance = new DonationEffects();
 
-    public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
+    public Map<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";

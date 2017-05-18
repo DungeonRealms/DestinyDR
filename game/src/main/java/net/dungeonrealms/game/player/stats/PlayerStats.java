@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mastery.StatBoost;
 import net.dungeonrealms.game.mastery.Stats;
 import net.dungeonrealms.game.mechanic.ItemManager;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.StatGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -70,85 +71,30 @@ public class PlayerStats implements LoadableData, SaveableData {
     public int getFreePoints() {
     	int usedPoints = 0;
     	for(Stats s : Stats.values())
-    		usedPoints += getTempStat(s);
+    		usedPoints += getTempStat(s) + getStat(s);
     	return (POINTS_PER_LEVEL  * (getLevel() + 2)) - usedPoints;
     }
     
     public void openMenu(Player player) {
-    	Inventory inv = Bukkit.createInventory(null, 18, "Stat Points");
+    	/*Inventory inv = Bukkit.createInventory(null, 18, "Stat Points");
     	inv.setItem(0, loadStatsInfoItem());
     	inv.setItem(6, loadConfirmItem());
     	updateItems(inv);
-    	player.openInventory(inv);
+    	player.openInventory(inv);*/
+    	new StatGUI(player).open(player,null);
     }
 
-    public void allocatePoint(Stats s, Inventory inv) {
+    public void allocatePoint(Stats s) {
         if (getFreePoints() > 0)
             setTempStat(s, getTempStat(s) + 1);
-        updateItems(inv);
-    }
-    
-    private ItemStack loadStatItem(Stats s) {
-    	DecimalFormat df = new DecimalFormat("##.###");
-    	int temp = getTempStat(s);
-    	int stat = getStat(s);
-    	boolean buy = temp > 0;
-    	
-    	List<String> list = new ArrayList<>();
-    	for(StatBoost boost : s.getStatBoosts()) {
-    		String prefix = ChatColor.stripColor(boost.getType().getPrefix());
-    		list.add(ChatColor.GOLD + prefix + ChatColor.AQUA + df.format(stat * boost.getMultiplier()) + boost.getType().getSuffix() + " " + (buy ? ChatColor.GREEN + "[+" + df.format(temp * boost.getMultiplier()) + "]" : ""));
-    	}
-    	String[] arr = new String[list.size()];
-    	list.toArray(arr);
-    	return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + s.name() + " Bonuses: " + getStat(s) + (buy ? ChatColor.GREEN + "[+" + temp + "]" : ""), arr);
-    }
-    
-    private ItemStack loadDescItem(Stats s) {
-    	List<String> list = new ArrayList<>();
-    	
-    	for(String desc : s.getDescription())
-    		list.add(ChatColor.GRAY + desc);
-    	
-    	list.add(ChatColor.AQUA + "Allocated Points: " + getStat(s) + (getStat(s) > 0 ? ChatColor.GREEN + " [+" + getTempStat(s) + "]" : ""));
-    	list.add(ChatColor.RED + "Free Points: " + getFreePoints());
-    	String[] lore = new String[list.size()];
-    	list.toArray(lore);
-    	return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + s.name(), lore);
+        //updateItems(inv);
     }
 
-    public void updateItems(Inventory openInventory) {
-    	for (int i = 2; i < Stats.values().length; i++) {
-    		Stats s = Stats.values()[i - 2];
-    		openInventory.setItem(i, loadStatItem(s));
-    		openInventory.setItem(i + 9, loadDescItem(s));
-    	}
-    }
-
-    public void removePoint(Stats s, Inventory inv) {
+    public void removePoint(Stats s) {
         int val = getTempStat(s);
         if (val > 0)
         	setTempStat(s, val - 1);
-        updateItems(inv);
-    }
-
-    ItemStack loadStatsInfoItem() {
-
-        return ItemManager.createItem(Material.ENCHANTED_BOOK, ChatColor.YELLOW + "Stat Point Info", new String[]{ChatColor.LIGHT_PURPLE + "Points to Allocate: " + getFreePoints(),
-                ChatColor.AQUA + "LCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point",
-                ChatColor.AQUA + "RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point",
-                ChatColor.AQUA + "S-LCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "3" + ChatColor.GRAY + " points",
-                ChatColor.AQUA + "S-RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "3" + ChatColor.GRAY + " points",
-                ChatColor.AQUA + "MCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "custom" + ChatColor.GRAY + " points",
-        });
-    }
-
-    @SuppressWarnings("deprecation")
-	ItemStack loadConfirmItem() {
-        ItemStack stack = ItemManager.createItem(Material.INK_SACK, ChatColor.GREEN + "Confirm", new String[]{"Click to confirm your stat ", "point allocation.  If you ",
-                "want to undo your changes, ", "press escape."});
-        stack.setDurability(DyeColor.LIME.getDyeData());
-        return stack;
+        //updateItems(inv);
     }
 
 

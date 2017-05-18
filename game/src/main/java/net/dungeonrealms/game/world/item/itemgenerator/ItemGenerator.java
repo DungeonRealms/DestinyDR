@@ -174,7 +174,6 @@ public class ItemGenerator {
         wm.new LifeSteal();
         wm.new Pure();
         wm.new Slow();
-        wm.new SwordDamage();
         wm.new Versus();
 
         ArmorModifiers am = new ArmorModifiers();
@@ -196,6 +195,8 @@ public class ItemGenerator {
         am.new BootsArmor();
         am.new Reflection();
         am.new Resistances();
+        //So they can get 2 ty.
+        am.new StrDexVitInt();
         am.new StrDexVitInt();
         am.new Thorns();
     }
