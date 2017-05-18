@@ -498,8 +498,8 @@ public class RealmListener implements Listener {
 
         ItemStack loot = (new ItemStack(b.getType(), 1, b.getState().getData().getData()));
 
-        if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER || b.getType() == Material.LAVA
-                || b.getType() == Material.STATIONARY_LAVA) {
+        if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER
+        		|| b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
             return;
         }
 
@@ -523,9 +523,8 @@ public class RealmListener implements Listener {
             chestInv.clear();
         }
 
-        if (b.getState() instanceof InventoryHolder) {
+        if (b.getState() instanceof InventoryHolder)
             deleteIllegalItemsInInventory(((InventoryHolder) b.getState()).getInventory(), p);
-        }
 
         if (b.getType() == Material.CHEST)
             loot = new ItemRealmChest().generateItem();
@@ -541,7 +540,7 @@ public class RealmListener implements Listener {
                 loot.setDurability((short) ((Skull) b.getState()).getSkullType().ordinal());
         }
 
-        b.getLocation().getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getTypeId());
+        ParticleAPI.spawnBlockParticles(b.getLocation(), b.getType());
         b.setType(Material.AIR);
 
         int amount = loot.getAmount();

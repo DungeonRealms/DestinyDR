@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum MiningTier {
+public enum MiningTier implements ProfessionTier {
 	
 	TIER_1(0, 90, 35, 120, EnumAchievements.PICKAXE_LEVEL_I, Material.COAL_ORE, "Coal", "A chunk of coal ore.", Material.WOOD_PICKAXE, "Novice", "sturdy wood", new int[] {100}),
 	TIER_2(20, 275, 35, 300,EnumAchievements.PICKAXE_LEVEL_II, Material.EMERALD_ORE, "Emerald", "An unrefined piece of emerald ore.", Material.STONE_PICKAXE, "Apprentice", "cave stone", new int[] {150, 70}),
@@ -43,8 +43,8 @@ public enum MiningTier {
 		return ordinal() + 1;
 	}
 	
-	public String getItemName(ItemPickaxe pick) {
-		return getColor() + (pick.getLevel() == 100 ? "Grand " : "") + this.name + " Pickaxe";
+	public String getItemName() {
+		return this.name + " Pickaxe";
 	}
 	
 	public String getDescription() {
@@ -72,7 +72,7 @@ public enum MiningTier {
 	}
 	
 	public static MiningTier getTierByLevel(int level) {
-		for (int i = values().length; i >= 0; i--)
+		for (int i = values().length - 1; i >= 0; i--)
 			if (MiningTier.values()[i].getLevel() <= level)
 				return MiningTier.values()[i];
 		return MiningTier.TIER_1;

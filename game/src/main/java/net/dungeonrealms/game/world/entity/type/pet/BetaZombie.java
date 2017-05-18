@@ -2,21 +2,21 @@ package net.dungeonrealms.game.world.entity.type.pet;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.minecraft.server.v1_9_R2.*;
 
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+@Setter
 public class BetaZombie extends ZombiePet implements Ownable {
 
-	@Setter private Player owner;
-    @Getter @Setter private long lastBrainEat;
-    @Setter private int lastTick;
+	private Player owner;
+    @Getter private long lastBrainEat;
+    private int lastTick;
 
     public BetaZombie(World world) {
         super(world);
@@ -53,7 +53,7 @@ public class BetaZombie extends ZombiePet implements Ownable {
             if (time >= 750) {
                 getBukkitEntity().getWorld().playSound(this.getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1.2F);
                 if (time >= 1500) {
-                    this.getBukkitEntity().getWorld().playEffect(this.getBukkitEntity().getLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK.getId());
+                    ParticleAPI.spawnBlockParticles(getBukkitEntity().getLocation(), Material.REDSTONE_BLOCK);
                     setLastBrainEat(System.currentTimeMillis());
                 }
             }
