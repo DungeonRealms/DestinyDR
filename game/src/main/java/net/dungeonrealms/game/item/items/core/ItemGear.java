@@ -35,21 +35,30 @@ import java.util.*;
  *
  * @author Kneesnap
  */
-@Getter
 public abstract class ItemGear extends ItemGeneric {
 
+    @Getter
     @Setter
     private boolean Protected; //Uppercast to avoid being the keyword "protected".
 
+    @Getter //The tier of this item.
     private ItemTier tier;
+
+    @Getter //The rarity of this item.
     private ItemRarity rarity;
-    
+
+    @Getter
     @Setter
     private int enchantCount;
-    
-    private boolean rollStats;
+
+    @Getter
     private int durability;
+
+    @Getter
     private AttributeList attributes;
+
+    @Getter
+    private GeneratedItemType generatedItemType;
 
     public static final int MAX_DURABILITY = 1500;
 
@@ -69,7 +78,7 @@ public abstract class ItemGear extends ItemGeneric {
         setTier(ItemTier.getRandomTier());
         setRarity(ItemRarity.getRandomRarity());
         this.durability = MAX_DURABILITY;
-        this.rollStats = true;
+        rollStats(false);
     }
 
     //Used for loading existing items usually.
@@ -84,6 +93,7 @@ public abstract class ItemGear extends ItemGeneric {
         this.attributes = new AttributeList();
 
         //  LOAD GENERAL DATA  //
+        this.generatedItemType = GeneratedItemType.getType(getItem().getType());
         setTier(ItemTier.getByTier(getTagInt(TIER)));
         setProtected(getTagBool("protected"));
         setEnchantCount(getTagInt("enchant"));
@@ -108,11 +118,6 @@ public abstract class ItemGear extends ItemGeneric {
     @Override
     public void updateItem() {
         //  SAVE GENERAL DATA  //
-    	if (isRollStats()) {
-    		rollStats(false);
-    		this.rollStats = false;
-    	}
-    	
         if (getRarity() != null)
             setTagString("itemRarity", getRarity().name());
 
@@ -125,7 +130,7 @@ public abstract class ItemGear extends ItemGeneric {
         getTag().set("AttributeModifiers", new NBTTagList());
         updateLore();
 
-        double percent = getDurabilityPercent() / 100D;
+        double percent = getDurabilityPercent() * 0.01;
         getItem().setDurability((short) (getItem().getType().getMaxDurability() - percent * getItem().getType().getMaxDurability()));
 
         if (getEnchantCount() > 3)
@@ -133,22 +138,19 @@ public abstract class ItemGear extends ItemGeneric {
         super.updateItem();
     }
 
+    /**
+     * Change the item type of this item.
+     */
+    public ItemGear setType(ItemType type) {
+        super.setType(type);
+        if (type != null)
+            this.generatedItemType = type.getType();
+        return this;
+    }
+
     @Override
     protected ItemStack getStack() {
         return new ItemStack(getGeneratedItemType().getTier(getTier()));
-    }
-    
-    /**
-     * Sets this item's type. Can be dangerous if used improperly.
-     */
-    @Override // Override to change protected -> public.
-    public ItemGear setType(ItemType newType) {
-    	super.setType(newType);
-    	return this;
-    }
-    
-    public GeneratedItemType getGeneratedItemType() {
-    	return getItemType().getType();
     }
 
     /**
@@ -184,11 +186,8 @@ public abstract class ItemGear extends ItemGeneric {
     private void updateLore() {
         //  SAVE ATTRIBUTES TO NBT  //
         NBTTagCompound nbtAttributes = new NBTTagCompound();
-        
-        List<AttributeType> attr = new ArrayList<>(getAttributes().getAttributes());
-        Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
-        
-        for (AttributeType t : attr) {
+        //TODO: Sort this so it appears in order.
+        for (AttributeType t : this.getAttributes().keySet()) {
             ModifierRange range = getAttributes().getAttribute(t);
             range.save(nbtAttributes, t.getNBTName());
             addLore(t.getPrefix() + range.toString() + t.getSuffix());
@@ -207,40 +206,37 @@ public abstract class ItemGear extends ItemGeneric {
         getMeta().setDisplayName(generateItemName());
     }
 
-    protected String generateItemName() {
+    private String generateItemName() {
         String name = getTier().getColor().toString();
 
-        List<AttributeType> sorted = new ArrayList<>(this.attributes.keySet());
-        sorted.sort((a1, a2) -> a2.getDisplayPriority() - a1.getDisplayPriority());
-        
-        GeneratedItemType itemType = this.getGeneratedItemType();
-        String rawItemName = itemType.getTierName(getTier());
-        
-        //  ADD PREFIXES  //
-        for (AttributeType type : sorted)
-        	if (!type.getDisplayPrefix().equals(""))
-        		name += type.getDisplayPrefix() + " ";
-        
-        //  ADD SUFFIXES  //
-        for (AttributeType type : sorted) {
-        	boolean contains = name.contains(rawItemName);
-        	String suffix = type.getDisplaySuffix(contains);
-        	if (!suffix.equals(""))
-        		name += (contains ? "" : rawItemName + " of") + " " + suffix;
+        if (customDisplayName != null) {
+            name += customDisplayName;
+        } else {
+            List<AttributeType> sorted = new ArrayList<>(this.attributes.keySet());
+            sorted.sort((a1, a2) -> a2.getDisplayPriority() - a1.getDisplayPriority());
+
+            GeneratedItemType itemType = this.getGeneratedItemType();
+            String rawItemName = itemType.getTierName(getTier());
+
+            //  ADD PREFIXES  //
+            for (AttributeType type : sorted)
+                if (!type.getDisplayPrefix().equals(""))
+                    name += type.getDisplayPrefix() + " ";
+
+            //  ADD SUFFIXES  //
+            for (AttributeType type : sorted) {
+                boolean contains = name.contains(rawItemName);
+                String suffix = type.getDisplaySuffix(contains);
+                if (!suffix.equals(""))
+                    name += (contains ? "" : rawItemName + " of") + " " + suffix;
+            }
+
+            if (!name.contains(rawItemName))
+                name += rawItemName;
         }
-        
-        if (!name.contains(rawItemName))
-        	name += rawItemName;
-    
-    	if (getEnchantCount() > 0)
-    		name = ChatColor.RED + "[+" + getEnchantCount() + "] " + name;
-    	return name;
-    }
-    
-    @Override // Shows enchant count for EC-named items.
-    public String getCustomName() {
-    	String o = super.getCustomName();
-    	return o != null ? (getEnchantCount() > 0 ? ChatColor.RED + "[+" + getEnchantCount() + "] " : "") + getTier().getColor() + o : null;
+        if (getEnchantCount() > 0)
+            name = ChatColor.RED + "[+" + getEnchantCount() + "] " + name;
+        return name;
     }
 
     /**
@@ -254,7 +250,7 @@ public abstract class ItemGear extends ItemGeneric {
             pw.getPlayerGameStats().addStat(StatColumn.FAILED_ENCHANTS);
 
             if (enchantCount <= 8 && isProtected()) {
-                setProtected(false);
+                removeProtection();
                 p.sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
                 return;
             }
@@ -268,7 +264,7 @@ public abstract class ItemGear extends ItemGeneric {
         applyEnchantStats();
 
         this.enchantCount++;
-        setProtected(false);
+        removeProtection();
 
         //Play Effect
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
@@ -287,6 +283,7 @@ public abstract class ItemGear extends ItemGeneric {
     public void repair() {
         this.durability = MAX_DURABILITY;
     }
+
 
     /**
      * Subtracts durability from this item, and alerts the player if it reaches a certain level.
@@ -352,6 +349,24 @@ public abstract class ItemGear extends ItemGeneric {
     }
 
     /**
+     * Sets this item as protected.
+     */
+    public void protectItem() {
+        if (isProtected())
+            return;
+        setTagBool("protected", true);
+    }
+
+    /**
+     * Unprotects this item.
+     */
+    public void removeProtection() {
+        if (!isProtected())
+            return;
+        removeTag("protected");
+    }
+
+    /**
      * Rolls the stats for this item.
      */
     public void rollStats(boolean isReroll) {
@@ -364,6 +379,7 @@ public abstract class ItemGear extends ItemGeneric {
         Map<ModifierCondition, ItemModifier> conditionMap = new HashMap<>();
         Random rand = new Random();
 
+        System.out.println("The tier: " + getTier().name());
         //  ROLL STATS  //
         for (ItemModifier im : ItemGenerator.modifierObjects) {
             //Is this applicable to the current item material?
@@ -371,8 +387,10 @@ public abstract class ItemGear extends ItemGeneric {
             if (im.canApply(getItemType())) {
                 ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 
-                if (mc != null)
+                if (mc != null) {
+                    System.out.println("Adding the mc with tier: " + mc.getTier().name());
                     attemptAddModifier(conditionMap, mc, im, rand, isReroll);
+                }
             }
         }
 
@@ -388,10 +406,13 @@ public abstract class ItemGear extends ItemGeneric {
 
         Map<AttributeType, ModifierRange> keptAttributes = new HashMap<>();
 
-        if (isReroll)
-            for (AttributeType attribute : this.attributes.keySet())
-                if (attribute.isIncludeOnReroll())
+        if (isReroll) {
+            for (AttributeType attribute : this.attributes.keySet()) {
+                if (attribute.isIncludeOnReroll()) {
                     keptAttributes.put(attribute, this.attributes.get(attribute));
+                }
+            }
+        }
 
         this.attributes.clear();
 
@@ -403,6 +424,7 @@ public abstract class ItemGear extends ItemGeneric {
             if (this.attributes.containsKey(im.getCurrentAttribute()))
                 continue;
 
+
             //  GENERATE NEW STAT VALUE  //
             ModifierRange range = mc.getRange();
             range.generateRandom();
@@ -413,6 +435,7 @@ public abstract class ItemGear extends ItemGeneric {
             //  SAVE NEW STAT  //
             this.attributes.put(im.getCurrentAttribute(), range.clone());
         }
+
     }
 
     private void attemptAddModifier(Map<ModifierCondition, ItemModifier> conditions, ModifierCondition mc, ItemModifier im, Random rand, boolean reRoll) {

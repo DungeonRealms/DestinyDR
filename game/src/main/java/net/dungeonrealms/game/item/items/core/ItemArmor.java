@@ -33,8 +33,10 @@ public class ItemArmor extends CombatItem {
 	 */
 	public ItemStack[] generateArmorSet() {
 		ItemStack[] ret = new ItemStack[ARMOR.length];
-		for (int i = 0; i < ARMOR.length; i++)
-			ret[i] = new ItemArmor(ARMOR[i]).setTier(getTier()).setRarity(getRarity()).generateItem();
+		for (int i = 0; i < ARMOR.length; i++) {
+			setType(ARMOR[i]);
+			ret[i] = generateItem();
+		}
 		return ret;
 	}
 

@@ -220,8 +220,6 @@ public class DungeonRealms extends JavaPlugin {
 
         ItemGenerator.loadModifiers();
         PowerMove.registerPowerMoves();
-        ItemGenerator.loadModifiers();
-
 
         Utils.log.info("DungeonRealms - Loading Mechanics");
 

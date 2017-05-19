@@ -50,6 +50,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Created by Kieran on 10/3/2015.
+ */
 public class HealthHandler implements GenericMechanic {
 
     @Getter
@@ -205,7 +208,7 @@ public class HealthHandler implements GenericMechanic {
         } else if (GameAPI.isNonPvPRegion(player.getLocation())) {
             hpColor = ChatColor.YELLOW;
         }
-        String playerHPInfo = hpColor.toString() + ChatColor.BOLD + "HP " + hpColor + currentHP
+        String playerHPInfo = hpColor + "" + ChatColor.BOLD + "HP " + hpColor + currentHP
                 + (currentHP != maxHP ? ChatColor.BOLD + " / " + hpColor + (int) maxHP : "");
 
         //  GENERATE XP STRING  //
@@ -428,7 +431,7 @@ public class HealthHandler implements GenericMechanic {
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
 
         //  PERMA DEATH ON EVENT SHARDS  //
-        /*if (DungeonRealms.isEvent()) {
+        if (DungeonRealms.isEvent()) {
             if (Rank.isTrialGM(player)) {
                 player.sendMessage(ChatColor.GOLD + "Death has acknowledged your identity and chosen to spare your life.");
             } else {
@@ -438,7 +441,7 @@ public class HealthHandler implements GenericMechanic {
                     PunishAPI.ban(player.getUniqueId(), player.getName(), 0, -1, "You have been eliminated", null);
                 }, 5);
             }
-        }*/
+        }
 
         if (player.hasMetadata("lastDeathTime") && System.currentTimeMillis() - player.getMetadata("lastDeathTime").get(0).asLong() <= 100)
             return false;

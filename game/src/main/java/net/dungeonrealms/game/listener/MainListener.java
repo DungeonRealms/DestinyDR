@@ -958,12 +958,15 @@ public class MainListener implements Listener {
             return;
         if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
             event.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling target to " + event.getEntity().getName());
             return;
         }
 
         GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
-        if (gp != null && !gp.isTargettable())
+        if (gp != null && !gp.isTargettable()) {
             event.setCancelled(true);
+            Bukkit.getLogger().info("Cancelling target to from GPLAYER " + event.getEntity().getName());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

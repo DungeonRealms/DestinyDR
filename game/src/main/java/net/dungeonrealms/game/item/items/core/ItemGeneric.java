@@ -35,19 +35,25 @@ public abstract class ItemGeneric extends PersistentItem {
 
     private List<String> lore;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean antiDupe;
 
     @Getter
     private ItemType itemType;
 
-    @Getter @Setter //Whether or not this item should be removed.
+    @Getter
+    @Setter //Whether or not this item should be removed.
     private boolean destroyed;
 
-    @Setter @Getter
+    private boolean resetLore; //This marks whether lore should be reset. This is used so lore isn't added from a previous item update.
+
+    @Setter
+    @Getter
     private int price; //The price of this item. 0 marks no price.
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private boolean showPrice = true; //Whether or not lore should be created for this price.
 
     private long soulboundTrade = 0;
@@ -241,6 +247,11 @@ public abstract class ItemGeneric extends PersistentItem {
                 setTagBool("showPrice", true);
                 addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
             }
+        } else {
+            if (getTagBool("price")) {
+                //Remove..
+
+            }
         }
 
         if (isGlowing())
@@ -263,8 +274,9 @@ public abstract class ItemGeneric extends PersistentItem {
         	setTagString("ecLore", getCustomLore());
         
         saveMeta();
+        resetLore = true;
     }
-    
+
     /**
      * Saves data in meta to NBT.
      * Just using setItemMeta will override NBT tags, so we set them manually.
@@ -309,8 +321,10 @@ public abstract class ItemGeneric extends PersistentItem {
         if (this.lore == null) // Can't put above constructor as it will override any values set in loadItem
             this.lore = new ArrayList<>();
 
-        if (reset)
+        if (reset) {
             this.lore.clear();
+            resetLore = false;
+        }
         this.lore.add(ChatColor.GRAY + s);
     }
 

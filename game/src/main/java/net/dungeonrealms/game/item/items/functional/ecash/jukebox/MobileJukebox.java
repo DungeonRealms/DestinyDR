@@ -2,13 +2,11 @@ package net.dungeonrealms.game.item.items.functional.ecash.jukebox;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
-
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
@@ -41,7 +39,7 @@ public class MobileJukebox {
             //Stays for 5 minutes?
             this.timeoutTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
             jukebox.setType(Material.JUKEBOX);
-            ParticleAPI.spawnBlockParticles(jukebox.getLocation().clone().add(.5, .5, .5), Material.JUKEBOX);
+            jukebox.getWorld().playEffect(jukebox.getLocation().clone().add(0.5, .5, 0.5), Effect.STEP_SOUND, Material.JUKEBOX.getId());
             ItemJukebox.getMobileJukeboxes().put(this.jukebox, this);
             ItemJukebox.attemptTaskStart();
 
@@ -64,8 +62,9 @@ public class MobileJukebox {
         }
 
         jukebox.setType(Material.AIR);
-        ParticleAPI.spawnBlockParticles(jukebox.getLocation().clone().add(.5, .5, .5), Material.JUKEBOX);
-        if (this.hologram != null && !this.hologram.isDeleted())
+        jukebox.getWorld().playEffect(jukebox.getLocation().clone().add(0.5, .5, 0.5), Effect.STEP_SOUND, Material.JUKEBOX.getId());
+        if (this.hologram != null && !this.hologram.isDeleted()) {
             this.hologram.delete();
+        }
     }
 }
