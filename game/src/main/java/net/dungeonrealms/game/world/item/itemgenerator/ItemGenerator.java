@@ -274,14 +274,6 @@ public class ItemGenerator {
                                 list.add(new NBTTagString("@#" + lower + "," + upper + "$?"));
                                 firstRange = false;
                                 foundStats = true;
-//                                int val = ThreadLocalRandom.current().nextInt((upper - lower)) + lower;
-//                                if (line.contains("+") || line.contains("-")) {
-//                                    line = line.replace("(" + lower + "~" + upper + ")", String.valueOf(val));
-//                                } else {
-//                                    if (!line.contains("-")) {
-//                                        line = line.replace("(" + lower + "~" + upper + ")", "+" + String.valueOf(val));
-//                                    }
-//                                }
                             }
                             if (isRange) {
                                 range = "[" + range + "]";
@@ -381,17 +373,15 @@ public class ItemGenerator {
         The line below removes the weapons attributes.
         E.g. Diamond Sword says, "+7 Attack Damage"
          */
-            tag.set("AttributeModifiers", new NBTTagList());
+//            tag.set("AttributeModifiers", new NBTTagList());
             tag.set("itemTier", new NBTTagInt(getTierFromMaterial(is.getType())));
-
-
             Item.GeneratedItemType type = Item.GeneratedItemType.getType(is.getType());
 
             if (type != null) {
                 tag.setString("type", type.name().toLowerCase());
             }
             tag.set("itemAttributes", itemAttributes);
-            tag.set("drItemId", new NBTTagString(template_name));
+//            tag.set("drItemId", new NBTTagString(template_name));
 
 //        tag.a(CraftItemStack.asNMSCopy(is).getTag());
             nmsStack.setTag(tag);
