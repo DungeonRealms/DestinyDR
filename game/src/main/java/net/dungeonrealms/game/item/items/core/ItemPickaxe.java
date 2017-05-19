@@ -1,12 +1,10 @@
 package net.dungeonrealms.game.item.items.core;
 
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.data.ProfessionTier;
 import net.dungeonrealms.game.world.item.Item.PickaxeAttributeType;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -27,7 +25,7 @@ public class ItemPickaxe extends ProfessionItem {
 	public ItemPickaxe(ItemStack item) {
 		super(item);
 	}
-
+	
 	/**
 	 * Returns the chance of the ore breaking.
 	 */
@@ -42,7 +40,6 @@ public class ItemPickaxe extends ProfessionItem {
 
 	@Override
 	public ProfessionTier getProfessionTier() {
-		throw new UnsupportedOperationException();
-		return null;
+		return MiningTier.getTierByLevel(getLevel());
 	}
 }

@@ -1,11 +1,10 @@
 package net.dungeonrealms.game.item.items.core;
 
-import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
+import net.dungeonrealms.game.mechanic.data.ProfessionTier;
 
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -35,5 +34,10 @@ public class ItemFishingPole extends ProfessionItem {
 	
 	public static boolean isFishingPole(ItemStack item) {
 		return isType(item, ItemType.FISHING_POLE);
+	}
+
+	@Override
+	public ProfessionTier getProfessionTier() {
+		return FishingTier.getTierByLevel(getLevel());
 	}
 }

@@ -361,7 +361,7 @@ public class EntityAPI {
             ItemArmor armor = dungeon ? (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
 
             // Register monster data.
-            if (!mType.isFriendly()) {
+            if (mType != null && !mType.isFriendly()) {
                 registerMonster(le, level, tier, armor, weapon, displayName);
 
                 // Mark as dungeon mob.

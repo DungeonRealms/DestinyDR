@@ -26,6 +26,8 @@ import net.dungeonrealms.game.anticheat.PacketModifier;
 import net.dungeonrealms.game.command.*;
 import net.dungeonrealms.game.command.content.*;
 import net.dungeonrealms.game.command.donation.CommandDonation;
+import net.dungeonrealms.game.command.donation.CommandMailbox;
+import net.dungeonrealms.game.command.donation.CommandUnlocks;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
 import net.dungeonrealms.game.command.friend.AddCommand;
@@ -398,6 +400,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGMotd("gmotd", "/<command> [args]", "Guild motd command."));
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
+            cm.registerCommand(new CommandMailbox());
+            cm.registerCommand(new CommandUnlocks());
             cm.registerCommand(new CommandTrade());
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
             cm.registerCommand(new CommandTeleport("teleport", "/<command> [args]", "This will allow a Gamer Master to teleport across the lands of Andalucia."));

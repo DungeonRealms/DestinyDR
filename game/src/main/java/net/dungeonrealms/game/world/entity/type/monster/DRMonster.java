@@ -200,7 +200,9 @@ public interface DRMonster {
             	int drop = Math.min((int)gemsDropped, 64);
             	gemsDropped -= drop;
             	ItemGem gem = new ItemGem(drop);
-            	ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gem.generateItem()));
+            	ItemStack gemStack = gem.generateItem();
+            	System.out.println("The amount of gems: " + gemStack.getAmount() + " , real amount: " + drop);
+            	ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gemStack));
             }
         }
 

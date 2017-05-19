@@ -74,7 +74,7 @@ public class BankListener implements Listener {
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 
         if (Metadata.WHITELIST.has(event.getItem()) && event.getItem().getTicksLived() < 60 * 20) {
-            if (!event.getPlayer().getName().equals(Metadata.WHITELIST.get(event.getItem()).asBoolean())) {
+            if (!event.getPlayer().getName().equals(Metadata.WHITELIST.get(event.getItem()).asString())) {
                 event.setCancelled(true);
                 return;
             }
@@ -112,10 +112,13 @@ public class BankListener implements Listener {
                 pouch.setGemValue(Math.min(oldGemValue + giveGems, pouch.getMaxStorage()));
                 giveGems -= (pouch.getGemValue() - oldGemValue);
                 p.getInventory().setItem(i, pouch.generateItem());
+                pw.sendDebug("Sup gems: " + i);
             }
 
-            if (giveGems > 0)
+            if (giveGems > 0) {
+                pw.sendDebug("Giving or dropping the item!");
                 GameAPI.giveOrDropItem(player, new ItemGem(giveGems).generateItem());
+            }
         }
     }
 

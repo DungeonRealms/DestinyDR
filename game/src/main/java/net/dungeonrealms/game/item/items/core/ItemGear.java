@@ -282,7 +282,6 @@ public abstract class ItemGear extends ItemGeneric {
         this.durability = MAX_DURABILITY;
     }
 
-
     /**
      * Subtracts durability from this item, and alerts the player if it reaches a certain level.
      * Supplied player is who should receive the damage warning, if any.
@@ -377,7 +376,6 @@ public abstract class ItemGear extends ItemGeneric {
         Map<ModifierCondition, ItemModifier> conditionMap = new HashMap<>();
         Random rand = new Random();
 
-        System.out.println("The tier: " + getTier().name());
         //  ROLL STATS  //
         for (ItemModifier im : ItemGenerator.modifierObjects) {
             //Is this applicable to the current item material?
@@ -386,7 +384,6 @@ public abstract class ItemGear extends ItemGeneric {
                 ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 
                 if (mc != null) {
-                    System.out.println("Adding the mc with tier: " + mc.getTier().name());
                     attemptAddModifier(conditionMap, mc, im, rand, isReroll);
                 }
             }
