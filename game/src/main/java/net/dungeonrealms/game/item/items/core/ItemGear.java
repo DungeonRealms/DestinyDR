@@ -35,30 +35,22 @@ import java.util.*;
  *
  * @author Kneesnap
  */
+@Getter
 public abstract class ItemGear extends ItemGeneric {
 
-    @Getter
     @Setter
     private boolean Protected; //Uppercast to avoid being the keyword "protected".
 
-    @Getter //The tier of this item.
     private ItemTier tier;
-
-    @Getter //The rarity of this item.
     private ItemRarity rarity;
 
-    @Getter
     @Setter
     private int enchantCount;
 
-    @Getter
     private int durability;
-
-    @Getter
     private AttributeList attributes;
-
-    @Getter
     private GeneratedItemType generatedItemType;
+    private boolean rollStats;
 
     public static final int MAX_DURABILITY = 1500;
 
@@ -78,7 +70,7 @@ public abstract class ItemGear extends ItemGeneric {
         setTier(ItemTier.getRandomTier());
         setRarity(ItemRarity.getRandomRarity());
         this.durability = MAX_DURABILITY;
-        rollStats(false);
+        rollStats = true;
     }
 
     //Used for loading existing items usually.
@@ -90,6 +82,12 @@ public abstract class ItemGear extends ItemGeneric {
     @Override
     protected void loadItem() {
         super.loadItem();
+        
+        if (isRollStats()) {
+        	rollStats(false);
+        	this.rollStats = false;
+        }
+        
         this.attributes = new AttributeList();
 
         //  LOAD GENERAL DATA  //

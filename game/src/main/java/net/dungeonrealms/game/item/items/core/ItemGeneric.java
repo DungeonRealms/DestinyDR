@@ -46,8 +46,6 @@ public abstract class ItemGeneric extends PersistentItem {
     @Setter //Whether or not this item should be removed.
     private boolean destroyed;
 
-    private boolean resetLore; //This marks whether lore should be reset. This is used so lore isn't added from a previous item update.
-
     @Setter
     @Getter
     private int price; //The price of this item. 0 marks no price.

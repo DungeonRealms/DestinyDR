@@ -5,6 +5,7 @@ import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantFishingRod;
@@ -12,6 +13,7 @@ import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantProfession;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
+import net.dungeonrealms.game.mechanic.data.ProfessionTier;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
@@ -59,6 +61,7 @@ public abstract class ProfessionItem extends ItemGear {
 		setTagInt("level", getLevel());
 		setTagInt("xp", getXP());
 		addLore();
+		getMeta().setDisplayName(getTier().getColor() + (getLevel() == 100 ? "Grand " : "") + getProfessionTier().getItemName());
 		super.updateItem();
 	}
 	
@@ -116,8 +119,12 @@ public abstract class ProfessionItem extends ItemGear {
 			return;
 		int newLevel = getLevel() + 1;
 		
+		if (newLevel == getNextTierLevel())
+			Achievements.giveAchievement(p, getProfessionTier().getAchievement());
+		
 		ItemTier oldTier = getTier();
 		setLevel(newLevel);
+		setXP(0);
 		
 		//Apply new stat.
 		if (getTier() != oldTier) {
@@ -138,7 +145,6 @@ public abstract class ProfessionItem extends ItemGear {
             p.sendMessage("");
 		}
 		
-		onLevelUp(p);
 		p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
         Firework fw = (Firework) p.getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
         FireworkMeta fwm = fw.getFireworkMeta();
@@ -154,7 +160,7 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	@Override
 	public ItemTier getTier() {
-		return ItemTier.getByTier(Math.max(1, (getLevel() / 20) + 1));
+		return ItemTier.getByTier(getProfessionTier().getTier());
 	}
 	
 	/**
@@ -228,5 +234,5 @@ public abstract class ProfessionItem extends ItemGear {
 	/**
 	 * Calls when this item levels up.
 	 */
-	public abstract void onLevelUp(Player p);
+	public abstract ProfessionTier getProfessionTier();
 }
