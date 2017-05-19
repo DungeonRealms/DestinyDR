@@ -40,6 +40,7 @@ public abstract class FunctionalItem extends ItemGeneric {
 
     @Override
     public void updateItem() {
+        clearLore(); // goto clear the previous b4 we add new.
         String[] lore = getLore();
         if (lore != null)
             for (String line : lore)

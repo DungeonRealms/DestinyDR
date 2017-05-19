@@ -34,9 +34,9 @@ public enum Purchaseables {
     CROWN("Gold Crown", "\nEvery helmet you wear will look like\na kings crown!", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, ChatColor.GOLD),
-    JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 2, false, true, ChatColor.AQUA),
+    JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, false, false, ChatColor.GREEN),
-    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 1, false, true, ChatColor.GOLD, ChatColor.GRAY,true),
+    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, ChatColor.GOLD, ChatColor.GRAY,true),
     DPS_DUMMY("DPS Dummy", "A squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, ChatColor.GREEN);
 
     private String name;

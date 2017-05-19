@@ -12,6 +12,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.*;
 import net.dungeonrealms.game.world.entity.type.mounts.HorseMount;
+import net.dungeonrealms.game.world.entity.type.pet.CustomPet;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.minecraft.server.v1_9_R2.*;
 
@@ -224,7 +225,8 @@ public enum EnumMonster {
         COW(EntityCow.class),
         OCELOT(EntityOcelot.class),
         MOOSHROOM(EntityMushroomCow.class),
-        
+        CUSTOM_PET(CustomPet.class, EntityType.SILVERFISH),
+
         //  BASE  //
         DR_SPIDER(DRSpider.class, EntityType.CAVE_SPIDER),
         DR_WITHER(DRWitherSkeleton.class, EntityType.SKELETON),

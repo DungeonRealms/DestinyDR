@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 public abstract class GUIMenu extends ShopMenu {
 
     @Getter
-    @Setter
     private boolean shouldOpenPreviousOnClose;
 
     @Getter
@@ -52,6 +51,11 @@ public abstract class GUIMenu extends ShopMenu {
     public void setItem(int index, @Nullable ShopItem shopItem) {
         this.items.put(index, shopItem);
         this.inventory.setItem(index, shopItem.getItem());
+    }
+
+    public GUIMenu setShouldOpenPreviousOnClose(boolean should) {
+        this.shouldOpenPreviousOnClose = should;
+        return this;
     }
 
     public void setItem(int index, @NonNull ItemStack item) {

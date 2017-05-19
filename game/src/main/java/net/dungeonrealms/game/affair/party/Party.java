@@ -179,7 +179,7 @@ public class Party {
 
     	Affair.getInvitations().put(receiver, this);
     	receiver.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY
-    			+ " has invited you to join their party! To accept, type " + ChatColor.LIGHT_PURPLE + "/pccept" + ChatColor.GRAY + " or to decline, type " + ChatColor.LIGHT_PURPLE + "/pdecline");
+    			+ " has invited you to join their party! To accept, type " + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " or to decline, type " + ChatColor.LIGHT_PURPLE + "/pdecline");
         invitor.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.LIGHT_PURPLE + receiver.getDisplayName() + ChatColor.GRAY + " to join your party.");
     }
 

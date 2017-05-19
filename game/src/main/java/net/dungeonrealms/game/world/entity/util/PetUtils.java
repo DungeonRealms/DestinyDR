@@ -135,13 +135,13 @@ public class PetUtils implements GenericMechanic {
         }
     }
 
-    private static class PathfinderGoalWalkToTile extends PathfinderGoal {
+    public static class PathfinderGoalWalkToTile extends PathfinderGoal {
         private EntityInsentient entity;
         private PathEntity path;
         private Player owner;
         private double speed;
 
-        PathfinderGoalWalkToTile(EntityInsentient entity, Player owner, double speed) {
+        public PathfinderGoalWalkToTile(EntityInsentient entity, Player owner, double speed) {
             this.entity = entity;
             this.owner = owner;
             this.speed = speed;

@@ -4,6 +4,8 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.PlayerProfileGUI;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -26,8 +28,9 @@ public class CommandStats extends BaseCommand {
 			return false;
 
 		Player player = (Player) s;
-		Chat.listenForMessage(player, null);
-		PlayerWrapper.getWrapper(player).getPlayerStats().openMenu(player);
+		player.sendMessage(ChatColor.GRAY + "The stats page has been merged with the profile page!");
+		player.sendMessage(ChatColor.GRAY + "Please use /profile to access this menu in the future!");
+		new PlayerProfileGUI(player).open(player,null);
 		return true;
 	}
 }

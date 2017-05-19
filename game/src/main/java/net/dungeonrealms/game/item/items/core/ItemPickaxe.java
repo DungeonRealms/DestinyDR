@@ -35,7 +35,7 @@ public class ItemPickaxe extends ProfessionItem {
 	@Override
 	public void updateItem() {
 		MiningTier tier = MiningTier.getTierFromPickaxe(this);
-		this.setCustomDisplayName(tier == null ? "Error" : tier.getItemName(this));
+		this.setCustomDisplayName(tier == null ? "Error" : tier.getItemName());
 		super.updateItem();
 	}
 

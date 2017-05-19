@@ -138,6 +138,61 @@ public class ItemManager {
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD + " GEM FIND" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValue() + ChatColor.BOLD + " ITEM FIND";
 
+        /*page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "   " + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + align_expire_message + "\n"
+                + ChatColor.BLACK.toString() + align_descrip + new_line + ChatColor.BLACK.toString() + "   " + HealthMechanics.getPlayerHP(p.getName())
+                + " / " + HealthMechanics.health_data.get(p.getName()) + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
+                + "   " + ItemMechanics.armor_data.get(p.getName()).get(0) + " - " + ItemMechanics.armor_data.get(p.getName()).get(1) + "% "
+                + ChatColor.BOLD.toString() + "Armor" + "\n" + ChatColor.BLACK.toString() + "   " + ItemMechanics.dmg_data.get(p.getName()).get(0)
+                + " - " + ItemMechanics.dmg_data.get(p.getName()).get(1) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+                + "   " + (HealthMechanics.health_regen_data.get((p.getName())) + 5) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "   " + df.format((((double) FatigueMechanics.energy_regen_data.get((p.getName()))) * 100.0D) + 90.0D)
+                + "% " + ChatColor.BOLD.toString() + "Energy" + "\n" + ChatColor.BLACK.toString() + "   " + gold_find + "x "
+                + ChatColor.BOLD.toString() + "Gem Find" + "\n" + ChatColor.BLACK.toString() + "   " + item_find + "x " + ChatColor.BOLD.toString()
+                + "Item Find" + money_space + ChatColor.BLACK.toString() + "" + Hive.player_ecash.get(p.getName()) + " " + ChatColor.BOLD.toString()
+                + "E-CASH";
+        page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
+                + "       LEVEL\n\n" + "         " + ChatColor.BLACK + LevelMechanics.getPlayerLevel(p) + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
+                + "          XP" + "\n" + ChatColor.BLACK + "       " + LevelMechanics.getPlayerData(p).getXP() + " / "
+                + LevelMechanics.getPlayerData(p).getEXPNeeded(LevelMechanics.getPlayerLevel(p));
+        page3_string = "\n" + ChatColor.BLACK.toString() + "   " + ItemMechanics.fire_res_data.get(p.getName()) + "% " + ChatColor.BOLD.toString()
+                + "Fire Resist" + "\n" + ChatColor.BLACK.toString() + "   " + ItemMechanics.ice_res_data.get(p.getName()) + "% "
+                + ChatColor.BOLD.toString() + "Ice Resist" + "\n" + ChatColor.BLACK.toString() + "   " + ItemMechanics.poison_res_data.get(p.getName())
+                + "% " + ChatColor.BOLD.toString() + "Poison Resist" + new_line + ChatColor.BLACK.toString() + "Monsters that deal" + "\n"
+                + "elemental damage will" + "\n" + "ignore 80% of your" + "\n" + "ARMOR." + new_line + ChatColor.BLACK.toString()
+                + "Fire, Ice, and Poison" + "\n" + "resistances will take" + "\n" + "the place of your" + "\n" + "ARMOR vs. elements.";
+
+        int str_val = ItemMechanics.str_data.get(p.getName());
+        int dex_val = ItemMechanics.dex_data.get(p.getName());
+        int vit_val = ItemMechanics.vit_data.get(p.getName());
+        int int_val = ItemMechanics.int_data.get(p.getName());
+
+        page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + str_val + " Strength"
+                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.03) + "% Armor" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.017) + "% Block" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.015) + "% Axe DMG" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.023) + "% Polearm DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + dex_val + " Dexterity" + "\n"
+                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'"
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.03) + "% Dodge" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.015) + "% Bow DMG" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.005) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.009) + "% Armor Pen.";
+
+        page5_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + vit_val + " Vitality"
+                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'"
+                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.034) + "% Health" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.3) + "   HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.04) + "% Ele Resist" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.01) + "% Sword DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + int_val + " Intellect" + "\n"
+                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + new_line
+                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.015) + "% Energy" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.05) + "% Ele Damage" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.025) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.02) + "% Staff DMG";*/
+
         questPage_string = ChatColor.BLACK + "" + ChatColor.BOLD + ChatColor.UNDERLINE + "  Quest Progress  \n\n";
         int quests = 0;
 
@@ -196,7 +251,17 @@ public class ItemManager {
 
 
         String page5_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
-                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu" +
+                new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/mailbox" + "\n" + ChatColor.BLACK.toString() + "Open Your mailbox to view your pending purchases!"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/unlocks" + "\n" + ChatColor.BLACK.toString() + "Open your unlocks menu!");
+
+        String page6_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Party Commands  " + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pinvite" + "\n" + ChatColor.BLACK.toString() + "Invite someone to your party" +
+                new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pdeny" + "\n" + ChatColor.BLACK.toString() + "Deny your pending party invitation"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/paccept" + "\n" + ChatColor.BLACK.toString() + "Accept your pending party invitation");
+
+        String page7_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/djoin" + "\n" + ChatColor.BLACK.toString() + "Join your parties Dungeon"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/dleave" + "\n" + ChatColor.BLACK.toString() + "Leave your parties Dungeon");
 
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
@@ -207,6 +272,8 @@ public class ItemManager {
         pages.add(page3_string);
         pages.add(page4_string);
         pages.add(page5_string);
+        pages.add(page6_string);
+        pages.add(page7_string);
 
         bm.setPages(pages);
         stack.setItemMeta(bm);

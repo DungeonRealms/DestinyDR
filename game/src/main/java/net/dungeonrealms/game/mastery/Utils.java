@@ -63,6 +63,12 @@ public class Utils {
         return sortedMap;
     }
 
+    public static void addChatColor(List<String> toAdd, ChatColor color) {
+        for(int i = 0; i < toAdd.size(); i++) {
+            toAdd.set(i,color + toAdd.get(i));
+        }
+    }
+
     private static DecimalFormat dFormat = new DecimalFormat("#,###.##");
 
     public static String formatCommas(double val) {
