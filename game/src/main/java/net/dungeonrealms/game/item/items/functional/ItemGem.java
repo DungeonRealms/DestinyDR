@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.functional;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -30,12 +31,18 @@ public class ItemGem extends ItemMoney {
 		getItem().setAmount(amount);
 	}
 
-	/*@Override
+	@Override
 	public ItemStack generateItem() {
 		ItemStack toReturn = super.generateItem();
-		toReturn.setAmount(getGemValue());
+		toReturn.setAmount(this.gemValue);
 		return toReturn;
-	}*/
+	}
+
+	@Override
+	public void updateItem() {
+		super.updateItem();
+		getItem().setAmount(this.gemValue);
+	}
 
 	@Override
 	public int getMaxStorage() {

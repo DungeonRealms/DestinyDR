@@ -1,11 +1,9 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
 import com.google.common.collect.Lists;
-
 import lombok.Getter;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ShopItem;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,12 +16,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GUIItem extends ShopItem {
-	
+
     @Getter
     private Consumer<InventoryClickEvent> clickCallback;
 
-    @Getter private List<String> lore;
-    
     public GUIItem(ItemStack item) {
         super(item);
         getItem().getItemMeta().addItemFlags(ItemFlag.values());
@@ -32,21 +28,14 @@ public class GUIItem extends ShopItem {
     public GUIItem(Material material) {
         this(material, (short) 0);
     }
-    
+
     public GUIItem(Material mat, short s) {
-    	this(new ItemStack(mat, 1, s));
+        this(new ItemStack(mat, 1, s));
     }
-    
-    @Override
-    public void updateItem() {
-    	if (getLore() != null)
-    		getLore().forEach(this::addLore);
-    	super.updateItem();
-    }
-    
+
     @Override
     public ItemStack getStack() {
-    	return getItem();
+        return getItem();
     }
 
     public GUIItem setEnchanted(boolean enchant) {
@@ -57,6 +46,13 @@ public class GUIItem extends ShopItem {
             getItem().removeEnchantment(EnchantmentAPI.getGlowEnchant());
 
         return this;
+    }
+
+    @Override
+    public void loadItem() {
+        super.loadItem();
+        if (getItem().hasItemMeta() && getItem().getItemMeta().hasLore())
+            this.lore = getItem().getItemMeta().getLore();
     }
 
     public GUIItem setClick(Consumer<InventoryClickEvent> event) {

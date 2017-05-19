@@ -430,13 +430,14 @@ public class EntityAPI {
         fullBar = full + fullBar.substring(0, greenBars) + empty + fullBar.substring(greenBars);
         
         // Apply name to entity.
-        String[] bar = splitHalfColor(fullBar, bold);
-        ent.setCustomName("[" + bar[0] + " " + ChatColor.WHITE + monster.getHP() + " " + bar[1] + ChatColor.GRAY + "]");
+        String[] bar = splitHalfColor(fullBar, bold, String.valueOf(monster.getHP()).length());
+        ent.setCustomName("[" + bar[0] + " " + ChatColor.WHITE + monster.getHP() + " " + bar[1] + ChatColor.WHITE + "]");
         ent.setCustomNameVisible(true);
     }
     
-    private static String[] splitHalfColor(String spl, boolean bold) {
-    	int splitIndex = spl.length() / 2;
+    private static String[] splitHalfColor(String spl, boolean bold, int healthLength) {
+        //Need to offset for the health.
+    	int splitIndex = spl.length() / 2 - healthLength / 2 - 1;
     	
     	// Add any color.
     	ChatColor lastColor = null;

@@ -10,7 +10,6 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -30,10 +29,10 @@ import java.util.*;
  */
 public abstract class ItemGeneric extends PersistentItem {
 
-	@Getter
-	private Map<ItemData, Boolean> dataMap;
+    @Getter
+    private Map<ItemData, Boolean> dataMap;
 
-    private List<String> lore;
+    protected List<String> lore;
 
     @Getter
     @Setter
@@ -64,11 +63,13 @@ public abstract class ItemGeneric extends PersistentItem {
 
     @Getter
     private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
-    
-    @Setter @Getter // EC - Name
+
+    @Setter
+    @Getter // EC - Name
     private String customName;
-    
-    @Getter @Setter
+
+    @Getter
+    @Setter
     private String customLore;
 
     //Tier should share the same name for consistency.
@@ -187,12 +188,12 @@ public abstract class ItemGeneric extends PersistentItem {
         setShowPrice(getTagBool("showPrice"));
         setGlowing(EnchantmentAPI.isGlowing(getItem()));
         setType(ItemType.getType(getTagString("type")));
-     
+
         if (hasTag("ecName"))
-        	setCustomName(getTagString("ecName"));
-        
+            setCustomName(getTagString("ecName"));
+
         if (hasTag("ecLore"))
-        	setCustomLore(getTagString("ecLore"));
+            setCustomLore(getTagString("ecLore"));
     }
 
     /**
@@ -260,19 +261,19 @@ public abstract class ItemGeneric extends PersistentItem {
         // Ecash Name - Overrides custom names by other items.
         String ecashName = getCustomName();
         if (ecashName != null)
-        	getMeta().setDisplayName(ecashName);
-        
+            getMeta().setDisplayName(ecashName);
+
         if (getCustomLore() != null) {
-        	addLore("");
-        	addLore(getCustomLore());
+            addLore("");
+            addLore(getCustomLore());
         }
 
         if (this.customName != null) // Set the custom name into the lore. Don't use the getter since we want the raw name, regardless of what items override.
-        	setTagString("ecName", this.customName);
-        
+            setTagString("ecName", this.customName);
+
         if (getCustomLore() != null)
-        	setTagString("ecLore", getCustomLore());
-        
+            setTagString("ecLore", getCustomLore());
+
         saveMeta();
         resetLore = true;
     }
@@ -339,7 +340,7 @@ public abstract class ItemGeneric extends PersistentItem {
 
     public void clearLore() {
         if (this.lore != null)
-        	this.lore.clear();
+            this.lore.clear();
     }
 
     public boolean getSData(ItemData data) {
@@ -352,8 +353,9 @@ public abstract class ItemGeneric extends PersistentItem {
         dataMap.put(data, enabled);
     }
 
-    @AllArgsConstructor @Getter
-	public enum ItemData {
+    @AllArgsConstructor
+    @Getter
+    public enum ItemData {
         SOULBOUND(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "Soulbound"),
         UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
         PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
@@ -364,9 +366,9 @@ public abstract class ItemGeneric extends PersistentItem {
 
         private final String display;
         private boolean showInGUI;
-        
+
         ItemData(String s) {
-        	this(s, true);
+            this(s, true);
         }
 
         public String getNBTTag() {

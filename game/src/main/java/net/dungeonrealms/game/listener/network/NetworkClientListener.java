@@ -452,6 +452,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             if (DungeonRealms.getInstance().canAcceptPlayers())
                                 GameAPI.stopGame();
                             return;
+                        case "Rank":
+                            UUID uuid = UUID.fromString(in.readUTF());
+                            PlayerRank rank = PlayerRank.getFromInternalName(in.readUTF());
+                            Rank.getCachedRanks().put(uuid, rank);
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if(wrapper != null) {
+                                wrapper.setRank(rank);
+                            }
                         case "Guilds":
                             String command = in.readUTF();
 

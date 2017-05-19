@@ -84,11 +84,11 @@ public class PlayerProfileGUI extends GUIMenu {
             gui.open();
         }));
 
-        setItem(26, new GUIItem(ItemManager.createItem(Material.COMPASS, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Achievements",
+        setItem(8, new GUIItem(ItemManager.createItem(Material.COMPASS, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Achievements",
                 ChatColor.GRAY.toString() + "Check your progress."
         )).setClick(e -> new AchievementGUI(player, this).open(player, e.getAction())));
 
-        setItem(8, new GUIItem(ItemManager.createItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Toggles",
+        setItem(26, new GUIItem(ItemManager.createItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Toggles",
                 ChatColor.GRAY.toString() + "Adjust preferences here."
         )).setClick(e -> new TogglesGUI(player, this).open(player, e.getAction())));
 
