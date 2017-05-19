@@ -62,9 +62,7 @@ public abstract class ShopMenu {
     }
 
     public ShopMenu(Player player, String title, int rows) {
-        this.title = title;
-        this.size = rows * 9;
-        this.inventory = Bukkit.createInventory(null, rows * 9, title);
+        this(player, rows * 9, title);
         open(player, null);
     }
 
@@ -93,8 +91,17 @@ public abstract class ShopMenu {
             return item;
         }
         getItems().put(this.index, item);
+        getInventory().setItem(this.index, item.generateItem());
         this.index += 1;
         return item;
+    }
+    
+    protected ShopItem addItem(Material mat, String name, String ... lore) {
+    	return addItem(createItem(mat, name, lore));
+    }
+    
+    protected ShopItem addItem(Material mat, short meta, String name, String... lore) {
+    	return addItem(createItem(mat, meta, name, lore));
     }
 
     protected ShopItem addItem(ItemStack item) {
@@ -130,6 +137,13 @@ public abstract class ShopMenu {
     }
 
     /**
+     * Set the index to the next row.
+     */
+    protected void nextRow() {
+    	this.index = (((this.index - 1) / 9) + 1) * 9 - 1;
+    }
+    
+    /**
      * Places the items in the shop.
      */
     protected abstract void setItems();
@@ -141,6 +155,15 @@ public abstract class ShopMenu {
         Lists.newArrayList(getInventory().getViewers()).forEach(HumanEntity::closeInventory);
         getInventory().clear();
     }
+    
+    /**
+     * Clear this inventory.
+     */
+    public void clear() {
+    	getItems().clear();
+    	getInventory().clear();
+    	this.index = 0;
+    }
 
     /**
      * Opens this gui for the specified player.
@@ -148,20 +171,16 @@ public abstract class ShopMenu {
     public void open(Player player, InventoryAction action) {
         if (player == null)
             return;
+        
         this.player = player;
-        this.index = 0;
-        this.inventory.clear();
+        clear();
         setItems();
-        for (int i : getItems().keySet())
-            getInventory().setItem(i, getItems().get(i).generateItem());
-
 
         ShopMenu menu = ShopMenuListener.getMenus().get(player);
         if(menu != null){
-            if(menu.getTitle() != null && menu.getTitle().equals(getTitle()) && menu.getSize() == getSize()){
-                setItems();
+            if(menu.getTitle() != null && menu.getTitle().equals(getTitle()) && menu.getSize() == getSize())
                 return;
-            }
+            
             //Delay the next inventory click by 1.
             if(action != null && action.name().startsWith("PICKUP_")){
                 //CAnt close the inventory on a pickup_all action etc otherwise throws exceptions.
@@ -174,6 +193,7 @@ public abstract class ShopMenu {
             reopenWithDelay(player);
             return;
         }
+        
         player.openInventory(getInventory());
         ShopMenuListener.getMenus().put(player, this);
     }
@@ -185,8 +205,13 @@ public abstract class ShopMenu {
             ShopMenuListener.getMenus().put(player, this);
         }, 1);
     }
+    
     protected static ItemStack createItem(Material mat, String name, String... lore) {
-        ItemStack stack = new ItemStack(mat);
+    	return createItem(mat, (short) 0, name, lore);
+    }
+    
+    protected static ItemStack createItem(Material mat, short dura, String name, String... lore) {
+        ItemStack stack = new ItemStack(mat, 1, dura);
         ItemMeta meta = stack.getItemMeta();
 
         // Name
@@ -216,6 +241,10 @@ public abstract class ShopMenu {
                 menu.getLastMenu().open(player);
             return false;
         });
+    }
+    
+    public static int fitSize(List<?> l) {
+    	return fitSize(l.size());
     }
 
     public static int fitSize(int size) {

@@ -59,6 +59,7 @@ public class ItemHealingFood extends FunctionalItem implements ItemConsumeListen
 	@Override
 	public void updateItem() {
 		setTagInt("healAmount", this.healAmount);
+		super.updateItem();
 	}
 
 	@Override
@@ -100,6 +101,7 @@ public class ItemHealingFood extends FunctionalItem implements ItemConsumeListen
 			};
 	}
 	
+	@Getter
 	public enum EnumHealingFood {
 		
 		// Tier 1
@@ -123,14 +125,14 @@ public class ItemHealingFood extends FunctionalItem implements ItemConsumeListen
 		ENCH_KINGS_APPLE(4, ItemRarity.RARE, Material.GOLDEN_APPLE, 1, 1000, 100, "Enchanted King's Apple", "A powerful King's battle snack."),
 		GOLD_CARROT(4, ItemRarity.UNIQUE, Material.GOLDEN_CARROT, 1350, 128, "Golden Carrot", "Now this is just a waste of useful gold ore.");
 		
-		@Getter private final String displayName;
-		@Getter private final ItemRarity rarity;
-		@Getter private final String description;
-		@Getter private final int healAmount;
-		@Getter private final Material material;
-		@Getter private final int meta;
-		@Getter private final int tier;
-		@Getter private final int price;
+		private final String displayName;
+		private final ItemRarity rarity;
+		private final String description;
+		private final int healAmount;
+		private final Material material;
+		private final int meta;
+		private final int tier;
+		private final int price;
 		
 		EnumHealingFood(int tier, ItemRarity rarity, Material mat, int health, int price, String name, String desc) {
 			this(tier, rarity, mat, 0, health, price, name, desc);

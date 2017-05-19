@@ -68,7 +68,7 @@ public enum ShardInfo implements Serializable {
         return query.isPresent() ? query.get() : null;
     }
 
-    @AllArgsConstructor
+    @AllArgsConstructor @Getter
     public enum ShardType {
 
     	DEFAULT("", ChatColor.YELLOW, "END_CRYSTAL"),
@@ -81,14 +81,12 @@ public enum ShardInfo implements Serializable {
     	ROLEPLAY("Role-playing Shard", ChatColor.YELLOW, "BOOK"),
     	EVENT("", ChatColor.YELLOW, "GOLD_INGOT", "Please be aware that data is not synchronized with the live game. ", "This shard is only accessible for a short amount of time.");
 
-    	@Getter private String description;
-    	@Getter private ChatColor color;
-    	@Getter private PlayerRank minRank;
-    	@Getter
-    	private String icon;
-    	@Getter
+    	private String description;
+    	private ChatColor color;
+    	private PlayerRank minRank;
+    	private String icon; // This is a string because the proxy doesn't have the Material class.
     	private int meta;
-    	@Getter private String[] info;
+    	private String[] info;
 
     	ShardType(String d, ChatColor c, String m, String... info) {
     		this(d, c, PlayerRank.DEFAULT, m, info);
@@ -97,10 +95,5 @@ public enum ShardInfo implements Serializable {
     	ShardType(String d, ChatColor c, PlayerRank rank, String i, String... info) {
     		this(d, c, rank, i, 0, info);
     	}
-
-//    	public ItemStack getIcon(){
-//    		return new ItemStack(icon, (short)meta);
-//    	}
-
     }
 }

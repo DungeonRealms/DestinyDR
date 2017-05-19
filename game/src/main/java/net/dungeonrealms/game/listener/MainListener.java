@@ -191,9 +191,9 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-        if (player.getName().equalsIgnoreCase("Ingot") || player.getName().equalsIgnoreCase("iFamasssxD")) {
-            player.setOp(true);
-        }
+        if (Constants.DEVELOPERS.contains(event.getPlayer().getName()))
+        	player.setOp(true);
+        
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);

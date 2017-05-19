@@ -422,11 +422,6 @@ public class InventoryListener implements Listener {
                 event.setResult(Event.Result.DENY);
             }
         }
-
-        if (GUIMenu.alwaysCancelInventories.contains(event.getInventory().getName()) && !event.isCancelled()) {
-            event.setCancelled(true);
-            Bukkit.getLogger().info("Cancelling " + event.getInventory().getName() + " Click for " + event.getWhoClicked().getName() + ", hasnt been cancelled in menu.");
-        }
     }
 
     /**
@@ -525,54 +520,6 @@ public class InventoryListener implements Listener {
             }, 20L);
         }
 
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerClickStatsInventory(InventoryClickEvent event) {
-        if (GameAPI.isShop(event.getInventory())) return;
-        if (event.getInventory().getTitle().contains("Stat Points")) {
-            //Stat Points Inv
-            event.setCancelled(true);
-            int slot = event.getRawSlot();
-            Player p = (Player) event.getWhoClicked();
-            PlayerWrapper wp = PlayerWrapper.getWrapper(p);
-            PlayerStats stats = wp.getPlayerStats();
-
-            if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
-                final Inventory inv = event.getInventory();
-                int amount = event.isShiftClick() ? 3 : 1;
-                Stats stat = Stats.values()[slot - 2];
-
-                if (event.getClick() == ClickType.MIDDLE) {
-
-                    p.sendMessage(ChatColor.GREEN + "Type a custom allocated amount.");
-                    stats.reset = false;
-                    int currentFreePoints = stats.getFreePoints();
-
-                    Chat.listenForNumber(p, 0, currentFreePoints, num -> {
-                        for (int i = 0; i < num; i++)
-                            stats.allocatePoint(stat, inv);
-                        p.openInventory(inv);
-                    }, () -> {
-                        p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                        stats.resetTemp();
-                    });
-
-                } else {
-                    for (int i = 0; i < amount; i++) {
-                        if (event.isRightClick())
-                            stats.removePoint(stat, inv);
-                        if (event.isLeftClick())
-                            stats.allocatePoint(stat, inv);
-                    }
-                }
-            }
-
-            if (slot == 6) {
-                stats.confirmStats();
-                p.closeInventory();
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

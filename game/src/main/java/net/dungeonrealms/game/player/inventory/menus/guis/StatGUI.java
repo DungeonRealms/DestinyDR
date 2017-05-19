@@ -31,8 +31,6 @@ public class StatGUI extends GUIMenu {
         super(viewer, 18, "Stat Points");
     }
 
-
-
     @Override
     protected void setItems() {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);

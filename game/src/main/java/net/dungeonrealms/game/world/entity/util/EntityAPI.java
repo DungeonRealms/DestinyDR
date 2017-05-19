@@ -16,7 +16,6 @@ import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;

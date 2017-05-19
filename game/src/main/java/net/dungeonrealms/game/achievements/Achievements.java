@@ -119,10 +119,9 @@ public class Achievements {
 
 		public int getNumberOfAchievements() {
 			int toReturn = 0;
-			for(EnumAchievements achievement : EnumAchievements.values()) {
-				if(achievement.getCategory() == this) toReturn++;
-			}
-
+			for(EnumAchievements achievement : EnumAchievements.values())
+				if(achievement.getCategory() == this)
+					toReturn++;
 			return toReturn;
 		}
 	}

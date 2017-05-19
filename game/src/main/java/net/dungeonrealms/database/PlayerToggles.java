@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 
 public class PlayerToggles implements LoadableData, SaveableData {
 
@@ -42,9 +43,12 @@ public class PlayerToggles implements LoadableData, SaveableData {
 
     @SneakyThrows
     public void extractData(ResultSet set) {
-        for (Toggles t : Toggles.values())
-        	if (t.isSaved())
-        		setState(t, set.getBoolean("toggles." + t.getDBField()));
+        for (Toggles t : Toggles.values()) {
+        	if (t.isSaved()) {
+        		String db = "toggles." + t.getDBField();
+        		setState(t, SQLDatabaseAPI.hasColumn(set, db) ? set.getBoolean(db) : t.isToggledByDefault());
+        	}
+        }
     }
 
     public String getUpdateStatement() {
@@ -55,47 +59,52 @@ public class PlayerToggles implements LoadableData, SaveableData {
     	return sql + " WHERE account_id = '" + wrapper.getAccountID() + "';";
     }
 
-    @AllArgsConstructor
+    @AllArgsConstructor @Getter
     public enum Toggles {
-    	DEBUG("debug_enabled", "debug","Toggles displaying combat debug messages", "Debug Messages"),
-    	TRADE("trading_enabled", "trade","Toggles trading requests.", "Trade"),
+    	DEBUG("debug_enabled", "debug","Toggles displaying combat debug messages", "Debug Messages", true),
+    	TRADE("trading_enabled", "trade","Toggles trading requests.", "Trade", true),
     	TRADE_CHAT("trade_chat_enabled", "tradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
     	GLOBAL_CHAT("default_global_chat", "globalchat", "Toggles talking only in global chat.", "Global Chat"),
-    	ENABLE_PMS("pms_enabled", "tells", "Toggles receiving NON-BUD /tell.", "NON-BUD Private Messages."),
+    	ENABLE_PMS("pms_enabled", "tells", "Toggles receiving NON-BUD /tell.", "NON-BUD Private Messages.", true),
     	PVP("pvp_enabled", "pvp","Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
-    	DUEL("dueling_enabled", "duel","Toggles dueling requests", "Dueling Requests"),
+    	DUEL("dueling_enabled", "duel","Toggles dueling requests", "Dueling Requests", true),
     	CHAOTIC_PREVENTION("chaotic_prevention_enabled", "chaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
     	//SOUNDTRACK("sound", "Toggles the DungeonRealms Soundtrack.", "Soundtrack"),
-    	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display"),
-    	GLOW("glowEnabled", "glow","Toggles rare items glowing.", "Item Glow"),
-    	DAMAGE_INDICATORS("dmgIndicators","indicators", "Toggles floating damage values.", "Damage Indicators"),
+    	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display", true),
+    	GLOW("glowEnabled", "glow","Toggles rare items glowing.", "Item Glow", true),
+    	DAMAGE_INDICATORS("dmgIndicators","indicators", "Toggles floating damage values.", "Damage Indicators", true),
 
-    	GUILD_CHAT("guild_chat", "guildchat", "Toggles talking only in guild chat.", "Guild Chat", false),
+    	GUILD_CHAT("guild_chat", "guildchat", "Toggles talking only in guild chat.", "Guild Chat", false, false),
 
+    	// GM Toggles
     	VANISH("vanish", "Toggles your vanish-status.", "Vanish", PlayerRank.TRIALGM);
 
-    	@Getter
     	private String columnName;
     	private String commandName;
-    	@Getter private String description;
-    	@Getter private String displayName;
-    	@Getter private PlayerRank minRank;
-    	@Getter private boolean saved;
+    	private String description;
+    	private String displayName;
+    	private PlayerRank minRank;
+    	private boolean toggledByDefault;
+    	private boolean saved;
 
     	Toggles(String columnName, String description, String display) {
     		this(columnName, description, display, PlayerRank.DEFAULT);
     	}
 
     	Toggles(String columnName, String description, String display, PlayerRank rank) {
-    		this(columnName, null, description, display, rank, true);
+    		this(columnName, null, description, display, rank, false, true);
     	}
 
     	Toggles(String columnName, String cmd, String description, String display) {
     		this(columnName, cmd, description, display, true);
     	}
-
+    	
     	Toggles(String columnName, String cmd, String description, String display, boolean save) {
-    		this(columnName, cmd, description, display, PlayerRank.DEFAULT, save);
+    		this(columnName, cmd, description, display, PlayerRank.DEFAULT, false, save);
+    	}
+    	
+    	Toggles(String columnName, String cmd, String description, String display,  boolean defaultState, boolean save) {
+    		this(columnName, cmd, description, display, PlayerRank.DEFAULT, defaultState, save);
     	}
 
     	public String getCommand() {

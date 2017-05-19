@@ -27,6 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,7 +47,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Fishing implements GenericMechanic, Listener {
 
-    private Random random = new Random();
     private static HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
     private static HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
     private static int splashCounter = 10;
@@ -70,9 +70,9 @@ public class Fishing implements GenericMechanic, Listener {
                 Random random = ThreadLocalRandom.current();
                 for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
                     Location epicenter = data.getKey();
-                    ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.WATER_SPLASH, epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20);
+                    ParticleAPI.spawnParticle(Particle.WATER_SPLASH, epicenter, 20, 1.4F);
                     data.getValue().stream().filter(loc -> random.nextInt(chance) == 1).forEach(
-                            loc -> ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.WATER_SPLASH, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20));
+                            loc -> ParticleAPI.spawnParticle(Particle.WATER_SPLASH, loc, 20, 1.4F));
                 }
             } catch (ConcurrentModificationException cme) {
                 cme.printStackTrace();

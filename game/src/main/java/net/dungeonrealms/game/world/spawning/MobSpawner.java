@@ -20,10 +20,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base for a DR Mob Spawner.
@@ -254,7 +252,7 @@ public abstract class MobSpawner {
     public abstract void init();
 
     public void kill() {
-        getSpawnedMonsters().stream().filter(e -> e != null).forEach(ent -> ent.remove());
+        getSpawnedMonsters().stream().filter(e -> e != null).forEach(Entity::remove);
         getSpawnedMonsters().clear();
 
         if (getArmorStand() != null)

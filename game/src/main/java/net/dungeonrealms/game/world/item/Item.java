@@ -29,7 +29,7 @@ public class Item {
     public enum GeneratedItemType {
         // WEAPONS
     	SWORD(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.GOLD_SWORD}, new String[] {"Shortsword", "Broadsword", "Magic Sword", "Ancient Sword", "Legendary Sword"}, 2),
-        POLEARM(AttributeBank.WEAPON, new Material[] {Material.WOOD_SWORD, Material.STONE_SPADE, Material.IRON_SPADE, Material.DIAMOND_SPADE, Material.GOLD_SPADE}, new String[] {"Spear", "Halberd", "Magic Polearm", "Ancient Polearm", "Legendary Polearm"}, 2),
+        POLEARM(AttributeBank.WEAPON, new Material[] {Material.WOOD_SPADE, Material.STONE_SPADE, Material.IRON_SPADE, Material.DIAMOND_SPADE, Material.GOLD_SPADE}, new String[] {"Spear", "Halberd", "Magic Polearm", "Ancient Polearm", "Legendary Polearm"}, 2),
         AXE(AttributeBank.WEAPON, new Material[] {Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[] {"Hatchet", "Great Axe", "War Axe", "Ancient Axe", "Legendary Axe"}, 2),
         STAFF(AttributeBank.WEAPON, new Material[] {Material.WOOD_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.DIAMOND_HOE, Material.GOLD_HOE}, new String[] {"Staff", "Battlestaff", "Wizard Staff", "Ancient Staff", "Legendary Staff"}, 2),
         BOW(AttributeBank.WEAPON, Material.BOW, new String[] {"Shortbow", "Longbow", "Magic Bow", "Ancient Bow", "Legendary Bow"}, 2),
@@ -58,14 +58,6 @@ public class Item {
         	this.gearNames = names;
         	this.attributeBank = attributes;
         	this.merchantScraps = scraps;
-        }
-
-        public static GeneratedItemType getRandomWeapon() {
-            return GeneratedItemType.getById(Utils.randInt(0, 4));
-        }
-
-        public static GeneratedItemType getRandomArmor() {
-            return GeneratedItemType.getById(Utils.randInt(5, 8));
         }
 
         /**
@@ -227,6 +219,13 @@ public class Item {
                 if (im.getId() == id)
                     return im;
             return null;
+        }
+        
+        public static ItemRarity getByName(String name) {
+        	for (ItemRarity ir : values())
+        		if (ir.name.equalsIgnoreCase(name))
+        			return ir;
+        	return null;
         }
         
         public static ItemRarity getRandomRarity() {

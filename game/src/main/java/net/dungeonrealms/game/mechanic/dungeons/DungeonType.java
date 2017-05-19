@@ -31,19 +31,18 @@ import java.util.List;
  *
  * @author Kneesnap
  */
-@AllArgsConstructor
-@Getter
+@AllArgsConstructor @Getter
 public enum DungeonType {
     BANDIT_TROVE("Bandit Trove", "banditTrove", StatColumn.BOSS_KILLS_MAYEL,
-            BanditTrove.class, null,
+            BanditTrove.class, null, BossType.Mayel,
             EnumMounts.WOLF, 1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
 
     VARENGLADE("Varenglade", "varenglade", StatColumn.BOSS_KILLS_BURICK,
-            Varenglade.class, VarengladeListener.class,
+            Varenglade.class, VarengladeListener.class, BossType.Burick,
             EnumMounts.SLIME, 3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE),
 
     THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss", StatColumn.BOSS_KILLS_INFERNALABYSS,
-            InfernalAbyss.class, InfernalListener.class,
+            InfernalAbyss.class, InfernalListener.class, BossType.InfernalAbyss,
             EnumMounts.SPIDER, 4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS);
 
     private String name;
@@ -51,6 +50,7 @@ public enum DungeonType {
     private StatColumn stat;
     private Class<? extends Dungeon> dungeonClass;
     private Class<? extends Listener> listenerClass;
+    private BossType boss;
     private EnumMounts mount;
     private int tier;
     private int minShards;
@@ -59,14 +59,6 @@ public enum DungeonType {
     private int maxGems;
     private int XP;
     private EnumAchievements achievement;
-
-    public BossType getBoss() {
-        if (this == VARENGLADE) return BossType.Burick;
-        if (this == THE_INFERNAL_ABYSS) return BossType.InfernalAbyss;
-        if (this == BANDIT_TROVE) return BossType.Mayel;
-
-        return null;
-    }
 
     /**
      * Gets a random number of gems in the allowed range.

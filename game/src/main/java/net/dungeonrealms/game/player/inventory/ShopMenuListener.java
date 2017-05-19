@@ -37,7 +37,6 @@ public class ShopMenuListener implements Listener {
     public void onInventoryClick(InventoryClickEvent evt) {
         Player p = (Player) evt.getWhoClicked();
 
-
         ItemStack clicked = evt.getCurrentItem();
         ShopMenu menu = getMenu(p);
         if (menu == null)

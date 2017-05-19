@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
 import com.google.common.collect.Lists;
+
 import lombok.Getter;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ShopItem;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,29 +18,43 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GUIItem extends ShopItem {
-
+	
     @Getter
     private Consumer<InventoryClickEvent> clickCallback;
 
+    @Getter private List<String> lore;
+    
     public GUIItem(ItemStack item) {
         super(item);
-        item.getItemMeta().addItemFlags(ItemFlag.values());
+        getItem().getItemMeta().addItemFlags(ItemFlag.values());
     }
 
     public GUIItem(Material material) {
-        this(new ItemStack(material, 1));
+        this(material, (short) 0);
     }
-
+    
+    public GUIItem(Material mat, short s) {
+    	this(new ItemStack(mat, 1, s));
+    }
+    
     @Override
-    public void loadItem() {
+    public void updateItem() {
+    	if (getLore() != null)
+    		getLore().forEach(this::addLore);
+    	super.updateItem();
+    }
+    
+    @Override
+    public ItemStack getStack() {
+    	return getItem();
     }
 
     public GUIItem setEnchanted(boolean enchant) {
 
         if (enchant)
-            this.item.addUnsafeEnchantment(EnchantmentAPI.getGlowEnchant(), 1);
-        else if (item.containsEnchantment(EnchantmentAPI.getGlowEnchant()))
-            this.item.removeEnchantment(EnchantmentAPI.getGlowEnchant());
+            getItem().addUnsafeEnchantment(EnchantmentAPI.getGlowEnchant(), 1);
+        else if (getItem().containsEnchantment(EnchantmentAPI.getGlowEnchant()))
+            getItem().removeEnchantment(EnchantmentAPI.getGlowEnchant());
 
         return this;
     }
@@ -50,32 +66,32 @@ public class GUIItem extends ShopItem {
 
     public GUIItem setECashCost(int ecash) {
         this.setECash(ecash);
-        ItemMeta im = item.getItemMeta();
+        ItemMeta im = getItem().getItemMeta();
         List<String> lore = im.getLore() == null ? Lists.newArrayList() : im.getLore();
         lore.add(ChatColor.WHITE.toString() + ecash + ChatColor.GREEN + " E-Cash");
         im.setLore(lore);
-        item.setItemMeta(im);
+        getItem().setItemMeta(im);
         return this;
     }
 
     public GUIItem setSkullOwner(String name) {
-        ItemMeta im = item.getItemMeta();
+        ItemMeta im = getItem().getItemMeta();
         if (!(im instanceof SkullMeta)) return this;
         SkullMeta sm = (SkullMeta) im;
         sm.setOwner(name);
-        item.setItemMeta(sm);
+        getItem().setItemMeta(sm);
         return this;
     }
 
     public GUIItem setDurability(short data) {
-        item.setDurability(data);
+        getItem().setDurability(data);
         return this;
     }
 
     public GUIItem setName(String name) {
-        ItemMeta im = item.getItemMeta();
+        ItemMeta im = getItem().getItemMeta();
         im.setDisplayName(name);
-        item.setItemMeta(im);
+        getItem().setItemMeta(im);
         return this;
     }
 
@@ -83,10 +99,8 @@ public class GUIItem extends ShopItem {
         return setLore(Lists.newArrayList(strings));
     }
 
-    public GUIItem setLore(List<String> string) {
-        ItemMeta im = item.getItemMeta();
-        im.setLore(string);
-        item.setItemMeta(im);
+    public GUIItem setLore(List<String> lore) {
+        this.lore = lore;
         return this;
     }
 }

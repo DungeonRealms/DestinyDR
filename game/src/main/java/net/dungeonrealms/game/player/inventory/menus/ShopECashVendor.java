@@ -31,7 +31,6 @@ public class ShopECashVendor extends GUIMenu {
     public ShopECashVendor(Player player, GUIMenu menu) {
         super(player, 18, "E-Cash Vendor", menu);
         open(player, null);
-        Bukkit.getLogger().info("IniT!");
     }
 
     @Override

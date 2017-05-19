@@ -425,6 +425,21 @@ public class SQLDatabaseAPI {
             }, SERVER_EXECUTOR_SERVICE);
         }
     }
+    
+    /**
+     * Does this ResultSet have the given data?
+     * @param set
+     * @param name
+     * @return
+     */
+    public static boolean hasColumn(ResultSet set, String name) {
+    	try {
+    		set.findColumn(name);
+    		return true;
+    	} catch (Exception e) {
+    		return false;
+    	}
+    }
 
     public static String filterSQLInjection(String string) {
         return string.replaceAll("'", "").replace("\"", "");

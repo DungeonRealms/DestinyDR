@@ -493,8 +493,6 @@ public class DungeonRealms extends JavaPlugin {
             e.printStackTrace();
         }
 
-        ItemGenerator.convertOldItemTemplates();
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             Constants.log.info("DungeonRealms - Now Accepting Players.");
 

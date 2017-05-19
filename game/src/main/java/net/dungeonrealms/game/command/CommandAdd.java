@@ -9,9 +9,11 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
+import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.functional.*;
@@ -20,6 +22,7 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
+import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemEditor;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -44,8 +47,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.util.*;
-
-import net.dungeonrealms.game.mechanic.data.EnumBuff;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -72,16 +73,26 @@ public class CommandAdd extends BaseCommand {
         if (args.length > 0) {
             int tier;
             LivingEntity target;
+            ItemStack held = player.getEquipment().getItemInMainHand();
             switch (args[0]) {
+            	case "edit":
+            		if (!ItemGear.isCustomTool(held)) {
+            			player.sendMessage(ChatColor.RED + "This is not an edittable item.");
+            			return true;
+            		}
+            		
+            		final GUIItemEditor ie = new GUIItemEditor(player, (ItemGear) PersistentItem.constructItem(held));
+            		ie.setCloseCallback(p -> p.getEquipment().setItemInMainHand(ie.getGear().generateItem()));
+            		player.sendMessage(ChatColor.GREEN + "Opened GUI.");
+            		break;
             	case "save":
-            		ItemStack held = player.getEquipment().getItemInMainHand();
             		if (held == null || held.getType() == Material.AIR) {
             			player.sendMessage(ChatColor.RED + "You must be holding an item");
             			return true;
             		}
             		
             		if (args.length == 1) {
-            			player.sendMessage(ChatColor.RED + "You must enter an item ID.");
+            			player.sendMessage(ChatColor.RED + "Syntax: /ad save <name>");
             			return true;
             		}
             		
@@ -260,8 +271,6 @@ public class CommandAdd extends BaseCommand {
                 	break;
                 case "einfo":
                 	target = getEntity(player, args);
-                	if (target == null)
-                		return true;
                 	boolean monster = EntityAPI.isMonster(target);
                 	player.sendMessage("Name: " + target.getCustomName());
                 	player.sendMessage("HP: " + HealthHandler.getHP(target));
@@ -275,8 +284,6 @@ public class CommandAdd extends BaseCommand {
                 	break;
                 case "invsee":
                 	target = getEntity(player, args);
-                	if (target == null)
-                		return true;
                 	
                 	Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, target.getCustomName());
                 	EntityEquipment e = target.getEquipment();
@@ -306,8 +313,10 @@ public class CommandAdd extends BaseCommand {
     	final String finalSearch = search;
     	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity
     			&& getName(e).contains(finalSearch)).findAny().orElse(null);
-    	if (target == null)
+    	if (target == null) {
     		player.sendMessage(ChatColor.RED + "Entity not found.");
+    		return player;
+    	}
     	return target;
     }
     

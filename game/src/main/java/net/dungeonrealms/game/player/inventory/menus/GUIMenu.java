@@ -6,9 +6,7 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.items.core.ShopItem;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
-import net.dungeonrealms.game.player.inventory.ShopMenuListener;
 import net.minecraft.server.v1_9_R2.ChatMessage;
 import net.minecraft.server.v1_9_R2.EntityPlayer;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
@@ -18,12 +16,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class GUIMenu extends ShopMenu {
@@ -35,16 +30,12 @@ public abstract class GUIMenu extends ShopMenu {
     @Getter
     protected GUIMenu previousGUI = null;
 
-    public static Set<String> alwaysCancelInventories = new HashSet<>();
-
     public GUIMenu(Player player, int size, String title) {
-        super(player, size, title);
-        shouldOpenPreviousOnClose = false;
-        alwaysCancelInventories.add(title);
+        this(player, size, title, null);
     }
 
     public GUIMenu(Player player, int size, String title, GUIMenu previous) {
-        this(player, size, title);
+        super(player, size, title);
         this.previousGUI = previous;
     }
 
@@ -53,20 +44,14 @@ public abstract class GUIMenu extends ShopMenu {
         return this;
     }
 
-
     public GUIMenu open() {
         open(player, null);
         return this;
     }
 
-    @Override
-    protected abstract void setItems();
-
     public void setItem(int index, @Nullable ShopItem shopItem) {
         this.items.put(index, shopItem);
-        NBTWrapper wrapper = new NBTWrapper(shopItem.getItem());
-        wrapper.setInt("disp", 1);
-        this.inventory.setItem(index, wrapper.build());
+        this.inventory.setItem(index, shopItem.getItem());
     }
 
     public void setItem(int index, @NonNull ItemStack item) {
@@ -87,48 +72,6 @@ public abstract class GUIMenu extends ShopMenu {
     public GUIMenu setCloseCallback(Consumer<Player> event) {
         this.closeCallback = event;
         return this;
-    }
-
-    public void clear() {
-        this.inventory.clear();
-        this.items.clear();
-    }
-
-    public void open(Player player, InventoryAction action) {
-        if (player == null)
-            return;
-        this.player = player;
-
-
-        ShopMenu menu = ShopMenuListener.getMenus().get(player);
-        if (menu != null) {
-            if (menu.getTitle() != null && menu.getTitle().equals(getTitle()) && menu.getSize() == getSize()) {
-                setItems();
-                return;
-            }
-
-            //Delay the next inventory click by 1.
-            if (action != null && action.name().startsWith("PICKUP_")) {
-                //CAnt close the inventory on a pickup_all action etc otherwise throws exceptions.
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    this.setItems();
-                    player.closeInventory();
-                    reopenWithDelay(player);
-                });
-                return;
-            }
-            this.setItems();
-            reopenWithDelay(player);
-            return;
-        }
-
-        this.setItems();
-        player.openInventory(getInventory());
-        ShopMenuListener.getMenus().put(player, this);
-    }
-
-    public GUIMenu getPreviousGUI() {
-        return previousGUI;
     }
 
     public GUIItem getBackButton(String... lore) {
@@ -165,5 +108,4 @@ public abstract class GUIMenu extends ShopMenu {
         setItems();
         player.updateInventory();
     }
-
 }

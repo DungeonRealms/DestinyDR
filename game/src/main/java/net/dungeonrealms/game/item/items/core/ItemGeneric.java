@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.core;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -9,6 +10,7 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -28,7 +30,8 @@ import java.util.*;
  */
 public abstract class ItemGeneric extends PersistentItem {
 
-    private Map<ItemData, Boolean> dataMap;
+	@Getter
+	private Map<ItemData, Boolean> dataMap;
 
     private List<String> lore;
 
@@ -58,6 +61,9 @@ public abstract class ItemGeneric extends PersistentItem {
     
     @Setter @Getter // EC - Name
     private String customName;
+    
+    @Getter @Setter
+    private String customLore;
 
     //Tier should share the same name for consistency.
     protected static final String TIER = "itemTier";
@@ -158,7 +164,6 @@ public abstract class ItemGeneric extends PersistentItem {
 
     @Override
     protected void loadItem() {
-
         this.meta = getItem().getItemMeta();
 
         for (ItemData data : ItemData.values())
@@ -179,6 +184,9 @@ public abstract class ItemGeneric extends PersistentItem {
      
         if (hasTag("ecName"))
         	setCustomName(getTagString("ecName"));
+        
+        if (hasTag("ecLore"))
+        	setCustomLore(getTagString("ecLore"));
     }
 
     /**
@@ -196,7 +204,9 @@ public abstract class ItemGeneric extends PersistentItem {
     @Override
     public ItemStack generateItem() {
         this.meta = getStack().getItemMeta();
-        return super.generateItem();
+        ItemStack ret = super.generateItem().clone();
+        clearLore();
+        return ret;
     }
 
     @Override
@@ -240,9 +250,17 @@ public abstract class ItemGeneric extends PersistentItem {
         String ecashName = getCustomName();
         if (ecashName != null)
         	getMeta().setDisplayName(ecashName);
+        
+        if (getCustomLore() != null) {
+        	addLore("");
+        	addLore(getCustomLore());
+        }
 
         if (this.customName != null) // Set the custom name into the lore. Don't use the getter since we want the raw name, regardless of what items override.
         	setTagString("ecName", this.customName);
+        
+        if (getCustomLore() != null)
+        	setTagString("ecLore", getCustomLore());
         
         saveMeta();
     }
@@ -305,35 +323,36 @@ public abstract class ItemGeneric extends PersistentItem {
         }
     }
 
-    protected void clearLore() {
+    public void clearLore() {
         if (this.lore != null)
         	this.lore.clear();
     }
 
-    protected boolean getSData(ItemData data) {
+    public boolean getSData(ItemData data) {
         return dataMap != null && dataMap.containsKey(data) && dataMap.get(data);
     }
 
-    protected void setData(ItemData data, boolean enabled) {
+    public void setData(ItemData data, boolean enabled) {
         if (dataMap == null)
             dataMap = new HashMap<>();
         dataMap.put(data, enabled);
     }
 
-    protected enum ItemData {
+    @AllArgsConstructor @Getter
+	public enum ItemData {
         SOULBOUND(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "Soulbound"),
         UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
         PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
         EVENT(ChatColor.RED + "Event Item"),
-        MENU(ChatColor.GRAY + "Display Item"),
+        MENU(ChatColor.GRAY + "Display Item", false),
         DUNGEON(ChatColor.RED + "Dungeon Item"),
-        UNDROPPABLE(null);
+        UNDROPPABLE(null, false);
 
-        @Getter
         private final String display;
-
-        ItemData(String display) {
-            this.display = display;
+        private boolean showInGUI;
+        
+        ItemData(String s) {
+        	this(s, true);
         }
 
         public String getNBTTag() {

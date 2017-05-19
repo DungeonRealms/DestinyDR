@@ -289,7 +289,6 @@ public class PlayerWrapper {
                     "SELECT * FROM `users` LEFT JOIN `ranks` ON `users`.`account_id` = `ranks`.`account_id` " +
                             "LEFT JOIN `toggles` ON `users`.`account_id` = `toggles`.`account_id` " +
                             "LEFT JOIN `ip_addresses` ON `users`.`account_id` = `ip_addresses`.`account_id` " +
-                            "LEFT JOIN `mail` ON `users`.`account_id` = `mail`.`account_id` " +
                             "LEFT JOIN `guild_members` ON `users`.`account_id` = `guild_members`.`account_id` " +
                             "LEFT JOIN `guilds` ON `guild_members`.`guild_id` = `guilds`.`guild_id` " +
                             "LEFT JOIN `characters` ON `characters`.`character_id` = `users`.`selected_character_id` " +

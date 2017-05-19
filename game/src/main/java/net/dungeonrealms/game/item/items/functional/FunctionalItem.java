@@ -5,6 +5,8 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.FunctionalItemEvent;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +57,8 @@ public abstract class FunctionalItem extends ItemGeneric {
         if (ice.getVanillaItem() == null || ice.getVanillaItem().getType() == Material.AIR)
             return;
 
-        if(ice.getPlayer().hasMetadata("sharding"))return;
+        if(Metadata.SHARDING.has(ice.getPlayer()))
+        	return;
 
         //Check that the FunctionalItem is not null, and that the usagetype supplied is allowed for this item.
         if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage())) {

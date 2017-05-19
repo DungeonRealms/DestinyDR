@@ -586,27 +586,30 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
-        if (location == null) return false;
-        RegionManager regionManager = getWorldGuard().getRegionManager(location.getWorld());
-        if (regionManager == null) return false;
-        ApplicableRegionSet region = regionManager.getApplicableRegions(location);
-        if (region == null) return false;
-        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
+    	ApplicableRegionSet region = getRegion(location);
+        return region != null && region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
                 && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
 
     public static boolean isNonPvPRegion(Location location) {
-        if (location == null) return false;
-        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
-                .getApplicableRegions(location);
-        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
+        ApplicableRegionSet region = getRegion(location);
+        return region != null && region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
     }
 
     public static boolean isNonMobDamageRegion(Location location) {
-        if (location == null) return false;
-        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
-                .getApplicableRegions(location);
-        return region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
+        ApplicableRegionSet region = getRegion(location);
+        return region != null && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
+    }
+    
+    private static ApplicableRegionSet getRegion(Location l) {
+    	if (l == null || l.getWorld() == null)
+    		return null;
+    	
+    	 RegionManager regionManager = getWorldGuard().getRegionManager(l.getWorld());
+         if (regionManager == null)
+        	 return null;
+         
+         return regionManager.getApplicableRegions(l);
     }
 
     /**

@@ -56,7 +56,7 @@ public abstract class ItemGear extends ItemGeneric {
     //Enchant Success Chances
     private static final int[] SUCCESS_CHANCE = {100, 100, 100, 70, 60, 50, 35, 25, 20, 15, 10, 5};
     private static final int[] DURABILITY_WARNINGS = {30, 10, 5, 2};
-
+    
     public ItemGear(ItemType... types) {
         this(types[new Random().nextInt(types.length)]);
     }
