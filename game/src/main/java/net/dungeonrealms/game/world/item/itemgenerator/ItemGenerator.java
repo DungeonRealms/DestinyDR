@@ -16,6 +16,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.*;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -254,8 +255,18 @@ public class ItemGenerator {
                         boolean isRange = false;
                         if (line.contains("(")) {
                             // Number range!
-
                             NBTTagList list = new NBTTagList();
+                            if (line.contains(" - ")) {
+                                //Seems like we have some data first?
+                                String firstNum = line.split(" - ")[0].trim();
+                                if (firstNum.contains(":")) firstNum = firstNum.split(":")[1].trim();
+                                if (StringUtils.isNumeric(firstNum)) {
+                                    int firstData = Integer.parseInt(firstNum);
+                                    Bukkit.getLogger().info("Converted busted line " + line + " from " + template_name);
+                                    list.add(new NBTTagString("@#" + 1 + "," + firstData + "$?"));
+                                    isRange = true;
+                                }
+                            }
                             String range = "";
                             for (String s : line.split("\\(")) {
                                 if (!s.contains("~")) {
@@ -271,20 +282,45 @@ public class ItemGenerator {
                                 }
                                 range += "@#" + lower + "," + upper + "$?";
 
-                                list.add(new NBTTagString("@#" + lower + "," + upper + "$?"));
+                                list.add(getData(lower, upper));
                                 firstRange = false;
                                 foundStats = true;
                             }
-                            if (isRange) {
-                                range = "[" + range + "]";
-                            }
 
-                            if (isRange) {
+                            if (isRange)
+                                range = "[" + range + "]";
+
+
+                            if (isRange)
                                 itemAttributes.set(attributeType.getNBTName(), list);
-                            } else {
+                            else
                                 itemAttributes.setString(attributeType.getNBTName(), range);
-                            }
+
                             Bukkit.getLogger().info("Loaded attribute: " + attributeType.getNBTName() + " with range: " + range + " for " + template_name);
+                            continue;
+                        } else if (line.contains("%") || line.contains("+")) {
+                            //% or +?
+                            String repl = line.replace("%", "").replace("+", "").replace("HP/s", "");
+
+                            String dataValues = repl.split(":")[1].trim();
+                            if (dataValues.contains(" - ")) {
+                                //Rip.. old armor scuffed values?
+
+                                String[] args = dataValues.split(" - ");
+                                int first = Integer.parseInt(args[0]);
+                                int second = Integer.parseInt(args[1]);
+//                                NBTTagList list = new NBTTagList();
+//
+//                                list.add(new NBTTagInt(first));
+//                                list.add(new NBTTagInt(second));
+                                itemAttributes.set(attributeType.getNBTName(), getData(first, second));
+                                Bukkit.getLogger().info("Loaded old busted attribute: " + attributeType.getNBTName() + " with old range: " + first + " - " + second + " for " + template_name);
+                                continue;
+                            }
+                            int val = Integer.parseInt(dataValues);
+
+                            Bukkit.getLogger().info("Loaded attribute: " + attributeType.getNBTName() + " with value: " + val + " for " + template_name);
+                            itemAttributes.setInt(attributeType.getNBTName(), val);
                             continue;
                         }
 
@@ -310,23 +346,16 @@ public class ItemGenerator {
                 return;
             }
 
-
-            ItemMeta im = is.getItemMeta();
-            im.setDisplayName(item_name);
-            im.setLore(item_lore);
-            is.setItemMeta(im);
-
             // check rarity
             net.dungeonrealms.game.world.item.Item.ItemRarity rarity = null;
             for (String line : Lists.newLinkedList(Lists.reverse(item_lore))) {
                 for (net.dungeonrealms.game.world.item.Item.ItemRarity itemRarity : net.dungeonrealms.game.world.item.Item.ItemRarity.values()) {
                     if (ChatColor.stripColor(line).equals(ChatColor.stripColor(itemRarity.getName()))) {
-                        rarity = itemRarity;
+                        if (rarity == null)
+                            rarity = itemRarity;
                         item_lore.remove(line);
-                        break;
                     }
                 }
-                if (rarity != null) break;
             }
 
             if (rarity == null) {
@@ -340,18 +369,22 @@ public class ItemGenerator {
 
             // check soulbound, untradeable, or permanently untradeable
             boolean isSoulbound = false, isUntradeable = false, isPermanentlyUntradeable = false;
-            for (String line : Lists.reverse(item_lore)) {
+            for (String line : Lists.newArrayList(item_lore)) {
                 if (line.contains("Soulbound")) {
                     isSoulbound = true;
-                    break; // an item can only be one of the three
+                    item_lore.remove(line);
                 } else if (line.contains("Permanently Untradeable")) {
                     isPermanentlyUntradeable = true;
-                    break;
+                    item_lore.remove(line);
                 } else if (line.contains("Untradeable")) {
                     isUntradeable = true;
-                    break;
+                    item_lore.remove(line);
                 }
             }
+            ItemMeta im = is.getItemMeta();
+            im.setDisplayName(item_name);
+            im.setLore(item_lore);
+            is.setItemMeta(im);
 
             // set NBT tags
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
@@ -363,11 +396,11 @@ public class ItemGenerator {
             //tag.set("type", new NBTTagInt(Item.ItemType.getTypeFromMaterial(is.getType()).getId()));
             tag.setString("itemRarity", rarity.name());
             if (isSoulbound)
-                tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
+                tag.set("soulbound", new NBTTagInt(1));
             if (isUntradeable)
-                tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
+                tag.set("untradeable", new NBTTagInt(1));
             if (isPermanentlyUntradeable)
-                tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
+                tag.set("puntradeable", new NBTTagInt(1));
 
         /*
         The line below removes the weapons attributes.
@@ -393,6 +426,10 @@ public class ItemGenerator {
         }
 
 
+    }
+
+    private static NBTTagString getData(int min, int max) {
+        return new NBTTagString("@#" + min + "," + max + "$?");
     }
 
     public static void setCustomItemDurability(ItemStack itemStack, double durability) {

@@ -187,8 +187,7 @@ public abstract class ItemGear extends ItemGeneric {
 		NBTTagCompound nbtAttributes = new NBTTagCompound();
 
 		// Sort Attributes
-		List<AttributeType> attr = new ArrayList<>(getAttributes()
-				.getAttributes());
+		List<AttributeType> attr = new ArrayList<>(getAttributes().getAttributes());
 		Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
 
 		// Save to NBT and Lore.
