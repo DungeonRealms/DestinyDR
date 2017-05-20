@@ -1039,7 +1039,7 @@ public class PlayerWrapper {
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
 
         if (getAlignment() != alignmentTo) {
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getColor(), getLevel());
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getNameColor(), getLevel());
             this.alignment = alignmentTo;
         }
     }
@@ -1373,7 +1373,7 @@ public class PlayerWrapper {
             Utils.sendCenteredMessage(getPlayer(), ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             getPlayer().playSound(getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
 
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), getAlignment().getAlignmentColor(), newLevel);
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), getAlignment().getNameColor(), newLevel);
         }
 
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())

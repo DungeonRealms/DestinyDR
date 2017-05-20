@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 
 import org.bukkit.ChatColor;
@@ -28,7 +29,7 @@ public class CommandMonSpawn extends BaseCommand {
             return false;
         
         if (args.length < 5) {
-        	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <> <display_name>");
+        	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <eliteName> <display_name>");
         	return true;
         }
         
@@ -69,9 +70,16 @@ public class CommandMonSpawn extends BaseCommand {
        
         int tier = Integer.parseInt(args[1]);
         int level = Utils.getRandomFromTier(tier, "high");
-        
+
+        EnumNamedElite eliteFound = null;
+        try{
+            eliteFound = EnumNamedElite.valueOf(args[3]);
+        }catch(Exception e){
+            s.sendMessage(ChatColor.RED + "No elite found with that type.");
+        }
+
         if (elite) {
-        	EntityAPI.spawnElite(spawn, null, type, tier, level, customName);
+        	EntityAPI.spawnElite(spawn, eliteFound, type, tier, level, customName);
         } else {
         	EntityAPI.spawnCustomMonster(spawn, type, level, tier, null, customName);
         }

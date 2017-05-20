@@ -30,12 +30,8 @@ public class CommandSupport extends BaseCommand {
             return false;
         }
 
-        if(args.length == 2) {
-            new MainSupportGUI(player,args[0]).open(player,null);
-            return true;
-        }
-
-        SupportMenus.openMainMenu(player, args[0]);
+        new MainSupportGUI(player,args[0]).open(player,null);
+        //SupportMenus.openMainMenu(player, args[0]);
         return true;
     }
 

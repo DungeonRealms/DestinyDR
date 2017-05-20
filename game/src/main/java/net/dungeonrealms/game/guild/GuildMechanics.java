@@ -269,7 +269,7 @@ public class GuildMechanics {
                                 GamePlayer gp = GameAPI.getGamePlayer(player);
                                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                                 if (gp != null)
-                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getAlignment().getColor(), wrapper.getLevel());
+                                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, wrapper.getAlignment().getNameColor(), wrapper.getLevel());
 
                                 player.getInventory().addItem(newWrapper.getBanner().clone());
 

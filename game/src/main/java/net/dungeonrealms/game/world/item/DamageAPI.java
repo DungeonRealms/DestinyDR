@@ -43,6 +43,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -512,54 +513,77 @@ public class DamageAPI {
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         pw.calculateAllAttributes();
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
-        fireStaffProjectile(player, pw.getAttributes(), staff);
+        fireStaffProjectile(player, pw.getAttributes(), null, staff);
+    }
+
+    public static Projectile fireStaffProjectile(LivingEntity attacker, @Nullable LivingEntity target, ItemWeaponStaff staff) {
+        return fireStaffProjectile(attacker, staff.getAttributes(), target, staff);
     }
 
     public static Projectile fireStaffProjectile(LivingEntity attacker, ItemWeaponStaff staff) {
-        return fireStaffProjectile(attacker, staff.getAttributes(), staff);
+        return fireStaffProjectile(attacker, staff.getAttributes(), attacker instanceof Creature ? ((Creature) attacker).getTarget() : null, staff);
     }
 
     //TODO: Modularize.
-    public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, ItemWeapon staff) {
+    public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, @Nullable LivingEntity target, ItemWeapon staff) {
         System.out.println("Fire staff projectile method!");
         double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
         Bukkit.getLogger().info("Yaw: " + attacker.getLocation().getYaw() + " Pitch: " + attacker.getLocation().getPitch());
-
-        System.out.println("Attackers direction: " + attacker.getLocation().getDirection());
+        org.bukkit.util.Vector vector = null;
+        if (target != null)
+            vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+        System.out.println("Attackers direction: " + attacker.getLocation().getDirection() + " Vector: " + vector);
+        boolean kilitanStaff = staff.hasTag("customId") && staff.getTagString("customId").equals("kilatan");
         Projectile projectile = null;
-        switch (staff.getTier()) {
+        Item.ItemTier tier = staff.getTier();
+        switch (tier) {
             case TIER_1:
                 projectile = attacker.launchProjectile(Snowball.class);
-                projectile.setVelocity(projectile.getVelocity().multiply(1.15));
+//                projectile.setVelocity(projectile.getVelocity().multiply(1.15));
                 System.out.println("Snowballs Yaw: " + projectile.getLocation().getYaw() + " Pitch: " + projectile.getLocation().getPitch());
                 System.out.println("Snowballs direction: " + projectile.getLocation().getDirection());
                 break;
             case TIER_2:
                 projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, SmallFireball.class, accuracy);
-                projectile.setVelocity(projectile.getVelocity().multiply(1.5));
+//                if (vector == null) projectile.setVelocity(projectile.getVelocity().multiply(1.5));
+
                 ((SmallFireball) projectile).setYield(0);
                 ((SmallFireball) projectile).setIsIncendiary(false);
                 break;
             case TIER_3:
                 projectile = attacker.launchProjectile(EnderPearl.class);
-                projectile.setVelocity(projectile.getVelocity().multiply(1.75));
+//                if (vector != null) vector = vector.multiply(1.75);
+//                else projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
             case TIER_4:
                 projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, WitherSkull.class, accuracy);
-                projectile.setVelocity(projectile.getVelocity().multiply(2.25));
+//                if (vector != null) vector = vector.multiply(2.25);
+//                else projectile.setVelocity(projectile.getVelocity().multiply(2.25));
                 break;
             case TIER_5:
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, LargeFireball.class, accuracy);
-                projectile.setVelocity(projectile.getVelocity().multiply(2.5));
-                ((LargeFireball) projectile).setYield(0);
-                ((LargeFireball) projectile).setIsIncendiary(false);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, kilitanStaff ? DragonFireball.class : LargeFireball.class, accuracy);
+//                if (vector != null) vector = vector.multiply(3);
+//                else projectile.setVelocity(projectile.getVelocity().multiply(3));
+                ((Fireball) projectile).setYield(0);
+                ((Fireball) projectile).setIsIncendiary(false);
                 break;
         }
-        System.out.println("Staff projectile debug 1");
-        if (projectile == null) return null;
-        System.out.println("Staff projectile debug 2");
+
+
+        if(vector != null){
+            //mob
+            vector = vector.multiply(tier.getTierId() <= 3 ? 1.75 : tier == Item.ItemTier.TIER_5 ? 2.3 : 1);
+        }else {
+            //player shooting
+            //1, 1.25, 1.25, 1.5, 3x velocities
+            projectile.setVelocity(projectile.getVelocity().multiply(tier.getTierId() == 1 ? 1.25 : tier.getTierId() <= 3 ? 2 : tier == Item.ItemTier.TIER_4 ? 2.25 : tier == Item.ItemTier.TIER_5 ? 3 : 1));
+        }
+
+        if(projectile == null)return null;
         projectile.setBounce(false);
         projectile.setShooter(attacker);
+        if (vector != null)
+            EntityMechanics.setVelocity(projectile, vector);
         MetadataUtils.registerProjectileMetadata(attributes, staff.getTier().getId(), projectile);
         return projectile;
     }

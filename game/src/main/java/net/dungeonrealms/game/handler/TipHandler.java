@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * TipHandler - Announces tips regularly.
@@ -51,8 +52,12 @@ public class TipHandler implements GenericMechanic {
 	private static String getRandomTip() {
 		if (tips.isEmpty()) // We've cycled through them all, reload them.
 			loadTips();
-		
-		return tips.remove(new Random().nextInt(tips.size()));
+
+		if(tips.isEmpty()) {
+			return "No tips to load!";
+		}
+
+		return tips.remove(ThreadLocalRandom.current().nextInt(tips.size()));
 	}
 	
 	private static void loadTips() {

@@ -2,19 +2,18 @@ package net.dungeonrealms.game.world.entity;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
-import net.dungeonrealms.game.world.entity.type.mounts.*;
-import net.dungeonrealms.game.world.entity.type.pet.*;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.Entity;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -23,6 +22,7 @@ import org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,9 +33,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class EntityMechanics implements GenericMechanic {
 
-	@Getter
+    @Getter
     private static EntityMechanics instance = new EntityMechanics();
-    
+
     public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
     public static CopyOnWriteArrayList<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 
@@ -44,29 +44,29 @@ public class EntityMechanics implements GenericMechanic {
         return EnumPriority.POPE;
     }
 
-	@Override
+    @Override
     public void startInitialization() {
-    	
-    	//  REGISTER MONSTERS  //
-    	for (CustomEntityType type : CustomEntityType.values())
-    		type.register();
-        
+
+        //  REGISTER MONSTERS  //
+        for (CustomEntityType type : CustomEntityType.values())
+            type.register();
+
         //  REGISTER PETS  //
         for (EnumPets pet : EnumPets.values())
-        	if (!pet.isFrame())
-        		NMSUtils.registerEntity(pet.getClazz().getSimpleName(), pet.getEggShortData(), pet.getClazz());
-        
+            if (!pet.isFrame())
+                NMSUtils.registerEntity(pet.getClazz().getSimpleName(), pet.getEggShortData(), pet.getClazz());
+
         //  REGISTER MOUNTS  //
         for (EnumMounts m : EnumMounts.values())
-        	if (m.shouldRegister())
-        		NMSUtils.registerEntity(m.getClazz().getSimpleName(), m.getEntityId(), m.getClazz());
+            if (m.shouldRegister())
+                NMSUtils.registerEntity(m.getClazz().getSimpleName(), m.getEntityId(), m.getClazz());
 
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
     }
 
     @Override
     public void stopInvocation() {
-    	
+
     }
 
     public static Projectile spawnFireballProjectile(World world, CraftLivingEntity shooter, Vector velocity, Class<? extends Fireball> projectile, double accuracy) {
@@ -87,6 +87,14 @@ public class EntityMechanics implements GenericMechanic {
                         this.dirX = d0 / d3 * 0.1D;
                         this.dirY = d1 / d3 * 0.1D;
                         this.dirZ = d2 / d3 * 0.1D;
+                    }
+
+                    @Override
+                    public void collide(Entity entity) {
+                        if (entity instanceof EntityFireball) {
+                            return;
+                        }
+                        super.collide(entity);
                     }
 
                     @Override
@@ -112,7 +120,55 @@ public class EntityMechanics implements GenericMechanic {
                     }
                 };
             } else if (DragonFireball.class.isAssignableFrom(projectile)) {
-                launch = new EntityDragonFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ());
+                launch = new EntityDragonFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
+                    @Override
+                    public void setDirection(double d0, double d1, double d2) {
+                        d0 += this.random.nextGaussian() * accurate;
+                        d1 += this.random.nextGaussian() * accurate;
+                        d2 += this.random.nextGaussian() * accurate;
+                        //Dont add any randomness too it since its meant to be accurateish
+                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                        this.dirX = d0 / d3 * 0.1D;
+                        this.dirY = d1 / d3 * 0.1D;
+                        this.dirZ = d2 / d3 * 0.1D;
+                    }
+
+                    @Override
+                    public void collide(Entity entity) {
+                        if (entity instanceof EntityFireball) {
+                            return;
+                        }
+                        super.collide(entity);
+                    }
+
+                    //Collide method
+                    @Override
+                    protected void a(MovingObjectPosition movingobjectposition) {
+                        if (!this.world.isClientSide) {
+                            if (movingobjectposition.entity != null) {
+                                movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 6.0F);
+                                this.a(this.shooter, movingobjectposition.entity);
+                            }
+
+                            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
+                            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(this.world.getServer(), this));
+                            this.world.getServer().getPluginManager().callEvent(event);
+                            if (!event.isCancelled()) {
+                                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
+                            }
+
+                            this.die();
+                        }
+                    }
+
+                    @Override
+                    public boolean damageEntity(DamageSource damagesource, float f) {
+                        if (this.isInvulnerable(damagesource))
+                            return false;
+                        this.ao();
+                        return damagesource.getEntity() != null ? !CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f) : false;
+                    }
+                };
             } else {
                 launch = new EntityLargeFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
                     @Override
@@ -128,6 +184,34 @@ public class EntityMechanics implements GenericMechanic {
                     }
 
                     @Override
+                    protected EnumParticle j() {
+                        return EnumParticle.DRAGON_BREATH;
+                    }
+
+                    @Override
+                    protected void a(MovingObjectPosition movingobjectposition) {
+                        if (!this.world.isClientSide) {
+                            if (movingobjectposition.entity != null) {
+                                //No ty
+                                if (movingobjectposition.entity instanceof EntityFireball) return;
+
+                                movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 6.0F);
+                                this.a(this.shooter, movingobjectposition.entity);
+                            }
+
+                            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
+                            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(this.world.getServer(), this));
+                            this.world.getServer().getPluginManager().callEvent(event);
+                            if (!event.isCancelled()) {
+                                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
+                            }
+
+                            this.die();
+                        }
+
+                    }
+
+                    @Override
                     public boolean damageEntity(DamageSource damagesource, float f) {
                         if (this.isInvulnerable(damagesource))
                             return false;
@@ -140,8 +224,8 @@ public class EntityMechanics implements GenericMechanic {
         }
 
         if (launch == null)
-        	return null;
-        
+            return null;
+
         launch.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
         if (velocity != null)
@@ -151,7 +235,7 @@ public class EntityMechanics implements GenericMechanic {
         return (Projectile) launch.getBukkitEntity();
     }
 
-    public static void setVelocity(Player player, Vector velocity) {
+    public static void setVelocity(org.bukkit.entity.Entity player, Vector velocity) {
 
         if (Double.isNaN(velocity.getX()) || Double.isNaN(velocity.getY()) || Double.isNaN(velocity.getZ())) {
             Bukkit.getLogger().info("Prevented Crash due to velocity: " + velocity + " bound for " + player.getName() + " at " + player.getLocation().toString());
@@ -172,59 +256,60 @@ public class EntityMechanics implements GenericMechanic {
      * Could be named better.
      */
     private void checkForLeashedMobs() {
-    	for (LivingEntity entity : MONSTERS_LEASHED) {
-    		if (entity == null) {
-    			Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
-    			continue;
-    		}
-    		if (entity.isDead() || Metadata.DUNGEON.get(entity).asBoolean() || Metadata.BOSS.get(entity).asBoolean()) {
-    			MONSTERS_LEASHED.remove(entity);
-    			MONSTER_LAST_ATTACK.remove(entity);
-    			if (entity.isDead()) //Remove the entity if it's dead...
-    				entity.remove();
-    			continue;
-    		}
-    		if (!MONSTER_LAST_ATTACK.containsKey(entity)) {
-    			MONSTER_LAST_ATTACK.put(entity, 15);
-    			continue;
-    		}
-    		
-    		int lastAttack = MONSTER_LAST_ATTACK.get(entity);
-    		EntityInsentient ei = (EntityInsentient) ((CraftEntity)entity).getHandle();
-    		
-    		if (lastAttack == 11) {
-    			// Teleport back to spawnpoint if too far away.
-    			Location target = ei.getGoalTarget() != null ? ei.getGoalTarget().getBukkitEntity().getLocation() : null;
-    			if (target != null && target.getWorld().equals(entity.getWorld())) {
-    			    //Distance squared
-    				double distance = target.distanceSquared(entity.getLocation());
-    				
-    				// If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
-    				if (distance >= 4 && distance <= 6 * 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
-    					entity.teleport(target);
-    					MONSTER_LAST_ATTACK.put(entity, 15);
-    				}
-    			}
-    		} else if (lastAttack == 10) {
-    			// Update entity name.
-    			EntityAPI.updateName(entity);
-    		} else if (lastAttack <= 0){
-    			// Remove.
-    			MONSTERS_LEASHED.remove(entity);
-    			MONSTER_LAST_ATTACK.remove(entity);
-    			tryToReturnMobToBase(((CraftEntity) entity).getHandle());
-    			// Reset goal.
-    			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
-    		}
-    		
-    		MONSTER_LAST_ATTACK.put(entity, lastAttack - 1);
-    	}
+        for (LivingEntity entity : MONSTERS_LEASHED) {
+            if (entity == null) {
+                Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
+                continue;
+            }
+            if (entity.isDead() || Metadata.DUNGEON.get(entity).asBoolean() || Metadata.BOSS.get(entity).asBoolean()) {
+                MONSTERS_LEASHED.remove(entity);
+                MONSTER_LAST_ATTACK.remove(entity);
+                if (entity.isDead()) //Remove the entity if it's dead...
+                    entity.remove();
+                continue;
+            }
+            if (!MONSTER_LAST_ATTACK.containsKey(entity)) {
+                MONSTER_LAST_ATTACK.put(entity, 15);
+                continue;
+            }
+
+            int lastAttack = MONSTER_LAST_ATTACK.get(entity);
+            EntityInsentient ei = (EntityInsentient) ((CraftEntity) entity).getHandle();
+
+            if (lastAttack == 11) {
+                // Teleport back to spawnpoint if too far away.
+                Location target = ei.getGoalTarget() != null ? ei.getGoalTarget().getBukkitEntity().getLocation() : null;
+                if (target != null && target.getWorld().equals(entity.getWorld())) {
+                    //Distance squared
+                    double distance = target.distanceSquared(entity.getLocation());
+
+                    // If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
+                    if (distance >= 4 && distance <= 6 * 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
+                        entity.teleport(target);
+                        MONSTER_LAST_ATTACK.put(entity, 15);
+                    }
+                }
+            } else if (lastAttack == 10) {
+                // Update entity name.
+                EntityAPI.updateName(entity);
+            } else if (lastAttack <= 0) {
+                // Remove.
+                MONSTERS_LEASHED.remove(entity);
+                MONSTER_LAST_ATTACK.remove(entity);
+                Bukkit.getLogger().info("Returning entity to base: " + entity.getType());
+                tryToReturnMobToBase(((CraftEntity) entity).getHandle());
+                // Reset goal.
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
+            }
+
+            MONSTER_LAST_ATTACK.put(entity, lastAttack - 1);
+        }
     }
 
     private void tryToReturnMobToBase(Entity entity) {
         SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
                 .forEach(mobSpawner -> {
-                	EntityArmorStand eas = (EntityArmorStand) ((CraftEntity)mobSpawner.getArmorStand()).getHandle();
+                    EntityArmorStand eas = (EntityArmorStand) ((CraftEntity) mobSpawner.getArmorStand()).getHandle();
                     EntityInsentient entityInsentient = (EntityInsentient) entity;
                     entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
                     Location l = mobSpawner.getLocation();

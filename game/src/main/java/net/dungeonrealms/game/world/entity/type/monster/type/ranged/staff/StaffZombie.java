@@ -18,13 +18,14 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
 
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(25D);
         EntityAPI.clearAI(goalSelector, targetSelector);
+
         this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.3D, 15, 45, 15.0F));
         this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, .7F));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
 
-        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, untargettable));
-        this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false, untargettable));
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     @Override
@@ -36,9 +37,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
     protected void r() {}
 
     @Override
-    protected void o() {
-        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-    }
+    protected void o() {}
 
     @Override
     public void a(EntityLiving entity, float f) {

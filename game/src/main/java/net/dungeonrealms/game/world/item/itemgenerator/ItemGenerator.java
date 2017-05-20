@@ -117,7 +117,7 @@ public class ItemGenerator {
     	JsonObject obj = readJSON(eliteName, "elite");
     	for (EquipmentSlot s : EquipmentSlot.values()) {
     		if (obj.has(s.name()))
-    			map.put(s, createItem(obj.get(s.name()).getAsJsonObject()));
+    			map.put(s, createItem(obj.get(s.name()).getAsJsonObject(), eliteName));
     	}
     	return map;
     }

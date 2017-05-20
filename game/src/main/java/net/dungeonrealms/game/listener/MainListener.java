@@ -191,9 +191,15 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-        if (Constants.DEVELOPERS.contains(event.getPlayer().getName()))
-        	player.setOp(true);
-        
+        if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
+            player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process. 2");
+            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
+            return;
+        }
+        if (Constants.DEVELOPERS.contains(event.getPlayer().getName())) {
+            player.setOp(true);
+        }
+
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
         //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);

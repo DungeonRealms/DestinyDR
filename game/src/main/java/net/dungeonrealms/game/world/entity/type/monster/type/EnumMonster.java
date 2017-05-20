@@ -38,7 +38,7 @@ public enum EnumMonster {
     
     // Bandits
     Bandit(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
-    Bandit1(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
+    Bandit1(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_ZOMBIE), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
     PassiveBandit(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
     
     // Skeletons
