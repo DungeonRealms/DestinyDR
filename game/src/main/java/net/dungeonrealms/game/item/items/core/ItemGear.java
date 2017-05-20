@@ -187,17 +187,18 @@ public abstract class ItemGear extends ItemGeneric {
 		NBTTagCompound nbtAttributes = new NBTTagCompound();
 
 		// Sort Attributes
-		List<AttributeType> attr = new ArrayList<>(getAttributes()
-				.getAttributes());
-		Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
-
-		// Save to NBT and Lore.
-		for (AttributeType t : attr) {
-			ModifierRange range = getAttributes().getAttribute(t);
-			range.save(nbtAttributes, t.getNBTName());
-			addLore(t.getPrefix() + range.toString() + t.getSuffix());
+		if (getAttributes() != null) {
+			List<AttributeType> attr = new ArrayList<>(getAttributes().getAttributes());
+			Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
+		
+			// Save to NBT and Lore.
+			for (AttributeType t : attr) {
+				ModifierRange range = getAttributes().getAttribute(t);
+				range.save(nbtAttributes, t.getNBTName());
+				addLore(t.getPrefix() + range.toString() + t.getSuffix());
+			}
+			getTag().set("itemAttributes", nbtAttributes);
 		}
-		getTag().set("itemAttributes", nbtAttributes);
 
 		// Show Custom lore.
 
