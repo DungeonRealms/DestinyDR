@@ -303,7 +303,7 @@ public class Chat {
 
         List<Player> recipients = getRecipients(sender, channel);
         String finalMessage = channel.getPrefix() + PlayerWrapper.getWrapper(sender).getChatName() + ChatColor.RESET + ": " + message;
-        JSONMessage show = message.contains("@i@") && held != null && held.getType() != Material.AIR ? applyShowItem(sender, message) : null;
+        JSONMessage show = finalMessage.contains("@i@") && held != null && held.getType() != Material.AIR ? applyShowItem(sender, finalMessage) : null;
         
         if (show != null) {
         	recipients.forEach(show::sendToPlayer);

@@ -99,7 +99,7 @@ public class BankListener implements Listener {
 
             pw.getPlayerGameStats().addStat(StatColumn.GEMS_EARNED, gem.getGemValue());
 
-            int giveGems = event.getRemaining();
+            int giveGems = event.getItem().getItemStack().getAmount();
             for (int i = 0; i < p.getInventory().getContents().length; i++) {
                 ItemStack pch = p.getInventory().getContents()[i];
                 if (giveGems <= 0)
@@ -112,11 +112,9 @@ public class BankListener implements Listener {
                 pouch.setGemValue(Math.min(oldGemValue + giveGems, pouch.getMaxStorage()));
                 giveGems -= (pouch.getGemValue() - oldGemValue);
                 p.getInventory().setItem(i, pouch.generateItem());
-                pw.sendDebug("Sup gems: " + i);
             }
 
             if (giveGems > 0) {
-                pw.sendDebug("Giving or dropping the item!");
                 GameAPI.giveOrDropItem(player, new ItemGem(giveGems).generateItem());
             }
         }

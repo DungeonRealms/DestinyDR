@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.item.itemgenerator;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -10,17 +11,24 @@ import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,6 +87,8 @@ public class ItemGenerator {
      * Applies RNG, so don't use this on anything a user can control.
      */
     public static NBTTagCompound loadNBT(String data) throws MojangsonParseException {
+        data = data.replace("\"@#", "<").replace("$?\"", ">");
+
         //Format: <x,y> Generates a random value between <x,y>
         Matcher rangeMatch = Pattern.compile("<\\d+,\\d+>").matcher(data);
         while (rangeMatch.find()) {
@@ -138,11 +148,11 @@ public class ItemGenerator {
     public static void saveItem(ItemStack item, String itemName) {
         if (!DungeonRealms.isMaster())
             return;
-        
+
         VanillaItem vi = new VanillaItem(item);
         vi.removeTag("display"); // Just takes extra space and can make editting the tag more annoying..
         item = vi.generateItem();
-        
+
         try {
             FileWriter file = new FileWriter(getFile(itemName));
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -152,6 +162,256 @@ public class ItemGenerator {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to save " + itemName + ".item");
         }
+    }
+
+    private static String stripExtension(String str) {
+        // Handle null case specially.
+
+        if (str == null) return null;
+
+        // Get position of last '.'.
+
+        int pos = str.lastIndexOf(".");
+
+        // If there wasn't any '.' just return the string as is.
+
+        if (pos == -1) return str;
+
+        // Otherwise return the string, up to the dot.
+
+        return str.substring(0, pos);
+    }
+
+    public static void convertOldItemTemplates() {
+        System.out.println("Attemtping to convert old file templates!");
+        File directory = new File("plugins/DungeonRealms/custom_items_old");
+        if (!directory.exists()) {
+            System.out.println("Nothing to convert!");
+            return;
+        }
+        File[] inDir = directory.listFiles();
+        System.out.println("We found " + inDir.length + " items to convert!");
+        fileLoop:
+        for (File oldFile : inDir) {
+            if (oldFile == null || !oldFile.exists()) {
+                System.out.println("ItemTemplate File iteration error code 1");
+                continue;
+            }
+            if (oldFile.isDirectory()) {
+                System.out.println("ItemTemplate File iteration error code 2");
+                continue;
+            }
+            if (!oldFile.getName().endsWith(".item")) {
+                System.out.println("ItemTemplate File iteration error code 3");
+                continue;
+            }
+
+            String template_name = stripExtension(oldFile.getName());
+
+            int item_id = -1;
+            String item_name = "";
+            List<String> item_lore = new ArrayList<>();
+            LinkedHashMap<String, NBTTagInt> NBTModifiers = new LinkedHashMap<>();
+            ItemStack is = null;
+
+            BufferedReader reader = null;
+            NBTTagCompound itemAttributes = new NBTTagCompound();
+            boolean foundStats = false;
+            try {
+                reader = new BufferedReader(new FileReader(oldFile));
+
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("item_name=")) {
+                        line = ChatColor.translateAlternateColorCodes('&', line);
+
+                        item_name = line.substring(line.indexOf("=") + 1, line.length());
+                    } else if (line.startsWith("item_id=")) {
+                        item_id = Integer.parseInt(line.substring(line.indexOf("=") + 1, line.length()));
+                        is = new ItemStack(Material.getMaterial(item_id));
+                    } else if (line.contains(":")) {
+                        if (is == null) {
+                            Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
+                            continue fileLoop;
+                        }
+
+                        // It's lore!
+                        line = ChatColor.translateAlternateColorCodes('&', line);
+                        //line = ChatColor.stripColor(line);
+
+                        String modifierName = ChatColor.stripColor(line);
+                        modifierName = modifierName.substring(0, modifierName.indexOf(':') + 1);
+
+                        net.dungeonrealms.game.world.item.Item.AttributeType attributeType = net.dungeonrealms.game.world.item.Item.AttributeType.getAttributeTypeFromPrefix(modifierName);
+
+                        if (attributeType == null) {
+                            Bukkit.getLogger().info("Null attribute type: " + modifierName + " for " + template_name);
+                            continue;
+                        }
+                        boolean firstRange = true;
+
+                        boolean isRange = false;
+                        if (line.contains("(")) {
+                            // Number range!
+
+                            NBTTagList list = new NBTTagList();
+                            String range = "";
+                            for (String s : line.split("\\(")) {
+                                if (!s.contains("~")) {
+                                    continue;
+                                }
+                                int lower = Integer.parseInt(s.substring(0, s.indexOf("~")));
+                                int upper = Integer.parseInt(s.substring(s.indexOf("~") + 1, s.indexOf(")")));
+
+                                if (!range.isEmpty())
+                                    isRange = true;
+                                if (!firstRange) {
+                                    range += ",";
+                                }
+                                range += "@#" + lower + "," + upper + "$?";
+
+                                list.add(new NBTTagString("@#" + lower + "," + upper + "$?"));
+                                firstRange = false;
+                                foundStats = true;
+                            }
+                            if (isRange) {
+                                range = "[" + range + "]";
+                            }
+
+                            if (isRange) {
+                                itemAttributes.set(attributeType.getNBTName(), list);
+                            } else {
+                                itemAttributes.setString(attributeType.getNBTName(), range);
+                            }
+                            Bukkit.getLogger().info("Loaded attribute: " + attributeType.getNBTName() + " with range: " + range + " for " + template_name);
+                            continue;
+                        }
+
+
+                        item_lore.add(line);
+                    } else {
+                        item_lore.add(ChatColor.translateAlternateColorCodes('&', line));
+                    }
+                }
+            } catch (Exception e) {
+                Utils.log.info("Template error - " + template_name);
+                e.printStackTrace();
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (is == null) {
+                Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
+                return;
+            }
+
+
+            ItemMeta im = is.getItemMeta();
+            im.setDisplayName(item_name);
+            im.setLore(item_lore);
+            is.setItemMeta(im);
+
+            // check rarity
+            net.dungeonrealms.game.world.item.Item.ItemRarity rarity = null;
+            for (String line : Lists.newLinkedList(Lists.reverse(item_lore))) {
+                for (net.dungeonrealms.game.world.item.Item.ItemRarity itemRarity : net.dungeonrealms.game.world.item.Item.ItemRarity.values()) {
+                    if (ChatColor.stripColor(line).equals(ChatColor.stripColor(itemRarity.getName()))) {
+                        rarity = itemRarity;
+                        item_lore.remove(line);
+                        break;
+                    }
+                }
+                if (rarity != null) break;
+            }
+
+            if (rarity == null) {
+                if (!foundStats) continue fileLoop;
+                // Add rarity if needed.
+                rarity = net.dungeonrealms.game.world.item.Item.ItemRarity.UNIQUE; // default to unique
+//                item_lore.add(rarity.getName());
+//                im.setLore(item_lore);
+//                is.setItemMeta(im);
+            }
+
+            // check soulbound, untradeable, or permanently untradeable
+            boolean isSoulbound = false, isUntradeable = false, isPermanentlyUntradeable = false;
+            for (String line : Lists.reverse(item_lore)) {
+                if (line.contains("Soulbound")) {
+                    isSoulbound = true;
+                    break; // an item can only be one of the three
+                } else if (line.contains("Permanently Untradeable")) {
+                    isPermanentlyUntradeable = true;
+                    break;
+                } else if (line.contains("Untradeable")) {
+                    isUntradeable = true;
+                    break;
+                }
+            }
+
+            // set NBT tags
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+            // NMS stack for writing NBT tags
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+
+            tag.setInt("RepairCost", 1500);
+            //guess ill go make a sammi, brb
+            //tag.set("type", new NBTTagInt(Item.ItemType.getTypeFromMaterial(is.getType()).getId()));
+            tag.setString("itemRarity", rarity.name());
+            if (isSoulbound)
+                tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
+            if (isUntradeable)
+                tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
+            if (isPermanentlyUntradeable)
+                tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
+
+        /*
+        The line below removes the weapons attributes.
+        E.g. Diamond Sword says, "+7 Attack Damage"
+         */
+//            tag.set("AttributeModifiers", new NBTTagList());
+            tag.set("itemTier", new NBTTagInt(getTierFromMaterial(is.getType())));
+            Item.GeneratedItemType type = Item.GeneratedItemType.getType(is.getType());
+
+            if (type != null) {
+                tag.setString("type", type.name().toLowerCase());
+            }
+            tag.set("itemAttributes", itemAttributes);
+//            tag.set("drItemId", new NBTTagString(template_name));
+
+//        tag.a(CraftItemStack.asNMSCopy(is).getTag());
+            nmsStack.setTag(tag);
+
+            System.out.println("Successfully converted the old template named '" + template_name + ".item'");
+            saveItem(CraftItemStack.asCraftMirror(nmsStack), template_name);
+
+            //return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        }
+
+
+    }
+
+    public static void setCustomItemDurability(ItemStack itemStack, double durability) {
+        try {
+            Repairable repairable = (Repairable) itemStack.getItemMeta();
+            repairable.setRepairCost((int) durability);
+            itemStack.setItemMeta((ItemMeta) repairable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getTierFromMaterial(Material m) {
+        if (m.name().toLowerCase().contains("leather")) return 1;
+        if (m.name().toLowerCase().contains("chain")) return 2;
+        if (m.name().toLowerCase().contains("iron")) return 3;
+        if (m.name().toLowerCase().contains("diamond")) return 4;
+        if (m.name().toLowerCase().contains("gold")) return 5;
+        return 1;
     }
 
     public static void loadModifiers() {

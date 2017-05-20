@@ -10,7 +10,6 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -184,12 +183,12 @@ public abstract class ItemGeneric extends PersistentItem {
         setShowPrice(getTagBool("showPrice"));
         setGlowing(EnchantmentAPI.isGlowing(getItem()));
         setType(ItemType.getType(getTagString("type")));
-     
+
         if (hasTag("ecName"))
-        	setCustomName(getTagString("ecName"));
-        
+            setCustomName(getTagString("ecName"));
+
         if (hasTag("ecLore"))
-        	setCustomLore(getTagString("ecLore"));
+            setCustomLore(getTagString("ecLore"));
     }
 
     /**
@@ -333,8 +332,9 @@ public abstract class ItemGeneric extends PersistentItem {
         dataMap.put(data, enabled);
     }
 
-    @AllArgsConstructor @Getter
-	public enum ItemData {
+    @AllArgsConstructor
+    @Getter
+    public enum ItemData {
         SOULBOUND(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "Soulbound"),
         UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
         PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
@@ -345,9 +345,9 @@ public abstract class ItemGeneric extends PersistentItem {
 
         private final String display;
         private boolean showInGUI;
-        
+
         ItemData(String s) {
-        	this(s, true);
+            this(s, true);
         }
 
         public String getNBTTag() {

@@ -4,6 +4,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.MainSupportGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,6 +28,11 @@ public class CommandSupport extends BaseCommand {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Invalid usage: /support <name>");
             return false;
+        }
+
+        if(args.length == 2) {
+            new MainSupportGUI(player,args[0]).open(player,null);
+            return true;
         }
 
         SupportMenus.openMainMenu(player, args[0]);

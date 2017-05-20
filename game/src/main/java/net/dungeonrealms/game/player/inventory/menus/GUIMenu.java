@@ -48,9 +48,9 @@ public abstract class GUIMenu extends ShopMenu {
         return this;
     }
 
-    public void setItem(int index, @Nullable ShopItem shopItem) {
+    public void setItem(int index, @NonNull ShopItem shopItem) {
         this.items.put(index, shopItem);
-        this.inventory.setItem(index, shopItem.getItem());
+        this.inventory.setItem(index, shopItem.generateItem());
     }
 
     public GUIMenu setShouldOpenPreviousOnClose(boolean should) {

@@ -13,7 +13,7 @@ public abstract class ItemMoney extends FunctionalItem {
 	private boolean writeNbt;
 	
 	@Getter
-	private int gemValue;
+	protected int gemValue;
 	
 	public ItemMoney(ItemType type, int gemAmount) {
 		this(type, gemAmount, true);
@@ -46,6 +46,7 @@ public abstract class ItemMoney extends FunctionalItem {
 		assert getMaxStorage() >= value && value >= 0;
 		if (value == 0 && doesDestroyOnEmpty())
 			setDestroyed(true);
+		this.getItem().setAmount(value);
 		this.gemValue = value;
 	}
 	
