@@ -11,6 +11,7 @@ import net.dungeonrealms.database.UpdateType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -25,14 +26,17 @@ public class CommandSetRank extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player && !Rank.isGM((Player) sender))
         	return false;
-        
-        PlayerWrapper executor = PlayerWrapper.getWrapper((Player) sender);
+
+        boolean isConsole = (sender instanceof ConsoleCommandSender);
+        PlayerWrapper executor = null;
+        if(!isConsole) PlayerWrapper.getWrapper((Player) sender);
         PlayerRank newRank = PlayerRank.getFromInternalName(args[1]);
-        
+        PlayerRank executorRank = isConsole ? PlayerRank.DEV : executor.getRank();
+
         if (newRank == null) {
         	sender.sendMessage(ChatColor.RED + "Invalid usage: /setrank <name> <rank>");
         	String ranks = "";
-        	for (int i = 0; i <= executor.getRank().ordinal(); i++) {
+        	for (int i = 0; i <= executorRank.ordinal(); i++) {
         		PlayerRank r = PlayerRank.values()[i];
         		ranks += r.getChatColor() + (r == PlayerRank.DEFAULT ? "DEFAULT" : r.getInternalName()) + ChatColor.GREEN + " | ";
         	}
@@ -41,7 +45,7 @@ public class CommandSetRank extends BaseCommand {
         	return true;
         }
         
-        if (newRank.ordinal() > executor.getRank().ordinal()) {
+        if (newRank.ordinal() > executorRank.ordinal()) {
         	sender.sendMessage(ChatColor.RED + "You are not authorized to set a player to this rank.");
         	return true;
         }
@@ -56,7 +60,7 @@ public class CommandSetRank extends BaseCommand {
                 
                 PlayerRank currentRank = wrapper.getRank();
                 
-                if (currentRank.ordinal() > executor.getRank().ordinal()) {
+                if (currentRank.ordinal() > executorRank.ordinal()) {
                 	sender.sendMessage(ChatColor.RED + "You do not have permission to change this user's rank.");
                 	return;
                 }

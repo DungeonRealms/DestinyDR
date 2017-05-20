@@ -5,6 +5,8 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.handler.ClickHandler;
+import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,7 +21,7 @@ import java.util.List;
 public class RankSupportGUI extends SupportGUI {
 
     public RankSupportGUI(Player viewer, String other) {
-        super(viewer,other,9,other + "'s Rank Management");
+        super(viewer,other,27,other + "'s Rank Management");
     }
 
     @Override
