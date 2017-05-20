@@ -35,6 +35,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -242,7 +243,7 @@ public class CombatLog implements GenericMechanic {
         if (alignments == null)
             return;
         
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         //TODO: Check if this includes Armor.
         for (int i = 0; i <= player.getInventory().getContents().length; i++) {
             if (i > 35) {

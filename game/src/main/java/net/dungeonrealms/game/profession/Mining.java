@@ -28,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Mining - Core listeners for the mining profession.
@@ -71,7 +72,7 @@ public class Mining implements GenericMechanic, Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         ItemStack item = e.getPlayer().getEquipment().getItemInMainHand();
         
         // Verify main world.

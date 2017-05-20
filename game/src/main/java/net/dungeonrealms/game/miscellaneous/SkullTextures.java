@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran Quigley (Proxying) on 06-Jun-16.
@@ -51,7 +52,7 @@ public enum SkullTextures {
     }
 
     public String getURL() {
-        return "http://textures.minecraft.net/texture/" + this.b64String[new Random().nextInt(this.b64String.length)];
+        return "http://textures.minecraft.net/texture/" + this.b64String[ThreadLocalRandom.current().nextInt(this.b64String.length)];
     }
 
     public ItemStack getSkull() {

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran Quigley (Proxying) on 11-Jun-16.
@@ -45,7 +46,7 @@ public class CombatLogger {
 
     private void setRespawnLocation() {
         if (playerAlignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-            Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
+            Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
             if (loc != null) {
                 String locString = loc.getBlockX() +"," + loc.getBlockY() + 3 + "," + loc.getBlockZ() + "," + "0,0";
 //                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);

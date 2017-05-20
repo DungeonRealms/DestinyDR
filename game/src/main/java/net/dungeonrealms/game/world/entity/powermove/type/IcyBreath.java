@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 8/23/2016
@@ -25,7 +26,7 @@ public class IcyBreath extends PowerMove {
         Vector vector = entity.getEyeLocation().getDirection();
         vector.multiply(2.0F);
 
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
 
         float angle = entity.getEyeLocation().getYaw() / 60;
 

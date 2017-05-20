@@ -46,6 +46,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -167,9 +168,9 @@ public class DamageAPI {
         }
 
         //  CRIT CHANCE  //
-        if (new Random().nextInt(100) < critHit) {
+        if (ThreadLocalRandom.current().nextInt(100) < critHit) {
             defender.getEntity().getWorld().spawnParticle(Particle.CRIT, defender.getEntity().getLocation(), 10,
-                    new Random().nextDouble(), new Random().nextDouble(), new Random().nextDouble(), 0.5F);
+                    ThreadLocalRandom.current().nextDouble(), ThreadLocalRandom.current().nextDouble(), ThreadLocalRandom.current().nextDouble(), 0.5F);
             isHitCrit = true;
         }
 
@@ -216,7 +217,7 @@ public class DamageAPI {
     }
 
     private static boolean getChance(AttributeList al, AttributeType at) {
-        return al.hasAttribute(at) && new Random().nextInt(100) < al.getAttribute(at).getValue();
+        return al.hasAttribute(at) && ThreadLocalRandom.current().nextInt(100) < al.getAttribute(at).getValue();
     }
 
     private static void applyDebuff(LivingEntity defender, ElementalAttribute ea, int tier) {
@@ -228,10 +229,10 @@ public class DamageAPI {
 
             if (ea == ElementalAttribute.FIRE) {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, defender.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
 
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, defender.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
+                        ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1f, 10);
                 final int[] FIRE_TICKS = new int[]{15, 25, 30, 35, 40};
                 defender.setFireTicks(FIRE_TICKS[tier - 1]);
             } else {
@@ -389,7 +390,7 @@ public class DamageAPI {
         int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
 
         //  BLOCK AND DODGE  //
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
 
         int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
         int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
@@ -402,7 +403,7 @@ public class DamageAPI {
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
             }
             removeElementalEffects(defender.getEntity());
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getEntity().getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getEntity().getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
             res.setResult(DamageResultType.DODGE);
             return;
         } else if (blockRoll < blockChance - accuracy) {
@@ -411,7 +412,7 @@ public class DamageAPI {
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
             }
             removeElementalEffects(defender.getEntity());
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, defender.getEntity().getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, defender.getEntity().getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
             res.setResult(DamageResultType.BLOCK);
             return;
         }

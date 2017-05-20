@@ -140,7 +140,7 @@ public abstract class Dungeon {
     @SuppressWarnings("deprecation")
     private void giveDrops() {
         LivingEntity livingEntity = getBoss().getBukkit();
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
 
         if (random.nextInt(100) < 80) { // 80% chance!
             List<ItemStack> possibleDrops = new ArrayList<>();

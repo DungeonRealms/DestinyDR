@@ -103,7 +103,7 @@ public class EnergyListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
             TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "❢ LOW ENERGY ❢", 4 * 20);
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

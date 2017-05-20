@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.item.items.core;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.game.item.ItemType;
 
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class CombatItem extends ItemGear {
 	
 	public CombatItem() {
-		this(new Random().nextBoolean() ? ItemArmor.ARMOR : ItemWeapon.WEAPONS);
+		this(ThreadLocalRandom.current().nextBoolean() ? ItemArmor.ARMOR : ItemWeapon.WEAPONS);
 	}
 	
 	public CombatItem(ItemType... type) {

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mechanic.dungeons;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
@@ -45,7 +46,7 @@ public class Varenglade extends Dungeon {
 	        	return;
 	        
 	        Dungeon d = DungeonManager.getDungeon(w);
-	        if (d.hasSpawned(BossType.BurickPriest) || new Random().nextInt(10) > 7)
+	        if (d.hasSpawned(BossType.BurickPriest) || ThreadLocalRandom.current().nextInt(10) > 7)
 	        	return;
 	        
 	        Player killer = event.getEntity().getKiller();

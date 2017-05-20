@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -86,7 +87,7 @@ public class BuffMechanics implements GenericMechanic, Listener {
     	
         Entity buff = event.getEntity();
     	List<Player> toBuff = GameAPI.getNearbyPlayers(buff.getLocation(), BUFF_RADIUS);
-        PotionEffectType effectType = BUFFS[new Random().nextInt(BUFFS.length)];
+        PotionEffectType effectType = BUFFS[ThreadLocalRandom.current().nextInt(BUFFS.length)];
 
         buff.getWorld().playSound(buff.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F);
         removeBuff(buff);
@@ -127,7 +128,7 @@ public class BuffMechanics implements GenericMechanic, Listener {
             	continue;
             
             // TODO: Verify this is correct. This looks like it'll just make buffs not spawn.
-            if (new Random().nextInt(21) >= 5 || getBuffs().isEmpty())
+            if (ThreadLocalRandom.current().nextInt(21) >= 5 || getBuffs().isEmpty())
             	continue;
             
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {

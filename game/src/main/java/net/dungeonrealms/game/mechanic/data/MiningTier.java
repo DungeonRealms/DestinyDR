@@ -3,6 +3,7 @@ package net.dungeonrealms.game.mechanic.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
@@ -56,7 +57,7 @@ public enum MiningTier implements ProfessionTier {
 	}
 	
 	public int getXP() {
-		return this.baseXP + new Random().nextInt(this.randXP);
+		return this.baseXP + ThreadLocalRandom.current().nextInt(this.randXP);
 	}
 	
 	public ItemStack createOreItem() {

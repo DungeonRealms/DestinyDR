@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Burick The Fanatic Dungeon Boss.
@@ -126,7 +127,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 		}
 		
 		public static MinionType getRandom() {
-			return values()[new Random().nextInt(values().length)];
+			return values()[ThreadLocalRandom.current().nextInt(values().length)];
 		}
 	}
 }

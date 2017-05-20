@@ -1014,8 +1014,9 @@ public class PlayerWrapper {
 
         this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(getPlayer().getEquipment().getItemInMainHand());
 
-        for (Stats stat : Stats.values())
+        for (Stats stat : Stats.values()) {
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
+        }
 
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses();

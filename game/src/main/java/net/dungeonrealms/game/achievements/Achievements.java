@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -86,7 +87,7 @@ public class Achievements {
             GameAPI.addCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN, 1);
         }
 
-        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 10);
+        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 10);
         if (achievement.getReward() > 0)
             wrapper.addExperience(achievement.getReward(), false, true);
 

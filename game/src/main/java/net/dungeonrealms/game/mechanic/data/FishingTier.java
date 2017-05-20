@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanic.data;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public enum FishingTier implements ProfessionTier {
 	}
 	
 	public int getXP() {
-		return (int) (2D * (this.xpInc + new Random().nextInt((int) (this.xpInc * 0.3D))));
+		return (int) (2D * (this.xpInc + ThreadLocalRandom.current().nextInt((int) (this.xpInc * 0.3D))));
 	}
 	
 	public static FishingTier getTierByLevel(int level) {

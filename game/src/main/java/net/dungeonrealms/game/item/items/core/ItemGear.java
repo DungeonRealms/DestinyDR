@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * ItemGear - Contains shared methods for gear that can have attributes, be
@@ -57,7 +58,7 @@ public abstract class ItemGear extends ItemGeneric {
 	private static final int[] DURABILITY_WARNINGS = { 30, 10, 5, 2 };
 
 	public ItemGear(ItemType... types) {
-		this(types[new Random().nextInt(types.length)]);
+		this(types[ThreadLocalRandom.current().nextInt(types.length)]);
 	}
 
 	// Used for item generators usually.
@@ -253,7 +254,7 @@ public abstract class ItemGear extends ItemGeneric {
 	 * Enchants this item.
 	 */
 	public void enchantItem(Player p) {
-		boolean success = new Random().nextInt(100) <= SUCCESS_CHANCE[enchantCount];
+		boolean success = ThreadLocalRandom.current().nextInt(100) <= SUCCESS_CHANCE[enchantCount];
 		PlayerWrapper pw = PlayerWrapper.getWrapper(p);
 
 		if (!success) {
@@ -371,7 +372,7 @@ public abstract class ItemGear extends ItemGeneric {
 		ItemMeta meta = getItem().getItemMeta();
 
 		Map<ModifierCondition, ItemModifier> conditionMap = new HashMap<>();
-		Random rand = new Random();
+		Random rand = ThreadLocalRandom.current();
 
 		// ROLL STATS //
 		for (ItemModifier im : ItemGenerator.modifierObjects) {

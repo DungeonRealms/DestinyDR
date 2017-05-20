@@ -42,6 +42,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -234,7 +235,7 @@ public class PvEListener implements Listener {
             return;
 
         int mobTier = EntityAPI.getTier(receiver);
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
         if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {

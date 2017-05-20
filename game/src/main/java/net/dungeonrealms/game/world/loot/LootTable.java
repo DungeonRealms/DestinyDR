@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
@@ -65,7 +66,7 @@ public class LootTable {
 		 * Returns null if the chance was not met.
 		 */
 		public ItemGeneric generate() {
-			return this.chance >= new Random().nextInt(1000) ? generator.getLoot(Utils.randInt(minAmt, maxAmt), meta) : null;
+			return this.chance >= ThreadLocalRandom.current().nextInt(1000) ? generator.getLoot(Utils.randInt(minAmt, maxAmt), meta) : null;
 		}
 		
 		@Override

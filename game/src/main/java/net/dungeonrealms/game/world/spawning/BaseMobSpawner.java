@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Base Mob Spawner - Spawns regular custom entities.
@@ -30,7 +31,7 @@ public class BaseMobSpawner extends MobSpawner {
     	// The delay of when monsters should spawn is set after a monster dies.
 		// We don't want excess monsters spawning.
     	getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(monster ->
-			respawnTimes.put(monster, getRespawnDelay() + (new Random().nextInt(getRespawnDelay() / 2) + 15)));
+			respawnTimes.put(monster, getRespawnDelay() + (ThreadLocalRandom.current().nextInt(getRespawnDelay() / 2) + 15)));
 
     	if (isFirstSpawn())
     		for (int i = 0; i < 2; i++)

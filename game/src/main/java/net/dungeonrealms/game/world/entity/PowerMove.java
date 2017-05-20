@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by chase on 6/30/2016.
@@ -26,11 +27,11 @@ public abstract class PowerMove {
         powermoves.add(new PowerStrike());
 
         World world = Bukkit.getWorlds().get(0);
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
             world.getLivingEntities().stream().filter(ent -> chargedMonsters.contains(ent.getUniqueId())).forEach(ent -> {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL_WITCH, ent.getLocation().add(0, 1, 0), new Random().nextFloat(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL_WITCH, ent.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(),
                         rand.nextFloat(), rand.nextFloat(), 0.5F, 35);
 
 

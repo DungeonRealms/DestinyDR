@@ -207,6 +207,7 @@ public class MainListener implements Listener {
 
         CombatLog.checkCombatLog(player.getUniqueId());
         try {
+            System.out.println("Calling handle login: " + player.getName());
             GameAPI.handleLogin(player);
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
@@ -513,7 +514,7 @@ public class MainListener implements Listener {
             if (player.getVehicle() != null)
                 player.getVehicle().eject();
 
-            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
+            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
             else

@@ -68,6 +68,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -308,10 +309,10 @@ public class DamageListener implements Listener {
         //  KEEP PERMANENT UNTRADEABLE  //
         event.getDrops().stream().filter(ItemManager::isItemPermanentlyUntradeable).forEach(gearToSave::add);
 
-        ItemStack dontSave = (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL && new Random().nextInt(25) <= 25) ?
-                p.getEquipment().getArmorContents()[new Random().nextInt(
+        ItemStack dontSave = (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL && ThreadLocalRandom.current().nextInt(25) <= 25) ?
+                p.getEquipment().getArmorContents()[ThreadLocalRandom.current().nextInt(
                         p.getEquipment().getArmorContents().length)] : null;
-        boolean skipWeapon = new Random().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
+        boolean skipWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
 
         System.out.println(p.getName() + " DIED " + alignment.name());
 
@@ -375,7 +376,7 @@ public class DamageListener implements Listener {
 
         Location respawnLocation;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
         } else if (DungeonRealms.isEvent()) {
             respawnLocation = TeleportLocation.EVENT_AREA.getLocation();
         } else {
@@ -521,7 +522,7 @@ public class DamageListener implements Listener {
         //  OUT OF ENERGY  //
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.getPlayer().playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 40);
             return;
         }
 
@@ -791,7 +792,7 @@ public class DamageListener implements Listener {
     public void onFireballHit(ProjectileHitEvent event) {
         Entity e = event.getEntity();
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         if (e instanceof LargeFireball && shooter instanceof Ghast) {
             for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
                 if (GameAPI.isPlayer(ent) && !GameAPI.isInSafeRegion(ent.getLocation())) {

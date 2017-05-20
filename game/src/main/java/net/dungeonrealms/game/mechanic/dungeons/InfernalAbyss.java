@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mechanic.dungeons;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
@@ -94,7 +95,7 @@ public class InfernalAbyss extends Dungeon {
 					if (l.getBlock().getType() == Material.AIR)
 						l.getBlock().setType(Material.FIRE);
 						
-					if (new Random().nextInt(20) == 0)
+					if (ThreadLocalRandom.current().nextInt(20) == 0)
 						EntityAPI.spawnCustomMonster(l.clone().add(0, 2, 0), EnumMonster.MagmaCube, "low", 3, null);
 				}
 			}, 0L, 5L);
@@ -123,7 +124,7 @@ public class InfernalAbyss extends Dungeon {
 		private void destroyDebuff(Entity e) {
 			InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(e.getWorld());
 			Block block = e.getLocation().clone().subtract(0, 1, 0).getBlock();
-			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT_MAGIC, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT_MAGIC, block.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 50);
 	        
 			if (block.getType() == Material.BEDROCK)
 				block.setType(Material.AIR);

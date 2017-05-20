@@ -5,6 +5,7 @@ import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemEnchantFishingRod extends ItemEnchantProfession {
@@ -38,7 +39,7 @@ public class ItemEnchantFishingRod extends ItemEnchantProfession {
 
 	@Override
 	protected String[] getLore() {
-		return new String[] { "Fishing Rod Enchant" };
+		return new String[] { ChatColor.GRAY + "Imbues a fishing rod with special attributes." };
 	}
 	
 	public static boolean isEnchant(ItemStack stack) {

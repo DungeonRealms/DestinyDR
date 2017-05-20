@@ -22,7 +22,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 	@Getter @Setter
 	private ItemTier tier;
 	
-	private String enchantType;
+	protected String enchantType;
 	
 	public ItemEnchantScroll(ItemTier tier, ItemType type, String enchantType) {
 		super(type);
@@ -59,7 +59,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 		evt.setCancelled(true);
 		ItemGear gear = (ItemGear)PersistentItem.constructItem(upgradeItem);
 		
-		if (gear.getTier() != getTier()) {
+		if (gear.getTier() != getTier() && !(this instanceof ItemEnchantProfession)) {
 			evt.getPlayer().sendMessage(ChatColor.RED + "This enchant scroll is not meant for this weapon tier.");
 			return;
 		}

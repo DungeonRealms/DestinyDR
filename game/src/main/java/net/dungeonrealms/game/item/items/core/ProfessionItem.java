@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.item.items.core;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -137,7 +138,7 @@ public abstract class ProfessionItem extends ItemGear {
 		//Apply new stat.
 		if (getTier() != oldTier) {
 			ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
-			ProfessionAttribute pa = attributes[new Random().nextInt(attributes.length)];
+			ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
 			getAttributes().setStat(pa, Utils.randInt(pa.getPercentRange()[0], pa.getPercentRange()[1]));
 		}
 		

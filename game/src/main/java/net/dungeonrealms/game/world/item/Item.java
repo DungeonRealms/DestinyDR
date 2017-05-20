@@ -337,7 +337,7 @@ public class Item {
         private int[] percentRange;
 
         FishingAttributeType(String prefix, String nbt, int... range) {
-            this.prefix = prefix;
+            this.prefix = ChatColor.RED + prefix;
             this.NBTName = nbt;
             this.percentRange = range;
         }
@@ -398,7 +398,7 @@ public class Item {
 
         DOUBLE_ORE("DOUBLE ORE", "doubleOre", 5, 5, 9, 13, 17),
         GEM_FIND("GEM FIND", "gemFind", 3, 3, 5, 8, 11),
-        MINING_SUCCESS("MINING SUCCESS: ", "miningSuccess", 2, 2, 3, 4, 5),
+        MINING_SUCCESS("MINING SUCCESS", "miningSuccess", 2, 2, 3, 4, 5),
         TRIPLE_ORE("TRIPLE ORE", "tripleOre", 2, 2, 3, 4, 5),
         DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25);
 
@@ -409,7 +409,7 @@ public class Item {
         private int[] percentRange;
 
         PickaxeAttributeType(String prefix, String nbt, int... percentageRange) {
-            this.prefix = prefix;
+            this.prefix = ChatColor.RED + prefix;
             this.NBTName = nbt;
             this.percentRange = percentageRange;
         }

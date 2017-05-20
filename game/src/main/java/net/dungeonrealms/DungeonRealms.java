@@ -101,6 +101,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -167,7 +168,7 @@ public class DungeonRealms extends JavaPlugin {
         saveDefaultConfig();
 
         // RANDOMIZE REBOOT TIME //
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         long min = Constants.MIN_GAME_TIME + SERVER_START_TIME;
         long max = Constants.MAX_GAME_TIME + SERVER_START_TIME;
 

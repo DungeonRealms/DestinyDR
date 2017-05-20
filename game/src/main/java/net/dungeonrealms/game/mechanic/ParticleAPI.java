@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/20/2015.
@@ -213,7 +214,7 @@ public class ParticleAPI {
      * @param speed
      */
     public static void spawnParticle(Particle p, Location loc, int count, float speed) {
-        Random r = new Random();
+        Random r = ThreadLocalRandom.current();
         spawnParticle(p, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), count, speed);
     }
 

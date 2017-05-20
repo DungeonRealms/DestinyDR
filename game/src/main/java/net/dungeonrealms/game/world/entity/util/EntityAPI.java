@@ -57,7 +57,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityAPI {
 
-    private static Random random = new Random();
+    private static Random random = ThreadLocalRandom.current();
 
     @Getter
     //TODO: Prevent memory leaks, on death, on despawn. Every few minutes go through this list and clean up the trash.

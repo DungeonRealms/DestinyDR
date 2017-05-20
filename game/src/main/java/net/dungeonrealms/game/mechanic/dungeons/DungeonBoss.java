@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * DungeonBoss - Contains utilities that dungeon bosses should implement.
@@ -74,7 +75,7 @@ public interface DungeonBoss extends DRMonster {
 		//Remove Nearby Fire
 		getNearbyBlocks(getBukkit().getLocation(), 10).stream().filter(bk -> bk.getType() == Material.FIRE).forEach(bk -> bk.setType(Material.AIR));
 		
-		Random random = new Random();
+		Random random = ThreadLocalRandom.current();
 		ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, getBukkit().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
 		
 		getDungeon().completeDungeon();

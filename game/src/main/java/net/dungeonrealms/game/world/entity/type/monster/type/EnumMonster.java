@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * EnumMonster - A registry of all monsters in the game.
@@ -157,11 +158,11 @@ public enum EnumMonster {
     }
 
     public String getPrefix() {
-    	return prefix.length > 0 ? prefix[new Random().nextInt(prefix.length)] + " " : "";
+    	return prefix.length > 0 ? prefix[ThreadLocalRandom.current().nextInt(prefix.length)] + " " : "";
     }
 
     public String getSuffix() {
-        return suffix.length > 0 ? " " + suffix[new Random().nextInt(suffix.length)] : "";
+        return suffix.length > 0 ? " " + suffix[ThreadLocalRandom.current().nextInt(suffix.length)] : "";
     }
 
 	public static EnumMonster getMonsterByString(String mob) {
@@ -176,7 +177,7 @@ public enum EnumMonster {
 	}
 
     public ElementalAttribute getRandomElement() {
-        return possibleElementalTypes.get(new Random().nextInt(possibleElementalTypes.size()));
+        return possibleElementalTypes.get(ThreadLocalRandom.current().nextInt(possibleElementalTypes.size()));
     }
 
 	public ItemStack getSkullItem() {
@@ -186,7 +187,7 @@ public enum EnumMonster {
 	 * Selects from the choice of random entity classes.
 	 */
 	public CustomEntityType getCustomEntity() {
-		return clazzes[new Random().nextInt(clazzes.length)];
+		return clazzes[ThreadLocalRandom.current().nextInt(clazzes.length)];
 	}
 	
 	//This is here to be used as a shortcut. so we can do l(1, 2) instead of new int[] {1, 2};

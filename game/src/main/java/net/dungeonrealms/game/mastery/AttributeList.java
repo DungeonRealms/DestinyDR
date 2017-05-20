@@ -149,7 +149,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
         		continue;
         	for (StatBoost boost : stat.getStatBoosts())
         		if(hasAttribute(boost.getType()))
-        			addStat(boost.getType(), (int) (getAttribute(stat.getType()).getValue() + boost.getMultiplier()));
+        			addStat(boost.getType(), (int) (getAttribute(stat.getType()).getValue() * boost.getMultiplier()));
         }
 	}
 

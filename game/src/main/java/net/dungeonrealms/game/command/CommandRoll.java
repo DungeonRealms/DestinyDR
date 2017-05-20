@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 11/9/2015.
@@ -39,7 +40,7 @@ public class CommandRoll extends BaseCommand {
             }
             Player player = (Player) sender;
 
-            int roll = new Random().nextInt(max) + 1;
+            int roll = ThreadLocalRandom.current().nextInt(max) + 1;
 
             String playerName = PlayerWrapper.getWrapper(player).getChatName();
 

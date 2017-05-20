@@ -40,6 +40,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public interface DRMonster {
 	
@@ -84,7 +85,7 @@ public interface DRMonster {
     
     default void setGear() {
     	ItemStack[] armor = GameAPI.getTierArmor(getTier());
-		Random random = new Random();
+		Random random = ThreadLocalRandom.current();
 		boolean forcePlace = false;
 		EntityEquipment e = getBukkit().getEquipment();
 		
@@ -162,7 +163,7 @@ public interface DRMonster {
             return;
         
         int tier = getTier();
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         PlayerWrapper pw = PlayerWrapper.getWrapper(killer);
         
         ModifierRange gemFinder = pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND);
@@ -233,7 +234,7 @@ public interface DRMonster {
             	wrapper.sendDebug(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
             
             ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
-            if (new Random().nextInt(2) == 0) { // 50% chance for weapon, 50% for armor
+            if (ThreadLocalRandom.current().nextInt(2) == 0) { // 50% chance for weapon, 50% for armor
                 ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
                 if (weapon != null && weapon.getType() != Material.AIR)
                     drop = weapon;

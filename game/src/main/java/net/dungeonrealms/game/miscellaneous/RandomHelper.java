@@ -2,13 +2,14 @@ package net.dungeonrealms.game.miscellaneous;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 11/6/2015.
  */
 public class RandomHelper {
     /** The random number stream used by this helper. */
-    public final static Random rand = new Random();
+    public final static Random rand = ThreadLocalRandom.current();
 
     /**
      * Returns a random int between min and max, inclusive.

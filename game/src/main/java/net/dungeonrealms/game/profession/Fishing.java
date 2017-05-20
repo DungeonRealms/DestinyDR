@@ -126,7 +126,7 @@ public class Fishing implements GenericMechanic, Listener {
     }
 
     public static FishBuff getRandomBuff(FishingTier tier) {
-        int roll = new Random().nextInt(100);
+        int roll = ThreadLocalRandom.current().nextInt(100);
         int check = 0;
         for (FishBuffType bType : FishBuffType.values()) {
             try {
@@ -185,7 +185,7 @@ public class Fishing implements GenericMechanic, Listener {
             for (EnumFish fish : values())
                 if (fish.getTier() == tier)
                     fishList.add(fish);
-            return fishList.get(new Random().nextInt(fishList.size() - 1));
+            return fishList.get(ThreadLocalRandom.current().nextInt(fishList.size() - 1));
         }
     }
 
@@ -313,7 +313,7 @@ public class Fishing implements GenericMechanic, Listener {
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
-            Random random = new Random();
+            Random random = ThreadLocalRandom.current();
             final Location fishLoc = getFishingSpot(pl.getLocation());
             final int spotTier = getFishingSpotTier(pl.getLocation());
             if (e.getCaught() != null)
@@ -328,7 +328,7 @@ public class Fishing implements GenericMechanic, Listener {
 
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-                int fishRoll = new Random().nextInt(100);
+                int fishRoll = ThreadLocalRandom.current().nextInt(100);
                 int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
                 if (pole.getTier().getId() == spotTier)
@@ -338,7 +338,7 @@ public class Fishing implements GenericMechanic, Listener {
 
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
-                    if (new Random().nextInt(100) > duraBuff)
+                    if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
                         pole.damageItem(pl, 1);
                     return;
                 }
@@ -347,7 +347,7 @@ public class Fishing implements GenericMechanic, Listener {
                 ItemStack fish = new ItemFish(fTier, EnumFish.getRandomFish(fTier.getTier())).generateItem();
                 int fishDrop = 1;
 
-                if (new Random().nextInt(100) > duraBuff)
+                if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
                     pole.damageItem(pl, 2);
 
                 pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
@@ -375,8 +375,8 @@ public class Fishing implements GenericMechanic, Listener {
                 GameAPI.giveOrDropItem(pl, fish);
 
                 //  Junk Find.
-                if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= new Random().nextInt(100) + 1) {
-                    int junkType = new Random().nextInt(100) + 1; // 0, 1, 2
+                if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
+                    int junkType = ThreadLocalRandom.current().nextInt(100) + 1; // 0, 1, 2
                     ItemStack junk = null;
 
                     if (junkType < 70) {
@@ -412,9 +412,9 @@ public class Fishing implements GenericMechanic, Listener {
                 }
 
                 // Treasure Find.
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= new Random().nextInt(300) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
                     // Give em treasure!
-                    int treasureType = new Random().nextInt(3); // 0, 1
+                    int treasureType = ThreadLocalRandom.current().nextInt(3); // 0, 1
                     ItemStack treasure = null;
                     if (treasureType == 0) {
                         treasure = new ItemOrb().generateItem();

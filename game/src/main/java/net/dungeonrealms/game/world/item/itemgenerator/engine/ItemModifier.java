@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class ItemModifier implements Comparable<ItemModifier> {
 	
@@ -64,6 +65,6 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 
 	public void rollAttribute() {
 		if (this.possibleAttributes.length > 1)
-			this.currentAttribute = this.possibleAttributes[new Random().nextInt(this.possibleAttributes.length)];
+			this.currentAttribute = this.possibleAttributes[ThreadLocalRandom.current().nextInt(this.possibleAttributes.length)];
 	}
 }

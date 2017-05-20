@@ -18,6 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
@@ -31,7 +32,7 @@ public class DonationEffects implements GenericMechanic {
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";
 
-    private static Random random = new Random();
+    private static Random random = ThreadLocalRandom.current();
 
     @Override
     public EnumPriority startPriority() {

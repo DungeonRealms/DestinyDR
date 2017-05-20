@@ -36,6 +36,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -244,7 +245,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
     }
 
     public static String createEpoch(ItemStack item) {
-    	return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(99999) + "R";
+    	return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + ThreadLocalRandom.current().nextInt(99999) + "R";
     }
 
     @EventHandler

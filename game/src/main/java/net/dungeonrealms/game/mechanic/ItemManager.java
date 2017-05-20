@@ -31,6 +31,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * ItemManager - Contains basic item utils.
@@ -376,7 +377,7 @@ public class ItemManager {
     }
 
     public static CombatItem createRandomCombatItem() {
-        return new Random().nextBoolean() ? new ItemWeapon() : new ItemArmor();
+        return ThreadLocalRandom.current().nextBoolean() ? new ItemWeapon() : new ItemArmor();
     }
 
     public static ItemStack createItem(Material mat, short data, String name) {

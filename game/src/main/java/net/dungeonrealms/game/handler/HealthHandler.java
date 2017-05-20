@@ -581,7 +581,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
-        Random r = new Random();
+        Random r = ThreadLocalRandom.current();
         defender.getWorld().spawnParticle(Particle.BLOCK_DUST, defender.getLocation().clone().add(0, 1, 0), 10,
                 r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
 

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.functional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +44,7 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
 		setTier(tier);
 		setFishType(fishType);
 		
-		if (getTier().getBuffChance() >= new Random().nextInt(100))
+		if (getTier().getBuffChance() >= ThreadLocalRandom.current().nextInt(100))
 			setFishBuff(Fishing.getRandomBuff(getTier()));
 	}
 	
