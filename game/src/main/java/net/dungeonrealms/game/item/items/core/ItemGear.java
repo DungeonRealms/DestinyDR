@@ -81,11 +81,6 @@ public abstract class ItemGear extends ItemGeneric {
 	protected void loadItem() {
 		super.loadItem();
 
-		if (isRollStats()) {
-			rollStats(false);
-			this.rollStats = false;
-		}
-
 		this.attributes = new AttributeList();
 
 		// LOAD GENERAL DATA //
@@ -114,6 +109,11 @@ public abstract class ItemGear extends ItemGeneric {
 
 	@Override
 	public void updateItem() {
+		if (isRollStats()) {
+			rollStats(false);
+			this.rollStats = false;
+		}
+		
 		// SAVE GENERAL DATA //
 		if (getRarity() != null)
 			setTagString("itemRarity", getRarity().name());

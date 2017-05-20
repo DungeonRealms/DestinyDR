@@ -299,6 +299,7 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
+        cm.registerCommand(new CommandItemEdit());
         cm.registerCommand(new CommandGraveyard());
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandWipe());

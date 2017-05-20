@@ -81,22 +81,6 @@
           <artifactId>craftbukkit</artifactId>
           <groupId>org.bukkit</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>json</artifactId>
-          <groupId>org.json</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>reflectionhelper</artifactId>
-          <groupId>org.inventivetalent</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.packetlistener</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.nicknamer</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -108,10 +92,6 @@
         <exclusion>
           <artifactId>bukkit-classloader-check</artifactId>
           <groupId>com.sk89q.spigot</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bukkit</artifactId>
-          <groupId>org.bukkit</groupId>
         </exclusion>
         <exclusion>
           <artifactId>commandbook</artifactId>
@@ -156,7 +136,7 @@
       <artifactId>spigot</artifactId>
       <version>1.9.4-R0.1-SNAPSHOT</version>
       <scope>system</scope>
-      <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+      <systemPath>${project.basedir}/lib/spigot1.9.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>net.citizensnpcs</groupId>

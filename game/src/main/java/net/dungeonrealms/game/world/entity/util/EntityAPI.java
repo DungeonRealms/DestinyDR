@@ -100,20 +100,12 @@ public class EntityAPI {
             e.setArmorContents(armor.generateArmorSet());
         } else if (elite != null) {
             // Load elite custom gear.
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot == EquipmentSlot.OFF_HAND) // Skip offhand.
-                    continue;
-
-                String templateName = elite.name() + Utils.capitalize(slot.name());
-                ItemStack item = ItemGenerator.getNamedItem(templateName);
-                if (item == null || item.getType() == Material.AIR) {
-                    Bukkit.getLogger().info("Unable to find elite gear item for " + templateName);
-                    continue;
-                }
-
-                EnchantmentAPI.addGlow(item);
-                GameAPI.setItem(entity, slot, item);
-            }
+        	Map<EquipmentSlot, ItemStack> gear = ItemGenerator.getEliteGear(elite);
+        	for (EquipmentSlot e : gear.keySet()) {
+        		ItemStack i = gear.get(e);
+        		EnchantmentAPI.addGlow(i);
+        		GameAPI.setItem(entity, e, i);
+        	}
         }
 
         Metadata.ELITE.set(entity, true);
@@ -409,10 +401,6 @@ public class EntityAPI {
         attributes.applyStatBonuses();
     }
 
-    private static int getBarLength(int tier) {
-        return 20 + (tier * 5) + (tier >= 5 ? 5 : 0);
-    }
-
     public static void showHPBar(DRMonster monster) {
         Entity ent = monster.getBukkit();
         boolean boss = isBoss(ent);
@@ -456,48 +444,4 @@ public class EntityAPI {
 
         return new String[]{spl.substring(0, splitIndex), (lastColor != null ? lastColor + (bold ? ChatColor.BOLD + "" : "") : "") + spl.substring(splitIndex)};
     }
-
-    // Legacy HP Bar (Removed May 17th, 2017.)
-    /*public static void oldHPBar(DRMonster monster) {
-        Entity ent = monster.getBukkit();
-        boolean boss = isBoss(ent);
-        boolean elite = isElite(ent);
-        int maxBar = boss ? getBarLength(getTier(ent)) : 60;
-        ChatColor cc = boss ? ChatColor.GOLD : ChatColor.GREEN;
-
-        double hpPercentDecimal = HealthHandler.getHPPercent(ent);
-        double hpPercent = hpPercentDecimal * 100D;
-        hpPercent = Math.max(1, hpPercent);
-
-        if (hpPercent <= 45)
-            cc = ChatColor.YELLOW;
-
-        if (hpPercent <= 20)
-            cc = ChatColor.RED;
-
-        if (PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId()))
-            cc = ChatColor.LIGHT_PURPLE;
-
-        String formatted = cc + "" + ChatColor.BOLD + "║" + ChatColor.RESET + "" + cc + (elite || boss ? ChatColor.BOLD : "");
-
-
-        int greenBars = (int) Math.ceil(hpPercentDecimal * maxBar);
-        int redBars = maxBar - greenBars;
-        for (int i = 0; i < greenBars; i++) {
-            formatted += "|";
-        }
-
-        formatted += ChatColor.BLACK;
-        if (elite)
-            formatted += ChatColor.BOLD;
-
-        for (int i = 0; i < redBars; i++)
-            formatted += "|";
-
-        formatted = formatted + cc + ChatColor.BOLD + "║";
-
-        // Apply name to entity.
-        ent.setCustomName(formatted);
-        ent.setCustomNameVisible(true);
-    }*/
 }

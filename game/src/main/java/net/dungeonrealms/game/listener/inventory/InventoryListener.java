@@ -288,21 +288,16 @@ public class InventoryListener implements Listener {
             player.updateInventory();
             return;
         }
-
-        if (!CombatLog.isInCombat(player)) {
-            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
-
-            final ItemStack old = event.getOldArmorPiece();
-            final ItemStack newArmor = event.getNewArmorPiece();
-
-            // Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> handleArmorDifferences(old, newArmor, player));
-        } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
-            player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
-                    "cannot" + ChatColor.RED + " switch armor right now.");
-            event.setCancelled(true);
-            player.updateInventory();
-        }
+        
+        if (CombatLog.isInCombat(player) && (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE))) {
+			player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
+					"cannot" + ChatColor.RED + " switch armor right now.");
+			event.setCancelled(true);
+			player.updateInventory();
+			return;
+		}
+        
+        handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
     }
 
     /**
@@ -316,46 +311,50 @@ public class InventoryListener implements Listener {
      */
 
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
-        // recalculate attributes
-        PlayerWrapper wp = PlayerWrapper.getWrapper(p);
-
-        boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
-        boolean hasNewArmor = ItemArmor.isArmor(newArmor);
-
-        String oldArmorName = Utils.getItemName(oldArmor);
-        String newArmorName = Utils.getItemName(newArmor);
-
-
-        // display differences to player
-        p.sendMessage(ChatColor.GRAY + oldArmorName + ChatColor.WHITE +
-                ChatColor.BOLD + " -> " + ChatColor.GRAY + newArmorName);
-
-        //TODO: Don't show the same stat twice, combine the messages.
-        AttributeList armorChanges = new AttributeList();
-
-        // Show stats for the armor being removed.
-        if (hasOldArmor) {
-            ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
-            armorChanges.removeStats(removedArmor.getAttributes());
-        }
-
-        // Show stats for the armor being equipped.
-        if (hasNewArmor) {
-            ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
-            armorChanges.addStats(addedArmor.getAttributes());
-        }
-
-        wp.calculateAllAttributes();
-
-        for (AttributeType t : armorChanges.keySet()) {
-            ModifierRange armorVal = armorChanges.getAttribute(t);
-            ModifierRange newVal = wp.getAttributes().getAttribute(t);
-
-            p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED + "")
-                    + armorVal.getValue() + t.getSuffix()
-                    + " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
-                    + newVal.getValue() + t.getSuffix() + "]");
-        }
+    	p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+    	
+    	// Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
+    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+    		// recalculate attributes
+    		PlayerWrapper wp = PlayerWrapper.getWrapper(p);
+    		
+    		boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
+    		boolean hasNewArmor = ItemArmor.isArmor(newArmor);
+    		
+    		String oldArmorName = Utils.getItemName(oldArmor);
+    		String newArmorName = Utils.getItemName(newArmor);
+    		
+    		
+    		// display differences to player
+    		p.sendMessage(ChatColor.GRAY + oldArmorName + ChatColor.WHITE +
+    				ChatColor.BOLD + " -> " + ChatColor.GRAY + newArmorName);
+    		
+    		AttributeList armorChanges = new AttributeList();
+    		
+    		// Show stats for the armor being removed.
+    		if (hasOldArmor) {
+    			ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
+    			armorChanges.removeStats(removedArmor.getAttributes());
+    		}
+    		
+    		// Show stats for the armor being equipped.
+    		if (hasNewArmor) {
+    			ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
+    			armorChanges.addStats(addedArmor.getAttributes());
+    		}
+    		
+    		wp.calculateAllAttributes();
+    		
+    		for (AttributeType t : armorChanges.keySet()) {
+    			ModifierRange armorVal = armorChanges.getAttribute(t);
+    			ModifierRange newVal = wp.getAttributes().getAttribute(t);
+    			
+    			p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED + "")
+    					+ armorVal.getValue() + t.getSuffix()
+    					+ " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
+    					+ newVal.getValue() + t.getSuffix() + "]");
+    		}
+    	});	
     }
 
 
@@ -550,5 +549,14 @@ public class InventoryListener implements Listener {
                 event.setResult(Event.Result.DENY);
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST) // This case is not caught by ArmorEquipEvent.
+    public void playerDoWeirdArmorThing(InventoryClickEvent event) {
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")
+        		|| event.getAction() != InventoryAction.HOTBAR_SWAP
+        		|| event.getSlotType() != InventoryType.SlotType.ARMOR)
+        	return;
+        event.setCancelled(true);
     }
 }

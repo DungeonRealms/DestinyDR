@@ -57,7 +57,7 @@ public class TipHandler implements GenericMechanic {
 	
 	private static void loadTips() {
 		try {
-			File file = new File("plugins/DungeonRealms/tips/tips.txt");
+			File file = new File("plugins/DungeonRealms/tips.txt");
 			if (!file.exists())
 				file.createNewFile();
 			

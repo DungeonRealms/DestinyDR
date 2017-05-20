@@ -4,25 +4,31 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +37,8 @@ public class ItemGenerator {
     public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<>();
     public static List<ItemModifier> modifierObjects = new ArrayList<>();
 
-    private static File getFile(String itemName) {
-        return new File(GameAPI.getDataFolder() + "/custom_items/" + Utils.sanitizeFileName(itemName) + ".item");
+    private static File getFile(String itemName, String ext) {
+        return new File(GameAPI.getDataFolder() + "/custom_items/" + Utils.sanitizeFileName(itemName) + "." + ext);
     }
 
     public static ItemStack createItem(JsonObject fullObj) {
@@ -92,6 +98,44 @@ public class ItemGenerator {
 
         return MojangsonParser.parse(data);
     }
+    
+    /**
+     * Load the elite gear for a given entity type.
+     * @param type
+     */
+    public static Map<EquipmentSlot, ItemStack> getEliteGear(EnumNamedElite type) {
+    	return getEliteGear(type.name().toLowerCase());
+    }
+    
+    /**
+     * Load the elite gear from a file name.
+     * @param eliteName
+     * @return
+     */
+    public static Map<EquipmentSlot, ItemStack> getEliteGear(String eliteName) {
+    	Map<EquipmentSlot, ItemStack> map = new HashMap<>();
+    	JsonObject obj = readJSON(eliteName, "elite");
+    	for (EquipmentSlot s : EquipmentSlot.values()) {
+    		if (obj.has(s.name()))
+    			map.put(s, createItem(obj.get(s.name()).getAsJsonObject()));
+    	}
+    	return map;
+    }
+    
+    /**
+     * Save elite gear to disk.
+     * @param e
+     * @param fileName
+     */
+    public static void saveEliteGear(EntityEquipment e, String fileName) {
+    	JsonObject entire = new JsonObject();
+    	for (EquipmentSlot slot : EquipmentSlot.values()) {
+    		ItemStack i = GameAPI.getItem(e, slot);
+    		if (i != null && i.getType() != Material.AIR)
+    			entire.add(slot.name(), toJson(i));
+    	}
+    	saveJSON(fileName, "elite", entire);
+    }
 
     /**
      * Loads a custom item from disk.
@@ -99,21 +143,14 @@ public class ItemGenerator {
      * @param templateName
      */
     public static ItemStack getNamedItem(String templateName) {
-        File file = getFile(templateName);
+        File file = getFile(templateName, "item");
         if (!file.exists()) {
             Utils.log.warning("[ItemGenerator] Custom item " + templateName + " not found!");
             return new ItemStack(Material.AIR); // No such custom template!
         }
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file)); //Read from file
-            return createItem(new JsonParser().parse(br).getAsJsonObject(), templateName); //Create Item
-        } catch (IOException e) {
-            e.printStackTrace();
-            Utils.log.info("[ItemGenerator] Failed to load " + templateName + ".");
-        }
-
-        return new ItemStack(Material.AIR);
+        JsonObject obj = readJSON(templateName, "item");
+        return obj != null ? createItem(obj, templateName) : new ItemStack(Material.AIR);
     }
 
     /**
@@ -125,6 +162,11 @@ public class ItemGenerator {
         VanillaItem toSave = new VanillaItem(item);
         JsonObject fullObj = new JsonObject();
 
+        toSave.removeTag("display"); // Display is only used to show to the player, it'll get regenerated on load.
+        toSave.removeTag("customId"); // Gets overriden.
+        if (toSave.hasTag("u"))
+        	toSave.setTagBool("u", true); // Takes up extra space, and will get regened anyways.
+        
         // Save Data.
         fullObj.addProperty("count", item.getAmount());
         fullObj.addProperty("damage", item.getDurability());
@@ -139,21 +181,30 @@ public class ItemGenerator {
      * Silently fails if non US0
      */
     public static void saveItem(ItemStack item, String itemName) {
-        if (!DungeonRealms.isMaster())
-            return;
-
-        VanillaItem vi = new VanillaItem(item);
-        vi.removeTag("display"); // Just takes extra space and can make editting the tag more annoying..
-        item = vi.generateItem();
-
-        try {
-            FileWriter file = new FileWriter(getFile(itemName));
+        if (DungeonRealms.isMaster())
+            saveJSON(itemName, "item", toJson(item));
+    }
+    
+    private static JsonObject readJSON(String fileName, String ext) {
+    	try {
+            BufferedReader br = new BufferedReader(new FileReader(getFile(fileName, ext))); //Read from file
+            return new JsonParser().parse(br).getAsJsonObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utils.log.info("[ItemGenerator] Failed to load " + fileName + "." + ext);
+            return null;
+        }
+    }
+    
+    private static void saveJSON(String fileName, String ext, JsonObject object) {
+    	try {
+            FileWriter file = new FileWriter(getFile(fileName, ext));
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            file.write(gson.toJson(toJson(item)));
+            file.write(gson.toJson(object));
             file.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to save " + itemName + ".item");
+            Bukkit.getLogger().warning("Failed to save " + fileName + "." + ext);
         }
     }
     

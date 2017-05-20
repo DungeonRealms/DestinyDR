@@ -75,16 +75,6 @@ public class CommandAdd extends BaseCommand {
             LivingEntity target;
             ItemStack held = player.getEquipment().getItemInMainHand();
             switch (args[0]) {
-            	case "edit":
-            		if (!ItemGear.isCustomTool(held)) {
-            			player.sendMessage(ChatColor.RED + "This is not an edittable item.");
-            			return true;
-            		}
-            		
-            		final GUIItemEditor ie = new GUIItemEditor(player, (ItemGear) PersistentItem.constructItem(held));
-            		ie.setCloseCallback(p -> p.getEquipment().setItemInMainHand(ie.getGear().generateItem()));
-            		player.sendMessage(ChatColor.GREEN + "Opened GUI.");
-            		break;
             	case "save":
             		if (held == null || held.getType() == Material.AIR) {
             			player.sendMessage(ChatColor.RED + "You must be holding an item");

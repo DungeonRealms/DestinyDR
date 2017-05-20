@@ -1489,7 +1489,10 @@ public class GameAPI {
     }
 
     public static ItemStack getItem(Player player, EquipmentSlot slot) {
-        EntityEquipment e = player.getEquipment();
+    	return getItem(player.getEquipment(), slot);
+    }
+    
+    public static ItemStack getItem(EntityEquipment e, EquipmentSlot slot) {
         switch (slot) {
             case HAND:
                 return e.getItemInMainHand();
