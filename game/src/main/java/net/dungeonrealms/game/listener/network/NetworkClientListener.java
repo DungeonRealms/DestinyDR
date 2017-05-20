@@ -460,6 +460,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             if(wrapper != null) {
                                 wrapper.setRank(rank);
                             }
+                            break;
                         case "Guilds":
                             String command = in.readUTF();
 

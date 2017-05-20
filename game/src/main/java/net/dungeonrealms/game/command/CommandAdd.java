@@ -135,6 +135,7 @@ public class CommandAdd extends BaseCommand {
                         player.getInventory().addItem(gear.generateItem());
 
                     } catch (Exception ex) {
+                	    ex.printStackTrace();
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;

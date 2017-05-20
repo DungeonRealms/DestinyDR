@@ -10,7 +10,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -80,20 +79,14 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
+import org.bukkit.*;
 import org.bukkit.Material;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -1386,9 +1379,12 @@ public class GameAPI {
      */
     public static void sendVoteMessage(Player player) {
         int ecashAmount = Rank.isSUBPlus(player) ? 25 : (Rank.isSUB(player) ? 20 : 15);
-        ComponentBuilder cb = new ComponentBuilder("To vote for " + ecashAmount + " ECASH & 5% EXP, click ").color(ChatColor.GRAY);
-        cb.append("HERE").color(ChatColor.AQUA).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
-        player.sendMessage(cb.create());
+//        ComponentBuilder cb = new ComponentBuilder("To vote for " + ecashAmount + " ECASH & 5% EXP, click ").color(ChatColor.GRAY);
+//        cb.append("HERE").color(ChatColor.AQUA).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
+//        player.sendMessage(cb.create());
+        final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
+        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
+        message.sendToPlayer(player);
     }
 
     public static boolean isMainWorld(World world) {
@@ -1561,12 +1557,17 @@ public class GameAPI {
         PlayerWrapper pw = PlayerWrapper.getWrapper(p);
         if (pw.getPlayerStats().getFreePoints() > 0) {
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-            	ComponentBuilder cb = new ComponentBuilder("* ").color(ChatColor.GREEN);
-            	cb.append("You have available ").color(ChatColor.GRAY).append("stat points").color(ChatColor.GREEN);
-            	cb.append(". To allocate, click ").color(ChatColor.GRAY)
-            			.append("HERE").color(ChatColor.GREEN).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"))
-            			.append(" *").bold(false).underlined(false);
-            	p.sendMessage(cb.create());
+//            	ComponentBuilder cb = new ComponentBuilder("* ").color(ChatColor.GREEN);
+//            	cb.append("You have available ").color(ChatColor.GRAY).append("stat points").color(ChatColor.GREEN);
+//            	cb.append(". To allocate, click ").color(ChatColor.GRAY)
+//            			.append("HERE").color(ChatColor.GREEN).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"))
+//            			.append(" *").bold(false).underlined(false);
+                final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                        "To allocate click ", ChatColor.WHITE);
+                normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
+                normal.addText(ChatColor.GREEN + "*");
+                normal.sendToPlayer(p);
+//            	p.sendMessage(cb.create());
             });
         }
     }
@@ -1618,12 +1619,14 @@ public class GameAPI {
 
         // Reward to player with their EXP increase.
         pw.addExperience(expToGive, false, true);
-
+        final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+        normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
+        GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
         // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
-        ComponentBuilder cb = new ComponentBuilder(player.getName()).color(ChatColor.AQUA)
-        		.append(" voted for " + ecashReward + " ECASH & 5% EXP @ vote ").color(ChatColor.GRAY)
-        		.append("HERE").color(ChatColor.AQUA).bold(true).underlined(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
-       	sendShardMessage(cb);
+//        ComponentBuilder cb = new ComponentBuilder(player.getName()).color(ChatColor.AQUA)
+//        		.append(" voted for " + ecashReward + " ECASH & 5% EXP @ vote ").color(ChatColor.GRAY)
+//        		.append("HERE").color(ChatColor.AQUA).bold(true).underlined(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
+//       	sendShardMessage(cb);
     }
 
     public static void addCooldown(Metadatable m, Metadata type, int seconds) {

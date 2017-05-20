@@ -39,7 +39,7 @@ public class MainSupportGUI extends SupportGUI {
                         int amount = Integer.parseInt(customAmount.getMessage());
                         getWrapper().setGems(amount);
                         getWrapper().runQuery(QueryType.SET_GEMS, getWrapper().getGems(), getWrapper().getCharacterID());
-                        player.sendMessage(ChatColor.GREEN + "Successfully set " + getOtherName() + "'s gems to " + customAmount);
+                        player.sendMessage(ChatColor.GREEN + "Successfully set " + getOtherName() + "'s gems to " + customAmount.getMessage());
                     } catch (NumberFormatException e) {
                         player.sendMessage(ChatColor.RED + customAmount.getMessage() + " is not a valid number.");
                     }

@@ -95,7 +95,7 @@
             <artifactId>spigot</artifactId>
             <version>1.9.4-R0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+            <systemPath>${project.basedir}/lib/spigot1.9.jar</systemPath>
         </dependency>
 
         <!--Bukkit GameAPI&ndash;&gt;-->

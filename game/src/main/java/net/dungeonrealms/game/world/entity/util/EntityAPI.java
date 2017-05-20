@@ -104,9 +104,12 @@ public class EntityAPI {
                 if (slot == EquipmentSlot.OFF_HAND) // Skip offhand.
                     continue;
 
-                ItemStack item = ItemGenerator.getNamedItem(elite.name() + Utils.capitalize(slot.name()));
-                if (item == null || item.getType() == Material.AIR)
+                String templateName = elite.name() + Utils.capitalize(slot.name());
+                ItemStack item = ItemGenerator.getNamedItem(templateName);
+                if (item == null || item.getType() == Material.AIR) {
+                    Bukkit.getLogger().info("Unable to find elite gear item for " + templateName);
                     continue;
+                }
 
                 EnchantmentAPI.addGlow(item);
                 GameAPI.setItem(entity, slot, item);
@@ -409,17 +412,17 @@ public class EntityAPI {
     private static int getBarLength(int tier) {
         return 20 + (tier * 5) + (tier >= 5 ? 5 : 0);
     }
-    
+
     public static void showHPBar(DRMonster monster) {
-    	Entity ent = monster.getBukkit();
-    	boolean boss = isBoss(ent);
-    	boolean bold = boss || isElite(ent);
-    	int barSize = (boss ? 15 : 10) * 2;
-    	
-    	double hpPercentDecimal = HealthHandler.getHPPercent(ent);
+        Entity ent = monster.getBukkit();
+        boolean boss = isBoss(ent);
+        boolean bold = boss || isElite(ent);
+        int barSize = (boss ? 15 : 10) * 2;
+
+        double hpPercentDecimal = HealthHandler.getHPPercent(ent);
         double hpPercent = hpPercentDecimal * 100D;
         hpPercent = Math.max(1, hpPercent);
-        
+
         String fullBar = new String(new char[barSize]).replace("\0", "|");
 
         String full = ChatColor.GREEN + (bold ? ChatColor.BOLD + "" : "");
@@ -428,30 +431,30 @@ public class EntityAPI {
         // Apply color.
         int greenBars = (int) Math.ceil(hpPercentDecimal * barSize);
         fullBar = full + fullBar.substring(0, greenBars) + empty + fullBar.substring(greenBars);
-        
+
         // Apply name to entity.
         String[] bar = splitHalfColor(fullBar, bold, String.valueOf(monster.getHP()).length());
         ent.setCustomName("[" + bar[0] + " " + ChatColor.WHITE + monster.getHP() + " " + bar[1] + ChatColor.WHITE + "]");
         ent.setCustomNameVisible(true);
     }
-    
+
     private static String[] splitHalfColor(String spl, boolean bold, int healthLength) {
         //Need to offset for the health.
-    	int splitIndex = spl.length() / 2 - healthLength / 2 - 1;
-    	
-    	// Add any color.
-    	ChatColor lastColor = null;
-    	String colorChar = ChatColor.WHITE.toString().substring(0, 1);
-    	for (int i = 0; i < splitIndex; i++) {
-    		if (spl.substring(i).startsWith(colorChar)) {
-    			splitIndex += 2;
-    			ChatColor c = ChatColor.getByChar(spl.charAt(i + 1));
-    			if (c != null && c != ChatColor.BOLD)
-    				lastColor = c;
-    		}
-    	}
-    	
-    	return new String[] {spl.substring(0, splitIndex), (lastColor != null ? lastColor + (bold ? ChatColor.BOLD + "" : "") : "") + spl.substring(splitIndex)};
+        int splitIndex = spl.length() / 2 - healthLength / 2 - 1;
+
+        // Add any color.
+        ChatColor lastColor = null;
+        String colorChar = ChatColor.WHITE.toString().substring(0, 1);
+        for (int i = 0; i < splitIndex; i++) {
+            if (spl.substring(i).startsWith(colorChar)) {
+                splitIndex += 2;
+                ChatColor c = ChatColor.getByChar(spl.charAt(i + 1));
+                if (c != null && c != ChatColor.BOLD)
+                    lastColor = c;
+            }
+        }
+
+        return new String[]{spl.substring(0, splitIndex), (lastColor != null ? lastColor + (bold ? ChatColor.BOLD + "" : "") : "") + spl.substring(splitIndex)};
     }
 
     // Legacy HP Bar (Removed May 17th, 2017.)

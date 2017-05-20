@@ -536,7 +536,7 @@ public class DungeonRealms extends JavaPlugin {
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupPlayers, 0L, 12000L);
 
-        ItemGenerator.convertOldItemTemplates();
+//        ItemGenerator.convertOldItemTemplates();
     }
 
     private static boolean isShard(ShardType type) {
