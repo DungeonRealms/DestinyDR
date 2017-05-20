@@ -78,7 +78,7 @@ public class GUIItemEditor extends GUIMenu {
 		
 		skipSlot(5);
 		ItemStack g = getGear().generateItem();
-		addItem(new GUIItem(g).setLore(g.getItemMeta().getLore()).setClick((evt) -> {
+		addItem(new GUIItem(g).setClick((evt) -> {
 			if (evt.isRightClick()) {
 				getPlayer().sendMessage(ChatColor.GREEN + "Please enter the name you'd like to save this item as.");
 				Chat.listenForMessage(getPlayer(), e -> {

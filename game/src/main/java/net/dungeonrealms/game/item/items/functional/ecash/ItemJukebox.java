@@ -4,17 +4,19 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
+import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemClickListener {
@@ -41,18 +43,11 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                     taskID = -1;
                 } else {
                     mobileJukeboxes.forEach((block, juke) -> {
-                        if (!block.getChunk().isLoaded()) {
-                            //Remove to not keep processing..
-                            mobileJukeboxes.remove(block);
-                            return;
+                        if (!block.getChunk().isLoaded() || block.getType() != Material.JUKEBOX) {
+                            mobileJukeboxes.remove(block); // Don't keep processing.
+                        } else {
+                        	ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(0, .75D, 0), 1.4F, 1, 1.4F, 30, .1F);;
                         }
-
-                        //How??
-                        if (block.getType() != Material.JUKEBOX) {
-                            mobileJukeboxes.remove(block);
-                            return;
-                        }
-                        ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(0, .75D, 0), 1.4F, 1, 1.4F, 0.1F, 30);
                     });
                 }
             }, 20, 5);
@@ -88,14 +83,5 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
     @Override
     protected ItemUsage[] getUsage() {
         return new ItemUsage[0];
-    }
-
-
-    class MobileJukebox {
-
-        private UUID uuid;
-        private String owner;
-        private Material recordPlaying;
-
     }
 }

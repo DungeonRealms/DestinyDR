@@ -166,11 +166,9 @@ public class Item {
             this.armorName = armorName;
         }
         public static ItemTier getByTier(int tier) {
-            for (ItemTier it : values()) {
+            for (ItemTier it : values())
                 if (it.getTierId() == tier)
                     return it;
-            }
-
             return null;
         }
         

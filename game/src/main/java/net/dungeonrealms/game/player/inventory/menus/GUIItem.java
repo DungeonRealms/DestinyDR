@@ -21,8 +21,6 @@ public class GUIItem extends ShopItem {
 	
     @Getter
     private Consumer<InventoryClickEvent> clickCallback;
-
-    @Getter private List<String> lore;
     
     public GUIItem(ItemStack item) {
         super(item);
@@ -35,13 +33,6 @@ public class GUIItem extends ShopItem {
     
     public GUIItem(Material mat, short s) {
     	this(new ItemStack(mat, 1, s));
-    }
-    
-    @Override
-    public void updateItem() {
-    	if (getLore() != null)
-    		getLore().forEach(this::addLore);
-    	super.updateItem();
     }
     
     @Override
@@ -100,7 +91,7 @@ public class GUIItem extends ShopItem {
     }
 
     public GUIItem setLore(List<String> lore) {
-        this.lore = lore;
+        lore.forEach(this::addLore);
         return this;
     }
 }

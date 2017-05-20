@@ -32,12 +32,12 @@ import org.bukkit.inventory.meta.FireworkMeta;
  * Represents profession items.
  * @author Kneesnap
  */
+@Getter
 public abstract class ProfessionItem extends ItemGear {
 
-	@Getter
 	private int level;
 	
-	@Getter @Setter
+	@Setter
 	private int XP;
 	
 	public ProfessionItem(ItemStack item) {
@@ -45,7 +45,12 @@ public abstract class ProfessionItem extends ItemGear {
 	}
 	
 	public ProfessionItem(ItemType type) {
+		this(type, 1);
+	}
+	
+	public ProfessionItem(ItemType type, int level) {
 		super(type);
+		setLevel(level);
 	}
 	
 	@Override
@@ -57,12 +62,15 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	@Override
 	public void updateItem() {
-		clearLore();
 		setTagInt("level", getLevel());
 		setTagInt("xp", getXP());
 		addLore();
-		getMeta().setDisplayName(getTier().getColor() + (getLevel() == 100 ? "Grand " : "") + getProfessionTier().getItemName());
 		super.updateItem();
+	}
+	
+	@Override
+	protected String generateItemName() {
+		return getTier().getColor() + (getLevel() == 100 ? "Grand " : "") + getProfessionTier().getItemName();
 	}
 	
 	@Override
@@ -155,7 +163,7 @@ public abstract class ProfessionItem extends ItemGear {
 	}
 	
 	public int getNextTierLevel() {
-		return Math.max( ((getLevel() / 20) + 1) * 20, 100);
+		return Math.min( ((getLevel() / 20) + 1) * 20, 100);
 	}
 	
 	@Override

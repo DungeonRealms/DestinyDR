@@ -4,14 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
-import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -38,14 +36,14 @@ public class ItemBuff extends FunctionalItem implements ItemClickListener {
 
 	public ItemBuff(ItemStack stack) {
 		super(stack);
-		setBuffType(EnumBuff.valueOf(getTagString("buff")));
+		setBuffType(getEnum("buff", EnumBuff.class));
 		setDuration(getTagInt("duration"));
 		setBuffPower(getTagInt("buffPower"));
 	}
 
 	@Override
 	public void updateItem() {
-		setTagString("buff", getBuffType().name());
+		setEnum("buff", getBuffType());
 		setTagInt("duration", getDuration());
 		setTagInt("buffPower", getBuffPower());
 		super.updateItem();

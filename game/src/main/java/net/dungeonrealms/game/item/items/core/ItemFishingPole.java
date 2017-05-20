@@ -18,8 +18,7 @@ public class ItemFishingPole extends ProfessionItem {
 	}
 	
 	public ItemFishingPole(int level) {
-		super(ItemType.FISHING_POLE);
-		this.setLevel(level);
+		super(ItemType.FISHING_POLE, 1);
 	}
 	
 	public ItemFishingPole(ItemStack item) {

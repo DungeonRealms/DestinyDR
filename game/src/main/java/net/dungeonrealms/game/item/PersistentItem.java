@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.item;
 
-import lombok.Setter;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,13 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class PersistentItem {
 	
 	protected ItemStack item;
-
-	//Custom display name
-	@Setter
-	protected String customDisplayName;
-
 	private NBTTagCompound tag;
-	
 	private boolean generating;
 	
 	public PersistentItem() {
@@ -79,6 +73,51 @@ public abstract class PersistentItem {
 	 */
 	protected boolean isGenerating() {
 		return this.generating;
+	}
+	
+	/**
+	 * Set an enum value in NBT.
+	 * @param key
+	 * @param val
+	 */
+	public <T extends Enum<T>> void setEnum(String key, Enum<T> val) {
+		setTagString(key, val.name());
+	}
+	
+	/**
+	 * Load an enum from NBT.
+	 * @param key
+	 * @param fallback - Default value. Please do not supply null.
+	 */
+	public <T extends Enum<T>> T getEnum(String key, T fallback) {
+		return getEnum(key, fallback.getClass(), fallback);
+	}
+	
+	/**
+	 * Load an enum value from NBT.
+	 * @param key
+	 * @param cls
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public <T extends Enum<T>> T getEnum(String key, Class<? extends Enum> cls) {
+		return getEnum(key, cls, null);
+	}
+	
+	/**
+	 * Gets an enum value from NBT.
+	 * @param key - The NBT key to load from.
+	 * @param cls - The enum's class.
+	 * @param defaultValue - The default value.
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T extends Enum<T>> T getEnum(String key, Class<? extends Enum> cls, T defaultValue) {
+		try {
+			return (T) cls.getMethod("valueOf").invoke(null, getTagString(key));
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 	
 	/**

@@ -10,6 +10,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
@@ -60,9 +61,11 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
@@ -77,13 +80,20 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
-import org.bukkit.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -120,7 +130,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 
 /**
  * Created by Nick on 9/17/2015.
@@ -261,7 +270,7 @@ public class GameAPI {
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         int level = wrapper.getLevel();
-        int mob_level = kill.getMetadata("level").get(0).asInt();
+        int mob_level = EntityAPI.getLevel(kill);
         int xp;
         double amplifier = 1.0;
         if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
@@ -293,10 +302,9 @@ public class GameAPI {
         return armor.generateArmorSet();
     }
 
-    public static ChatColor getTierColor(int tier) {
+    public static org.bukkit.ChatColor getTierColor(int tier) {
         ItemTier retr = ItemTier.getByTier(tier);
-        if (retr == null) return ItemTier.TIER_1.getColor();
-        return retr.getColor();
+        return (retr == null ? ItemTier.TIER_1 : retr).getColor();
     }
 
     public static GameClient getClient() {
@@ -504,6 +512,14 @@ public class GameAPI {
 
     public static void sendDevMessage(String message, String... contents) {
         sendNetworkMessage("DEVMessage", message, contents);
+    }
+    
+    /**
+     * Send a ComponentBuilt message cross-shard.
+     * @param cb
+     */
+    public static void sendShardMessage(ComponentBuilder cb) {
+    	sendNetworkMessage("BroadcastRaw", ComponentSerializer.toString(cb.create()));
     }
 
     /**
@@ -1167,8 +1183,7 @@ public class GameAPI {
      */
     public static List<Entity> getNearbyMonsters(Location location, int radius) {
         return location.getWorld().getEntities().stream()
-                .filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type")
-                        && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))
+                .filter(mons -> mons.getLocation().distance(location) <= radius && EnumEntityType.HOSTILE_MOB.isType(mons))
                 .collect(Collectors.toList());
     }
 
@@ -1371,9 +1386,9 @@ public class GameAPI {
      */
     public static void sendVoteMessage(Player player) {
         int ecashAmount = Rank.isSUBPlus(player) ? 25 : (Rank.isSUB(player) ? 20 : 15);
-        final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
-        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
-        message.sendToPlayer(player);
+        ComponentBuilder cb = new ComponentBuilder("To vote for " + ecashAmount + " ECASH & 5% EXP, click ").color(ChatColor.GRAY);
+        cb.append("HERE").color(ChatColor.AQUA).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
+        player.sendMessage(cb.create());
     }
 
     public static boolean isMainWorld(World world) {
@@ -1545,12 +1560,13 @@ public class GameAPI {
     public static void sendStatNotification(Player p) {
         PlayerWrapper pw = PlayerWrapper.getWrapper(p);
         if (pw.getPlayerStats().getFreePoints() > 0) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                        "To allocate click ", ChatColor.WHITE);
-                normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
-                normal.addText(ChatColor.GREEN + "*");
-                normal.sendToPlayer(pw.getPlayer());
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            	ComponentBuilder cb = new ComponentBuilder("* ").color(ChatColor.GREEN);
+            	cb.append("You have available ").color(ChatColor.GRAY).append("stat points").color(ChatColor.GREEN);
+            	cb.append(". To allocate, click ").color(ChatColor.GRAY)
+            			.append("HERE").color(ChatColor.GREEN).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"))
+            			.append(" *").bold(false).underlined(false);
+            	p.sendMessage(cb.create());
             });
         }
     }
@@ -1604,9 +1620,10 @@ public class GameAPI {
         pw.addExperience(expToGive, false, true);
 
         // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
-        final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-        normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
-        GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
+        ComponentBuilder cb = new ComponentBuilder(player.getName()).color(ChatColor.AQUA)
+        		.append(" voted for " + ecashReward + " ECASH & 5% EXP @ vote ").color(ChatColor.GRAY)
+        		.append("HERE").color(ChatColor.AQUA).bold(true).underlined(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
+       	sendShardMessage(cb);
     }
 
     public static void addCooldown(Metadatable m, Metadata type, int seconds) {

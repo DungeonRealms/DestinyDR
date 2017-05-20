@@ -29,107 +29,106 @@ import java.util.*;
  * @author Kneesnap
  */
 public abstract class ItemGeneric extends PersistentItem {
-
+	
 	@Getter
 	private Map<ItemData, Boolean> dataMap;
-
-    private List<String> lore;
-
-    @Getter
-    @Setter
-    private boolean antiDupe;
-
-    @Getter
-    private ItemType itemType;
-
-    @Getter
-    @Setter //Whether or not this item should be removed.
-    private boolean destroyed;
-
-    @Setter
-    @Getter
+	
+	private List<String> lore;
+	
+	@Getter
+	private boolean resetLore; // Should this lore be reset?
+	
+	@Getter @Setter
+	private boolean antiDupe;
+	
+	@Getter
+	private ItemType itemType;
+	
+	@Getter @Setter //Whether or not this item should be removed.
+	private boolean destroyed;
+	
+	@Setter @Getter
     private int price; //The price of this item. 0 marks no price.
-
-    @Setter
-    @Getter
-    private boolean showPrice = true; //Whether or not lore should be created for this price.
-
-    private long soulboundTrade = 0;
-    private List<String> soulboundAllowedTraders;
-
-    @Getter
-    private boolean glowing;
-
-    @Getter
-    private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
-    
-    @Setter @Getter // EC - Name
-    private String customName;
-    
-    @Getter @Setter
-    private String customLore;
-
-    //Tier should share the same name for consistency.
-    protected static final String TIER = "itemTier";
-
-    public ItemGeneric(ItemType type) {
-        this(null, type);
+	
+	@Setter @Getter
+	private boolean showPrice = true; //Whether or not lore should be created for this price.
+	
+	private long soulboundTrade = 0;
+	private List<String> soulboundAllowedTraders;
+	
+	@Getter
+	private boolean glowing;
+	
+	@Getter
+	private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
+	
+	@Setter @Getter // EC - Name
+	private String customName;
+	
+	@Getter @Setter
+	private String customLore;
+	
+	//Tier should share the same name for consistency.
+	protected static final String TIER = "itemTier";
+	
+	public ItemGeneric(ItemType type) {
+		this(null, type);
+	}
+	
+	public ItemGeneric(ItemStack item) {
+		this(item, getType(item));
+	}
+	
+	public ItemGeneric(ItemStack item, ItemType type) {
+		super(item);
+		this.itemType = type;
+		
+		//Alert us if anything goes awry. Attempts to delete the item. (It likely won't)
+		if (isEventItem() && !(DungeonRealms.isMaster() || DungeonRealms.isEvent())) {
+			GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Found event item on non-event shard! Found "
+					+ item.getAmount() + "x" + (item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name()));
+			setDestroyed(true);
+		}
+	}
+	
+	public boolean isPermanentUntradeable() {
+		return getSData(ItemData.PUNTRADEABLE);
+	}
+	
+	public boolean isDisplay() {
+		return getSData(ItemData.MENU);
     }
-
-    public ItemGeneric(ItemStack item) {
-        this(item, getType(item));
-    }
-
-    public ItemGeneric(ItemStack item, ItemType type) {
-        super(item);
-        this.itemType = type;
-
-        //Alert us if anything goes awry. Attempts to delete the item. (It likely won't)
-        if (isEventItem() && !(DungeonRealms.isMaster() || DungeonRealms.isEvent())) {
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Found event item on non-event shard! Found "
-                    + item.getAmount() + "x" + (item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name()));
-            setDestroyed(true);
-        }
-    }
-
-    public boolean isPermanentUntradeable() {
-        return getSData(ItemData.PUNTRADEABLE);
-    }
-
-    public boolean isDisplay() {
-        return getSData(ItemData.MENU);
-    }
-
-    public boolean isSoulbound() {
-        return getSData(ItemData.SOULBOUND);
-    }
-
-    public boolean isUndroppable() {
-        return getSData(ItemData.UNDROPPABLE);
-    }
-
-    public boolean isUntradeable() {
-        return getSData(ItemData.UNTRADEABLE);
-    }
-
-    public boolean isEventItem() {
-        return getSData(ItemData.EVENT);
-    }
-
-    public boolean isDungeon() {
-        return getSData(ItemData.DUNGEON);
-    }
-
-    public ItemGeneric setDisplay(boolean display) {
-        setData(ItemData.MENU, display);
-        return this;
-    }
-
-    public ItemGeneric setDungeon(boolean dungeon) {
-        setData(ItemData.DUNGEON, dungeon);
-        return this;
-    }
-
+	
+	public boolean isSoulbound() {
+		return getSData(ItemData.SOULBOUND);
+	}
+	
+	public boolean isUndroppable() {
+		return getSData(ItemData.UNDROPPABLE);
+	}
+	
+	public boolean isUntradeable() {
+		return getSData(ItemData.UNTRADEABLE);
+	}
+	
+	public boolean isEventItem() {
+		return getSData(ItemData.EVENT);
+	}
+	
+	public boolean isDungeon() {
+		return getSData(ItemData.DUNGEON);
+	}
+	
+	public ItemGeneric setDisplay(boolean display) {
+		setData(ItemData.MENU, display);
+		return this;
+	}
+	
+	public ItemGeneric setDungeon(boolean dungeon) {
+		setData(ItemData.DUNGEON, dungeon);
+		return this;
+	}
+	
     public ItemGeneric setPermUntradeable(boolean perm) {
         setData(ItemData.PUNTRADEABLE, perm);
         return this;
@@ -209,7 +208,6 @@ public abstract class ItemGeneric extends PersistentItem {
     public ItemStack generateItem() {
         this.meta = getStack().getItemMeta();
         ItemStack ret = super.generateItem().clone();
-        clearLore();
         return ret;
     }
 
@@ -245,34 +243,27 @@ public abstract class ItemGeneric extends PersistentItem {
                 setTagBool("showPrice", true);
                 addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
             }
-        } else {
-            if (getTagBool("price")) {
-                //Remove..
-
-            }
         }
 
         if (isGlowing())
             EnchantmentAPI.addGlow(getItem());
 
         // Ecash Name - Overrides custom names by other items.
-        String ecashName = getCustomName();
-        if (ecashName != null)
-        	getMeta().setDisplayName(ecashName);
+        // getCustomName() should ONLY be overridden to modify the EC display name, ie append [+3] to the name.
+        if (this.customName != null) {
+        	setTagString("ecName", this.customName);
+        	getMeta().setDisplayName(getCustomName());
+        }
         
-        if (getCustomLore() != null) {
-        	addLore("");
+        // Ecash Lore - Overrides custom names given by other items.
+        // getCustomLore() should ONLY be overriden to modify the EC display lore. NOT any other lore.
+        if (this.customLore != null) {
+        	setTagString("ecLore", this.customLore);
         	addLore(getCustomLore());
         }
-
-        if (this.customName != null) // Set the custom name into the lore. Don't use the getter since we want the raw name, regardless of what items override.
-        	setTagString("ecName", this.customName);
-        
-        if (getCustomLore() != null)
-        	setTagString("ecLore", getCustomLore());
         
         saveMeta();
-        resetLore = true;
+        resetLore = true; // Reset the lore if we generate again.
     }
 
     /**
@@ -312,17 +303,14 @@ public abstract class ItemGeneric extends PersistentItem {
     }
 
     protected void addLore(String s) {
-        addLore(s, false);
-    }
-
-    protected void addLore(String s, boolean reset) {
         if (this.lore == null) // Can't put above constructor as it will override any values set in loadItem
             this.lore = new ArrayList<>();
 
-        if (reset) {
+        if (resetLore) {
             this.lore.clear();
             resetLore = false;
         }
+        
         this.lore.add(ChatColor.GRAY + s);
     }
 
@@ -333,11 +321,6 @@ public abstract class ItemGeneric extends PersistentItem {
                 return;
             }
         }
-    }
-
-    public void clearLore() {
-        if (this.lore != null)
-        	this.lore.clear();
     }
 
     public boolean getSData(ItemData data) {

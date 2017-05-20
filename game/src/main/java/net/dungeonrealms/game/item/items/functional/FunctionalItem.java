@@ -40,17 +40,12 @@ public abstract class FunctionalItem extends ItemGeneric {
 
     @Override
     public void updateItem() {
-        clearLore(); // goto clear the previous b4 we add new.
         String[] lore = getLore();
         if (lore != null)
             for (String line : lore)
                 addLore(line);
-
-        //We have a custom renamed item, dont overwrite.
-        if (customDisplayName != null)
-            getMeta().setDisplayName(customDisplayName);
-        else
-            getMeta().setDisplayName(getDisplayName());
+        
+        getMeta().setDisplayName(getDisplayName());
 
         super.updateItem();
     }

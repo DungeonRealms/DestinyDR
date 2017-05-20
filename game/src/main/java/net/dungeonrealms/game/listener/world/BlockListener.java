@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukeboxGUI;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -16,6 +17,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -213,7 +215,7 @@ public class BlockListener implements Listener {
 
                 // Remove from anvil.
                 itemEntity.remove();
-                middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
+                ParticleAPI.spawnBlockParticles(middle, Material.IRON_BLOCK);
                 middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
 
                 player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");

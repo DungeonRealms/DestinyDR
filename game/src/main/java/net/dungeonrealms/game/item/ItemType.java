@@ -4,16 +4,16 @@ import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ecash.*;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
-import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.block.Jukebox;
 
 /**
  * A registry of all persistent items.
  * If an item is not registered here, it will NOT be constructable via PersistentItem.constructItem
  * @author Kneesnap
  */
+@AllArgsConstructor @Getter
 public enum ItemType {
 
 	//  COMBAT  //
@@ -74,7 +74,7 @@ public enum ItemType {
 
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),
-	ITEM_NAME_TAG("itemNameTag", ItemNameTag.class),
+	ITEM_NAME_TAG("nameTag", ItemNameTag.class),
 	JUKE_BOX("jukebox", ItemJukebox.class),
 	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),
 
@@ -84,18 +84,12 @@ public enum ItemType {
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
 	OPEN_PROFILE("profile", ItemPlayerProfile.class);
 	
-	@Getter private final String NBT;
-	@Getter private final Class<? extends PersistentItem> itemClass;
-	@Getter private GeneratedItemType type;
+	private final String NBT;
+	private final Class<? extends PersistentItem> itemClass;
+	private final GeneratedItemType type;
 	
 	ItemType(String nbt, Class<? extends PersistentItem> cls) {
 		this(nbt, cls, null);
-	}
-	
-	ItemType(String nbt, Class<? extends PersistentItem> cls, GeneratedItemType gType) {
-		this.NBT = nbt;
-		this.itemClass = cls;
-		this.type = gType;
 	}
 	
 	public static ItemType getByName(String name) {

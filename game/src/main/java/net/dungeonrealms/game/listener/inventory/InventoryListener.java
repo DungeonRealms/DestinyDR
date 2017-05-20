@@ -197,12 +197,8 @@ public class InventoryListener implements Listener {
         CommandBinsee.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
 
-    /**
-     * @param event
-     * @since 1.0 Dragging is naughty.
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDragItemInDuelWager(InventoryDragEvent event) {
+    public void onDrag(InventoryDragEvent event) {
         String title = event.getInventory().getTitle();
         if (title.contains("VS.") || title.contains("Bank")
                 || GameAPI.isShop(event.getInventory()) || title.contains("Trade")
@@ -337,28 +333,19 @@ public class InventoryListener implements Listener {
         //TODO: Don't show the same stat twice, combine the messages.
         AttributeList armorChanges = new AttributeList();
 
-        System.out.println("Old player stats:");
-        System.out.println(wp.getAttributes().toString());
-
         // Show stats for the armor being removed.
         if (hasOldArmor) {
             ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
             armorChanges.removeStats(removedArmor.getAttributes());
-            System.out.println("Applied old armor:");
-            System.out.println(armorChanges.toString());
         }
 
         // Show stats for the armor being equipped.
         if (hasNewArmor) {
             ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
             armorChanges.addStats(addedArmor.getAttributes());
-            System.out.println("Applied new armor:");
-            System.out.println(armorChanges.toString());
         }
 
-        wp.getAttributes().addStats(armorChanges);
-        System.out.println("Final player stats:");
-        System.out.println(wp.getAttributes().toString());
+        wp.calculateAllAttributes();
 
         for (AttributeType t : armorChanges.keySet()) {
             ModifierRange armorVal = armorChanges.getAttribute(t);
@@ -369,9 +356,6 @@ public class InventoryListener implements Listener {
                     + " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
                     + newVal.getValue() + t.getSuffix() + "]");
         }
-
-        //wp.calculateAllAtributes(); // 100% sure way to prevent armor stacking. Issue with this is it cancels any buffs eg/fish.
-        HealthHandler.updatePlayerHP(p);
     }
 
 
@@ -566,16 +550,5 @@ public class InventoryListener implements Listener {
                 event.setResult(Event.Result.DENY);
             }
         }
-    }
-
-    //TODO: Why do we do this?
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerDoWeirdArmorThing(InventoryClickEvent event) {
-        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (!(event.getAction() == InventoryAction.HOTBAR_SWAP)) return;
-        if (!(event.getSlotType() == InventoryType.SlotType.ARMOR)) return;
-        event.setCancelled(true);
-        event.setResult(Event.Result.DENY);
-        event.getWhoClicked().sendMessage(ChatColor.RED + "Please do not try to equip armor this way!");
     }
 }

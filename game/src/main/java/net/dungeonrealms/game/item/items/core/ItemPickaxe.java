@@ -18,8 +18,7 @@ public class ItemPickaxe extends ProfessionItem {
 	}
 	
 	public ItemPickaxe(int level) {
-		super(ItemType.PICKAXE);
-		this.setLevel(level);
+		super(ItemType.PICKAXE, level);
 	}
 	
 	public ItemPickaxe(ItemStack item) {
