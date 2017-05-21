@@ -50,11 +50,6 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
     }
 
 	@Override
-	public String[] getItems() {
-		return null;
-	}
-
-	@Override
 	public BossType getBossType() {
 		return BossType.InfernalGhast;
 	}

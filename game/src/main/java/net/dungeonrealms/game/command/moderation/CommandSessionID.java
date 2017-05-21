@@ -42,6 +42,7 @@ public class CommandSessionID extends BaseCommand {
                     }
 
                     SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_USER, 0, accountID);
+                    sender.sendMessage(ChatColor.RED + "Set online to 0 for " + uuid + " (" + accountID + ")");
                 });
 //                    UUID uuid = null;
 //                    try {

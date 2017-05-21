@@ -34,7 +34,6 @@ public enum EnumNamedElite {
     
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.STAFF_SKELETON, -411, 33, -3487, 1800, 1);
-
     @Getter private String displayName;
     @Getter private int tier;
     @Getter private EnumMonster monster;
@@ -46,7 +45,7 @@ public enum EnumNamedElite {
     
     @Getter private int respawnDelay;
     @Getter private int spread;
-    
+
     /**
      * Return the location to spawn this elite at in the main world.
      */

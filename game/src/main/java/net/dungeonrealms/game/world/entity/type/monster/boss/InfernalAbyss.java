@@ -40,10 +40,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
     }
 
-    public String[] getItems() {
-        return new String[]{"infernalstaff", "infernalhelmet", "infernalchest", "infernallegging", "infernalboot"};
-    }
-
     @Override
     public BossType getBossType() {
         return BossType.InfernalAbyss;

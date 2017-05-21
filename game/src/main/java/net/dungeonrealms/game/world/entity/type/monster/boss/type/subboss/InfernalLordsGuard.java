@@ -8,7 +8,6 @@ import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.minecraft.server.v1_9_R2.*;
-
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -58,8 +57,4 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
 		return BossType.InfernalGuard;
 	}
 
-	@Override
-	public String[] getItems() {
-		return null;
-	}
 }

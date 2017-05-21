@@ -30,10 +30,6 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
         this.fireProof = true;
     }
     
-    public String[] getItems(){
-    	return new String[] {"mayelbow", "mayelhelmet", "mayelchest", "mayelpants", "mayelboot"};
-    }
-
     /**
      * Called when entity fires a projectile.
      */
