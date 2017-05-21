@@ -436,11 +436,13 @@ public class DamageAPI {
         //  THORNS  //
         ModifierRange mr = defender.getAttributes().getAttribute(ArmorAttributeType.THORNS);
         if (mr.getValue() != 0 && !res.hasProjectile()) { // Only applies to Melee
+            //Just only deal damage, but dont cancel the current event.
             int damageFromThorns = Math.max(1, (int) Math.round(damage * (mr.getValue() / 100f)));
-            res.setDamage(damageFromThorns);
+            //We need to swap this?
             ParticleAPI.spawnBlockParticles(attacker.getEntity().getLocation(), Material.LEAVES);
-            HealthHandler.damageEntity(res);
-            return;
+            AttackResult result = new AttackResult(defender.getEntity(), attacker.getEntity());
+            result.setDamage(damageFromThorns);
+            HealthHandler.damageEntity(result);
         }
 
         //  ELEMENTAL DAMAGE  //
