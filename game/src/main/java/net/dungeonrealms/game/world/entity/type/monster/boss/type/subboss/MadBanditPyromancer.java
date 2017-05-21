@@ -33,8 +33,4 @@ public class MadBanditPyromancer extends DRWitherSkeleton implements DungeonBoss
 		return BossType.Pyromancer;
 	}
 
-	@Override
-	public String[] getItems() {
-		return null;
-	}
 }

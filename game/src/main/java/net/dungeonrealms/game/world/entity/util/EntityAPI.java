@@ -222,6 +222,7 @@ public class EntityAPI {
     public static void registerBoss(DungeonBoss boss, int level, int tier) {
         LivingEntity le = boss.getBukkit();
         Metadata.BOSS.set(le, boss.getBossType().name());
+        Metadata.CUSTOM_NAME.set(le, boss.getBossType().getName());
         registerMonster(le, level, tier);
 
         for (ItemStack item : le.getEquipment().getArmorContents())

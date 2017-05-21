@@ -21,9 +21,4 @@ public class VarengladePriest extends MeleeSkeleton implements DungeonBoss {
 	public BossType getBossType() {
 		return BossType.BurickPriest;
 	}
-
-	@Override
-	public String[] getItems() {
-		return null;
-	}
 }
