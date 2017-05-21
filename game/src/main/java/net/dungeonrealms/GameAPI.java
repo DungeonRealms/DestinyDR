@@ -862,12 +862,6 @@ public class GameAPI {
         }
         player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
-        if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
-            player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
-            PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
-            return;
-        }
-
         ShardType type = DungeonRealms.getShard().getType();
         if (!playerWrapper.getRank().isAtLeast(type.getMinRank()) && type != ShardType.DEVELOPMENT) {
             player.kickPlayer(ChatColor.RED + "You are not authorized to connect to this shard.");
@@ -979,50 +973,17 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.handleLogin(player), 70L);
 
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
-        AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED); // Remove 1.9 Combat delay.
         instance.setBaseValue(1024.0D);
+        
+        // Load Permissions.
+        for (PlayerRank pr : PlayerRank.values())
+        	if (rank.isAtLeast(pr))
+        		for (String perm : pr.getPerms())
+        			player.addAttachment(DungeonRealms.getInstance()).setPermission(perm, true);
 
-        // Permissions
-        if (!Rank.isDev(player)) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.ban.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.unban.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.op.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.save.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.whitelist.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.stop", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.spreadplayers", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.spawnpoint", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.setworldspawn", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.scoreboard", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.seed", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.time.*", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamerule", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.debug", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.reload", false);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.timings", false);
-        }
-
-        if(player.getName().equalsIgnoreCase("logon1027")) {
+        if(player.getName().equalsIgnoreCase("logon1027")) { // Unsure if we're ready to give him CM, so I'll keep him hardcoded til he gets the rank.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-        }
-
-        if (Rank.isPMOD(player)) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
-        }
-
-        if (Rank.isTrialGM(player)) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
-
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.kick", true);
-
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }

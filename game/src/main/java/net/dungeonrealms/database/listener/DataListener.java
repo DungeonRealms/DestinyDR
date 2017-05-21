@@ -2,11 +2,12 @@ package net.dungeonrealms.database.listener;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.database.PlayerWrapper;
-
 import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -28,10 +29,16 @@ public class DataListener implements Listener {
         PlayerWrapper wrapper = new PlayerWrapper(event.getUniqueId());
         PlayerWrapper.setWrapper(event.getUniqueId(), wrapper);
         wrapper.loadPunishment(false, null);
+        
+        if (!DungeonRealms.getInstance().canAcceptPlayers()) { // Can't necessarily check rank, it might not have loaded yet.
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+            		ChatColor.RED + "This shard has not finished it's startup process.");
+            return;
+        }
 
         if(wrapper.isBanned()) {
             //This will never get called. It will catch them in the lobby instead.
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.RED.toString()
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.RED.toString()
 
                     + " is banned. Your ban expires in " + ChatColor.UNDERLINE.toString() + wrapper.getTimeWhenBanExpires() + "." +
                     "\n\n" + ChatColor.RED.toString()
@@ -59,9 +66,6 @@ public class DataListener implements Listener {
         }
 
         DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
-
-        // REQUEST PLAYER'S DATA ASYNC //
-//        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -102,7 +102,7 @@ public enum ItemType {
 	 */
 	public boolean isSimple() {
 		try {
-			return getItemClass().getDeclaredConstructor(ItemStack.class) != null && getType() != null;
+			return getItemClass().getDeclaredConstructor() != null && getType() == null;
 		} catch (Exception e) {
 			return false;
 		}
@@ -114,7 +114,7 @@ public enum ItemType {
 	 */
 	public PersistentItem makeSimple() {
 		try {
-			return getItemClass().getDeclaredConstructor(ItemStack.class).newInstance((ItemStack) null);
+			return getItemClass().getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Bukkit.getLogger().warning("Failed to create " + name() + " as simple item.");

@@ -1,11 +1,15 @@
 package net.dungeonrealms.game.item.items.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,6 +38,8 @@ public class ShopItem extends ItemGeneric {
 
     @Getter
     private ShopItemClick callback;
+    
+    protected List<String> originalLore = new ArrayList<>();
 
     public ShopItem(ItemStack item) {
         super(item);
@@ -49,6 +55,9 @@ public class ShopItem extends ItemGeneric {
 
     public ShopItem(ItemGeneric purchase, ShopItemClick cb) {
         super(ItemType.SHOP);
+        this.originalLore = purchase.generateItem().getItemMeta().getLore();
+        if (this.originalLore != null)
+        	this.originalLore = new ArrayList<>();
         this.soldItem = purchase;
         this.callback = cb;
         setData(ItemData.MENU, true);
@@ -75,10 +84,14 @@ public class ShopItem extends ItemGeneric {
 
     @Override
     public void updateItem() {
+    	if (this.originalLore != null)
+    		this.originalLore.forEach(this::addLore);
+    	
         if (getECashCost() > 0) {
             addLore(ChatColor.WHITE + "" + getECashCost() + ChatColor.GREEN + " E-Cash");
             setTagInt("eCash", getECashCost());
         }
+        
         if (getShards() > 0) {
             addLore(ChatColor.WHITE + "" + getShards() + getShardTier().getColor() + " Portal Key Shards");
             setTagInt("shardTier", getShardTier().getTier());

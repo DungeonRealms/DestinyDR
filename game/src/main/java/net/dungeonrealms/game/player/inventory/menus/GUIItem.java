@@ -89,7 +89,8 @@ public class GUIItem extends ShopItem {
     }
 
     public GUIItem setLore(List<String> lore) {
-        lore.forEach(this::addLore);
+    	if (lore != null)
+    		lore.forEach(this.originalLore::add);
         return this;
     }
 }

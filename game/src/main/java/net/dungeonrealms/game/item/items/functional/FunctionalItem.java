@@ -46,7 +46,6 @@ public abstract class FunctionalItem extends ItemGeneric {
                 addLore(line);
         
         getMeta().setDisplayName(getDisplayName());
-
         super.updateItem();
     }
 
@@ -61,9 +60,8 @@ public abstract class FunctionalItem extends ItemGeneric {
         	return;
 
         //Check that the FunctionalItem is not null, and that the usagetype supplied is allowed for this item.
-        if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage())) {
+        if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage()))
             return;
-        }
 
         try {
             ice.handle();

@@ -62,8 +62,7 @@ public interface DungeonBoss extends DRMonster {
     }
 
     @Override
-    default void onMonsterAttack(Player p) {
-    }
+    default void onMonsterAttack(Player p) {}
 
     @Override
     default void onMonsterDeath(Player killer) {
@@ -81,7 +80,7 @@ public interface DungeonBoss extends DRMonster {
 
     @Override
     default int getTier() {
-        return getBossType().getType().getTier();
+        return getDungeon().getType().getTier();
     }
 
     default Entity spawnMinion(EnumMonster monsterType, String mobName, int tier) {

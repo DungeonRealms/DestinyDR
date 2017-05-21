@@ -167,22 +167,25 @@ public class Rank {
         SUB_PLUS("S+", ChatColor.GOLD, "Subscriber+"),
         SUB_PLUS_PLUS("S++",ChatColor.YELLOW, "Subscriber++"),
         BUILDER("BLD", ChatColor.DARK_GREEN, "Builder"),
-        YOUTUBER("YOUTUBER", ChatColor.RED, "YouTuber"),
+        PARTNER("PTNR", ChatColor.DARK_GREEN, "Partner"),
+        YOUTUBER("YT", ChatColor.RED, "YouTuber"),
         HIDDEN_MOD("S+", ChatColor.GREEN, "Subscriber"),
-        PMOD("PMOD", ChatColor.WHITE, "Player Moderator"),
-        TRIALGM("GM", ChatColor.AQUA, "Trial Game Master"),
+        PMOD("PMOD", ChatColor.WHITE, "Player Moderator", "nocheatplus.notify", "nocheatplus.command.notify", "nocheatplus.command.info", "nocheatplus.command.inspect"),
+        TRIALGM("GM", ChatColor.AQUA, "Trial Game Master", "nocheatplus.checks", "nocheatplus.bypass.denylogin", "essentials.*", "nocheatplus.bypass.denylogin", "bukkit.command.teleport", "minecraft.command.tp"),
         GM("GM", ChatColor.AQUA, "Game Master"),
+        CM("CM", ChatColor.AQUA, "Community Manager"),
         HEADGM("GM", ChatColor.AQUA, "Head Game Master"),
         SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
-        DEV("DEV", ChatColor.DARK_AQUA, "Developer");
+        DEV("DEV", ChatColor.DARK_AQUA, "Developer", "bukkit.command.*");
 
         private String prefix;
         @Getter private ChatColor chatColor;
         private ChatColor prefixColor;
         private String displayPrefix;
+        @Getter private String[] perms;
         
-        PlayerRank(String prefix, ChatColor color, String fullPrefix) {
-        	this(prefix, color, color, fullPrefix);
+        PlayerRank(String prefix, ChatColor color, String fullPrefix, String... perms) {
+        	this(prefix, color, color, fullPrefix, perms);
         }
         
         public boolean isSUB() {

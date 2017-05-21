@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,23 +35,25 @@ import java.util.List;
 @AllArgsConstructor @Getter
 public enum DungeonType {
     BANDIT_TROVE("Bandit Trove", "banditTrove", StatColumn.BOSS_KILLS_MAYEL,
-            BanditTrove.class, null, BossType.Mayel,
-            EnumMounts.WOLF, 1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE),
+            BanditTrove.class, null, EnumMounts.WOLF,
+            1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE,
+            l(BossType.Mayel, BossType.Pyromancer)),
 
     VARENGLADE("Varenglade", "varenglade", StatColumn.BOSS_KILLS_BURICK,
-            Varenglade.class, VarengladeListener.class, BossType.Burick,
-            EnumMounts.SLIME, 3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE),
+            Varenglade.class, VarengladeListener.class, EnumMounts.SLIME,
+            3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE,
+            l(BossType.Burick, BossType.BurickPriest)),
 
     THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss", StatColumn.BOSS_KILLS_INFERNALABYSS,
-            InfernalAbyss.class, InfernalListener.class, BossType.InfernalAbyss,
-            EnumMounts.SPIDER, 4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS);
+            InfernalAbyss.class, InfernalListener.class, EnumMounts.SPIDER,
+            4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
+            l(BossType.InfernalAbyss, BossType.InfernalGhast, BossType.InfernalGuard));
 
     private String name;
     private String internalName;
     private StatColumn stat;
     private Class<? extends Dungeon> dungeonClass;
     private Class<? extends Listener> listenerClass;
-    private BossType boss;
     private EnumMounts mount;
     private int tier;
     private int minShards;
@@ -59,6 +62,14 @@ public enum DungeonType {
     private int maxGems;
     private int XP;
     private EnumAchievements achievement;
+    private BossType[] bosses;
+    
+    /**
+     * Get the final boss for this dungeon.
+     */
+    public BossType getBoss() {
+    	return Arrays.stream(getBosses()).filter(BossType::isFinalBoss).findAny().orElse(null);
+    }
 
     /**
      * Gets a random number of gems in the allowed range.
@@ -141,5 +152,9 @@ public enum DungeonType {
             if (d.getInternalName().equalsIgnoreCase(internalName))
                 return d;
         return null;
+    }
+    
+    private static BossType[] l(BossType... a) {
+    	return a;
     }
 }

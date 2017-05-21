@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;

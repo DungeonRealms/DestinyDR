@@ -18,10 +18,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
-@Getter
-@Setter
+@Getter @Setter
 public class DonationEffects implements GenericMechanic {
 
     @Getter
@@ -31,8 +29,6 @@ public class DonationEffects implements GenericMechanic {
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";
-
-    private static Random random = ThreadLocalRandom.current();
 
     @Override
     public EnumPriority startPriority() {

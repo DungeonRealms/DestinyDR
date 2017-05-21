@@ -33,12 +33,12 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 	
 	public ItemTeleportBook(ItemStack item) {
 		super(item);
-		setTeleportLocation(TeleportLocation.valueOf(getTagString("location")));
+		setTeleportLocation(getEnum("location", TeleportLocation.class));
 	}
 	
 	@Override
 	public void updateItem() {
-		setTagString("location", getTeleportLocation().name());
+		setEnum("location", getTeleportLocation());
 		super.updateItem();
 	}
 

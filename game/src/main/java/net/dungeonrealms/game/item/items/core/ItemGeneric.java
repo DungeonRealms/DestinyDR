@@ -59,7 +59,7 @@ public abstract class ItemGeneric extends PersistentItem {
 	private boolean glowing;
 	
 	@Getter
-	private ItemMeta meta = new ItemStack(Material.DIRT).getItemMeta().clone(); //Default ItemMeta
+	private ItemMeta meta;
 	
 	@Setter @Getter // EC - Name
 	private String customName;
@@ -166,8 +166,8 @@ public abstract class ItemGeneric extends PersistentItem {
 
     @Override
     protected void loadItem() {
-        this.meta = getItem().getItemMeta();
-
+    	this.meta = new ItemStack(Material.DIRT).getItemMeta();
+    	
         for (ItemData data : ItemData.values())
             setData(data, getTagBool(data.getNBTTag()));
 
@@ -219,7 +219,7 @@ public abstract class ItemGeneric extends PersistentItem {
             boolean enabled = getSData(data);
             setTagBool(data.getNBTTag(), enabled);
 
-            if (data.getDisplay() != null && enabled)
+            if (data.getDisplay() != null && enabled && (lore == null || !lore.contains(ChatColor.GRAY + data.getDisplay())))
                 addLore(data.getDisplay());
         }
 

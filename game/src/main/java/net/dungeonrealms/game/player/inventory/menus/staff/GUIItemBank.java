@@ -25,7 +25,7 @@ public class GUIItemBank extends GUIMenu {
 	@Override
 	protected void setItems() {
 		for (ItemType s : getSimple())
-			addItem(new GUIItem(s.makeSimple().generateItem()).setClick(ice -> player.getInventory().addItem(ice.getCurrentItem())));
+			addItem(new GUIItem(s.makeSimple().generateItem()).setClick(ice -> player.getInventory().addItem(s.makeSimple().generateItem())));
 	}
 	
 	private static List<ItemType> getSimple() {
