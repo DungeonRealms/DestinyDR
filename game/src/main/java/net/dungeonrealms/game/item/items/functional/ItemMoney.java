@@ -46,7 +46,6 @@ public abstract class ItemMoney extends FunctionalItem {
 		assert getMaxStorage() >= value && value >= 0;
 		if (value == 0 && doesDestroyOnEmpty())
 			setDestroyed(true);
-		this.getItem().setAmount(value);
 		this.gemValue = value;
 	}
 	
