@@ -46,12 +46,14 @@ public abstract class Dungeon {
     private DungeonType type;
     private int time;
     private int killCount;
-    private List<Entity> aliveMonsters = new ArrayList<>();
+//    private Set<Entity> aliveMonsters = new ConcurrentSet<>();
     private Map<Entity, Location> trackedMonsters = new ConcurrentHashMap<>();
     private Set<MobSpawner> spawns = new ConcurrentSet<>();
     private List<BossType> spawnedBosses = new ArrayList<>();
     private World world;
     private boolean taunted;
+    @Getter
+    @Setter
     private int maxMobCount;
     private DungeonBoss boss;
     @Setter
@@ -95,6 +97,10 @@ public abstract class Dungeon {
 
         // Load spawns.
         this.spawns = DungeonManager.getSpawns(getWorld(), getType());
+
+        for(MobSpawner spawner : spawns){
+            maxMobCount += spawner.getSpawnAmount();
+        }
 //        startDungeon();
     }
 
@@ -304,7 +310,7 @@ public abstract class Dungeon {
     public void updateMob(Entity e) {
         if (!e.isDead() && !e.isEmpty())
             return;
-        getAliveMonsters().remove(e);
+        getTrackedMonsters().remove(e);
         increaseKillCount();
     }
 
@@ -326,7 +332,7 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-        return Math.max(0, (int) (getAliveMonsters().size() * 0.8D) - getKillCount());
+        return Math.max(0, (int) (getTrackedMonsters().size() * 0.8D) - getKillCount());
     }
 
     /**

@@ -64,7 +64,7 @@ public class DungeonManager implements GenericMechanic {
         
         // Update mobs
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> 
-        	getDungeons().forEach(d -> d.getAliveMonsters().forEach(d::updateMob)), 200L, 10L);
+        	getDungeons().forEach(d -> d.getTrackedMonsters().keySet().forEach(d::updateMob)), 200L, 10L);
         
         // Spawns dungeon mobs every few half a second.
     	Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
@@ -189,8 +189,8 @@ public class DungeonManager implements GenericMechanic {
     private void updateActionBar(Dungeon dungeon) {
     	for (Player p : dungeon.getAllPlayers()) {
     		TitleAPI.sendActionBar(p, ChatColor.AQUA + "Time: " + ChatColor.GOLD
-    				+ (dungeon.getTime() / 1200) + "/" + MAX_DUNGEON_TIME + " " + ChatColor.AQUA
-    				+ "Alive: " + ChatColor.RED + dungeon.getKillCount() + ChatColor.GRAY + "/" + ChatColor.GRAY + dungeon.getMaxMobCount());
+    				+ (dungeon.getTime() / 1200) + "/" + MAX_DUNGEON_TIME + "m " + ChatColor.AQUA
+    				+ "Alive: " + ChatColor.RED + (dungeon.getMaxMobCount() - dungeon.getKillCount()) + ChatColor.GRAY + "/" + ChatColor.GRAY + dungeon.getMaxMobCount());
     	}
     }
     
