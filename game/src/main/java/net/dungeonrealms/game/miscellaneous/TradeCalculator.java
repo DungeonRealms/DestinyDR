@@ -146,8 +146,8 @@ public class TradeCalculator {
         		ItemStack scrap = new ItemScrap(ScrapTier.getScrapTier(Math.max(2, t.getId() - 1))).generateItem();
         		int giveScrap = (int) (currentOre * Math.max(0.5D, Math.pow(2, -t.getId() + 2)));
         		while (giveScrap > 0) {
-        			int sub = Math.min(currentOre, 64);
-        			currentOre -= sub;
+        			int sub = Math.min(giveScrap, 64);
+        			giveScrap -= sub;
         			ItemStack add = scrap.clone();
         			add.setAmount(sub);
         			items.add(add);

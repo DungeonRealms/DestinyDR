@@ -110,14 +110,17 @@ public class CommandStore extends BaseCommand {
                                 items.add(new ItemProtectionScroll(tier).generateItem());
                             } else if (scrollType.equals("mining") || scrollType.equals("pick") || scrollType.equals("pickaxe")) {
                                 if (args.length >= 5) {
-                                    items.add(new ItemEnchantPickaxe(PickaxeAttributeType.valueOf(args[4].toUpperCase())).generateItem());
+                                	ItemEnchantPickaxe pick = new ItemEnchantPickaxe();
+                                	pick.addEnchant(PickaxeAttributeType.valueOf(args[4].toUpperCase()));
+                                    items.add(pick.generateItem());
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
                                 }
                             } else if (scrollType.equals("fishing") || scrollType.equals("fish") || scrollType.equals("rod") || scrollType.equals("fishingrod")) {
                                 if (args.length >= 5) {
-                                    ItemEnchantFishingRod rod = new ItemEnchantFishingRod(FishingAttributeType.valueOf(args[4].toUpperCase()));
-                                    items.add(new ItemEnchantFishingRod(FishingAttributeType.valueOf(args[4].toUpperCase())).generateItem());
+                                    ItemEnchantFishingRod rod = new ItemEnchantFishingRod();
+                                    rod.addEnchant(FishingAttributeType.valueOf(args[4].toUpperCase()));
+                                    items.add(rod.generateItem());
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
                                 }

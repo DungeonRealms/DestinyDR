@@ -38,9 +38,8 @@ public class ParticleEffectGUI extends GUIMenu {
         for (ParticleAPI.ParticleEffect effect : ParticleAPI.ParticleEffect.values()) {
             List<String> lore = Lists.newArrayList();
 
-            if (effect == ParticleAPI.ParticleEffect.GOLD_BLOCK) {
+            if (effect == ParticleAPI.ParticleEffect.GOLD_BLOCK)
                 lore.addAll(Purchaseables.GOLDEN_CURSE.getDescription(true));
-            }
 
             boolean activated = wrapper.getActiveTrail() == effect;
             lore.add("");

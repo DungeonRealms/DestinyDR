@@ -301,7 +301,12 @@ public abstract class ItemGeneric extends PersistentItem {
         return !isSoulbound() || (this.soulboundTrade > System.currentTimeMillis() && this.soulboundAllowedTraders.contains(p.getName()));
     }
 
-    protected void addLore(String s) {
+    /**
+     * Adds lore to this item. * SHOULD ONLY BE CALLED DURING updateItem() *
+     * Automatically applies gray at the start of the string.
+     * @param s
+     */
+    public void addLore(String s) {
         if (this.lore == null) // Can't put above constructor as it will override any values set in loadItem
             this.lore = new ArrayList<>();
 

@@ -109,22 +109,26 @@ public class GUIItemEditor extends GUIMenu {
 				}));
 		
 		// Rarity
-		addItem(new GUIItem(gear.getRarity().getMaterial())
-			.setName(ChatColor.AQUA + "Set Rarity")
-			.setLore("Current Rarity: " + gear.getRarity().getName())
-			.setClick(e -> {
-				player.sendMessage(ChatColor.YELLOW + "Please enter the rarity of this item.");
-				Chat.listenForMessage(player, evt -> {
-					ItemRarity ir = ItemRarity.getByName(evt.getMessage());
-					if (ir == null) {
-						player.sendMessage(ChatColor.RED + "Unknown tier.");
-					} else {
-						gear.setRarity(ir);
-						player.sendMessage(ChatColor.GREEN + "Rarity updated.");
-					}
-					open();
-				}, this::open);
+		if (gear.getRarity() != null) {
+			addItem(new GUIItem(gear.getRarity().getMaterial())
+				.setName(ChatColor.AQUA + "Set Rarity")
+				.setLore("Current Rarity: " + gear.getRarity().getName())
+				.setClick(e -> {
+					player.sendMessage(ChatColor.YELLOW + "Please enter the rarity of this item.");
+					Chat.listenForMessage(player, evt -> {
+						ItemRarity ir = ItemRarity.getByName(evt.getMessage());
+						if (ir == null) {
+							player.sendMessage(ChatColor.RED + "Unknown tier.");
+						} else {
+							gear.setRarity(ir);
+							player.sendMessage(ChatColor.GREEN + "Rarity updated.");
+						}
+						open();
+					}, this::open);
 			}));
+		} else {
+			skipSlot(1);
+		}
 		
 		skipSlot(1);
 		

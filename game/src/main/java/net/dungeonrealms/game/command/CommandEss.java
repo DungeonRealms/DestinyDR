@@ -12,12 +12,14 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -217,7 +219,7 @@ public class CommandEss extends BaseCommand {
                         ParticleEffect trail = ParticleEffect.getByName(trailType);
                         String trailFriendly = trailType.toUpperCase().replace("_", " ");
 
-                        if (!GameAPI.isStringTrail(trailType)) {
+                        if (ParticleAPI.ParticleEffect.getByName(trailType) == null) {
                             commandSender.sendMessage(ChatColor.RED + "The trail " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " does not exist.");
                             return false;
                         }

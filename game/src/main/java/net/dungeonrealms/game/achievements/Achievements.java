@@ -9,9 +9,11 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -87,7 +89,8 @@ public class Achievements {
             GameAPI.addCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN, 1);
         }
 
-        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 10);
+        ParticleAPI.spawnParticle(Particle.TOWN_AURA, player.getLocation().add(0, 2, 0), 10, 1F);
+        
         if (achievement.getReward() > 0)
             wrapper.addExperience(achievement.getReward(), false, true);
 

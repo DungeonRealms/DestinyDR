@@ -5,6 +5,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.minecraft.server.v1_9_R2.*;
 
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 public class SpiderMount extends EntitySpider implements JumpingMount {
@@ -67,7 +68,7 @@ public class SpiderMount extends EntitySpider implements JumpingMount {
             floatTicks++;
             this.motY = .185D;
             this.floatCooldown = System.currentTimeMillis() + 2000;
-            ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.SMOKE_NORMAL, getBukkitEntity(), 0.0F, 0.0F, 0.0F, 0.01F, 3);
+            ParticleAPI.spawnParticle(Particle.SMOKE_NORMAL, getBukkitEntity().getLocation(), 0D, 0D, 0D, 3, 1F);
         } else {
             this.motY = 0.5D;    // Default jump.
         }

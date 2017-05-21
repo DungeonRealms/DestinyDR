@@ -12,6 +12,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Particle;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -28,12 +29,12 @@ public class TradeManager implements GenericMechanic {
 	public void startInitialization() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for(Trade trade : trades){
-                if(trade.p1 != null && trade.p1.isOnline()){
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, trade.p1.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
-                }
-                if(trade.p2 != null && trade.p2.isOnline()){
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, trade.p2.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
-                }
+                if(trade.p1 != null && trade.p1.isOnline())
+                	ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, trade.p1.getLocation().add(0, 2.05, 0), 5, .001F);
+                
+                if(trade.p2 != null && trade.p2.isOnline())
+                	ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, trade.p2.getLocation().add(0, 2.05, 0), 5, .001F);
+                
             }
         }, 20, 20);
 	}

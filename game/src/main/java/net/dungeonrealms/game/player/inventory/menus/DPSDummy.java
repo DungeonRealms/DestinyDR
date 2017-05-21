@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
@@ -100,6 +102,6 @@ public class DPSDummy {
     public void destroy() {
         ItemDPSDummy.dpsDummies.remove(entity);
         entity.remove();
-        ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.CRIT, location.clone().add(0, 1, 0), .5F, .5F, .5F, 1F, 30);
+        ParticleAPI.spawnParticle(Particle.CRIT, location.clone().add(0, 1, 0), .5F, 30, 1F);
     }
 }

@@ -3,7 +3,6 @@ package net.dungeonrealms.game.player.inventory.menus.guis.support;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
-import net.dungeonrealms.game.player.support.Support;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,7 +13,7 @@ import org.bukkit.entity.Player;
 public class BankSupportGUI extends SupportGUI {
 
     public BankSupportGUI(Player viewer, String other) {
-        super(viewer,other,45,other + "'s Bank Management");
+        super(viewer, other, 45, other + "'s Bank Management");
     }
 
     @Override

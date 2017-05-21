@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.item.items.core;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.game.item.ItemType;

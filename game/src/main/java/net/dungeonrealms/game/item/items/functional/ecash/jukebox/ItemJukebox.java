@@ -78,17 +78,11 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                         }
 
                         CompletableFuture.runAsync(() -> {
-                            Random r = ThreadLocalRandom.current();
-                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(0.50, 0.95, 0.50),
-                                    r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.5F, 40);
-                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(1.50, 1, 0.50),
-                                    r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.02F, 2);
-                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(-1.50, 1, 0.50),
-                                    r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.02F, 2);
-                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(0.50, 1, 1.50),
-                                    r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.02F, 2);
-                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.NOTE, block.getLocation().add(0.50, 1, -1.50),
-                                    r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.02F, 2);
+                            ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(.5, .95, .5), 40, .5F);
+                            ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(.5, 1, 1.5), 2, .02F);
+                            ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(.5, 1, -1.5), 2, .02F);
+                            ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(1.5, 1, .5), 2, .02F);
+                            ParticleAPI.spawnParticle(Particle.NOTE, block.getLocation().add(-1.5, 1, .5), 2, .02F);
                         }, ForkJoinPool.commonPool());
                     });
                 }

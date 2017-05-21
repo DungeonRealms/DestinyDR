@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.mastery;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
@@ -123,6 +126,15 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	}
 	
 	/**
+	 * Override a stat value.
+	 * @param t
+	 * @param range
+	 */
+	public void setStat(AttributeType t, ModifierRange range) {
+		this.put(t, range.clone());
+	}
+	
+	/**
 	 * Sets the value of a static attribute type.
 	 * Does not work on ranged attributes.
 	 */
@@ -153,11 +165,27 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
         }
 	}
 
-	public void save(NBTTagCompound tag) {
-		NBTTagCompound attr = new NBTTagCompound();
-		for (AttributeType type : getAttributes())
-			getAttribute(type).save(attr, type.getNBTName());
-		tag.set("itemAttributes", attr);
+	/**
+	 * Apply these attributes to this item.
+	 * @parma meta
+	 * @param tag
+	 */
+	public void save(ItemGeneric item) {
+		NBTTagCompound nbt = new NBTTagCompound();
+		
+		// Sort
+		List<AttributeType> attr = new ArrayList<>(getAttributes());
+		Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
+		
+		// Save
+		for (AttributeType type : attr) {
+			ModifierRange range = getAttribute(type);
+			range.save(nbt, type.getNBTName()); // Save to NBT.
+			item.addLore(type.getPrefix() + range.toString() + type.getSuffix()); // Apply lore.
+		}
+		
+		// Write NBT to item.
+		item.getTag().set("itemAttributes", nbt);
 	}
 	
 	public void load(NBTTagCompound tag, AttributeType[] types) {

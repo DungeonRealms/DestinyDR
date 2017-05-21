@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
@@ -14,10 +15,12 @@ import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -99,7 +102,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
                 count++;
                 if (count < max) {
                     player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING" + ChatColor.WHITE + " ... " + (max - count) + ChatColor.BOLD + "s");
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
+                    ParticleAPI.spawnParticle(Particle.SPELL, player.getLocation(), 1F, 0F, 1F, 40, .1F);
                 } else {
                     MountUtils.spawnMount(player, mountType, pw.getActiveMountSkin());
                     cancel();

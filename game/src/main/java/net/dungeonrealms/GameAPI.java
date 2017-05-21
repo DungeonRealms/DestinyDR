@@ -1149,17 +1149,6 @@ public class GameAPI {
     }
 
     /**
-     * Returns the string is a Particle Trail
-     *
-     * @param trailType
-     * @return boolean
-     * @since 1.0
-     */
-    public static boolean isStringTrail(String trailType) {
-        return ParticleAPI.ParticleEffect.getByName(trailType.toUpperCase()) != null;
-    }
-
-    /**
      * Returns if the entity is an actual player and not a Citizens NPC
      */
     public static boolean isPlayer(Entity entity) {

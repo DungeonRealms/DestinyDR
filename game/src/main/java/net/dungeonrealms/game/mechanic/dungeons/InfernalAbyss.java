@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -17,6 +17,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -94,8 +95,8 @@ public class InfernalAbyss extends Dungeon {
 					Location l = e.getLocation();
 					if (l.getBlock().getType() == Material.AIR)
 						l.getBlock().setType(Material.FIRE);
-						
-					if (ThreadLocalRandom.current().nextInt(20) == 0)
+					
+					if (Utils.randInt(20) == 0)
 						EntityAPI.spawnCustomMonster(l.clone().add(0, 2, 0), EnumMonster.MagmaCube, "low", 3, null);
 				}
 			}, 0L, 5L);
@@ -124,7 +125,7 @@ public class InfernalAbyss extends Dungeon {
 		private void destroyDebuff(Entity e) {
 			InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(e.getWorld());
 			Block block = e.getLocation().clone().subtract(0, 1, 0).getBlock();
-			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT_MAGIC, block.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 50);
+			ParticleAPI.spawnParticle(Particle.CRIT_MAGIC, block.getLocation().add(0, 1, 0), 50, 1F);
 	        
 			if (block.getType() == Material.BEDROCK)
 				block.setType(Material.AIR);
@@ -186,7 +187,7 @@ public class InfernalAbyss extends Dungeon {
 			} else if (name.equals("The Annihilator")) {
 				stack = getKey("B");
 			}
-			ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F, .75F, .75F, .06F, 50);
+			ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F,  50, .06F);
         	entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
 		} else if (name.equals("Fire Lord Of The Abyss")) {
 			stack = ItemGenerator.getNamedItem("firelord");

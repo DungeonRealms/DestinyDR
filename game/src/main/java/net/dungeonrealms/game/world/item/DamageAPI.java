@@ -228,11 +228,9 @@ public class DamageAPI {
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
 
             if (ea == ElementalAttribute.FIRE) {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, defender.getLocation(),
-                        ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
-
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, defender.getLocation(),
-                        ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1f, 10);
+            	ParticleAPI.spawnParticle(Particle.FLAME, defender.getLocation(), 10, 0.5F);
+            	ParticleAPI.spawnParticle(Particle.SPELL, defender.getLocation(), 10, 1F);
+            	
                 final int[] FIRE_TICKS = new int[]{15, 25, 30, 35, 40};
                 defender.setFireTicks(FIRE_TICKS[tier - 1]);
             } else {
@@ -403,7 +401,7 @@ public class DamageAPI {
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
             }
             removeElementalEffects(defender.getEntity());
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getEntity().getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
+            ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
             res.setResult(DamageResultType.DODGE);
             return;
         } else if (blockRoll < blockChance - accuracy) {
@@ -412,7 +410,7 @@ public class DamageAPI {
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
             }
             removeElementalEffects(defender.getEntity());
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, defender.getEntity().getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 10);
+            ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
             res.setResult(DamageResultType.BLOCK);
             return;
         }

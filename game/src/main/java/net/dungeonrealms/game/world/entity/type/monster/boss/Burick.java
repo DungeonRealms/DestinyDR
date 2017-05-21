@@ -14,6 +14,7 @@ import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -80,7 +81,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         
         if (getPercentHP() <= 0.5F && canAddsRespawn) {
         	spawnWave();
-        	ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, getBukkitEntity().getLocation(), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+        	ParticleAPI.spawnParticle(Particle.SPELL, getBukkitEntity().getLocation(), 100, 1F);
         	getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
         	setVulnerable(false);
         	say("To me, my undead brethren! Rip these Andalucians to pieces!");

@@ -13,6 +13,7 @@ import net.minecraft.server.v1_9_R2.EntityExperienceOrb;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
@@ -101,12 +102,8 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
             player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "❢ LOW ENERGY ❢", 4 * 20);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 40);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "â�¢ LOW ENERGY â�¢", 4 * 20);
+            ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1, 0), 40, .75F);
             return;
         }
         if (player.hasMetadata("lastAttack")) {

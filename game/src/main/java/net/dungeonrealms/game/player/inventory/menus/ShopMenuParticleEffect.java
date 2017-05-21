@@ -21,9 +21,8 @@ public class ShopMenuParticleEffect extends ShopMenu {
 	@Override
 	protected void setItems() {
 		for (ParticleEffect effect : ParticleEffect.values()) {
-			if (effect.getPrice() < 0)
+			if (!effect.isEnabled())
 				continue;
-			if(effect.isTrail() || effect.getPrice() < 0)continue;
 
             addItem(new ItemParticleSelector(effect)).setOnClick((p, s) -> {
             	PlayerWrapper pw = PlayerWrapper.getWrapper(p);

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.quests;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -18,9 +19,11 @@ import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -59,9 +62,8 @@ public class Quests implements GenericMechanic {
     }
 
     private void spawnQuestParticles() {
-        for (QuestNPC npc : this.npcStore.getList()){
-            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, npc.getLocation(), 0.5F, 1, 0.5F, .01F, 6);
-        }
+    	npcStore.getList().forEach(npc ->
+    			ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), .5F, 1, .5F, 6, .01F));
     }
 
     public void updateGlow(Player player) {

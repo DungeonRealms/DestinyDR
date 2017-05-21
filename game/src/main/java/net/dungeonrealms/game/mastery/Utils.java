@@ -142,6 +142,10 @@ public class Utils {
     public static String format(int number) {
         return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
+    
+    public static int randInt(int max) {
+    	return randInt(0, max - 1);
+    }
 
     public static int randInt(int min, int max) {
         return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;

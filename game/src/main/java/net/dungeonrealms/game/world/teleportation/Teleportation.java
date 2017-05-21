@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.world.teleportation;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -13,6 +15,7 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveUseHearthStone;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -39,9 +42,14 @@ public class Teleportation implements GenericMechanic {
     public static Location Underworld;
     public static Location Overworld;
 
+    @AllArgsConstructor @Getter
     public enum EnumTeleportType {
-        HEARTHSTONE,
-        TELEPORT_BOOK;
+        HEARTHSTONE(Particle.SPELL, Particle.SPELL, 10),
+        TELEPORT_BOOK(Particle.SPELL_WITCH, Particle.PORTAL, 5);
+        
+        private Particle particleA;
+        private Particle particleB;
+        private int tickDelay;
     }
 
     @Override
@@ -74,40 +82,24 @@ public class Teleportation implements GenericMechanic {
      */
     public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, TeleportLocation location) {
         Player player = Bukkit.getPlayer(uuid);
-        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
-            if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
-            }
+        if (!GameAPI.isMainWorld(player.getWorld()))
             return;
-        }
+        
         TeleportAPI.addPlayerCurrentlyTeleporting(uuid, player.getLocation());
         
-        if (teleportType == EnumTeleportType.HEARTHSTONE)
+        if (teleportType == EnumTeleportType.HEARTHSTONE) {
         	location = TeleportLocation.valueOf(TeleportAPI.getLocationFromDatabase(uuid).toUpperCase());
-
-        assert location != null;
+        } else {
+        	player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
+            player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
+        }
 
         String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + location.getDisplayName();
 
         player.sendMessage(message);
 
-        ParticleAPI.ParticleEffect[] particleEffect = new ParticleAPI.ParticleEffect[2];
-        final int[] taskTimer = {7};
-        switch (teleportType) {
-            case HEARTHSTONE:
-                particleEffect[0] = ParticleAPI.ParticleEffect.SPELL;
-                particleEffect[1] = ParticleAPI.ParticleEffect.SPELL;
-                taskTimer[0] = 10;
-                break;
-            case TELEPORT_BOOK:
-                particleEffect[0] = ParticleAPI.ParticleEffect.SPELL_WITCH;
-                particleEffect[1] = ParticleAPI.ParticleEffect.PORTAL;
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
-                player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
-                taskTimer[0] = 5;
-                break;
-        }
+        final int[] taskTimer = {teleportType.getTickDelay()}; 
 
         Location startingLocation = player.getLocation();
         final boolean[] hasCancelled = {false};
@@ -117,25 +109,22 @@ public class Teleportation implements GenericMechanic {
                 if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                     if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
-                        try {
-                            ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 1F, 250);
-                            ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 4F, 400);
-                        } catch (Exception e) {
-                            Utils.log.info("[TELEPORT] Tried to send particle to player and failed. Continuing");
-                        }
+                        ParticleAPI.spawnParticle(teleportType.getParticleA(), player.getLocation(), 250, 1F);
+                        ParticleAPI.spawnParticle(teleportType.getParticleB(), player.getLocation(), 400, 4F);
+                        
                         if (taskTimer[0] <= 0) {
+                        	if (teleportType == EnumTeleportType.HEARTHSTONE)
+                                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
+                        	
                             if (CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
-                                if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                                    TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
-                                }
                             } else {
                                 player.teleport(teleportTo.getLocation());
-                                if (teleportType == EnumTeleportType.HEARTHSTONE)
-                                    TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
                             }
+                            
                             TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
                         }
+                        
                         taskTimer[0]--;
                     } else {
                         hasCancelled[0] = true;
@@ -143,7 +132,7 @@ public class Teleportation implements GenericMechanic {
                             player.removePotionEffect(PotionEffectType.BLINDNESS);
                             player.removePotionEffect(PotionEffectType.CONFUSION);
                         }
-                        player.sendMessage(ChatColor.RED + "Your teleport was canceled!");
+                        player.sendMessage(ChatColor.RED + "Your teleport was cancelled!");
                         if (teleportType == EnumTeleportType.HEARTHSTONE) {
                             TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
                         }

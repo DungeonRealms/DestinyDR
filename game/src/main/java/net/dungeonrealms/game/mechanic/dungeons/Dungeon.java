@@ -234,7 +234,7 @@ public abstract class Dungeon {
         winner.playSound(winner.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
         winner.getInventory().addItem(mount);
         winner.getWorld().playSound(winner.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .3F);
-        ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, winner, 1, 1, 1, 0.03F, 50);
+        ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, winner.getLocation(), 1, 1, 1, 50, .03F);
         String mountName = getType().getMount().getDisplayName();
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "** " + winner.getName() + ChatColor.GOLD + " has received a " +

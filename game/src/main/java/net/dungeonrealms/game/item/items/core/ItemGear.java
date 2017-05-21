@@ -16,7 +16,6 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -184,28 +183,14 @@ public abstract class ItemGear extends ItemGeneric {
 	}
 
 	private void updateLore() {
-		// SAVE ATTRIBUTES TO NBT //
-		NBTTagCompound nbtAttributes = new NBTTagCompound();
-
-		// Sort Attributes
-		if (getAttributes() != null) {
-			List<AttributeType> attr = new ArrayList<>(getAttributes().getAttributes());
-			Collections.sort(attr, (a, b) -> Integer.compare(a.getId(), b.getId()));
+		// Save attributes
+		getAttributes().save(this);
 		
-			// Save to NBT and Lore.
-			for (AttributeType t : attr) {
-				ModifierRange range = getAttributes().getAttribute(t);
-				range.save(nbtAttributes, t.getNBTName());
-				addLore(t.getPrefix() + range.toString() + t.getSuffix());
-			}
-			getTag().set("itemAttributes", nbtAttributes);
-		}
-
-		// Show Custom lore.
-
+		// Show rarity.
 		if (getRarity() != null)
 			addLore(getRarity().getName());
 
+		// Show protection status.
 		if (isProtected())
 			addLore(ChatColor.GOLD + "Protected");
 

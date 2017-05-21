@@ -285,11 +285,11 @@ public class RealmListener implements Listener {
 
                 //loc.subtract(.5D, 2D, .5D);
                 if (realm.getProperty("peaceful"))
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.VILLAGER_HAPPY, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+                    ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 20, 0F);
 
                 //loc.subtract(.5D, 1.5D, .5D);
                 if (realm.getProperty("flight"))
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+                	ParticleAPI.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 20, 0F);
             }
         }
     }
@@ -316,6 +316,7 @@ public class RealmListener implements Listener {
         }
     }
 
+    //TODO: Change this
     private void createDoubleHelix(Location loc) {
         double radius;
 
@@ -327,9 +328,8 @@ public class RealmListener implements Listener {
             double y2 = 3 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
-
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.spawnParticle(Particle.REDSTONE, loc2, 0, 0, 0, 1, 0F), (long) ((y + 1) * 20));
         }
 
         for (double y = 0; y < 2; y += 0.007) {
@@ -342,7 +342,7 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.REDSTONE, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.spawnParticle(Particle.REDSTONE, loc2, 0, 0, 0, 1, 0F), (long) ((y + 1) * 20));
         }
     }
 

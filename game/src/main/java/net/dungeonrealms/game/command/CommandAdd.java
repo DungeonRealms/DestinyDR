@@ -9,20 +9,16 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
-import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
-import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemEditor;
+import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemBank;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -132,6 +128,9 @@ public class CommandAdd extends BaseCommand {
                 case "reloadModifiers":
                     ItemGenerator.loadModifiers();
                     break;
+                case "item":
+                	new GUIItemBank(player);
+                	break;
                 case "pick":
                 	int level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
                     player.getInventory().addItem(new ItemPickaxe().setLevel(level).generateItem());
@@ -139,9 +138,6 @@ public class CommandAdd extends BaseCommand {
                 case "rod":
                     level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
                     player.getInventory().addItem(new ItemFishingPole().setLevel(level).generateItem());
-                    break;
-                case "resetbook":
-                    player.getInventory().addItem(new ItemRetrainingBook().generateItem());
                     break;
                 case "scrap":
                     for (int i = 1; i <= 5; i++)
@@ -160,19 +156,6 @@ public class CommandAdd extends BaseCommand {
                     for (EnumHealingFood food : EnumHealingFood.values())
                     	player.getInventory().addItem(new ItemHealingFood(food).generateItem());
                     break;
-                case "orb":
-                case "orb_of_alteration":
-                    player.getInventory().addItem(new ItemOrb().generateItem());
-                    break;
-                case "orb_of_peace":
-                    player.getInventory().addItem(new ItemPeaceOrb().generateItem());
-                    break;
-                case "orb_of_flight":
-                    player.getInventory().addItem(new ItemFlightOrb().generateItem());
-                    break;
-                case "global_messenger":
-                    player.getInventory().addItem(new ItemGlobalMessager().generateItem());
-                    break;
                 case "buff":
                 	BuffMechanics.spawnBuff(player);
                     break;
@@ -190,9 +173,6 @@ public class CommandAdd extends BaseCommand {
                 case "scroll":
                 case "protectscroll":
                     player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(Integer.parseInt(args[1]))).generateItem());
-                    break;
-                case "realmchest":
-                    player.getInventory().addItem(new ItemRealmChest().generateItem());
                     break;
                 case "pouch":
                     tier = Integer.parseInt(args[1]);

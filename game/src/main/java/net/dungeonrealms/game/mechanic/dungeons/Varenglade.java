@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.GameAPI;

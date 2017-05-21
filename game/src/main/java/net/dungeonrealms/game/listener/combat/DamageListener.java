@@ -522,7 +522,7 @@ public class DamageListener implements Listener {
         //  OUT OF ENERGY  //
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.getPlayer().playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 40);
+            ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1, 0), 40, .75F);
             return;
         }
 

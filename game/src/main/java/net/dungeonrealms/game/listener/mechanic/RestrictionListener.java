@@ -510,39 +510,31 @@ public class RestrictionListener implements Listener {
                 pDamager.updateInventory();
                 return;
             }
-            if (pDamager.hasMetadata("last_Attack")) {
-                if (System.currentTimeMillis() - pDamager.getMetadata("last_Attack").get(0).asLong() < 80) {
+            if (pDamager.hasMetadata("lastAttack")) {
+                if (System.currentTimeMillis() - pDamager.getMetadata("lastAttack").get(0).asLong() < 80) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     pDamager.updateInventory();
                     return;
                 }
             }
-            pDamager.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+            pDamager.setMetadata("lastAttack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             if (pDamager.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(pDamager) <= 0) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.playSound(pDamager.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
                 pDamager.updateInventory();
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.75F, 40);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                ParticleAPI.spawnParticle(Particle.CRIT, event.getEntity().getLocation().add(0, 1, 0), 40, .75F);
                 return;
             }
         }
 
         if (isDefenderPlayer) {
-            if (GameAPI.getGamePlayer(pReceiver) == null) {
+        	GamePlayer rec = GameAPI.getGamePlayer(pReceiver);
+            if (rec == null || rec.isInvulnerable() || !rec.isTargettable()) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pReceiver.updateInventory();
-                return;
-            }
-            if (GameAPI.getGamePlayer(pReceiver).isInvulnerable() || !GameAPI.getGamePlayer(pReceiver).isTargettable()) {
-                event.setCancelled(true);
-                event.setDamage(0);
                 return;
             }
         }

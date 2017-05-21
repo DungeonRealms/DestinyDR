@@ -13,9 +13,11 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityLiving;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -123,7 +125,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
         if (random.nextInt(15) == 0) {
             Location loc = getBukkit().getLocation();
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SMOKE_LARGE, loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+            ParticleAPI.spawnParticle(Particle.SMOKE_LARGE, loc.add(0, 0.5, 0), 100, 1F);
 
             // Spawn minions
             int minionType = random.nextInt(2);

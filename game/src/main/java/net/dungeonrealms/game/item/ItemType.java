@@ -1,5 +1,9 @@
 package net.dungeonrealms.game.item;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ecash.*;
@@ -90,6 +94,32 @@ public enum ItemType {
 	
 	ItemType(String nbt, Class<? extends PersistentItem> cls) {
 		this(nbt, cls, null);
+	}
+	
+	/**
+	 * Is this item constructable without an extra data?
+	 * @return
+	 */
+	public boolean isSimple() {
+		try {
+			return getItemClass().getDeclaredConstructor(ItemStack.class) != null && getType() != null;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * Make this item as a simple item, if possible.
+	 * @return
+	 */
+	public PersistentItem makeSimple() {
+		try {
+			return getItemClass().getDeclaredConstructor(ItemStack.class).newInstance((ItemStack) null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Bukkit.getLogger().warning("Failed to create " + name() + " as simple item.");
+			return new VanillaItem(new ItemStack(Material.AIR));
+		}
 	}
 	
 	public static ItemType getByName(String name) {

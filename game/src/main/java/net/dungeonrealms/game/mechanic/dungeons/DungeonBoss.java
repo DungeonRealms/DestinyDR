@@ -74,10 +74,7 @@ public interface DungeonBoss extends DRMonster {
 		
 		//Remove Nearby Fire
 		getNearbyBlocks(getBukkit().getLocation(), 10).stream().filter(bk -> bk.getType() == Material.FIRE).forEach(bk -> bk.setType(Material.AIR));
-		
-		Random random = ThreadLocalRandom.current();
-		ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, getBukkit().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
-		
+		ParticleAPI.spawnParticle(Particle.FIREWORKS_SPARK, getBukkit().getLocation().add(0, 2, 0), 200, .2F);
 		getDungeon().completeDungeon();
 	}
 	

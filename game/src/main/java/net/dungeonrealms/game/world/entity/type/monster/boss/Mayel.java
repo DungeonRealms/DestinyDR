@@ -11,6 +11,7 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,7 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
     		return;
     	
     	// Spawn minions.
-    	ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, getBukkitEntity().getLocation(), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+    	ParticleAPI.spawnParticle(Particle.SPELL, getBukkitEntity().getLocation(), 100, 1F);
         for (int i = 0; i < 4; i++)
             spawnMinion(EnumMonster.MayelPirate, "Mayel's Crew", 1);
         say("Come to my call, brothers!");
