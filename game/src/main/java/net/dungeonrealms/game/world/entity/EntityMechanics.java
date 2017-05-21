@@ -8,21 +8,23 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.*;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_9_R2.potion.CraftPotionUtil;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,164 +71,42 @@ public class EntityMechanics implements GenericMechanic {
 
     }
 
-    public static Projectile spawnFireballProjectile(World world, CraftLivingEntity shooter, Vector velocity, Class<? extends Fireball> projectile, double accuracy) {
+    public static Projectile spawnFireballProjectile(World world, CraftLivingEntity shooter, Vector velocity, Class<? extends Projectile> projectile, double accuracy) {
         Location location = shooter.getEyeLocation();
         Vector direction = location.getDirection().multiply(10);
 
         Entity launch = null;
-        double accurate = .4D - (.4D * (accuracy / 100));
+        double accurate = .4D - (.4D * (accuracy / 100D));
+        Bukkit.getLogger().info("Accuracy: " + accurate + " From: " + accuracy);
         if (Fireball.class.isAssignableFrom(projectile)) {
             if (SmallFireball.class.isAssignableFrom(projectile)) {
-                launch = new EntitySmallFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
-                    @Override
-                    public void setDirection(double d0, double d1, double d2) {
-                        d0 += this.random.nextGaussian() * accurate;
-                        d1 += this.random.nextGaussian() * accurate;
-                        d2 += this.random.nextGaussian() * accurate;
-                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-                        this.dirX = d0 / d3 * 0.1D;
-                        this.dirY = d1 / d3 * 0.1D;
-                        this.dirZ = d2 / d3 * 0.1D;
-                    }
-
-                    @Override
-                    public void collide(Entity entity) {
-                        if (entity instanceof EntityFireball) {
-                            return;
-                        }
-                        super.collide(entity);
-                    }
-
-                    @Override
-                    public boolean damageEntity(DamageSource damagesource, float f) {
-                        if (this.isInvulnerable(damagesource))
-                            return false;
-                        this.ao();
-                        return damagesource.getEntity() != null ? !CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f) : false;
-                    }
-                };
+                launch = new CustomSmallFireball(world, shooter, direction.getX(), direction.getY(), direction.getZ(), accurate);
             } else if (WitherSkull.class.isAssignableFrom(projectile)) {
                 //Pending
-                launch = new EntityWitherSkull(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
-                    @Override
-                    public void setDirection(double d0, double d1, double d2) {
-                        d0 += this.random.nextGaussian() * accurate;
-                        d1 += this.random.nextGaussian() * accurate;
-                        d2 += this.random.nextGaussian() * accurate;
-                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-                        this.dirX = d0 / d3 * 0.1D;
-                        this.dirY = d1 / d3 * 0.1D;
-                        this.dirZ = d2 / d3 * 0.1D;
-                    }
-                };
+                launch = new CustomWitherSkull(world, direction.getX(), direction.getY(), direction.getZ(), shooter, accurate);
             } else if (DragonFireball.class.isAssignableFrom(projectile)) {
-                launch = new EntityDragonFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
-                    @Override
-                    public void setDirection(double d0, double d1, double d2) {
-                        d0 += this.random.nextGaussian() * accurate;
-                        d1 += this.random.nextGaussian() * accurate;
-                        d2 += this.random.nextGaussian() * accurate;
-                        //Dont add any randomness too it since its meant to be accurateish
-                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-                        this.dirX = d0 / d3 * 0.1D;
-                        this.dirY = d1 / d3 * 0.1D;
-                        this.dirZ = d2 / d3 * 0.1D;
-                    }
-
-                    @Override
-                    public void collide(Entity entity) {
-                        if (entity instanceof EntityFireball) {
-                            return;
-                        }
-                        super.collide(entity);
-                    }
-
-                    //Collide method
-                    @Override
-                    protected void a(MovingObjectPosition movingobjectposition) {
-                        if (!this.world.isClientSide) {
-                            if (movingobjectposition.entity != null) {
-                                movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 6.0F);
-                                this.a(this.shooter, movingobjectposition.entity);
-                            }
-
-                            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
-                            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(this.world.getServer(), this));
-                            this.world.getServer().getPluginManager().callEvent(event);
-                            if (!event.isCancelled()) {
-                                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
-                            }
-
-                            this.die();
-                        }
-                    }
-
-                    @Override
-                    public boolean damageEntity(DamageSource damagesource, float f) {
-                        if (this.isInvulnerable(damagesource))
-                            return false;
-                        this.ao();
-                        return damagesource.getEntity() != null ? !CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f) : false;
-                    }
-                };
+                launch = new CustomDragonFireball(world, shooter, direction.getX(), direction.getY(), direction.getZ(), accurate);
             } else {
-                launch = new EntityLargeFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
-                    @Override
-                    public void setDirection(double d0, double d1, double d2) {
-                        d0 += this.random.nextGaussian() * accurate;
-                        d1 += this.random.nextGaussian() * accurate;
-                        d2 += this.random.nextGaussian() * accurate;
-                        //Dont add any randomness too it since its meant to be accurateish
-                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-                        this.dirX = d0 / d3 * 0.1D;
-                        this.dirY = d1 / d3 * 0.1D;
-                        this.dirZ = d2 / d3 * 0.1D;
-                    }
-
-                    @Override
-                    protected EnumParticle j() {
-                        return EnumParticle.DRAGON_BREATH;
-                    }
-
-                    @Override
-                    protected void a(MovingObjectPosition movingobjectposition) {
-                        if (!this.world.isClientSide) {
-                            if (movingobjectposition.entity != null) {
-                                //No ty
-                                if (movingobjectposition.entity instanceof EntityFireball) return;
-
-                                movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 6.0F);
-                                this.a(this.shooter, movingobjectposition.entity);
-                            }
-
-                            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
-                            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(this.world.getServer(), this));
-                            this.world.getServer().getPluginManager().callEvent(event);
-                            if (!event.isCancelled()) {
-                                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
-                            }
-
-                            this.die();
-                        }
-
-                    }
-
-                    @Override
-                    public boolean damageEntity(DamageSource damagesource, float f) {
-                        if (this.isInvulnerable(damagesource))
-                            return false;
-                        this.ao();
-                        return damagesource.getEntity() != null ? !CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f) : false;
-                    }
-                };
+                launch = new CustomLargeFireball(world, shooter, direction.getX(), direction.getY(), direction.getZ(), accurate);
             }
-            ((EntityFireball) launch).projectileSource = shooter;
+        } else if (projectile.isAssignableFrom(Arrow.class)) {
+            if (TippedArrow.class.isAssignableFrom(projectile)) {
+                launch = new CustomEntityTippedArrow(world, shooter.getHandle());
+                ((EntityTippedArrow) launch).setType(CraftPotionUtil.fromBukkit(new PotionData(PotionType.WATER, false, false)));
+            } else if (SpectralArrow.class.isAssignableFrom(projectile)) {
+                launch = new EntitySpectralArrow(world, shooter.getHandle());
+            } else {
+                launch = new CustomEntityTippedArrow(world, shooter.getHandle());
+            }
+
+            ((EntityArrow) launch).a(shooter.getHandle(), shooter.getHandle().pitch, shooter.getHandle().yaw, 0.0F, 3.0F, 1.0F);
         }
 
         if (launch == null)
             return null;
 
-        launch.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        //This needed?
+        launch.setPosition(location.getX(), location.getY(), location.getZ());
 
         if (velocity != null)
             launch.getBukkitEntity().setVelocity(velocity);

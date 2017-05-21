@@ -10,6 +10,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.*;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.*;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.CustomLargeFireball;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.*;
 import net.dungeonrealms.game.world.entity.type.mounts.HorseMount;
 import net.dungeonrealms.game.world.entity.type.pet.CustomPet;

@@ -380,7 +380,7 @@ public class EnergyHandler implements GenericMechanic {
                 return 0.13636364F;
             case BOW:
             	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
-            	return 0.105F + (gear.getTier().getId() * 0.2F);
+            	return 0.105F + gear.getTier().getId() * 0.02F;
            default:
         	   return 0.10F;
         }

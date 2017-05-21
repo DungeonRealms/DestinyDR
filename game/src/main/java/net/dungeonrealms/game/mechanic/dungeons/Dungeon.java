@@ -95,7 +95,7 @@ public abstract class Dungeon {
 
         // Load spawns.
         this.spawns = DungeonManager.getSpawns(getWorld(), getType());
-        startDungeon();
+//        startDungeon();
     }
 
     /**
@@ -116,7 +116,10 @@ public abstract class Dungeon {
             Utils.removeFile(new File(worldName + "/players"));
 
             Bukkit.getLogger().info("[Dungeons] Successfully created " + getType().getName() + ".");
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> setupWorld(worldName));
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                setupWorld(worldName);
+                startDungeon();
+            });
         });
 
     }

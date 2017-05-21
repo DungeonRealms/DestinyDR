@@ -16,7 +16,6 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -100,7 +99,7 @@ public class DamageListener implements Listener {
         if (event.getEntity().getType() != EntityType.ARMOR_STAND)
             return;
 
-        if(EnumEntityType.DPS_DUMMY.isType(event.getEntity()))return;
+        if (EnumEntityType.DPS_DUMMY.isType(event.getEntity())) return;
 
         event.setDamage(0);
         event.setCancelled(true);
@@ -535,7 +534,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onStaffProjectileExplode(ExplosionPrimeEvent event) {
         if (!(event.getEntity() instanceof WitherSkull) && !(event.getEntity() instanceof Fireball) && !(event
-                .getEntity() instanceof LargeFireball) && !(event.getEntity() instanceof SmallFireball)) {
+                .getEntity() instanceof LargeFireball) && !(event.getEntity() instanceof SmallFireball) && !(event.getEntity() instanceof DragonFireball)) {
             return;
         }
         event.setCancelled(false);

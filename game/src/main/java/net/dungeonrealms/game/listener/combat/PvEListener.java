@@ -123,11 +123,10 @@ public class PvEListener implements Listener {
 
         if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
             System.out.println("It's da bow");
+            //Why cancel the event?
             int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
-            event.setCancelled(true);
-            DamageAPI.knockbackEntity(damager, receiver, 1D + (.2D * tier));
+            DamageAPI.knockbackEntity(damager, receiver, 1D + .2D * tier);
             damager.updateInventory();
-            return;
         }
 
         System.out.println("We need to apply our damage.");

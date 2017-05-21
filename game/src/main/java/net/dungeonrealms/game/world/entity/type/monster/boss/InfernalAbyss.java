@@ -81,7 +81,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;
         Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), staff.getAttributes(), target, staff);
         if (proj != null)
-            proj.setVelocity(proj.getVelocity().multiply(1.25));
+            proj.setVelocity(proj.getVelocity().multiply(1.15));
     }
 
     private void pushAwayPlayer(Player p, double speed) {

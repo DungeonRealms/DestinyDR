@@ -55,10 +55,9 @@ public class InfernalAbyss extends Dungeon {
 	@Override
 	protected void setupWorld(String worldName) {
 		super.setupWorld(worldName);
-		
 		CraftWorld world = (CraftWorld)getWorld();
-    	world.setEnvironment(Environment.NETHER);
-    	world.getHandle().worldProvider.a(world.getHandle()); //<- Prevents an NMS crash, by initing the world.
+		world.setEnvironment(Environment.NETHER);
+		world.getHandle().worldProvider.a(world.getHandle()); //<- Prevents an NMS crash, by initing the world.
 	}
 	
 	@Override
@@ -86,11 +85,14 @@ public class InfernalAbyss extends Dungeon {
 			Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
 				for (Dungeon o : DungeonManager.getDungeons(DungeonType.THE_INFERNAL_ABYSS)) {
 					InfernalAbyss dungeon = (InfernalAbyss) o;
-					
+
+					//Not spawned..
+					if(dungeon.getBoss() == null)continue;
+
 					Entity e = dungeon.getBoss().getBukkit();
 					if (e.isDead() || !e.isOnGround())
 						return;
-					
+
 					Location l = e.getLocation();
 					if (l.getBlock().getType() == Material.AIR)
 						l.getBlock().setType(Material.FIRE);

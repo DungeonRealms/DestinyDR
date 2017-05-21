@@ -147,6 +147,7 @@ public class KarmaHandler implements GenericMechanic, Listener {
             case ENDER_PEARL:
             case FIREBALL:
             case WITHER_SKULL:
+            case DRAGON_FIREBALL:
                 Projectile projectile = (Projectile) killer;
                 if (!(projectile.getShooter() instanceof LivingEntity)) break;
                 leKiller = (LivingEntity) projectile.getShooter();

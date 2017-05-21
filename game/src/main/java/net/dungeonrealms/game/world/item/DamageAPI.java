@@ -115,6 +115,7 @@ public class DamageAPI {
                 case ENDER_PEARL:
                 case FIREBALL:
                 case WITHER_SKULL:
+                case DRAGON_FIREBALL:
                     damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.2);
                     break;
                 default:
@@ -228,9 +229,9 @@ public class DamageAPI {
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
 
             if (ea == ElementalAttribute.FIRE) {
-            	ParticleAPI.spawnParticle(Particle.FLAME, defender.getLocation(), 10, 0.5F);
-            	ParticleAPI.spawnParticle(Particle.SPELL, defender.getLocation(), 10, 1F);
-            	
+                ParticleAPI.spawnParticle(Particle.FLAME, defender.getLocation(), 10, 0.5F);
+                ParticleAPI.spawnParticle(Particle.SPELL, defender.getLocation(), 10, 1F);
+
                 final int[] FIRE_TICKS = new int[]{15, 25, 30, 35, 40};
                 defender.setFireTicks(FIRE_TICKS[tier - 1]);
             } else {
@@ -569,16 +570,16 @@ public class DamageAPI {
         }
 
 
-        if(vector != null){
+        if (vector != null) {
             //mob
-            vector = vector.multiply(tier.getTierId() <= 3 ? 1.75 : tier == Item.ItemTier.TIER_5 ? 2.3 : 1);
-        }else {
+            vector = vector.multiply(tier.getTierId() <= 3 ? 1.75 : tier == Item.ItemTier.TIER_5 ? 1.75 : 1);
+        } else {
             //player shooting
             //1, 1.25, 1.25, 1.5, 3x velocities
             projectile.setVelocity(projectile.getVelocity().multiply(tier.getTierId() == 1 ? 1.25 : tier.getTierId() <= 3 ? 2 : tier == Item.ItemTier.TIER_4 ? 2.25 : tier == Item.ItemTier.TIER_5 ? 3 : 1));
         }
 
-        if(projectile == null)return null;
+        if (projectile == null) return null;
         projectile.setBounce(false);
         projectile.setShooter(attacker);
         if (vector != null)
@@ -602,14 +603,17 @@ public class DamageAPI {
         for (AttributeType type : bow.getAttributes().keySet()) {
             ElementalAttribute ea = ElementalAttribute.getByAttribute(type);
             if (ea != null) {
-                if (projectile == null)
-                    projectile = ent.launchProjectile(TippedArrow.class);
-                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(ea.getDefensePotion(), 0, 0), true);
+                if (projectile == null) {
+                    projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, TippedArrow.class, 100D);
+                    if (projectile != null)
+                        ((TippedArrow) projectile).addCustomEffect(new PotionEffect(ea.getDefensePotion(), 0, 0), true);
+                }
             }
         }
 
         if (projectile == null)
-            projectile = ent.launchProjectile(Arrow.class);
+            projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, Arrow.class, 100D);
+//        projectile = ent.launchProjectile(Arrow.class);
 
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.15));
@@ -667,7 +671,7 @@ public class DamageAPI {
     public static boolean isStaffProjectile(Entity entity) {
         EntityType type = entity.getType();
         return type == EntityType.SNOWBALL || type == EntityType.SMALL_FIREBALL || type == EntityType.ENDER_PEARL ||
-                type == EntityType.FIREBALL || type == EntityType.WITHER_SKULL;
+                type == EntityType.FIREBALL || type == EntityType.WITHER_SKULL || type == EntityType.DRAGON_FIREBALL;
     }
 
     public static boolean isBowProjectile(Entity entity) {
