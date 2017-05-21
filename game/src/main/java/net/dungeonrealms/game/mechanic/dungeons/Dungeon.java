@@ -46,7 +46,7 @@ public abstract class Dungeon {
     private DungeonType type;
     private int time;
     private int killCount;
-//    private Set<Entity> aliveMonsters = new ConcurrentSet<>();
+    //    private Set<Entity> aliveMonsters = new ConcurrentSet<>();
     private Map<Entity, Location> trackedMonsters = new ConcurrentHashMap<>();
     private Set<MobSpawner> spawns = new ConcurrentSet<>();
     private List<BossType> spawnedBosses = new ArrayList<>();
@@ -98,8 +98,8 @@ public abstract class Dungeon {
         // Load spawns.
         this.spawns = DungeonManager.getSpawns(getWorld(), getType());
 
-        for(MobSpawner spawner : spawns){
-            maxMobCount += spawner.getSpawnAmount();
+        for (MobSpawner spawn : spawns) {
+            maxMobCount += spawn.getSpawnAmount();
         }
 //        startDungeon();
     }
@@ -298,7 +298,7 @@ public abstract class Dungeon {
      * Teleports an entity back to their spawner.
      */
     public void returnToSpawner(Entity e) {
-        Location l = getTrackedMonsters().get(e.getUniqueId());
+        Location l = getTrackedMonsters().get(e);
         if (l != null)
             e.teleport(l);
     }
@@ -308,10 +308,16 @@ public abstract class Dungeon {
      * Removes it if it's dead, etc.
      */
     public void updateMob(Entity e) {
-        if (!e.isDead() && !e.isEmpty())
+        if (e.isValid())
             return;
+
         getTrackedMonsters().remove(e);
-        increaseKillCount();
+
+        if (!e.hasMetadata("invalid")) {
+            increaseKillCount();
+        } else {
+            maxMobCount--;
+        }
     }
 
     /**

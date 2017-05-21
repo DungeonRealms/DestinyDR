@@ -632,7 +632,8 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name());
+            e.setMetadata("invalid", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
+            Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name() + " from " + event.getCause());
             e.remove();
             return;
         } else if (event.getCause() == DamageCause.POISON) {
