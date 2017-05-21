@@ -8,6 +8,7 @@ import lombok.Setter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
@@ -223,6 +224,8 @@ public class DungeonRealms extends JavaPlugin {
 
         ItemGenerator.loadModifiers();
         PowerMove.registerPowerMoves();
+        //Init and load ranks.
+        Rank.getCachedRanks();
 
         Utils.log.info("DungeonRealms - Loading Mechanics");
 

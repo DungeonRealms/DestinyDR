@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.PickaxeAttributeType;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -119,7 +120,7 @@ public class CommandStore extends BaseCommand {
                             } else if (scrollType.equals("fishing") || scrollType.equals("fish") || scrollType.equals("rod") || scrollType.equals("fishingrod")) {
                                 if (args.length >= 5) {
                                     ItemEnchantFishingRod rod = new ItemEnchantFishingRod();
-                                    rod.addEnchant(FishingAttributeType.valueOf(args[4].toUpperCase()));
+                                    rod.addEnchant(FishingAttributeType.valueOf(args[4].toUpperCase()), args.length == 6 && StringUtils.isNumeric(args[5]) ? Integer.parseInt(args[5]) : -1);
                                     items.add(rod.generateItem());
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");

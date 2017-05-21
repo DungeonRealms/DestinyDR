@@ -23,11 +23,7 @@ import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -117,7 +113,11 @@ public class Fishing implements GenericMechanic, Listener {
         try {
             Class<? extends FishBuff> buffCls = fbt.getBuffClass();
             FishingTier tier = FishingTier.values()[tag.getInt("itemTier") - 1];
-            return buffCls.getConstructor(tag.getClass(), tier.getClass()).newInstance(tag, tier);
+            try {
+                return buffCls.getConstructor(tag.getClass(), tier.getClass()).newInstance(tag, tier);
+            } catch (NoSuchMethodException ex) {
+                return buffCls.getConstructor(tag.getClass()).newInstance(tag);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to construct " + fbt.name());
@@ -148,29 +148,29 @@ public class Fishing implements GenericMechanic, Listener {
     public enum EnumFish {
 
         //  TIER 1  //
-        Shrimp(1, "A raw and pink crustacean"),
-        Anchovie(1, "A small blue, oily fish"),
-        Crayfish(1, "A lobster-like and brown crustacean"),
+        Shrimp(1, "A pink scaled crustacean."),
+        Anchovie(1, "A small blue, oily fish."),
+        Crayfish(1, "A lobster-like and brown crustacean."),
 
         //  TIER 2  //
-        Carp(2, "A Large, silver-scaled fish"),
-        Herring(2, "A colourful and medium-sized fish"),
-        Sardine(2, "A small and oily green fish"),
+        Carp(2, "A Large, silver-scaled fish."),
+        Herring(2, "A colourful and medium-sized fish."),
+        Sardine(2, "A small and oily green fish."),
 
         //  TIER 3  //
-        Salmon(3, "A beautiful jumping fish"),
-        Trout(3, "A non-migrating Salmon"),
-        Cod(3, "A cold-water, deep sea fish"),
+        Salmon(3, "A beautiful jumping fish."),
+        Trout(3, "A non-migrating Salmon."),
+        Cod(3, "A cold-water, deep sea fish."),
 
         //  TIER 4  //
-        Lobster(4, "A Large, red crustacean"),
-        Tuna(4, "A large, sapphire blue fish"),
-        Bass(4, "A very large and white fish"),
+        Lobster(4, "A large, red crustacean."),
+        Tuna(4, "A large, sapphire blue fish."),
+        Bass(4, "A very large and white fish."),
 
         //  TIER 5  //
-        Shark(5, "A terrifying and massive predator"),
-        Swordfish(5, "An elongated fish with a long bill"),
-        Monkfish(5, "A flat, large, and scary-looking fish");
+        Shark(5, "A terrifying and massive predator."),
+        Swordfish(5, "An elongated fish with a long bill."),
+        Monkfish(5, "A flat, large, and scary looking fish.");
 
 
         private int tier;
