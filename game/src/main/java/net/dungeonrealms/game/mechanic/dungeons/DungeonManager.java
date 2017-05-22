@@ -189,7 +189,7 @@ public class DungeonManager implements GenericMechanic {
     private void updateActionBar(Dungeon dungeon) {
     	for (Player p : dungeon.getAllPlayers()) {
     		TitleAPI.sendActionBar(p, ChatColor.AQUA + "Time: " + ChatColor.GOLD
-    				+ (dungeon.getTime() / 1200) + "/" + MAX_DUNGEON_TIME + "m " + ChatColor.AQUA
+    				+ (dungeon.getTime() / 60) + "/" + MAX_DUNGEON_TIME + "m " + ChatColor.AQUA
     				+ "Alive: " + ChatColor.RED + (dungeon.getMaxMobCount() - dungeon.getKillCount()) + ChatColor.GRAY + "/" + ChatColor.GRAY + dungeon.getMaxMobCount());
     	}
     }
