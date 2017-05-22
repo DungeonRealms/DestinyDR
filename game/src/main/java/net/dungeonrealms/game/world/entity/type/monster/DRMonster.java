@@ -241,7 +241,7 @@ public interface DRMonster {
         // Drop teleport book.
         if (dr.getTeleportBookChance() >= random.nextInt(100))
             ItemManager.whitelistItemDrop(killer, ent.getLocation(), new ItemTeleportBook(
-            		TELEPORT_DROPS[tier][random.nextInt(TELEPORT_DROPS[tier].length)]).generateItem());
+            		TELEPORT_DROPS[tier - 1][random.nextInt(TELEPORT_DROPS[tier - 1].length)]).generateItem());
     }
     
     default ItemStack getHeld() {

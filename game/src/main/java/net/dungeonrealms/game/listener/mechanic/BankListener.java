@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -22,7 +21,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -121,9 +119,9 @@ public class BankListener implements Listener {
     }
 
     private boolean canItemBeStored(ItemStack item) {
-        if(item == null)return true;
-        if(ItemManager.isItemSoulbound(item)) return true;
-        if(ItemMoney.isMoney(item)) return false;
+        if (item == null) return true;
+        if (ItemManager.isItemSoulbound(item)) return true;
+        if (ItemMoney.isMoney(item)) return false;
         return ItemManager.isItemTradeable(item);
     }
 
@@ -131,14 +129,14 @@ public class BankListener implements Listener {
     public void handleBankClick(InventoryClickEvent evt) {
         if (!evt.getInventory().getTitle().equalsIgnoreCase("Bank Chest"))
             return;
-        if(DungeonRealms.getInstance().isAlmostRestarting()){
+        if (DungeonRealms.getInstance().isAlmostRestarting()) {
             evt.setCancelled(true);
             Bukkit.getLogger().info("Cancelling " + evt.getWhoClicked().getName() + " click due to restart...");
             return;
         }
         Player player = (Player) evt.getWhoClicked();
-        evt.setCancelled(true);
         if (evt.getRawSlot() < 9) {
+            evt.setCancelled(true);
             if (evt.getCursor() == null || evt.getCursor().getType() == Material.AIR) {
                 if (evt.getRawSlot() == 0) {
                     //  OPEN STORAGE  //
@@ -232,9 +230,13 @@ public class BankListener implements Listener {
                 }
             }
         } else if (evt.isShiftClick()) {
+            evt.setCancelled(true);
             ItemStack item = evt.getCurrentItem();
+            if(item == null || item.getType() == Material.AIR)return;
             if (ItemMoney.isMoney(item)) {
-                handleMoneyDeposit(evt);
+                evt.setCancelled(true);
+                depositAllMoney(player);
+//                handleMoneyDeposit(evt);
                 updateBank(evt.getInventory(), player.getUniqueId());
                 return;
             }
@@ -264,27 +266,43 @@ public class BankListener implements Listener {
 
         boolean muleStorage = evt.getInventory().getTitle().equalsIgnoreCase("Mule Storage");
         //No thanks..
-        if(DungeonRealms.getInstance().isAlmostRestarting()){
+        if (DungeonRealms.getInstance().isAlmostRestarting()) {
             evt.setCancelled(true);
+            evt.getWhoClicked().closeInventory();
             Bukkit.getLogger().info("Cancelling " + evt.getWhoClicked().getName() + " click due to restart...");
             return;
         }
+//        System.out.println("Action: " + evt.getAction().name());
         Inventory inv = evt.getInventory();
         int slot = evt.getRawSlot();
         ItemStack attemptAdd = null;
         InventoryAction action = evt.getAction();
 
         boolean bottomInventory = false;
-        if (evt.isShiftClick() && slot >= inv.getSize()) {
+        if (evt.isShiftClick() && (bottomInventory = slot >= inv.getSize())) {
             attemptAdd = evt.getCurrentItem();
-        } else if (bottomInventory = slot < inv.getSize()) {
+        } else if (slot < inv.getSize()) {
             //Clicking below
-
             //Item we are placing down into OUR inventory?
             attemptAdd = evt.getCursor();
             if (action == InventoryAction.HOTBAR_MOVE_AND_READD || action == InventoryAction.HOTBAR_SWAP)
                 attemptAdd = evt.getView().getBottomInventory().getItem(evt.getHotbarButton());
         }
+
+        Player player = (Player) evt.getWhoClicked();
+        boolean isMoney = ItemMoney.isMoney(attemptAdd);
+        if (bottomInventory && !muleStorage) {
+            //Check for add all gems / money?
+            if (evt.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && isMoney) {
+                evt.setCancelled(true);
+                depositAllMoney(player);
+                return;
+            }
+        }
+
+
+        if (isMoney && !muleStorage)
+            handleMoneyDeposit(evt);
 
         if (!canItemBeStored(attemptAdd)) {
             evt.setCancelled(true);
@@ -292,9 +310,6 @@ public class BankListener implements Listener {
             return;
         }
         Bukkit.getLogger().info("Can be stored: " + canItemBeStored(attemptAdd) + " for " + attemptAdd);
-
-        if (ItemMoney.isMoney(attemptAdd) && !muleStorage)
-            handleMoneyDeposit(evt);
     }
 
     /**
@@ -322,10 +337,12 @@ public class BankListener implements Listener {
         if (!ItemMoney.isMoney(item))
             return item;
         ItemMoney money = (ItemMoney) PersistentItem.constructItem(item);
-        PlayerWrapper.getWrapper(player).addGems(money.getGemValue());
-        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + money.getGemValue() + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + getPlayerGems(player.getUniqueId()) + " GEM(s)");
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-        money.setGemValue(0);
+        if (money.getGemValue() > 0) {
+            PlayerWrapper.getWrapper(player).addGems(money.getGemValue());
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + money.getGemValue() + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + getPlayerGems(player.getUniqueId()) + " GEM(s)");
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+            money.setGemValue(0);
+        }
         return money.generateItem();
     }
 
@@ -342,7 +359,7 @@ public class BankListener implements Listener {
             return;
 
         // Item has to exist.
-        if (evt.getCurrentItem() == null && evt.getCurrentItem().getType() == Material.AIR)
+        if (evt.getCurrentItem() == null || evt.getCurrentItem().getType() == Material.AIR)
             return;
 
         // Return the item.
@@ -475,6 +492,31 @@ public class BankListener implements Listener {
         return player.getInventory().firstEmpty() != -1;
     }
 
+    public void depositAllMoney(Player player) {
+        int depositing = 0;
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack is = player.getInventory().getItem(i);
+            if (is == null || is.getType() == Material.AIR) continue;
+            if (ItemMoney.isMoney(is)) {
+                ItemMoney money = (ItemMoney) PersistentItem.constructItem(is);
+                if (money.getGemValue() > 0) {
+                    depositing += money.getGemValue();
+                    money.setGemValue(0);
+                    player.getInventory().setItem(i, money.isDestroyed() ? null : money.generateItem());
+                }
+            }
+        }
+        if (depositing > 0) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            wrapper.addGems(depositing);
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + depositing + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + wrapper.getGems() + " GEM(s)");
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.1F);
+            player.updateInventory();
+            Bukkit.getLogger().info("Depositing all money from " + player.getName() + " Amount: " + depositing);
+        }
+    }
+
     private void updateBank(Inventory inv, UUID uuid) {
         ItemStack bankItem = new ItemStack(Material.EMERALD);
         ItemMeta meta = bankItem.getItemMeta();
@@ -501,7 +543,7 @@ public class BankListener implements Listener {
         Inventory inv = Bukkit.createInventory(null, 9, "Bank Chest");
         ItemStack storage = new ItemStack(Material.CHEST, 1);
         ItemMeta storagetMeta = storage.getItemMeta();
-        storagetMeta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "STORAGE");
+        storagetMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Bank Storage");
         ArrayList<String> storelore = new ArrayList<>();
         storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
         storelore.add(ChatColor.GREEN + "Middle Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");

@@ -2,7 +2,6 @@ package net.dungeonrealms.database;
 
 import com.google.common.collect.Lists;
 import com.mysql.jdbc.StatementImpl;
-
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +9,8 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
@@ -54,7 +53,6 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -671,6 +669,7 @@ public class PlayerWrapper {
             if (Constants.debug)
                 Bukkit.getLogger().info("Batch executed in " + (System.currentTimeMillis() - start));
         } catch (Exception e) {
+            GameAPI.sendDevMessage("Failed to Player Data for " + username + " on {SERVER}! Exception Message: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -968,11 +967,9 @@ public class PlayerWrapper {
         if (stringInv != null && stringInv.length() > 1) {
             Inventory inv = ItemSerialization.fromString(stringInv);
             if (inv == null) return;
-            for (ItemStack item : inv.getContents())
-                if (item != null && item.getType() == Material.AIR)
-                    inv.addItem(item);
-
-            storage.collection_bin = inv;
+            int items = (int) Arrays.stream(inv.getContents()).filter(item -> item != null && item.getType() != Material.AIR).count();
+            if (items > 0)
+                storage.collection_bin = inv;
         }
 
     }
@@ -1004,21 +1001,21 @@ public class PlayerWrapper {
         if (epoch == null || !epoch.equals(this.currentWeapon))
             calculateAllAttributes();
     }
-    
+
     private void checkForIllegalItems() {
-    	Player player = getPlayer();
-    	ItemStack held = player.getInventory().getItemInMainHand();
-    	if (getRank().isAtLeast(PlayerRank.DEV) || !ItemWeapon.isWeapon(held))
-    		return;
-    	
-    	ModifierRange range = ((ItemWeapon) PersistentItem.constructItem(held)).getAttributes().getAttribute(WeaponAttributeType.DAMAGE);
-    	if (range.getValHigh() < 1000)
-    		return;
-    	
-    	player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-    	player.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the gods.");
-    	
-    	GameAPI.sendWarning("Destroyed illegal item (" + range.toString() + ") from " + player.getName() + " on shard {SERVER}.");
+        Player player = getPlayer();
+        ItemStack held = player.getInventory().getItemInMainHand();
+        if (getRank().isAtLeast(PlayerRank.DEV) || !ItemWeapon.isWeapon(held))
+            return;
+
+        ModifierRange range = ((ItemWeapon) PersistentItem.constructItem(held)).getAttributes().getAttribute(WeaponAttributeType.DAMAGE);
+        if (range.getValHigh() < 1000)
+            return;
+
+        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+        player.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the gods.");
+
+        GameAPI.sendWarning("Destroyed illegal item (" + range.toString() + ") from " + player.getName() + " on shard {SERVER}.");
     }
 
     /**
@@ -1062,7 +1059,7 @@ public class PlayerWrapper {
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
 
         if (getAlignment() != alignmentTo) {
-        	ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
+            ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
             this.alignment = alignmentTo;
         }
     }
@@ -1084,12 +1081,12 @@ public class PlayerWrapper {
     public boolean hasEffectUnlocked(ParticleEffect effect) {
         return getParticles().contains(effect) || effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB();
     }
-    
+
     /**
      * Is this player vulnerable to damage?
      */
     public boolean isVulnerable() {
-    	return getPlayer().getGameMode() == GameMode.SURVIVAL && !getToggles().getState(Toggles.INVULNERABLE) && !getPlayer().isInvulnerable();
+        return getPlayer().getGameMode() == GameMode.SURVIVAL && !getToggles().getState(Toggles.INVULNERABLE) && !getPlayer().isInvulnerable();
     }
 
     /**

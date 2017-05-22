@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemGemPouch;
 import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -123,7 +124,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        return ItemManager.isItemTradeable(i) && !ItemMoney.isMoney(i);
+        return ItemManager.isItemTradeable(i) && (!ItemMoney.isMoney(i) || ItemGemPouch.isPouch(i)) ;
     }
 
     public static void setupShop(Block block, UUID uniqueId) {

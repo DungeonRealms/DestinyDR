@@ -44,20 +44,28 @@ public class ItemGemPouch extends ItemMoney implements ItemInventoryListener {
 
 	@Override
 	protected String getDisplayName() {
-		return GameAPI.getTierColor(tier.getId()) + tier.getName() + " Gem Pouch " + ChatColor.GREEN + getGemValue() + "g";
+		return GameAPI.getTierColor(tier.getId()) + tier.getName() + " Gem Pouch " + ChatColor.GREEN + ChatColor.BOLD + getGemValue() + "g";
 	}
 
 	@Override
 	protected String[] getLore() {
-		return new String[] { "A small linen pouch that holds " + tier.getSize() + "g" };
+		return new String[] { tier.getDescription()};
 	}
-	
+
+	@Override
+	public ItemStack generateItem() {
+		if(getGemValue() < 0)
+			setGemValue(0);
+
+		return super.generateItem();
+	}
+
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
-		if(evt.getEvent().isRightClick() && evt.getSwappedItem() == null) {
+		if(evt.getEvent().isRightClick() && (evt.getSwappedItem() == null || evt.getSwappedItem().getType() == Material.AIR)) {
 			//Lets players take gems from pouches.
 			evt.setCancelled(true);
-			int withdrawGems = Math.max(getGemValue(), 64);
+			int withdrawGems = Math.min(getGemValue(), 64);
 			setGemValue(getGemValue() - withdrawGems);
 			evt.setSwappedItem(new ItemGem(withdrawGems).generateItem());
 			evt.setResultItem(generateItem());
@@ -67,19 +75,23 @@ public class ItemGemPouch extends ItemMoney implements ItemInventoryListener {
 			evt.setCancelled(true);
 			ItemGem gem = new ItemGem(evt.getSwappedItem());
 			int oldGemValue = getGemValue();
-			
-			setGemValue(Math.max(getGemValue() + gem.getGemValue(), getMaxStorage()));
+
+			if(oldGemValue >= getMaxStorage()){
+				evt.getPlayer().sendMessage(ChatColor.RED + "Gem Pouch cannot hold any more gems!");
+				return;
+			}
+			setGemValue(Math.min(getGemValue() + gem.getGemValue(), getMaxStorage()));
 			evt.setResultItem(generateItem());
 			
 			gem.setGemValue(gem.getGemValue() - (getGemValue() - oldGemValue));
-			evt.setSwappedItem(gem.generateItem());
+			evt.setSwappedItem(gem.isDestroyed() ? null : gem.generateItem());
 			evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 		}
 	}
 
 	@Override
 	protected ItemUsage[] getUsage() {
-		return new ItemUsage [] {ItemUsage.INVENTORY_SWAP_PICKUP};
+		return new ItemUsage [] {ItemUsage.INVENTORY_SWAP_PICKUP, ItemUsage.INVENTORY_PICKUP_ITEM};
 	}
 
 	@Override
