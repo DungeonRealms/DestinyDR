@@ -421,7 +421,7 @@ public class MainListener implements Listener {
                     .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
-                    new FixedMetadataValue(DungeonRealms.getInstance(), 20));
+                    new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
 
@@ -432,7 +432,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (player.getWorld() != Bukkit.getWorlds().get(0)) return; //Only main world!
+            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();

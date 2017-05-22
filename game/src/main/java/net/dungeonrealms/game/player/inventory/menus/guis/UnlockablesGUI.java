@@ -106,6 +106,7 @@ public class UnlockablesGUI extends GUIMenu {
 
                     player.sendMessage(ChatColor.GRAY + "Mule Leash added to inventory!");
                     player.getInventory().addItem(mount.generateItem());
+                    setShouldOpenPreviousOnClose(false);
                     player.closeInventory();
                 } else {
                     player.sendMessage(ChatColor.RED + "There already seems to be a Leash in your inventory or Bank!");
@@ -119,6 +120,7 @@ public class UnlockablesGUI extends GUIMenu {
                 }
                 wrapper.setActiveMount(EnumMounts.MULE);
                 ItemMount.attemptSummonMount(player, null);
+                setShouldOpenPreviousOnClose(false);
                 player.closeInventory();
             }
         }));

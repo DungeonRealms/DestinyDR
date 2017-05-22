@@ -54,7 +54,9 @@ public class MountSelectionGUI extends GUIMenu {
                     wrapper.setActiveMount(mounts);
 
                     String name = mounts == EnumMounts.MULE ? wrapper.getMuleTier().getName() : mounts.getDisplayName();
+                    setShouldOpenPreviousOnClose(false);
                     ItemMount.attemptSummonMount(player, name);
+                    player.closeInventory();
                 }
             }));
         }

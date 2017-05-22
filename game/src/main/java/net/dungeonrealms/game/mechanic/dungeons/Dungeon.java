@@ -77,7 +77,7 @@ public abstract class Dungeon {
             pw.setStoredLocation(TeleportLocation.CYRENNICA.getLocation());
             player.teleport(getWorld().getSpawnLocation());
             player.setFallDistance(0F);
-            player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.RED + "How dare you enter my domain!");
+            player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "How dare you enter my domain!");
         }
     }
 
