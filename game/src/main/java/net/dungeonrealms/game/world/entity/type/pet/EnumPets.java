@@ -177,8 +177,7 @@ public enum EnumPets {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to create pet " + name() + ".");
             player.sendMessage(ChatColor.RED + "There was an error loading your pet.");
-            if (!Constants.debug)
-                GameAPI.sendNetworkMessage("DEVMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Failed to load " + player.getName() + "'s pet " + name() + ".");
+            GameAPI.sendError("Failed to load " + player.getName() + "'s pet on {SERVER}.");
         }
         return null;
     }

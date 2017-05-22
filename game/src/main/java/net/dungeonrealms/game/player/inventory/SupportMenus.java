@@ -1,5 +1,5 @@
 package net.dungeonrealms.game.player.inventory;
-
+/*
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
@@ -33,7 +33,7 @@ import java.util.UUID;
 /**
  * Created by Brad on 16/06/2016.
  */
-public class SupportMenus {
+/*public class SupportMenus {
 
     private static ItemStack applySupportItemTags(ItemStack item, String playerName, UUID uuid) {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
@@ -149,7 +149,7 @@ public class SupportMenus {
                     "",
                     ChatColor.WHITE + "One day, a tool for support will go here."
             });
-            inv.setItem(34, applySupportItemTags(item, playerName, uuid));*/
+            inv.setItem(34, applySupportItemTags(item, playerName, uuid));
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.openInventory(inv));
                 });
@@ -528,4 +528,4 @@ public class SupportMenus {
         return PlayerMenus.editItemWithShort(itemStack, shortID, name, lore);
     }
 
-}
+}*/

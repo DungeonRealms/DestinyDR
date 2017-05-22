@@ -2,6 +2,7 @@ package net.dungeonrealms.database;
 
 import com.google.common.collect.Lists;
 import com.mysql.jdbc.StatementImpl;
+
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
@@ -29,6 +30,8 @@ import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Stats;
@@ -48,7 +51,10 @@ import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -437,7 +443,7 @@ public class PlayerWrapper {
 
     public void setGems(int gems) {
         if (gems < 0 || gems > 10000000) {
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
+            GameAPI.sendWarning("Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
             gems = 0;
         }
 
@@ -998,6 +1004,22 @@ public class PlayerWrapper {
         if (epoch == null || !epoch.equals(this.currentWeapon))
             calculateAllAttributes();
     }
+    
+    private void checkForIllegalItems() {
+    	Player player = getPlayer();
+    	ItemStack held = player.getInventory().getItemInMainHand();
+    	if (getRank().isAtLeast(PlayerRank.DEV) || !ItemWeapon.isWeapon(held))
+    		return;
+    	
+    	ModifierRange range = ((ItemWeapon) PersistentItem.constructItem(held)).getAttributes().getAttribute(WeaponAttributeType.DAMAGE);
+    	if (range.getValHigh() < 1000)
+    		return;
+    	
+    	player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+    	player.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the gods.");
+    	
+    	GameAPI.sendWarning("Destroyed illegal item (" + range.toString() + ") from " + player.getName() + " on shard {SERVER}.");
+    }
 
     /**
      * Calculate all stat attributes from gear.
@@ -1008,15 +1030,15 @@ public class PlayerWrapper {
         getAttributes().clear(); // Reset stats.
 
         //  CALCULATE FROM ITEMS  //
+        checkForIllegalItems();
         getAttributes().addStats(getPlayer().getInventory().getItemInMainHand());
         for (ItemStack armor : getPlayer().getInventory().getArmorContents())
             getAttributes().addStats(armor);
 
         this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(getPlayer().getEquipment().getItemInMainHand());
 
-        for (Stats stat : Stats.values()) {
+        for (Stats stat : Stats.values())
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
-        }
 
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses();
@@ -1040,7 +1062,7 @@ public class PlayerWrapper {
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
 
         if (getAlignment() != alignmentTo) {
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), alignmentTo.getNameColor(), getLevel());
+        	ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
             this.alignment = alignmentTo;
         }
     }
@@ -1061,6 +1083,13 @@ public class PlayerWrapper {
 
     public boolean hasEffectUnlocked(ParticleEffect effect) {
         return getParticles().contains(effect) || effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB();
+    }
+    
+    /**
+     * Is this player vulnerable to damage?
+     */
+    public boolean isVulnerable() {
+    	return getPlayer().getGameMode() == GameMode.SURVIVAL && !getToggles().getState(Toggles.INVULNERABLE) && !getPlayer().isInvulnerable();
     }
 
     /**
@@ -1329,7 +1358,7 @@ public class PlayerWrapper {
 
     public void setEcash(int ecash) {
         if (ecash < 0 || ecash > 1_000_000) {
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Tried to set " + getPlayer().getName() + "'s E-Cash to " + ecash + " on shard {SERVER}.");
+            GameAPI.sendWarning("Tried to set " + getPlayer().getName() + "'s E-Cash to " + ecash + " on shard {SERVER}.");
             ecash = 0;
         }
 
@@ -1371,10 +1400,7 @@ public class PlayerWrapper {
             Utils.sendCenteredMessage(getPlayer(), ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             getPlayer().playSound(getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
 
-            Utils.sendCenteredMessage(getPlayer(), ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
-            getPlayer().playSound(getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(getPlayer(), getAlignment().getNameColor(), newLevel);
+            ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
         }
 
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())
@@ -1388,8 +1414,6 @@ public class PlayerWrapper {
             PendingPurchaseable item = getPendingPurchaseablesUnlocked().get(k);
             toReturn.append(item.toString());
             if (k < (getPendingPurchaseablesUnlocked().size() - 1)) toReturn.append("%^&%");
-        }
-        for (PendingPurchaseable item : getPendingPurchaseablesUnlocked()) {
         }
 
         System.out.println("The pending we are saving: " + toReturn.toString());

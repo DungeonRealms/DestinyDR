@@ -18,7 +18,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
@@ -78,7 +77,7 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
     protected ItemStack getStack() {
         ItemStack potion = new ItemStack(isSplash() ? Material.SPLASH_POTION : Material.POTION);
         PotionMeta pm = (PotionMeta) potion.getItemMeta();
-        pm.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        pm.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS);
         pm.setBasePotionData(new PotionData(getTier().getPotionType()));
         potion.setItemMeta(pm);
         return potion;

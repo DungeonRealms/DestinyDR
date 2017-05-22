@@ -2,7 +2,7 @@ package net.dungeonrealms.lobby;
 
 
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;

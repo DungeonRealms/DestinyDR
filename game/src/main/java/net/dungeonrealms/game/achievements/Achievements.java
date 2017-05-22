@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.MetadataUtils;

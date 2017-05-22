@@ -53,7 +53,6 @@ public class CommandTrail extends BaseCommand {
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {
-//                PlayerMenus.openPlayerParticleMenu((Player) sender);
                 new ParticleEffectGUI(player, null).open();
                 return true;
             } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {

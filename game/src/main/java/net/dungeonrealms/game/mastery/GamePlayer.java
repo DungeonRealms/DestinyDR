@@ -17,11 +17,6 @@ public class GamePlayer {
 
     private boolean sharding = false;
     private Player player;
-    
-    // Game Master
-    private boolean isInvulnerable;
-    private boolean isTargettable;
-    private boolean isStreamMode;
 
     private boolean isJailed;
 
@@ -37,27 +32,14 @@ public class GamePlayer {
 	public GamePlayer(Player player) {
         this.player = player;
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
-        this.isTargettable = true;
-        this.isInvulnerable = false;
-        this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
-    }
-
-    public void setInvulnerable(boolean flag) {
-        if (CombatLog.isInCombat(getPlayer())) CombatLog.removeFromCombat(getPlayer());
-        if (CombatLog.inPVP(getPlayer())) CombatLog.removeFromPVP(getPlayer());
-        isInvulnerable = flag;
     }
 
     public void setPvpTaggedUntil(long time) {
         if (!isPvPTagged())
             TitleAPI.sendActionBar(getPlayer(), ChatColor.RED + "PvP Tagged - " + ChatColor.BOLD + "10s", 4 * 20);
         this.pvpTaggedUntil = time;
-    }
-
-    public void setStreamMode(boolean flag) {
-        isStreamMode = flag;
     }
 
     public boolean isPvPTagged() {

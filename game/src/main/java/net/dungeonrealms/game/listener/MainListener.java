@@ -208,7 +208,7 @@ public class MainListener implements Listener {
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
             PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
-//            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
+            GameAPI.sendStaffMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "There was an error while loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on {SHARD}.");
             e.printStackTrace();
             return;
         }
@@ -472,7 +472,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())) {
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getPlayer().getName() + " has attempted GM3 teleport on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+        	GameAPI.sendWarning(event.getPlayer().getName() + " attempted to teleport with spectator mode on {SERVER}.");
             event.setCancelled(true);
         }
     }
@@ -959,13 +959,9 @@ public class MainListener implements Listener {
     public void entityTarget(EntityTargetEvent event) {
         if (event.getTarget() == null)
             return;
-        if (!GameAPI.isPlayer(event.getTarget()) || GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
-        if (gp != null && !gp.isTargettable())
+        if (!GameAPI.isPlayer(event.getTarget())
+        		|| GameAPI.isInSafeRegion(event.getTarget().getLocation())
+        		|| !PlayerWrapper.getWrapper((Player) event.getTarget()).isVulnerable())
             event.setCancelled(true);
     }
 

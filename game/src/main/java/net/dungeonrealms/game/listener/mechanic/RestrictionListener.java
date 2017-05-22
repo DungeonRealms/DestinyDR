@@ -412,25 +412,23 @@ public class RestrictionListener implements Listener {
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
         if (!GameAPI.isPlayer(event.getTarget())) return;
         PlayerWrapper pw = PlayerWrapper.getWrapper((Player) event.getTarget());
-        GamePlayer gamePlayer = GameAPI.getGamePlayer((Player) event.getTarget());
-        if (gamePlayer == null) return;
+        
         if (Metadata.TIER.has(event.getEntity())) {
             if (GameAPI.getTierFromLevel(pw.getLevel()) > EntityAPI.getTier(event.getEntity()) + 2) {
-                if (!CombatLog.isInCombat((Player) event.getTarget()) && event.getTarget().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                if (!CombatLog.isInCombat((Player) event.getTarget()) && GameAPI.isMainWorld(event.getTarget().getWorld())) {
                     event.setCancelled(true);
                     return;
                 }
             }
         }
-        if (!gamePlayer.isTargettable())
+        if (!pw.isVulnerable())
         	event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
-        if (!GameAPI.isPlayer(event.getEntity())) return;
-        if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) return;
-        if (!GameAPI.getGamePlayer((Player) event.getEntity()).isInvulnerable()) return;
+        if (!GameAPI.isPlayer(event.getEntity()) || !PlayerWrapper.getWrapper((Player) event.getEntity()).isVulnerable())
+        	return;
 
         event.setDamage(0);
         event.setCancelled(true);
@@ -529,14 +527,11 @@ public class RestrictionListener implements Listener {
             }
         }
 
-        if (isDefenderPlayer) {
-        	GamePlayer rec = GameAPI.getGamePlayer(pReceiver);
-            if (rec == null || rec.isInvulnerable() || !rec.isTargettable()) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                pReceiver.updateInventory();
-                return;
-            }
+        if (isDefenderPlayer && !PlayerWrapper.getWrapper(pReceiver).isVulnerable()) {
+        	event.setCancelled(true);
+        	event.setDamage(0);
+        	pReceiver.updateInventory();
+        	return;
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {

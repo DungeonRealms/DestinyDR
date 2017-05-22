@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
@@ -10,7 +11,6 @@ import org.bukkit.event.inventory.InventoryAction;
 
 import java.util.List;
 import java.util.UUID;
-
 
 /**
  * Created by Rar349 on 5/10/2017.
@@ -80,8 +80,8 @@ public class SubscriptionsGUI extends GUIMenu implements WebstoreGUI {
     }
 
     public int checkSubscription(UUID uuid, int expiration) {
-        Rank.PlayerRank rank = Rank.getPlayerRank(uuid);
-        if (rank == Rank.PlayerRank.SUB || rank == Rank.PlayerRank.SUB_PLUS) {
+        PlayerRank rank = Rank.getPlayerRank(uuid);
+        if (rank == PlayerRank.SUB || rank == PlayerRank.SUB_PLUS) {
             int currentTime = (int) (System.currentTimeMillis() / 1000);
             int endTime = expiration;
             int timeRemaining = (currentTime == 0 || endTime == 0 ? 0 : (endTime - currentTime));

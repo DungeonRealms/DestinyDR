@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import net.dungeonrealms.network.discord.DiscordAPI;
 import net.dungeonrealms.network.discord.DiscordChannel;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -32,11 +33,10 @@ public class MasterServerListener extends Listener {
             	String task = in.readUTF();
             	
             	switch(task) {
-            		case "GMMessage":
-            			DiscordAPI.sendMessage(DiscordChannel.NOTIFICATIONS, in.readUTF());
-            			break;
-            		case "DEVMessage":
-            			DiscordAPI.sendMessage(DiscordChannel.DEVELOPMENT, in.readUTF());
+            		case "StaffMessage":
+            			DiscordChannel dc = DiscordChannel.getByChannel(PlayerRank.valueOf(in.readUTF()));
+            			if (dc != null)
+            				DiscordAPI.sendMessage(dc, in.readUTF());
             			break;
             		case "BanMessage":
             			DiscordAPI.sendMessage(DiscordChannel.STAFF_REPORTS, in.readUTF());
@@ -46,19 +46,7 @@ public class MasterServerListener extends Listener {
                         int duration = Integer.parseInt(in.readUTF()) / 60;
                         int bonusAmount = Integer.parseInt(in.readUTF());
                         String playerName = in.readUTF();
-                        String friendlyName = "";
-                        //TODO: This can be done better.
-                        switch(type.toLowerCase()) {
-                        	case "loot":
-                        		friendlyName = "Loot";
-                        		break;
-                        	case "profession":
-                        		friendlyName = "Profession";
-                        		break;
-                        	case "level":
-                        		friendlyName = "XP";
-                        		break;
-                        }
+                        String friendlyName = type.equalsIgnoreCase("level") ? "XP" : type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
 //                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
                         break;
             	}

@@ -70,7 +70,7 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 		
 		if (!getTeleportLocation().canBeABook()) {
 			player.sendMessage(ChatColor.RED + "This teleport book is invalid, so it has vanished into the wind.");
-			GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removed 1x " + getTeleportLocation().getDisplayName() + " teleport books from " + player.getName() + ".");
+			GameAPI.sendWarning("Removed 1x " + getTeleportLocation().getDisplayName() + " teleport books from " + player.getName() + ".");
 			return;
 		}
 		

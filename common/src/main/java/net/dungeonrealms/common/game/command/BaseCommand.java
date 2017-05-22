@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Created by Nick on 10/24/2015.
+ * TODO: Rewrite.
  */
 public abstract class BaseCommand implements CommandExecutor, TabExecutor {
 
@@ -103,6 +104,10 @@ public abstract class BaseCommand implements CommandExecutor, TabExecutor {
         if (this.permMessage != null) cmd.setPermissionMessage(this.permMessage);
         getCommandMap().register("", cmd);
         cmd.setExecutor(this);
+    }
+    
+    public String getUsage() {
+    	return this.usage != null ? this.usage.replace("<command>", this.command) : "";
     }
 
     final CommandMap getCommandMap() {

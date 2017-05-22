@@ -1,14 +1,11 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.support;
 
-import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.database.rank.Subscription;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
-import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
-import net.dungeonrealms.game.player.support.Support;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,7 +22,7 @@ public class MainSupportGUI extends SupportGUI {
 
     @Override
     protected void setItems() {
-        Rank.PlayerRank playerRank = getWrapper().getRank();
+        PlayerRank playerRank = getWrapper().getRank();
 
         setItem(19, new GUIItem(Material.DIAMOND).setName(ChatColor.GOLD + "Rank Manager").setLore(ChatColor.WHITE + "Modify the rank of " + getOtherName(), ChatColor.WHITE + "Current rank: " + playerRank.getPrefix()).setClick((evt) -> new RankSupportGUI(player,getOtherName()).open(player,evt.getAction())));
 

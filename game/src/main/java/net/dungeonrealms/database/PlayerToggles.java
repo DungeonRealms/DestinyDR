@@ -10,12 +10,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 
 public class PlayerToggles implements LoadableData, SaveableData {
 
@@ -31,8 +39,40 @@ public class PlayerToggles implements LoadableData, SaveableData {
 		return bool != null && bool && wrapper.getRank().isAtLeast(t.getMinRank());
     }
 
-    public void setState(Toggles t, boolean b) {
-    	toggles.put(t, b);
+    public void setState(Toggles t, boolean newState) {
+    	if (!wrapper.getRank().isAtLeast(t.getMinRank()))
+    		return; // Somehow a player is toggling a togled they don't have access to?
+    	
+    	toggles.put(t, newState);
+    	
+    	// Some special cases :/
+    	Player player = wrapper.getPlayer();
+    	if (t == Toggles.VANISH) {
+    		GameAPI._hiddenPlayers.remove(player);
+    		player.removePotionEffect(PotionEffectType.INVISIBILITY);
+    		GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), String.valueOf(newState));
+    		player.setCustomNameVisible(!newState);
+    		
+    		if (newState) {
+    			GameAPI._hiddenPlayers.add(player);
+    			Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+    			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
+    		} else {
+    			Bukkit.getOnlinePlayers().forEach(p -> p.showPlayer(player));
+    		}
+    		
+    		player.setGameMode(newState ? GameMode.SPECTATOR : GameMode.CREATIVE);
+    	} else if (t == Toggles.INVULNERABLE) {
+    		if (newState) {
+    			EntityAPI.untargetEntity(player, 30); // Untarget player.
+    			CombatLog.removeFromPVP(player);
+    			CombatLog.removeFromCombat(player);
+    		}
+    	} else if (t == Toggles.STREAM) {
+    		player.performCommand("ncp notify " + (newState ? "off" : "on")); // Toggle NCP notifications.
+            for (int i = 0; i < 50; i++)
+                player.sendMessage(""); // Clear chat
+    	}
     }
 
     public void toggle(Toggles t) {
@@ -44,7 +84,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
     @SneakyThrows
     public void extractData(ResultSet set) {
         for (Toggles t : Toggles.values()) {
-        	if (t.isSaved()) {
+        	if (t.isSaved() && wrapper.getRank().isAtLeast(t.getMinRank())) {
         		String db = "toggles." + t.getDBField();
         		setState(t, SQLDatabaseAPI.hasColumn(set, db) ? set.getBoolean(db) : t.isToggledByDefault());
         	}
@@ -72,12 +112,14 @@ public class PlayerToggles implements LoadableData, SaveableData {
     	//SOUNDTRACK("sound", "Toggles the DungeonRealms Soundtrack.", "Soundtrack"),
     	TIPS("tips_enabled", "tips","Toggles the receiving of informative tips.", "Tip Display", true),
     	GLOW("glowEnabled", "glow","Toggles rare items glowing.", "Item Glow", true),
-    	DAMAGE_INDICATORS("dmgIndicators","indicators", "Toggles floating damage values.", "Damage Indicators", true),
+    	HOLOGRAMS("dmgIndicators", "indicators", "Toggles floating damage values.", "Damage Holograms", true),
 
     	GUILD_CHAT("guild_chat", "guildchat", "Toggles talking only in guild chat.", "Guild Chat", false, false),
 
-    	// GM Toggles
-    	VANISH("vanish", "Toggles your vanish-status.", "Vanish", PlayerRank.TRIALGM);
+    	// Staff Toggles
+    	STREAM("stream", "Prevent sensitive messages from displaying.", "Stream Mode", PlayerRank.PMOD),
+    	VANISH("vanish", "Vanish to players and mobs.", "Vanish", PlayerRank.TRIALGM),
+    	INVULNERABLE("god", "Allow incoming damage.", "Invincibility", PlayerRank.TRIALGM);
 
     	private String columnName;
     	private String commandName;
@@ -113,6 +155,10 @@ public class PlayerToggles implements LoadableData, SaveableData {
 
     	public String getDBField() {
     		return columnName;
+    	}
+    	
+    	public DyeColor getDye(boolean toggled) {
+    		return toggled ? DyeColor.LIME : DyeColor.valueOf(getMinRank().getDyeColor());
     	}
 
     	public static List<Toggles> getToggles(Player player) {

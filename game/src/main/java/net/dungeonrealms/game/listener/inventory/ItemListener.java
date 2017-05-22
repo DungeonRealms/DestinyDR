@@ -171,7 +171,6 @@ public class ItemListener implements Listener {
             return;
         evt.setCancelled(true);
         player.getInventory().remove(item);
-        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removing vanilla potion from " + player.getName() + ".");
 
         player.sendMessage(ChatColor.GRAY + " *Glug* *Glug* *Glug*");
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, 1);

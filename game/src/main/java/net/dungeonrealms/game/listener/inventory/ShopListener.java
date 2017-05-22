@@ -310,9 +310,7 @@ public class ShopListener implements Listener {
                     attemptPurchaseItem(clicker, shop, event.getRawSlot(), itemClicked, itemClicked.getAmount());
                 }
             } else {
-                clicker.closeInventory();
-                clicker.sendMessage(ChatColor.RED + "Woah.. I think the banhammer is loading..");
-                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "BANHAMMER: " + clicker.getName() + " is cheating in shops on " + DungeonRealms.getInstance().bungeeName);
+                // Not possible anymore, prevented a dupe.
             }
         }
     }

@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
@@ -10,10 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import static net.dungeonrealms.game.player.inventory.PlayerMenus.editItem;
-
 
 /**
  * Created by Rar349 on 5/10/2017.

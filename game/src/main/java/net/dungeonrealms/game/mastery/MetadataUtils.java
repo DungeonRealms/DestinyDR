@@ -80,7 +80,8 @@ public class MetadataUtils {
 		PORTAL_COOLDOWN(-1),
 		DPS_DUMMY(-1),
 		DUMMY_INFO(-1),
-		SOUND_COOLDOWN(-1);
+		SOUND_COOLDOWN(-1),
+		STAFF_ENERGY_COOLDOWN(-1);
 		
 		private Object defaultValue;
 		

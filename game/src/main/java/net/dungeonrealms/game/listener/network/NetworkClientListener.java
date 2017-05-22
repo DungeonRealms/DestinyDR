@@ -11,7 +11,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -20,6 +20,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -214,41 +215,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     	}
             		});
                     break;
-                case "IGN_GMMessage":
-                    //This GMMessage will only show in-game and skip being show in discord.
-                case "GMMessage": {
-                    String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
-                    Bukkit.getOnlinePlayers().forEach(p -> {
-                        if (Rank.isTrialGM(p)) {
-                            GamePlayer gp = GameAPI.getGamePlayer(p);
-                            if (gp != null && !gp.isStreamMode()) {
-                                p.sendMessage(msg);
-                            }
-                        }
-                    });
-                    break;
-                }
-                case "DEVMessage": {
-                    String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
-                    Bukkit.getOnlinePlayers().forEach(p -> {
-                        if (Rank.isDev(p)) {
-                            GamePlayer gp = GameAPI.getGamePlayer(p);
-                            if (gp != null && !gp.isStreamMode()) {
-                                p.sendMessage(msg);
-                            }
-                        }
-                    });
-                    break;
-                }
+                case "IG_StaffMessage":
                 case "StaffMessage": {
+                	PlayerRank minRank = PlayerRank.valueOf(in.readUTF());
                     String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                        if (Rank.isPMOD(p) || Rank.isSupport(p)) {
-                            GamePlayer gp = GameAPI.getGamePlayer(p);
-                            if (gp != null && !gp.isStreamMode()) {
-                                p.sendMessage(msg);
-                            }
-                        }
+                    	PlayerWrapper pw = PlayerWrapper.getWrapper(p);
+                    	if (pw != null && !pw.getToggles().getState(Toggles.STREAM) && pw.getRank().isAtLeast(minRank))
+                    		p.sendMessage(msg);
                     });
                     break;
                 }

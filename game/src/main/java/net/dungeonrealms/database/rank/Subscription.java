@@ -2,7 +2,7 @@ package net.dungeonrealms.database.rank;
 
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -33,8 +33,8 @@ public class Subscription {
      *
      */
     public int checkSubscription(UUID uuid, int expiration) {
-        Rank.PlayerRank rank = Rank.getPlayerRank(uuid);
-        if (rank == Rank.PlayerRank.SUB || rank == Rank.PlayerRank.SUB_PLUS) {
+        PlayerRank rank = Rank.getPlayerRank(uuid);
+        if (rank == PlayerRank.SUB || rank == PlayerRank.SUB_PLUS) {
             int currentTime = (int) (System.currentTimeMillis() / 1000);
             int endTime = expiration;
             int timeRemaining = (currentTime == 0 || endTime == 0 ? 0 : (endTime - currentTime));
@@ -64,7 +64,7 @@ public class Subscription {
     public void expireSubscription(Player player, PlayerWrapper wrapper) {
         wrapper.setRank(PlayerRank.DEFAULT);
         wrapper.setRankExpiration(0);
-        Rank.getCachedRanks().put(player.getUniqueId(), Rank.PlayerRank.DEFAULT);
+        Rank.getCachedRanks().put(player.getUniqueId(), PlayerRank.DEFAULT);
         SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_RANK, "DEFAULT", wrapper.getAccountID());
         player.sendMessage(ChatColor.RED + "Your subscription has expired!");
     }

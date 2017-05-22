@@ -6,6 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -48,7 +49,7 @@ public class CommandWipe extends BaseCommand {
                             sender.sendMessage(ChatColor.RED + "You have WIPED " + wrapper.getUsername() + "'s user and character data.");
                         }, "UPDATE users SET selected_character_id = 0, ecash = 0, last_free_ecash = 0, currentShard = null, is_online = 0, currencyTab = " + (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? "'0:0:0:0:0'" : "null") + ", mounts = null WHERE account_id = '" + wrapper.getAccountID() + "';");
                         wrapper.loadAllPunishments(true, punishments -> {
-                            GameAPI.sendNetworkMessage("GMMessage", sender.getName() + " has WIPED " + wrapper.getUsername() + "'s character data from the database. A-ID: (" + wrapper.getAccountID() + ") C-ID: (" + wrapper.getCharacterID() + ") " + punishments.getPunishCount(PunishType.MUTE) + " Mutes, " + punishments.getPunishCount(PunishType.BAN) + " Bans");
+                            GameAPI.sendStaffMessage(PlayerRank.GM, sender.getName() + " has WIPED " + wrapper.getUsername() + "'s character data from the database. A-ID: (" + wrapper.getAccountID() + ") C-ID: (" + wrapper.getCharacterID() + ") " + punishments.getPunishCount(PunishType.MUTE) + " Mutes, " + punishments.getPunishCount(PunishType.BAN) + " Bans");
                         });
                     }
                 });

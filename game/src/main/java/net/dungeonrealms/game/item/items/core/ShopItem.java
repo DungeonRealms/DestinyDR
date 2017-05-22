@@ -60,7 +60,7 @@ public class ShopItem extends ItemGeneric {
         	this.originalLore = new ArrayList<>();
         this.soldItem = purchase;
         this.callback = cb;
-        setData(ItemData.MENU, true);
+        setFlag(ItemFlag.MENU, true);
     }
 
     public ShopItem setECash(int eCash) {

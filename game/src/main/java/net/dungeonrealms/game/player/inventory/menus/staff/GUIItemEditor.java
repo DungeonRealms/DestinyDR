@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.game.item.items.core.ItemGear;
-import net.dungeonrealms.game.item.items.core.ItemGeneric.ItemData;
+import net.dungeonrealms.game.item.items.core.ItemGeneric.ItemFlag;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
@@ -155,15 +155,15 @@ public class GUIItemEditor extends GUIMenu {
 		
 		nextRow();
 		skipSlot(3);
-		for (ItemData data : gear.getDataMap().keySet()) {
+		for (ItemFlag data : gear.getDataMap().keySet()) {
 			if (!data.isShowInGUI())
 				continue;
 			
-			addItem(new GUIItem(gear.getSData(data) ? Material.EMERALD_BLOCK : Material.LAPIS_BLOCK)
+			addItem(new GUIItem(gear.getFlag(data) ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK)
 				.setName(ChatColor.BLUE + "Set " + data.getDisplay())
 				.setLore("Click here to toggle " + data.getDisplay() + " status.")
 				.setClick(e -> {
-					gear.setData(data, !gear.getSData(data));
+					gear.setFlag(data, !gear.getFlag(data));
 					player.sendMessage(ChatColor.GREEN + "Toggled " + data.getDisplay());
 					reconstructGUI(player);
 				}));

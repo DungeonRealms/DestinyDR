@@ -4,6 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
@@ -106,13 +107,10 @@ public class CommandMute extends BaseCommand {
         // Distribute the appropriate messages.
         sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + ".");
         p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
-        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
+        GameAPI.sendStaffMessage(PlayerRank.PMOD, ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
         
         //  BROADCASTS TO DISCORD  //
-        String message = "/" + label;
-        for(String a : args)
-        	message += " " + a;
-        GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
+        GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /" + String.join(" ", args));
         
         return false;
     }

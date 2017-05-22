@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
@@ -213,21 +214,18 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove, boolean duel) {
         Player player = Bukkit.getPlayer(uuid);
-        if (Rank.isTrialGM(player)) {
-            GamePlayer gp = GameAPI.getGamePlayer(player);
-            // check if they have allow fight on
-            if (gp != null && gp.isInvulnerable() && !gp.isTargettable()) return;
+        if (!PlayerWrapper.getWrapper(player).isVulnerable())
+        	return;
+        
+        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel)
+        	return;
+        
+        if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
+        	if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
+        		return;
+        	GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
         }
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) return;
-        if (player.hasMetadata("last_energy_remove")) {
-            if(ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
-                if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
-                    return;
-                }
-            }
-        }
-        player.setMetadata("last_energy_remove", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        
         if (getPlayerCurrentEnergy(player) <= 0) return;
         if ((getPlayerCurrentEnergy(player) - amountToRemove) <= 0) {
             player.setExp(0.0F);

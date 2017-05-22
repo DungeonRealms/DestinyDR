@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.support;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+/*import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
@@ -16,7 +16,7 @@ import java.util.UUID;
 /**
  * Created by Brad on 17/06/2016.
  */
-public class Support {
+/*public class Support {
 
     public static void handleClick(Player player, String menu, ItemStack itemClicked, int slotClicked) {
         // @todo: Do this sometime (move out of ClickHandler since it's bulky.
@@ -31,7 +31,7 @@ public class Support {
      * @param amount
      * @param type
      */
-    public static void modifyEcash(Player player, String playerName, UUID uuid, int amount, String type) {
+    /*public static void modifyEcash(Player player, String playerName, UUID uuid, int amount, String type) {
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setEcash(type.equals("set") ? amount : type.equals("remove") ? wrapper.getEcash() + (amount * -1) : wrapper.getEcash() + amount);
@@ -52,7 +52,7 @@ public class Support {
      * @param amount
      * @param type
      */
-    public static void modifyLevel(Player player, String playerName, UUID uuid, int amount, String type) {
+    /*public static void modifyLevel(Player player, String playerName, UUID uuid, int amount, String type) {
         if (amount < 1 || amount > 100) {
             player.sendMessage(ChatColor.RED + "Error: Invalid #.");
             return;
@@ -77,7 +77,7 @@ public class Support {
      * @param amount
      * @param type
      */
-    public static void modifyExp(Player player, String playerName, UUID uuid, int amount, String type) {
+    /*public static void modifyExp(Player player, String playerName, UUID uuid, int amount, String type) {
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setExperience(type.equals("set") ? amount : type.equals("remove") ? wrapper.getExperience() + (amount * -1) : wrapper.getExperience() + amount);
@@ -98,7 +98,7 @@ public class Support {
      * @param amount
      * @param type
      */
-    public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
+    /*public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
         PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
             wrapper.setGems(type.equals("set") ? amount : type.equals("remove") ? (amount * -1) : amount);
             wrapper.saveData(true, null, (wrap) -> {
@@ -125,4 +125,4 @@ public class Support {
         });
     }
 
-}
+}*/

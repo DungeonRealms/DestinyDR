@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.inventory.menus.guis.support;
 
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
@@ -38,8 +39,8 @@ public abstract class SupportGUI extends GUIMenu {
                 player.sendMessage(ChatColor.RED + "This person has never logged into dungeon realms!");
                 return;
             }
-            Rank.PlayerRank playerRank = Rank.getPlayerRank(uuid);
-            if (!Rank.isDev(player) && (playerRank == Rank.PlayerRank.GM || playerRank == Rank.PlayerRank.DEV)) {
+            PlayerRank playerRank = Rank.getPlayerRank(uuid);
+            if (!Rank.getRank(player).isAtLeast(playerRank)) {
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
                 return;
             }

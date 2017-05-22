@@ -30,7 +30,7 @@ import java.util.*;
 public abstract class ItemGeneric extends PersistentItem {
 	
 	@Getter
-	private Map<ItemData, Boolean> dataMap;
+	private Map<ItemFlag, Boolean> dataMap;
 	
 	private List<String> lore;
 	
@@ -81,75 +81,68 @@ public abstract class ItemGeneric extends PersistentItem {
 	public ItemGeneric(ItemStack item, ItemType type) {
 		super(item);
 		this.itemType = type;
-		
-		//Alert us if anything goes awry. Attempts to delete the item. (It likely won't)
-		if (isEventItem() && !(DungeonRealms.isMaster() || DungeonRealms.isEvent())) {
-			GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Found event item on non-event shard! Found "
-					+ item.getAmount() + "x" + (item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name()));
-			setDestroyed(true);
-		}
 	}
 	
 	public boolean isPermanentUntradeable() {
-		return getSData(ItemData.PUNTRADEABLE);
+		return getFlag(ItemFlag.PUNTRADEABLE);
 	}
 	
 	public boolean isDisplay() {
-		return getSData(ItemData.MENU);
+		return getFlag(ItemFlag.MENU);
     }
 	
 	public boolean isSoulbound() {
-		return getSData(ItemData.SOULBOUND);
+		return getFlag(ItemFlag.SOULBOUND);
 	}
 	
 	public boolean isUndroppable() {
-		return getSData(ItemData.UNDROPPABLE);
+		return getFlag(ItemFlag.UNDROPPABLE);
 	}
 	
 	public boolean isUntradeable() {
-		return getSData(ItemData.UNTRADEABLE);
+		return getFlag(ItemFlag.UNTRADEABLE);
 	}
 	
 	public boolean isEventItem() {
-		return getSData(ItemData.EVENT);
+		return getFlag(ItemFlag.EVENT);
 	}
 	
 	public boolean isDungeon() {
-		return getSData(ItemData.DUNGEON);
+		return getFlag(ItemFlag.DUNGEON);
 	}
 	
 	public ItemGeneric setDisplay(boolean display) {
-		setData(ItemData.MENU, display);
+		setFlag(ItemFlag.MENU, display);
 		return this;
 	}
 	
 	public ItemGeneric setDungeon(boolean dungeon) {
-		setData(ItemData.DUNGEON, dungeon);
+		setFlag(ItemFlag.DUNGEON, dungeon);
 		return this;
 	}
 	
     public ItemGeneric setPermUntradeable(boolean perm) {
-        setData(ItemData.PUNTRADEABLE, perm);
+        setFlag(ItemFlag.PUNTRADEABLE, perm);
         return this;
     }
 
     public ItemGeneric setSoulbound(boolean soulbound) {
-        setData(ItemData.SOULBOUND, soulbound);
+        setFlag(ItemFlag.SOULBOUND, soulbound);
         return this;
     }
 
     public ItemGeneric setUndroppable(boolean undroppable) {
-        setData(ItemData.UNDROPPABLE, undroppable);
+        setFlag(ItemFlag.UNDROPPABLE, undroppable);
         return this;
     }
 
     public ItemGeneric setUntradeable(boolean untradeable) {
-        setData(ItemData.UNTRADEABLE, untradeable);
+        setFlag(ItemFlag.UNTRADEABLE, untradeable);
         return this;
     }
 
     public ItemGeneric setEventItem(boolean event) {
-        setData(ItemData.EVENT, event);
+        setFlag(ItemFlag.EVENT, event);
         return this;
     }
 
@@ -168,8 +161,8 @@ public abstract class ItemGeneric extends PersistentItem {
     protected void loadItem() {
     	this.meta = new ItemStack(Material.DIRT).getItemMeta();
     	
-        for (ItemData data : ItemData.values())
-            setData(data, getTagBool(data.getNBTTag()));
+        for (ItemFlag data : ItemFlag.values())
+            setFlag(data, getTagBool(data.getNBTTag()));
 
         if (isSoulbound() && hasTag("soulboundTrade")) {
             long time = getTag().getLong("soulboundTrade");
@@ -215,8 +208,8 @@ public abstract class ItemGeneric extends PersistentItem {
         if (isDestroyed())
             return;
 
-        for (ItemData data : ItemData.values()) {
-            boolean enabled = getSData(data);
+        for (ItemFlag data : ItemFlag.values()) {
+            boolean enabled = getFlag(data);
             setTagBool(data.getNBTTag(), enabled);
 
             if (data.getDisplay() != null && enabled && (lore == null || !lore.contains(ChatColor.GRAY + data.getDisplay())))
@@ -327,11 +320,11 @@ public abstract class ItemGeneric extends PersistentItem {
         }
     }
 
-    public boolean getSData(ItemData data) {
+    public boolean getFlag(ItemFlag data) {
         return dataMap != null && dataMap.containsKey(data) && dataMap.get(data);
     }
 
-    public void setData(ItemData data, boolean enabled) {
+    public void setFlag(ItemFlag data, boolean enabled) {
         if (dataMap == null)
             dataMap = new HashMap<>();
         dataMap.put(data, enabled);
@@ -339,7 +332,7 @@ public abstract class ItemGeneric extends PersistentItem {
 
     @AllArgsConstructor
     @Getter
-    public enum ItemData {
+    public enum ItemFlag {
         SOULBOUND(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "Soulbound"),
         UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
         PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
@@ -351,7 +344,7 @@ public abstract class ItemGeneric extends PersistentItem {
         private final String display;
         private boolean showInGUI;
 
-        ItemData(String s) {
+        ItemFlag(String s) {
             this(s, true);
         }
 

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 
 import org.bukkit.entity.Player;
@@ -106,13 +107,13 @@ public class PlayerGameStats implements LoadableData, SaveableData {
 				@Override
 				public String getReplacement(Player player) {
 					PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-					if(wrapper == null) return null;
-					if(stat.equals(TIME_PLAYED)) {
-					    int seconds = wrapper.getPlayerGameStats().getStat(stat);
-					    long hours = TimeUnit.SECONDS.toHours((long) seconds);
-					    long minutes = seconds / 60 - hours * 60;
-					    return hours + "h " + minutes + "m";
-                    }
+					if(wrapper == null)
+						return null;
+					
+					if (stat == TIME_PLAYED)
+						return String.valueOf(GameAPI.formatTime(TimeUnit.SECONDS
+								.toMillis((long) wrapper.getPlayerGameStats().getStat(stat))));
+					
                     return Utils.format(wrapper.getPlayerGameStats().getStat(stat));
 				}
         	};

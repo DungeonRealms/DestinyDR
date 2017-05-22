@@ -147,20 +147,20 @@ public class CombatLog implements GenericMechanic {
      */
     public static void addToPVP(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
-        if (!inPVP(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
-            PVP_COMBAT.put(player, 10);
-            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
+        if(wrapper == null || !wrapper.isVulnerable() || inPVP(player))
+        	return;
 
-            /*
-            Knock player off of horse, if they're tagged in combat.
-             */
-            if (player.getVehicle() != null) {
-            	MountUtils.removeMount(player);
-            	if (player.getVehicle() != null)
-            		player.getVehicle().remove();
-                player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
-            }
+        PVP_COMBAT.put(player, 10);
+        TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
+
+        /*
+         Knock player off of horse, if they're tagged in combat.
+         */
+        if (player.getVehicle() != null) {
+        	MountUtils.removeMount(player);
+        	if (player.getVehicle() != null)
+        		player.getVehicle().remove();
+        	player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
         }
     }
 
@@ -199,21 +199,20 @@ public class CombatLog implements GenericMechanic {
 
     public static void addToCombat(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
-        if (!isInCombat(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
-            COMBAT.put(player, 10);
-            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
-            
-            /*
-            Knock player off of horse, if they're tagged in combat.
-             */
-            if (player.getVehicle() != null) {
-            	MountUtils.removeMount(player);
-            	if (player.getVehicle() != null)
-                    player.getVehicle().remove();
-                player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
-            }
-
+        if(wrapper == null || isInCombat(player) || !wrapper.isVulnerable())
+        	return;
+       
+        COMBAT.put(player, 10);
+        TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
+        
+        /*
+         Knock player off of horse, if they're tagged in combat.
+         */
+        if (player.getVehicle() != null) {
+        	MountUtils.removeMount(player);
+        	if (player.getVehicle() != null)
+        		player.getVehicle().remove();
+        	player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
         }
     }
 

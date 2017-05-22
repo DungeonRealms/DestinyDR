@@ -2,6 +2,7 @@ package net.dungeonrealms.game.handler;
 
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 /**
  * Created by Kieran on 10/21/2015.
+ * TODO: This system seems overly complex. Can we redo this later?
  */
 public class ScoreboardHandler implements GenericMechanic {
 
@@ -92,69 +94,40 @@ public class ScoreboardHandler implements GenericMechanic {
         mainScoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
     }
 
-    /**
-     * Updates the players name and tab menus
-     * (Shown to other players).
-     *
-     * @param player
-     * @param chatColor
-     * @param playerLevel
-     * @since 1.0
-     */
-    public void setPlayerHeadScoreboard(Player player, final ChatColor chatColor, int playerLevel) {
-        ChatColor color = chatColor;
-        Rank.PlayerRank rank = Rank.getPlayerRank(player.getUniqueId());
-        //Only need to check if GM one time..
-        if (rank.isAtLeast(Rank.PlayerRank.TRIALGM))
-            color = ChatColor.AQUA;
+    public void updatePlayerName(Player player) {
+    	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+    	if (pw == null)
+    		return;
+    	
+    	ChatColor color = pw.getRank().isAtLeast(PlayerRank.TRIALGM) ? ChatColor.AQUA : pw.getAlignment().getNameColor();
+    	player.setPlayerListName(color + player.getName());
+    	
+    	String prefix = color + "";
+    	String suffix = ChatColor.AQUA + "[" + pw.getLevel() + "]";
+    	
+    	// Append guild tag.
+    	GuildWrapper guild = pw.getGuild();
+    	if (guild != null)
+    		prefix = ChatColor.RESET + guild.getTag() + prefix;
+    	
+    	//This is not async because the scoreboard should NEVER be modified async.
+    	for (Player update : Bukkit.getOnlinePlayers())
+    		if (!Affair.isInParty(update))
+    			updateTeam(getPlayerTeam(getPlayerScoreboardObject(update), player), player, prefix, suffix);
+    	
+    	// Update the value for everyone in a party.
+    	for (Party party : Affair.getParties())
+    		updateTeam(getPlayerTeam(party.getScoreboard(), player), player, prefix, suffix);
 
-        String guild = "";
-
-        GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
-        if (guildWrapper != null) {
-            String clanTag = guildWrapper.getTag();
-            guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
-        }
-
-        //Async please thanks.
-        //Do this once.
-        player.setPlayerListName(rank.getChatColor() + player.getName());
-        for (Player player1 : Bukkit.getOnlinePlayers()) {
-
-            //Party support.
-            if (Affair.isInParty(player1)) {
-                //Dont update them each indiviually.
-                continue;
-            }
-
-            //The player1 team on their scoreboard.
-            Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
-            team.setPrefix(guild + color);
-            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-            if (!team.hasEntry(player.getName())) {
-                team.addEntry(player.getName());
-            }
-        }
-
-        for (Party party : Affair.getParties()) {
-        	// Update the scoreboards to show levels.
-            Scoreboard scoreboard = party.getScoreboard();
-            Team team = getPlayerTeam(scoreboard, player);
-            team.setPrefix(guild + color);
-            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-            if (!team.hasEntry(player.getName())) {
-                team.addEntry(player.getName());
-            }
-        }
-
-        Team team = getPlayerTeam(mainScoreboard, player);
-        team.setPrefix(guild + color);
-        team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-        if (!team.hasEntry(player.getName())) {
-            team.addEntry(player.getName());
-        }
-
+    	updateTeam(getPlayerTeam(mainScoreboard, player), player, prefix, suffix);
     }
+
+	private void updateTeam(Team team, Player player, String prefix, String suffix) {
+		team.setPrefix(prefix);
+		team.setSuffix(suffix);
+		if (!team.hasEntry(player.getName()))
+			team.addEntry(player.getName());
+	}
 
     public void registerHealth(Scoreboard scoreboard) {
         Objective objective = scoreboard.getObjective("playerScoreboard") != null ? scoreboard.getObjective("playerScoreboard") : scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
@@ -185,7 +158,7 @@ public class ScoreboardHandler implements GenericMechanic {
             team.setPrefix(guild + chatColor);
             team.setSuffix(ChatColor.AQUA + " [Lvl. " + level + "]");
 
-            Rank.PlayerRank rank = Rank.getRank(player1);
+            PlayerRank rank = Rank.getRank(player1);
             player1.setPlayerListName(rank.getChatColor() + player1.getName());
             if (!team.hasEntry(player1.getName())) {
                 team.addEntry(player1.getName());

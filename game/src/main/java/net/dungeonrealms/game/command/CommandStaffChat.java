@@ -1,10 +1,11 @@
 package net.dungeonrealms.game.command;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,11 +16,19 @@ import java.util.Arrays;
 /**
  * Created by Brad on 16/06/2016.
  */
-
 public class CommandStaffChat extends BaseCommand {
 
-    public CommandStaffChat() {
-        super("staffchat", "/<command> [message]", "Send a message to the staff chat.", Arrays.asList("sc", "s"));
+	private PlayerRank rank;
+	private String prefix;
+	
+	public CommandStaffChat(String name, PlayerRank minRank) {
+		this(name, minRank, minRank.getPrefix());
+	}
+	
+    public CommandStaffChat(String name, PlayerRank rank, String prefix) {
+        super(name + "chat", "/<command> <message>", "Send a message to the " + name + " chat.", Arrays.asList(name.substring(0, 1) + "c"));
+        this.rank = rank;
+        this.prefix = prefix;
     }
 
     @Override
@@ -27,15 +36,15 @@ public class CommandStaffChat extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        if (!Rank.isPMOD(player))
-        	return false;
+        if (!Rank.getRank(player).isAtLeast(rank))
+        	return true;
         
         if (args.length == 0) {
-        	sender.sendMessage("/sc|staffchat|s [message]");
+        	sender.sendMessage(getUsage());
         	return true;
         }
 
-        GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper((Player) sender).getChatName() + "&6" + String.join(" ", args));
+        GameAPI.sendStaffMessage(rank, ChatColor.GOLD + "<" + this.prefix + "> ({SERVER}&) " + PlayerWrapper.getWrapper((Player) sender).getChatName() + "&6: " + String.join(" ", args));
         return true;
     }
 }

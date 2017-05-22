@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
@@ -18,6 +19,7 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
@@ -394,7 +396,7 @@ public abstract class Dungeon {
             try {
                 Bukkit.getLogger().info("Saving " + getType().getName() + " from " + getWorld().getName());
                 GameAPI.createZipFile(getWorld().getName() + "/", getType().getZipFile().getPath());
-                GameAPI.sendNetworkMessage("GMMessage", ChatColor.GREEN + "Saved modified '" + getType().getName() + "' dungeon on {SERVER}" + ChatColor.GREEN + ".");
+                GameAPI.sendStaffMessage(PlayerRank.GM, ChatColor.GREEN + "Saved modified '" + getType().getName() + "' dungeon on {SERVER}" + ChatColor.GREEN + ".");
             } catch (Exception e) {
                 e.printStackTrace();
                 Bukkit.getLogger().warning("Failed to save editted dungeon " + getType().getName() + ".");

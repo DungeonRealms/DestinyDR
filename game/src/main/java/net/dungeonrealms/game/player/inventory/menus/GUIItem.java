@@ -7,7 +7,6 @@ import net.dungeonrealms.game.item.items.core.ShopItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -22,7 +21,7 @@ public class GUIItem extends ShopItem {
 
     public GUIItem(ItemStack item) {
         super(item);
-        getItem().getItemMeta().addItemFlags(ItemFlag.values());
+        getItem().getItemMeta().addItemFlags(org.bukkit.inventory.ItemFlag.values());
     }
 
     public GUIItem(Material material) {

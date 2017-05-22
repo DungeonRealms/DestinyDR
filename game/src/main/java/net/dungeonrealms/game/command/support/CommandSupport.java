@@ -2,7 +2,6 @@ package net.dungeonrealms.game.command.support;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.game.player.inventory.SupportMenus;
 
 import net.dungeonrealms.game.player.inventory.menus.guis.support.MainSupportGUI;
 import org.bukkit.ChatColor;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 /**
  * Created by Brad on 09/06/2016.
  */
-
 public class CommandSupport extends BaseCommand {
 
     public CommandSupport(String command, String usage, String description) {
@@ -31,7 +29,6 @@ public class CommandSupport extends BaseCommand {
         }
 
         new MainSupportGUI(player,args[0]).open(player,null);
-        //SupportMenus.openMainMenu(player, args[0]);
         return true;
     }
 

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.command.punish;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
@@ -21,7 +22,6 @@ import java.util.Arrays;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
-
 public class CommandBan extends BaseCommand {
 
     public CommandBan(String command, String usage, String description, String... aliases) {
@@ -126,17 +126,14 @@ public class CommandBan extends BaseCommand {
                 if (finalDuration != 0) {
                     String punishExpiry = ChatColor.BOLD + PunishAPI.timeString((int) (finalDuration / 60));
                     sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + ".");
-                    GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + friendlyMessage + ".");
+                    GameAPI.sendStaffMessage(PlayerRank.PMOD, ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + friendlyMessage + ".");
                 } else {
                     sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-                    GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
+                    GameAPI.sendStaffMessage(PlayerRank.PMOD, ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
                 }
 
                 //  BROADCASTS TO DISCORD  //
-                String message = "/" + label;
-                for (String a : args)
-                    message += " " + a;
-                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
+                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /" + String.join(" ", args));
 
                 Player online = Bukkit.getPlayer(p_uuid);
                 if (online != null) {

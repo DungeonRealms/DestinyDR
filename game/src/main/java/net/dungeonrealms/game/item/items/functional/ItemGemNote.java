@@ -5,6 +5,7 @@ import java.util.List;
 
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
@@ -39,7 +40,7 @@ public class ItemGemNote extends ItemMoney implements ItemClickListener, ItemInv
 	@Override
 	public void updateItem() {
 		if (getGemValue() > getMaxStorage() / 2)
-			GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.GOLD + "[WARNING] " + ChatColor.WHITE + getLastSigner() + " created a Bank Note worth " + ChatColor.GREEN + getGemValue() + ChatColor.WHITE + " on {SERVER}.");
+			GameAPI.sendStaffMessage(PlayerRank.GM, ChatColor.GOLD + "[WARNING] " + ChatColor.WHITE + getLastSigner() + " created a Bank Note worth " + ChatColor.GREEN + getGemValue() + ChatColor.WHITE + " on {SERVER}.", true);
 		
 		setTagString("signers", String.join(",", this.signers));
 		super.updateItem();

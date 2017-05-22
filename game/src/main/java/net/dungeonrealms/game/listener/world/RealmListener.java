@@ -87,16 +87,12 @@ public class RealmListener implements Listener {
             player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
                     + " be flagged as 'combat logged' while invincible.");
 
-            if (GameAPI.getGamePlayer(player) != null)
-                GameAPI.getGamePlayer(player).setInvulnerable(true);
-
+            player.setInvulnerable(true);
 
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 if (player.isOnline()) {
                     player.setFireTicks(0);
-                    GamePlayer pl = GameAPI.getGamePlayer(player);
-                    if (pl != null)
-                        pl.setInvulnerable(false);
+                    player.setInvulnerable(false);
                 }
             }, 15 * 20L);
 

@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
@@ -129,8 +130,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
                 i++;
             }
             p.sendMessage(ChatColor.GOLD + "Found a dupe? Don't " + ChatColor.RED + "abuse" + ChatColor.GOLD + " it! Report it and you may be eligible for " + ChatColor.YELLOW + ChatColor.BOLD + "SUB++" + ChatColor.GOLD + "!");
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
-                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard {SERVER}.");
+            GameAPI.sendWarning("Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard {SERVER}.");
             
             DebugUtil.debugReport(p);
         }

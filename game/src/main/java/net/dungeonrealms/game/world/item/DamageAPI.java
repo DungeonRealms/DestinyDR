@@ -743,7 +743,7 @@ public class DamageAPI {
      * Create a hologram that floats up and deletes itself.
      */
     public static void createDamageHologram(Player createFor, Location createAround, String display) {
-        if (createFor != null && !PlayerWrapper.getPlayerWrapper(createFor).getToggles().getState(Toggles.DAMAGE_INDICATORS))
+        if (createFor != null && !PlayerWrapper.getPlayerWrapper(createFor).getToggles().getState(Toggles.HOLOGRAMS))
             return;
         double xDif = (Utils.randInt(0, 20) - 10) / 10D;
         double yDif = Utils.randInt(0, 15) / 10D;

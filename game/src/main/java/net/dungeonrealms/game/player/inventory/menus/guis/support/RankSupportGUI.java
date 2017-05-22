@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.inventory.menus.guis.support;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -27,8 +28,8 @@ public class RankSupportGUI extends SupportGUI {
     @Override
     protected void setItems() {
         int slot = 0;
-        Rank.PlayerRank viewerRank = Rank.getPlayerRank(player.getUniqueId());
-        for(Rank.PlayerRank rank : Rank.PlayerRank.values()) {
+        PlayerRank viewerRank = Rank.getPlayerRank(player.getUniqueId());
+        for(PlayerRank rank : PlayerRank.values()) {
             if(!viewerRank.isAtLeast(rank)) continue; //Can not set someones rank higher than their own.
             setItem(slot++, new GUIItem(Material.BAKED_POTATO).setName(rank.getChatColor() + rank.getChatPrefix()).setLore(ChatColor.WHITE + "Set the users rank to: " + rank.getFullPrefix()).setClick((evt) -> {
                 getWrapper().setRank(rank);

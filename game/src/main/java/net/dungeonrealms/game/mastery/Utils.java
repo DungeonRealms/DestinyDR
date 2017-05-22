@@ -143,6 +143,10 @@ public class Utils {
         return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
     
+    public static boolean randChance(int chance) {
+    	return randInt(chance) == 0;
+    }
+    
     public static int randInt(int max) {
     	return randInt(0, max - 1);
     }

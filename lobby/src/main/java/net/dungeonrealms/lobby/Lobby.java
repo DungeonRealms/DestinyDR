@@ -10,7 +10,7 @@ import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;

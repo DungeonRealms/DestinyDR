@@ -2,65 +2,26 @@ package net.dungeonrealms.game.handler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.database.UpdateType;
-import net.dungeonrealms.game.achievements.Achievements.AchievementCategory;
-import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
-import net.dungeonrealms.game.item.items.functional.ecash.ItemPetSelector;
-import net.dungeonrealms.game.listener.NPCMenu;
-import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
-import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.inventory.SupportMenus;
-import net.dungeonrealms.game.player.inventory.menus.AchievementMenu;
-import net.dungeonrealms.game.player.inventory.menus.guis.AchievementGUI;
-import net.dungeonrealms.game.player.inventory.menus.guis.MountSelectionGUI;
-import net.dungeonrealms.game.player.menu.CraftingMenu;
-import net.dungeonrealms.game.player.support.Support;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.entity.util.PetUtils;
-import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -74,7 +35,6 @@ public class ClickHandler {
         String name = event.getInventory().getName();
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (slot == -999)
         	return; // Dropping item.
 
@@ -282,7 +242,7 @@ public class ClickHandler {
                 }
                 break;
             // CUSTOMER SUPPORT @todo: Move to own class to clean up & take advantage of own methods for reusing vars.
-            case "Support Tools":
+            /*case "Support Tools":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
                     break;
@@ -395,7 +355,7 @@ public class ClickHandler {
                 });
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
-                SupportMenus.openMainMenu(player, playerName);*/
+                SupportMenus.openMainMenu(player, playerName);
                 break;
             case "Support Tools (Subscription)":
                 event.setCancelled(true);
@@ -696,115 +656,7 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
                         return;
                 }
-                break;
-            case "Game Master Toggles":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-
-                switch (slot) {
-                    case 0: // Vanish
-                        if (GameAPI._hiddenPlayers.contains(player)) {
-                            GameAPI._hiddenPlayers.remove(player);
-                            for (Player player1 : Bukkit.getOnlinePlayers()) {
-                                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
-                                    continue;
-                                }
-                                player1.showPlayer(player);
-                            }
-                            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
-                            GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "false");
-                            player.setCustomNameVisible(true);
-                            player.setGameMode(GameMode.CREATIVE);
-                            PlayerWrapper.getWrapper(player).getToggles().toggle(Toggles.VANISH);
-                        } else {
-                            // Remove Trail
-                            if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
-                                DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                                player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
-                            }
-                            
-                            PetUtils.removePet(player);
-
-                            // Make the user invisible / hidden.
-                            GameAPI._hiddenPlayers.add(player);
-                            player.setCustomNameVisible(false);
-                            Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
-                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
-                            GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "true");
-                            player.setGameMode(GameMode.SPECTATOR);
-                            PlayerWrapper.getWrapper(player).getToggles().toggle(Toggles.VANISH);
-                        }
-                        break;
-
-                    case 1: // Allow Fight
-                        GamePlayer gp = GameAPI.getGamePlayer(player);
-                        if (gp == null) break;
-                        // invert invulnerable flag
-
-                        boolean newVal = !gp.isInvulnerable();
-                        gp.setInvulnerable(newVal);
-                        //If we are invunerable = true, then targetable = false.
-                        gp.setTargettable(!newVal);
-
-                        if (!gp.isTargettable())
-                            EntityAPI.untargetEntity(player, 20);
-
-                        Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "GM " +
-                                "INVINCIBILITY - " + (gp.isInvulnerable() ? ChatColor.GREEN.toString() + ChatColor
-                                .BOLD + "ENABLED" : ChatColor.RED.toString() + ChatColor.BOLD + "DISABLED"));
-                        break;
-
-                    case 2: // Toggle Stream Mode
-                        gp = GameAPI.getGamePlayer(player);
-                        if (gp == null) break;
-
-                        // Change the status.
-                        gp.setStreamMode(!gp.isStreamMode());
-
-                        // Update Permission
-                        player.performCommand("ncp notify " + (gp.isStreamMode() ? "off" : "on"));
-
-                        // Clear Immediate Chat
-                        for (int i = 0; i < 50; i++) {
-                            player.sendMessage("");
-                        }
-
-                        // Prompt user about the change.
-                        if (gp.isStreamMode()) {
-                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Stream Mode - ENABLED");
-                        } else {
-                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stream Mode - DISABLED");
-                        }
-
-                        break;
-
-                    default:
-                        break;
-                }
-
-                PlayerMenus.openGameMasterTogglesMenu(player);
-                break;
-            case "Head Game Master Toggles":
-                event.setCancelled(true);
-                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-
-                switch (slot) {
-                    case 0: // Game Master Extended Permissions
-                        DungeonRealms.getInstance().isGMExtendedPermissions = !DungeonRealms.getInstance().isGMExtendedPermissions;
-                        if (DungeonRealms.getInstance().isGMExtendedPermissions) {
-                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Game Master Extended Permissions - ENABLED");
-                        } else {
-                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Game Master Extended Permissions - DISABLED");
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                PlayerMenus.openHeadGameMasterTogglesMenu(player);
-                break;
+                break;*/
         }
     }
 }

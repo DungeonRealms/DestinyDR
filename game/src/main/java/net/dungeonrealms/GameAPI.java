@@ -10,12 +10,13 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -85,6 +86,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -355,7 +357,7 @@ public class GameAPI {
 
         //Sometimes the crash detector has to kill bukkit on a normal shutdown, we don't need to announce it if DR's normal shutdown has already run.
         if (!DungeonRealms.getInstance().isAlmostRestarting())
-            sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " has crashed.");
+            sendWarning("{SERVER} has crashed.");
 
 
         final long terminateTime = ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 1000 + 10000;
@@ -498,13 +500,49 @@ public class GameAPI {
         }
         getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
     }
-
-    public static void sendIngameDevMessage(String message, String... contents) {
-        sendNetworkMessage("IGN_DEVMessage", message, contents);
+    
+    /**
+     * Broadcast a staff message on all shards.
+     * @param message
+     */
+    public static void sendStaffMessage(String message) {
+    	sendStaffMessage(PlayerRank.PMOD, message);
+    }
+    
+    /**
+     * Broadcast an error cross-shard.
+     */
+    public static void sendError(String error) {
+    	sendStaffMessage(PlayerRank.GM, ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + error);
+    }
+    
+    /**
+     * Broadcast a warning cross-shard.
+     * @param warning
+     */
+    public static void sendWarning(String warning) {
+    	sendStaffMessage(PlayerRank.GM, ChatColor.RED + "[WARNING] " + ChatColor.WHITE + warning);
+    }
+    
+    /**
+     * Broadcast a message cross-server and potentially to discord to any player with at least the given rank.
+     */
+    public static void sendStaffMessage(PlayerRank minRank, String message) {
+    	sendStaffMessage(minRank, message, false);
+    }
+    
+    /**
+     * Broadcast a message cross-server to any player with at least the given rank.
+     * @param minRank
+     * @param message
+     * @param ignOnly
+     */
+    public static void sendStaffMessage(PlayerRank minRank, String message, boolean ignOnly) {
+    	sendNetworkMessage((ignOnly ? "IG_" : "") + "StaffMessage", minRank.name(), message);
     }
 
-    public static void sendDevMessage(String message, String... contents) {
-        sendNetworkMessage("DEVMessage", message, contents);
+    public static void sendDevMessage(String message) {
+        sendStaffMessage(PlayerRank.DEV, message);
     }
     
     /**
@@ -900,7 +938,7 @@ public class GameAPI {
 
         if (playerWrapper.isFirstTimePlaying()) {
             playerWrapper.setFirstLogin(System.currentTimeMillis());
-            sendNetworkMessage("IGN_GMMessage", ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!");
+            sendStaffMessage(PlayerRank.PMOD, ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!", true);
 
             ItemManager.giveStarter(player, true);
             player.teleport((DungeonRealms.isEvent() ? TeleportLocation.EVENT_AREA : TeleportLocation.STARTER).getLocation());
@@ -995,35 +1033,12 @@ public class GameAPI {
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
 
-        if (Rank.isTrialGM(player)) {
-
-            gp.setInvulnerable(true);
-            gp.setTargettable(false);
-            player.sendMessage("");
-
-            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
-
-            // check vanish
-            if (playerWrapper.getToggles().getState(Toggles.VANISH)) {
-                GameAPI._hiddenPlayers.add(player);
-                player.setCustomNameVisible(false);
-                Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
-                Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
-                GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "true");
-                player.setGameMode(GameMode.SPECTATOR);
-            } else {
-                player.setGameMode(GameMode.CREATIVE);
-            }
-        }
-
         DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             //Prevent weird scoreboard thing when sharding.
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
-            PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, pw.getAlignment().getColor(), playerWrapper.getLevel());
+            ScoreboardHandler.getInstance().updatePlayerName(player);
         }, 100L);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> DonationEffects.getInstance().doLogin(player), 100L);
@@ -1588,14 +1603,17 @@ public class GameAPI {
 //       	sendShardMessage(cb);
     }
 
+    public static void addSmallCooldown(Metadatable m, Metadata type, int milliseconds) {
+    	type.set(m, System.currentTimeMillis() + milliseconds);
+    }
+    
     public static void addCooldown(Metadatable m, Metadata type, int seconds) {
-        type.set(m, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
+        addSmallCooldown(m, type, seconds * 1000);
     }
 
     public static String getFormattedCooldown(Metadatable m, Metadata type) {
         long val = type.get(m).asLong();
-        if (val <= System.currentTimeMillis()) return null;
-        return TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000);
+        return val > System.currentTimeMillis() ? TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000) : null;
     }
 
     public static boolean isCooldown(Metadatable m, Metadata type) {

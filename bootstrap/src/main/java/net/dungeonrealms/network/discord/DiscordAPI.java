@@ -33,8 +33,6 @@ public class DiscordAPI {
 	}
 	
 	private static void sendRequest(String url, String postData) {
-		System.out.println(url);
-		System.out.println(postData);
 		new Thread(() -> {
 			try {
         		HttpsURLConnection con = (HttpsURLConnection) new URL(url).openConnection();
@@ -48,15 +46,12 @@ public class DiscordAPI {
         		out.write(postData.getBytes());
         		out.flush();
         		out.close();
-        		System.out.println("Status Code = " + con.getResponseCode());
         		
         		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
         		StringBuilder result = new StringBuilder();
         		String line;
         		while((line = reader.readLine()) != null)
         		    result.append(line);
-        		
-        		System.out.println(result.toString());
         	} catch (Exception e) {
             	e.printStackTrace();
         	}

@@ -492,8 +492,9 @@ public class Realm {
                 });
 
             } catch (InterruptedException | ExecutionException e) {
-                player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
-                GameAPI.sendNetworkMessage("GMMessage", ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + "Failed to load " + getName() + "'s realm on {SERVER}.");
+                e.printStackTrace();
+            	player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
+            	GameAPI.sendError("Failed to load " + getName() + "'s realm on {SERVER}.");
                 Realms.getInstance().getRealmMap().remove(getOwner());
                 e.printStackTrace();
             }

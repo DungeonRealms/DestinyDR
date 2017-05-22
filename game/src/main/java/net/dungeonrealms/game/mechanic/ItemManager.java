@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.mechanic;
 
 import com.google.common.collect.Lists;
+
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -9,28 +11,28 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -50,50 +52,27 @@ public class ItemManager {
     }
 
     /**
-     * Adds a starter kit to the player.
-     * TODO: Make this less bad.
+     * Gives a starter kit to the player.
      *
      * @param player
      * @param isNew
      */
     public static void giveStarter(Player player, boolean isNew) {
 
-        // Give T1 potions.
         for (int i = 0; i < 3; i++)
             player.getInventory().addItem(new PotionItem(PotionTier.TIER_1).setUntradeable(true).generateItem());
 
         if (isNew)
             player.getInventory().addItem(new VanillaItem(new ItemStack(Material.BREAD, 3)).setUntradeable(true).generateItem());
 
-        if (isNew)
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
-                    ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-
-        if (Utils.randInt(0, 1) == 1) {
-            ItemStack fixedSword = ItemGenerator.getNamedItem("training_sword");
-            player.getInventory().addItem(new ItemBuilder().setItem(fixedSword).setNBTString("dataType", "starterSet").build());
-        } else {
-            ItemStack fixedAxe = ItemGenerator.getNamedItem("training_axe");
-            player.getInventory().addItem(new ItemBuilder().setItem(fixedAxe).setNBTString("dataType", "starterSet").build());
-        }
-
         EntityEquipment e = player.getEquipment();
-        ItemStack fixedHelmet = ItemGenerator.getNamedItem("traininghelm");
-        if (e.getHelmet() == null || e.getHelmet().getType() == Material.AIR)
-            player.getInventory().setHelmet(new ItemBuilder().setItem(fixedHelmet).setNBTString("dataType", "starterSet").build());
-
-        ItemStack fixedChestplate = ItemGenerator.getNamedItem("trainingchest");
-        if (e.getChestplate() == null || e.getChestplate().getType() == Material.AIR)
-            player.getInventory().setChestplate(new ItemBuilder().setItem(fixedChestplate).setNBTString("dataType", "starterSet").build());
-
-        ItemStack fixedLeggings = ItemGenerator.getNamedItem("traininglegs");
-        if (e.getLeggings() == null || e.getLeggings().getType() == Material.AIR)
-            player.getInventory().setLeggings(new ItemBuilder().setItem(fixedLeggings).setNBTString("dataType", "starterSet").build());
-
-        ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
-        if (e.getBoots() == null || e.getBoots().getType() == Material.AIR)
-            player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
-
+        Map<EquipmentSlot, ItemStack> starter = ItemGenerator.getEliteGear("starter");
+        for (EquipmentSlot eq : starter.keySet()) {
+        	ItemStack c = GameAPI.getItem(e, eq);
+        	if (c == null || c.getType() == Material.AIR)
+        		GameAPI.setItem(player, eq, starter.get(eq));
+        }
+        
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
     }
 
@@ -311,20 +290,7 @@ public class ItemManager {
      */
     public static boolean isItemTradeable(ItemStack item) {
         ItemGeneric ig = get(item);
-        if (ig.isUntradeable()) {
-            System.out.println("Returning tradable debug 1");
-            return false;
-        }
-        if (ig.isSoulbound()) {
-            System.out.println("Returning tradable debug 2");
-            return false;
-        }
-        if (ig.isPermanentUntradeable()) {
-            System.out.println("Returning tradable debug 3");
-            return false;
-        }
-        System.out.println("Returning tradable debug 4");
-        return true;
+        return !(ig.isUntradeable() || ig.isSoulbound() || ig.isPermanentUntradeable());
     }
 
     /**

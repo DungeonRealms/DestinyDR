@@ -9,6 +9,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
@@ -332,11 +333,10 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandInterface());
         cm.registerCommand(new CommandISay());
         cm.registerCommand(new CommandModeration());
-        cm.registerCommand(new CommandStaffChat());
-        cm.registerCommand(new CommandGmChat());
-        cm.registerCommand(new CommandDevChat());
+        cm.registerCommand(new CommandStaffChat("staff", PlayerRank.PMOD, "SC"));
+        cm.registerCommand(new CommandStaffChat("gm", PlayerRank.TRIALGM));
+        cm.registerCommand(new CommandStaffChat("dev", PlayerRank.DEV));
         cm.registerCommand(new CommandBroadcast());
-        cm.registerCommand(new CommandGm());
         cm.registerCommand(new CommandHeadGm());
         cm.registerCommand(new CommandPlayerFix());
         cm.registerCommand(new CommandSudo());
@@ -425,10 +425,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Sends a message to global chat."));
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
-            cm.registerCommand(new CommandAsk("ask", "/<command> [args]", "Ask command", Collections.singletonList("help")));
-            //cm.registerCommand(new CommandWelcome("welcome", "/<command> [args]", "Welcome command for ecash"));
+            cm.registerCommand(new CommandAsk());
             cm.registerCommand(new CommandAnswer("answer", "/<command> [args]", "Answer command"));
-            //cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
             cm.registerCommand(new CommandSuicide("suicide", "/<command>", "Kills your player.", Collections.singletonList("drsuicide")));
 
             cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));

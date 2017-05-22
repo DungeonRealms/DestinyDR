@@ -2,8 +2,8 @@ package net.dungeonrealms.common.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.player.Rank.PlayerRank;
-import net.md_5.bungee.api.ChatColor;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.util.ChatColor;
 
 import java.io.Serializable;
 import java.util.Arrays;

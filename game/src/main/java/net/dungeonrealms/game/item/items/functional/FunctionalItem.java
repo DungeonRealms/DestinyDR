@@ -67,7 +67,7 @@ public abstract class FunctionalItem extends ItemGeneric {
             ice.handle();
         } catch (Exception e) {
             e.printStackTrace();
-            GameAPI.sendIngameDevMessage(ChatColor.RED + "Error using " + ice.getPlayer().getName() + "'s " + ice.getItem().getClass().getSimpleName());
+            GameAPI.sendError("Item Failure: " + ice.getPlayer().getName() + " encountered an error using " + ice.getItem().getClass().getSimpleName() + " on {SERVER}.");
             ice.getPlayer().sendMessage(ChatColor.RED + "There was an error while using this item. The developers have been notified.");
         }
     }

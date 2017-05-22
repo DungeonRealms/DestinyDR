@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -31,6 +32,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -325,13 +327,9 @@ public class HealthHandler implements GenericMechanic {
         Player player = res.getDefender().getPlayer();
         LivingEntity attacker = res.getAttacker().getEntity();
         double damage = res.getWeightedDamage();
-        final GamePlayer gp = GameAPI.getGamePlayer(player);
-
-        //  DONT DAMAGE THESE  //
-        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || gp
-                == null || gp.isInvulnerable())
+        
+        if (!res.getDefender().getWrapper().isVulnerable())
             return;
-
 
         boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT;
 
@@ -558,19 +556,6 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
-        if (attacker != null && GameAPI.isPlayer(attacker) && damage > 3000) {
-            Player player = res.getAttacker().getPlayer();
-            if (!player.getName().equals("iFamasssxD")) { //No ty..
-                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                attacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
-
-                //  ALERT STAFF  //
-                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Destroyed illegal item ("
-                        + damage + ") from " + attacker.getName() + " on shard {SERVER}.");
-                return;
-            }
-        }
-
 
         double maxHP = isDPSDummy ? 0 : getMaxHP(defender);
         double currentHP = isDPSDummy ? 0 : getHP(defender);
@@ -584,9 +569,9 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
-        Random r = ThreadLocalRandom.current();
-        defender.getWorld().spawnParticle(Particle.BLOCK_DUST, defender.getLocation().clone().add(0, 1, 0), 10,
-                r.nextGaussian(), r.nextGaussian(), r.nextGaussian(), 152);
+        
+        if (Utils.randChance(7))
+        	ParticleAPI.spawnBlockParticles(defender.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
 
         if (attacker != null && GameAPI.isPlayer(attacker)) {
             handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);

@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.command;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -11,15 +10,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
 public class CommandAsk extends BaseCommand {
 
-    public CommandAsk(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandAsk() {
+        super("ask", "/<command> <question>", "Ask a staff member a question.", Arrays.asList("a"));
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -31,23 +30,15 @@ public class CommandAsk extends BaseCommand {
             p.sendMessage(PunishAPI.getMutedMessage(p.getUniqueId()));
             return true;
         }
+        
+        if (args.length == 0) {
+        	sender.sendMessage("/ask <message>");
+        	return true;
+        }
+        
+        p.sendMessage(ChatColor.GOLD + "Your question has been sent to an online staff member.");
+        GameAPI.sendStaffMessage("&e<QUESTION> &6({SERVER}&6) " + PlayerWrapper.getWrapper(p).getChatName() + "&e" + String.join(" ", args));
 
-        StringBuilder message;
-        if (args.length > 0) {
-            message = new StringBuilder(args[0]);
-
-            for (int arg = 1; arg < args.length; arg++)
-                message.append(" ").append(args[arg]);
-
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Your question has been sent to an online staff member."));
-            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + PlayerWrapper.getWrapper(p).getChatName() + "&e" + message);
-
-        } else sender.sendMessage("/ask|a [message]");
-
-        return false;
-    }
-
-    public String[] getAliases() {
-        return new String[]{"a"};
+        return true;
     }
 }

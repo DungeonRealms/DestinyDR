@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.util.TimeUtil;
@@ -36,16 +37,16 @@ public class CommandWhois extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) return true;
 
-        Rank.PlayerRank rank;
+        PlayerRank rank;
         if (sender instanceof Player) {
             Player player = (Player) sender;
             rank = Rank.getPlayerRank(player.getUniqueId());
         } else {
-            rank = Rank.PlayerRank.DEV;
+            rank = PlayerRank.DEV;
         }
         if (args.length == 0) {
             if (sender instanceof Player) {
-                sender.sendMessage("Syntax. /whois <player>" + (rank.isAtLeast(Rank.PlayerRank.GM) ? "/<ipAddress> -a (alts) -i (ip)" : ""));
+                sender.sendMessage("Syntax. /whois <player>" + (rank.isAtLeast(PlayerRank.GM) ? "/<ipAddress> -a (alts) -i (ip)" : ""));
                 return true;
             }
             sender.sendMessage("Syntax. /whois <player> ");
@@ -54,14 +55,14 @@ public class CommandWhois extends BaseCommand {
 
         List<String> argList = Lists.newArrayList(args);
 
-        boolean showAlts = argList.contains("-a") && rank.isAtLeast(Rank.PlayerRank.GM);
-        boolean showIPs = argList.contains("-i") && rank.isAtLeast(Rank.PlayerRank.HEADGM);
+        boolean showAlts = argList.contains("-a") && rank.isAtLeast(PlayerRank.GM);
+        boolean showIPs = argList.contains("-i") && rank.isAtLeast(PlayerRank.HEADGM);
 
         String p_name = args[0];
         Player online = Bukkit.getPlayer(p_name);
         if (p_name.contains(".")) {
 
-            if (showAlts || rank.isAtLeast(Rank.PlayerRank.DEV)) {
+            if (showAlts || rank.isAtLeast(PlayerRank.DEV)) {
                 //its an ip
                 SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALTS.getQuery(p_name), true, (set) -> {
                     if (set == null) {
