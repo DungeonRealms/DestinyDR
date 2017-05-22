@@ -101,12 +101,12 @@ public class EntityAPI {
             e.setArmorContents(armor.generateArmorSet());
         } else if (elite != null) {
             // Load elite custom gear.
-        	Map<EquipmentSlot, ItemStack> gear = ItemGenerator.getEliteGear(elite);
-        	for (EquipmentSlot e : gear.keySet()) {
-        		ItemStack i = gear.get(e);
-        		EnchantmentAPI.addGlow(i);
-        		GameAPI.setItem(entity, e, i);
-        	}
+            Map<EquipmentSlot, ItemStack> gear = ItemGenerator.getEliteGear(elite);
+            for (EquipmentSlot e : gear.keySet()) {
+                ItemStack i = gear.get(e);
+                EnchantmentAPI.addGlow(i);
+                GameAPI.setItem(entity, e, i);
+            }
         }
 
         Metadata.ELITE.set(entity, true);
@@ -157,10 +157,16 @@ public class EntityAPI {
             ElementalAttribute ea = getElement(entity);
             String[] splitName = name.split(" ", 2);
 
-            boolean shortName = ea == ElementalAttribute.PURE || splitName.length == 1;
-            String ePrefix = shortName ? splitName[0] + " " : "";
-            String eSuffix = shortName ? name : splitName[1];
-            name = ea.getColor() + ePrefix + ea.getPrefix() + " " + eSuffix;
+            boolean shortName = splitName.length == 1;
+            String ePrefix = shortName ? splitName[0] : "";
+            String eSuffix = shortName ? "" : " " + splitName[1];
+
+            if (shortName) {
+                //Fire Acolyte, Fire Daemon etc.
+                name = ea.getColor() + ea.getPrefix() + " " + ePrefix;
+            } else {
+                name = ea.getColor() + ePrefix + ea.getPrefix() + eSuffix;
+            }
         }
 
         // Apply boss.
@@ -172,7 +178,7 @@ public class EntityAPI {
             prefix = ChatColor.BOLD + "";
 
         int tier = Metadata.TIER.get(entity).asInt();
-        if(!name.contains(ChatColor.COLOR_CHAR + "") && tier != -1){
+        if (!name.contains(ChatColor.COLOR_CHAR + "") && tier != -1) {
             //Add the tier color to the front?
             prefix = Item.ItemTier.getByTier(tier).getColor() + "";
         }

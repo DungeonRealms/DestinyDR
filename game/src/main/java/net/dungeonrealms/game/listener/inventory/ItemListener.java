@@ -11,6 +11,7 @@ import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import org.bukkit.Bukkit;
@@ -60,6 +61,16 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
             event.getEntity().remove();
             return;
+        }
+
+        //Dont spawn exploded shit.
+        if (DungeonManager.isDungeon(event.getEntity().getWorld())) {
+            ItemStack type = event.getEntity().getItemStack();
+            if (type != null && type.getType().name().contains("REDSTONE")) {
+                event.setCancelled(true);
+                event.getEntity().remove();
+                return;
+            }
         }
         this.applyRarityGlow(event.getEntity());
     }
