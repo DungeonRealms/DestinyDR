@@ -130,6 +130,7 @@ public enum DungeonType {
             return;
         }
 
+
         List<MobSpawner> spawns = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             for (String line; (line = br.readLine()) != null; ) {
@@ -144,6 +145,8 @@ public enum DungeonType {
             exception.printStackTrace();
             Bukkit.getLogger().warning("Failed to parse mob spawns for " + f.getName() + ".");
         }
+        Bukkit.getLogger().warning("[Dungeons] Loaded spawns for " + getInternalName() + ".dat!");
+
         DungeonManager.getDungeonSpawns().put(this, spawns);
     }
 

@@ -20,6 +20,7 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -170,6 +171,11 @@ public class EntityAPI {
         if (Metadata.ELITE.get(entity).asBoolean())
             prefix = ChatColor.BOLD + "";
 
+        int tier = Metadata.TIER.get(entity).asInt();
+        if(!name.contains(ChatColor.COLOR_CHAR + "") && tier != -1){
+            //Add the tier color to the front?
+            prefix = Item.ItemTier.getByTier(tier).getColor() + "";
+        }
         entity.setCustomName(prefix + name);
         entity.setCustomNameVisible(true);
     }
@@ -211,8 +217,9 @@ public class EntityAPI {
         if (weapon != null)
             le.getEquipment().setItemInMainHand(weapon.generateItem());
 
-        if (name != null && name.length() > 0)
+        if (name != null && name.length() > 0) {
             Metadata.CUSTOM_NAME.set(entity, name);
+        }
         updateName(entity);
     }
 

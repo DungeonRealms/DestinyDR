@@ -111,9 +111,9 @@ public class SpawningMechanics implements GenericMechanic {
     	String mobPower = String.valueOf(line.charAt(line.indexOf("@") - 1)).equals("+") ? "high" : "low";
     	
     	String name = "";
-    	if (line.contains("\\(") && line.contains("\\)"))
-    		name = line.split("\\(")[1].split("\\)")[0].replaceAll("_", " ");
-    	
+    	if (line.contains("(") && line.contains(")")) {
+			name = line.split("\\(")[1].split("\\)")[0].replaceAll("_", " ");
+		}
     	// Create spawner.
     	MobSpawner spawner;
     	if (elite) {
