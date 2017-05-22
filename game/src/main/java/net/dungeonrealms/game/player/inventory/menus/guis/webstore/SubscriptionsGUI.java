@@ -37,9 +37,9 @@ public class SubscriptionsGUI extends GUIMenu implements WebstoreGUI {
             lore.add(isUnlocked ? ChatColor.GREEN.toString() + ChatColor.BOLD + "UNLOCKED" : ChatColor.RED.toString() + ChatColor.BOLD + "LOCKED");
             if (isUnlocked) {
                 lore.add("");
-                lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "Expires");
+                lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "Expires in");
                 String expires = getRankExpireTime();
-                lore.add(ChatColor.RED + ChatColor.UNDERLINE.toString() + expires);
+                lore.add(ChatColor.RED + expires);
 //                lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "EXPIRES IN " + expires);
             }
             setItem(webItem.getGuiSlot(), new GUIItem(webItem.getItemType()).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
