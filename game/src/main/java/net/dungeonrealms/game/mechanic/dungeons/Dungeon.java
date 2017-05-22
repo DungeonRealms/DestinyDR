@@ -338,7 +338,7 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-        return Math.max(0, (int) (getTrackedMonsters().size() * 0.8D) - getKillCount());
+        return Math.max(0, (int) (getMaxMobCount() * 0.8D) - getKillCount());
     }
 
     /**

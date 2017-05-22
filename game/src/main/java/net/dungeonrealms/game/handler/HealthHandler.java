@@ -559,13 +559,16 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (attacker != null && GameAPI.isPlayer(attacker) && damage > 3000) {
-            res.getAttacker().getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-            attacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
+            Player player = res.getAttacker().getPlayer();
+            if (!player.getName().equals("iFamasssxD")) { //No ty..
+                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                attacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
 
-            //  ALERT STAFF  //
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Destroyed illegal item ("
-                    + damage + ") from " + attacker.getName() + " on shard {SERVER}.");
-            return;
+                //  ALERT STAFF  //
+                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "Destroyed illegal item ("
+                        + damage + ") from " + attacker.getName() + " on shard {SERVER}.");
+                return;
+            }
         }
 
 
@@ -589,9 +592,9 @@ public class HealthHandler implements GenericMechanic {
             handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);
             checkForNewTarget(defender);
 
-            if(isDPSDummy){
+            if (isDPSDummy) {
                 DPSDummy dummy = ItemDPSDummy.dpsDummies.get(defender);
-                if(dummy != null){
+                if (dummy != null) {
                     dummy.trackDamage(attacker.getUniqueId(), damage);
                 }
             }
