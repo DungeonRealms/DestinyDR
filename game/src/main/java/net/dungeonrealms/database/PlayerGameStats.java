@@ -110,10 +110,10 @@ public class PlayerGameStats implements LoadableData, SaveableData {
 					if(stat.equals(TIME_PLAYED)) {
 					    int seconds = wrapper.getPlayerGameStats().getStat(stat);
 					    long hours = TimeUnit.SECONDS.toHours((long) seconds);
-					    long minutes = (seconds / 60) - (hours * 60);
-					    return hours + "H " + minutes + "M";
+					    long minutes = seconds / 60 - hours * 60;
+					    return hours + "h " + minutes + "m";
                     }
-                    return wrapper != null ? Utils.format(wrapper.getPlayerGameStats().getStat(stat)) : null;
+                    return Utils.format(wrapper.getPlayerGameStats().getStat(stat));
 				}
         	};
         }

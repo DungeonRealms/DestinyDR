@@ -63,7 +63,7 @@ public class CharacterTabColumn extends Column {
                     new Variable("dps") {
                         @Override
                         public String getReplacement(Player player) {
-                            return getAttribute(player, WeaponAttributeType.DAMAGE);
+                            return getAttribute(player, ArmorAttributeType.DAMAGE);
                         }
                     },
                     new Variable("alignment") {
