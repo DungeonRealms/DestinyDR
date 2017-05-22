@@ -197,6 +197,10 @@ public class MountUtils {
         return getInventories().get(p.getUniqueId());
     }
 
+    public static Inventory getInventory(UUID uuid) {
+        return getInventories().get(uuid);
+    }
+
     public static boolean hasInventory(Player p) {
         return getInventory(p) != null;
     }

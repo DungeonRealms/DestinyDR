@@ -701,7 +701,7 @@ public class PlayerWrapper {
         String bankString = bankStorage != null && bankStorage.inv != null ? ItemSerialization.toString(bankStorage.inv) : null;
 
 
-        Inventory mule = MountUtils.getInventory(player);
+        Inventory mule = MountUtils.getInventory(uuid);
         if (mule == null && player == null)
             mule = pendingMuleInventory;
 
