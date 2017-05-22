@@ -53,7 +53,7 @@ public abstract class MobSpawner {
 
     @Setter
     @Getter //Custom name
-    private String customName;
+    protected String customName;
 
     @Setter
     @Getter //Monster type

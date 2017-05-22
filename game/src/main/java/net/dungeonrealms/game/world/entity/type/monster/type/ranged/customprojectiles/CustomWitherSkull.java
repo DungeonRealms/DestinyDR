@@ -12,6 +12,7 @@ public class CustomWitherSkull extends EntityWitherSkull implements CustomProjec
         super(world);
         this.accuracy = accuracy;
         this.setPositionRotation(shooter.getLocation().getX(), shooter.getLocation().getY(), shooter.getLocation().getZ(), shooter.getLocation().getYaw(), shooter.getLocation().getPitch());
+        this.setPosition(this.locX, this.locY, this.locZ);
         this.motX = this.motY = this.motZ = 0.0D;
         this.accuracy = accuracy;
         this.shooter = shooter.getHandle();

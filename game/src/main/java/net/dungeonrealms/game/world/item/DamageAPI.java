@@ -528,49 +528,37 @@ public class DamageAPI {
 
     //TODO: Modularize.
     public static Projectile fireStaffProjectile(LivingEntity attacker, AttributeList attributes, @Nullable LivingEntity target, ItemWeapon staff) {
-        System.out.println("Fire staff projectile method!");
-        double accuracy = attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
-        Bukkit.getLogger().info("Yaw: " + attacker.getLocation().getYaw() + " Pitch: " + attacker.getLocation().getPitch());
+        double accuracy = !(attacker instanceof Player) ? 85 + Utils.randInt(staff.getTier().getTierId() * 3) : attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
         org.bukkit.util.Vector vector = null;
+
         if (target != null)
             vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-        System.out.println("Attackers direction: " + attacker.getLocation().getDirection() + " Vector: " + vector);
+
         boolean kilitanStaff = staff.hasTag("customId") && staff.getTagString("customId").equals("kilatan");
         Projectile projectile = null;
         Item.ItemTier tier = staff.getTier();
         switch (tier) {
             case TIER_1:
                 projectile = attacker.launchProjectile(Snowball.class);
-//                projectile.setVelocity(projectile.getVelocity().multiply(1.15));
-                System.out.println("Snowballs Yaw: " + projectile.getLocation().getYaw() + " Pitch: " + projectile.getLocation().getPitch());
-                System.out.println("Snowballs direction: " + projectile.getLocation().getDirection());
                 break;
             case TIER_2:
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, SmallFireball.class, accuracy);
-//                if (vector == null) projectile.setVelocity(projectile.getVelocity().multiply(1.5));
-
-                ((SmallFireball) projectile).setYield(0);
-                ((SmallFireball) projectile).setIsIncendiary(false);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, vector, SmallFireball.class, accuracy);
                 break;
             case TIER_3:
                 projectile = attacker.launchProjectile(EnderPearl.class);
-//                if (vector != null) vector = vector.multiply(1.75);
-//                else projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
             case TIER_4:
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, WitherSkull.class, accuracy);
-//                if (vector != null) vector = vector.multiply(2.25);
-//                else projectile.setVelocity(projectile.getVelocity().multiply(2.25));
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, vector, WitherSkull.class, accuracy);
                 break;
             case TIER_5:
-                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, null, kilitanStaff ? DragonFireball.class : LargeFireball.class, accuracy);
-//                if (vector != null) vector = vector.multiply(3);
-//                else projectile.setVelocity(projectile.getVelocity().multiply(3));
-                ((Fireball) projectile).setYield(0);
-                ((Fireball) projectile).setIsIncendiary(false);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) attacker.getWorld()).getHandle(), (CraftLivingEntity) attacker, vector, kilitanStaff ? DragonFireball.class : LargeFireball.class, accuracy);
                 break;
         }
 
+        if (projectile instanceof Fireball) {
+            ((Fireball) projectile).setYield(0);
+            ((Fireball) projectile).setIsIncendiary(false);
+        }
 
         if (vector != null) {
             //mob

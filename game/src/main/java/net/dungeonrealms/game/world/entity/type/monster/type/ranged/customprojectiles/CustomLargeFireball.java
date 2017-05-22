@@ -12,6 +12,7 @@ public class CustomLargeFireball extends EntityLargeFireball implements CustomPr
     public CustomLargeFireball(World world, CraftLivingEntity shooter, double x, double y, double z, double accuracy) {
         super(world);
         this.setPositionRotation(shooter.getLocation().getX(), shooter.getLocation().getY(), shooter.getLocation().getZ(), shooter.getLocation().getYaw(), shooter.getLocation().getPitch());
+        this.setPosition(locX, locY, locZ);
         this.motX = this.motY = this.motZ = 0.0D;
         this.accuracy = accuracy;
         this.shooter = shooter.getHandle();

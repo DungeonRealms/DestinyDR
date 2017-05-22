@@ -73,10 +73,10 @@ public class EntityMechanics implements GenericMechanic {
 
     public static Projectile spawnFireballProjectile(World world, CraftLivingEntity shooter, Vector velocity, Class<? extends Projectile> projectile, double accuracy) {
         Location location = shooter.getEyeLocation();
-        Vector direction = location.getDirection().multiply(10);
+        Vector direction = velocity == null ? location.getDirection().multiply(10) : velocity;
 
         Entity launch = null;
-        double accurate = .4D - (.4D * (accuracy / 100D));
+        double accurate = .4D - .4D * accuracy / 100D;
         Bukkit.getLogger().info("Accuracy: " + accurate + " From: " + accuracy);
         if (Fireball.class.isAssignableFrom(projectile)) {
             if (SmallFireball.class.isAssignableFrom(projectile)) {

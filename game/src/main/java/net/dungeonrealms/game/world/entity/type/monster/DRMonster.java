@@ -200,6 +200,7 @@ public interface DRMonster {
             while (gemsDropped > 0) {
             	int drop = Math.min((int)gemsDropped, 64);
             	gemsDropped -= drop;
+            	if(drop <= 0)break;
             	ItemGem gem = new ItemGem(drop);
             	ItemStack gemStack = gem.generateItem();
             	System.out.println("The amount of gems: " + gemStack.getAmount() + " , real amount: " + drop);
