@@ -1,8 +1,11 @@
 package net.dungeonrealms.database.listener;
 
+import java.util.Arrays;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -75,6 +78,7 @@ public class DataListener implements Listener {
         if(wrapper == null) return;
         wrapper.setLastLogin(System.currentTimeMillis());
         wrapper.loadPlayerAfterLogin(event.getPlayer());
+        Arrays.stream(Toggles.values()).forEach(t -> wrapper.getToggles().setState(t, wrapper.getToggles().getState(t))); // Applies things to your character like vanish.
         //Overwrite whatever we have in there.
         SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
 //        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().setResourcePack(Constants.RESOURCE_PACK), 1);

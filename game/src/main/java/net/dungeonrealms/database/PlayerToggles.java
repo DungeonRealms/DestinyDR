@@ -47,6 +47,9 @@ public class PlayerToggles implements LoadableData, SaveableData {
     	
     	// Some special cases :/
     	Player player = wrapper.getPlayer();
+    	if (player == null)
+    		return; // They're logging in. This'll be called again once they exist in the world.
+    	
     	if (t == Toggles.VANISH) {
     		GameAPI._hiddenPlayers.remove(player);
     		player.removePotionEffect(PotionEffectType.INVISIBILITY);
