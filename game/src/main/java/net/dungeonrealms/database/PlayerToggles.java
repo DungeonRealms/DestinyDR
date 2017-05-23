@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import org.bukkit.Bukkit;
@@ -68,11 +69,10 @@ public class PlayerToggles implements LoadableData, SaveableData {
                 EntityAPI.untargetEntity(player, 30); // Untarget player.
                 CombatLog.removeFromPVP(player);
                 CombatLog.removeFromCombat(player);
+
             }
         } else if (t == Toggles.STREAM) {
             player.performCommand("ncp notify " + (newState ? "off" : "on")); // Toggle NCP notifications.
-            for (int i = 0; i < 50; i++)
-                player.sendMessage(""); // Clear chat
         }
     }
 
@@ -121,7 +121,7 @@ public class PlayerToggles implements LoadableData, SaveableData {
         // Staff Toggles
         STREAM("stream", "Prevent sensitive messages from displaying.", "Stream Mode", PlayerRank.PMOD),
         VANISH("vanish", "Vanish to players and mobs.", "Vanish", PlayerRank.TRIALGM),
-        INVULNERABLE("god", "Allow incoming damage.", "Invincibility", PlayerRank.TRIALGM);
+        INVULNERABLE("god", "Disable incoming damage.", "Invincibility", PlayerRank.TRIALGM);
 
         private String columnName;
         private String commandName;

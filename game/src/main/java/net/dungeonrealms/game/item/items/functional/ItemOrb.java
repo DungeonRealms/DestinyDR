@@ -86,7 +86,8 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
 
     @Override
     protected String[] getLore() {
-        return new String[]{"Randomizes bonus stats of selected equipment"};
+        return new String[]{ "Place on equipment to",
+                            ChatColor.LIGHT_PURPLE + "randomize" + ChatColor.GRAY + " all bonus stats"};
     }
 
     @Override
