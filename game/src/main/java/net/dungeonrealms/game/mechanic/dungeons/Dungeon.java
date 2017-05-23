@@ -19,7 +19,6 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
@@ -163,9 +162,9 @@ public abstract class Dungeon {
             // Drop the item.
             ItemStack drop = possibleDrops.get(random.nextInt(possibleDrops.size()));
 
+            drop.getEnchantments().keySet().forEach(ench -> drop.removeEnchantment(ench));
             // Remove any enchants.
             ItemMeta meta = drop.getItemMeta();
-            meta.getEnchants().clear();
             drop.setItemMeta(meta);
 
             // Add soulbound.
@@ -259,7 +258,8 @@ public abstract class Dungeon {
      * @param success - Was the dungeon completed successfully?
      */
     public void removePlayers(boolean success) {
-        announce(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.RESET + "You have failed, Adventurers.");
+        if (!success)
+            announce(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.RESET + "You have failed, Adventurers.");
         for (Player p : getAllPlayers()) {
             if (success)
                 Achievements.giveAchievement(p, getType().getAchievement());
@@ -434,7 +434,7 @@ public abstract class Dungeon {
     public DungeonBoss spawnBoss(BossType type, Location loc) {
         // We've already spawned this boss.
         if (hasSpawned(type))
-        	return null;
+            return null;
 
         DungeonBoss boss = null;
 

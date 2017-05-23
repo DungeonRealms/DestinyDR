@@ -3,9 +3,7 @@ package net.dungeonrealms.game.mechanic.dungeons;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -101,20 +99,33 @@ public class InfernalAbyss extends Dungeon {
             Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> DungeonManager.getDungeons(DungeonType.THE_INFERNAL_ABYSS).forEach(d -> {
                 InfernalAbyss ab = (InfernalAbyss) d;
                 int w = ab.getWither();
-                if (w <= 0)
+                if (w <= 0) {
+                    //Check if they were inflicted by the command block.
+                    for (Player pl : ab.getWorld().getPlayers()) {
+                        if (pl.hasPotionEffect(PotionEffectType.WITHER)) {
+                            //Activate?
+                            PotionEffect effect = pl.getActivePotionEffects().stream().filter(e -> e.getType().getName().equals(PotionEffectType.WITHER.getName())).findFirst().orElse(null);
+                            if (effect != null && effect.getDuration() > 20) {
+                                //Get time in seconds?
+                                Bukkit.getLogger().info("Setting wither duration to " + effect.getDuration() / 20);
+                                ab.setWither(effect.getDuration() / 20);
+                            }
+                        }
+                    }
                     return;
+                }
 
                 if (w == 30) {
                     ab.announce(ChatColor.RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE +
                             w + "s" + ChatColor.RED + " left until the inferno consumes you.");
-                } else {
+                } else if (w == 1) { //Last second?
                     for (Player p : d.getPlayers()) {
                         HealthHandler.setHP(p, 1);
                         p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
                     }
                     d.announce(ChatColor.RED + "" + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
                 }
-                ab.setWither(w--);
+                ab.setWither(--w);
             }), 200L, 20L);
         }
 
@@ -165,47 +176,48 @@ public class InfernalAbyss extends Dungeon {
             block.getWorld().getNearbyEntities(block.getLocation(), 3, 3, 3).stream().filter(e -> e instanceof EnderCrystal)
                     .forEach(this::destroyDebuff);
         }
-    }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onMobDeath(EntityDeathEvent evt) {
-        if (!DungeonManager.isDungeon(evt.getEntity().getWorld(), DungeonType.THE_INFERNAL_ABYSS))
-            return;
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onMobDeath(EntityDeathEvent evt) {
+            if (!DungeonManager.isDungeon(evt.getEntity().getWorld(), DungeonType.THE_INFERNAL_ABYSS))
+                return;
 
-        InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(evt.getEntity().getWorld());
-        Entity entity = evt.getEntity();
-        String name = ChatColor.stripColor(EntityAPI.getCustomName(entity));
-        ItemStack stack = null;
+            InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(evt.getEntity().getWorld());
+            Entity entity = evt.getEntity();
+            String name = ChatColor.stripColor(EntityAPI.getCustomName(entity));
+            ItemStack stack = null;
 
-        if (entity.getType() == EntityType.ENDERMAN) {
-            if (name.equals("The Devastator")) {
-                stack = getKey("A");
-            } else if (name.equals("The Annihilator")) {
-                stack = getKey("B");
+            if(entity.getType() == EntityType.ENDERMAN){
+                if (name.equals("The Devastator")) {
+                    stack = getKey("A");
+                } else if (name.equals("The Annihilator")) {
+                    stack = getKey("B");
+                }
+                ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F, 50, .06F);
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
+            } else if (name.equals("Fire Lord Of The Abyss")) {
+                stack = ItemGenerator.getNamedItem("firelord");
+            } else if (name.equals("Ice Lord Of The Abyss")) {
+                stack = ItemGenerator.getNamedItem("icelord");
             }
-            ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F, 50, .06F);
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
-        } else if (name.equals("Fire Lord Of The Abyss")) {
-            stack = ItemGenerator.getNamedItem("firelord");
-        } else if (name.equals("Ice Lord Of The Abyss")) {
-            stack = ItemGenerator.getNamedItem("icelord");
+
+            Player killer = evt.getEntity().getKiller();
+
+            if (stack != null) {
+                if (killer != null && killer.getInventory().firstEmpty() != -1) {
+                    killer.getInventory().addItem(stack);
+                } else {
+                    entity.getWorld().dropItemNaturally(entity.getLocation().clone().add(0, 1, 0), stack);
+                }
+            }else{
+                Bukkit.getLogger().info("Stats were null!");
+            }
+
+            dungeon.setWither(0);
         }
 
-        Player killer = evt.getEntity().getKiller();
-
-        if (stack != null) {
-            if (killer != null && killer.getInventory().firstEmpty() != -1) {
-                killer.getInventory().addItem(stack);
-            } else {
-                entity.getWorld().dropItemNaturally(entity.getLocation().clone().add(0, 1, 0), stack);
-            }
+        private ItemStack getKey(String k) {
+            return ItemGenerator.getNamedItem("doorkey" + k.toLowerCase());
         }
-
-        dungeon.setWither(0);
-    }
-
-    private ItemStack getKey(String k) {
-        ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey " + k, ChatColor.ITALIC + "A key required in the Infernal Abyss Dungeon");
-        return new VanillaItem(key).setDungeon(true).generateItem();
     }
 }

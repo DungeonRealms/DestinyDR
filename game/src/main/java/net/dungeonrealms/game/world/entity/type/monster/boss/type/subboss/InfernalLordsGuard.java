@@ -23,6 +23,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
         
         this.setOnFire(Integer.MAX_VALUE);
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(65);
+        System.out.println("Spawning the infernal lord guard!");
     }
 
     

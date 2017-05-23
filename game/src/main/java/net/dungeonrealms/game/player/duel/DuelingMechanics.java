@@ -37,6 +37,11 @@ public class DuelingMechanics {
 
         if(senderWrapper == null || requestedWrapper == null) return;
 
+        if(sender == requested) {
+            sender.sendMessage("You can not duel yourself!");
+            return;
+        }
+
         if (DungeonRealms.isEvent()) {
             sender.sendMessage(ChatColor.RED + "Dueling is disabled on this shard.");
             return;

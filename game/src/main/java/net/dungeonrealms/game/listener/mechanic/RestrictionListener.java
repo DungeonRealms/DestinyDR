@@ -427,7 +427,7 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
-        if (!GameAPI.isPlayer(event.getEntity()) || !PlayerWrapper.getWrapper((Player) event.getEntity()).isVulnerable())
+        if (!GameAPI.isPlayer(event.getEntity()) || PlayerWrapper.getWrapper((Player) event.getEntity()).isVulnerable())
         	return;
 
         event.setDamage(0);
@@ -497,6 +497,7 @@ public class RestrictionListener implements Listener {
             if (!isAttackerPlayer || !isDefenderPlayer) {
                 if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
                     event.setCancelled(true);
+                    pDamager.updateInventory();
                     return;
                 }
             }

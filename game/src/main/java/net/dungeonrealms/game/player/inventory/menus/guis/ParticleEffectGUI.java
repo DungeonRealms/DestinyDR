@@ -28,6 +28,7 @@ public class ParticleEffectGUI extends GUIMenu {
         setItem(getSize() - 2, new GUIItem(Material.ARMOR_STAND).setName(ChatColor.GREEN + "Turn Off Effect").setClick(e -> {
             if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
+                wrapper.setActiveTrail(null);
                 player.sendMessage(ChatColor.GREEN + "You have disabled your effect.");
             } else {
                 player.sendMessage(ChatColor.RED + "You don't have a player effect currently activated.");

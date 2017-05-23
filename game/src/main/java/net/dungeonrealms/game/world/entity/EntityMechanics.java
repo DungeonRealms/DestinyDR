@@ -105,9 +105,7 @@ public class EntityMechanics implements GenericMechanic {
         if (launch == null)
             return null;
 
-        //This needed?
-        launch.setPosition(location.getX(), location.getY(), location.getZ());
-
+        launch.setPosition(location.getX(), location.getY() - (shooter instanceof Skeleton && ((Skeleton)shooter).getSkeletonType() == Skeleton.SkeletonType.WITHER ? .45D : 0), location.getZ());
         if (velocity != null)
             launch.getBukkitEntity().setVelocity(velocity);
 
@@ -156,6 +154,7 @@ public class EntityMechanics implements GenericMechanic {
             int lastAttack = MONSTER_LAST_ATTACK.get(entity);
             EntityInsentient ei = (EntityInsentient) ((CraftEntity) entity).getHandle();
 
+            if(entity.isInvulnerable())continue;
             if (lastAttack == 11) {
                 // Teleport back to spawnpoint if too far away.
                 Location target = ei.getGoalTarget() != null ? ei.getGoalTarget().getBukkitEntity().getLocation() : null;

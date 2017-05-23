@@ -29,9 +29,11 @@ public class PvPListener implements Listener {
     	Projectile projectile = isProjectile ? (Projectile)event.getDamager() : null;
     	
     	//  DONT HANDLE IF IT'S NOT PLAYER VS PLAYER  //
-    	if ((!isProjectile || !isPlayer))
+    	if (!isProjectile && !isPlayer)
     		return;
-    	
+
+    	if(isProjectile && !(projectile.getShooter() instanceof Player)) return; //Shooter is not a player
+
     	Player attacker = isProjectile ? (Player)projectile.getShooter() : (Player)event.getDamager();
     	Player defender = (Player)event.getEntity();
     	
@@ -43,7 +45,7 @@ public class PvPListener implements Listener {
     		return;
     	
         boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
-        
+
         if (!isDuel)
         	CombatLog.updatePVP(attacker);
         

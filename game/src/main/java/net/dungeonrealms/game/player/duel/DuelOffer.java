@@ -90,7 +90,7 @@ public class DuelOffer {
             GamePlayer wGP = GameAPI.getGamePlayer(winner);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(winner);
             GamePlayer lGP = GameAPI.getGamePlayer(loser);
-            PlayerWrapper loserWrapper = PlayerWrapper.getPlayerWrapper(winner);
+            PlayerWrapper loserWrapper = PlayerWrapper.getPlayerWrapper(loser);
             if (wGP != null) {
                 wGP.setPvpTaggedUntil(0);
                 wrapper.getPlayerGameStats().addStat(StatColumn.DUELS_WON);

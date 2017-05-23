@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -43,7 +44,13 @@ public class SubscriptionsGUI extends GUIMenu implements WebstoreGUI {
 //                lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "EXPIRES IN " + expires);
             }
             setItem(webItem.getGuiSlot(), new GUIItem(webItem.getItemType()).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
-                player.sendMessage("Sub button clicked!");
+                if(isUnlocked) {
+                    player.sendMessage(ChatColor.GREEN + "Thank you for purchasing " + webItem.getName());
+                    player.sendMessage(ChatColor.GRAY + "Extend your subscription at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                } else {
+                    player.sendMessage(ChatColor.RED + "You have not purchased this rank!");
+                    player.sendMessage(ChatColor.GRAY + "Unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                }
             }));
         }
     }

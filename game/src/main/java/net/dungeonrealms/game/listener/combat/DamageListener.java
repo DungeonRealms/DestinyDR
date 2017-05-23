@@ -113,12 +113,16 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void entDamageNullCheck(EntityDamageByEntityEvent event) {
         if (GameAPI.isPlayer(event.getDamager()))
-            if (GameAPI.getGamePlayer((Player) event.getDamager()) == null)
+            if (GameAPI.getGamePlayer((Player) event.getDamager()) == null) {
                 event.setCancelled(true);
+                System.out.println("Cancelling entity damage 1");
+            }
 
         if (GameAPI.isPlayer(event.getEntity()))
-            if (GameAPI.getGamePlayer((Player) event.getEntity()) == null)
+            if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) {
                 event.setCancelled(true);
+                System.out.println("Cancelling entity damage 2");
+            }
     }
 
 
@@ -405,7 +409,7 @@ public class DamageListener implements Listener {
         EntityMechanics.setVelocity(p, p.getVelocity().zero());
 
         p.updateInventory();
-
+        p.setGameMode(GameMode.SURVIVAL);
         //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(p);
@@ -418,7 +422,8 @@ public class DamageListener implements Listener {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             p.setCanPickupItems(true);
-            p.setGameMode(GameMode.SURVIVAL);
+            if (p.getGameMode().equals(GameMode.SPECTATOR))
+                p.setGameMode(GameMode.SURVIVAL);
             PlayerWrapper pw = PlayerWrapper.getWrapper(p);
             pw.calculateAllAttributes();
         }, 20L);
@@ -615,10 +620,17 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
 
+            event.setCancelled(true);
             if (EntityAPI.isBoss(e)) {
-                if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast)
-                    event.getEntity().teleport(new Location(event.getEntity().getWorld(), -53, 170, 660));
-
+                if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
+                    Entity pass = event.getEntity().getPassenger();
+                    if (pass != null) pass.eject();
+                    event.getEntity().teleport(((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint());
+                    if (pass != null) {
+                        pass.teleport(event.getEntity());
+                        event.getEntity().setPassenger(pass);
+                    }
+                }
                 return;
             }
             //Dont even despawn the boss.. or elites

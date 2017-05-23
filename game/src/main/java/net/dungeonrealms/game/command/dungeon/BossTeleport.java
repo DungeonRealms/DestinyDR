@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command.dungeon;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 
@@ -33,8 +34,8 @@ public class BossTeleport extends BaseCommand {
         }
         
         Dungeon d = DungeonManager.getDungeon(bcs.getBlock().getWorld());
-        
-        if (!d.canBossSpawn()) {
+
+        if (!d.canBossSpawn() && d.getWorld().getPlayers().stream().filter(p -> Rank.isDev(p)).count() < d.getWorld().getPlayers().size()) {
         	d.announce(ChatColor.RED + "You must kill " + ChatColor.GOLD + d.getKillsLeft() + ChatColor.RED + " more mobs.");
         	return true;
         }

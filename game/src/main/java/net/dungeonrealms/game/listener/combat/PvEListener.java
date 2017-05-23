@@ -52,7 +52,6 @@ public class PvEListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackMob(EntityDamageByEntityEvent event) {
 
-        Bukkit.getLogger().info("Entity: " + (event.getEntity() instanceof LivingEntity));
         if (!(event.getEntity() instanceof LivingEntity))
             return;
 
@@ -88,8 +87,6 @@ public class PvEListener implements Listener {
 
         event.setDamage(0);
 
-        System.out.println("Hooray we're firing.");
-
         if (DamageAPI.isInvulnerable(receiver)) {
             if (EntityAPI.isBoss(receiver))
                 ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked(damager);
@@ -111,7 +108,6 @@ public class PvEListener implements Listener {
         if (!ItemWeapon.isWeapon(held)) {
             res = new AttackResult(damager, receiver);
             res.setDamage(1);
-            System.out.println(held.getType() + " is not a wepaon.");
             if (dpsDummy) {
                 res.applyDamage();
             } else {
@@ -122,14 +118,12 @@ public class PvEListener implements Listener {
         }
 
         if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
-            System.out.println("It's da bow");
             //Why cancel the event?
             int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
             DamageAPI.knockbackEntity(damager, receiver, 1D + .2D * tier);
             damager.updateInventory();
         }
 
-        System.out.println("We need to apply our damage.");
 
         //  CALCULATE DAMAGE  //
         res = new AttackResult(damager, receiver, projectile);

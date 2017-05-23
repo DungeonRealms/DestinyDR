@@ -32,15 +32,15 @@ public class CommandTrail extends BaseCommand {
         }
 
         Player player = (Player) sender;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if(wrapper == null) return false;
         if (args.length == 0) {
             if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
+                wrapper.setActiveTrail(null);
                 player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                 return true;
             }
-
-            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-            if(wrapper == null) return false;
 
             ParticleEffect trailType = wrapper.getActiveTrail();
             if (trailType == null || trailType.equals("")) {
