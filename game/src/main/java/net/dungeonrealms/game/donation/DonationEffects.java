@@ -14,19 +14,21 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Getter @Setter
+@Getter
+@Setter
 public class DonationEffects implements GenericMechanic {
 
     @Getter
     private static DonationEffects instance = new DonationEffects();
 
     public Map<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Location, MaterialData> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";
 
@@ -173,19 +175,19 @@ public class DonationEffects implements GenericMechanic {
 
             ParticleEffect effect = entry.getValue();
             if (effect != ParticleEffect.GOLD_BLOCK)
-            	ParticleAPI.spawnParticle(effect.getParticle(), entry.getKey().getLocation().add(0, .22, 0), -.5F, 6, effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F);
+                ParticleAPI.spawnParticle(effect.getParticle(), entry.getKey().getLocation().add(0, .22, 0), -.5F, 6, effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F);
         }
     }
 
     private void removeGoldBlockTrails() {
         if (PLAYER_GOLD_BLOCK_TRAIL_INFO.isEmpty()) return;
-        for (Map.Entry<Location, Material> goldTrails : PLAYER_GOLD_BLOCK_TRAIL_INFO.entrySet()) {
+        for (Map.Entry<Location, MaterialData> goldTrails : PLAYER_GOLD_BLOCK_TRAIL_INFO.entrySet()) {
             Location location = goldTrails.getKey();
             int timeRemaining = location.getBlock().getMetadata("time").get(0).asInt();
             timeRemaining--;
             if (timeRemaining <= 0) {
-                Material material = goldTrails.getValue();
-                location.getBlock().setType(material);
+                MaterialData material = goldTrails.getValue();
+                location.getBlock().setTypeIdAndData(material.getItemTypeId(), material.getData(), false);
                 PLAYER_GOLD_BLOCK_TRAIL_INFO.remove(location);
             } else {
                 location.getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), timeRemaining));
@@ -214,12 +216,15 @@ public class DonationEffects implements GenericMechanic {
         return false;
     }
 
-    public static boolean isGoldenCursable(Material material) {
+    public static boolean isGoldenCursable(MaterialData data) {
+        Material material = data.getItemType();
         return material == Material.DIRT || material == Material.GRASS || material == Material.STONE
                 || material == Material.COBBLESTONE || material == Material.GRAVEL
                 || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
                 || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF
                 || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
-                || material == Material.SNOW_BLOCK || material == Material.CLAY;
+                || material == Material.SNOW_BLOCK || material == Material.CLAY
+                || material == Material.DOUBLE_STONE_SLAB2 || material == Material.STONE_SLAB2
+                || material == Material.DOUBLE_STEP || material == Material.WOOD_DOUBLE_STEP || material == Material.STEP && (data.getData() == 8 || data.getData() == 11);
     }
 }

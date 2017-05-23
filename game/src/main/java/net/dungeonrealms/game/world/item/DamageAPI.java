@@ -562,7 +562,7 @@ public class DamageAPI {
 
         if (vector != null) {
             //mob
-            vector = vector.multiply(tier.getTierId() <= 3 ? 1.75 : tier == Item.ItemTier.TIER_5 ? 1.75 : 1);
+            vector = vector.multiply(tier.getTierId() <= 3 ? 1.75 : tier == Item.ItemTier.TIER_5 ? 1.4 : 1);
         } else {
             //player shooting
             //1, 1.25, 1.25, 1.5, 3x velocities

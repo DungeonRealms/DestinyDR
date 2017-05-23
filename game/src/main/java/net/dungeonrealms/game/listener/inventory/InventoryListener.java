@@ -501,7 +501,7 @@ public class InventoryListener implements Listener {
                 boolean ready = status.equalsIgnoreCase("ready");
                 trade.updateReady(event.getWhoClicked().getUniqueId());
                 ItemStack item = new ItemStack(Material.INK_SACK);
-                item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.GREEN.getDyeData());
+                item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.LIME.getDyeData());
                 ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
                 item.setItemMeta(meta);

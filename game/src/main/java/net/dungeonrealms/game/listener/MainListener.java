@@ -32,6 +32,7 @@ import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -79,6 +80,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -415,10 +417,12 @@ public class MainListener implements Listener {
         if (effect == null || effect != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
         if (!player.getWorld().equals(Bukkit.getWorlds().get(0)) || player.getLocation().getBlock().getType() != Material.AIR)
             return;
-        Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
-        if (DonationEffects.isGoldenCursable(material)) {
+        Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
+        MaterialData data = new MaterialData(bl.getType(), bl.getData());
+
+        if (DonationEffects.isGoldenCursable(data)) {
             DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
-                    .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
+                    .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), data);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
                     new FixedMetadataValue(DungeonRealms.getInstance(), 30));
@@ -436,7 +440,7 @@ public class MainListener implements Listener {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
-            Material m = block.getType();
+            MaterialData m = new MaterialData(block.getType(), block.getData());
 
             if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m)) {
 
@@ -563,7 +567,7 @@ public class MainListener implements Listener {
         if (npcNameStripped.equalsIgnoreCase("Sales Manager")) {
             if (player.getName().equals("iFamasssxD") && player.isSneaking()) {
                 for (int i = 0; i < 100; i++) {
-                    ShopMechanics.getRecentlySoldItems().add(new SoldShopItem(player.getUniqueId(), player.getName(), new ItemOrb().generateItem(), ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE) + 1, "Bill Gates"));
+                    ShopMechanics.getRecentlySoldItems().add(new SoldShopItem(player.getUniqueId(), player.getName(), new NBTWrapper(new ItemOrb().generateItem()).removeKey("type").build(), ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE) + 1, "Bill Gates"));
                 }
             }
             new SalesManagerGUI(player).open(player, null);
