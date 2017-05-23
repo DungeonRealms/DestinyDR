@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -96,7 +97,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     if (meta.hasDisplayName())
                     	name += meta.getDisplayName();
                     else {
-                        Material material = e.getValue().a().getType();
+                        Material material = item.getType();
                         name += material.toString().replace("_", " ");
                     }
                     
@@ -104,19 +105,23 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     	itemDesc.put(name, itemDesc.get(name) + 1);
                     else
                     	itemDesc.put(name, 1);
-                    
+
+                    Inventory inv = e.getKey();
+                    String uniqueID = e.getValue().b();
                     // GIVE THEM AN ORIGINAL //
-                    if (ItemGear.isCustomTool(e.getValue().a())) {
-                        remove(e.getKey(), e.getValue().b());
+                    if (ItemGear.isCustomTool(item)) {
+                        remove(inv, uniqueID);
                         // THIS WILL REMOVED THE DUPLICATE ITEMS //
-                        if (traceCount(e.getKey(), e.getValue().b()) == 0)
-                            e.getKey().addItem(e.getValue().a());
-                    } else if (traceCount(e.getKey(), e.getValue().b()) == 0) {
-                        e.getValue().a().setAmount(1);
-                        e.getKey().addItem(e.getValue().a());
+                        if (traceCount(inv, uniqueID) == 0)
+                            inv.addItem(item);
+                    } else if (traceCount(inv, uniqueID) == 0) {
+                        //wat?
+                        Bukkit.getLogger().info("Adding " + item + " into " + inv.getName() + " from " + p.getName());
+                        item.setAmount(1);
+                        inv.addItem(item);
                     } else {
-                        itemDesc.put(name, itemDesc.get(name) + (e.getValue().a().getAmount() - 2));
-                        remove(e.getKey(), e.getValue().b());
+                        itemDesc.put(name, itemDesc.get(name) + item.getAmount() - 2);
+                        remove(inv, uniqueID);
                     }
                 }
             }
@@ -141,15 +146,16 @@ public class AntiDuplication implements GenericMechanic, Listener {
      *
      * @param player      Player target
      * @param inventories Inventories to check
-     * @author APOLLOSOFTWARE
-     * @author EtherealTemplar
-     *
-     * Oh nice job lads, yes amazing, this is the most retarded thing I've ever seen. congrats.
+     * @author iFamasssxD
      */
     public static void checkForSuspiciousDupedItems(Player player, final Set<Inventory> inventories) {
         if (Rank.isTrialGM(player)) return;
         if (EXCLUSIONS.contains(player.getUniqueId())) return;
 
+        InventoryView openInventory = player.getOpenInventory();
+        if(openInventory != null && openInventory.getTopInventory() != null && openInventory.getTopInventory().getName().contains("- @")){
+            inventories.add(openInventory.getTopInventory());
+        }
         HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
 
         for (Inventory inv : inventories) {
@@ -177,7 +183,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
             if (i.getAmount() <= 0) continue;
             if (isRegistered(i))
                 if (getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
-                    inventory.remove(i);
+                    inventory.removeItem(i);
         }
     }
 
