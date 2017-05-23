@@ -1,21 +1,6 @@
 Build <build>
-
-<<<<<<< HEAD
 &8&lChanges&0
-- &a&l2x&0 Drop Rates
-- &a&l30%&0 Increased Profession EXP Rates
-- Orbs now tradeable for 180 T3 Scrap
-- Easter Eggs no longer drop from mobs.
-=======
-&8Changes&0
-- Realms Optimized
->>>>>>> refs/heads/item-recode
-
-<<<<<<< HEAD
-&8&lBug Fixes&0
-- Fixed glow not working for some people.
-- Fixed going Chaotic after a duel in the Wilderness
-=======
-&8Bugfixes&0
-- 
->>>>>>> refs/heads/item-recode
+ &l* &0&a&l2x&0 Drop Rates<h>New drop rates!!</h>
+ &l* &0Added Shields<h>&b&lWhat are Shields?,,&7Shields are used to reduce incoming damage,&7and can come with various other stats,,&b&lDamage Reduction,&f&lTier 1&f - 10%,&a&lTier 2&a - 15%,&b&lTier 3&b - 20%,&d&lTier 4&d - 25%,&e&lTier 5&e - 30%,,&7Shields can be obtained,&7by defeating &dRift Elites&7!</h>
+ &l* &0Added Rifts<h>&7Defeat these mystical rifts for\n&7the chance to obtain a Shield!</h>
+ &l* &0Orbs now tradeable for 180 T3 Scrap

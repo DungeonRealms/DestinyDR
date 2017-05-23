@@ -102,7 +102,7 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
             player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "â�¢ LOW ENERGY â�¢", 4 * 20);
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "❢ LOW ENERGY ❢", 4 * 20);
             ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1, 0), 40, .75F);
             return;
         }
