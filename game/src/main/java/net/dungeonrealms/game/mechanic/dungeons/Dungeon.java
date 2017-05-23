@@ -100,10 +100,8 @@ public abstract class Dungeon {
         // Load spawns.
         this.spawns = DungeonManager.getSpawns(getWorld(), getType());
 
-        for (MobSpawner spawn : spawns) {
+        for (MobSpawner spawn : spawns)
             maxMobCount += spawn.getSpawnAmount();
-        }
-//        startDungeon();
     }
 
     /**
@@ -436,7 +434,7 @@ public abstract class Dungeon {
     public DungeonBoss spawnBoss(BossType type, Location loc) {
         // We've already spawned this boss.
         if (hasSpawned(type))
-            return null;
+        	return null;
 
         DungeonBoss boss = null;
 

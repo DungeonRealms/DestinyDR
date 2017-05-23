@@ -64,7 +64,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
             String subChannel = in.readUTF();
 
             try {
-                if (subChannel.equals("IP")) {
+                /*if (subChannel.equals("IP")) { // Disabled due to ineffectiveness. Doesn't catch the people we really want banned and players who use VPNs can get banned false-positively.
                     String address = in.readUTF();
 
 
@@ -83,17 +83,8 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                             e.printStackTrace();
                         }
                     });
-//                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-//                    DatabaseAPI.getInstance().retrieveDocumentFromAddress(address, existingDoc -> {
-//                        if (existingDoc != null) {
-//                            UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
-//
-//                            if (PunishAPI.isBanned(uuid))
-//                                PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
-//                        }
-//                    });
                     return;
-                }
+                }*/
 
                 if (subChannel.equals("PlayerCount")) {
                     String server = in.readUTF();

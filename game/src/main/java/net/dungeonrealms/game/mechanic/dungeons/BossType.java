@@ -97,7 +97,7 @@ public enum BossType {
 	 * Is this the final boss?
 	 */
 	public boolean isFinalBoss() {
-		return getPrefix() != null;
+		return getPrefix() != null && getPrefix().length() > 0;
 	}
 	
 	/**

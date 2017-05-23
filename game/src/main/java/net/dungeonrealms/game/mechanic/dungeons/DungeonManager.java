@@ -86,7 +86,7 @@ public class DungeonManager implements GenericMechanic {
     			// Automatically spawns in bosses, if needed.
     			// Don't automatically spawn final bosses or special bosses.
     			// Since they're have spawn triggers.
-    			Arrays.stream(d.getType().getBosses()).filter(b -> !b.isFinalBoss() && !b.isSpecial() && !d.hasSpawned(b)
+    			Arrays.stream(d.getType().getBosses()).filter(b -> !b.isFinalBoss() && !b.isSpecial()
     					&& GameAPI.arePlayersNearby(b.getLocation(d.getWorld()), 50)).forEach(d::spawnBoss);
     		}
     	}, 0L, 10L);

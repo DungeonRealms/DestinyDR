@@ -44,7 +44,7 @@ public class CommandStaffChat extends BaseCommand {
         	return true;
         }
 
-        GameAPI.sendStaffMessage(rank, ChatColor.GOLD + "<" + this.prefix + "> ({SERVER}&) " + PlayerWrapper.getWrapper((Player) sender).getChatName() + "&6: " + String.join(" ", args));
+        GameAPI.sendStaffMessage(rank, ChatColor.GOLD + "<" + this.prefix + "&6> ({SERVER}&6) " + PlayerWrapper.getWrapper((Player) sender).getChatName() + "&6: " + String.join(" ", args), true);
         return true;
     }
 }

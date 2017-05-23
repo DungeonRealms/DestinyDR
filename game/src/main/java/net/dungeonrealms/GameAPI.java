@@ -498,7 +498,7 @@ public class GameAPI {
             Utils.log.info("Not sending " + task + ", we haven't connected.");
             return;
         }
-        getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
+        getClient().sendNetworkMessage(task, message, contents);
     }
     
     /**
@@ -538,7 +538,8 @@ public class GameAPI {
      * @param ignOnly
      */
     public static void sendStaffMessage(PlayerRank minRank, String message, boolean ignOnly) {
-    	sendNetworkMessage((ignOnly ? "IG_" : "") + "StaffMessage", minRank.name(), message);
+    	sendNetworkMessage((ignOnly ? "IG_" : "") + "StaffMessage", minRank.name(),
+    			message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET));
     }
 
     public static void sendDevMessage(String message) {

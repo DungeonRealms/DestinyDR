@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class CommandToggles extends BaseCommand {
     public CommandToggles() {
-        super("toggles", "/<command> [args]", "View and manage your profile toggles.", null, Lists.newArrayList("toggle"));
+        super("toggles", "/<command> [args]", "View and manage your profile toggles.", null, Lists.newArrayList("toggle", "gm"));
     }
 
     @Override

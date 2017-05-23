@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.player.inventory.menus;
 
 import com.google.common.collect.Lists;
+
 import lombok.Getter;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ShopItem;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -18,9 +21,12 @@ public class GUIItem extends ShopItem {
 
     @Getter
     private Consumer<InventoryClickEvent> clickCallback;
+    
+    private List<String> lore = new ArrayList<>();
 
     public GUIItem(ItemStack item) {
         super(item);
+        this.setOnClick(null);
         getItem().getItemMeta().addItemFlags(org.bukkit.inventory.ItemFlag.values());
     }
 
@@ -31,10 +37,11 @@ public class GUIItem extends ShopItem {
     public GUIItem(Material mat, short s) {
     	this(new ItemStack(mat, 1, s));
     }
-
+    
     @Override
-    public ItemStack getStack() {
-        return getItem();
+    public void updateItem() {
+    	this.lore.forEach(this::addLore);
+    	super.updateItem();
     }
 
     public GUIItem setEnchanted(boolean enchant) {
@@ -89,7 +96,7 @@ public class GUIItem extends ShopItem {
 
     public GUIItem setLore(List<String> lore) {
     	if (lore != null)
-    		lore.forEach(this.originalLore::add);
+    		lore.forEach(this.lore::add);
         return this;
     }
 }

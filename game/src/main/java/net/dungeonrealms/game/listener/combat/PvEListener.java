@@ -147,7 +147,7 @@ public class PvEListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
         LivingEntity monster = event.getEntity();
-        if (!EnumEntityType.HOSTILE_MOB.isType(monster) || EntityAPI.isBoss(monster)) //Return if you have uuid too.
+        if (!EnumEntityType.HOSTILE_MOB.isType(monster)) 
             return;
 
         Player killer = monster.getKiller();
@@ -158,7 +158,7 @@ public class PvEListener implements Listener {
         if (highestDamage == null || !highestDamage.isOnline()) {
             if (killer != null) {
                 highestDamage = killer;
-            } else {
+            } else if (!EntityAPI.isBoss(monster)) { // We can skip the kill hook, unless it's a boss.
                 return;
             }
         }
@@ -178,6 +178,9 @@ public class PvEListener implements Listener {
             quest.getStageList().stream().filter(stage -> stage.getObjective() instanceof ObjectiveKill)
                     .forEach(stage -> ((ObjectiveKill) stage.getObjective()).handleKill(questReward, event.getEntity(), drMonster));
 
+        if (EntityAPI.isBoss(monster))
+        	return; // We don't need to run the code past here for bosses.
+        
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
 

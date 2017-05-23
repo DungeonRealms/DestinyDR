@@ -51,8 +51,9 @@ public interface DRMonster {
 				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
 				{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}};
 
-	public static final Class[] untargettable = new Class[] {EntityZombie.class, EntitySkeleton.class, EntitySilverfish.class, EntitySpider.class, EntityCaveSpider.class, DRMonster.class};
-    default void onMonsterAttack(Player p) {
+	public static final Class<?>[] untargettable = new Class[] {EntityZombie.class, EntitySkeleton.class, EntitySilverfish.class, EntitySpider.class, EntityCaveSpider.class, DRMonster.class};
+    
+	default void onMonsterAttack(Player p) {
     	
     }
 

@@ -39,10 +39,12 @@ public class ShopItem extends ItemGeneric {
     @Getter
     private ShopItemClick callback;
     
-    protected List<String> originalLore = new ArrayList<>();
+    protected List<String> originalLore;
 
     public ShopItem(ItemStack item) {
-        super(item);
+        super(item.clone());
+        setSoldItem(new VanillaItem(getItem()));
+        this.originalLore = getItem().getItemMeta().getLore();
     }
 
     public ShopItem(ItemGeneric purchase) {
@@ -56,8 +58,6 @@ public class ShopItem extends ItemGeneric {
     public ShopItem(ItemGeneric purchase, ShopItemClick cb) {
         super(ItemType.SHOP);
         this.originalLore = purchase.generateItem().getItemMeta().getLore();
-        if (this.originalLore != null)
-        	this.originalLore = new ArrayList<>();
         this.soldItem = purchase;
         this.callback = cb;
         setFlag(ItemFlag.MENU, true);
@@ -97,6 +97,7 @@ public class ShopItem extends ItemGeneric {
             setTagInt("shardTier", getShardTier().getTier());
             setTagInt("shards", getShards());
         }
+        
         super.updateItem();
     }
 
