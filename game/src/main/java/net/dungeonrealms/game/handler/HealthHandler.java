@@ -32,7 +32,6 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -327,7 +326,7 @@ public class HealthHandler implements GenericMechanic {
         Player player = res.getDefender().getPlayer();
         LivingEntity attacker = res.getAttacker().getEntity();
         double damage = res.getWeightedDamage();
-        
+
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
 
@@ -541,7 +540,7 @@ public class HealthHandler implements GenericMechanic {
      * Damages a monster.
      */
     public static void damageMonster(AttackResult res) {
-        System.out.println("Damage -> Monster = " + res.getDamage());
+//        System.out.println("Damage -> Monster = " + res.getDamage());
         if (res.getDamage() <= 0)
             return;
 
@@ -569,9 +568,9 @@ public class HealthHandler implements GenericMechanic {
         }
 
         defender.playEffect(EntityEffect.HURT);
-        
+
         if (Utils.randChance(7))
-        	ParticleAPI.spawnBlockParticles(defender.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
+            ParticleAPI.spawnBlockParticles(defender.getLocation().clone().add(0, 1, 0), Material.REDSTONE_BLOCK);
 
         if (attacker != null && GameAPI.isPlayer(attacker)) {
             handleMonsterDamageTracker(defender.getUniqueId(), (Player) attacker, damage);
@@ -590,8 +589,6 @@ public class HealthHandler implements GenericMechanic {
                 atk.sendDebug(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + npcTierColor + customNameAppended + npcTierColor + " [" + (int) (newHP < 0 ? 0 : newHP) + "HP]");
             }
         }
-
-        System.out.println("Setting HP = " + newHP);
 
         if (newHP <= 0 && !isDPSDummy) {
             //  KILL ENTITY  //
@@ -655,6 +652,8 @@ public class HealthHandler implements GenericMechanic {
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
 
+        if (EntityAPI.isElite(entity))
+            Bukkit.getLogger().info("Healh Potions from Attributes: " + totalHP);
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[]{1.8, 2.5, 3, 4, 5.5};
 
@@ -675,6 +674,8 @@ public class HealthHandler implements GenericMechanic {
                 totalHP *= 6;
         }
 
+        if (EntityAPI.isElite(entity))
+            Bukkit.getLogger().info("Healh points after Attributes: " + totalHP);
         setMaxHP(entity, totalHP);
     }
 }

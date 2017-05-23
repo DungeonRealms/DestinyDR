@@ -62,10 +62,13 @@ public class TipHandler implements GenericMechanic {
 	
 	private static void loadTips() {
 		try {
-			File file = new File("plugins/DungeonRealms/tips.txt");
-			if (!file.exists())
+			File file = new File("plugins/DungeonRealms/tips/tips.txt");
+			if (!file.exists()) {
 				file.createNewFile();
-			
+				System.out.println("Had to create a new file!");
+			}
+
+			System.out.println("The tip path: " + file.getAbsolutePath());
 			tips = Files.readAllLines(file.toPath());
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -48,6 +48,6 @@ public class EliteMobSpawner extends MobSpawner {
     	boolean nearby = GameAPI.arePlayersNearby(getLocation(), 24);
     	if (nearby)
     		setCounter(0);
-        return super.canSpawnMobs() && nearby;
+        return super.canSpawnMobs() && (nearby || isDungeon());
     }
 }

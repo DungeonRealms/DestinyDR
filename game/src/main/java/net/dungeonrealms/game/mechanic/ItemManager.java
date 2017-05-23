@@ -99,7 +99,11 @@ public class ItemManager {
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                 playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
 
-        if (playerAlignment != EnumPlayerAlignments.LAWFUL) {
+        if(TutorialIsland.onTutorialIsland(p.getLocation())) {
+            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
+                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/skip" + pretty_align + "\n" + "to skip the tutorial!" + new_line;
+        }
+        else if (playerAlignment != EnumPlayerAlignments.LAWFUL) {
             String time = String.valueOf(pw.getAlignmentTime());
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s.." + new_line;

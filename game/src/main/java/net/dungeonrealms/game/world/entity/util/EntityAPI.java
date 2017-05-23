@@ -45,6 +45,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
@@ -78,11 +79,10 @@ public class EntityAPI {
     public static Entity spawnElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name) {
         name = name != null ? name : monster.getName();
         LivingEntity entity = spawnEntity(loc, monster, elite != null ? elite.getEntity() : monster.getCustomEntity(), tier, level, name);
-        ;
-        ;
 
+        boolean isDungeon = DungeonManager.isDungeon(loc.getWorld());
         // For non-Named elites that don't have custom gear.
-        if (elite == null && monster != null && !DungeonManager.isDungeon(loc.getWorld())) {
+        if (elite == null && !isDungeon) {
             ItemWeapon weapon = new ItemWeapon();
             weapon.setTier(tier).setRarity(ItemRarity.getRandomRarity(true)).setGlowing(true);
             ItemType type = monster.getWeaponType();
@@ -108,7 +108,6 @@ public class EntityAPI {
                 GameAPI.setItem(entity, e, i);
             }
         }
-
         Metadata.ELITE.set(entity, true);
         if (elite != null)
             Metadata.NAMED_ELITE.set(entity, elite);
@@ -214,8 +213,6 @@ public class EntityAPI {
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
 
         LivingEntity le = (LivingEntity) entity;
-        HealthHandler.calculateHP(le);
-        HealthHandler.setHP(le, HealthHandler.getMaxHP(le));
 
         if (armorSet != null)
             le.getEquipment().setArmorContents(armorSet.generateArmorSet());
@@ -223,6 +220,8 @@ public class EntityAPI {
         if (weapon != null)
             le.getEquipment().setItemInMainHand(weapon.generateItem());
 
+        HealthHandler.calculateHP(le);
+        HealthHandler.setHP(le, HealthHandler.getMaxHP(le));
         if (name != null && name.length() > 0) {
             Metadata.CUSTOM_NAME.set(entity, name);
         }
@@ -366,8 +365,8 @@ public class EntityAPI {
             le.setCollidable(true);
 
             boolean dungeon = DungeonManager.isDungeon(loc.getWorld());
-            ItemWeapon weapon = dungeon ? (ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
-            ItemArmor armor = dungeon ? (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
+            ItemWeapon weapon = dungeon && (monster == null || monster.getWeapon() == null) ? (ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE) : monster != null && monster.getWeapon() != null ? new ItemWeapon(monster.getWeapon()) : null;
+            ItemArmor armor = dungeon && (monster == null || Arrays.stream(monster.getBukkit().getEquipment().getArmorContents()).filter(e -> e != null && e.getType() != Material.AIR).count() < 4) ? (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
 
             // Register monster data.
             if (mType != null && !mType.isFriendly()) {
@@ -382,8 +381,11 @@ public class EntityAPI {
                 }
             }
 
-            if (monster != null)
+            if (monster != null) {
                 calculateAttributes(monster);
+                HealthHandler.calculateHP(le);
+                HealthHandler.setHP(le, HealthHandler.getMaxHP(le));
+            }
             return le;
         } catch (Exception e) {
             e.printStackTrace();

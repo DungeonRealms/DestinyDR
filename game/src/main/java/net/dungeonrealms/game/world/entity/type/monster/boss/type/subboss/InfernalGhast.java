@@ -30,7 +30,6 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
         super(world);
         DamageAPI.setArmorBonus(getBukkit(), 50);
 
-
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(50F);
         try {
             Field bSet = ReflectionAPI.getDeclaredField(goalSelector.getClass(), "b");
@@ -38,16 +37,17 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
             for (Object o : new LinkedHashSet<>(b)) {
                 Field goal = ReflectionAPI.getDeclaredField(o.getClass(), "a");
                 PathfinderGoal pathGoal = (PathfinderGoal) goal.get(o);
-                if (pathGoal.getClass().getName().contains("GhastMoveTowardsTarget")) {
+                if (pathGoal.getClass().getName().contains("GhastMoveTowardsTarget") || pathGoal.getClass().getName().contains("GhastAttackTarget")) {
                     //Remove this?
                     b.remove(o);
                     bSet.set(goalSelector, b);
-                    Bukkit.getLogger().info("Removed Ghast Move Towards target!");
+                    Bukkit.getLogger().info("Removed ghast path finder: " + pathGoal.getClass().getName());
                 }
             }
         } catch (IllegalAccessException e1) {
             e1.printStackTrace();
         }
+        this.goalSelector.a(7, new PathfinderGoalGhastAttackTarget(this));
         this.moveController = new ControllerGhast(this);
     }
 
@@ -119,10 +119,11 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
                     d3 = (double) MathHelper.sqrt(d3);
                     if (this.b(this.b, this.c, this.d, d3)) {
                         this.i.motX += d0 / d3 * 0.1D;
-                        this.i.motY += d1 / d3 * 0.1D;
+                        //Dont fly down?
+                        this.i.motY += Math.max(-0.001, d1 / d3 * 0.1D);
                         this.i.motZ += d2 / d3 * 0.1D;
                     } else {
-//                        this.h = Operation.WAIT;
+                        this.h = Operation.WAIT;
                     }
                 }
             }
@@ -151,4 +152,77 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
             return true;
         }
     }
+
+    static class PathfinderGoalGhastAttackTarget extends PathfinderGoal {
+        private EntityGhast ghast;
+        public int a;
+
+        public PathfinderGoalGhastAttackTarget(EntityGhast entityghast) {
+            this.ghast = entityghast;
+        }
+
+        public boolean a() {
+            return this.ghast.getGoalTarget() != null;
+        }
+
+        public void c() {
+            this.a = 0;
+        }
+
+        public void d() {
+            this.ghast.a(false);
+        }
+
+        public void e() {
+            EntityLiving entityliving = this.ghast.getGoalTarget();
+            double d0 = 64.0D;
+            if (entityliving.h(this.ghast) < d0 * d0 && this.ghast.hasLineOfSight(entityliving)) {
+                World world = this.ghast.world;
+                ++this.a;
+                if (this.a == 10) {
+                    world.a((EntityHuman) null, 1015, new BlockPosition(this.ghast), 0);
+                }
+
+                if (this.a == 20) {
+                    double d1 = 4.0D;
+                    Vec3D vec3d = this.ghast.f(1.0F);
+                    double d2 = entityliving.locX - (this.ghast.locX + vec3d.x * d1);
+                    double d3 = entityliving.getBoundingBox().b + (double) (entityliving.length / 2.0F) - (0.5D + this.ghast.locY + (double) (this.ghast.length / 2.0F));
+                    double d4 = entityliving.locZ - (this.ghast.locZ + vec3d.z * d1);
+                    world.a((EntityHuman) null, 1016, new BlockPosition(this.ghast), 0);
+                    //Custom fireball makes him shoot all insane?
+                    EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this.ghast, d2, d3, d4) {
+                        @Override
+                        protected void a(MovingObjectPosition movingobjectposition) {
+                            if (movingobjectposition.entity != null && (movingobjectposition.entity instanceof EntityFireball || !(movingobjectposition.entity instanceof EntityHuman) && !(shooter instanceof EntityHuman))) {
+                                Bukkit.getLogger().info("Ignoring Fireball collision with " + movingobjectposition.entity);
+                                return;
+                            }
+                            super.a(movingobjectposition);
+                        }
+
+                        @Override
+                        public void setDirection(double d0, double d1, double d2) {
+                            double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                            this.dirX = d0 / d3 * 0.1D;
+                            this.dirY = d1 / d3 * 0.1D;
+                            this.dirZ = d2 / d3 * 0.1D;
+                        }
+
+                    };
+                    entitylargefireball.bukkitYield = (float) (entitylargefireball.yield = this.ghast.getPower());
+                    entitylargefireball.locX = this.ghast.locX + vec3d.x * d1;
+                    entitylargefireball.locY = this.ghast.locY + (double) (this.ghast.length / 2.0F) + 0.5D;
+                    entitylargefireball.locZ = this.ghast.locZ + vec3d.z * d1;
+                    world.addEntity(entitylargefireball);
+                    this.a = -40;
+                }
+            } else if (this.a > 0) {
+                --this.a;
+            }
+
+            this.ghast.a(this.a > 10);
+        }
+    }
+
 }

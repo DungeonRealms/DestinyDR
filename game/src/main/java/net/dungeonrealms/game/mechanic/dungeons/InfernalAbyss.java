@@ -90,7 +90,7 @@ public class InfernalAbyss extends Dungeon {
                     if (l.getBlock().getType() == Material.AIR)
                         l.getBlock().setType(Material.FIRE);
 
-                    if (Utils.randInt(20) == 0)
+                    if (Utils.randInt(20) == 0 && e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20)
                         EntityAPI.spawnCustomMonster(l.clone().add(0, 2, 0), EnumMonster.MagmaCube, "low", 3, null);
                 }
             }, 0L, 5L);
@@ -183,11 +183,12 @@ public class InfernalAbyss extends Dungeon {
                 return;
 
             InfernalAbyss dungeon = (InfernalAbyss) DungeonManager.getDungeon(evt.getEntity().getWorld());
+            if (dungeon == null) return;
             Entity entity = evt.getEntity();
             String name = ChatColor.stripColor(EntityAPI.getCustomName(entity));
             ItemStack stack = null;
 
-            if(entity.getType() == EntityType.ENDERMAN){
+            if (entity.getType() == EntityType.ENDERMAN) {
                 if (name.equals("The Devastator")) {
                     stack = getKey("A");
                 } else if (name.equals("The Annihilator")) {
@@ -206,11 +207,18 @@ public class InfernalAbyss extends Dungeon {
             if (stack != null) {
                 if (killer != null && killer.getInventory().firstEmpty() != -1) {
                     killer.getInventory().addItem(stack);
+                    killer.getWorld().playSound(killer.getLocation(), Sound.ENTITY_ITEM_PICKUP, 10, .95F);
                 } else {
-                    entity.getWorld().dropItemNaturally(entity.getLocation().clone().add(0, 1, 0), stack);
+                    //Get someone that can take it first?
+                    Player toGive = dungeon.getPlayers().stream().filter(pl -> pl.getInventory().firstEmpty() != -1).findFirst().orElse(null);
+                    if (toGive != null) {
+                        toGive.getInventory().addItem(stack);
+                        toGive.getWorld().playSound(toGive.getLocation(), Sound.ENTITY_ITEM_PICKUP, 10, .95F);
+                    } else {
+                        entity.getWorld().dropItemNaturally(entity.getLocation().clone().add(0, 1, 0), stack);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_ANVIL_LAND, 3, 1.15F);
+                    }
                 }
-            }else{
-                Bukkit.getLogger().info("Stats were null!");
             }
 
             dungeon.setWither(0);

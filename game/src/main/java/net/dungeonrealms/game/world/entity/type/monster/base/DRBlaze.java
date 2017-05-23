@@ -14,9 +14,6 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 	
 	protected DRBlaze(World world) {
 		super(world);
-		//  SET NMS DATA //
-		goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-		targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 	}
 	
 	@Override

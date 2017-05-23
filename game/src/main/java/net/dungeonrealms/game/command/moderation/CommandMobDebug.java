@@ -10,12 +10,17 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 import net.minecraft.server.v1_9_R2.PathfinderGoal;
 import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
@@ -60,7 +65,24 @@ public class CommandMobDebug extends BaseCommand {
 
             player.sendMessage(ChatColor.RED + "Target Selector:");
             sendGoalSelector(player, ent.targetSelector);
+        }
 
+        Inventory armor = Bukkit.createInventory(null, 9, "Gear");
+
+        int items = 0;
+        for (ItemStack item : ((LivingEntity) entity).getEquipment().getArmorContents()) {
+            if (item == null || Material.AIR == item.getType()) continue;
+            items++;
+            armor.addItem(item);
+        }
+
+        ItemStack hand = ((LivingEntity) entity).getEquipment().getItemInMainHand();
+        if (hand != null && hand.getType() != Material.AIR) {
+            items++;
+            armor.setItem(armor.getSize() - 1, hand);
+        }
+        if (items > 0) {
+            player.openInventory(armor);
         }
     }
 

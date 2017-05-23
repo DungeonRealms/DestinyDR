@@ -34,6 +34,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
@@ -89,14 +90,14 @@ public interface DRMonster {
 		Random random = ThreadLocalRandom.current();
 		boolean forcePlace = false;
 		EntityEquipment e = getBukkit().getEquipment();
-		
+
 		int chance = 6 + getTier();
-		
+
 		ItemStack[] entityArmor = e.getArmorContents();
 		for (int i = 0; i <= 2; i++) { //Chestplate, boots, leggings. No helmet.
 			if (forcePlace || getTier() >= 3 || random.nextInt(10) <= chance) {
 				entityArmor[i] = armor[i];
-				
+
 				if (i == 1) //Reset force place for low tiers at leggings.
 					forcePlace = false;
 			} else {
@@ -133,6 +134,8 @@ public interface DRMonster {
     
     default void setSkullTexture() {
     	if(getEnum() != null && getEnum().getSkullItem() != null) {
+    	    //No helms, they dont render.
+    	    if(getBukkit().getType() == EntityType.IRON_GOLEM || getBukkit().getType() == EntityType.BLAZE || getBukkit().getType() == EntityType.WITCH)return;
     		ItemStack helmet = getEnum().getSkullItem();
     		getBukkit().getEquipment().setHelmet(helmet);
     		getNMS().setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(helmet));
@@ -187,8 +190,7 @@ public interface DRMonster {
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LOOT))
         	chance += chance * (DonationEffects.getInstance().getBuff(EnumBuff.LOOT).getBonusAmount() / 100f);
 
-        chance *= 2; //Double drop rates this wipe.
-        
+
         if (gemRoll < (gemChance * gemFind)) {
             if (gemRoll >= gemChance)
                 wrapper.sendDebug(ChatColor.GREEN + "Your " + gemFinder.getValHigh() + "% Gem Find has resulted in a drop.");
@@ -204,7 +206,6 @@ public interface DRMonster {
             	if(drop <= 0)break;
             	ItemGem gem = new ItemGem(drop);
             	ItemStack gemStack = gem.generateItem();
-            	System.out.println("The amount of gems: " + gemStack.getAmount() + " , real amount: " + drop);
             	ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gemStack));
             }
         }

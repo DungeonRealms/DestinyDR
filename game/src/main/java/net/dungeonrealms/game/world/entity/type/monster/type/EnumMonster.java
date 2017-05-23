@@ -91,7 +91,11 @@ public enum EnumMonster {
     SpawnOfInferno(l(CustomEntityType.DR_MAGMA), "Spawn of Inferno", null, 10, ElementalAttribute.FIRE),
 	Demon(l(CustomEntityType.DR_SILVERFISH), "Greater Abyssal Demon", ItemType.SWORD),
 	InfernalEndermen(l(CustomEntityType.INFERNAL_ENDERMAN), "Endermen", null, 20, ElementalAttribute.FIRE),
-    
+    InfernalLordsGuard(l(CustomEntityType.INFERNAL_GUARD), "Infernal Lords Guard", null, 30, ElementalAttribute.FIRE),
+    FireLord(l(CustomEntityType.FIRE_LORD), "Fire Lord of the Abyss", null, 30, ElementalAttribute.FIRE),
+    IceLord(l(CustomEntityType.ICE_LORD), "Ice Lord of the Abyss", null, 70, ElementalAttribute.ICE),
+
+
     // Vanilla NonHostiles
 	PassiveChicken(l(CustomEntityType.PASSIVE_CHICKEN), "Quillen", ItemType.SWORD),
     Pig(l(CustomEntityType.PIG), "Pig"),
@@ -249,8 +253,10 @@ public enum EnumMonster {
         INFERNAL_GHAST(InfernalGhast.class, EntityType.GHAST),
         INFERNAL_ENDERMAN(InfernalEndermen.class, EntityType.ENDERMAN),
         INFERNAL_GUARD(InfernalLordsGuard.class, EntityType.SKELETON),
-        
-        
+        FIRE_LORD(FireLord.class, EntityType.BLAZE),
+        ICE_LORD(IceLord.class, EntityType.IRON_GOLEM),
+
+
         //  BOSSES  //
         MAYEL(Mayel.class, EntityType.SKELETON),
         BURICK(Burick.class, EntityType.SKELETON),

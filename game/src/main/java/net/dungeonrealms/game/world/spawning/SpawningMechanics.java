@@ -93,7 +93,7 @@ public class SpawningMechanics implements GenericMechanic {
     	// Load mob type.
     	String monsterType = line.split("=")[1].split(":")[0].split("\\(")[0];
     	EnumMonster monster = EnumMonster.getByName(monsterType);
-    	
+
     	// Spawn data.
     	int spawnDelay = Integer.parseInt(line.split("@")[1].split("#")[0]);
     	

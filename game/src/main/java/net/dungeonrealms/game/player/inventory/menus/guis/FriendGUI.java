@@ -37,11 +37,11 @@ public class FriendGUI extends GUIMenu {
                 setItems();
             }));
 
-            int slot = 9;
+            int slot = 0;
             for (Map.Entry<UUID, Integer> entry : wrapper.getFriendsList().entrySet()) {
                 String name = SQLDatabaseAPI.getInstance().getUsernameFromAccountID(entry.getValue());
 
-                setItem(slot, new GUIItem(ItemManager.createItem(Material.SKULL_ITEM, ChatColor.GREEN + name, (short) 3, ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!")).setSkullOwner(name)
+                setItem(slot++, new GUIItem(ItemManager.createItem(Material.SKULL_ITEM, ChatColor.GREEN + name, (short) 3, ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!")).setSkullOwner(name)
                         .setClick(e -> {
                             if (e.getClick() == ClickType.RIGHT) {
                                 //Remove Pending request

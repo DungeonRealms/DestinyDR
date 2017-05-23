@@ -44,6 +44,7 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+import net.minecraft.server.v1_9_R2.EntityMagmaCube;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -625,9 +626,10 @@ public class DamageListener implements Listener {
                 if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
                     Entity pass = event.getEntity().getPassenger();
                     if (pass != null) pass.eject();
-                    event.getEntity().teleport(((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint());
+                    Location spawn = ((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint();
+                    event.getEntity().teleport(spawn);
                     if (pass != null) {
-                        pass.teleport(event.getEntity());
+                        pass.teleport(spawn);
                         event.getEntity().setPassenger(pass);
                     }
                 }
@@ -756,9 +758,6 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (event.getCause().equals(DamageCause.FALL)) {
-            System.out.println("The fall damage: " + dmg);
-        }
         res.setDamage(dmg);
         HealthHandler.damageEntity(res);
     }
@@ -815,10 +814,13 @@ public class DamageListener implements Listener {
                 }
             }
 
-            if (random.nextInt(10) == 0)
-                for (int i = 0; i <= 3; i++)
-                    EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
 
+            //Seemed like it was getting excessive.
+            if(e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20) {
+                if (random.nextInt(10) == 0)
+                    for (int i = 0; i <= 3; i++)
+                        EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
+            }
         } else if (event.getEntity() instanceof SmallFireball && shooter instanceof Blaze && random.nextInt(5) == 0) {
             int tier = EntityAPI.getTier(e);
             EntityAPI.spawnCustomMonster(e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);

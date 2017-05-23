@@ -323,12 +323,14 @@ public class Realm {
     private void updateRune() {
         Player owner = Bukkit.getPlayer(getOwner());
 
-        if (owner == null)
+        if (owner == null) {
             return;
+        }
 
-        int slot = GameAPI.getItemSlot(owner.getInventory(), "realmPortalRune");
-        if (slot != -1)
+        int slot = GameAPI.getItemSlot(owner.getInventory(), "portalRune");
+        if (slot != -1) {
             owner.getInventory().setItem(slot, new ItemPortalRune(owner).generateItem());
+        }
         owner.updateInventory();
     }
 
