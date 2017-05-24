@@ -235,8 +235,7 @@ public class EntityAPI {
     public static void registerBoss(DungeonBoss boss, int level, int tier) {
         LivingEntity le = boss.getBukkit();
         Metadata.BOSS.set(le, boss.getBossType().name());
-        Metadata.CUSTOM_NAME.set(le, ChatColor.RED + ChatColor.BOLD.toString() + boss.getBossType().getName());
-        registerMonster(le, level, tier);
+        registerMonster(le, level, tier, null, null, boss.getBossType().getName());
 
         for (ItemStack item : le.getEquipment().getArmorContents())
             if (item != null && item.getType() != Material.AIR)

@@ -290,7 +290,8 @@ public abstract class ItemGeneric extends PersistentItem {
     public void addSoulboundBypass(Player p, int time) {
         this.soulboundTrade = System.currentTimeMillis() + time * 1000;
 
-        if (this.soulboundAllowedTraders == null) this.soulboundAllowedTraders = Lists.newArrayList();
+        if (this.soulboundAllowedTraders == null)
+        	this.soulboundAllowedTraders = Lists.newArrayList();
 
         this.soulboundAllowedTraders.add(p.getName());
     }
@@ -316,6 +317,9 @@ public abstract class ItemGeneric extends PersistentItem {
             this.lore.clear();
             resetLore = false;
         }
+        
+        if (this.lore.contains(ChatColor.GRAY + s))
+        	return;
 
         this.lore.add(ChatColor.GRAY + s);
     }

@@ -5,7 +5,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,7 +16,6 @@ import java.util.UUID;
 /**
  * Created by Nick on 10/22/2015.
  */
-@SuppressWarnings("unchecked")
 public class FriendHandler {
 
     static FriendHandler instance = null;

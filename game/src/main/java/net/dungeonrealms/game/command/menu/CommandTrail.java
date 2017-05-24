@@ -4,7 +4,6 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.menus.guis.ParticleEffectGUI;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 
