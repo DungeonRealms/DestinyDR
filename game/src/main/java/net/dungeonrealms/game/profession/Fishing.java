@@ -198,7 +198,7 @@ public class Fishing implements GenericMechanic, Listener {
         SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
-        VISION(FishVisionBuff.class, "NIGHTVISION BUFF", "", "", "", 0),
+        VISION(FishVisionBuff.class, "NIGHTVISION ", " BUFF", "", "", 0),
         BLOCK(FishBlockBuff.class, "+", "% BLOCK", "", "Blocking", 0);
 
         private Class<? extends FishBuff> buffClass;

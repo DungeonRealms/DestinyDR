@@ -122,7 +122,7 @@ public abstract class FishBuff {
      * Gets the lore string that describes this buff.
      */
     public String getLore() {
-        return ChatColor.RED + "" + getBuffPrefix() + getValue() + getBuffSuffix() + " " + ChatColor.GRAY
+        return ChatColor.RED.toString() + getBuffPrefix() + getValue() + getBuffSuffix() + " " + ChatColor.GRAY
                 + "(" + (getDuration() > 0 ? getDuration() + "s" : "instant") + ")";
     }
 

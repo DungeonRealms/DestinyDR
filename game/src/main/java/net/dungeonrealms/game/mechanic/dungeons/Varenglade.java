@@ -1,14 +1,7 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.mechanic.ItemManager;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +9,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Varenglade Dungeon
@@ -30,10 +26,7 @@ public class Varenglade extends Dungeon {
 	}
 	
 	public static ItemStack getKey() {
-		ItemStack k = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.LIGHT_PURPLE + "A mystical key", ChatColor.ITALIC + "One of four mysterious keys.");
-		VanillaItem key = new VanillaItem(k);
-		key.setDungeon(true);
-		return key.generateItem();
+		return ItemGenerator.getNamedItem("DOkey");
 	}
 	
 	public static class VarengladeListener implements Listener {

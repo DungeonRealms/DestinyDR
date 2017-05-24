@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,11 +23,9 @@ public class MadBanditPyromancer extends DRWitherSkeleton implements DungeonBoss
 	@Override
 	public void onBossDeath(Player killer) {
 		//TODO: The map will need to be edited to use new items.
-		ItemStack key = ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", ChatColor.ITALIC + "A strange substance that animates objects.");
-        VanillaItem vi = new VanillaItem(key);
-        vi.setDungeon(true);
-		GameAPI.giveOrDropItem(killer, vi.generateItem());
+		GameAPI.giveOrDropItem(killer, ItemGenerator.getNamedItem("tnt_bandit_key"));
 	}
+
 
 	@Override
 	public BossType getBossType() {

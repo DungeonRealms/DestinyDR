@@ -44,6 +44,7 @@ import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -83,7 +84,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -194,7 +194,7 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-        
+
         if (Constants.DEVELOPERS.contains(event.getPlayer().getName()))
             player.setOp(true);
 
@@ -420,12 +420,10 @@ public class MainListener implements Listener {
         Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
         MaterialData data = new MaterialData(bl.getType(), bl.getData());
 
-        if (DonationEffects.isGoldenCursable(data)) {
-            DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
-                    .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), data);
-            player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
-            player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
-                    new FixedMetadataValue(DungeonRealms.getInstance(), 30));
+        if (DonationEffects.isGoldenCursable(data) && !Mining.isMineable(bl.getLocation())) {
+            DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO.put(bl.getLocation(), data);
+            bl.setType(Material.GOLD_BLOCK);
+            bl.setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
 
@@ -442,7 +440,7 @@ public class MainListener implements Listener {
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
             MaterialData m = new MaterialData(block.getType(), block.getData());
 
-            if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m)) {
+            if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m) && !Mining.isMineable(block.getLocation())) {
 
                 block.setType(Material.GOLD_BLOCK);
                 DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
@@ -476,7 +474,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())) {
-        	GameAPI.sendWarning(event.getPlayer().getName() + " attempted to teleport with spectator mode on {SERVER}.");
+            GameAPI.sendWarning(event.getPlayer().getName() + " attempted to teleport with spectator mode on {SERVER}.");
             event.setCancelled(true);
         }
     }
@@ -964,8 +962,8 @@ public class MainListener implements Listener {
         if (event.getTarget() == null)
             return;
         if (!GameAPI.isPlayer(event.getTarget())
-        		|| GameAPI.isInSafeRegion(event.getTarget().getLocation())
-        		|| !PlayerWrapper.getWrapper((Player) event.getTarget()).isVulnerable())
+                || GameAPI.isInSafeRegion(event.getTarget().getLocation())
+                || !PlayerWrapper.getWrapper((Player) event.getTarget()).isVulnerable())
             event.setCancelled(true);
     }
 

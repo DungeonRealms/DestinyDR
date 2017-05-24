@@ -77,7 +77,6 @@ public class EntityMechanics implements GenericMechanic {
 
         Entity launch = null;
         double accurate = .4D - .4D * accuracy / 100D;
-        Bukkit.getLogger().info("Accuracy: " + accurate + " From: " + accuracy);
         if (Fireball.class.isAssignableFrom(projectile)) {
             if (SmallFireball.class.isAssignableFrom(projectile)) {
                 launch = new CustomSmallFireball(world, shooter, direction.getX(), direction.getY(), direction.getZ(), accurate);

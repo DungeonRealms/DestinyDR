@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandSudo extends BaseCommand {
     public CommandSudo() {
-        super("sudo", "/<command> <name> <command>", "Sudo command.");
+        super("sudo", "/<command> <name> <command>", "Sudo command.", null, Lists.newArrayList("drsudo"));
     }
 
     @Override

@@ -134,10 +134,9 @@ public abstract class Dungeon {
      */
     public void completeDungeon() {
         announce(ChatColor.YELLOW + "You will be teleported out in 30 seconds...");
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> removePlayers(true), 1500L);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> removePlayers(true), 600);
         giveShards();
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::giveDrops, 5L);
-
         // Add stats.
         getPlayers().forEach(p -> PlayerWrapper.getWrapper(p).getPlayerGameStats().addStat(getType().getStat()));
     }

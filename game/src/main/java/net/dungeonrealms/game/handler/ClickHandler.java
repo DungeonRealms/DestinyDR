@@ -1,15 +1,10 @@
 package net.dungeonrealms.game.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,12 +18,15 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Nick on 10/2/2015.
  */
 public class ClickHandler {
 
-	@Getter
+    @Getter
     private static ClickHandler instance = new ClickHandler();
 
     public void doClick(InventoryClickEvent event) {
@@ -36,7 +34,7 @@ public class ClickHandler {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         if (slot == -999)
-        	return; // Dropping item.
+            return; // Dropping item.
 
         switch (name) {
             case "Merchant":
@@ -45,7 +43,7 @@ public class ClickHandler {
                     event.setCancelled(true);
                     return;
                 }
-                if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
+                if (!event.isShiftClick() || event.isShiftClick() && slot < 27) {
                     if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
                         return;
                     }
@@ -55,30 +53,36 @@ public class ClickHandler {
                     if (slot > 26 || slot < 0) {
                         return;
                     }
+
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack;
                     if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
                             || slot == 20 || slot == 21) && !(slot > 27)) {
                         event.setCancelled(true);
                         tradeWindow.setItem(slot, tradeWindow.getItem(slot));
                         player.setItemOnCursor(event.getCursor());
                         player.updateInventory();
-                    } else if (!(event.isShiftClick())) {
-                        if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                    } else if (!event.isShiftClick()) {
+                        if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR) && event.getCurrentItem() != null &&
+                                (nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem())) != null && nmsStack.getTag() != null &&
+                                !nmsStack.getTag().hasKey("acceptButton")) {
                             event.setCancelled(true);
                             ItemStack slotItem = tradeWindow.getItem(slot);
                             tradeWindow.setItem(slot, new ItemStack(Material.AIR));
                             event.setCursor(slotItem);
                             player.updateInventory();
-                        } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null)) {
-                            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("subType"))) {
+                        } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) && event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
+                            nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                            if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("subType")) {
                                 event.setCancelled(true);
                                 player.updateInventory();
                             }
                             event.setCancelled(true);
                             ItemStack currentItem = event.getCursor();
                             tradeWindow.setItem(slot, currentItem);
-                            event.setCursor(new ItemStack(Material.AIR));
+                            event.setCursor(null);
+                            player.setItemOnCursor(null);
                             player.updateInventory();
-                        } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
+                        } else if (event.getCurrentItem() != null && event.getCursor() != null && (nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem())) != null && nmsStack.getTag() != null && !nmsStack.getTag().hasKey("acceptButton")) {
                             event.setCancelled(true);
                             ItemStack currentItem = event.getCursor();
                             ItemStack slotItem = event.getCurrentItem();
@@ -96,7 +100,8 @@ public class ClickHandler {
                             tradeWindow.setItem(slot, tradeWindow.getItem(slot));
                             player.updateInventory();
                         }
-                    } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                    } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null &&
+                            !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
                         event.setCancelled(true);
                         ItemStack slotItem = event.getCurrentItem();
                         if (player.getInventory().firstEmpty() != -1) {
@@ -106,7 +111,7 @@ public class ClickHandler {
                         }
                     }
                 }
-                if (event.isShiftClick() && slot >= 27 && !(event.isCancelled()) && !(event.getCurrentItem().getType() == Material.BOOK)) {
+                if (event.isShiftClick() && slot >= 27 && !event.isCancelled() && !(event.getCurrentItem().getType() == Material.BOOK)) {
                     event.setCancelled(true);
                     ItemStack slotItem = event.getCurrentItem();
                     int localSlot = event.getSlot();
@@ -146,8 +151,8 @@ public class ClickHandler {
                 x = -1;
                 while (x < 26) {
                     x++;
-                    if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
-                            || x == 20 || x == 21)) {
+                    if (x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                            || x == 20 || x == 21) {
                         continue;
                     }
                     tradeWindow.setItem(x, new ItemStack(Material.AIR));
@@ -156,8 +161,8 @@ public class ClickHandler {
                 while (x < 26) {
                     x++;
                     if (new_Offer.size() > 0) {
-                        if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
-                                || x == 20 || x == 21)) {
+                        if (x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                                || x == 20 || x == 21) {
                             continue;
                         }
                         int index = new_Offer.size() - 1;
@@ -190,7 +195,7 @@ public class ClickHandler {
                                 continue;
                             }
                             ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                            if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
+                            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
                                 continue;
                             }
                             inv_Needed++;
@@ -198,10 +203,7 @@ public class ClickHandler {
                         if (player_Inv_Available < inv_Needed) {
                             player.sendMessage(ChatColor.RED + "Inventory is full.");
                             player.sendMessage(ChatColor.GRAY + "You require " + ChatColor.BOLD + (inv_Needed - player_Inv_Available) + ChatColor.GRAY + " more free slots to complete this trade!");
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                InventoryCloseEvent closeEvent = new InventoryCloseEvent(player.getOpenInventory());
-                                Bukkit.getServer().getPluginManager().callEvent(closeEvent);
-                            }, 2L);
+                            player.closeInventory();
                             return;
                         }
                         slot_Variable = -1;
@@ -212,11 +214,11 @@ public class ClickHandler {
                                 continue;
                             }
                             ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                            if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
+                            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
                                 continue;
                             }
                             if (itemStack.getType() == Material.EMERALD) {
-                            	itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
+                                itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
                             }
                             player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                         }
@@ -232,7 +234,6 @@ public class ClickHandler {
                         tradeWindow.clear();
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            player.updateInventory();
                             player.closeInventory();
                         }, 2L);
 

@@ -112,7 +112,7 @@ public class CommandStore extends BaseCommand {
                             } else if (scrollType.equals("mining") || scrollType.equals("pick") || scrollType.equals("pickaxe")) {
                                 if (args.length >= 5) {
                                 	ItemEnchantPickaxe pick = new ItemEnchantPickaxe();
-                                	pick.addEnchant(PickaxeAttributeType.valueOf(args[4].toUpperCase()));
+                                    pick.addEnchant(PickaxeAttributeType.valueOf(args[4].toUpperCase()), args.length == 6 && StringUtils.isNumeric(args[5]) ? Integer.parseInt(args[5]) : -1);
                                     items.add(pick.generateItem());
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");

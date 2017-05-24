@@ -214,6 +214,11 @@
             <systemPath>${project.basedir}/lib/HolographicDisplaysAPI_v2.1.7.jar</systemPath>
             <scope>system</scope>
         </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-protocol</artifactId>
+            <version>1.8-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -66,6 +66,7 @@ public class CommandAdd extends BaseCommand {
             return false;
         }
 
+
         if (args.length > 0) {
             int tier;
             LivingEntity target;

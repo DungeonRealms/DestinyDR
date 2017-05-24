@@ -168,10 +168,6 @@ public class EntityAPI {
             }
         }
 
-        // Apply boss.
-        if (isBoss(entity))
-            prefix = ChatColor.RED + "" + ChatColor.BOLD;
-
         // Apply elite.
         if (Metadata.ELITE.get(entity).asBoolean())
             prefix = ChatColor.BOLD + "";
@@ -181,6 +177,11 @@ public class EntityAPI {
             //Add the tier color to the front?
             prefix = Item.ItemTier.getByTier(tier).getColor() + "";
         }
+
+        // Apply boss.
+        if (isBoss(entity))
+            prefix = ChatColor.RED + ChatColor.BOLD.toString();
+
         entity.setCustomName(prefix + name);
         entity.setCustomNameVisible(true);
     }
@@ -234,7 +235,7 @@ public class EntityAPI {
     public static void registerBoss(DungeonBoss boss, int level, int tier) {
         LivingEntity le = boss.getBukkit();
         Metadata.BOSS.set(le, boss.getBossType().name());
-        Metadata.CUSTOM_NAME.set(le, boss.getBossType().getName());
+        Metadata.CUSTOM_NAME.set(le, ChatColor.RED + ChatColor.BOLD.toString() + boss.getBossType().getName());
         registerMonster(le, level, tier);
 
         for (ItemStack item : le.getEquipment().getArmorContents())

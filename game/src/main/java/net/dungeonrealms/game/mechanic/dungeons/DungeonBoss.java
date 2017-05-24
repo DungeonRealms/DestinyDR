@@ -2,14 +2,19 @@ package net.dungeonrealms.game.mechanic.dungeons;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.MadBanditPyromancer;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -99,6 +104,15 @@ public interface DungeonBoss extends DRMonster {
     }
 
     default void setArmor() {
+
+        if (this instanceof MadBanditPyromancer || this instanceof InfernalGhast) {
+            //Just give him some standard gear?
+            ItemArmor armor = (ItemArmor) new ItemArmor().setRarity(Item.ItemRarity.RARE).setTier(getTier()).setGlowing(true);
+            getBukkit().getEquipment().setArmorContents(armor.generateArmorSet());
+            getBukkit().getEquipment().setItemInMainHand(new ItemWeaponMelee().setTier(getTier()).setRarity(Item.ItemRarity.getRandomRarity(true)).setGlowing(true).generateItem());
+            return;
+        }
+
         // Set armor.
         Map<EquipmentSlot, ItemStack> gear = ItemGenerator.getEliteGear(getBossType().name().toLowerCase());
         

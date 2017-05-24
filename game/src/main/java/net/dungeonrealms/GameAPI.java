@@ -718,6 +718,7 @@ public class GameAPI {
     }
 
     public static boolean arePlayersNearby(Location location, int radius) {
+        if(location == null)return false;
         return location.getWorld().getPlayers().stream().filter(player -> !(!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player))).anyMatch(player -> location.distanceSquared(player.getLocation()) <= radius * radius);
     }
 

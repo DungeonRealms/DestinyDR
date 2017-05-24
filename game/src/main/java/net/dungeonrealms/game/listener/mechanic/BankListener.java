@@ -113,7 +113,7 @@ public class BankListener implements Listener {
             }
 
             if (giveGems > 0) {
-                GameAPI.giveOrDropItem(player, new ItemGem(giveGems).generateItem());
+                p.getInventory().addItem(new ItemGem(giveGems).generateItem());
             }
         }
     }
