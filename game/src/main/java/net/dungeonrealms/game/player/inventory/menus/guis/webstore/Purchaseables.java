@@ -140,7 +140,7 @@ public enum Purchaseables {
     public static final int NOT_STOREABLE = -1, NO_MULTIPLES = 0, SUCCESS = 1, NONE_OWNED = 2, SUCESS_REMOVED_ALL = 3, FAILED = 4;
 
 
-    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, int transactionId,boolean autoSave) {
+    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId,boolean autoSave) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
         wrapper.getPendingPurchaseablesUnlocked().add(new PendingPurchaseable(this,whoPurchased,datePurchased,amount, transactionId));
@@ -174,11 +174,11 @@ public enum Purchaseables {
 
     }
 
-    public static boolean removePending(PlayerWrapper wrapper, int transactionID, boolean autoSave) {
+    public static boolean removePending(PlayerWrapper wrapper, String transactionID, boolean autoSave) {
         List<PendingPurchaseable> pendingList = wrapper.getPendingPurchaseablesUnlocked();
         for(int index = 0; index < pendingList.size(); index++) {
             PendingPurchaseable pending = pendingList.get(index);
-            if(pending.getTransactionId() != transactionID) continue;
+            if(!pending.getTransactionId().equals(transactionID)) continue;
             pendingList.remove(index);
             if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
             return true;

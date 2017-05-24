@@ -75,6 +75,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                         }
                         item.getPurchaseables().addNumberUnlocked(wrapper,item.getNumberPurchased());
                         player.sendMessage(ChatColor.GREEN + "Successfully claimed " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + " from " + item.getWhoPurchased());
+                        wrapper.updatePurchaseLog("claimed", item.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
                     }, () -> {
                         player.sendMessage(ChatColor.RED + item.getPurchaseables().getName(false).toUpperCase() + " CLAIMING - CANCELLED");
                     });
@@ -97,6 +98,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                         }
                         SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
                         player.sendMessage(ChatColor.GREEN + "Successfully denied " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + " from " + item.getWhoPurchased());
+                        wrapper.updatePurchaseLog("denied", item.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
                     }, () -> {
                         player.sendMessage(ChatColor.RED + item.getPurchaseables().getName(false).toUpperCase() + " CLAIMING - CANCELLED");
                     });

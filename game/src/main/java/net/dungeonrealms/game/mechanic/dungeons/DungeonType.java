@@ -34,23 +34,24 @@ import java.util.List;
  */
 @AllArgsConstructor @Getter
 public enum DungeonType {
-    BANDIT_TROVE("Bandit Trove", "banditTrove", StatColumn.BOSS_KILLS_MAYEL,
+    BANDIT_TROVE("Bandit Trove", "banditTrove", "t1dungeon", StatColumn.BOSS_KILLS_MAYEL,
             BanditTrove.class, null, EnumMounts.WOLF,
             1, 100, 250, 100, 250, 5000, EnumAchievements.BANDIT_TROVE,
             l(BossType.Mayel, BossType.Pyromancer)),
 
-    VARENGLADE("Varenglade", "varenglade", StatColumn.BOSS_KILLS_BURICK,
+    VARENGLADE("Varenglade", "varenglade", "dodungeon", StatColumn.BOSS_KILLS_BURICK,
             Varenglade.class, VarengladeListener.class, EnumMounts.SLIME,
             3, 100, 375, 1000, 2500, 25000, EnumAchievements.VARENGLADE,
             l(BossType.Burick, BossType.BurickPriest)),
 
-    THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss", StatColumn.BOSS_KILLS_INFERNALABYSS,
+    THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss", "fireydungeon", StatColumn.BOSS_KILLS_INFERNALABYSS,
             InfernalAbyss.class, InfernalListener.class, EnumMounts.SPIDER,
             4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
             l(BossType.InfernalAbyss, BossType.InfernalGhast, BossType.InfernalGuard));
 
     private String name;
     private String internalName;
+    private String legacyName;
     private StatColumn stat;
     private Class<? extends Dungeon> dungeonClass;
     private Class<? extends Listener> listenerClass;
@@ -152,11 +153,11 @@ public enum DungeonType {
 
     public static DungeonType getInternal(String internalName) {
         for (DungeonType d : values())
-            if (d.getInternalName().equalsIgnoreCase(internalName))
+            if (d.getInternalName().equalsIgnoreCase(internalName) || d.getLegacyName().equalsIgnoreCase(internalName))
                 return d;
         return null;
     }
-    
+
     private static BossType[] l(BossType... a) {
     	return a;
     }

@@ -53,6 +53,7 @@ public enum QueryType {
     SELECT_ALTS("SELECT `ip_addresses`.`account_id`, `ip_addresses`.`last_used`,`users`.`username`, users.last_login FROM `ip_addresses` LEFT JOIN users ON `ip_addresses`.`account_id` = `users`.`account_id` WHERE `ip_addresses`.`ip_address` = '%s';"),
     SELECT_ALTS_FROM_ACCOUNT_ID("SELECT `ip_addresses`.`ip_address`, `ip_addresses`.`last_used` FROM `ip_addresses` WHERE `ip_addresses`.`account_id` = %s;"),
     UPDATE_PURCHASES("UPDATE users SET purchaseables = %s, pending_purchaseables = %s WHERE account_id = %s"),
+    INSERT_PURCHASE_LOG("INSERT INTO purchase_history (action, transaction_id, date, uuid) VALUES(%s,%s,%s,%s)"),
     SELECT_PURCHASES("SELECT purchaseables, pending_purchaseables FROM uses WHERE account_id = %s");
 
     @Getter private String rawQuery;

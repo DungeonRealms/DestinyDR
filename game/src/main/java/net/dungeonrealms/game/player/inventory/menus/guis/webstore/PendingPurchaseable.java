@@ -22,7 +22,7 @@ public class PendingPurchaseable {
     @Setter
     @NonNull private int numberPurchased;
     @Getter
-    private int transactionId;
+    private String transactionId;
 
     @Override
     public String toString() {
@@ -37,7 +37,7 @@ public class PendingPurchaseable {
             String purchased = parts[1];
             String time = parts[2];
             int numPurchased = Integer.valueOf(parts[3]);
-            int transactionId = Integer.valueOf(parts[4]);
+            String transactionId = parts[4];
             return new PendingPurchaseable(item,purchased,time,numPurchased,transactionId);
         } catch(Exception e) {
             e.printStackTrace();
