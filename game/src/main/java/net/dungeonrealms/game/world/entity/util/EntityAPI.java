@@ -364,9 +364,10 @@ public class EntityAPI {
             le.teleport(loc);
             le.setCollidable(true);
 
-            boolean dungeon = DungeonManager.isDungeon(loc.getWorld());
-            ItemWeapon weapon = dungeon && (monster == null || monster.getWeapon() == null) ? (ItemWeapon) new ItemWeapon().setTier(tier).setRarity(ItemRarity.UNIQUE) : monster != null && monster.getWeapon() != null ? new ItemWeapon(monster.getWeapon()) : null;
-            ItemArmor armor = dungeon && (monster == null || Arrays.stream(monster.getBukkit().getEquipment().getArmorContents()).filter(e -> e != null && e.getType() != Material.AIR).count() < 4) ? (ItemArmor) new ItemArmor().setTier(tier).setRarity(ItemRarity.UNIQUE) : null;
+            Dungeon mDungeon = DungeonManager.getDungeon(loc.getWorld());
+            boolean dungeon = mDungeon != null;
+            ItemWeapon weapon = dungeon && (monster == null || monster.getWeapon() == null) ? mDungeon.getGeneralMobWeapon() : monster != null && monster.getWeapon() != null ? new ItemWeapon(monster.getWeapon()) : null;
+            ItemArmor armor = dungeon && (monster == null || Arrays.stream(monster.getBukkit().getEquipment().getArmorContents()).filter(e -> e != null && e.getType() != Material.AIR).count() < 4) ? mDungeon.getGeneralMobArmorSet() : null;
 
             // Register monster data.
             if (mType != null && !mType.isFriendly()) {

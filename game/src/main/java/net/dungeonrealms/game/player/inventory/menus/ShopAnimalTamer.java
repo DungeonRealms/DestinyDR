@@ -54,7 +54,8 @@ public class ShopAnimalTamer extends GUIMenu {
                     .setLore(lore).setName(horse.getNameWithColor()).setClick(e -> {
 
                         if (pw.getMountsUnlocked().contains(mount)) {
-                            player.sendMessage(ChatColor.RED + "You already own this mount!");
+                            player.sendMessage(ChatColor.RED + "You have already unlocked this Mount!");
+                            player.sendMessage(ChatColor.GRAY + "You can recover a lost saddle in your " + ChatColor.UNDERLINE + "/profile" + ChatColor.GRAY + ".");
                             return;
                         }
 

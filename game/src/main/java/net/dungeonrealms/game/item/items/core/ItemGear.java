@@ -44,6 +44,11 @@ public abstract class ItemGear extends ItemGeneric {
     private ItemTier tier;
     private ItemRarity rarity;
 
+    //If we want some randomness to their gear allow for a min amount of uniques if thats desired.
+    @Getter
+    private ItemRarity maxRarity;
+    @Getter
+    private int minRarityItems;
     @Setter
     private int enchantCount;
 
@@ -141,6 +146,12 @@ public abstract class ItemGear extends ItemGeneric {
     public ItemGear setType(ItemType type) {
         super.setType(type);
         return this;
+    }
+
+    public ItemGear setMaxRarity(ItemRarity rarity, int minRequired){
+        this.maxRarity = rarity;
+        this.minRarityItems = minRequired;
+        return null;
     }
 
     public GeneratedItemType getGeneratedItemType() {

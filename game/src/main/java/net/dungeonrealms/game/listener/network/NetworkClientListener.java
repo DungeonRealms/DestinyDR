@@ -33,6 +33,7 @@ import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
@@ -312,6 +313,17 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 }
                             }
                             return;
+                        }
+                        case "donation": {
+
+                            UUID uuid = UUID.fromString(in.readUTF());
+
+                            //This is just a broad message telling the shard "reload all of his purchases".
+
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                            if (wrapper == null) return;//We dont care because they are not on this shard.
+                            wrapper.fullyReloadPurchaseables(null);
+                            break;
                         }
                         case "PrivateMessage": {
                             String fromPlayer = in.readUTF();

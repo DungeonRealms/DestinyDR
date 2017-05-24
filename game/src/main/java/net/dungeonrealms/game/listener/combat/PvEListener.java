@@ -71,7 +71,6 @@ public class PvEListener implements Listener {
             return;
         }
 
-        System.out.println(damager.getName() + " -> Melee attacking ?");
 
         //  THIS ONLY HANDLES PvE  //
         if (event.getEntity() instanceof Player)

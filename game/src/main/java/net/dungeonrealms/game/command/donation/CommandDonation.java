@@ -71,10 +71,11 @@ public class CommandDonation extends BaseCommand {
                     if(wrapper == null) {
                         sender.sendMessage("Something went wrong loading the playerwrapper!");
                         return;
-               }
+                }
 
                     boolean removed = Purchaseables.removePending(wrapper,transactionID,true);
                     sender.sendMessage(removed ? "Successfully removed the transaction!" : "Could not find any pending purchases with that transaction id");
+                    GameAPI.sendNetworkMessage("donation", uid.toString());
                     return;
                 });
             });
@@ -111,11 +112,14 @@ public class CommandDonation extends BaseCommand {
                 }
 
 
-                for(PendingPurchaseable pending : wrapper.getPendingPurchaseablesUnlocked()) {
+                for(int k = 0; k < wrapper.getPendingPurchaseablesUnlocked().size(); k++) {
+                    PendingPurchaseable pending = wrapper.getPendingPurchaseablesUnlocked().get(k);
                     if(pending == null) continue;
                     if(pending.getTransactionId() == transactionID) {
                         Constants.log.info("The UUID '" + args[1] + "' charged back a pending purchase so we didn't punish him!");
                         sender.sendMessage("The UUID '" + args[1] + "' charged back a pending purchase so we didn't punish him!");
+                        wrapper.getPendingPurchaseablesUnlocked().remove(k);
+                        wrapper.saveData(true,null);
                         return;
                     }
                 }
@@ -222,6 +226,7 @@ public class CommandDonation extends BaseCommand {
                             sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
                         } else if (returnCode == Purchaseables.SUCCESS) {
                             sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
@@ -231,8 +236,10 @@ public class CommandDonation extends BaseCommand {
                             sender.sendMessage(playerName + " did not have any " + item.name());
                         } else if (returnCode == Purchaseables.SUCCESS) {
                             sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
                             sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
@@ -242,6 +249,7 @@ public class CommandDonation extends BaseCommand {
                             sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
                         } else if (returnCode == Purchaseables.SUCCESS) {
                             sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
@@ -251,8 +259,10 @@ public class CommandDonation extends BaseCommand {
                             sender.sendMessage(playerName + " did not have any " + item.name());
                         } else if (returnCode == Purchaseables.SUCCESS) {
                             sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
                             sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
+                            GameAPI.sendNetworkMessage("donation", uuid.toString());
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }

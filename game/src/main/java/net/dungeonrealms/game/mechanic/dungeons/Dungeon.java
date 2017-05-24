@@ -8,6 +8,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.Utils;
@@ -16,6 +18,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
@@ -218,6 +221,18 @@ public abstract class Dungeon {
         }, 5L);
 
         giveMount();
+    }
+
+
+    public ItemWeapon getGeneralMobWeapon() {
+        return (ItemWeapon) new ItemWeapon().setTier(getType().getTier()).setRarity(Item.ItemRarity.UNIQUE);
+    }
+
+    public ItemArmor getGeneralMobArmorSet() {
+        ItemArmor armor = new ItemArmor();
+        //3 pieces of unique, 4th is random?
+        armor.setMaxRarity(Item.ItemRarity.UNIQUE, 3);
+        return armor;
     }
 
     /**

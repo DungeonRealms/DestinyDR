@@ -317,7 +317,7 @@ public abstract class ItemGeneric extends PersistentItem {
             this.lore.clear();
             resetLore = false;
         }
-        
+
         if (this.lore.contains(ChatColor.GRAY + s))
         	return;
 

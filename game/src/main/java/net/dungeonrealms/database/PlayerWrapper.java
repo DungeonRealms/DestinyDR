@@ -465,13 +465,29 @@ public class PlayerWrapper {
         return petData != null && petData.getPetName() != null ? petData.getPetName() : pets.getDisplayName();
     }
 
+    public void fullyReloadPurchaseables(Consumer<Boolean> callback) {
+        SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.SELECT_PURCHASES, getAccountID()), true,(set) -> {
+            try {
+                loadPurchaseables(set);
+                if (callback != null) callback.accept(true);
+            } catch(Exception e) {
+                e.printStackTrace();
+                if (callback != null) callback.accept(false);
+            }
+        });
+    }
+
+    private void loadPurchaseables(ResultSet result) throws SQLException {
+        this.purchaseablesUnlocked = StringUtils.deserializeNumberMap(result.getString("users.purchaseables"), Purchaseables.class, Integer.class);
+        loadPendingPurchaseables(result.getString("users.pending_purchaseables"));
+    }
+
     public void loadUnlockables(ResultSet result) throws SQLException {
+        loadPurchaseables(result);
         this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("users.mounts"), EnumMounts.class);
         this.mountSkins = StringUtils.deserializeEnumListToSet(result.getString("users.mountSkin"), EnumMountSkins.class);
         this.particles = StringUtils.deserializeEnumListToSet(result.getString("users.particles"), ParticleEffect.class);
 //        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
-        this.purchaseablesUnlocked = StringUtils.deserializeNumberMap(result.getString("users.purchaseables"), Purchaseables.class, Integer.class);
-        loadPendingPurchaseables(result.getString("users.pending_purchaseables"));
 
         List<String> list = StringUtils.deserializeList(result.getString("users.pets"), ",");
         if (list != null) {

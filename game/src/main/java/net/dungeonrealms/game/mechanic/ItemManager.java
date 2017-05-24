@@ -309,7 +309,7 @@ public class ItemManager {
     public static boolean isDungeonItem(ItemStack item) {
         if(item == null)return false;
         //Incase the lore is synced..
-        return get(item).isDungeon() || item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().filter(lore -> lore.contains("Dungeon Item")).count() > 0;
+        return get(item).isDungeon() || item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().filter(lore -> lore.endsWith("Dungeon Item")).count() > 0;
     }
 
     /**

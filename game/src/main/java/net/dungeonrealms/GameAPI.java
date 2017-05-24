@@ -293,7 +293,8 @@ public class GameAPI {
     public static ItemStack[] getTierArmor(int tier) {
         ItemArmor armor = new ItemArmor();
         armor.setTier(ItemTier.getByTier(tier));
-        armor.setRarity(ItemRarity.getRandomRarity());
+        //Atleast 2 pieces of whatever gear we select?
+        armor.setMaxRarity(ItemRarity.getRandomRarity(), 2);
         return armor.generateArmorSet();
     }
 
@@ -718,7 +719,7 @@ public class GameAPI {
     }
 
     public static boolean arePlayersNearby(Location location, int radius) {
-        return location != null && location.getWorld().getPlayers().stream().filter(player -> !(!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player))).anyMatch(player -> location.distanceSquared(player.getLocation()) <= radius * radius);
+        return location != null && location.getWorld() != null && location.getWorld().getPlayers().stream().filter(player -> !(!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player))).anyMatch(player -> location.distanceSquared(player.getLocation()) <= radius * radius);
     }
 
     public static void handleLogout(Player player, boolean async, Consumer<Boolean> doAfter) {
@@ -1370,7 +1371,7 @@ public class GameAPI {
     public static boolean isMainWorld(Entity ent) {
         return isMainWorld(ent.getWorld());
     }
-    
+
     /**
      * Add an item into a player's inventory.
      * If there isn't enough space, drop it.
