@@ -44,7 +44,6 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.minecraft.server.v1_9_R2.EntityMagmaCube;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -166,10 +165,10 @@ public class DamageListener implements Listener {
         DamageAPI.calculateWeaponDamage(res, false);
         CombatLog.updateCombat(player);
 
-        if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
+        boolean powerStrike = PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
+        if (powerStrike) {
             res.setDamage(res.getDamage() * 2);
             PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
-            PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
             player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
         }
@@ -177,6 +176,8 @@ public class DamageListener implements Listener {
         DamageAPI.applyArmorReduction(res, true);
 
         res.applyDamage();
+
+
     }
 
     /**
@@ -813,7 +814,7 @@ public class DamageListener implements Listener {
 
 
             //Seemed like it was getting excessive.
-            if(e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20) {
+            if (e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20) {
                 if (random.nextInt(10) == 0)
                     for (int i = 0; i <= 3; i++)
                         EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");

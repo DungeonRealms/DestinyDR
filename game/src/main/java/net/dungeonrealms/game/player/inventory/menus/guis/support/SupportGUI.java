@@ -29,7 +29,7 @@ public abstract class SupportGUI extends GUIMenu {
             setShouldOpenPreviousOnClose(true);
         }
     }
-    
+
     /**
      * Save this player's data.
      */

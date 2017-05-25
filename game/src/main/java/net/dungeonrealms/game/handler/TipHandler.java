@@ -52,7 +52,7 @@ public class TipHandler implements GenericMechanic {
 	private static String getRandomTip() {
 		if (tips.isEmpty()) // We've cycled through them all, reload them.
 			loadTips();
-		
+
 		return tips.isEmpty() ? "No loaded tips!" : tips.remove(ThreadLocalRandom.current().nextInt(tips.size()));
 	}
 	

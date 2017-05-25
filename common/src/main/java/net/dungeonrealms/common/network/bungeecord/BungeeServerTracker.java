@@ -104,7 +104,6 @@ public class BungeeServerTracker {
                 try {
                     data = ServerPinger.fetchData(address, 500);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     isOnline = false;
                 }
 

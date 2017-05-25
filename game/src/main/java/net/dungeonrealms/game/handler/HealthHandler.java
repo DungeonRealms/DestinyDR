@@ -387,20 +387,20 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
             }
 
-            pw.sendDebug(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
+            pw.sendDebug(ChatColor.RED + "     " + (int)Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
 
         }
 
         player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
 
         if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+            defender.sendDebug(ChatColor.RED + "     -" + (int)Math.ceil(damage) + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
                     + (int) res.getTotalArmor() + "%A -> -" + (int) res.getTotalArmorReduction() + ChatColor.BOLD + "DMG" +
                     ChatColor.GRAY
                     + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         } else { // foreign damage
             DamageType type = DamageType.getByReason(cause);
-            defender.sendDebug(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            defender.sendDebug(ChatColor.RED + "     -" + (int)Math.ceil(damage) + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         Random r = ThreadLocalRandom.current();

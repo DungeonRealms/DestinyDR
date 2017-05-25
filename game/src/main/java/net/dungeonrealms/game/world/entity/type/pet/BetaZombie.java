@@ -51,7 +51,7 @@ public class BetaZombie extends ZombiePet implements Ownable {
         if (isPassenger()) { // If we're chomping someone,
             long time = System.currentTimeMillis() - this.getLastBrainEat();
             if (time >= 750) {
-                getBukkitEntity().getWorld().playSound(this.getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1.2F);
+                getBukkitEntity().getWorld().playSound(this.getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_EAT, .3F, 1.2F);
                 if (time >= 1500) {
                     ParticleAPI.spawnBlockParticles(getBukkitEntity().getLocation(), Material.REDSTONE_BLOCK);
                     setLastBrainEat(System.currentTimeMillis());
@@ -62,11 +62,11 @@ public class BetaZombie extends ZombiePet implements Ownable {
         
         // Try to chomp nearby players.
 
-        for(org.bukkit.entity.Entity ent : getBukkitEntity().getNearbyEntities(5, 5, 5)) {
+        for(org.bukkit.entity.Entity ent : getBukkitEntity().getNearbyEntities(7, 7, 7)) {
             if(!(ent instanceof Player)) continue;
             Player player = (Player) ent;
             if(player.equals(owner)) continue;
-            if(ThreadLocalRandom.current().nextInt(50) == 5) {
+            if(ThreadLocalRandom.current().nextInt(20) == 0) {
                 player.setPassenger(getBukkitEntity());
                 return;
             }

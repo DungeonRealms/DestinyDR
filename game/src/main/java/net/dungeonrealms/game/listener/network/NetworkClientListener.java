@@ -200,6 +200,12 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             					wrapper.setGems((int) obj);
                             				} else if (update == UpdateType.RANK) {
                             					wrapper.setRank(PlayerRank.getFromInternalName((String) obj));
+                                                Player p = wrapper.getPlayer();
+
+                                                if (p != null && p.isOnline()) {
+                                                    p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + wrapper.getRank().getPrefix());
+                                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                                }
                             				} else {
                             					getField(update.getFieldName()).set(wrapper, obj);
                             				}
@@ -444,6 +450,12 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             Rank.getCachedRanks().put(uuid, rank);
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
                             if(wrapper != null) {
+                                Player p = wrapper.getPlayer();
+
+                                if (p != null && p.isOnline()) {
+                                    p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                }
                                 wrapper.setRank(rank);
                             }
                             break;

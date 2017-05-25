@@ -41,10 +41,10 @@ public class BossTeleport extends BaseCommand {
         }
         
         Location spawn = d.getType().getBoss().getLocation(d.getWorld());
-        
+
         float yaw = args.length >= 4 ? Float.parseFloat(args[3]) : 0;
         float pitch = args.length >= 5 ? Float.parseFloat(args[4]) : 0;
-        
+
         if (args.length >= 3)
         	spawn = new Location(bcs.getBlock().getWorld(), Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]), yaw, pitch);
 

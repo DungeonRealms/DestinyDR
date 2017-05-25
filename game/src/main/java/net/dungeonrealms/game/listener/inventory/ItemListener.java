@@ -183,7 +183,7 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         PlayerManager.checkInventory(event.getPlayer());
     }
 

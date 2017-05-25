@@ -9,6 +9,7 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -55,7 +56,7 @@ public abstract class ItemGeneric extends PersistentItem {
     @Getter
     private boolean showPrice = true; //Whether or not lore should be created for this price.
 
-    private long soulboundTrade = 0;
+    private long soulboundTrade = -1;
     private List<String> soulboundAllowedTraders;
 
     @Getter
@@ -171,9 +172,13 @@ public abstract class ItemGeneric extends PersistentItem {
 
         if (isSoulbound() && hasTag("soulboundTrade")) {
             long time = getTag().getLong("soulboundTrade");
+            Bukkit.getLogger().info("Soulbound trade: " + time);
             if (time > System.currentTimeMillis()) {
                 this.soulboundTrade = time;
                 this.soulboundAllowedTraders = Arrays.asList(getTagString("soulboundBypass").split(","));
+                Bukkit.getLogger().info("Soulbound trade: " + time + " with bypassers: " + this.soulboundAllowedTraders.toString() + " New Time: " + this.soulboundTrade);
+            } else {
+                Bukkit.getLogger().info("Time seems to have already passed: " + time);
             }
         }
 
@@ -212,6 +217,13 @@ public abstract class ItemGeneric extends PersistentItem {
     public void updateItem() {
         if (isDestroyed())
             return;
+        //We want the lore ABOVE the soulbound and other tags.
+        // Ecash Lore - Overrides custom names given by other items.
+        // getCustomLore() should ONLY be overriden to modify the EC display lore. NOT any other lore.
+        if (this.customLore != null) {
+            setTagString("ecLore", this.customLore);
+            addLore(getCustomLore());
+        }
 
         for (ItemFlag data : ItemFlag.values()) {
             boolean enabled = getFlag(data);
@@ -252,13 +264,6 @@ public abstract class ItemGeneric extends PersistentItem {
             getMeta().setDisplayName(getCustomName());
         }
 
-        // Ecash Lore - Overrides custom names given by other items.
-        // getCustomLore() should ONLY be overriden to modify the EC display lore. NOT any other lore.
-        if (this.customLore != null) {
-            setTagString("ecLore", this.customLore);
-            addLore(getCustomLore());
-        }
-
         saveMeta();
         resetLore = true; // Reset the lore if we generate again.
     }
@@ -291,7 +296,7 @@ public abstract class ItemGeneric extends PersistentItem {
         this.soulboundTrade = System.currentTimeMillis() + time * 1000;
 
         if (this.soulboundAllowedTraders == null)
-        	this.soulboundAllowedTraders = Lists.newArrayList();
+            this.soulboundAllowedTraders = Lists.newArrayList();
 
         this.soulboundAllowedTraders.add(p.getName());
     }
@@ -300,7 +305,9 @@ public abstract class ItemGeneric extends PersistentItem {
      * Can this item be traded to a specified player?
      */
     public boolean isSoulboundBypass(Player p) {
-        return !isSoulbound() || (this.soulboundTrade > System.currentTimeMillis() && this.soulboundAllowedTraders.contains(p.getName()));
+        Bukkit.getLogger().info("Type: " + getItemType());
+        Bukkit.getLogger().info("Traders: " + this.soulboundAllowedTraders + " Time: " + this.soulboundTrade + " Soulbound: " + isSoulbound());
+        return !isSoulbound() || this.soulboundTrade > System.currentTimeMillis() && this.soulboundAllowedTraders.contains(p.getName());
     }
 
     /**
@@ -318,8 +325,9 @@ public abstract class ItemGeneric extends PersistentItem {
             resetLore = false;
         }
 
-        if (this.lore.contains(ChatColor.GRAY + s))
-        	return;
+        //Dont count for emtpy lines?
+        if (!s.isEmpty() && this.lore.contains(ChatColor.GRAY + s))
+            return;
 
         this.lore.add(ChatColor.GRAY + s);
     }

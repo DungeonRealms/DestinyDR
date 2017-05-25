@@ -8,6 +8,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
@@ -61,7 +62,7 @@ public abstract class Dungeon {
     private int maxMobCount;
     private DungeonBoss boss;
     @Setter
-    private boolean editMode;
+    private boolean editMode, finished = false;
     private List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
 
     public Dungeon(DungeonType dungeon, List<Player> players) {
@@ -136,6 +137,8 @@ public abstract class Dungeon {
      * Called when a player kills the boss.
      */
     public void completeDungeon() {
+        if(finished)return;
+        finished = true;
         announce(ChatColor.YELLOW + "You will be teleported out in 30 seconds...");
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> removePlayers(true), 600);
         giveShards();
@@ -153,18 +156,17 @@ public abstract class Dungeon {
         Random random = ThreadLocalRandom.current();
 
         if (random.nextInt(100) < 80) { // 80% chance!
-            List<ItemStack> possibleDrops = new ArrayList<>();
+            List<ItemStack> possibleDrops = Arrays.stream(livingEntity.getEquipment().getArmorContents()).filter(is -> is != null && is.getType() != Material.AIR && is.getTypeId() != 144 && is.getTypeId() != 397).collect(Collectors.toList());
 
             // Get a list of posssible drops
-            for (ItemStack is : livingEntity.getEquipment().getArmorContents())
-                if (is != null && is.getType() != Material.AIR && is.getTypeId() != 144 && is.getTypeId() != 397)
-                    possibleDrops.add(is);
             possibleDrops.add(livingEntity.getEquipment().getItemInMainHand());
 
             // Drop the item.
             ItemStack drop = possibleDrops.get(random.nextInt(possibleDrops.size()));
 
             drop.getEnchantments().keySet().forEach(ench -> drop.removeEnchantment(ench));
+            EnchantmentAPI.removeGlow(drop);
+
             // Remove any enchants.
             ItemMeta meta = drop.getItemMeta();
             drop.setItemMeta(meta);
@@ -181,7 +183,7 @@ public abstract class Dungeon {
 
             // Alert the players.
             List<String> hoveredChat = new ArrayList<>();
-            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : reward.getType().name()));
+            hoveredChat.add(meta.hasDisplayName() ? meta.getDisplayName() : reward.getType().name());
             if (meta.hasLore())
                 hoveredChat.addAll(meta.getLore());
 
@@ -193,7 +195,7 @@ public abstract class Dungeon {
         int gemDrop = getType().getGems();
         int groupSize = (int) getPlayers().size();
 
-        int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
+        int perPlayerDrop = groupSize == 0 ? gemDrop : Math.round(gemDrop / groupSize);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             announce(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
             announce(ChatColor.DARK_PURPLE + "Each player receives " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + perPlayerDrop + ChatColor.DARK_PURPLE + " gems!");
@@ -229,10 +231,7 @@ public abstract class Dungeon {
     }
 
     public ItemArmor getGeneralMobArmorSet() {
-        ItemArmor armor = new ItemArmor();
-        //3 pieces of unique, 4th is random?
-        armor.setMaxRarity(Item.ItemRarity.UNIQUE, 3);
-        return armor;
+        return (ItemArmor) new ItemArmor().setTier(getType().getTier()).setMaxRarity(Item.ItemRarity.UNIQUE, 3);
     }
 
     /**

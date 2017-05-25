@@ -111,7 +111,7 @@ public class Realm {
     public void openPortal(Player player, Location location) {
     	if (!canPlacePortal(player, location))
             return;
-    	
+
         loadRealm(player, () -> {
 
             //Their realm is upgrading, shouldn't be accessible.

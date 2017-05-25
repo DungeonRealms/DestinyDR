@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -68,10 +69,15 @@ public class CommandSetRank extends BaseCommand {
                     wrapper.setRankExpiration(0);
 
                 sender.sendMessage(ChatColor.GREEN + "Setting rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + (newRank == PlayerRank.DEFAULT ? "DEFAULT" : newRank.getInternalName()) + ChatColor.GREEN + ".");
+                Player p = wrapper.getPlayer();
+
+                if (p != null && p.isOnline()) {
+                    p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                }
                 wrapper.setRank(newRank);
 
                 Rank.setRank(uuid, newRank.getInternalName(), done -> {
-                    if (wrapper.getPlayer() == null) //update cross shard.
                         GameAPI.updatePlayerData(uuid, UpdateType.RANK);
                 });
             });

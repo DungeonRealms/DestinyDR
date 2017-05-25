@@ -68,7 +68,6 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
         // Spawn Pet.
         PetUtils.spawnPet(player, pet, pw.getRank().getChatColor() + petName);
-        player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
     }
 
     public static void renamePet(Player player, EnumPets toRename) {

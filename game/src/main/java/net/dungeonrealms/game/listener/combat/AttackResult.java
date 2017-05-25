@@ -80,7 +80,7 @@ public class AttackResult {
 		
         if (getResult() != DamageResultType.NORMAL) {
         	if (getAttacker() != null)
-        		getAttacker().getEntity().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT " + getResult().getPastTenseName() + "* (" + defenderName + ChatColor.RED + ")");
+        		getAttacker().getEntity().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT " + getResult().getPastTenseName() + "* (" + defenderName + ChatColor.RED + ChatColor.BOLD + ")");
         	
         	if (hologramOwner != null)
         		DamageAPI.createDamageHologram(hologramOwner, receiver.getLocation(), ChatColor.RED + "*" + getResult().name() + "*");

@@ -122,6 +122,7 @@ public abstract class ItemGear extends ItemGeneric {
         // SAVE GENERAL DATA //
         if (getRarity() != null)
             setTagString("itemRarity", getRarity().name());
+        updateLore();
 
         setTagInt(TIER, getTier().getId());
         setTagInt("enchant", getEnchantCount());
@@ -130,7 +131,6 @@ public abstract class ItemGear extends ItemGeneric {
 
         // Removes the extra tag on gear, Ie: Diamond Sword - "+7 Attack Damage"
         getTag().set("AttributeModifiers", new NBTTagList());
-        updateLore();
 
         double percent = getDurabilityPercent() / 100D;
         getItem().setDurability((short) (getItem().getType().getMaxDurability() - percent * getItem().getType().getMaxDurability()));
@@ -193,7 +193,7 @@ public abstract class ItemGear extends ItemGeneric {
         return this;
     }
 
-    private void updateLore() {
+    public void updateLore() {
         // Save attributes
         getAttributes().save(this);
 

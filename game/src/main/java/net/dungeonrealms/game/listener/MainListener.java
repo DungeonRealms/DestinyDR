@@ -873,7 +873,7 @@ public class MainListener implements Listener {
         //If we're too far away, teleport back.
         if (event.getReason() == UnleashReason.DISTANCE && horse.getOwner() != null)
         	horse.teleport((Entity) horse.getOwner());
-        
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }
 

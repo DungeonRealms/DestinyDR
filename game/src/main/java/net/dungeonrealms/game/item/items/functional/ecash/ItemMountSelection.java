@@ -15,7 +15,7 @@ public class ItemMountSelection extends FunctionalItem implements ItemInventoryE
         super(ItemType.MOUNT_SELECTION);
         setUndroppable(true);
     }
-    
+
     public ItemMountSelection(ItemStack item) {
     	super(item);
     }

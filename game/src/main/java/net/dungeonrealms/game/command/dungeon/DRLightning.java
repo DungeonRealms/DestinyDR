@@ -19,8 +19,8 @@ public class DRLightning extends BaseCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isOp())
 			return true;
-		
-		
+
+
 		World w = sender instanceof Player ? ((Player)sender).getWorld() : ((BlockCommandSender)sender).getBlock().getWorld();
 		
 		if(args.length < 3) {
@@ -31,7 +31,7 @@ public class DRLightning extends BaseCommand {
 		double x = Double.parseDouble(args[0]);
 		double y = Double.parseDouble(args[1]);
 		double z = Double.parseDouble(args[2]);
-		
+
 		w.strikeLightning(new Location(w, x, y, z));
 		return true;
 	}

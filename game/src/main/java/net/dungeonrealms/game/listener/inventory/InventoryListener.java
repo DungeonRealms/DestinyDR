@@ -53,13 +53,13 @@ public class InventoryListener implements Listener {
     public void handleMechantClose(InventoryCloseEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("Merchant"))
             return;
-        
+
         Player player = (Player) event.getPlayer();
         getPlayerOffer(event.getInventory()).forEach(i -> GameAPI.giveOrDropItem(player, i));
         player.getOpenInventory().getTopInventory().clear();
         player.updateInventory();
     }
-	
+
 	@EventHandler
 	public void handleMerchantClick(InventoryClickEvent event) {
     	Player player = (Player) event.getWhoClicked();
@@ -67,41 +67,41 @@ public class InventoryListener implements Listener {
     	Inventory window = event.getInventory();
     	if (slot < 0 || !event.getInventory().getTitle().equalsIgnoreCase("Merchant"))
     		return; // Ignore dropping cursor or if this isn't a merchant.
-    	
+
     	if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
     		event.setCancelled(true); // Don't allow this, it could allow taking items from the other side of the menu.
     		return;
     	}
-    	
-    	if (slot < window.getSize()) { 
+
+    	if (slot < window.getSize()) {
     		// Clicking inside the trade window.
-    		
+
     		if (!isLeft(slot)) {
     			event.setCancelled(true);
     			player.updateInventory();
     			return;
     		}
-    		
+
     		if (slot == 0) { // Accept trade.
     			event.setCancelled(true);
-    			
+
     			List<ItemStack> merchant = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
     			int freeSlots = (int) Arrays.stream(player.getInventory().getContents()).filter(i -> i == null
     					|| i.getType() == Material.AIR).count();
-    			
+
     			if (freeSlots < merchant.size()) {
     				player.sendMessage(ChatColor.RED + "Please free " + (merchant.size() - freeSlots) + " inventory slots.");
     				return;
     			}
-    			
+
     			window.clear(); // Clear the items out.
     			merchant.forEach(player.getInventory()::addItem);
     			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
-    			
+
     			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2F);
     			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
     			player.sendMessage(ChatColor.GREEN + "Trade accepted.");
-    			
+
     			return;
     		}
     	} else {
@@ -111,29 +111,29 @@ public class InventoryListener implements Listener {
     			int newSlot = firstAllowed(window); // Find the right slot to shift-click this into.
     			if (newSlot > -1) {
     				// Attempt to find the right place to shift click this to.
-    				window.setItem(newSlot, event.getCurrentItem()); 
+    				window.setItem(newSlot, event.getCurrentItem());
     				event.setCurrentItem(null);
     			}
     		}
     	}
-    	
+
     	// Run next tick so the items from this action get applied.
     	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
     		// Update offer.
     		List<ItemStack> merchantOffer = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
     		List<Integer> slots = getMerchantSlots(window);
     		slots.forEach(s -> window.setItem(s, null));
-    		
+
     		int mSlot = 0;
     		for (ItemStack i : merchantOffer) {
     			window.setItem(slots.get(mSlot), i);
     			mSlot++;
     		}
-    		
+
     		player.updateInventory();
     	});
     }
-    
+
     private List<ItemStack> getPlayerOffer(Inventory window) {
     	List<ItemStack> playerOffer = new ArrayList<>();
     	for (int i : getPlayerSlots(window)) {
@@ -143,16 +143,16 @@ public class InventoryListener implements Listener {
     	}
     	return playerOffer;
     }
-    
+
     private int firstAllowed(Inventory i) {
     	return getPlayerSlots(i).stream().filter(s -> i.getItem(s) == null
     			|| i.getItem(s).getType() == Material.AIR).findFirst().orElse(-1);
     }
-    
+
     private boolean isLeft(int slot) {
     	return slot % 9 < 4;
     }
-    
+
     private List<Integer> getPlayerSlots(Inventory i) {
     	List<Integer> slots = new ArrayList<>();
     	for (int y = 0; y < i.getSize() / 9; y++)
@@ -161,7 +161,7 @@ public class InventoryListener implements Listener {
     				slots.add(x + (y * 9));
     	return slots;
     }
-    
+
     private List<Integer> getMerchantSlots(Inventory i) {
     	List<Integer> slots = new ArrayList<>();
     	for (int y = 0; y < i.getSize() / 9; y++)
@@ -169,7 +169,7 @@ public class InventoryListener implements Listener {
     			slots.add(x + (y * 9) + 5);
     	return slots;
     }
-	
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
@@ -583,9 +583,11 @@ public class InventoryListener implements Listener {
                 return;
 
             VanillaItem vi = new VanillaItem(event.getCurrentItem());
-            if (!vi.isSoulboundBypass(trade.getOppositePlayer(player)) || vi.isUntradeable()) {
+            if (!vi.isSoulboundBypass(trade.getOppositePlayer(player)) && !ItemManager.isItemTradeable(event.getCurrentItem())) {
                 player.sendMessage(ChatColor.RED + "You can't trade this item.");
+                Bukkit.getLogger().info("Soulbound bypassable for " + trade.getOppositePlayer(player).getName() + " : " + vi.isSoulboundBypass(trade.getOppositePlayer(player)));
                 event.setCancelled(true);
+                return;
             }
 
 
@@ -634,7 +636,7 @@ public class InventoryListener implements Listener {
         }
 
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST) // This case is not caught by ArmorEquipEvent.
     public void playerDoWeirdArmorThing(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")

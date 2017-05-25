@@ -45,6 +45,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -275,7 +276,10 @@ public class DamageAPI {
         boolean damagerIsMob = !(damager instanceof Player);
         int hitCount = 0;
 
-        for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+        List<Entity> ents = event.getEntity().getNearbyEntities(2.5,3,2.5);
+
+
+        for (Entity entity : ents) {
             //  ARE WE AN ALLOWED ENTITY  //
             if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)))
                 continue;
@@ -286,7 +290,7 @@ public class DamageAPI {
             if (entity.equals(damager))
                 continue;
 
-            AttackResult res = new AttackResult(damager, (LivingEntity) event.getEntity());
+            AttackResult res = new AttackResult(damager, (LivingEntity) entity);
             res.setDamage(damage);
             applyArmorReduction(res, true);
 
@@ -504,7 +508,7 @@ public class DamageAPI {
 
         System.out.println("Final dmg = " + res.getDamage());
 
-        res.setDamage(damage);
+        res.setDamage(Math.max(1, damage));
         res.setTotalArmor(totalArmor);
         res.setTotalArmorReduction(totalArmorReduction);
     }

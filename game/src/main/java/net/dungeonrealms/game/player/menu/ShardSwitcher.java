@@ -2,8 +2,8 @@ package net.dungeonrealms.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
@@ -16,6 +16,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,10 +43,14 @@ public class ShardSwitcher extends AbstractMenu {
             if (!o1.getServerName().contains("us"))
                 return -1;
 
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
-            return o1num - o2num;
+            String numString1 = o1.getServerName().substring(o1.getServerName().length() - 1);
+            String numString = o2.getServerName().substring(o2.getServerName().length() - 1);
+            if (StringUtils.isNumeric(numString) && StringUtils.isNumeric(numString1)) {
+                int o2num = Integer.parseInt(numString);
+                int o1num = Integer.parseInt(numString1);
+                return o1num - o2num;
+            }
+            return -1;
         });
 
         PlayerRank rank = Rank.getRank(player);

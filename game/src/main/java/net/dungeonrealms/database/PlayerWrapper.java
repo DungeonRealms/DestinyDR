@@ -467,13 +467,15 @@ public class PlayerWrapper {
 
     public void fullyReloadPurchaseables(Consumer<Boolean> callback) {
         SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.SELECT_PURCHASES, getAccountID()), true,(set) -> {
-            try {
-                loadPurchaseables(set);
-                if (callback != null) callback.accept(true);
-            } catch(Exception e) {
-                e.printStackTrace();
-                if (callback != null) callback.accept(false);
-            }
+                try {
+                    if(set.first()) {
+                        loadPurchaseables(set);
+                        if (callback != null) callback.accept(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (callback != null) callback.accept(false);
+                }
         });
     }
 
@@ -820,11 +822,6 @@ public class PlayerWrapper {
     public void setRank(PlayerRank newRank) {
         PlayerRank oldRank = getRank();
         Rank.getCachedRanks().put(getUuid(), newRank);
-        Player p = getPlayer();
-        if (oldRank != newRank && p != null && p.isOnline()) {
-            p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
-            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-        }
     }
 
     public PlayerRank getRank() {
@@ -1461,6 +1458,6 @@ public class PlayerWrapper {
     }
 
     public void updatePurchaseLog(String action, String transaction_id, long date, String uuid) {
-        SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true, null);
+        SQLDatabaseAPI.getInstance().executeUpdate(null,getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true);
     }
 }
