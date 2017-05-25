@@ -1459,4 +1459,8 @@ public class PlayerWrapper {
         this.pendingPurchaseablesUnlocked = purchases;
         return true;
     }
+
+    public void updatePurchaseLog(String action, String transaction_id, long date, String uuid) {
+        SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true, null);
+    }
 }

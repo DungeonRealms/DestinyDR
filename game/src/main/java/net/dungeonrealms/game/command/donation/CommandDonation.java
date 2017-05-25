@@ -4,6 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
@@ -54,13 +55,7 @@ public class CommandDonation extends BaseCommand {
                 sender.sendMessage("Use /drdonation removepending <player> <transactionId>");
             }
             String playerName = args[1];
-            int transactionID;
-            try {
-                transactionID = Integer.parseInt(args[2]);
-            } catch(Exception e) {
-                sender.sendMessage("The transaction id must be an integer!");
-                return true;
-            }
+            String transactionID = args[2];
 
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false,(uid) -> {
                 if(uid == null) {
@@ -96,13 +91,7 @@ public class CommandDonation extends BaseCommand {
                 return true;
             }
 
-            int transactionID;
-            try {
-                transactionID = Integer.parseInt(args[2]);
-            } catch(Exception e) {
-                sender.sendMessage("The transactionID must be an integer!");
-                return true;
-            }
+            String transactionID = args[2];
 
             PlayerWrapper.getPlayerWrapper(playerId, false, true, (wrapper) -> {
                 if(wrapper == null) {
@@ -191,23 +180,18 @@ public class CommandDonation extends BaseCommand {
                 return true;
             }
 
-            int transactionID = -1;
+            String transactionID = "-1";
 
             if(isAdd && fromPending) {
                 if(args.length < 6) {
                     sender.sendMessage("No transaction ID specified. Using -1 as a default.");
                     sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID>'");
                 } else {
-                    try {
-                        transactionID = Integer.parseInt(args[5]);
-                    } catch (Exception e) {
-                        sender.sendMessage("The transaction ID must be an integer!");
-                        return true;
-                    }
+                    transactionID = args[5];
                 }
             }
 
-            final int realTransactionID = transactionID;
+            final String realTransactionID = transactionID;
 
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false, (uuid) -> {
                 if(uuid == null) {
@@ -245,6 +229,9 @@ public class CommandDonation extends BaseCommand {
                         }
                     } else if(isAdd && fromPending) {
                         int returnCode = item.addNumberPending(wrapper,amount,sender.getName(),Utils.getDateString(),realTransactionID,true);
+                        String uuidString =((sender instanceof Player) ? ((Player)sender).getUniqueId().toString() : "-1");
+                        //-1 for ^ if console
+                        wrapper.updatePurchaseLog("addedPending", realTransactionID, System.currentTimeMillis(), uuidString);
                         if (returnCode == Purchaseables.NO_MULTIPLES) {
                             sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
                         } else if (returnCode == Purchaseables.SUCCESS) {
