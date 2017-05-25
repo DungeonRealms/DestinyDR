@@ -12,12 +12,14 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +31,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -56,8 +59,9 @@ public class ItemListener implements Listener {
      */
     @EventHandler
     public void onItemSpawn(ItemSpawnEvent event) {
+        ItemStack type = event.getEntity().getItemStack();
         //Remove those shitty leashes..
-        if (event.getEntity().getItemStack() != null && event.getEntity().getItemStack().getType() == Material.LEASH && !event.getEntity().getItemStack().hasItemMeta()) {
+        if (type != null && type.getType() == Material.LEASH && !type.hasItemMeta()) {
             event.setCancelled(true);
             event.getEntity().remove();
             return;
@@ -65,14 +69,37 @@ public class ItemListener implements Listener {
 
         //Dont spawn exploded shit.
         if (DungeonManager.isDungeon(event.getEntity().getWorld())) {
-            ItemStack type = event.getEntity().getItemStack();
             if (type != null && type.getType().name().contains("REDSTONE")) {
                 event.setCancelled(true);
                 event.getEntity().remove();
                 return;
             }
+
         }
         this.applyRarityGlow(event.getEntity());
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        int removed = 0;
+        StringBuilder removedStr = null;
+        for (Entity ent : event.getChunk().getEntities()) {
+            if (ent instanceof Item) {
+                Item item = (Item) ent;
+                if (item.getItemStack() != null && !new NBTWrapper(item.getItemStack()).hasTag("type")) {
+                    item.remove();
+                    removed++;
+                    if (removedStr == null)
+                        removedStr = new StringBuilder();
+
+                    removedStr.append(item.getItemStack().getType()).append(", ");
+                }
+            }
+        }
+
+        if (removed > 0)
+            Bukkit.getLogger().info("Removed " + removed + " invalid items: " + removedStr.toString() + " from chunk: x" + event.getChunk().getX() + " z" + event.getChunk().getZ());
+
     }
 
     private void applyRarityGlow(Item entity) {
