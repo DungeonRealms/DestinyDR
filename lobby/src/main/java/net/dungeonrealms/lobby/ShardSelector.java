@@ -11,6 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,14 +33,14 @@ public class ShardSelector extends AbstractMenu {
         List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
 
         Collections.sort(servers, (o1, o2) -> {
-
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
-            if (!o1.getServerName().contains("us"))
-                return -1;
-
-            return o1num - o2num;
+            String numString1 = o1.getServerName().substring(o1.getServerName().length() - 1);
+            String numString = o2.getServerName().substring(o2.getServerName().length() - 1);
+            if (StringUtils.isNumeric(numString) && StringUtils.isNumeric(numString1)) {
+                int o2num = Integer.parseInt(numString);
+                int o1num = Integer.parseInt(numString1);
+                return o1num - o2num;
+            }
+            return -1;
         });
 
         // DISPLAY AVAILABLE SHARDS //
