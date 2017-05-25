@@ -1218,7 +1218,7 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
         if (nms == null || nms.getTag() == null) return null;
         NBTTagCompound tag = nms.getTag();
-        return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
+        return tag.hasKey("customId") ? tag.getString("customId") : null;
     }
 
     public static boolean isPlayerHidden(UUID uuid) {

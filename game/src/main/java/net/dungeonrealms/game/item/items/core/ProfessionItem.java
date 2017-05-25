@@ -108,6 +108,7 @@ public abstract class ProfessionItem extends ItemGear {
 	
 	/**
 	 * Gets an enchant for this item. (Uses special cases, so it needs to be updated for every new profession item.)
+	 * We can modularize this later.
 	 */
 	public ItemEnchantProfession getEnchant() {
 		if (this instanceof ItemPickaxe) {

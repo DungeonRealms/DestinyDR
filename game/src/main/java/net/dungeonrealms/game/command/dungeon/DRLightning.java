@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.command.dungeon;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,48 +17,22 @@ public class DRLightning extends BaseCommand {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Player p = null;
+		if (!sender.isOp())
+			return true;
 		
-		if(sender instanceof Player) {
-			p = (Player) sender;
+		
+		World w = sender instanceof Player ? ((Player)sender).getWorld() : ((BlockCommandSender)sender).getBlock().getWorld();
+		
+		if(args.length < 3) {
+			sender.sendMessage(ChatColor.RED + "Invalid Syntax. Please use /drlightning <x> <y> <z> to spawn a lightning strike at that location.");
+			return true;
 		}
 		
-		if(p != null) {
-			if(!(p.isOp())) { return true; }
-		}
+		double x = Double.parseDouble(args[0]);
+		double y = Double.parseDouble(args[1]);
+		double z = Double.parseDouble(args[2]);
 		
-		if(args.length != 3) {
-			if(p != null) {
-				if(!(p.isOp())) { return true; }
-				p.sendMessage(ChatColor.RED + "Invalid Syntax. Please use /drlightning <x> <y> <z> to spawn a lightning strike at that location.");
-				return true;
-			}
-		}
-		
-		if(sender instanceof BlockCommandSender) {
-			BlockCommandSender cb = (BlockCommandSender) sender;
-			double x;
-			double y;
-			double z;
-			
-			x = Double.parseDouble(args[0]);
-			y = Double.parseDouble(args[1]);
-			z = Double.parseDouble(args[2]);
-			
-			Location loc = new Location(cb.getBlock().getWorld(), x, y, z);
-			loc.getWorld().strikeLightning(loc);
-		} else if(sender instanceof Player) {
-			double x;
-			double y;
-			double z;
-			
-			x = Double.parseDouble(args[0]);
-			y = Double.parseDouble(args[1]);
-			z = Double.parseDouble(args[2]);
-			
-			Location loc = new Location(p.getWorld(), x, y, z);
-			loc.getWorld().strikeLightning(loc);
-		}
+		w.strikeLightning(new Location(w, x, y, z));
 		return true;
 	}
 	

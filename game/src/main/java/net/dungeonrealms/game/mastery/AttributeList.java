@@ -95,9 +95,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	 */
 	public void subtractStat(AttributeType t, ModifierRange mr) {
 		ModifierRange take = mr.clone();
-		System.out.println("Attempting to remove " + t.getNBTName() + ", " + mr.toString());
 		take.setVal(-take.getValLow(), -take.getValHigh());
-		System.out.println("Doing this by adding " + take.toString());
 		addStat(t, take);
 	}
 	
@@ -112,13 +110,11 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 	public void addStat(AttributeType t, ModifierRange range) {
 		ModifierRange mr = getAttribute(t);
 		
-//		System.out.println("Adding " + range.toString() + " to " + t.getNBTName());
 		if(t.isRange()) {
 			setStatRange(t, range.getValLow() + mr.getValLow(), range.getValHigh() + mr.getValHigh());
 		} else {
 			setStat(t, range.getValue() + mr.getValue());
 		}
-//		System.out.println("Ok! Is now " + getAttribute(t).toString());
 	}
 	
 	public void addStat(AttributeType t, int inc) {

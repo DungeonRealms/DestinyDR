@@ -305,7 +305,7 @@ public class DamageListener implements Listener {
         if (Rank.isTrialGM(p) && !Rank.isDev(p))
             event.getDrops().clear();
 
-        List<ItemStack> gearToSave = new ArrayList<>();
+        Set<ItemStack> gearToSave = new HashSet<>();
         KarmaHandler.EnumPlayerAlignments alignment = wrapper.getAlignment();
 
         if (alignment == null) return;
@@ -414,10 +414,7 @@ public class DamageListener implements Listener {
         //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(p);
-
-            for (ItemStack stack : gearToSave)
-                p.getInventory().addItem(stack);
-
+            gearToSave.forEach(p.getInventory()::addItem);
             ItemManager.giveStarter(p);
         });
 

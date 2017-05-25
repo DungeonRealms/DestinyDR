@@ -199,7 +199,7 @@ public class Realms implements GenericMechanic {
      */
     public Realm getRealm(Location location) {
         if (!GameAPI.isMainWorld(location)) {
-            GameAPI.sendDevMessage(ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + "Tried to find a realm in world " + location.getWorld().getName() + " on {SERVER}.");
+            GameAPI.sendError("Tried to find a realm in world " + location.getWorld().getName() + " on {SERVER}.");
             Utils.log.info("Tried to load realm from " + location.getWorld().getName() + "?");
             Utils.printTrace();
             return null;
@@ -303,8 +303,7 @@ public class Realms implements GenericMechanic {
      */
     public static RealmTier getRealmTier(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        if (wrapper == null) return null;
-        return RealmTier.getByTier(wrapper.getRealmTier());
+        return wrapper != null ? RealmTier.getByTier(wrapper.getRealmTier()) : null;
     }
 
     /**

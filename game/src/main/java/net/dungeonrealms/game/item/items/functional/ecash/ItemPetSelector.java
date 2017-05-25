@@ -10,7 +10,6 @@ import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @Getter
@@ -21,14 +20,15 @@ public class ItemPetSelector extends FunctionalItem implements ItemInventoryEven
     private String petName;
 
     public ItemPetSelector(ItemStack item){
-        super(ItemType.PET_SELECTOR);
+        super(item);
     }
-    public ItemPetSelector(Player player) {
+    public ItemPetSelector() {
         super(ItemType.PET_SELECTOR);
+        setUndroppable(true);
     }
 
     public ItemPetSelector(EnumPets pet) {
-        super(ItemType.PET_SELECTOR);
+        this();
         this.pet = pet;
         this.petName = getPet().getDisplayName();
     }

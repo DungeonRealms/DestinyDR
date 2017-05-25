@@ -11,8 +11,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemMountSelection extends FunctionalItem implements ItemInventoryEvent.ItemInventoryListener {
 
-    public ItemMountSelection(ItemStack item) {
+    public ItemMountSelection() {
         super(ItemType.MOUNT_SELECTION);
+        setUndroppable(true);
+    }
+    
+    public ItemMountSelection(ItemStack item) {
+    	super(item);
     }
 
     @Override

@@ -29,8 +29,13 @@ public abstract class SupportGUI extends GUIMenu {
             setShouldOpenPreviousOnClose(true);
         }
     }
-
-
+    
+    /**
+     * Save this player's data.
+     */
+    public void saveData() {
+    	getWrapper().saveData(true, null);
+    }
 
     @Override
     public void open(Player player, InventoryAction action) {

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.handler;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -13,7 +14,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -52,23 +52,18 @@ public class TipHandler implements GenericMechanic {
 	private static String getRandomTip() {
 		if (tips.isEmpty()) // We've cycled through them all, reload them.
 			loadTips();
-
-		if(tips.isEmpty()) {
-			return "No tips to load!";
-		}
-
-		return tips.remove(ThreadLocalRandom.current().nextInt(tips.size()));
+		
+		return tips.isEmpty() ? "No loaded tips!" : tips.remove(ThreadLocalRandom.current().nextInt(tips.size()));
 	}
 	
 	private static void loadTips() {
 		try {
-			File file = new File("plugins/DungeonRealms/tips/tips.txt");
+			File file = new File(GameAPI.getDataFolder() + "/tips.txt");
 			if (!file.exists()) {
 				file.createNewFile();
-				System.out.println("Had to create a new file!");
+				Bukkit.getLogger().warning("Tips not found - Creating...");
 			}
 
-			System.out.println("The tip path: " + file.getAbsolutePath());
 			tips = Files.readAllLines(file.toPath());
 		} catch (Exception e) {
 			e.printStackTrace();

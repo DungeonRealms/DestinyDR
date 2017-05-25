@@ -171,11 +171,7 @@ public class KarmaHandler implements GenericMechanic, Listener {
         EnumPlayerAlignments alignmentPlayer = deathWrapper.getAlignment();
         
         killerWrapper.getPlayerGameStats().addStat(StatColumn.PLAYER_KILLS);
-        if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
-        	killerWrapper.getPlayerGameStats().addStat(StatColumn.LAWFUL_KILLS);
-        } else {
-        	killerWrapper.getPlayerGameStats().addStat(StatColumn.UNLAWFUL_KILLS);
-        }
+        killerWrapper.getPlayerGameStats().addStat(alignmentPlayer == EnumPlayerAlignments.LAWFUL ? StatColumn.LAWFUL_KILLS : StatColumn.UNLAWFUL_KILLS);
         
         EnumPlayerAlignments a = killerWrapper.getAlignment();
         killerWrapper.setAlignment(a == EnumPlayerAlignments.LAWFUL ? EnumPlayerAlignments.CHAOTIC : a);

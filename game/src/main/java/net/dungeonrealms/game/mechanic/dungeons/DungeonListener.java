@@ -1,21 +1,24 @@
-package net.dungeonrealms.game.listener.world;
+package net.dungeonrealms.game.mechanic.dungeons;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 
 import org.bukkit.*;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +51,28 @@ public class DungeonListener implements Listener {
         List<Player> players = Affair.isInParty(player) ? Affair.getParty(player).getAllMembers().stream().filter(p -> p.getLocation().distanceSquared(player.getLocation()) <= 200).collect(Collectors.toList())
         		: Arrays.asList(player);
         DungeonManager.createDungeon(DungeonType.getInternal(event.getNewRegion().split("_")[1]), players);
+    }
+    
+    /**
+     * Handles testing for custom items.
+     */
+    @EventHandler
+    public void onHopperPickup(InventoryPickupItemEvent evt) {
+    	if (!(evt.getInventory().getHolder() instanceof Hopper))
+    		return;
+    	
+    	Hopper h = (Hopper) evt.getInventory().getHolder();
+    	Matcher mName = Pattern.compile("Custom ID: <(\\w+)>").matcher(h.getInventory().getTitle());
+    	if (!mName.find())
+    		return;
+    	
+    	evt.setCancelled(true);
+    	if (mName.group(1).equalsIgnoreCase(GameAPI.getCustomID(evt.getItem().getItemStack()))) {
+    		evt.getItem().remove();
+    		h.getBlock().getLocation().subtract(0, 1, 0).getBlock().setType(Material.REDSTONE_BLOCK);
+    	} else {
+    		evt.getItem().setVelocity(new Vector(0, .25F, 0));
+    	}
     }
 
     /**

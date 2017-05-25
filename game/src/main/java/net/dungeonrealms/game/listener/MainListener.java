@@ -109,15 +109,8 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
-        if (event.getEntity().getType() == EntityType.ENDERMAN) {
-
-            MetadataValue value = MetadataUtils.Metadata.ENTITY_TYPE.get(event.getEntity());
-            if (value == null) System.out.println("The value is null on enderman teleport!");
-            else System.out.println("The value on enderman teleport is: " + value.asString());
-            if (value != null && value.asString().equalsIgnoreCase("pet")) return;
-
+        if (event.getEntity().getType() == EntityType.ENDERMAN && !EnumEntityType.PET.isType(event.getEntity()))
             event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -151,7 +144,7 @@ public class MainListener implements Listener {
 
         if (index != 0) {
             Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
-            e.getPlayer().closeInventory(); // Closes the chat after it grabs it!
+            e.getPlayer().closeInventory(); // Closes the chat after sending message!
         }
     }
 
@@ -200,7 +193,6 @@ public class MainListener implements Listener {
 
         player.removeMetadata("saved", DungeonRealms.getInstance());
 
-        //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
@@ -601,46 +593,6 @@ public class MainListener implements Listener {
         }
     }
 
-    /**
-     * Checks for players quitting the merchant NPC
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerCloseInventory(InventoryCloseEvent event) {
-        if (!event.getInventory().getName().equalsIgnoreCase("Merchant")) {
-            return;
-        }
-        Player player = (Player) event.getPlayer();
-        if (!GameAPI.isPlayer(player)) {
-            return;
-        }
-        int slot_Variable = -1;
-        while (slot_Variable < 26) {
-            slot_Variable++;
-            if (!(slot_Variable == 0 || slot_Variable == 1 || slot_Variable == 2 || slot_Variable == 3 || slot_Variable == 9 || slot_Variable == 10 || slot_Variable == 11
-                    || slot_Variable == 12 || slot_Variable == 18 || slot_Variable == 19 || slot_Variable == 20 || slot_Variable == 21)) {
-                continue;
-            }
-            ItemStack itemStack = event.getInventory().getItem(slot_Variable);
-            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
-                continue;
-            }
-            if (itemStack.getType() == Material.EMERALD) {
-                itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
-            }
-            if (player.getInventory().firstEmpty() == -1) {
-                player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
-            } else {
-                player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
-            }
-        }
-        player.getOpenInventory().getTopInventory().clear();
-        player.updateInventory();
-    }
-
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onCraft(CraftItemEvent event) {
         if (event.getWhoClicked().getLocation().getWorld().equals(Bukkit.getWorlds().get(0)))
@@ -661,16 +613,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
         evt.setCancelled(true);
-        /*if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
-            evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
-                if (ent instanceof ItemFrame) {
-                    ItemFrame itemFrame = (ItemFrame) ent;
-                    if (itemFrame.getItem() == null || itemFrame.getItem().getType() == Material.AIR)
-                        itemFrame.remove();
-                }
-            });
-            evt.setCancelled(true);
-        }*/
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -744,10 +686,8 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onArmorStand(EntityDamageEvent event) {
-        if (EnumEntityType.DPS_DUMMY.isType(event.getEntity())) {
-            if (event.getCause().name().startsWith("ENTITY_")) return;
-            event.setCancelled(true);
-        }
+        if (EnumEntityType.DPS_DUMMY.isType(event.getEntity()) && !event.getCause().name().startsWith("ENTITY_"))
+        	event.setCancelled(true);
     }
 
     @EventHandler
@@ -883,19 +823,14 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent event) {
-        if (event.getItem().getItemStack().getAmount() <= 0) {
+    	ItemStack item = event.getItem().getItemStack();
+        if (item.getAmount() <= 0 || item.getType() == Material.ARROW) {
             event.setCancelled(true);
             event.getItem().remove();
             return;
         }
 
-        if (event.getItem().getItemStack().getType() == Material.ARROW) {
-            event.setCancelled(true);
-            event.getItem().remove();
-            return;
-        }
-
-        if (event.getItem().getItemStack().getType() != Material.EMERALD)
+        if (item.getType() != Material.EMERALD) // Gems have their own special ding.
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
     }
 
@@ -936,12 +871,9 @@ public class MainListener implements Listener {
         }
 
         //If we're too far away, teleport back.
-        if (event.getReason() == UnleashReason.DISTANCE) {
-            //Teleport host?
-            if (horse.getOwner() != null) {
-                horse.teleport((Entity) horse.getOwner());
-            }
-        }
+        if (event.getReason() == UnleashReason.DISTANCE && horse.getOwner() != null)
+        	horse.teleport((Entity) horse.getOwner());
+        
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }
 

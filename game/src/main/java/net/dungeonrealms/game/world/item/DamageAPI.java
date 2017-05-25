@@ -534,7 +534,7 @@ public class DamageAPI {
         if (target != null)
             vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
 
-        boolean kilitanStaff = staff.hasTag("customId") && staff.getTagString("customId").equals("kilatan");
+        boolean kilitanStaff = "kilatan".equals(GameAPI.getCustomID(staff.getItem()));
         Projectile projectile = null;
         Item.ItemTier tier = staff.getTier();
         switch (tier) {

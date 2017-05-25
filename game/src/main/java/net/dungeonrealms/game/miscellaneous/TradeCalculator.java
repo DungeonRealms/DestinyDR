@@ -1,11 +1,9 @@
 package net.dungeonrealms.game.miscellaneous;
 
-
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.functional.*;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
@@ -28,7 +26,6 @@ public class TradeCalculator {
 
     public static List<ItemStack> calculateMerchantOffer(List<ItemStack> playerOffer) {
         List<PersistentItem> merchantOffer = new ArrayList<>();
-        List<ItemStack> remove = new ArrayList<>();
         List<ItemStack> items = new ArrayList<>();
 
 
@@ -43,30 +40,23 @@ public class TradeCalculator {
             ore.put(t, 0);
 
         for (ItemStack is : playerOffer) {
-            if (is == null || is.getType() == Material.AIR || !ItemManager.isItemTradeable(is))
+            if (is == null || is.getType() == Material.AIR)
                 continue;
-
-            boolean removeItem = false; //Whether this item should be removed from the player's inventory.
 
             //  POTION  //
             if (PotionItem.isPotion(is)) {
                 PotionItem potion = new PotionItem(is);
-                if (potion.getTier() == PotionTier.TIER_5)
-                    continue;
-                removeItem = true;
-                potions.add(potion);
+                if (potion.getTier() != PotionTier.TIER_5)
+                	potions.add(potion);
             }
 
             //  ORE  //
             MiningTier oreTier = MiningTier.getTierFromOre(is.getType());
-            if (oreTier != null) {
-                removeItem = true;
+            if (oreTier != null)
                 ore.put(oreTier, ore.get(oreTier) + is.getAmount());
-            }
 
             //  SCRAP  //
             if (ItemScrap.isScrap(is)) {
-                removeItem = true;
                 ItemScrap scrap = new ItemScrap(is);
                 scraps.put(scrap.getTier(), scraps.get(scrap.getTier()) + is.getAmount());
             }
@@ -74,7 +64,6 @@ public class TradeCalculator {
             //  GEAR  //
             if (CombatItem.isCombatItem(is)) {
                 CombatItem ci = (CombatItem) PersistentItem.constructItem(is);
-                removeItem = true;
                 int scrap = ci.getGeneratedItemType().getMerchantScraps();
                 ScrapTier scrapTier = ScrapTier.getScrapTier(ci.getTier().getId());
 
@@ -86,7 +75,6 @@ public class TradeCalculator {
 
             //  ORB OF ALTERATION  //
             if (ItemOrb.isOrb(is)) {
-                removeItem = true;
                 ItemStack scrap = new ItemScrap(ScrapTier.TIER5).generateItem();
                 scrap.setAmount(20);
                 items.add(scrap);
@@ -94,16 +82,10 @@ public class TradeCalculator {
 
             //  PROFESSION ITEM  //
             if (ProfessionItem.isProfessionItem(is)) {
-                removeItem = true;
                 ProfessionItem pi = (ProfessionItem) PersistentItem.constructItem(is);
                 merchantOffer.add(pi.getEnchant());
             }
-
-            if (removeItem)
-                remove.add(is);
         }
-
-        remove.forEach(playerOffer::remove);
 
         //  POTION TRADES  //
         for (boolean splash : new boolean[]{true, false}) {

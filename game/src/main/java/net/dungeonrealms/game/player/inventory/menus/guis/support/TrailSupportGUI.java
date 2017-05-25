@@ -31,12 +31,10 @@ public class TrailSupportGUI extends SupportGUI {
             setItem(slot++, new GUIItem(item).setLore(lore).setClick((evt) -> {
                 if(unlocked) {
                     getWrapper().getParticles().remove(effect);
-                    getWrapper().saveData(true,null);
-                }
-                else {
+                } else {
                     getWrapper().getParticles().add(effect);
-                    getWrapper().saveData(true,null);
                 }
+                saveData();
             }));
         }
 

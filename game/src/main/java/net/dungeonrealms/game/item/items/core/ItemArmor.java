@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.item.items.core;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,7 +71,7 @@ public class ItemArmor extends CombatItem {
 
     @Override
     protected void onItemBreak(Player player) {
-        HealthHandler.updatePlayerHP(player);
+    	PlayerWrapper.getWrapper(player).calculateAllAttributes();
     }
 
     public static boolean isArmor(ItemStack item) {

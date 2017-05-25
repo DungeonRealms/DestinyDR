@@ -1,33 +1,31 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.*;
-import net.dungeonrealms.game.handler.ClickHandler;
-import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mastery.Stats;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
-import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -40,6 +38,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -48,21 +49,127 @@ import java.util.UUID;
  */
 public class InventoryListener implements Listener {
 
-    /**
-     * Handles important inventories (guilds, etc.)
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onImportantInventoryClick(InventoryClickEvent event) {
-
-        if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR))
-            if (event.getSlotType() == InventoryType.SlotType.ARMOR)
-                return;
-
-        ClickHandler.getInstance().doClick(event);
+	@EventHandler
+    public void handleMechantClose(InventoryCloseEvent event) {
+        if (!event.getInventory().getName().equalsIgnoreCase("Merchant"))
+            return;
+        
+        Player player = (Player) event.getPlayer();
+        getPlayerOffer(event.getInventory()).forEach(i -> GameAPI.giveOrDropItem(player, i));
+        player.getOpenInventory().getTopInventory().clear();
+        player.updateInventory();
     }
+	
+	@EventHandler
+	public void handleMerchantClick(InventoryClickEvent event) {
+    	Player player = (Player) event.getWhoClicked();
+    	int slot = event.getRawSlot();
+    	Inventory window = event.getInventory();
+    	if (slot < 0 || !event.getInventory().getTitle().equalsIgnoreCase("Merchant"))
+    		return; // Ignore dropping cursor or if this isn't a merchant.
+    	
+    	if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+    		event.setCancelled(true); // Don't allow this, it could allow taking items from the other side of the menu.
+    		return;
+    	}
+    	
+    	if (slot < window.getSize()) { 
+    		// Clicking inside the trade window.
+    		
+    		if (!isLeft(slot)) {
+    			event.setCancelled(true);
+    			player.updateInventory();
+    			return;
+    		}
+    		
+    		if (slot == 0) { // Accept trade.
+    			event.setCancelled(true);
+    			
+    			List<ItemStack> merchant = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
+    			int freeSlots = (int) Arrays.stream(player.getInventory().getContents()).filter(i -> i == null
+    					|| i.getType() == Material.AIR).count();
+    			
+    			if (freeSlots < merchant.size()) {
+    				player.sendMessage(ChatColor.RED + "Please free " + (merchant.size() - freeSlots) + " inventory slots.");
+    				return;
+    			}
+    			
+    			window.clear(); // Clear the items out.
+    			merchant.forEach(player.getInventory()::addItem);
+    			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
+    			
+    			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2F);
+    			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
+    			player.sendMessage(ChatColor.GREEN + "Trade accepted.");
+    			
+    			return;
+    		}
+    	} else {
+    		// In player's inventory.
+    		if (event.isShiftClick()) {
+    			event.setCancelled(true);
+    			int newSlot = firstAllowed(window); // Find the right slot to shift-click this into.
+    			if (newSlot > -1) {
+    				// Attempt to find the right place to shift click this to.
+    				window.setItem(newSlot, event.getCurrentItem()); 
+    				event.setCurrentItem(null);
+    			}
+    		}
+    	}
+    	
+    	// Run next tick so the items from this action get applied.
+    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+    		// Update offer.
+    		List<ItemStack> merchantOffer = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
+    		List<Integer> slots = getMerchantSlots(window);
+    		slots.forEach(s -> window.setItem(s, null));
+    		
+    		int mSlot = 0;
+    		for (ItemStack i : merchantOffer) {
+    			window.setItem(slots.get(mSlot), i);
+    			mSlot++;
+    		}
+    		
+    		player.updateInventory();
+    	});
+    }
+    
+    private List<ItemStack> getPlayerOffer(Inventory window) {
+    	List<ItemStack> playerOffer = new ArrayList<>();
+    	for (int i : getPlayerSlots(window)) {
+    		ItemStack item = window.getItem(i);
+    		if (item != null && item.getType() != Material.AIR)
+    			playerOffer.add(item);
+    	}
+    	return playerOffer;
+    }
+    
+    private int firstAllowed(Inventory i) {
+    	return getPlayerSlots(i).stream().filter(s -> i.getItem(s) == null
+    			|| i.getItem(s).getType() == Material.AIR).findFirst().orElse(-1);
+    }
+    
+    private boolean isLeft(int slot) {
+    	return slot % 9 < 4;
+    }
+    
+    private List<Integer> getPlayerSlots(Inventory i) {
+    	List<Integer> slots = new ArrayList<>();
+    	for (int y = 0; y < i.getSize() / 9; y++)
+    		for (int x = 0; x < 4; x++)
+    			if (x + y > 0) // Don't add the first slot, since it has the accept button
+    				slots.add(x + (y * 9));
+    	return slots;
+    }
+    
+    private List<Integer> getMerchantSlots(Inventory i) {
+    	List<Integer> slots = new ArrayList<>();
+    	for (int y = 0; y < i.getSize() / 9; y++)
+    		for (int x = 0; x < 4; x++)
+    			slots.add(x + (y * 9) + 5);
+    	return slots;
+    }
+	
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
@@ -200,8 +307,9 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDrag(InventoryDragEvent event) {
         String title = event.getInventory().getTitle();
-        if (title.contains("VS.") || title.contains("Bank")
-                || GameAPI.isShop(event.getInventory()) || title.contains("Trade")
+        if (title.contains("Bank")
+                || GameAPI.isShop(event.getInventory())
+                || title.contains("Trade")
                 || title.contains("Merchant"))
             event.setCancelled(true);
     }
@@ -525,30 +633,6 @@ public class InventoryListener implements Listener {
             }, 20L);
         }
 
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerDragItemInMerchant(InventoryClickEvent event) {
-        if (event.getInventory().getName().equals("Merchant")) {
-            int slot = event.getRawSlot();
-            if (!(slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
-                    || slot == 20 || slot == 21) && !(slot > 27)) {
-                if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                    event.setCancelled(true);
-                    event.setResult(Event.Result.DENY);
-                    return;
-                }
-                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                    event.setCancelled(true);
-                    event.setResult(Event.Result.DENY);
-                    return;
-                }
-            }
-            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                event.setCancelled(true);
-                event.setResult(Event.Result.DENY);
-            }
-        }
     }
     
     @EventHandler(priority = EventPriority.HIGHEST) // This case is not caught by ArmorEquipEvent.

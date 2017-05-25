@@ -46,7 +46,7 @@ public class PetSupportGUI extends SupportGUI {
                     (isLocked.get() ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked.get() ? "" : "UN") + "LOCKED")).set("EntityTag", compound).build()).setClick(e -> {
 
                 getWrapper().getPetsUnlocked().put(pets, new PetData(null, !isLocked.get()));
-                getWrapper().saveData(true,null);
+                saveData();
                 player.sendMessage("Success!");
             }));
         }

@@ -307,9 +307,7 @@ public class ItemManager {
     }
 
     public static boolean isDungeonItem(ItemStack item) {
-        if(item == null)return false;
-        //Incase the lore is synced..
-        return get(item).isDungeon() || item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().filter(lore -> lore.endsWith("Dungeon Item")).count() > 0;
+        return get(item).isDungeon();
     }
 
     /**
@@ -365,10 +363,9 @@ public class ItemManager {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(name);
         List<String> l = new ArrayList<>();
-        if(lore != null) {
+        if(lore != null)
             for (String s : lore)
                 l.add(ChatColor.GRAY + s);
-        }
         meta.setLore(l);
         stack.setItemMeta(meta);
         return stack;

@@ -30,7 +30,6 @@ public class ItemDPSDummy extends FunctionalItem implements ItemClickEvent.ItemC
 
     private static BukkitRunnable dummyRunnable;
 
-
     public ItemDPSDummy(ItemStack item) {
         super(ItemType.DPS_DUMMY);
         setUndroppable(true);
@@ -92,7 +91,6 @@ public class ItemDPSDummy extends FunctionalItem implements ItemClickEvent.ItemC
                 return;
             }
 
-            int radius = 15 * 15;
             DPSDummy nearby = dpsDummies.values().stream().filter(d -> d.getLocation().distanceSquared(player.getLocation()) <= 15).findFirst().orElse(null);
 
             if (nearby != null) {

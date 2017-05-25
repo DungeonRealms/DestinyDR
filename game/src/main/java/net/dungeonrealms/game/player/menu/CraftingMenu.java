@@ -49,8 +49,8 @@ public class CraftingMenu implements GenericMechanic, Listener {
                     if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
                         player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).generateItem());
                         player.getOpenInventory().getTopInventory().setItem(2, new ItemHearthstone(player).generateItem());
-                        player.getOpenInventory().getTopInventory().setItem(3, new ItemPetSelector(player).generateItem());
-                        player.getOpenInventory().getTopInventory().setItem(4, new ItemMountSelection(null).generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(3, new ItemPetSelector().generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(4, new ItemMountSelection().generateItem());
                     }
                     GameAPI.runAsSpectators(player, (spectator) -> {
                         spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");

@@ -19,18 +19,11 @@ public class BankSupportGUI extends SupportGUI {
     @Override
     protected void setItems() {
         setItem(4, new GUIItem(Material.BAKED_POTATO).setName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Set Gems").setLore(ChatColor.GRAY + "Click here to set " + getOtherName() + "'s gems.","",ChatColor.GREEN + "Current Gems: " + ChatColor.BOLD + getWrapper().getGems()).setClick((evt) -> {
-            Chat.listenForMessage(player, customAmount -> {
-                if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
-                    try {
-                        int amount = Integer.parseInt(customAmount.getMessage());
-                        getWrapper().setGems(amount);
-                        getWrapper().runQuery(QueryType.SET_GEMS, getWrapper().getGems(), getWrapper().getCharacterID());
-                        player.sendMessage(ChatColor.GREEN + "Successfully set " + getOtherName() + "'s gems to " + customAmount);
-                    } catch (NumberFormatException e) {
-                        player.sendMessage(ChatColor.RED + customAmount.getMessage() + " is not a valid number.");
-                    }
-                }
-            });
+            Chat.listenForNumber(player, 0, Integer.MAX_VALUE, n -> {
+            	getWrapper().setGems(n);
+            	getWrapper().runQuery(QueryType.SET_GEMS, getWrapper().getGems(), getWrapper().getCharacterID());
+            	player.sendMessage(ChatColor.GREEN + "Successfully set " + getOtherName() + "'s gems to " + n);
+            }, null);
         }));
     }
 }

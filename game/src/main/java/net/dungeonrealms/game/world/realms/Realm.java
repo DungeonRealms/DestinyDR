@@ -109,6 +109,9 @@ public class Realm {
      * Opens a realm portal at a given location. Grabs the realm from FTP if needed.
      */
     public void openPortal(Player player, Location location) {
+    	if (!canPlacePortal(player, location))
+            return;
+    	
         loadRealm(player, () -> {
 
             //Their realm is upgrading, shouldn't be accessible.
@@ -125,7 +128,7 @@ public class Realm {
             }
 
             if (!canPlacePortal(player, location))
-                return;
+                return; // Check again, it's possible the world could have changed since the download started.
 
             if (isLoaded())
                 removePortal(null);

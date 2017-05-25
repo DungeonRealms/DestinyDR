@@ -151,7 +151,7 @@ public abstract class ItemGear extends ItemGeneric {
     public ItemGear setMaxRarity(ItemRarity rarity, int minRequired){
         this.maxRarity = rarity;
         this.minRarityItems = minRequired;
-        return null;
+        return this;
     }
 
     public GeneratedItemType getGeneratedItemType() {

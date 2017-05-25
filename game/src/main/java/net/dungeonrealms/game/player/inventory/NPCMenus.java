@@ -2,7 +2,7 @@ package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -78,13 +78,11 @@ public class NPCMenus {
 
         inv.setItem(4, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
         inv.setItem(13, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
+        //inv.setItem(13, ItemManager.createItem(Material.MAP, ChatColor.BLUE + "Trade Information", "")); TODO: List all trades.
         inv.setItem(22, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
-        inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[]{
-                "",
-                ChatColor.GRAY + "Display Item"
-        }).setNBTString("acceptButton", "whynot").build());
-        player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.f, 1.f);
+        inv.setItem(0, ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW + "Click to ACCEPT", (short) 8, "", ChatColor.GRAY + "Display Item"));
 
+        player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.f, 1.f);
         player.openInventory(inv);
     }
 

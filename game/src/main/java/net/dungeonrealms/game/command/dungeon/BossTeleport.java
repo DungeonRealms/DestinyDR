@@ -41,8 +41,12 @@ public class BossTeleport extends BaseCommand {
         }
         
         Location spawn = d.getType().getBoss().getLocation(d.getWorld());
+        
+        float yaw = args.length >= 4 ? Float.parseFloat(args[3]) : 0;
+        float pitch = args.length >= 5 ? Float.parseFloat(args[4]) : 0;
+        
         if (args.length >= 3)
-        	spawn = new Location(bcs.getBlock().getWorld(), Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
+        	spawn = new Location(bcs.getBlock().getWorld(), Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]), yaw, pitch);
 
         for (Player player : bcs.getBlock().getWorld().getPlayers()) {
             player.teleport(spawn.clone().add(0, 2, 0));
@@ -50,7 +54,7 @@ public class BossTeleport extends BaseCommand {
         }
         
         d.spawnBoss(d.getType().getBoss());
-        bcs.getBlock().setType(Material.AIR); //
+        bcs.getBlock().setType(Material.AIR); // Remove the command block.
         return true;
     }
 }

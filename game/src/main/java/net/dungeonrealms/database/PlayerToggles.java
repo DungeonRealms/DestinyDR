@@ -7,7 +7,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import org.bukkit.Bukkit;

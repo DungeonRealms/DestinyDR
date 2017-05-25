@@ -203,7 +203,7 @@ public interface DRMonster {
             while (gemsDropped > 0) {
             	int drop = Math.min((int)gemsDropped, 64);
             	gemsDropped -= drop;
-            	if(drop <= 0)break;
+            	if(drop <= 0) break;
             	ItemGem gem = new ItemGem(drop);
             	ItemStack gemStack = gem.generateItem();
             	ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), gemStack));

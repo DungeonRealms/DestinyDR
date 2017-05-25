@@ -150,14 +150,14 @@ public class ItemListener implements Listener {
             return;
         }
 
-        PlayerManager.checkInventory(event.getPlayer());
-
         //  SILENTLY REMOVE UNDROPPABLE ITEMS  //
         if (!ItemManager.isItemDroppable(item)) {
             event.getItemDrop().remove();
             event.setCancelled(true);
             return;
         }
+        
+        PlayerManager.checkInventory(event.getPlayer());
     }
 
     @EventHandler //Prevents dropping undroppable items and having the pop back up in your inventory.
