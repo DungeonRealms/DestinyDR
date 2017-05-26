@@ -109,11 +109,11 @@ public class PlayerGameStats implements LoadableData, SaveableData {
 					PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 					if(wrapper == null)
 						return null;
-					
+
 					if (stat == TIME_PLAYED)
 						return String.valueOf(GameAPI.formatTime(TimeUnit.SECONDS
 								.toMillis((long) wrapper.getPlayerGameStats().getStat(stat))));
-					
+
                     return Utils.format(wrapper.getPlayerGameStats().getStat(stat));
 				}
         	};

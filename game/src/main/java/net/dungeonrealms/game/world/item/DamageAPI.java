@@ -267,7 +267,7 @@ public class DamageAPI {
         return damage * (1 + (difference * 0.09));
     }
 
-    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
+    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, LivingEntity damager) {
         ItemStack held = damager.getEquipment().getItemInMainHand();
 
         if (!ItemWeaponPolearm.isPolearm(held))
@@ -276,8 +276,11 @@ public class DamageAPI {
         boolean damagerIsMob = !(damager instanceof Player);
         int hitCount = 0;
 
-        List<Entity> ents = event.getEntity().getNearbyEntities(2.5,3,2.5);
+        List<Entity> ents = event.getEntity().getNearbyEntities(2.5, 3, 2.5);
 
+        PlayerWrapper attacker = null;
+        if (!damagerIsMob)
+            attacker = PlayerWrapper.getPlayerWrapper((Player) damager);
 
         for (Entity entity : ents) {
             //  ARE WE AN ALLOWED ENTITY  //
@@ -294,28 +297,27 @@ public class DamageAPI {
             res.setDamage(damage);
             applyArmorReduction(res, true);
 
-            if (entity != event.getEntity() && !res.getDefender().isPlayer()) {
+            if (!entity.equals(event.getEntity()) && !res.getDefender().isPlayer()) {
                 //  DAMAGING HOSTILE MOB  //
                 if (!EnumEntityType.HOSTILE_MOB.isType(entity))
                     continue;
 
                 HealthHandler.damageMonster(res);
             } else if (res.getDefender().isPlayer()) {
-                if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
+                if (damagerIsMob || !GameAPI.isNonPvPRegion(entity.getLocation())) {
                     if (GameAPI._hiddenPlayers.contains((Player) entity))
                         continue;
-                    if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
-                        PlayerWrapper attacker = PlayerWrapper.getPlayerWrapper(damager);
+                    if (!damagerIsMob && !DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
                         if (!attacker.getToggles().getState(Toggles.PVP)) {
                             attacker.sendDebug(ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                             continue;
                         }
                         //  IGNORE PARTIES  //
-                        if (Affair.areInSameParty(damager, (Player) entity))
+                        if (Affair.areInSameParty((Player) damager, (Player) entity))
                             continue;
 
                         //  IGNORE GUILDS  //
-                        if (GuildDatabase.getAPI().areInSameGuild(damager, res.getDefender().getPlayer()))
+                        if (GuildDatabase.getAPI().areInSameGuild((Player) damager, res.getDefender().getPlayer()))
                             continue;
                     }
                     HealthHandler.damagePlayer(res);
@@ -329,8 +331,9 @@ public class DamageAPI {
             if (hitCount > 2)
                 hitCount--;
 
-            EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(),
-                    (EnergyHandler.getSwingCost(held) * hitCount) / 4F);
+            if (!damagerIsMob)
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(),
+                        (EnergyHandler.getSwingCost(held) * hitCount) / 4F);
         }
     }
 
@@ -387,8 +390,10 @@ public class DamageAPI {
         //  DAMAGE ARMOR  //
         if (defender.isPlayer())
             if (takeDura)
-                for (ItemStack armor : defender.getPlayer().getEquipment().getArmorContents())
+                for (ItemStack armor : defender.getPlayer().getEquipment().getArmorContents()) {
+                    if (armor == null || armor.getType() == Material.AIR || !ItemArmor.isArmor(armor)) continue;
                     new ItemArmor(armor).damageItem(defender.getPlayer(), 1);
+                }
 
         int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
 

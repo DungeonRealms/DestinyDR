@@ -177,7 +177,7 @@ public class DamageListener implements Listener {
 
         res.applyDamage();
 
-
+        DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, leDamageSource);
     }
 
     /**

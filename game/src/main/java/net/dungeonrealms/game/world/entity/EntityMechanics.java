@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster.CustomEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.*;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -98,13 +99,16 @@ public class EntityMechanics implements GenericMechanic {
                 launch = new CustomEntityTippedArrow(world, shooter.getHandle());
             }
 
+            if (shooter.getHandle() instanceof DRMonster)
+                ((EntityArrow) launch).setKnockbackStrength(0);
+
             ((EntityArrow) launch).a(shooter.getHandle(), shooter.getHandle().pitch, shooter.getHandle().yaw, 0.0F, 3.0F, 1.0F);
         }
 
         if (launch == null)
             return null;
 
-        launch.setPosition(location.getX(), location.getY() - (shooter instanceof Skeleton && ((Skeleton)shooter).getSkeletonType() == Skeleton.SkeletonType.WITHER ? .45D : 0), location.getZ());
+        launch.setPosition(location.getX(), location.getY() - (shooter instanceof Skeleton && ((Skeleton) shooter).getSkeletonType() == Skeleton.SkeletonType.WITHER ? .45D : 0), location.getZ());
         if (velocity != null)
             launch.getBukkitEntity().setVelocity(velocity);
 
@@ -153,7 +157,7 @@ public class EntityMechanics implements GenericMechanic {
             int lastAttack = MONSTER_LAST_ATTACK.get(entity);
             EntityInsentient ei = (EntityInsentient) ((CraftEntity) entity).getHandle();
 
-            if(entity.isInvulnerable())continue;
+            if (entity.isInvulnerable()) continue;
             if (lastAttack == 11) {
                 // Teleport back to spawnpoint if too far away.
                 Location target = ei.getGoalTarget() != null ? ei.getGoalTarget().getBukkitEntity().getLocation() : null;

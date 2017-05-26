@@ -38,11 +38,12 @@ public class StatisticsTabColumn extends Column {
             // Add stats.
             for (StatColumn stat : StatColumn.values()) {
                 Variable v = stat.getVariable();
-                if (v != null)
+                if (v != null) {
                     variablesToRegister.add(v);
+                }
             }
         } catch (NullPointerException ignored) {
-
+            ignored.printStackTrace();
         }
         return this;
     }
