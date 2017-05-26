@@ -1058,6 +1058,9 @@ public class PlayerWrapper {
         this.attributesLoaded = true;
     }
 
+    public boolean hasEcash(int ecash){
+        return getEcash() >= ecash;
+    }
     public void setAlignment(EnumPlayerAlignments alignmentTo) {
         if (alignmentTo == null)
             alignmentTo = EnumPlayerAlignments.LAWFUL;

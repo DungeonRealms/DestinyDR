@@ -21,27 +21,27 @@ public class OverrideListener implements Listener {
 
     public void onEnable() {
         //this.getServer().getPluginManager().registerEvents((Listener)this, (Plugin)this);
-        this.equipment = new FakeEquipment(this) {
-            @Override
-            protected boolean onEquipmentSending(final EquipmentSendingEvent event) {
-                if (event.getSlot() != EnumWrappers.ItemSlot.HEAD) {
-                    return false;
-                }
-                final ItemStack clone = event.getEquipment();
-                if (clone == null) {
-                    return false;
-                }
-                clone.setType(Material.SAPLING);
-                clone.setDurability((short)4);
-                event.setEquipment(clone);
-                return true;
-            }
-
-            @Override
-            protected void onEntitySpawn(final Player client, final LivingEntity visibleEntity) {
-                super.onEntitySpawn(client, visibleEntity);
-            }
-        };
+//        this.equipment = new FakeEquipment(this) {
+//            @Override
+//            protected boolean onEquipmentSending(final EquipmentSendingEvent event) {
+//                if (event.getSlot() != EnumWrappers.ItemSlot.HEAD) {
+//                    return false;
+//                }
+//                final ItemStack clone = event.getEquipment();
+//                if (clone == null) {
+//                    return false;
+//                }
+//                clone.setType(Material.SAPLING);
+//                clone.setDurability((short)4);
+//                event.setEquipment(clone);
+//                return true;
+//            }
+//
+//            @Override
+//            protected void onEntitySpawn(final Player client, final LivingEntity visibleEntity) {
+//                super.onEntitySpawn(client, visibleEntity);
+//            }
+//        };
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

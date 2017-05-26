@@ -1,13 +1,19 @@
 package net.dungeonrealms.game.player.inventory.menus.guis;
 
 import com.google.common.collect.Lists;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -38,14 +44,35 @@ public class MountSkinSelectionGUI extends GUIMenu {
                 }
             } else {
                 lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
-                lore.add(ChatColor.GRAY + "Visit the E-Cash Vendor to unlock it!");
+                lore.add(ChatColor.WHITE.toString() + skin.getEcashPrice() + " " + ChatColor.GREEN + "E-Cash");
+                lore.add(ChatColor.GRAY + "Click to unlock this skin!");
             }
 
             setItem(slot++, new GUIItem(skin.getSelectionItem()).setName(ChatColor.GREEN.toString() + skin.getDisplayName())
                     .setLore(lore).setClick(event -> {
                         if (!wrapper.getMountSkins().contains(skin)) {
                             player.sendMessage(ChatColor.RED + "You do not own this Mount Skin!");
-                            player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
+                            if (wrapper.hasEcash(skin.getEcashPrice())) {
+                                Utils.sendCenteredMessage(player, ChatColor.GREEN + "Are you sure you want to unlock this Mount Skin?");
+                                Utils.sendCenteredMessage(player, ChatColor.GRAY + "Please enter " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " to confirm this purchase.");
+                                Chat.promptPlayerConfirmation(player, () -> {
+                                    if (wrapper.hasEcash(skin.getEcashPrice()) && !wrapper.getMountSkins().contains(skin)) {
+                                        wrapper.withdrawEcash(skin.getEcashPrice());
+                                        wrapper.getMountSkins().add(skin);
+                                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
+                                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin!");
+                                            //Redraw.
+                                            open(player, null);
+                                        });
+                                    } else {
+                                        player.sendMessage(ChatColor.RED + "You do not have enough E-Cash anymore!");
+                                    }
+                                }, () -> player.sendMessage(ChatColor.RED + "Mount Skin Purchase - " + ChatColor.BOLD + "CANCELLED"));
+                            } else {
+                                player.sendMessage(ChatColor.RED + "This Mount Skin requires " + ChatColor.UNDERLINE + skin.getEcashPrice() + ChatColor.RED + " E-Cash!");
+                                player.sendMessage(ChatColor.GRAY + "You can also unlock this Mount Skin at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
+                            }
                             return;
                         }
 
