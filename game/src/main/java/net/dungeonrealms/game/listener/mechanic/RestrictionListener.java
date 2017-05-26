@@ -26,8 +26,6 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.shops.Shop;
-import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -49,9 +47,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran Quigley (Proxying) on 16-Jun-16.
@@ -412,7 +408,7 @@ public class RestrictionListener implements Listener {
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
         if (!GameAPI.isPlayer(event.getTarget())) return;
         PlayerWrapper pw = PlayerWrapper.getWrapper((Player) event.getTarget());
-        
+
         if (Metadata.TIER.has(event.getEntity())) {
             if (GameAPI.getTierFromLevel(pw.getLevel()) > EntityAPI.getTier(event.getEntity()) + 2) {
                 if (!CombatLog.isInCombat((Player) event.getTarget()) && GameAPI.isMainWorld(event.getTarget().getWorld())) {
@@ -422,13 +418,13 @@ public class RestrictionListener implements Listener {
             }
         }
         if (!pw.isVulnerable())
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
         if (!GameAPI.isPlayer(event.getEntity()) || PlayerWrapper.getWrapper((Player) event.getEntity()).isVulnerable())
-        	return;
+            return;
 
         event.setDamage(0);
         event.setCancelled(true);
@@ -497,7 +493,8 @@ public class RestrictionListener implements Listener {
             if (!isAttackerPlayer || !isDefenderPlayer) {
                 if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
                     event.setCancelled(true);
-                    pDamager.updateInventory();
+                    if (pDamager != null)
+                        pDamager.updateInventory();
                     return;
                 }
             }
@@ -529,10 +526,10 @@ public class RestrictionListener implements Listener {
         }
 
         if (isDefenderPlayer && !PlayerWrapper.getWrapper(pReceiver).isVulnerable()) {
-        	event.setCancelled(true);
-        	event.setDamage(0);
-        	pReceiver.updateInventory();
-        	return;
+            event.setCancelled(true);
+            event.setDamage(0);
+            pReceiver.updateInventory();
+            return;
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {
@@ -568,7 +565,7 @@ public class RestrictionListener implements Listener {
 
             PlayerWrapper damagerWrapper = PlayerWrapper.getPlayerWrapper(pDamager);
             boolean cancel = Affair.areInSameParty(pDamager, pReceiver) || GuildDatabase.getAPI().areInSameGuild(pDamager, pReceiver);
-            
+
             if (!damagerWrapper.getToggles().getState(Toggles.PVP)) {
                 damagerWrapper.sendDebug(ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                 cancel = true;

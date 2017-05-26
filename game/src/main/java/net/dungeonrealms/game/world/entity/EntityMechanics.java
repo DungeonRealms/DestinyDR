@@ -169,6 +169,7 @@ public class EntityMechanics implements GenericMechanic {
                     if (distance >= 4 && distance <= 6 * 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
                         entity.teleport(target);
                         MONSTER_LAST_ATTACK.put(entity, 15);
+                        Bukkit.getLogger().info("Teleporting " + entity + " to " + ei.getGoalTarget().getName() + " to prevent leashing!");
                     }
                 }
             } else if (lastAttack == 10) {
