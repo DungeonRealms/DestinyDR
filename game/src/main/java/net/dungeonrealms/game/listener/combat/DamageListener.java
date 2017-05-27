@@ -737,6 +737,11 @@ public class DamageListener implements Listener {
             dmg = 0;
         }
 
+        if(!type.doesAffectMobs() && !isPlayer){
+            event.setCancelled(true);
+            return;
+        }
+
         if (isPlayer)
             pw.updateWeapon();
 

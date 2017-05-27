@@ -7,18 +7,25 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
+import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.fishing.*;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
+import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
 import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -331,6 +338,18 @@ public class Fishing implements GenericMechanic, Listener {
                 int fishRoll = ThreadLocalRandom.current().nextInt(100);
                 int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
+                if (TutorialIsland.onTutorialIsland(pl.getLocation())) {
+                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(pl);
+                    Quest quest = data != null ? data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase("Tutorial Island")).findFirst().orElse(null) : null;
+                    if (quest != null) {
+                        QuestPlayerData.QuestProgress progress = data.getQuestProgress(quest);
+                        if (progress != null && progress.getCurrentStage() != null && progress.getCurrentStage().getObjective().getClass().equals(ObjectiveCatchFish.class)) {
+                            successRate = 100;
+                            Bukkit.getLogger().info("Catching fish for sure for " + pl.getName() + " due to Tutorial Island");
+                        }
+                    }
+                }
+
                 if (pole.getTier().getId() == spotTier)
                     successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
 
@@ -373,6 +392,8 @@ public class Fishing implements GenericMechanic, Listener {
                 pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
                 GameAPI.giveOrDropItem(pl, fish);
+
+                Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
 
                 //  Junk Find.
                 if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {

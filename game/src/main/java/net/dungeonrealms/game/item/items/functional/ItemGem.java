@@ -16,6 +16,7 @@ public class ItemGem extends ItemMoney {
 	
 	public ItemGem(ItemStack item) {
 		super(item);
+		setGemValue(item.getAmount());
 		setAntiDupe(false);
 	}
 	

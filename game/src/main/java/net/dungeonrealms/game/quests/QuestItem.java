@@ -8,11 +8,7 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantWeapon;
-import net.dungeonrealms.game.item.items.functional.ItemGem;
-import net.dungeonrealms.game.item.items.functional.ItemOrb;
-import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -80,7 +76,7 @@ public class QuestItem implements ISaveable {
 					created = new ItemOrb().generateItem();
 					break;
 				case PICKAXE:
-					created = new ItemPickaxe(this.tier.getTierId() * 20).generateItem();
+					created = new ItemPickaxe(this.tier.getTierId()).generateItem();
 					break;
 				case FISHING_ROD:
 					created = new ItemFishingPole(this.tier.getTierId()).generateItem();

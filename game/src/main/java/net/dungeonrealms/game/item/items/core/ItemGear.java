@@ -327,7 +327,6 @@ public abstract class ItemGear extends ItemGeneric {
                 player.getInventory().setItem(i, generateItem());
             }
         }
-//            player.getInventory().setArmorContents(armor);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.updateInventory(), 1);
 
         double duraPercent = getDurabilityPercent();

@@ -10,6 +10,9 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.PickaxeAttributeType;
 import net.md_5.bungee.api.ChatColor;
@@ -160,6 +163,7 @@ public class Mining implements GenericMechanic, Listener {
         ore.setAmount(oreToAdd);
         GameAPI.giveOrDropItem(p, ore);
 
+        Quests.getInstance().triggerObjective(p, ObjectiveMineOre.class);
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.GEM_FIND).getValue() >= rand.nextInt(100) + 1) {
             int tier = oreTier.getTier() - 1;
             int amount = (int) (Utils.randInt(GEM_FIND_MIN[tier], GEM_FIND_MAX[tier]) * 0.8);
