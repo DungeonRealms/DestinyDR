@@ -200,7 +200,7 @@ public abstract class ProfessionItem extends ItemGear {
         if (getXP() > getNeededXP())
             levelUp(p);
         
-        p.getEquipment().setItemInMainHand(generateItem());
+//        p.getEquipment().setItemInMainHand(generateItem());
 	}
 	
 	/**

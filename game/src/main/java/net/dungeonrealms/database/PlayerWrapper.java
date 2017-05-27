@@ -47,6 +47,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
@@ -741,6 +742,7 @@ public class PlayerWrapper {
 
         List<Object> array = new ArrayList<Object>();
 
+        this.questData = Quests.getInstance().playerDataMap.get(player).toJSON().toString();
         array.addAll(Lists.newArrayList(
                 getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(),
                 player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),

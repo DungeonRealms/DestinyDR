@@ -119,7 +119,7 @@ public class LootSpawner {
 	 * Draws enchantment particles around it.
 	 */
 	public void showParticles() {
-		Location half = getLocation().clone().add(0.5, 0, 0.5);
+		Location half = getLocation().clone().add(0.5, 1.5, 0.5);
 		ParticleAPI.spawnParticle(Particle.ENCHANTMENT_TABLE, half, 15, .2F, .01F);
 	}
 	

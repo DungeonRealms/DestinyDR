@@ -7,10 +7,10 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -126,8 +126,12 @@ public class Mining implements GenericMechanic, Listener {
         //  REPLACE ORE  //
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> e.getBlock().setType(oreTier.getOre()), oreTier.getOreRespawnTime() * 15);
 
+        double chance = rand.nextInt(100);
+        if (TutorialIsland.onTutorialIsland(p.getLocation()) && Quests.getInstance().hasCurrentQuestObjective(p, "Tutorial Island", ObjectiveMineOre.class)) {
+            chance = 1;
+        }
         //  SUCCESS  //
-        if (rand.nextInt(100) < pickaxe.getSuccessChance() || pickaxe.getTier().getId() > oreTier.getTier()) {
+        if (chance < pickaxe.getSuccessChance() || pickaxe.getTier().getId() > oreTier.getTier()) {
             oreToAdd = 1;
             pw.getPlayerGameStats().addStat(StatColumn.ORE_MINED);
         }
@@ -144,7 +148,10 @@ public class Mining implements GenericMechanic, Listener {
         }
 
         pickaxe.addExperience(p, xpGain);
-        p.getEquipment().setItemInMainHand(pickaxe.generateItem());
+        ItemStack hand = pickaxe.generateItem();
+        p.getEquipment().setItemInMainHand(hand);
+        Bukkit.getLogger().info("Dura: " + hand.getDurability());
+        p.updateInventory();
 
         //  DOUBLE ORE  //
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DOUBLE_ORE).getValue() >= rand.nextInt(100) + 1) {
@@ -163,7 +170,9 @@ public class Mining implements GenericMechanic, Listener {
         ore.setAmount(oreToAdd);
         GameAPI.giveOrDropItem(p, ore);
 
-        Quests.getInstance().triggerObjective(p, ObjectiveMineOre.class);
+        if (oreToAdd > 0)
+            Quests.getInstance().triggerObjective(p, ObjectiveMineOre.class);
+
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.GEM_FIND).getValue() >= rand.nextInt(100) + 1) {
             int tier = oreTier.getTier() - 1;
             int amount = (int) (Utils.randInt(GEM_FIND_MIN[tier], GEM_FIND_MAX[tier]) * 0.8);

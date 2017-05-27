@@ -358,7 +358,7 @@ public abstract class ItemGeneric extends PersistentItem {
         UNTRADEABLE(ChatColor.GRAY + "Untradeable"),
         PUNTRADEABLE(ChatColor.GRAY + "Permanent Untradeable"),
         EVENT(ChatColor.RED + "Event Item"),
-        MENU(ChatColor.GRAY + "Display Item", false),
+        MENU(null, false),
         DUNGEON(ChatColor.RED + "Dungeon Item"),
         UNDROPPABLE(null, false);
 

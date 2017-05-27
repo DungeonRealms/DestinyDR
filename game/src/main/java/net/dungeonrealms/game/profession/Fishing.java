@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
-import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
@@ -21,23 +22,24 @@ import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.fishing.*;
-import net.dungeonrealms.game.quests.Quest;
-import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
-import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
 import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.minecraft.server.v1_9_R2.EntityFishingHook;
+import net.minecraft.server.v1_9_R2.MathHelper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -205,7 +207,7 @@ public class Fishing implements GenericMechanic, Listener {
         SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
-        VISION(FishVisionBuff.class, "NIGHTVISION ", " BUFF", "", "", 0),
+        VISION(FishVisionBuff.class, "NIGHTVISION ", " BUFF", "", "Vision", 0),
         BLOCK(FishBlockBuff.class, "+", "% BLOCK", "", "Blocking", 0);
 
         private Class<? extends FishBuff> buffClass;
@@ -282,6 +284,8 @@ public class Fishing implements GenericMechanic, Listener {
         Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
     }
 
+    private Map<UUID, FishTracker> fishCaughtLog = new HashMap<>();
+
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {
         final Player pl = e.getPlayer();
@@ -310,6 +314,7 @@ public class Fishing implements GenericMechanic, Listener {
                 return;
             }
 
+
             int areaTier = getFishingSpotTier(loc);
             if (areaTier > pole.getTier().getId()) {
                 e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
@@ -317,9 +322,28 @@ public class Fishing implements GenericMechanic, Listener {
                 e.setCancelled(true);
                 return;
             }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
+                ReflectionAPI.setField("ay", fishHook, MathHelper.a(ThreadLocalRandom.current(), 0.0F, 360.0F));
+                ReflectionAPI.setField("ax", fishHook, MathHelper.nextInt(ThreadLocalRandom.current(), 20, 80));
+            }, 10);
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
+            EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
+            int ticks = (int) ReflectionAPI.getObjectFromField("av", fishHook);
+
+            int maxFishTicks = e.getHook().hasMetadata("maxTicks") ? e.getHook().getMetadata("maxTicks").get(0).asInt() : -1;
+
+            if (maxFishTicks == -1) {
+                maxFishTicks = ticks;
+                Bukkit.getLogger().info("No ticks able to be set, max was: " + maxFishTicks);
+            }
+            FishTracker tracker = fishCaughtLog.computeIfAbsent(pl.getUniqueId(), m -> new FishTracker());
+            int caughtSpeed = maxFishTicks - ticks;
+            tracker.trackFishCatch(pl, caughtSpeed);
+
             Random random = ThreadLocalRandom.current();
             final Location fishLoc = getFishingSpot(pl.getLocation());
             final int spotTier = getFishingSpotTier(pl.getLocation());
@@ -339,21 +363,17 @@ public class Fishing implements GenericMechanic, Listener {
                 int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
                 if (pole.getTier().getId() == spotTier)
-                    successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
+                    successRate = 50 + 2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel()));
 
                 successRate += pole.getAttributes().getAttribute(FishingAttributeType.CATCH_SUCCESS).getValue();
 
                 if (TutorialIsland.onTutorialIsland(pl.getLocation())) {
-                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(pl);
-                    Quest quest = data != null ? data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase("Tutorial Island")).findFirst().orElse(null) : null;
-                    if (quest != null) {
-                        QuestPlayerData.QuestProgress progress = data.getQuestProgress(quest);
-                        if (progress != null && progress.getCurrentStage() != null && progress.getCurrentStage().getObjective().getClass().equals(ObjectiveCatchFish.class)) {
-                            successRate = 100;
-                            Bukkit.getLogger().info("Catching fish for sure for " + pl.getName() + " due to Tutorial Island");
-                        }
+                    if (Quests.getInstance().hasCurrentQuestObjective(pl, "Tutorial Island", ObjectiveCatchFish.class)) {
+                        successRate = 100;
+                        Bukkit.getLogger().info("Catching fish for sure for " + pl.getName() + " due to Tutorial Island");
                     }
                 }
+
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
@@ -456,6 +476,14 @@ public class Fishing implements GenericMechanic, Listener {
                     }
                 }
             }, 10);
+        } else if (e.getState() == State.BITE) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
+                //The bobber is down, get the timer?
+                int ticks = (int) ReflectionAPI.getObjectFromField("av", fishHook);
+                Bukkit.getLogger().info("Max Fish ticks: " + ticks);
+                fishHook.getBukkitEntity().setMetadata("maxTicks", new FixedMetadataValue(DungeonRealms.getInstance(), ticks));
+            });
         }
     }
 

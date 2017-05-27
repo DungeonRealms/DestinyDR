@@ -185,7 +185,7 @@ public class BankListener implements Listener {
             } else {
                 // Check that we're holding an item, also that we're depositing it onto an empty slot.
                 if (evt.getCursor() == null || evt.getCursor().getType() == Material.AIR
-                        || evt.getCurrentItem() != null || evt.getCurrentItem().getType() != Material.AIR)
+                        || evt.getCurrentItem() != null && evt.getCurrentItem().getType() != Material.AIR)
                     return;
 
                 if (!evt.isLeftClick() && !evt.isRightClick())

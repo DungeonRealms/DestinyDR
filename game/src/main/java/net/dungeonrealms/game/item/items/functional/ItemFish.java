@@ -49,6 +49,8 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
 
         if (getTier().getBuffChance() >= ThreadLocalRandom.current().nextInt(100))
             setFishBuff(Fishing.getRandomBuff(getTier()));
+
+        setAntiDupe(false);
     }
 
     public ItemFish(ItemStack item) {
@@ -61,6 +63,8 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
 
         if (hasTag("fishType"))
             setFishType(EnumFish.valueOf(getTagString("fishType")));
+
+        setAntiDupe(false);
     }
 
     @Override

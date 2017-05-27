@@ -1,22 +1,29 @@
 package net.dungeonrealms.game.mechanic;
 
+import lombok.SneakyThrows;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  */
 public class ReflectionAPI {
 
+    //Caching these found fields is much faster then having reflection do it everytime.
+    private static Map<Class<?>, Map<String, Field>> cachedFields = new HashMap<>();
+
     public static Field getDeclaredField(Class<?> target, String fieldName) {
-        try{
+        Map<String, Field> stored = cachedFields.computeIfAbsent(target, m -> new HashMap<>());
+        Field found = stored.get(fieldName);
+        if (found != null) return found;
+
+        try {
             Field field = target.getDeclaredField(fieldName);
             field.setAccessible(true);
+            stored.put(fieldName, field);
             return field;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -24,15 +31,16 @@ public class ReflectionAPI {
 
 
     public static Method getDeclaredMethod(Class<?> target, String fieldName, Class<?>... params) {
-        try{
+        try {
             Method field = target.getDeclaredMethod(fieldName, params);
             field.setAccessible(true);
             return field;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *
@@ -44,6 +52,22 @@ public class ReflectionAPI {
     public static Field findField(Class<?> target, Class<?> fieldType, int index) {
         return findField(target, fieldType, index, false);
     }
+
+    @SneakyThrows
+    public static void setField(String fieldName, Object instance, Object value) {
+        Field field = getDeclaredField(instance.getClass(), fieldName);
+        if (field != null)
+            field.set(instance, value);
+    }
+
+    @SneakyThrows
+    public static Object getObjectFromField(String fieldName, Object instance) {
+        Field field = getDeclaredField(instance.getClass(), fieldName);
+        if (field != null)
+            return field.get(instance);
+        return null;
+    }
+
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *

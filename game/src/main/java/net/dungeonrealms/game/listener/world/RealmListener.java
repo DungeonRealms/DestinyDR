@@ -198,6 +198,10 @@ public class RealmListener implements Listener {
                     player.sendMessage("");
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                     realm.setState(RealmState.CLOSED);
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
+                    if(wrapper != null) {
+                        wrapper.setUpgradingRealm(false);
+                    }
                 } else {
                     realm.removeRealm(true);
                 }

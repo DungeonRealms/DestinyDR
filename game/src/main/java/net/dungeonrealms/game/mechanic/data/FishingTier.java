@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.mechanic.data;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.AllArgsConstructor;
@@ -14,10 +13,10 @@ import org.bukkit.ChatColor;
 public enum FishingTier implements ProfessionTier {
 
 	TIER_1(0, 20, 10, 250, EnumAchievements.FISHINGROD_LEVEL_I, "Basic", "wood and thread"),
-	TIER_2(20, 25, 20, 430, EnumAchievements.FISHINGROD_LEVEL_II,  "Advanced", "oak wood and thread"),
-	TIER_3(40, 33, 30, 820, EnumAchievements.FISHINGROD_LEVEL_III, "Expert", "ancient oak wood and spider silk"),
-	TIER_4(60, 33, 40, 1050, EnumAchievements.FISHINGROD_LEVEL_IV, "Supreme", "jungle bamboo and spider silk"),
-	TIER_5(80, 45, 50, 1230, EnumAchievements.FISHINGROD_LEVEL_IV, "Master", "rich mahogany and enchanted silk");
+	TIER_2(20, 18, 20, 430, EnumAchievements.FISHINGROD_LEVEL_II,  "Advanced", "oak wood and thread"),
+	TIER_3(40, 15, 30, 820, EnumAchievements.FISHINGROD_LEVEL_III, "Expert", "ancient oak wood and spider silk"),
+	TIER_4(60, 15, 40, 1050, EnumAchievements.FISHINGROD_LEVEL_IV, "Supreme", "jungle bamboo and spider silk"),
+	TIER_5(80, 15, 50, 1230, EnumAchievements.FISHINGROD_LEVEL_IV, "Master", "rich mahogany and enchanted silk");
 	
 	@Getter private int level;
 	@Getter private int buffChance;

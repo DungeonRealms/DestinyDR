@@ -30,7 +30,8 @@ public class ItemFishingPole extends ProfessionItem {
 		getMeta().addEnchant(Enchantment.LURE, 3, false);
 		super.updateItem();
 	}
-	
+
+
 	public static boolean isFishingPole(ItemStack item) {
 		return isType(item, ItemType.FISHING_POLE);
 	}
