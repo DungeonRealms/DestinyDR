@@ -399,10 +399,6 @@ public class DamageAPI {
 
         //  BLOCK AND DODGE  //
         Random rand = ThreadLocalRandom.current();
-
-        if(defender.getAttributes() == null){
-
-        }
         int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
         int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
         final int dodgeRoll = rand.nextInt(100);

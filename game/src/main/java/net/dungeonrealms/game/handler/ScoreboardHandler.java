@@ -103,12 +103,12 @@ public class ScoreboardHandler implements GenericMechanic {
     	player.setPlayerListName(color + player.getName());
     	
     	String prefix = color + "";
-    	String suffix = ChatColor.AQUA + "[" + pw.getLevel() + "]";
+    	String suffix = ChatColor.AQUA + " [Lvl. " + pw.getLevel() + "]";
     	
     	// Append guild tag.
     	GuildWrapper guild = pw.getGuild();
     	if (guild != null)
-    		prefix = ChatColor.RESET + guild.getTag() + prefix;
+    		prefix = "[" + guild.getTag() + ChatColor.RESET + "] " + prefix;
     	
     	//This is not async because the scoreboard should NEVER be modified async.
     	for (Player update : Bukkit.getOnlinePlayers())

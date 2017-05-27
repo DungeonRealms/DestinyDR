@@ -106,10 +106,6 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
         }
     }
 
-    private void sendNotUnlocked(Player player) {
-        player.sendMessage(ChatColor.RED + "You do not own this item!");
-        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
-    }
 
     @Override
     public GUIMenu getPreviousGUI() {

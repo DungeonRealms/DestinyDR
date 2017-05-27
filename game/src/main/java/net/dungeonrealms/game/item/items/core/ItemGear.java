@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item.items.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
@@ -148,7 +149,7 @@ public abstract class ItemGear extends ItemGeneric {
         return this;
     }
 
-    public ItemGear setMaxRarity(ItemRarity rarity, int minRequired){
+    public ItemGear setMaxRarity(ItemRarity rarity, int minRequired) {
         this.maxRarity = rarity;
         this.minRarityItems = minRequired;
         return this;
@@ -317,10 +318,17 @@ public abstract class ItemGear extends ItemGeneric {
             return;
 
         // Update the item in the player's inventory.
-        int slot = player.getInventory().first(getItem());
-        if (slot > -1)
-            player.getInventory().setItem(slot, generateItem());
-        player.updateInventory();
+        ItemStack[] items = player.getInventory().getContents();
+        for (int i = 0; i < items.length; i++) {
+            ItemStack item = items[i];
+            if (item != null && item.equals(getItem())) {
+                //Damage?
+                items[i] = generateItem();
+                player.getInventory().setItem(i, generateItem());
+            }
+        }
+//            player.getInventory().setArmorContents(armor);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.updateInventory(), 1);
 
         double duraPercent = getDurabilityPercent();
         // Durability warnings.

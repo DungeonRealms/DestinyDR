@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
+import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import org.bukkit.ChatColor;
@@ -32,8 +34,14 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
 
             ItemStack toDisplay = new ItemStack(webItem.getItemType());
             toDisplay.setDurability((short) webItem.getMeta());
+            boolean unlocked = webItem.isUnlocked(wrapper);
             setItem(webItem.getGuiSlot(), new GUIItem(toDisplay).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
-                player.sendMessage("Hat button clicked!");
+                if(!unlocked) {
+                    sendNotUnlocked(player);
+                    return;
+                }
+                wrapper.setActiveHatOverride(CosmeticOverrides.getOverrideFromPurchaseable(webItem));
+                OverrideListener.updatePlayersHat(player);
             }));
         }
     }

@@ -43,6 +43,7 @@ public class Rank {
                     	cachedRanks.put(uuid, rank);
                 }
 
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Loaded " + cachedRanks.size() + " ranks in " + (System.currentTimeMillis() - start) + "ms");
                 rs.close();
             } catch (Exception e) {
                 e.printStackTrace();

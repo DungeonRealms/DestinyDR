@@ -94,6 +94,7 @@ public class Lobby extends JavaPlugin implements Listener {
         if (this.client != null)
             new NetworkClientListener().startInitialization(this.client);
 
+        new Rank();
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));

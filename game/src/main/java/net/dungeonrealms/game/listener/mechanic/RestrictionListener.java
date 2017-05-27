@@ -267,6 +267,7 @@ public class RestrictionListener implements Listener {
 
         // Play the noise.
         p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
+        PlayerWrapper.getPlayerWrapper(p).updateWeapon();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -43,6 +43,7 @@ import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.handler.*;
 import net.dungeonrealms.game.item.FunctionalItemListener;
 import net.dungeonrealms.game.listener.MainListener;
@@ -257,6 +258,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new TradeManager());
         MechanicManager.registerMechanic(new CraftingMenu());
         MechanicManager.registerMechanic(new PacketLogger());
+        MechanicManager.registerMechanic(new OverrideListener());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());
@@ -290,6 +292,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new PvPListener(), this);
         pm.registerEvents(new PvEListener(), this);
         pm.registerEvents(new CurrencyTabListener(), this);
+        pm.registerEvents(new OverrideListener(), this);
 
         if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);

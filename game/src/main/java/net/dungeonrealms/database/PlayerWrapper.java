@@ -24,6 +24,8 @@ import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
+import net.dungeonrealms.game.donation.overrides.EquipmentSlot;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -248,6 +250,9 @@ public class PlayerWrapper {
     @Getter
     private Storage pendingBankStorage;
 
+    @Getter
+    private CosmeticOverrides activeHatOverride;
+
 
     // Non database data:
     @Setter
@@ -453,6 +458,11 @@ public class PlayerWrapper {
     public void addGems(int gems) {
         assert gems >= 0;
         setGems(getGems() + gems);
+    }
+
+    public void setActiveHatOverride(CosmeticOverrides override) {
+        if(override != null && !override.getEquipSlot().equals(EquipmentSlot.HEAD)) throw new IllegalArgumentException("Only hat overrides!");
+        this.activeHatOverride = override;
     }
 
     public void subtractGems(int gems) {
@@ -820,7 +830,6 @@ public class PlayerWrapper {
     }
 
     public void setRank(PlayerRank newRank) {
-        PlayerRank oldRank = getRank();
         Rank.getCachedRanks().put(getUuid(), newRank);
     }
 
