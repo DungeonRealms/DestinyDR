@@ -10,19 +10,21 @@ import org.bukkit.Material;
 @Getter
 public enum CosmeticOverrides {
 
-    WIZARD_HAT("Wizard Hat", "A stylish wizard hat", ChatColor.DARK_BLUE, Material.SAPLING, (short)4);
+    WIZARD_HAT("Wizard Hat", "A stylish wizard hat", ChatColor.DARK_BLUE, Material.SAPLING, (short)4, EquipmentSlot.HEAD);
 
     String displayName;
     String description;
     ChatColor nameColor;
     Material itemType;
     short durability;
+    EquipmentSlot equipSlot;
 
-    CosmeticOverrides(String displayName, String description, ChatColor nameColor, Material itemType, short durability) {
+    CosmeticOverrides(String displayName, String description, ChatColor nameColor, Material itemType, short durability, EquipmentSlot slot) {
         this.displayName = displayName;
         this.description = description;
         this.nameColor = nameColor;
         this.itemType = itemType;
         this.durability = durability;
+        this.equipSlot = slot;
     }
 }

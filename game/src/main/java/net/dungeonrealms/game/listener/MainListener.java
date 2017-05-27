@@ -586,10 +586,12 @@ public class MainListener implements Listener {
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
                 || npcNameStripped.equalsIgnoreCase("Aeylah")) {
             Storage storage = BankMechanics.getStorage(event.getPlayer().getUniqueId());
-            if (storage == null) {
+            if (storage == null || storage.inv == null) {
                 event.getPlayer().sendMessage(ChatColor.RED + "Please wait while your Bank is being loaded...");
                 return;
             }
+
+            player.openInventory(storage.inv);
         }
     }
 

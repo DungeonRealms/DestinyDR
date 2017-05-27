@@ -22,7 +22,7 @@ public abstract class FakeEquipment
     public FakeEquipment(final Plugin plugin) {
         this.processedPackets = new MapMaker().weakKeys().makeMap();
         this.plugin = plugin;
-        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = (PacketListener)new PacketAdapter(plugin, new PacketType[] { PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_DATA }) {
+        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = new PacketAdapter(plugin, new PacketType[] { PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_DATA }) {
             public void onPacketSending(final PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 final PacketType type = event.getPacketType();
@@ -31,7 +31,7 @@ public abstract class FakeEquipment
                 if (PacketType.Play.Server.ENTITY_EQUIPMENT.equals(type)) {
                     if (!observingPlayer.hasMetadata("NPC") && (!visibleEntity.hasMetadata("NPC") || (visibleEntity.getCustomName() != null && visibleEntity.getCustomName().contains("Wizard")))) {
                         final EnumWrappers.ItemSlot itemSlot = packet.getItemSlots().getValues().get(0);
-                        final ItemStack equipment = (ItemStack)packet.getItemModifier().read(0);
+                        final ItemStack equipment = packet.getItemModifier().read(0);
                         final EquipmentSendingEvent sendingEvent = new EquipmentSendingEvent(observingPlayer, visibleEntity, itemSlot, equipment);
                         final EnumWrappers.ItemSlot previous = FakeEquipment.this.processedPackets.get(packet.getHandle());
                         if (previous != null) {

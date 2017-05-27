@@ -110,9 +110,10 @@ public class ShopItem extends ItemGeneric {
         return isType(item, ItemType.SHOP);
     }
 
-    public void setShards(int i, ShardTier byTier) {
+    public ShopItem setShards(int i, ShardTier byTier) {
         this.shards = i;
         setShardTier(byTier);
+        return this;
     }
 
     public interface ShopItemClick {

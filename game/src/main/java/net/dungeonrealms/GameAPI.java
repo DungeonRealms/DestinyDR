@@ -1206,7 +1206,7 @@ public class GameAPI {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         int shardAmt = wrapper.getPortalShards(tier);
-        if (shardAmt > amount) {
+        if (shardAmt >= amount) {
             wrapper.setPortalShards(tier, shardAmt - amount);
             return true;
         }

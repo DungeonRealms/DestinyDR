@@ -67,11 +67,10 @@ public class ShopMenuListener implements Listener {
                             return;
                         }
                     }
-
                     guiItem.getClickCallback().accept(evt);
+                    return;
                 }
             }
-            return;
         }
 
         ShopItem shop = menu.getItems().get(evt.getRawSlot());

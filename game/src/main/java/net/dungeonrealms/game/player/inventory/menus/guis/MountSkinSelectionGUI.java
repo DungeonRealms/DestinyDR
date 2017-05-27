@@ -84,6 +84,7 @@ public class MountSkinSelectionGUI extends GUIMenu {
                         } else {
                             wrapper.setActiveMountSkin(skin);
                             player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed!");
+                            setItems();
                         }
                         Entity activeMount = MountUtils.getMounts().get(player);
                         if (activeMount != null && activeMount instanceof Horse) {
