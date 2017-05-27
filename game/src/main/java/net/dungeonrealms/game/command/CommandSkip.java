@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -39,6 +40,7 @@ public class CommandSkip extends BaseCommand {
                     + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
                     + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
 
+            Quests.getInstance().removeQuest(player, "Tutorial Island");
             Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
 

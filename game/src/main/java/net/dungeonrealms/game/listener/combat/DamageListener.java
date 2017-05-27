@@ -518,7 +518,7 @@ public class DamageListener implements Listener {
         if (!RestrictionListener.canPlayerUseTier(player, weapon.getTier())) {
             player.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                     + weapon.getTier().getLevelRequirement() + " to use this weapon.");
-            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player, 1F);
             return;
         }
 

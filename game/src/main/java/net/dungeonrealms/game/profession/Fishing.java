@@ -338,6 +338,11 @@ public class Fishing implements GenericMechanic, Listener {
                 int fishRoll = ThreadLocalRandom.current().nextInt(100);
                 int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
 
+                if (pole.getTier().getId() == spotTier)
+                    successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
+
+                successRate += pole.getAttributes().getAttribute(FishingAttributeType.CATCH_SUCCESS).getValue();
+
                 if (TutorialIsland.onTutorialIsland(pl.getLocation())) {
                     QuestPlayerData data = Quests.getInstance().playerDataMap.get(pl);
                     Quest quest = data != null ? data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase("Tutorial Island")).findFirst().orElse(null) : null;
@@ -349,12 +354,6 @@ public class Fishing implements GenericMechanic, Listener {
                         }
                     }
                 }
-
-                if (pole.getTier().getId() == spotTier)
-                    successRate = 50 + (2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel())));
-
-                successRate += pole.getAttributes().getAttribute(FishingAttributeType.CATCH_SUCCESS).getValue();
-
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     if (ThreadLocalRandom.current().nextInt(100) > duraBuff)

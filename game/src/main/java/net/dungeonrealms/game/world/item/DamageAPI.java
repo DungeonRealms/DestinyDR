@@ -282,6 +282,7 @@ public class DamageAPI {
         if (!damagerIsMob)
             attacker = PlayerWrapper.getPlayerWrapper((Player) damager);
 
+        float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(held);
         for (Entity entity : ents) {
             //  ARE WE AN ALLOWED ENTITY  //
             if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)))
@@ -293,6 +294,10 @@ public class DamageAPI {
             if (entity.equals(damager))
                 continue;
 
+            float totalEnergyCost = (float) (energyCostPerSwing * .25);
+            //Cant do anymore damage.
+            if (!damagerIsMob && EnergyHandler.getPlayerCurrentEnergy((Player) damager) < totalEnergyCost) break;
+
             AttackResult res = new AttackResult(damager, (LivingEntity) entity);
             res.setDamage(damage);
             applyArmorReduction(res, true);
@@ -302,6 +307,8 @@ public class DamageAPI {
                 if (!EnumEntityType.HOSTILE_MOB.isType(entity))
                     continue;
 
+                if (!damagerIsMob)
+                    EnergyHandler.removeEnergyFromPlayerAndUpdate((Player) damager, totalEnergyCost);
                 HealthHandler.damageMonster(res);
             } else if (res.getDefender().isPlayer()) {
                 if (damagerIsMob || !GameAPI.isNonPvPRegion(entity.getLocation())) {
@@ -320,21 +327,30 @@ public class DamageAPI {
                         if (GuildDatabase.getAPI().areInSameGuild((Player) damager, res.getDefender().getPlayer()))
                             continue;
                     }
+                    if (!damagerIsMob)
+                        EnergyHandler.removeEnergyFromPlayerAndUpdate((Player) damager, totalEnergyCost);
                     HealthHandler.damagePlayer(res);
                 }
             }
 
             hitCount++;
+
+//            if (hitCounter > 0) {
+//                if (hitCounter > 2) hitCounter--;
+//
+//                float totalEnergyCost = (float) ((energyCostPerSwing * .25) * (hitCounter));
+//                EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), totalEnergyCost);
+//            }
         }
 
-        if (hitCount > 0) {
-            if (hitCount > 2)
-                hitCount--;
-
-            if (!damagerIsMob)
-                EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(),
-                        (EnergyHandler.getSwingCost(held) * hitCount) / 4F);
-        }
+//        if (hitCount > 0) {
+//            if (hitCount > 2)
+//                hitCount--;
+//
+//            if (!damagerIsMob)
+//                EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(),
+//                        (EnergyHandler.getSwingCost(held) * hitCount) / 4F);
+//        }
     }
 
     /**
@@ -399,7 +415,7 @@ public class DamageAPI {
 
         //  BLOCK AND DODGE  //
         Random rand = ThreadLocalRandom.current();
-        if(defender.getAttributes() == null){
+        if (defender.getAttributes() == null) {
             //How?
             return;
         }
@@ -527,7 +543,7 @@ public class DamageAPI {
             staff.damageItem(player, 1);
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         pw.calculateAllAttributes();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
         fireStaffProjectile(player, pw.getAttributes(), null, staff);
     }
 
@@ -595,7 +611,7 @@ public class DamageAPI {
         if (takeDura)
             bow.damageItem(player, 1);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
         fireBowProjectile(player, bow);
     }
 

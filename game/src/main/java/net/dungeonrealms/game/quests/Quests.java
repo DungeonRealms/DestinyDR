@@ -3,7 +3,6 @@ package net.dungeonrealms.game.quests;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -19,7 +18,6 @@ import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -62,8 +60,8 @@ public class Quests implements GenericMechanic {
     }
 
     private void spawnQuestParticles() {
-    	npcStore.getList().forEach(npc ->
-    			ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), .5F, 1, .5F, 6, .01F));
+        npcStore.getList().forEach(npc ->
+                ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), .5F, 1, .5F, 6, .01F));
     }
 
     public void updateGlow(Player player) {
@@ -168,9 +166,9 @@ public class Quests implements GenericMechanic {
         String data = wrapper.getQuestData();
 
         JsonArray object;
-        if(data == null){
+        if (data == null) {
             object = new JsonArray();
-        }else {
+        } else {
             object = new JsonParser().parse(data).getAsJsonArray();
         }
         this.playerDataMap.put(player, new QuestPlayerData(player, object));
@@ -196,5 +194,20 @@ public class Quests implements GenericMechanic {
         QuestPlayerData pqd = this.playerDataMap.get(player);
         if (pqd != null)
             pqd.triggerObjectives(cls);
+    }
+
+
+    public boolean removeQuest(Player player, String questName) {
+        QuestPlayerData data = this.playerDataMap.get(player);
+        if (data == null) return false;
+        Quest quest = data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase(questName)).findFirst().orElse(null);
+        return quest != null && data.removeQuest(quest);
+    }
+
+    public boolean isDoingQuest(Player player, String questName) {
+        QuestPlayerData data = this.playerDataMap.get(player);
+        if (data == null) return false;
+        Quest quest = data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase(questName)).findFirst().orElse(null);
+        return quest != null && data.isDoingQuest(quest);
     }
 }

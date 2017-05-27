@@ -98,7 +98,7 @@ public class PvEListener implements Listener {
 
         boolean dpsDummy = EnumEntityType.DPS_DUMMY.isType(event.getEntity());
         ItemStack held = damager.getEquipment().getItemInMainHand();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager, EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
 
         if (!EntityAPI.isBoss(receiver))
             DamageAPI.knockbackEntity(damager, receiver, 0.4);

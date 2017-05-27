@@ -40,6 +40,7 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
                     sendNotUnlocked(player);
                     return;
                 }
+                player.sendMessage(ChatColor.GREEN + "You have activated your " + ChatColor.UNDERLINE.toString() + webItem.getName(false));
                 wrapper.setActiveHatOverride(CosmeticOverrides.getOverrideFromPurchaseable(webItem));
                 OverrideListener.updatePlayersHat(player);
             }));

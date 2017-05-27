@@ -98,6 +98,29 @@ public class OverrideListener implements GenericMechanic, Listener {
         this.equipment.close();
     }
 
+    public static void updatePlayersHatLocally(Player toUpdate) {
+        if (toUpdate == null || !toUpdate.isOnline()) return;
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(toUpdate);
+        if (wrapper == null) return;
+
+        CosmeticOverrides hatOverride = wrapper.getActiveHatOverride();
+        if (hatOverride == null) return;
+        if (toUpdate.getEquipment().getHelmet() == null || toUpdate.getEquipment().getHelmet().getType() == Material.AIR)
+            return;
+
+        ItemStack clone = toUpdate.getEquipment().getHelmet().clone();
+        if (clone == null) clone = new ItemStack(hatOverride.getItemType());
+        ItemMeta meta = clone.getItemMeta();
+        meta.setDisplayName(hatOverride.getNameColor() + hatOverride.getDisplayName());
+        clone.setType(hatOverride.getItemType());
+        clone.setDurability(hatOverride.getDurability());
+        clone.setItemMeta(meta);
+
+        ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
+
+    }
+
+
     public static void updatePlayersHat(Player toUpdate) {
         if (toUpdate == null || !toUpdate.isOnline()) return;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(toUpdate);
@@ -121,7 +144,6 @@ public class OverrideListener implements GenericMechanic, Listener {
             ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
         }
 
-        System.out.println("The armor hat debug send! 5: " + clone.getType() + " , " + clone.getDurability());
         ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
 
     }

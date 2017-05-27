@@ -16,6 +16,8 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,13 +39,17 @@ public class PacketModifier implements GenericMechanic {
                 ItemStack original = packet.getItemModifier().read(0);
                 if (original == null || original.getType() == Material.AIR)
                     return;
+
+                final LivingEntity visibleEntity = (LivingEntity)packet.getEntityModifier(event).read(0);
+                final Player observingPlayer = event.getPlayer();
+                if(visibleEntity == observingPlayer) return;
                 //Remove all data the client doesn't need to see.
                 ItemStack item = stripNBT(original);
                 ItemMeta meta = item.getItemMeta();
                 if (meta.hasLore())
                     meta.setLore(Arrays.asList(ItemRarity.UNIQUE.getName()));
                 if (meta.hasDisplayName())
-                    meta.setDisplayName(ChatColor.GOLD + "Legendary Snapper..?");
+                    meta.setDisplayName(ChatColor.MAGIC + "TRUMP STEAKS");
                 if (ItemArmor.isArmor(item) || ItemWeapon.isWeapon(item))
                     item.setDurability((short) 0);
                 item.setItemMeta(meta);

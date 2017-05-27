@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -327,7 +328,10 @@ public abstract class ItemGear extends ItemGeneric {
                 player.getInventory().setItem(i, generateItem());
             }
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.updateInventory(), 1);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            player.updateInventory();
+            OverrideListener.updatePlayersHatLocally(player);
+        } , 1);
 
         double duraPercent = getDurabilityPercent();
         // Durability warnings.

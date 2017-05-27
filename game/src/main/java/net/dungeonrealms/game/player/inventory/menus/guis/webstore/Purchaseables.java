@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Rar349 on 5/10/2017.
@@ -140,16 +141,20 @@ public enum Purchaseables {
     public static final int NOT_STOREABLE = -1, NO_MULTIPLES = 0, SUCCESS = 1, NONE_OWNED = 2, SUCESS_REMOVED_ALL = 3, FAILED = 4;
 
 
-    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId,boolean autoSave) {
+    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId,boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
         wrapper.getPendingPurchaseablesUnlocked().add(new PendingPurchaseable(this,whoPurchased,datePurchased,amount, transactionId));
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        if(autoSave) {
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        } else if(callback != null){
+            callback.accept(0);
+        }
         return SUCCESS;
 
     }
 
-    public int removeNumberPending(PlayerWrapper wrapper,int amount, boolean autoSave) {
+    public int removeNumberPending(PlayerWrapper wrapper,int amount, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
         List<PendingPurchaseable> pendingList = wrapper.getPendingPurchaseablesUnlocked();
@@ -167,31 +172,34 @@ public enum Purchaseables {
                 currentNumberTracking -= pending.getNumberPurchased();
         }
 
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        if(autoSave) {
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        } else if(callback != null) callback.accept(0);
         if(currentNumberTracking == amount) return NONE_OWNED;
         if(currentNumberTracking > 0) return SUCESS_REMOVED_ALL;
         return SUCCESS;
 
     }
 
-    public static boolean removePending(PlayerWrapper wrapper, String transactionID, boolean autoSave) {
+    public static boolean removePending(PlayerWrapper wrapper, String transactionID, boolean autoSave, Consumer<Integer> callback) {
         List<PendingPurchaseable> pendingList = wrapper.getPendingPurchaseablesUnlocked();
         for(int index = 0; index < pendingList.size(); index++) {
             PendingPurchaseable pending = pendingList.get(index);
             if(!pending.getTransactionId().equals(transactionID)) continue;
             pendingList.remove(index);
-            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+            else if(callback != null) callback.accept(0);
             return true;
         }
 
         return false;
     }
 
-    public int addNumberUnlocked(PlayerWrapper wrapper, int amount) {
-        return this.addNumberUnlocked(wrapper,amount,true);
+    public int addNumberUnlocked(PlayerWrapper wrapper, int amount, Consumer<Integer> callback) {
+        return this.addNumberUnlocked(wrapper,amount,true, callback);
     }
 
-    public int addNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave) {
+    public int addNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
         Integer currentNumberUnlocked = wrapper.getPurchaseablesUnlocked().get(this);
         if (currentNumberUnlocked == null) currentNumberUnlocked = 0;
@@ -199,22 +207,24 @@ public enum Purchaseables {
 
 
         wrapper.getPurchaseablesUnlocked().put(this, amount + currentNumberUnlocked);
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        else if(callback != null) callback.accept(0);
         return SUCCESS;
     }
 
-    public int removeNumberUnlocked(PlayerWrapper wrapper, int amount) {
-        return this.removeNumberUnlocked(wrapper,amount,true);
+    public int removeNumberUnlocked(PlayerWrapper wrapper, int amount, Consumer<Integer> callback) {
+        return this.removeNumberUnlocked(wrapper,amount,true, callback);
     }
 
-    public int removeNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave) {
+    public int removeNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
         Integer currentNumberUnlocked = wrapper.getPurchaseablesUnlocked().get(this);
         if (currentNumberUnlocked == null) return NONE_OWNED;
 
         if(currentNumberUnlocked - amount <= 0) {
             wrapper.getPurchaseablesUnlocked().remove(this);
-            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+            else if(callback != null) callback.accept(0);
             return SUCESS_REMOVED_ALL;
         }
 

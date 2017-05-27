@@ -53,7 +53,7 @@ public class PendingPurchasesGUI extends GUIMenu {
             lore.add("");
             lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LEFT CLICK TO CONFIRM");
             lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "RIGHT CLICK TO DENY");
-            GUIItem pendingItem = new GUIItem(item.getPurchaseables().getItemType()).setName(item.getPurchaseables().getName(true)).setLore(lore);
+            GUIItem pendingItem = new GUIItem(item.getPurchaseables().getItemType()).setDurability((short) item.getPurchaseables().getMeta()).setName(item.getPurchaseables().getName(true)).setLore(lore);
             pendingItem.setClick((evt) -> {
                 if(evt.getClick() == ClickType.LEFT) {
 
@@ -73,7 +73,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                             player.sendMessage(ChatColor.RED + "Oops! Something went wrong, sorry! Please try again!");
                             return;
                         }
-                        item.getPurchaseables().addNumberUnlocked(wrapper,item.getNumberPurchased());
+                        item.getPurchaseables().addNumberUnlocked(wrapper,item.getNumberPurchased(),null);
                         player.sendMessage(ChatColor.GREEN + "Successfully claimed " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + " from " + item.getWhoPurchased());
                         wrapper.updatePurchaseLog("claimed", item.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
                     }, () -> {

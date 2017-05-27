@@ -118,7 +118,7 @@ public class EnergyListener implements Listener {
         if (weapon.getType() == Material.BOW) {
             energyToRemove += 0.15F;
         }
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, energyToRemove);
     }
 
     /**
@@ -133,7 +133,7 @@ public class EnergyListener implements Listener {
     public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
         if (!(event.getPlayer().isSprinting())) {
             if (!(event.getPlayer().hasMetadata("starving"))) {
-                EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), 0.14F);
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer(), 0.14F);
                 event.getPlayer().setMetadata("sprinting", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 event.getPlayer().setSprinting(true);
             } else {

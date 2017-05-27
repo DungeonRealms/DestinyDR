@@ -185,7 +185,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(Player::isSprinting).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.15F);
+            removeEnergyFromPlayerAndUpdate(player, 0.15F);
             if (getPlayerCurrentEnergy(player) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -212,8 +212,7 @@ public class EnergyHandler implements GenericMechanic {
      * @param amountToRemove
      * @since 1.0
      */
-    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove, boolean duel) {
-        Player player = Bukkit.getPlayer(uuid);
+    public static void removeEnergyFromPlayerAndUpdate(Player player, float amountToRemove, boolean duel) {
         if (!PlayerWrapper.getWrapper(player).isVulnerable())
         	return;
         
@@ -227,7 +226,7 @@ public class EnergyHandler implements GenericMechanic {
         }
         
         if (getPlayerCurrentEnergy(player) <= 0) return;
-        if ((getPlayerCurrentEnergy(player) - amountToRemove) <= 0) {
+        if (getPlayerCurrentEnergy(player) - amountToRemove <= 0) {
             player.setExp(0.0F);
             updatePlayerEnergyBar(player);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
@@ -237,8 +236,8 @@ public class EnergyHandler implements GenericMechanic {
         updatePlayerEnergyBar(player);
     }
 
-    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
-        removeEnergyFromPlayerAndUpdate(uuid, amountToRemove, false);
+    public static void removeEnergyFromPlayerAndUpdate(Player player, float amountToRemove) {
+        removeEnergyFromPlayerAndUpdate(player, amountToRemove, false);
     }
 
     /**

@@ -298,7 +298,7 @@ public class RestrictionListener implements Listener {
                 if (!canPlayerUseItem(player, held)) {
                     event.setCancelled(true);
                     event.setDamage(0);
-                    EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+                    EnergyHandler.removeEnergyFromPlayerAndUpdate(player, 1F);
                 }
             }
         }
