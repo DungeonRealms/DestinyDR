@@ -333,6 +333,7 @@ public class DamageListener implements Listener {
                         ItemGear gear = (ItemGear) persis;
                         gear.damageItem(p, durabilityLoss);
                         gearToSave.add(persis.generateItem());
+                        event.getDrops().remove(item);
                     }
                 }
             }
@@ -348,18 +349,17 @@ public class DamageListener implements Listener {
                         ItemGear gear = (ItemGear) item;
                         gear.damageItem(p, durabilityLoss);
                         gearToSave.add(gear.generateItem());
+                        event.getDrops().remove(is);
                     }
                 }
             });
 
             //  KEEP SOULBOUND ITEMS  //
             event.getDrops().stream().filter(ItemManager::isItemSoulbound).forEach(gearToSave::add);
-
-        } else {
-            //  REMOVE SOULBOUND ITEMS  //
-            Lists.newArrayList(event.getDrops()).stream().filter(ItemManager::isItemSoulbound)
-                    .forEach(event.getDrops()::remove);
         }
+
+        Lists.newArrayList(event.getDrops()).stream().filter(ItemManager::isItemSoulbound)
+                .forEach(event.getDrops()::remove);
 
         if (MountUtils.hasInventory(p)) {
             Arrays.stream(MountUtils.getInventory(p).getContents()).forEach(event.getDrops()::add);

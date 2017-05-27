@@ -63,6 +63,7 @@ public class PvPListener implements Listener {
                 // Marks the player as not able to regen health while in a duel.
                 defender.setMetadata("lastDamageTaken", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             }
+            event.setDamage(0.0D);
 
             ItemStack held = attacker.getEquipment().getItemInMainHand();
             AttackResult res = new AttackResult(attacker, defender);

@@ -356,6 +356,7 @@ public class HealthHandler implements GenericMechanic {
 
         if (GameAPI.isPlayer(attacker)) {
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
+                newHP = 1;
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
                 if (offer != null) {
                     player.setMetadata("duelCooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
@@ -379,6 +380,10 @@ public class HealthHandler implements GenericMechanic {
                     attacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
                     player.sendMessage(ChatColor.YELLOW + attacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
                 }
+            } else if (newHP <= 1) {
+                //DONT KILL!!!!
+                Bukkit.getLogger().info("Setting hp to 1 instead of " + newHP + " to prevent death.");
+                newHP = 1;
             }
 
             if (!isReflectedDamage) {
@@ -387,20 +392,20 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
             }
 
-            pw.sendDebug(ChatColor.RED + "     " + (int)Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
+            pw.sendDebug(ChatColor.RED + "     " + (int) Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
 
         }
 
         player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
 
         if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            defender.sendDebug(ChatColor.RED + "     -" + (int)Math.ceil(damage) + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+            defender.sendDebug(ChatColor.RED + "     -" + (int) Math.ceil(damage) + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
                     + (int) res.getTotalArmor() + "%A -> -" + (int) res.getTotalArmorReduction() + ChatColor.BOLD + "DMG" +
                     ChatColor.GRAY
                     + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         } else { // foreign damage
             DamageType type = DamageType.getByReason(cause);
-            defender.sendDebug(ChatColor.RED + "     -" + (int)Math.ceil(damage) + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            defender.sendDebug(ChatColor.RED + "     -" + (int) Math.ceil(damage) + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         Random r = ThreadLocalRandom.current();
@@ -411,6 +416,7 @@ public class HealthHandler implements GenericMechanic {
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
             return;
 
+        Bukkit.getLogger().info("Setting hp: " + newHP);
         if (newHP <= 0 && handlePlayerDeath(player, attacker))
             return;
 

@@ -33,7 +33,7 @@ public class ItemWeapon extends CombatItem {
 
 	@Override
 	protected double getBaseRepairCost() {
-		return getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getMiddle() / 10;
+		return getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getMiddle() / (getItemType() == ItemType.POLEARM ? 6.5 : 10);
 	}
 
 	@Override

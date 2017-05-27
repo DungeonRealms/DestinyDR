@@ -252,7 +252,7 @@ public class RestrictionListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());

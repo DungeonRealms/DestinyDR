@@ -461,7 +461,8 @@ public class PlayerWrapper {
     }
 
     public void setActiveHatOverride(CosmeticOverrides override) {
-        if(override != null && !override.getEquipSlot().equals(EquipmentSlot.HEAD)) throw new IllegalArgumentException("Only hat overrides!");
+        if (override != null && !override.getEquipSlot().equals(EquipmentSlot.HEAD))
+            throw new IllegalArgumentException("Only hat overrides!");
         this.activeHatOverride = override;
     }
 
@@ -476,16 +477,16 @@ public class PlayerWrapper {
     }
 
     public void fullyReloadPurchaseables(Consumer<Boolean> callback) {
-        SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.SELECT_PURCHASES, getAccountID()), true,(set) -> {
-                try {
-                    if(set.first()) {
-                        loadPurchaseables(set);
-                        if (callback != null) callback.accept(true);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (callback != null) callback.accept(false);
+        SQLDatabaseAPI.getInstance().executeQuery(getQuery(QueryType.SELECT_PURCHASES, getAccountID()), true, (set) -> {
+            try {
+                if (set.first()) {
+                    loadPurchaseables(set);
+                    if (callback != null) callback.accept(true);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) callback.accept(false);
+            }
         });
     }
 
@@ -1050,11 +1051,15 @@ public class PlayerWrapper {
 
         //  CALCULATE FROM ITEMS  //
         checkForIllegalItems();
-        getAttributes().addStats(getPlayer().getInventory().getItemInMainHand());
+
+        ItemStack hand = getPlayer().getInventory().getItemInMainHand();
+        if (hand != null && hand.getType() != Material.AIR && ItemWeapon.isWeapon(hand))
+            getAttributes().addStats(hand);
+
         for (ItemStack armor : getPlayer().getInventory().getArmorContents())
             getAttributes().addStats(armor);
 
-        this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(getPlayer().getEquipment().getItemInMainHand());
+        this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(hand);
 
         for (Stats stat : Stats.values())
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
@@ -1067,9 +1072,10 @@ public class PlayerWrapper {
         this.attributesLoaded = true;
     }
 
-    public boolean hasEcash(int ecash){
+    public boolean hasEcash(int ecash) {
         return getEcash() >= ecash;
     }
+
     public void setAlignment(EnumPlayerAlignments alignmentTo) {
         if (alignmentTo == null)
             alignmentTo = EnumPlayerAlignments.LAWFUL;
@@ -1470,6 +1476,6 @@ public class PlayerWrapper {
     }
 
     public void updatePurchaseLog(String action, String transaction_id, long date, String uuid) {
-        SQLDatabaseAPI.getInstance().executeUpdate(null,getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true);
+        SQLDatabaseAPI.getInstance().executeUpdate(null, getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true);
     }
 }

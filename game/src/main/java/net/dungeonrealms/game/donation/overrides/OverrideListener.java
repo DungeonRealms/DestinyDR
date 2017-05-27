@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.PacketPlayOutEntityEquipment;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -31,18 +32,31 @@ public class OverrideListener implements GenericMechanic, Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onArmorEquip(final ArmorEquipEvent event) {
+        System.out.println("The armor hat debug send!");
         if (event.getType() == ArmorType.HELMET) {
+            System.out.println("The armor hat debug send! 2");
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
             if (wrapper == null) return;
+            System.out.println("The armor hat debug send! 3");
             CosmeticOverrides hatOverride = wrapper.getActiveHatOverride();
             if (hatOverride == null) return;
-            ItemStack clone = event.getNewArmorPiece();
+            if(event.getNewArmorPiece() == null || event.getNewArmorPiece().getType().equals(Material.AIR)) return;
+            System.out.println("The armor hat debug send! 4");
+            ItemStack clone = event.getNewArmorPiece().clone();
             if (clone == null) clone = new ItemStack(hatOverride.getItemType());
             ItemMeta meta = clone.getItemMeta();
             meta.setDisplayName(hatOverride.getNameColor() + hatOverride.getDisplayName());
             clone.setType(hatOverride.getItemType());
             clone.setDurability(hatOverride.getDurability());
-            ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(event.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
+            clone.setItemMeta(meta);
+            System.out.println("The armor hat debug send! 5: " + clone.getType() + " , " + clone.getDurability());
+            final ItemStack realClone = clone.clone();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(event.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(realClone)));
+                }
+            });
         }
     }
 
@@ -94,16 +108,22 @@ public class OverrideListener implements GenericMechanic, Listener {
         if (toUpdate.getEquipment().getHelmet() == null || toUpdate.getEquipment().getHelmet().getType() == Material.AIR)
             return;
 
-        final ItemStack clone = toUpdate.getEquipment().getHelmet().clone();
-        if (clone == null) return;
-
+        ItemStack clone = toUpdate.getEquipment().getHelmet().clone();
+        if (clone == null) clone = new ItemStack(hatOverride.getItemType());
+        ItemMeta meta = clone.getItemMeta();
+        meta.setDisplayName(hatOverride.getNameColor() + hatOverride.getDisplayName());
         clone.setType(hatOverride.getItemType());
         clone.setDurability(hatOverride.getDurability());
+        clone.setItemMeta(meta);
         for (Entity near : toUpdate.getNearbyEntities(32, 32, 32)) {
             if (!(near instanceof Player)) continue;
             Player nearPlayer = (Player) near;
             ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
         }
 
+        System.out.println("The armor hat debug send! 5: " + clone.getType() + " , " + clone.getDurability());
+        ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
+
     }
 }
+
