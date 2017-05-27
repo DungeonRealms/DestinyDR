@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
@@ -204,7 +203,7 @@ public class Fishing implements GenericMechanic, Listener {
         DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
         HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
         REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
-        SPEED(FishSpeedBuff.class, "SPEED BUFF", "", "", "Agility", 1),
+        SPEED(FishSpeedBuff.class, "SPEED BUFF ", "", "", " Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
         VISION(FishVisionBuff.class, "NIGHTVISION ", " BUFF", "", "Vision", 0),
@@ -256,10 +255,8 @@ public class Fishing implements GenericMechanic, Listener {
     }
 
     public static Integer getFishingSpotTier(Location loc) {
-        for (Location fishLoc : FISHING_LOCATIONS.keySet())
-            if (loc.distanceSquared(fishLoc) <= 100)
-                return FISHING_LOCATIONS.get(fishLoc);
-        return -1;
+        Location nearest = getFishingSpot(loc);
+        return FISHING_LOCATIONS.get(nearest);
     }
 
     public static int getExactTier(Block bk) {
@@ -381,7 +378,8 @@ public class Fishing implements GenericMechanic, Listener {
                     return;
                 }
 
-                FishingTier fTier = FishingTier.getTierByLevel(pole.getLevel());
+
+                FishingTier fTier = FishingTier.getByTier(spotTier);
                 ItemStack fish = new ItemFish(fTier, EnumFish.getRandomFish(fTier.getTier())).generateItem();
                 int fishDrop = 1;
 

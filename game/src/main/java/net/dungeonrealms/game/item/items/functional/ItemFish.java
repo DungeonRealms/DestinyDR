@@ -129,7 +129,7 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
     @Override
     protected String getDisplayName() {
         FishBuff buff = getFishBuff();
-        String name = buff != null ? buff.getItemName(getFishType()) : " " + getFishType().getName();
+        String name = buff != null ? buff.getItemName(getFishType()) + " " : " " + getFishType().getName();
         return getTier().getColor() + (isCooked() ? "Grilled" : "Raw") + name;
     }
 
