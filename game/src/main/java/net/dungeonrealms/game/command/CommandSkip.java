@@ -40,11 +40,11 @@ public class CommandSkip extends BaseCommand {
                     + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
                     + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
 
-            Quests.getInstance().removeQuest(player, "Tutorial Island");
             Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        Quests.getInstance().removeQuest(player, "Tutorial Island");
                         player.teleport(TeleportLocation.CYRENNICA.getLocation());
                         ItemManager.giveStarter(player);
 
