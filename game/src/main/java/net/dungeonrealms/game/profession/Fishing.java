@@ -32,16 +32,20 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -324,7 +328,18 @@ public class Fishing implements GenericMechanic, Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
                 ReflectionAPI.setField("ay", fishHook, MathHelper.a(ThreadLocalRandom.current(), 0.0F, 360.0F));
-                ReflectionAPI.setField("ax", fishHook, MathHelper.nextInt(ThreadLocalRandom.current(), 30, 100));
+
+                int maxHookTime = MathHelper.nextInt(ThreadLocalRandom.current(), 25, 90);
+                ReflectionAPI.setField("ax", fishHook, maxHookTime);
+
+                FishTracker tracker = fishCaughtLog.get(pl.getUniqueId());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    //Just listens for bobber splash.
+                    if (tracker != null) {
+                        tracker.startWurstTrap();
+                        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_BOBBER_SPLASH, 0.0F, 4F);
+                    }
+                }, maxHookTime - (ThreadLocalRandom.current().nextInt(5) + 5));
             }, 10);
         }
 
@@ -338,6 +353,7 @@ public class Fishing implements GenericMechanic, Listener {
                 maxFishTicks = ticks;
                 Bukkit.getLogger().info("No ticks able to be set, max was: " + maxFishTicks);
             }
+
             FishTracker tracker = fishCaughtLog.computeIfAbsent(pl.getUniqueId(), m -> new FishTracker());
             int caughtSpeed = maxFishTicks - ticks;
             tracker.trackFishCatch(pl, caughtSpeed);
@@ -358,7 +374,7 @@ public class Fishing implements GenericMechanic, Listener {
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 int fishRoll = ThreadLocalRandom.current().nextInt(100);
-                int successRate = pole.getTier().getId() > spotTier ? 100 : 0;
+                int successRate = pole.getTier().getId() > spotTier ? (pole.getTier().getId() - spotTier) * 20 + 20 : 0;
 
                 if (pole.getTier().getId() == spotTier)
                     successRate = 50 + 2 * (20 - Math.abs(pole.getNextTierLevel() - pole.getLevel()));
@@ -371,6 +387,11 @@ public class Fishing implements GenericMechanic, Listener {
                         Bukkit.getLogger().info("Catching fish for sure for " + pl.getName() + " due to Tutorial Island");
                     }
                 }
+
+                if (tracker.isSuspiciousAutoFisher() && successRate > 5)
+                    successRate = 5; //Auto fail.
+                else if (tracker.isAutoFisher() && successRate > 30)
+                    successRate = 30;
 
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
@@ -409,12 +430,33 @@ public class Fishing implements GenericMechanic, Listener {
 
                 pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
-                GameAPI.giveOrDropItem(pl, fish);
 
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
 
-                //  Junk Find.
-                if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
+                    // Give em treasure!
+                    int treasureType = ThreadLocalRandom.current().nextInt(3); // 0, 1
+                    ItemStack treasure = null;
+                    if (treasureType == 0) {
+                        treasure = new ItemOrb().generateItem();
+                    } else if (treasureType == 1) {
+                        int tierRoll = random.nextInt(100);
+                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
+                        treasureTier = Math.max(treasureTier, spotTier);
+                        ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : ItemRarity.RARE;
+                        treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
+                                .setRarity(rarity).generateItem();
+                    } else if (treasureType == 2) {
+                        treasure = new ItemFlightOrb().generateItem();
+                    }
+
+                    if (treasure != null) {
+                        GameAPI.giveOrDropItem(pl, treasure);
+                        if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(treasure,pl,e.getHook().getLocation());
+                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                + treasure.getItemMeta().getDisplayName());
+                    }
+                } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
                     int junkType = ThreadLocalRandom.current().nextInt(100) + 1; // 0, 1, 2
                     ItemStack junk = null;
 
@@ -440,40 +482,21 @@ public class Fishing implements GenericMechanic, Listener {
                             while (amount > 0) {
                                 amount--;
                                 GameAPI.giveOrDropItem(pl, junk);
+                                if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(junk,pl,e.getHook().getLocation());
                             }
                         } else {
                             GameAPI.giveOrDropItem(pl, junk);
+                            if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(junk,pl,e.getHook().getLocation());
                         }
 
                         pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + itemCount + "x "
                                 + junk.getItemMeta().getDisplayName());
                     }
+                } else {
+                    GameAPI.giveOrDropItem(pl, fish);
+                    if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(fish,pl,e.getHook().getLocation());
                 }
 
-                // Treasure Find.
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
-                    // Give em treasure!
-                    int treasureType = ThreadLocalRandom.current().nextInt(3); // 0, 1
-                    ItemStack treasure = null;
-                    if (treasureType == 0) {
-                        treasure = new ItemOrb().generateItem();
-                    } else if (treasureType == 1) {
-                        int tierRoll = random.nextInt(100);
-                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
-                        treasureTier = Math.max(treasureTier, spotTier);
-                        ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : ItemRarity.RARE;
-                        treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
-                                .setRarity(rarity).generateItem();
-                    } else if (treasureType == 2) {
-                        treasure = new ItemFlightOrb().generateItem();
-                    }
-
-                    if (treasure != null) {
-                        GameAPI.giveOrDropItem(pl, treasure);
-                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                                + treasure.getItemMeta().getDisplayName());
-                    }
-                }
             }, 10);
         } else if (e.getState() == State.BITE) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -483,10 +506,86 @@ public class Fishing implements GenericMechanic, Listener {
                 Bukkit.getLogger().info("Max Fish ticks: " + ticks);
                 fishHook.getBukkitEntity().setMetadata("maxTicks", new FixedMetadataValue(DungeonRealms.getInstance(), ticks));
             });
+        } else if (e.getState() == State.FAILED_ATTEMPT) {
+            FishTracker tracker = fishCaughtLog.get(pl.getUniqueId());
+            if (tracker != null) {
+                tracker.trackWurstTrap(pl, System.currentTimeMillis());
+            }
         }
     }
 
     public static Map<Location, Integer> getLocations() {
         return FISHING_LOCATIONS;
+    }
+
+    private static CopyOnWriteArrayList<Item> thrownItems = new CopyOnWriteArrayList<>();
+    private static int taskId = 0;
+
+    private static void shootItemStackFromWater(ItemStack stack, Player receiving, Location from) {
+        if(taskId == 0) {
+            taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                for(Item thrownItem : thrownItems) {
+                    if(thrownItem == null) continue;
+                    if(thrownItem.isOnGround()) {
+                        thrownItem.remove();
+                        thrownItems.remove(thrownItem);
+                    }
+                }
+            },3,3);
+        }
+        int distanceY = Math.abs(receiving.getLocation().getBlockY() - from.getBlockY());
+        Vector stackVelocity = calculateVelocity(from.toVector(), receiving.getLocation().toVector(), distanceY);
+        Item item = receiving.getWorld().dropItem(from,stack);
+        item.setPickupDelay(Integer.MAX_VALUE);
+        thrownItems.add(item);
+        item.setVelocity(stackVelocity);
+    }
+
+    private static Vector calculateVelocity(Vector from, Vector to, int heightGain)
+    {
+        double gravity = 0.115;
+
+        // Block locations
+        int endGain = to.getBlockY() - from.getBlockY();
+        double horizDist = Math.sqrt(distanceSquared(from, to));
+
+        // Height gain
+        int gain = heightGain;
+
+        double maxGain = gain > (endGain + gain) ? gain : (endGain + gain);
+
+        // Solve quadratic equation for velocity
+        double a = -horizDist * horizDist / (4 * maxGain);
+        double b = horizDist;
+        double c = -endGain;
+
+        double slope = -b / (2 * a) - Math.sqrt(b * b - 4 * a * c) / (2 * a);
+
+        // Vertical velocity
+        double vy = Math.sqrt(maxGain * gravity);
+
+        // Horizontal velocity
+        double vh = vy / slope;
+
+        // Calculate horizontal direction
+        int dx = to.getBlockX() - from.getBlockX();
+        int dz = to.getBlockZ() - from.getBlockZ();
+        double mag = Math.sqrt(dx * dx + dz * dz);
+        double dirx = dx / mag;
+        double dirz = dz / mag;
+
+        // Horizontal velocity components
+        double vx = vh * dirx;
+        double vz = vh * dirz;
+
+        return new Vector(vx, vy, vz);
+    }
+
+    private static double distanceSquared(Vector from, Vector to)
+    {
+        double dx = to.getBlockX() - from.getBlockX();
+        double dz = to.getBlockZ() - from.getBlockZ();
+
+        return dx * dx + dz * dz;
     }
 }

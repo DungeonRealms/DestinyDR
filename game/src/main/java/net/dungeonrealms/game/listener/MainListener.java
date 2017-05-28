@@ -734,6 +734,8 @@ public class MainListener implements Listener {
                     }
                 });
             }
+        } else if(event.getRightClicked() instanceof ArmorStand) {
+            if(!((ArmorStand) event.getRightClicked()).isVisible())event.setCancelled(true);
         }
     }
 
