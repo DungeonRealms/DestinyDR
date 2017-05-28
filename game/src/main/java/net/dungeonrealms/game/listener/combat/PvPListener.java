@@ -54,8 +54,9 @@ public class PvPListener implements Listener {
                 CombatLog.updatePVP(attacker);
 
             defender.playEffect(EntityEffect.HURT);
+            attacker.playEffect(EntityEffect.HURT);
             //decrement the knockback?
-            DamageAPI.knockbackPlayerPVP(attacker, defender, 0.3);
+            DamageAPI.knockbackPlayerPVP(attacker, defender);
 
             EntityHuman defend = ((CraftPlayer) defender).getHandle();
             defender.setSprinting(false);

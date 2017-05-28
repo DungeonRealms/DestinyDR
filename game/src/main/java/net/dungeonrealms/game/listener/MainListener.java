@@ -20,12 +20,10 @@ import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
@@ -46,6 +44,7 @@ import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
@@ -57,7 +56,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
@@ -83,7 +81,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -370,22 +367,30 @@ public class MainListener implements Listener {
                 }
 
                 if (event.getTo().distanceSquared(offer.centerPoint) >= 300) {
-                    event.setCancelled(true);
+//                    event.setCancelled(true);
                     player.teleport(event.getFrom());
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING:" + ChatColor.RED
                             + " You are too far from the DUEL START POINT, please turn back or you will "
                             + ChatColor.UNDERLINE + "FORFEIT.");
+
+                    org.bukkit.util.Vector vel = player.getLocation().toVector().subtract(offer.getCenterPoint().toVector());
+
+                    if (vel.length() > 0) vel.normalize().multiply(-1.75);
+                    vel.setY(1D);
+                    EntityMechanics.setVelocity(player, vel);
+
+                    player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1, 1.4F);
 
                     Integer attempts = offer.getLeaveAttempts().get(player.getUniqueId());
                     if (attempts != null) {
 
                         long lastAttempt = player.hasMetadata("duel_leave_attempt") ? player.getMetadata("duel_leave_attempt").get(0).asLong() : 0;
 
-                        if (System.currentTimeMillis() - lastAttempt <= 5000) {
+                        if (System.currentTimeMillis() - lastAttempt <= 3000) {
                             //Trying within 5 seconds.
-                            if (attempts >= 5) {
+                            if (attempts >= 6) {
                                 //NO
-                                Player winner = offer.player1 == player.getUniqueId() ? offer.getPlayer2() : offer.getPlayer1();
+                                Player winner = offer.player1.equals(player.getUniqueId()) ? offer.getPlayer2() : offer.getPlayer1();
 //                                Player loser = offer.player1 == player.getUniqueId() ?  : offer.getPlayer1();
                                 offer.endDuel(winner, player);
                                 player.sendMessage(ChatColor.RED + "You attempted to leave the duel area and forfeit the duel.");
@@ -689,7 +694,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onArmorStand(EntityDamageEvent event) {
         if (EnumEntityType.DPS_DUMMY.isType(event.getEntity()) && !event.getCause().name().startsWith("ENTITY_"))
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
 
     @EventHandler
@@ -734,8 +739,8 @@ public class MainListener implements Listener {
                     }
                 });
             }
-        } else if(event.getRightClicked() instanceof ArmorStand) {
-            if(!((ArmorStand) event.getRightClicked()).isVisible())event.setCancelled(true);
+        } else if (event.getRightClicked() instanceof ArmorStand) {
+            if (!((ArmorStand) event.getRightClicked()).isVisible()) event.setCancelled(true);
         }
     }
 
@@ -827,7 +832,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent event) {
-    	ItemStack item = event.getItem().getItemStack();
+        ItemStack item = event.getItem().getItemStack();
         if (item.getAmount() <= 0 || item.getType() == Material.ARROW) {
             event.setCancelled(true);
             event.getItem().remove();
@@ -876,7 +881,7 @@ public class MainListener implements Listener {
 
         //If we're too far away, teleport back.
         if (event.getReason() == UnleashReason.DISTANCE && horse.getOwner() != null)
-        	horse.teleport((Entity) horse.getOwner());
+            horse.teleport((Entity) horse.getOwner());
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> horse.setLeashHolder((Player) horse.getOwner()), 1);
     }

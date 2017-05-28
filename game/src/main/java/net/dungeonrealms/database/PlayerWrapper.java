@@ -33,10 +33,7 @@ import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.mastery.AttributeList;
-import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mastery.Stats;
-import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.MuleTier;
@@ -465,6 +462,13 @@ public class PlayerWrapper {
         if (override != null && !override.getEquipSlot().equals(EquipmentSlot.HEAD))
             throw new IllegalArgumentException("Only hat overrides!");
         this.activeHatOverride = override;
+        Player ourPlayer = getPlayer();
+        if (ourPlayer != null) {
+            if (override == null)
+                MetadataUtils.Metadata.ACTIVE_HAT.remove(ourPlayer);
+            else
+                MetadataUtils.Metadata.ACTIVE_HAT.set(ourPlayer, override.name());
+        }
     }
 
     public void subtractGems(int gems) {

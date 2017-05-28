@@ -1,21 +1,34 @@
 package net.dungeonrealms.game.world.item;
 
 import lombok.Getter;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 @Getter
-public class HitTracker {
+public class HitTracker extends HashMap<UUID, HitTracker.TargetHitTracker> {
 
-    private long lastHit;
-    private int hitCounter = 0;
+    public int trackHit(Player damaged) {
+        TargetHitTracker tracker = computeIfAbsent(damaged.getUniqueId(), m -> new TargetHitTracker());
+        return tracker.trackHit();
+    }
 
-    public int trackHit() {
-        //Withing 5 ticks?
-        if (System.currentTimeMillis() - this.lastHit <= 50 * 5)
-            this.hitCounter++;
-        else
-            this.hitCounter = 1;
+    @Getter
+    class TargetHitTracker {
 
-        this.lastHit = System.currentTimeMillis();
-        return this.hitCounter;
+        private long lastHit;
+        private int hitCounter = 0;
+
+        public int trackHit() {
+            //Withing 5 ticks?
+            if (System.currentTimeMillis() - this.lastHit <= 120)
+                this.hitCounter++;
+            else
+                this.hitCounter = 1;
+
+            this.lastHit = System.currentTimeMillis();
+            return this.hitCounter;
+        }
     }
 }

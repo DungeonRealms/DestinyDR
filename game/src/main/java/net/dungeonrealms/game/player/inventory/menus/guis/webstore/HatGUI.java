@@ -30,11 +30,17 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
             if (webItem.getCategory() != getCategory()) continue;
             List<String> lore = webItem.getDescription();
             lore.add(" ");
-            lore.add(webItem.getOwnedDisplayString(wrapper));
+            boolean unlocked = webItem.isUnlocked(wrapper);
+            String unlockedLine = webItem.getOwnedDisplayString(wrapper);
+
+            if(unlocked && wrapper.getActiveHatOverride() != null && wrapper.getActiveHatOverride().getLinkedPurchaseable().equals(webItem)) {
+                    unlockedLine = ChatColor.AQUA + ChatColor.BOLD.toString() + "SELECTED";
+            }
+
+            lore.add(unlockedLine);
 
             ItemStack toDisplay = new ItemStack(webItem.getItemType());
             toDisplay.setDurability((short) webItem.getMeta());
-            boolean unlocked = webItem.isUnlocked(wrapper);
             setItem(webItem.getGuiSlot(), new GUIItem(toDisplay).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
                 if(!unlocked) {
                     sendNotUnlocked(player);
@@ -43,6 +49,7 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
                 player.sendMessage(ChatColor.GREEN + "You have activated your " + ChatColor.UNDERLINE.toString() + webItem.getName(false));
                 wrapper.setActiveHatOverride(CosmeticOverrides.getOverrideFromPurchaseable(webItem));
                 OverrideListener.updatePlayersHat(player);
+                reconstructGUI(player);
             }));
         }
     }

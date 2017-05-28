@@ -11,7 +11,8 @@ import org.bukkit.Material;
 @Getter
 public enum CosmeticOverrides {
 
-    WIZARD_HAT("Wizard Hat", "A stylish wizard hat", ChatColor.DARK_BLUE, Material.SAPLING, (short)4, EquipmentSlot.HEAD, Purchaseables.WIZARD_HAT);
+    WIZARD_HAT("Wizard Hat", "A stylish wizard hat", ChatColor.DARK_BLUE, Material.SAPLING, (short)4, EquipmentSlot.HEAD, Purchaseables.WIZARD_HAT),
+    CROWN("Golden Crown", "A stylish golden crown", ChatColor.GOLD, Material.SAPLING, (short)2, EquipmentSlot.HEAD, Purchaseables.CROWN);
 
     String displayName;
     String description;

@@ -58,6 +58,7 @@ public class MetadataUtils {
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
 		SUMMONING(-1),
 		AUTO_FISHING(-1),
+		ACTIVE_HAT(""),
 
 		// Items
 		WHITELIST(""),

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.donation;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player;
 public class CommandMailbox extends BaseCommand {
 
     public CommandMailbox() {
-        super("mailbox", "/mailbox", "Opens up your mailbox");
+        super("mailbox", "/mailbox", "Opens up your mailbox", null, Lists.newArrayList("claim", "mail"));
     }
 
     @Override

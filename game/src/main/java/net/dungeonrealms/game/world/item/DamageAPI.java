@@ -42,8 +42,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.*;
-import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -651,20 +649,47 @@ public class DamageAPI {
             ent.setFireTicks(0);
     }
 
-    private Map<UUID, Map<UUID, HitTracker>> hitTrackerMap = new HashMap<>();
-    public static void knockbackPlayerPVP(Player attacker, Player damaged, double speed) {
+    private static Map<UUID, HitTracker> hitTrackerMap = new HashMap<>();
+
+    public static void knockbackPlayerPVP(Player attacker, Player damaged) {
         // Get velocity unit vector:
-//        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector());
+        org.bukkit.util.Vector unitVector = damaged.getLocation().toVector().subtract(attacker.getLocation().toVector());
 
-        org.bukkit.util.Vector vect = damaged.getVelocity();
+        if (unitVector.length() > 0) unitVector.normalize();
 
-        Vector direction = attacker.getEyeLocation().getDirection();
-        vect.multiply(direction);
+//        org.bukkit.util.Vector vect = damaged.getVelocity();
+//
+//        Vector direction = attacker.getEyeLocation().getDirection();
+//        if(vect.getX() != 0)
+//            vect.setX(vect.getX() + direction.getX());
+//        else
+//            vect.setX(direction.getX());
+//
+//        if(vect.getY() != 0)
+//            vect.setY(vect.getY() + direction.getY());
+//        else
+//            vect.setY(direction.getY() + 1);
+//
+//        if(vect.getZ() != 0)
+//            vect.setZ(vect.getZ() + direction.getZ());
+//        else
+//            vect.setZ(direction.getZ());
 
-        Bukkit.getLogger().info("Direction: " + direction.toString());
-        Bukkit.getLogger().info("current: " + vect.toString());
+        Bukkit.getLogger().info("Damaged Velocity: " + damaged.getVelocity().toString());
+        Bukkit.getLogger().info("UnitVector Velocity: " + unitVector.toString());
 
-        Bukkit.getLogger().info("if normalized: " + vect.clone().normalize().toString());
+        HitTracker tracker = hitTrackerMap.computeIfAbsent(attacker.getUniqueId(), t -> new HitTracker());
+
+        int hitCounter = tracker.trackHit(damaged);
+        unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .35 : hitCounter == 2 ? .25 : 0.10));
+
+        Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
+//        Bukkit.getLogger().info("Direction: " + direction.toString());
+//        Bukkit.getLogger().info("current: " + vect.toString());
+//
+//        Bukkit.getLogger().info("if normalized: " + vect.clone().normalize().toString());
+
+
         //Dont cause NaN.
 //        if (unitVector.length() > 0) unitVector.normalize();
 
@@ -674,8 +699,9 @@ public class DamageAPI {
 //        if (attacker.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
 
-        EntityMechanics.setVelocity(damaged, vect.multiply(speed));
+        EntityMechanics.setVelocity(damaged, unitVector.multiply(.45));
     }
+
     public static void knockbackEntity(Player p, Entity ent, double speed) {
         if (ent instanceof Horse || ent instanceof ArmorStand) {
             return;

@@ -1,34 +1,42 @@
 package net.dungeonrealms.game.donation.overrides;
 
-import com.comphenix.protocol.wrappers.*;
-import org.bukkit.plugin.*;
-import com.google.common.collect.*;
-import com.comphenix.protocol.*;
-import org.bukkit.inventory.*;
-import com.comphenix.protocol.events.*;
-import org.bukkit.entity.*;
-import java.lang.reflect.*;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.google.common.collect.MapMaker;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import org.bukkit.*;
-
-public abstract class FakeEquipment
-{
+public abstract class FakeEquipment {
     private Map<Object, EnumWrappers.ItemSlot> processedPackets;
     private Plugin plugin;
     private ProtocolManager manager;
     private PacketListener listener;
-    
+
     public FakeEquipment(final Plugin plugin) {
         this.processedPackets = new MapMaker().weakKeys().makeMap();
         this.plugin = plugin;
-        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = new PacketAdapter(plugin, new PacketType[] { PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_DATA }) {
+        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = new PacketAdapter(plugin, new PacketType[]{PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_ITEMS}) {
             public void onPacketSending(final PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 final PacketType type = event.getPacketType();
-                final LivingEntity visibleEntity = (LivingEntity)packet.getEntityModifier(event).read(0);
                 final Player observingPlayer = event.getPlayer();
                 if (PacketType.Play.Server.ENTITY_EQUIPMENT.equals(type)) {
+                    final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);
                     if (!observingPlayer.hasMetadata("NPC") && (!visibleEntity.hasMetadata("NPC") || (visibleEntity.getCustomName() != null && visibleEntity.getCustomName().contains("Wizard")))) {
                         final EnumWrappers.ItemSlot itemSlot = packet.getItemSlots().getValues().get(0);
                         final ItemStack equipment = packet.getItemModifier().read(0);
@@ -38,7 +46,7 @@ public abstract class FakeEquipment
                             packet = event.getPacket().deepClone();
                             sendingEvent.setSlot(previous);
                             ItemStack equipmentStack = FakeEquipment.this.getEquipment(previous, visibleEntity);
-                            if(equipmentStack != null)sendingEvent.setEquipment(equipmentStack.clone());
+                            if (equipmentStack != null) sendingEvent.setEquipment(equipmentStack.clone());
                         }
                         if (FakeEquipment.this.onEquipmentSending(sendingEvent)) {
                             FakeEquipment.this.processedPackets.put(packet.getHandle(), (previous != null) ? previous : itemSlot);
@@ -50,21 +58,69 @@ public abstract class FakeEquipment
                             packet.getItemModifier().write(0, sendingEvent.getEquipment());
                         }
                     }
-                }
-                else if (PacketType.Play.Server.NAMED_ENTITY_SPAWN.equals(type)) {
+                } else if (PacketType.Play.Server.NAMED_ENTITY_SPAWN.equals(type)) {
+                    final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);
+
                     FakeEquipment.this.onEntitySpawn(observingPlayer, visibleEntity);
-                }
-                else {
-                    if (!PacketType.Play.Server.WINDOW_DATA.equals(type)) {
-                        throw new IllegalArgumentException("Unknown packet type:" + type);
+                } else if (PacketType.Play.Server.WINDOW_ITEMS.equals(type)) {
+                    int slot = packet.getIntegers().read(0);
+
+                    if (slot != ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId) return;
+                    ItemStack[] items = packet.getItemArrayModifier().read(0);
+                    try {
+//                        String data = MetadataUtils.Metadata.ACTIVE_HAT.get(observingPlayer).asString();
+//                        if (data != null && !data.isEmpty()) {
+                        CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
+
+                        if (currentHat != null && items.length >= 4) {
+                            ItemStack helmet = items[5];
+                            if (helmet != null && helmet.getType() != Material.AIR) {
+                                helmet.setType(currentHat.getItemType());
+                                helmet.setDurability(currentHat.getDurability());
+                                items[5] = helmet;
+                                packet.getItemArrayModifier().write(0, items);
+                                Bukkit.getLogger().info("Sending window spoof packet to " + observingPlayer.getName());
+                            }
+                        }
+//                        }
+                    } catch (Exception e) {
+                        Bukkit.getLogger().info("Error getting hat from " + observingPlayer.getName());
                     }
-                    Bukkit.getLogger().info("Window item packet: " + visibleEntity);
-                    Bukkit.getLogger().info("a: " + packet.getIntegers().read(0) + " b: " + packet.getIntegers().read(1) + " c: " + packet.getIntegers().read(2));
+                } else if (PacketType.Play.Server.SET_SLOT.equals(type)) {
+                    int slot = packet.getIntegers().read(1);
+                    int windowId = packet.getIntegers().read(0);
+                    if (((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId != windowId) {
+                        return;
+                    }
+                    if (slot == 5) {
+                        ItemStack helmet = packet.getItemModifier().read(0);
+                        if (helmet != null && helmet.getType() != Material.AIR) {
+                            CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
+                            if (currentHat != null) {
+                                helmet.setType(currentHat.getItemType());
+                                helmet.setDurability(currentHat.getDurability());
+                                packet.getItemModifier().write(0, helmet);
+                            }
+                        }
+                    }
+                    Bukkit.getLogger().info("Set slot : " + slot + " window: " + ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId);
                 }
             }
         });
     }
 
+    public CosmeticOverrides getActiveOverride(Player player) {
+        String data = MetadataUtils.Metadata.ACTIVE_HAT.get(player).asString();
+        if (data != null && !data.isEmpty()) {
+            try {
+                return CosmeticOverrides.valueOf(data);
+            } catch (Exception e) {
+                Bukkit.getLogger().info("Error getting hat from " + data);
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     public ItemStack getEquipment(final EnumWrappers.ItemSlot slot, final LivingEntity entity) {
         switch (slot) {
@@ -91,12 +147,12 @@ public abstract class FakeEquipment
             }
         }
     }
-    
+
     protected void onEntitySpawn(final Player client, final LivingEntity visibleEntity) {
     }
-    
+
     protected abstract boolean onEquipmentSending(final EquipmentSendingEvent p0);
-    
+
     public void updateSlot(final Player client, final LivingEntity visibleEntity, final EquipmentSlot slot) {
         if (this.listener == null) {
             throw new IllegalStateException("FakeEquipment has closed.");
@@ -109,14 +165,13 @@ public abstract class FakeEquipment
             public void run() {
                 try {
                     ProtocolLibrary.getProtocolManager().sendServerPacket(client, equipmentPacket);
-                }
-                catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) {
                     throw new RuntimeException("Unable to update slot.", e);
                 }
             }
         });
     }
-    
+
     public void close() {
         if (this.listener != null) {
             this.manager.removePacketListener(this.listener);
