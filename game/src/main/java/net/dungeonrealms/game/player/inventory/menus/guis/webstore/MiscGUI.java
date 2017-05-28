@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -98,6 +99,17 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
 
                                 player.getInventory().addItem(new ItemDPSDummy(null).generateItem());
                                 player.sendMessage(ChatColor.GREEN + "DPS Dummy has been added to your inventory.");
+                            } else {
+                                sendNotUnlocked(player);
+                            }
+                        } else if (webItem == Purchaseables.ITEM_NAME_TAG) {
+                            if (unlocked) {
+                                if(player.getInventory().firstEmpty() == -1) {
+                                    player.sendMessage(ChatColor.RED + "You have no inventory space to claim this!");
+                                    return;
+                                }
+                                player.getInventory().addItem(new ItemNameTag(null).generateItem());
+                                player.sendMessage(ChatColor.GREEN + "An item name tag has been added to your inventory.");
                             } else {
                                 sendNotUnlocked(player);
                             }

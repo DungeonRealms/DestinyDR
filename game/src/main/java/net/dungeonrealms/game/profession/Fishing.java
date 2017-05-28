@@ -39,7 +39,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -388,10 +387,13 @@ public class Fishing implements GenericMechanic, Listener {
                     }
                 }
 
-                if (tracker.isSuspiciousAutoFisher() && successRate > 5)
+                if (tracker.isSuspiciousAutoFisher() && successRate > 5) {
                     successRate = 5; //Auto fail.
-                else if (tracker.isAutoFisher() && successRate > 30)
+                    Bukkit.getLogger().info("Setting " + pl.getName() + " success rate to " + successRate + " due to being an suspected auto fisher..");
+                } else if (tracker.isAutoFisher() && successRate > 30) {
                     successRate = 30;
+                    Bukkit.getLogger().info("Setting " + pl.getName() + " success rate to " + successRate + " due to being an auto fisher.");
+                }
 
                 if (successRate <= fishRoll) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
@@ -452,7 +454,8 @@ public class Fishing implements GenericMechanic, Listener {
 
                     if (treasure != null) {
                         GameAPI.giveOrDropItem(pl, treasure);
-                        if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(treasure,pl,e.getHook().getLocation());
+                        if (e.getHook() != null && e.getHook().getLocation() != null)
+                            shootItemStackFromWater(treasure, pl, e.getHook().getLocation());
                         pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
                                 + treasure.getItemMeta().getDisplayName());
                     }
@@ -482,11 +485,13 @@ public class Fishing implements GenericMechanic, Listener {
                             while (amount > 0) {
                                 amount--;
                                 GameAPI.giveOrDropItem(pl, junk);
-                                if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(junk,pl,e.getHook().getLocation());
+                                if (e.getHook() != null && e.getHook().getLocation() != null)
+                                    shootItemStackFromWater(junk, pl, e.getHook().getLocation());
                             }
                         } else {
                             GameAPI.giveOrDropItem(pl, junk);
-                            if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(junk,pl,e.getHook().getLocation());
+                            if (e.getHook() != null && e.getHook().getLocation() != null)
+                                shootItemStackFromWater(junk, pl, e.getHook().getLocation());
                         }
 
                         pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + itemCount + "x "
@@ -494,7 +499,8 @@ public class Fishing implements GenericMechanic, Listener {
                     }
                 } else {
                     GameAPI.giveOrDropItem(pl, fish);
-                    if(e.getHook() != null && e.getHook().getLocation() != null)shootItemStackFromWater(fish,pl,e.getHook().getLocation());
+                    if (e.getHook() != null && e.getHook().getLocation() != null)
+                        shootItemStackFromWater(fish, pl, e.getHook().getLocation());
                 }
 
             }, 10);
@@ -522,27 +528,26 @@ public class Fishing implements GenericMechanic, Listener {
     private static int taskId = 0;
 
     private static void shootItemStackFromWater(ItemStack stack, Player receiving, Location from) {
-        if(taskId == 0) {
+        if (taskId == 0) {
             taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                for(Item thrownItem : thrownItems) {
-                    if(thrownItem == null) continue;
-                    if(thrownItem.isOnGround()) {
+                for (Item thrownItem : thrownItems) {
+                    if (thrownItem == null) continue;
+                    if (thrownItem.isOnGround()) {
                         thrownItem.remove();
                         thrownItems.remove(thrownItem);
                     }
                 }
-            },3,3);
+            }, 3, 3);
         }
         int distanceY = Math.abs(receiving.getLocation().getBlockY() - from.getBlockY());
         Vector stackVelocity = calculateVelocity(from.toVector(), receiving.getLocation().toVector(), distanceY);
-        Item item = receiving.getWorld().dropItem(from,stack);
+        Item item = receiving.getWorld().dropItem(from, stack);
         item.setPickupDelay(Integer.MAX_VALUE);
         thrownItems.add(item);
         item.setVelocity(stackVelocity);
     }
 
-    private static Vector calculateVelocity(Vector from, Vector to, int heightGain)
-    {
+    private static Vector calculateVelocity(Vector from, Vector to, int heightGain) {
         double gravity = 0.115;
 
         // Block locations
@@ -581,8 +586,7 @@ public class Fishing implements GenericMechanic, Listener {
         return new Vector(vx, vy, vz);
     }
 
-    private static double distanceSquared(Vector from, Vector to)
-    {
+    private static double distanceSquared(Vector from, Vector to) {
         double dx = to.getBlockX() - from.getBlockX();
         double dz = to.getBlockZ() - from.getBlockZ();
 

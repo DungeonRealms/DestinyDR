@@ -60,9 +60,10 @@ public class FishTracker extends HashMap<Integer, Integer> {
         if (worstTrapStart != 0 && t - worstTrapStart <= 100) {
             long time = t - worstTrapStart;
             this.wurstFlags++;
-            wurstLastSet = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
+            wurstLastSet = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(60);
             Bukkit.getLogger().info("Accepted wurst trap for " + pl.getName() + " in " + time + "ms or " + time / 50 + " ticks later.");
         }
+
         this.worstTrapStart = t;
     }
 

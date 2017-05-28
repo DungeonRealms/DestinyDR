@@ -37,7 +37,8 @@ public abstract class FakeEquipment
                         if (previous != null) {
                             packet = event.getPacket().deepClone();
                             sendingEvent.setSlot(previous);
-                            sendingEvent.setEquipment(FakeEquipment.this.getEquipment(previous, visibleEntity).clone());
+                            ItemStack equipmentStack = FakeEquipment.this.getEquipment(previous, visibleEntity);
+                            if(equipmentStack != null)sendingEvent.setEquipment(equipmentStack.clone());
                         }
                         if (FakeEquipment.this.onEquipmentSending(sendingEvent)) {
                             FakeEquipment.this.processedPackets.put(packet.getHandle(), (previous != null) ? previous : itemSlot);

@@ -217,6 +217,7 @@ public class Quests implements GenericMechanic {
         Quest quest = data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase(questName)).findFirst().orElse(null);
 
         QuestProgress progress = data.getQuestProgress(quest);
-        return quest != null && data.isDoingQuest(quest) && progress != null && progress.getCurrentStage() != null && progress.getCurrentStage().getObjective().getClass().equals(objective);
+
+        return quest != null && data.isDoingQuest(quest) && progress != null && progress.getCurrentStage() != null && progress.getCurrentStage().getObjective() != null && progress.getCurrentStage().getObjective().getClass().equals(objective);
     }
 }

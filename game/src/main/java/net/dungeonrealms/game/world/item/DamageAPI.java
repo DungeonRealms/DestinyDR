@@ -42,11 +42,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.*;
+import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -543,7 +543,7 @@ public class DamageAPI {
             staff.damageItem(player, 1);
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         pw.calculateAllAttributes();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()));
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(staff.getItem()), !subtractDurability);
         fireStaffProjectile(player, pw.getAttributes(), null, staff);
     }
 
@@ -651,22 +651,47 @@ public class DamageAPI {
             ent.setFireTicks(0);
     }
 
+    private Map<UUID, Map<UUID, HitTracker>> hitTrackerMap = new HashMap<>();
+    public static void knockbackPlayerPVP(Player attacker, Player damaged, double speed) {
+        // Get velocity unit vector:
+//        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector());
+
+        org.bukkit.util.Vector vect = damaged.getVelocity();
+
+        Vector direction = attacker.getEyeLocation().getDirection();
+        vect.multiply(direction);
+
+        Bukkit.getLogger().info("Direction: " + direction.toString());
+        Bukkit.getLogger().info("current: " + vect.toString());
+
+        Bukkit.getLogger().info("if normalized: " + vect.clone().normalize().toString());
+        //Dont cause NaN.
+//        if (unitVector.length() > 0) unitVector.normalize();
+
+
+//        unitVector.setY(0.35);
+//        if (speed > 1) unitVector.setY(0.2);
+//        if (attacker.getVelocity().getY() > 0) unitVector.setY(0);
+        // Set speed and push entity:
+
+        EntityMechanics.setVelocity(damaged, vect.multiply(speed));
+    }
     public static void knockbackEntity(Player p, Entity ent, double speed) {
         if (ent instanceof Horse || ent instanceof ArmorStand) {
             return;
         }
         // Get velocity unit vector:
-        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector()).normalize();
+        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector());
+
+        //Dont cause NaN.
+        if (unitVector.length() > 0) unitVector.normalize();
+
         unitVector.setY(0.35);
         if (speed > 1) unitVector.setY(0.2);
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
 
-        if (ent instanceof Player) {
-            EntityMechanics.setVelocity((Player) ent, unitVector.multiply(speed));
-            return;
-        }
-        ent.setVelocity(unitVector.multiply(speed));
+        EntityMechanics.setVelocity(ent, unitVector.multiply(speed));
     }
 
     @SuppressWarnings("deprecation")

@@ -22,7 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -157,7 +157,49 @@ public class LootManager implements GenericMechanic, Listener {
 			if (spawner.getInventory().equals(event.getInventory()))
 				spawner.attemptBreak((Player) event.getPlayer());
 	}
-	
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onLootChestClick(InventoryClickEvent event) {
+		if (!event.getInventory().getTitle().equals("Loot"))
+			return;
+
+		if(!(event.getWhoClicked() instanceof Player)) return;
+
+		if(event.isCancelled()) return;
+
+		if(event.getClick() != ClickType.LEFT && event.getClick() != ClickType.SHIFT_LEFT) {
+			event.setCancelled(true);
+			return;
+		}
+
+		if(event.getClick() == ClickType.LEFT) {
+			if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
+			if (event.getRawSlot() < event.getInventory().getSize()) {
+				//click is in chest
+				event.setCancelled(true);
+			}
+		} else if(event.getClick() == ClickType.SHIFT_LEFT) {
+			if (event.getRawSlot() > event.getInventory().getSize()) {
+				//click is in chest
+				event.setCancelled(true);
+			}
+		} else {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onLootChestDrag(InventoryDragEvent event) {
+		if (!event.getInventory().getTitle().equals("Loot"))
+			return;
+
+		if(!(event.getWhoClicked() instanceof Player)) return;
+
+		if(event.isCancelled()) return;
+
+		event.setCancelled(true);
+	}
+
 	private void loadLoot(File f) {
 		String type = f.getName().split("\\.")[0];
 		

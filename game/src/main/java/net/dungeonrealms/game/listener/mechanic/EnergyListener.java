@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
@@ -118,7 +119,7 @@ public class EnergyListener implements Listener {
         if (weapon.getType() == Material.BOW) {
             energyToRemove += 0.15F;
         }
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, energyToRemove);
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, energyToRemove, DuelingMechanics.isDueling(player.getUniqueId()));
     }
 
     /**

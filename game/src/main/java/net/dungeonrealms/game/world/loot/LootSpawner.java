@@ -98,9 +98,11 @@ public class LootSpawner {
 			for (ItemStack stack : getInventory().getContents())
 				if (stack != null && stack.getType() != Material.AIR)
 					return;
-		
+
+		if(isBroken()) return;
+
 		World world = getLocation().getWorld();
-		
+
 		PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 		wrapper.getPlayerGameStats().addStat(StatColumn.LOOT_OPENED);
 
@@ -109,9 +111,9 @@ public class LootSpawner {
 		world.playSound(getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
 		getLocation().getBlock().getDrops().clear();
 		getLocation().getBlock().setType(Material.AIR);
-		
+
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::setContents,
-			(long) (getTickDelay() + (getTickDelay() * LootManager.getDelayMultiplier())));
+				(long) (getTickDelay() + (getTickDelay() * LootManager.getDelayMultiplier())));
 		isBroken();
 	}
 	

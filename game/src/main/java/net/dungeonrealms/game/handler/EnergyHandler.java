@@ -220,8 +220,8 @@ public class EnergyHandler implements GenericMechanic {
         	return;
         
         if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
-        	if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
-        		return;
+//        	if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
+//        		return;
         	GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
         }
         

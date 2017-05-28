@@ -77,8 +77,9 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         	player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "(!) " + ChatColor.RED + "You cannot rename this item!");
         	return;
         }
-        
-        player.setItemOnCursor(null); // Use this instead of evt.setUsed(true) because Chat.listenForMessage force closes the inventory and would cause the item to drop.
+
+        evt.setUsed(true);
+//        player.setItemOnCursor(null); // Use this instead of evt.setUsed(true) because Chat.listenForMessage force closes the inventory and would cause the item to drop.
         evt.setSwappedItem(null);
         player.updateInventory();
         
