@@ -203,7 +203,7 @@ public class Fishing implements GenericMechanic, Listener {
         DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
         HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
         REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
-        SPEED(FishSpeedBuff.class, "SPEED BUFF ", "", "", " Agility", 1),
+        SPEED(FishSpeedBuff.class, "SPEED ", " BUFF", "", "Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
         VISION(FishVisionBuff.class, "NIGHTVISION ", " BUFF", "", "Vision", 0),
@@ -256,7 +256,8 @@ public class Fishing implements GenericMechanic, Listener {
 
     public static Integer getFishingSpotTier(Location loc) {
         Location nearest = getFishingSpot(loc);
-        return FISHING_LOCATIONS.get(nearest);
+        Integer retr = FISHING_LOCATIONS.get(nearest);
+        return retr == null ? -1 : retr;
     }
 
     public static int getExactTier(Block bk) {
@@ -323,7 +324,7 @@ public class Fishing implements GenericMechanic, Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
                 ReflectionAPI.setField("ay", fishHook, MathHelper.a(ThreadLocalRandom.current(), 0.0F, 360.0F));
-                ReflectionAPI.setField("ax", fishHook, MathHelper.nextInt(ThreadLocalRandom.current(), 20, 80));
+                ReflectionAPI.setField("ax", fishHook, MathHelper.nextInt(ThreadLocalRandom.current(), 30, 100));
             }, 10);
         }
 
@@ -386,7 +387,7 @@ public class Fishing implements GenericMechanic, Listener {
                 if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
                     pole.damageItem(pl, 2);
 
-                pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+                pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName().trim() + ChatColor.GREEN + "!");
 
                 int exp = fTier.getXP();
                 pole.addExperience(pl, exp);

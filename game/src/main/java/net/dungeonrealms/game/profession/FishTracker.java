@@ -12,7 +12,7 @@ import java.util.HashMap;
 @Getter
 public class FishTracker extends HashMap<Integer, Integer> {
 
-    private static int MAX_FLAGS = 4, TEMP_BAN_FLAGS = 40;
+    private static int MAX_FLAGS = 10, TEMP_BAN_FLAGS = 40;
     private int flagsThrown = 0;
     private int lastCatchSpeed;
 
@@ -34,12 +34,12 @@ public class FishTracker extends HashMap<Integer, Integer> {
 
 
         if (sent <= System.currentTimeMillis()) {
-            if (isSuspiciousAutoFisher()) {
-                sent = System.currentTimeMillis() + 10_000;
-                GameAPI.sendStaffMessage(PlayerRank.TRIALGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
-            } else if (isAutoFisher()) {
+            if (isAutoFisher()) {
                 sent = System.currentTimeMillis() + 20_000;
                 GameAPI.sendWarning(ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.");
+            } else if (isSuspiciousAutoFisher()) {
+                sent = System.currentTimeMillis() + 10_000;
+                GameAPI.sendStaffMessage(PlayerRank.TRIALGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
             }
         }
         return flagsThrown;
