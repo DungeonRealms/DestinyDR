@@ -225,6 +225,9 @@ public abstract class ItemGeneric extends PersistentItem {
             addLore(getCustomLore());
         }
 
+        if (this instanceof ItemGear)
+            ((ItemGear) this).updateLore();
+
         for (ItemFlag data : ItemFlag.values()) {
             boolean enabled = getFlag(data);
             setTagBool(data.getNBTTag(), enabled);
@@ -258,7 +261,6 @@ public abstract class ItemGeneric extends PersistentItem {
             removeLore(ChatColor.GREEN + "Price: ");
             removeTag("price");
             removeTag("showPrice");
-            Bukkit.getLogger().info("Removing price: " + getPrice());
         }
 
         if (isGlowing())
@@ -271,10 +273,6 @@ public abstract class ItemGeneric extends PersistentItem {
             getMeta().setDisplayName(getCustomName());
         }
 
-
-        if (this instanceof ItemGear) {
-            ((ItemGear) this).updateLore();
-        }
 
         saveMeta();
         resetLore = true; // Reset the lore if we generate again.
@@ -292,11 +290,8 @@ public abstract class ItemGeneric extends PersistentItem {
         if (!nms.hasTag())
             return;
 
-        Bukkit.getLogger().info("nms before save " + Arrays.toString(nms.getTag().c().toArray()));
-        Bukkit.getLogger().info("getTag before save " + Arrays.toString(getTag().c().toArray()));
         NBTTagCompound merge = nms.getTag();
         for (String key : merge.c()) {
-            Bukkit.getLogger().info("Setting key: " + key);
             getTag().set(key, merge.get(key));
         }
         getItem().setItemMeta(getMeta());
