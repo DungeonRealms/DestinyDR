@@ -314,9 +314,9 @@ public class DamageListener implements Listener {
         //  KEEP PERMANENT UNTRADEABLE  //
         event.getDrops().stream().filter(ItemManager::isItemPermanentlyUntradeable).forEach(gearToSave::add);
 
-        ItemStack dontSave = (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL && ThreadLocalRandom.current().nextInt(25) <= 25) ?
-                p.getEquipment().getArmorContents()[ThreadLocalRandom.current().nextInt(
-                        p.getEquipment().getArmorContents().length)] : null;
+//        ItemStack dontSave = (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL && ThreadLocalRandom.current().nextInt(25) <= 25) ?
+//                p.getEquipment().getArmorContents()[ThreadLocalRandom.current().nextInt(
+//                        p.getEquipment().getArmorContents().length)] : null;
         boolean skipWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
 
         System.out.println(p.getName() + " DIED " + alignment.name());
@@ -324,16 +324,25 @@ public class DamageListener implements Listener {
         if (alignment != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             int durabilityLoss = (int) (ItemGear.MAX_DURABILITY * 0.3); // 30%
 
-            //  KEEP ARMOR  //
+            // LOSE MAX OF 2 PIECES IF YOU DIE NEUTRAL, 25% TO LOSE EACH.
+            int lostPieces = 0;
             for (ItemStack item : p.getEquipment().getArmorContents()) {
                 if (item == null || item.getType() == Material.AIR) continue;
-                if (dontSave == null || !dontSave.equals(item)) {
-                    PersistentItem persis = PersistentItem.constructItem(item);
-                    if (persis instanceof ItemGear) {
-                        ItemGear gear = (ItemGear) persis;
-                        gear.damageItem(p, durabilityLoss);
+                PersistentItem persis = PersistentItem.constructItem(item);
+                if (persis instanceof ItemGear) {
+                    ItemGear gear = (ItemGear) persis;
+                    gear.damageItem(p, durabilityLoss);
+
+                    event.getDrops().remove(item);
+                    //Dont drop if its not 0, 75% of the time.
+                    if (ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
                         gearToSave.add(persis.generateItem());
-                        event.getDrops().remove(item);
+                    } else {
+                        //Drop?
+                        //Remove the old item?
+                        event.getDrops().add(persis.generateItem());
+                        Bukkit.getLogger().info("Dropping " + persis.getItem() + " from " + p.getName());
+                        lostPieces++;
                     }
                 }
             }
@@ -737,7 +746,7 @@ public class DamageListener implements Listener {
             dmg = 0;
         }
 
-        if(!type.doesAffectMobs() && !isPlayer){
+        if (!type.doesAffectMobs() && !isPlayer) {
             event.setCancelled(true);
             return;
         }

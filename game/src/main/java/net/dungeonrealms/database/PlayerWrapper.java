@@ -1092,7 +1092,7 @@ public class PlayerWrapper {
         if (alignmentTo != getAlignment()) {
             player.sendMessage("");
             player.sendMessage(alignmentTo.getColor() + "              * YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + alignmentTo.name() + alignmentTo.getColor() + " ALIGNMENT *");
-            player.sendMessage(ChatColor.GRAY + alignmentTo.getDescription());
+            player.sendMessage(ChatColor.GRAY + alignmentTo.getLongDescription());
             player.sendMessage("");
         }
 
