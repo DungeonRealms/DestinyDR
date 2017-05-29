@@ -32,7 +32,7 @@ public abstract class ItemGeneric extends PersistentItem {
     @Getter
     private Map<ItemFlag, Boolean> dataMap;
 
-    private List<String> lore;
+    protected List<String> lore;
 
     @Getter
     private boolean resetLore; // Should this lore be reset?
@@ -63,11 +63,11 @@ public abstract class ItemGeneric extends PersistentItem {
     private boolean glowing;
 
     @Getter
-    private ItemMeta meta;
+    protected ItemMeta meta;
 
     @Setter
     @Getter // EC - Name
-    private String customName;
+    protected String customName;
 
     @Getter
     @Setter
@@ -251,7 +251,14 @@ public abstract class ItemGeneric extends PersistentItem {
             if (isShowPrice()) {
                 setTagBool("showPrice", true);
                 addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
+            } else {
+                removeLore(ChatColor.GREEN + "Price: ");
             }
+        } else if (hasTag("price")) {
+            removeLore(ChatColor.GREEN + "Price: ");
+            removeTag("price");
+            removeTag("showPrice");
+            Bukkit.getLogger().info("Removing price: " + getPrice());
         }
 
         if (isGlowing())
@@ -264,6 +271,11 @@ public abstract class ItemGeneric extends PersistentItem {
             getMeta().setDisplayName(getCustomName());
         }
 
+
+        if (this instanceof ItemGear) {
+            ((ItemGear) this).updateLore();
+        }
+
         saveMeta();
         resetLore = true; // Reset the lore if we generate again.
     }
@@ -272,16 +284,21 @@ public abstract class ItemGeneric extends PersistentItem {
      * Saves data in meta to NBT.
      * Just using setItemMeta will override NBT tags, so we set them manually.
      */
-    private void saveMeta() {
+    protected void saveMeta() {
         ItemStack withMeta = getItem().clone();
         getMeta().setLore(this.lore);
         withMeta.setItemMeta(getMeta());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(withMeta);
         if (!nms.hasTag())
             return;
+
+        Bukkit.getLogger().info("nms before save " + Arrays.toString(nms.getTag().c().toArray()));
+        Bukkit.getLogger().info("getTag before save " + Arrays.toString(getTag().c().toArray()));
         NBTTagCompound merge = nms.getTag();
-        for (String key : merge.c())
+        for (String key : merge.c()) {
+            Bukkit.getLogger().info("Setting key: " + key);
             getTag().set(key, merge.get(key));
+        }
         getItem().setItemMeta(getMeta());
     }
 
@@ -325,11 +342,22 @@ public abstract class ItemGeneric extends PersistentItem {
             resetLore = false;
         }
 
+        String newLine = startsWithValidColor(s) ? s : ChatColor.GRAY + s;
         //Dont count for emtpy lines?
-        if (!s.isEmpty() && this.lore.contains(ChatColor.GRAY + s))
+        if (!s.isEmpty() && this.lore.contains(newLine))
             return;
 
-        this.lore.add(ChatColor.GRAY + s);
+        this.lore.add(newLine);
+    }
+
+    public boolean startsWithValidColor(String string) {
+        if (string.startsWith(ChatColor.COLOR_CHAR + "")) {
+            if (string.startsWith(ChatColor.ITALIC.toString()) || string.startsWith(ChatColor.UNDERLINE.toString())
+                    || string.startsWith(ChatColor.STRIKETHROUGH.toString()) || string.startsWith(ChatColor.BOLD.toString()))
+                return false;
+            return true;
+        }
+        return false;
     }
 
     protected void removeLore(String startsWith) {

@@ -73,15 +73,15 @@ public class MountSelectionGUI extends GUIMenu {
         stackMeta.setDisplayName(displayColor + (mount == EnumMounts.MULE ? wrapper.getMuleTier().getName() : name));
         List<String> lore = new ArrayList<>();
         if (data != null) {
-            lore.add(ChatColor.RED + "Speed: " + data.getSpeedPercent() + "%");
+            lore.add(ChatColor.RED + "Speed " + data.getSpeedPercent() + "%");
 //            lore.add(ChatColor.RED + "Jump: 100%");
             lore.addAll(data.getLore());
         } else {
             HorseTier tier = HorseTier.getByMount(mount);
             if (tier != null) {
-                lore.add(ChatColor.RED + "Speed: " + tier.getSpeed() + "%");
+                lore.add(ChatColor.RED + "Speed " + tier.getSpeed() + "%");
                 if (tier.getJump() > 100)
-                    lore.add(ChatColor.RED + "Jump: " + tier.getJump() + "%");
+                    lore.add(ChatColor.RED + "Jump " + tier.getJump() + "%");
                 lore.addAll(tier.getDescription());
             }else{
                 //Storage mule I guess?

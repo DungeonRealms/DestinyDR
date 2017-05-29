@@ -124,7 +124,8 @@ public abstract class ItemGear extends ItemGeneric {
         // SAVE GENERAL DATA //
         if (getRarity() != null)
             setTagString("itemRarity", getRarity().name());
-        updateLore();
+
+        getAttributes().save(this);
 
         setTagInt(TIER, getTier().getId());
         setTagInt("enchant", getEnchantCount());
@@ -197,7 +198,7 @@ public abstract class ItemGear extends ItemGeneric {
 
     public void updateLore() {
         // Save attributes
-        getAttributes().save(this);
+//        getAttributes().save(this);
 
         // Show rarity.
         if (getRarity() != null)

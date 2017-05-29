@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -12,6 +13,7 @@ import net.minecraft.server.v1_9_R2.EntityHuman;
 import net.minecraft.server.v1_9_R2.PacketPlayOutAnimation;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -95,6 +97,11 @@ public class PvPListener implements Listener {
                 return;
 
             res.applyDamage();
+
+            if(!isProjectile) {
+                float energyToRemove = EnergyHandler.handleAirSwingItem(held);
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker, energyToRemove, isDuel);
+            }
 
             if (!isProjectile)
                 DamageAPI.handlePolearmAOE(event, Math.max(1, res.getDamage() / 2), attacker);
