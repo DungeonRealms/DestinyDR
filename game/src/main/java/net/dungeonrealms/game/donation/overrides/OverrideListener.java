@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.PacketPlayOutEntityEquipment;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -40,7 +42,7 @@ public class OverrideListener implements GenericMechanic, Listener {
             System.out.println("The armor hat debug send! 3");
             CosmeticOverrides hatOverride = wrapper.getActiveHatOverride();
             if (hatOverride == null) return;
-            if(event.getNewArmorPiece() == null || event.getNewArmorPiece().getType().equals(Material.AIR)) return;
+            if (event.getNewArmorPiece() == null || event.getNewArmorPiece().getType().equals(Material.AIR)) return;
             System.out.println("The armor hat debug send! 4");
             ItemStack clone = event.getNewArmorPiece().clone();
             if (clone == null) clone = new ItemStack(hatOverride.getItemType());
@@ -57,6 +59,25 @@ public class OverrideListener implements GenericMechanic, Listener {
                     ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(event.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(realClone)));
                 }
             });
+        }
+    }
+
+    @EventHandler
+    public void onPlayerClic(InventoryCreativeEvent event) {
+        if (event.getSlot() == 5 && event.getClickedInventory().getName().equals("container.inventory")) {
+            //Keep this synced...
+
+            Player player = (Player) event.getWhoClicked();
+            event.setCancelled(true);
+            player.updateInventory();
+            player.setItemOnCursor(null);
+            player.getInventory().addItem(event.getCurrentItem());
+            player.getEquipment().setHelmet(event.getCursor());
+
+//            event.setCursor(event.getCurrentItem());
+//            event.setCurrentItem(null);
+//            player.setItemOnCursor(event.getCurrentItem());
+//            player.updateInventory();
         }
     }
 
@@ -115,9 +136,6 @@ public class OverrideListener implements GenericMechanic, Listener {
         clone.setType(hatOverride.getItemType());
         clone.setDurability(hatOverride.getDurability());
         clone.setItemMeta(meta);
-
-        ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
-
     }
 
 
@@ -144,8 +162,8 @@ public class OverrideListener implements GenericMechanic, Listener {
             ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
         }
 
-        ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
-
+        if (toUpdate.getGameMode() != GameMode.CREATIVE)
+            ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
     }
 }
 

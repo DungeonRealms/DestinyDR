@@ -17,7 +17,7 @@ import java.util.List;
 public class HatGUI extends GUIMenu implements WebstoreGUI {
 
     public HatGUI(Player player) {
-        super(player, 9,"Cosmetic Hat Overrides");
+        super(player, 9,"Cosmetic Hat Selection");
     }
 
     @Override
@@ -34,7 +34,7 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
             String unlockedLine = webItem.getOwnedDisplayString(wrapper);
 
             if(unlocked && wrapper.getActiveHatOverride() != null && wrapper.getActiveHatOverride().getLinkedPurchaseable().equals(webItem)) {
-                    unlockedLine = ChatColor.AQUA + ChatColor.BOLD.toString() + "SELECTED";
+                    unlockedLine = ChatColor.GREEN + ChatColor.BOLD.toString() + "SELECTED";
             }
 
             lore.add(unlockedLine);

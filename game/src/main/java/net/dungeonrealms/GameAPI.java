@@ -1531,7 +1531,7 @@ public class GameAPI {
 
     public static void sendStatNotification(Player p) {
         PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-        if (pw.getPlayerStats().getFreePoints() > 0) {
+        if (pw != null && pw.getPlayer() != null && pw.getPlayerStats().getFreePoints() > 0) {
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
 //            	ComponentBuilder cb = new ComponentBuilder("* ").color(ChatColor.GREEN);
 //            	cb.append("You have available ").color(ChatColor.GRAY).append("stat points").color(ChatColor.GREEN);

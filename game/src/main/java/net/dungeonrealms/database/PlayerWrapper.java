@@ -44,6 +44,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -359,6 +360,7 @@ public class PlayerWrapper {
                 this.activePet = EnumPets.getByName(result.getString("characters.activePet"));
                 this.activeTrail = ParticleEffect.getByName(result.getString("characters.activeTrail"));
                 this.activeMountSkin = EnumMountSkins.getByName(result.getString("characters.activeMountSkin"));
+                setActiveHatOverride(CosmeticOverrides.getByName(result.getString("characters.activeHatOverride")));
                 this.achievements = StringUtils.deserializeEnumListToSet(result.getString("characters.achievements"), EnumAchievements.class);
 
                 this.questData = result.getString("characters.questData");
@@ -746,12 +748,13 @@ public class PlayerWrapper {
 
         List<Object> array = new ArrayList<Object>();
 
-        this.questData = Quests.getInstance().playerDataMap.get(player).toJSON().toString();
+        QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+        this.questData = data != null ? data.toJSON().toString() : null;
         array.addAll(Lists.newArrayList(
                 getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(),
                 player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
-                getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(),
+                getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(), getActiveHatOverride() != null ? getActiveHatOverride().name() : null,
                 getQuestData(), collectionBinString, player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
                 isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime()));
 
@@ -1209,6 +1212,8 @@ public class PlayerWrapper {
         if (this.activeTrail != null) {
             setActiveTrail(this.activeTrail);
         }
+        if (this.activeHatOverride != null)
+            setActiveHatOverride(this.activeHatOverride);
     }
 
     public void loadPlayerInventory(Player player) {

@@ -8,30 +8,25 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.UUID;
-
 /**
  * Created by Kieran on 9/24/2015.
  */
 public class EnergyHandler implements GenericMechanic {
 
-	@Getter
+    @Getter
     private static EnergyHandler instance = new EnergyHandler();
 
     @Override
@@ -62,7 +57,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     public void handleLoginEvents(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
         int foodLevel = wrapper.getStoredFoodLevel();
         if (foodLevel < 0) {
             foodLevel = 0;
@@ -116,7 +111,7 @@ public class EnergyHandler implements GenericMechanic {
                 continue;
             }
             // get regenAmount, 10% base energy regen (calculated here because it's hidden)
-            
+
             float regenAmount = (((float) playerWrapper.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).getValue()) / 100.0F) + 0.20F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
@@ -214,17 +209,21 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static void removeEnergyFromPlayerAndUpdate(Player player, float amountToRemove, boolean duel) {
         if (!PlayerWrapper.getWrapper(player).isVulnerable())
-        	return;
-        
-        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel)
-        	return;
-        
-        if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
-//        	if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
-//        		return;
-        	GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
+            return;
+
+        if (GameAPI.isInSafeRegion(player.getLocation())) {
+            if (!duel) {
+                Bukkit.getLogger().info("Cancelling energy reduction in safe zone.");
+                Thread.dumpStack();
+                return;
+            }
         }
-        
+        if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
+            if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
+                return;
+            GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
+        }
+
         if (getPlayerCurrentEnergy(player) <= 0) return;
         if (getPlayerCurrentEnergy(player) - amountToRemove <= 0) {
             player.setExp(0.0F);
@@ -309,15 +308,15 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_HOE:
                 return 0.075F / 1.1F;
             case BOW:
-            	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
-            	return 0.0525F + (gear.getTier().getId() * 0.01F);
+                ItemGear gear = (ItemGear) PersistentItem.constructItem(itemStack);
+                return 0.0525F + (gear.getTier().getId() * 0.01F);
             default:
-            	return 0.10F;
+                return 0.10F;
         }
     }
-    
+
     public static float getSwingCost(ItemStack item) {
-    	return getWeaponSwingEnergyCost(item);
+        return getWeaponSwingEnergyCost(item);
     }
 
     /**
@@ -376,10 +375,10 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_HOE:
                 return 0.13636364F;
             case BOW:
-            	ItemGear gear = (ItemGear)PersistentItem.constructItem(itemStack);
-            	return 0.105F + gear.getTier().getId() * 0.02F;
-           default:
-        	   return 0.10F;
+                ItemGear gear = (ItemGear) PersistentItem.constructItem(itemStack);
+                return 0.105F + gear.getTier().getId() * 0.02F;
+            default:
+                return 0.10F;
         }
     }
 }

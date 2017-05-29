@@ -3,13 +3,12 @@ package net.dungeonrealms.game.donation.overrides;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.google.common.collect.MapMaker;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.minecraft.server.v1_9_R2.Container;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -30,7 +29,10 @@ public abstract class FakeEquipment {
     public FakeEquipment(final Plugin plugin) {
         this.processedPackets = new MapMaker().weakKeys().makeMap();
         this.plugin = plugin;
-        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = new PacketAdapter(plugin, new PacketType[]{PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_ITEMS}) {
+
+        PacketAdapter.AdapterParameteters parameteters = new PacketAdapter.AdapterParameteters();
+        (this.manager = ProtocolLibrary.getProtocolManager()).addPacketListener(this.listener = new PacketAdapter(parameteters.optionAsync().listenerPriority(ListenerPriority.HIGH).types(PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.NAMED_ENTITY_SPAWN, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Client.SET_CREATIVE_SLOT).plugin(DungeonRealms.getInstance())) {
+            @Override
             public void onPacketSending(final PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 final PacketType type = event.getPacketType();
@@ -64,14 +66,13 @@ public abstract class FakeEquipment {
                     FakeEquipment.this.onEntitySpawn(observingPlayer, visibleEntity);
                 } else if (PacketType.Play.Server.WINDOW_ITEMS.equals(type)) {
                     int slot = packet.getIntegers().read(0);
-
-                    if (slot != ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId) return;
+                    if (slot != ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId)
+                        return;
                     ItemStack[] items = packet.getItemArrayModifier().read(0);
                     try {
 //                        String data = MetadataUtils.Metadata.ACTIVE_HAT.get(observingPlayer).asString();
 //                        if (data != null && !data.isEmpty()) {
                         CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
-
                         if (currentHat != null && items.length >= 4) {
                             ItemStack helmet = items[5];
                             if (helmet != null && helmet.getType() != Material.AIR) {
@@ -79,7 +80,6 @@ public abstract class FakeEquipment {
                                 helmet.setDurability(currentHat.getDurability());
                                 items[5] = helmet;
                                 packet.getItemArrayModifier().write(0, items);
-                                Bukkit.getLogger().info("Sending window spoof packet to " + observingPlayer.getName());
                             }
                         }
 //                        }
@@ -87,23 +87,49 @@ public abstract class FakeEquipment {
                         Bukkit.getLogger().info("Error getting hat from " + observingPlayer.getName());
                     }
                 } else if (PacketType.Play.Server.SET_SLOT.equals(type)) {
-                    int slot = packet.getIntegers().read(1);
-                    int windowId = packet.getIntegers().read(0);
-                    if (((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId != windowId) {
-                        return;
-                    }
-                    if (slot == 5) {
-                        ItemStack helmet = packet.getItemModifier().read(0);
-                        if (helmet != null && helmet.getType() != Material.AIR) {
-                            CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
-                            if (currentHat != null) {
-                                helmet.setType(currentHat.getItemType());
-                                helmet.setDurability(currentHat.getDurability());
-                                packet.getItemModifier().write(0, helmet);
+                    try {
+                        int windowId = packet.getIntegers().read(0);
+                        int slot = packet.getIntegers().read(1);
+                        Container contain = ((CraftPlayer) observingPlayer).getHandle().defaultContainer;
+                        if (contain == null || contain.windowId != windowId)
+                            return;
+
+                        if (slot == 5) {
+                            ItemStack helmet = packet.getItemModifier().read(0);
+                            if (helmet != null && helmet.getType() != Material.AIR) {
+                                CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
+                                if (currentHat != null) {
+                                    helmet.setType(currentHat.getItemType());
+                                    helmet.setDurability(currentHat.getDurability());
+                                    Bukkit.getLogger().info("Set in inventory slot : " + slot + " window: " + contain.windowId);
+                                }
                             }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    Bukkit.getLogger().info("Set slot : " + slot + " window: " + ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId);
+                }
+            }
+
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                final PacketType type = event.getPacketType();
+                final Player observingPlayer = event.getPlayer();
+
+                if (type.equals(PacketType.Play.Client.SET_CREATIVE_SLOT)) {
+                    int slot = packet.getIntegers().read(0);
+                    ItemStack item = packet.getItemModifier().read(0);
+                    if (slot == 5) {
+                        //Helmet?
+                        Bukkit.getLogger().info("Trying to set helmet to " + item);
+                        CosmeticOverrides override = getActiveOverride(event.getPlayer());
+
+                        if (override != null && override.getDurability() == item.getDurability() && override.getItemType() == item.getType()) {
+                            //Cancel... set to our helmet..
+                            packet.getItemModifier().write(0, event.getPlayer().getEquipment().getHelmet());
+                        }
+                    }
                 }
             }
         });

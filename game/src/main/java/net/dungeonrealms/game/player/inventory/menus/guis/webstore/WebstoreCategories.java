@@ -17,9 +17,9 @@ import java.util.List;
 @Getter
 public enum WebstoreCategories {
 
-    SUBSCRIPTIONS("Subscriptions", "\nClick here to view all subscription ranks!", Material.EMERALD,0, ChatColor.GREEN),
+    SUBSCRIPTIONS("Subscriptions", "\nUnlock access to all " + ChatColor.GREEN + ChatColor.BOLD + "SUB " + ChatColor.GRAY + "shards\nalong with access to many\nCosmetics and other perks!\n \nClick here to view all subscriptions!", Material.EMERALD,0, ChatColor.GREEN),
     GLOBAL_BUFFS("Global Buffs", "\nClick here to view all global buffs!", Material.DIAMOND,8, ChatColor.AQUA),
-    HATS("Cosmetic Hat Overrides", "\nClick here to view all hat overrides!", Material.SAPLING,4, ChatColor.WHITE, ChatColor.DARK_BLUE),
+    HATS("Cosmetics", "\nStand out from the rest with\nwith these Cosmetic Overrides!\n \nClick here to view all cosmetic gear items!", Material.SAPLING,4, ChatColor.AQUA, ChatColor.GRAY),
     MISCELLANEOUS("Misc Items", "\nClick here to view all miscellaneous items!", Material.BLAZE_ROD,5, ChatColor.GOLD);
 
     private String name;

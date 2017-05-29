@@ -332,6 +332,10 @@ public class HealthHandler implements GenericMechanic {
 
         boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT;
 
+        if (player.isDead()) {
+            Bukkit.getLogger().info("Cancelling damage event for " + player.getName() + " due to being dead.");
+            return;
+        }
         if (damage < 0) {
             Utils.log.info("Negative damage dealt to " + player.getName() + " Damager: " + attacker.getName() + " Damage: " + damage);
             damage = 1;

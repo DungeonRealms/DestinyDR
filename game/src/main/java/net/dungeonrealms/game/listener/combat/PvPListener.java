@@ -54,7 +54,7 @@ public class PvPListener implements Listener {
                 CombatLog.updatePVP(attacker);
 
             defender.playEffect(EntityEffect.HURT);
-            attacker.playEffect(EntityEffect.HURT);
+//            attacker.playEffect(EntityEffect.HURT);
             //decrement the knockback?
             DamageAPI.knockbackPlayerPVP(attacker, defender);
 
@@ -71,7 +71,7 @@ public class PvPListener implements Listener {
                 defender.setMetadata("lastDamageTaken", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             }
             //Make it seem like we are taking damage.
-            GameAPI.getNearbyPlayersAsync(defender.getLocation(), 20).forEach(pl -> ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(new PacketPlayOutAnimation(defend, 1)));
+//            GameAPI.getNearbyPlayersAsync(defender.getLocation(), 20).forEach(pl -> ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(new PacketPlayOutAnimation(defend, 1)));
             event.setDamage(0.0D);
             event.setCancelled(true);
 
@@ -94,11 +94,10 @@ public class PvPListener implements Listener {
             if (!isDuel && res.checkChaoticPrevention())
                 return;
 
-            DamageAPI.calculateWeaponDamage(res, !isDuel);
             res.applyDamage();
 
             if (!isProjectile)
-                DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, attacker);
+                DamageAPI.handlePolearmAOE(event, Math.max(1, res.getDamage() / 2), attacker);
         }
     }
 }
