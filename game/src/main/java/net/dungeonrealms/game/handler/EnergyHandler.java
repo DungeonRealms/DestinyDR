@@ -214,7 +214,6 @@ public class EnergyHandler implements GenericMechanic {
         if (GameAPI.isInSafeRegion(player.getLocation())) {
             if (!duel) {
                 Bukkit.getLogger().info("Cancelling energy reduction in safe zone.");
-                Thread.dumpStack();
                 return;
             }
         }
