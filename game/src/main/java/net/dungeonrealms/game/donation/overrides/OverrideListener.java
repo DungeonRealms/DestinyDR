@@ -71,8 +71,8 @@ public class OverrideListener implements GenericMechanic, Listener {
             event.setCancelled(true);
             player.updateInventory();
             player.setItemOnCursor(null);
-            player.getInventory().addItem(event.getCurrentItem());
             player.getEquipment().setHelmet(event.getCursor());
+            player.getInventory().addItem(event.getCurrentItem());
 
 //            event.setCursor(event.getCurrentItem());
 //            event.setCurrentItem(null);
