@@ -139,7 +139,10 @@ public abstract class ProfessionItem extends ItemGear {
 		if (getTier() != oldTier) {
 			ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
 			ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
-			getAttributes().setStat(pa, Utils.randInt(pa.getPercentRange()[0], pa.getPercentRange()[1]));
+			int currentAmount = getAttributes().hasAttribute(pa) ? getAttributes().get(pa).getValue() : 0;
+			int newAmount = Utils.randInt(pa.getPercentRange()[0], pa.getPercentRange()[1]);
+			int toUse = currentAmount >= newAmount ? currentAmount + 1 : newAmount;
+			getAttributes().setStat(pa, toUse);
 		}
 		
 		p.sendMessage(ChatColor.YELLOW + "Your " + getItemType().getNBT() + " has increased to level " + ChatColor.AQUA + getLevel());

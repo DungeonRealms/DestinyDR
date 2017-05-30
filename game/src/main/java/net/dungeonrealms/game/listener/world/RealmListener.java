@@ -715,7 +715,7 @@ public class RealmListener implements Listener {
             Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }
-        GameAPI.addCooldown(event.getPlayer(), Metadata.REALM_COOLDOWN, 60);
+        GameAPI.addCooldown(event.getPlayer(), Metadata.REALM_COOLDOWN, 5);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

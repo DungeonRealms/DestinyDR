@@ -16,6 +16,7 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -465,8 +466,25 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerSplashPotion(PotionSplashEvent event) {
+        if (!(event.getPotion().getShooter() instanceof Player)) return;
+        PotionItem potion = new PotionItem(event.getPotion().getItem());
+        if(potion == null) return;
+        event.setCancelled(true);
+
+        for (LivingEntity entity : event.getAffectedEntities()) {
+            if (!GameAPI.isPlayer(entity)) {
+                continue;
+            }
+            HealthHandler.heal((Player)event.getPotion().getShooter(), potion.getHealAmount(),true);
+        }
+    }
+
+    @EventHandler
     public void onWitchSplashPotion(PotionSplashEvent event) {
+
         if (!(event.getPotion().getShooter() instanceof LivingEntity)) return;
+
         LivingEntity leShooter = (LivingEntity) event.getPotion().getShooter();
         if (!(leShooter.getType() == EntityType.WITCH)) return;
 

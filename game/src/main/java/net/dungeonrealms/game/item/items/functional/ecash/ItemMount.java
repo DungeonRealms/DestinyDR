@@ -154,7 +154,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
 
     @Override
     protected String[] getLore() {
-        List<String> lore = Lists.newArrayList(ChatColor.RED + "Speed: " + horseTier.getSpeed() + "%");
+        List<String> lore = Lists.newArrayList(ChatColor.RED + "Speed " + horseTier.getSpeed() + "%");
         if (horseTier.getJump() > 100) {
             lore.add(ChatColor.RED + "Jump: " + horseTier.getJump() + "%");
         }

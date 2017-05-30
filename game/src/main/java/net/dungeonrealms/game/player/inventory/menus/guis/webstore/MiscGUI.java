@@ -108,8 +108,15 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                     player.sendMessage(ChatColor.RED + "You have no inventory space to claim this!");
                                     return;
                                 }
-                                player.getInventory().addItem(new ItemNameTag(null).generateItem());
-                                player.sendMessage(ChatColor.GREEN + "An item name tag has been added to your inventory.");
+                                webItem.removeNumberUnlocked(wrapper,1,(rows) -> {
+                                    if(rows == null || rows < 1) {
+                                        player.sendMessage(ChatColor.RED + "We are sorry! An error occurred while claiming your name tag!");
+                                        player.sendMessage(ChatColor.GRAY + "Please try again later or contact an administrator if the problem persists!");
+                                        return;
+                                    }
+                                    player.getInventory().addItem(new ItemNameTag(null).generateItem());
+                                    player.sendMessage(ChatColor.GREEN + "An item name tag has been added to your inventory.");
+                                });
                             } else {
                                 sendNotUnlocked(player);
                             }

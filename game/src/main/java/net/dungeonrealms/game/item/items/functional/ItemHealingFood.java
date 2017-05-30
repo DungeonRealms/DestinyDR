@@ -51,7 +51,7 @@ public class ItemHealingFood extends FunctionalItem implements ItemConsumeListen
 				}
 				
 				if (HealthHandler.getHP(player) < HealthHandler.getMaxHP(player))
-					HealthHandler.heal(player, healAmount);
+					HealthHandler.heal(player, healAmount,false);
 			}
 		}, 0, 20);
 	}

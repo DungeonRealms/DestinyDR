@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemTeleportBook extends FunctionalItem implements ItemClickListener {
 
-	@Getter @Setter
+	@Setter
 	private TeleportLocation teleportLocation;
 	
 	public ItemTeleportBook() {
@@ -40,6 +40,11 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 	public void updateItem() {
 		setEnum("location", getTeleportLocation());
 		super.updateItem();
+	}
+
+	public TeleportLocation getTeleportLocation() {
+		if(teleportLocation == null) return TeleportLocation.getRandomBookTP();
+		return teleportLocation;
 	}
 
 	@Override

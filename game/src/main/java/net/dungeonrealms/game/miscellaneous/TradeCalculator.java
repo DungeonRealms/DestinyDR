@@ -4,6 +4,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.functional.*;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
@@ -42,6 +43,8 @@ public class TradeCalculator {
         for (ItemStack is : playerOffer) {
             if (is == null || is.getType() == Material.AIR)
                 continue;
+
+            if(!ItemManager.isItemTradeable(is)) continue;
 
             //  POTION  //
             if (PotionItem.isPotion(is)) {

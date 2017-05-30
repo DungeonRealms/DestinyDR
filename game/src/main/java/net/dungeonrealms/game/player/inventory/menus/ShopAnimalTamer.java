@@ -31,9 +31,9 @@ public class ShopAnimalTamer extends GUIMenu {
             List<String> lore = Lists.newArrayList();
             EnumMounts mount = horse == HorseTier.MULE ? EnumMounts.MULE : horse.getMount();
             if (mount.name().contains("HORSE")) {
-                lore.add(ChatColor.RED + "Speed: " + horse.getSpeed() + "%");
+                lore.add(ChatColor.RED + "Speed " + horse.getSpeed() + "%");
                 if (horse.getJump() > 100)
-                    lore.add(ChatColor.RED + "Jump: " + horse.getJump() + "%");
+                    lore.add(ChatColor.RED + "Jump " + horse.getJump() + "%");
             }
 
             lore.add("");

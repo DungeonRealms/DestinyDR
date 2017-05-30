@@ -91,14 +91,19 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
             return;
         }
 
-        if (HealthHandler.getHP(evt.getPlayer()) >= HealthHandler.getMaxHP(evt.getPlayer())) {
+        if (!isSplash() && HealthHandler.getHP(evt.getPlayer()) >= HealthHandler.getMaxHP(evt.getPlayer())) {
             evt.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
             return;
         }
 
         evt.setUsed(true);
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
-        HealthHandler.heal(evt.getPlayer(), getHealAmount());
+        if(isSplash()) {
+            System.out.println("Calling the splash code!");
+            evt.setCancelled(false);
+        } else {
+            HealthHandler.heal(evt.getPlayer(), getHealAmount(),true);
+        }
     }
 
     private void findNextPotion(Player player, EquipmentSlot slot) {

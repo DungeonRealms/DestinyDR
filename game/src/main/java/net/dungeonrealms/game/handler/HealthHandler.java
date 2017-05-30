@@ -272,11 +272,11 @@ public class HealthHandler implements GenericMechanic {
             if (pw == null || !pw.isAttributesLoaded())
                 continue;
 
-            heal(player, getRegen(player));
+            heal(player, getRegen(player),false);
         }
     }
 
-    public static void heal(Entity e, int amount) {
+    public static void heal(Entity e, int amount, boolean showDebug) {
         int currentHP = getHP(e);
         int maxHP = getMaxHP(e);
         if (currentHP >= maxHP || amount <= 0)
@@ -287,10 +287,9 @@ public class HealthHandler implements GenericMechanic {
         if (!(e instanceof Player))
             return;
 
-        //int newHP = getHP(e);
-        //TODO: Re-enable this, but make it not show if you're getting it from gear hp/s.
-//    	PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
-//    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+        int newHP = getHP(e);
+    	if(showDebug)PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
+    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
     }
 
     /**

@@ -49,7 +49,7 @@ public class MountData {
     	//TODO: Make item
         List<String> lore = Lists.newArrayList();
 
-        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + speedPercent + "%");
+        lore.add(ChatColor.RED + "Speed " + ChatColor.BOLD + speedPercent + "%");
 
         lore.add("");
         lore.addAll(getLore());
