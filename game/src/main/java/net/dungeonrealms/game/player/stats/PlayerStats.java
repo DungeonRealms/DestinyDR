@@ -99,8 +99,12 @@ public class PlayerStats implements LoadableData, SaveableData {
         return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.015);
     }
 
-    public double getStaffDMG(boolean temp) {
+     public double getStaffDMG(boolean temp) {
         return ((temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.02);
+    }
+
+    public double getCriticalDamage(boolean temp) {
+        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.0025;
     }
 
 

@@ -15,6 +15,7 @@ import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -353,6 +354,13 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_AXE:
                 return 0.162F;
 
+            /* OLD DR VALUES
+            if(m == Material.WOOD_AXE) { return 0.0721F * 1.1F; } //.07931
+            if(m == Material.STONE_AXE) { return 0.0833F * 1.1F; } //.09163
+            if(m == Material.IRON_AXE) { return 0.10F * 1.1F; } //.11
+            if(m == Material.DIAMOND_AXE) { return 0.125F * 1.1F; } //.1375
+            if(m == Material.GOLD_AXE) { return 0.135F * 1.1F; } //.1485
+            */
 
             case WOOD_SPADE:
                 return 0.0721F;

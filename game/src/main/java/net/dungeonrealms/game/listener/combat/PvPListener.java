@@ -5,15 +5,14 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityHuman;
-import net.minecraft.server.v1_9_R2.PacketPlayOutAnimation;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -80,7 +79,7 @@ public class PvPListener implements Listener {
             ItemStack held = attacker.getEquipment().getItemInMainHand();
             AttackResult res = new AttackResult(attacker, defender);
 
-            if (!isProjectile && !ItemWeapon.isWeapon(held)) {
+            if (!isProjectile && (!ItemWeapon.isWeapon(held) || ItemWeaponStaff.isStaff(held))) {
                 res.setDamage(1);
                 res.applyDamage();
                 return;
@@ -98,7 +97,7 @@ public class PvPListener implements Listener {
 
             res.applyDamage();
 
-            if(!isProjectile) {
+            if (!isProjectile) {
                 float energyToRemove = EnergyHandler.handleAirSwingItem(held);
                 EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker, energyToRemove, isDuel);
             }

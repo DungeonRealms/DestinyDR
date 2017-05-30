@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.entity.type.pet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -13,7 +12,6 @@ import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -47,9 +45,10 @@ public enum EnumPets {
     MAGMA_CUBE(MagmaPet.class, EntityType.MAGMA_CUBE, Sound.ENTITY_MAGMACUBE_SQUISH),
     ENDERMAN(EndermanPet.class, EntityType.ENDERMAN, Sound.ENTITY_ENDERMEN_SCREAM, false),
     GUARDIAN(GuardianPet.class, EntityType.GUARDIAN, Sound.ENTITY_GUARDIAN_AMBIENT, .3F, false),
+    ELDER_GAURDIAN(GuardianPet.class, EntityType.GUARDIAN,  Sound.ENTITY_GUARDIAN_AMBIENT, .4F,  org.bukkit.ChatColor.GREEN + "An exclusive " + ChatColor.GREEN + org.bukkit.ChatColor.BOLD + "SUB++" + ChatColor.GREEN + " only pet!", false, true, true, false),
     BABY_SHEEP(BabySheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT),
     RAINBOW_SHEEP(RainbowSheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT, false),
-    BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE, Sound.ENTITY_ZOMBIE_AMBIENT,.3F, false),
+    BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE, Sound.ENTITY_ZOMBIE_AMBIENT, .3F, false),
 
     // Event Pets:
     SILVERFISH(SilverfishPet.class, EntityType.SILVERFISH, Sound.ENTITY_SILVERFISH_AMBIENT, false),
@@ -57,7 +56,7 @@ public enum EnumPets {
     INDEPENDENCE_CREEPER(CreeperPet.class, EntityType.CREEPER, Sound.ENTITY_CREEPER_PRIMED, false), //Fourth of July.
 
     // Special "Pets"
-    STORAGE_MULE(null, EntityType.HORSE, null, .55F, null, false, false, true);
+    STORAGE_MULE(null, EntityType.HORSE, null, .55F, null, false, false, false, true);
 
     private Class<? extends EntityInsentient> clazz;
     private EntityType entityType;
@@ -65,9 +64,10 @@ public enum EnumPets {
     private float followSpeed;
     private String description;
     private boolean subGetsFree;
+    private boolean subPlusPlusGetsFree;
     private boolean showInGui; //Pets we haven't released yet, or are disabled.
     private boolean special;
-    
+
     EnumPets(Class<? extends EntityInsentient> cls, EntityType t, Sound sound) {
         this(cls, t, sound, .45F);
     }
@@ -75,7 +75,7 @@ public enum EnumPets {
     EnumPets(Class<? extends EntityInsentient> cls, EntityType t, Sound sound, float followSpeed) {
         this(cls, t, sound, followSpeed, true);
     }
-    
+
     EnumPets(Class<? extends EntityInsentient> cls, EntityType t, Sound sound, boolean subFree) {
         this(cls, t, sound, .45F, subFree, true);
     }
@@ -85,11 +85,11 @@ public enum EnumPets {
     }
 
     EnumPets(Class<? extends EntityInsentient> cls, EntityType t, String description, Sound sound, float followSpeed, boolean subFree, boolean showGUI) {
-        this(cls, t, sound, followSpeed, description, subFree, showGUI, false);
+        this(cls, t, sound, followSpeed, description, subFree, false, showGUI, false);
     }
 
     EnumPets(Class<? extends EntityInsentient> cls, EntityType t, Sound sound, float followSpeed, boolean subFree, boolean showGUI) {
-        this(cls, t, sound, followSpeed, null, subFree, showGUI, false);
+        this(cls, t, sound, followSpeed, null, subFree, false, showGUI, false);
     }
 
     public String getDisplayName() {
@@ -108,13 +108,13 @@ public enum EnumPets {
     public Class<? extends EntityInsentient> getNMSSuperClass() {
         return (Class<? extends EntityInsentient>) getClazz().getSuperclass();
     }
-    
+
     /**
      * Get the mob entity id for registration.
      */
     @SuppressWarnings("deprecation")
-	public int getEggShortData() {
-    	return entityType.getTypeId();
+    public int getEggShortData() {
+        return entityType.getTypeId();
     }
 
     /**
@@ -172,6 +172,11 @@ public enum EnumPets {
             // Give correct AI and add to pet list.
             player.playSound(player.getLocation(), getSound(), 1F, 1F);
             PetUtils.givePetAI(e, player, this);
+
+            if (this == ELDER_GAURDIAN && pet instanceof GuardianPet) {
+                GuardianPet pets = (GuardianPet)pet;
+                pets.setElder(true);
+            }
             return pet;
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,6 +193,7 @@ public enum EnumPets {
                 return ep;
         return null;
     }
+
     public static EnumPets getById(int id) {
         for (EnumPets ep : values())
             if (ep.getId() == id)

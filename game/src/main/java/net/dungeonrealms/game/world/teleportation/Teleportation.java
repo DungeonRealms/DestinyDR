@@ -92,7 +92,7 @@ public class Teleportation implements GenericMechanic {
         } else {
         	player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
             player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
-            player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
+            player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1.5F);
         }
 
         String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + location.getDisplayName();

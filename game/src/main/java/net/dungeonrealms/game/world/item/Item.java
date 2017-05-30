@@ -328,7 +328,7 @@ public class Item {
         DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25),
         CATCH_SUCCESS("FISHING SUCCESS", "catchSuccess", 2, 2, 2, 2, 6),
         JUNK_FIND("JUNK FIND", "junkFind", 11, 12, 13, 14, 15),
-        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, -1, -1, 1, 1);
+        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, 1, 2, 3, 3);
 
         private String prefix;
         @Getter
@@ -400,7 +400,8 @@ public class Item {
         GEM_FIND("GEM FIND", "gemFind", 3, 3, 5, 8, 11),
         MINING_SUCCESS("MINING SUCCESS", "miningSuccess", 2, 2, 3, 4, 5),
         TRIPLE_ORE("TRIPLE ORE", "tripleOre", 2, 2, 3, 4, 5),
-        DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25);
+        DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25),
+        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, 1, 2, 3, 3);
 
         private String prefix;
         @Getter

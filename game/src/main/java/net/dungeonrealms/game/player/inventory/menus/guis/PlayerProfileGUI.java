@@ -40,25 +40,26 @@ public class PlayerProfileGUI extends GUIMenu {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
         setItem(17, new GUIItem(ItemManager.createItem(Material.BOOK_AND_QUILL, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Friend List",
-                ChatColor.GRAY.toString() + "Add or remove friends."
+                "", ChatColor.GRAY.toString() + "Manage your Friends List!"
         )).setClick(e -> new FriendGUI(player, this, false).open(player, e.getAction())));
 
         setItem(0, new GUIItem(ItemManager.createItem(Material.CHEST, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Unlockables",
-                ChatColor.GRAY.toString() + "Make yourself unique",
-                ChatColor.GRAY.toString() + "with awesome unlockables"
+                "",
+                ChatColor.GRAY.toString() + "View all in game unlockables!"
         )).setClick(e -> new UnlockablesGUI(player, this).open(player, e.getAction())));
 
         setItem(18, new GUIItem(ItemManager.createItem(Material.ENDER_CHEST, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Purchasables",
-                ChatColor.GRAY.toString() + "Swag yourself out with",
-                ChatColor.GRAY.toString() + "some dank purchasables"
+                "",
+                ChatColor.GRAY.toString() + "View all things available for purchase!"
         )).setClick(e -> new CategoryGUI(player).setPreviousGUI(this).setShouldOpenPreviousOnClose(true).open(player, e.getAction())));
 
 
         setItem(9, new GUIItem(ItemManager.createItem(Material.EMERALD, ChatColor.YELLOW + ChatColor.BOLD.toString() + "E-Cash Vendor",
-                ChatColor.GRAY.toString() + "E-Cash is obtained by voting",
                 "",
-                ChatColor.RED + "Use /vote"
-        )).setClick(e -> {
+                ChatColor.GRAY + "View all available E-Cash items!",
+                "",
+                ChatColor.GRAY + "Unlock " + ChatColor.GREEN + ChatColor.BOLD + "FREE" + ChatColor.GRAY + " E-Cash with " + ChatColor.GREEN + "/vote"
+        )).setEnchanted(true).setClick(e -> {
             player.closeInventory();
             //NPCMenu.ECASH_VENDOR.open(player)
             ShopECashVendor gui = new ShopECashVendor(player);
@@ -68,11 +69,14 @@ public class PlayerProfileGUI extends GUIMenu {
         }));
 
         setItem(8, new GUIItem(ItemManager.createItem(Material.COMPASS, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Achievements",
-                ChatColor.GRAY.toString() + "Check your progress."
+                "",
+                ChatColor.GRAY+  "View your Achievement progress",
+                ChatColor.GRAY + "on your journey through Andalucia!"
         )).setClick(e -> new AchievementGUI(player, this).open(player, e.getAction())));
 
         setItem(26, new GUIItem(ItemManager.createItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Toggles",
-                ChatColor.GRAY.toString() + "Adjust preferences here."
+                "",
+                ChatColor.GRAY.toString() + "Adjust game toggles and preferences."
         )).setClick(e -> new TogglesGUI(player, this).open(player, e.getAction())));
 
         PlayerStats stats = wrapper.getPlayerStats();
@@ -101,6 +105,8 @@ public class PlayerProfileGUI extends GUIMenu {
                 lore.add(ChatColor.GOLD + " BOW DMG: " + ChatColor.AQUA + df.format(stats.getBowDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getBowDMG(true)) + "%]" : ""));
             } else if (stat.equals(Stats.INTELLECT)) {
                 lore.add(ChatColor.GOLD + " STAFF DMG: " + ChatColor.AQUA + df.format(stats.getStaffDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getStaffDMG(true)) + "%]" : ""));
+                lore.add(ChatColor.GOLD + " CRITICAL DMG: " + ChatColor.AQUA + df.format(stats.getCriticalDamage(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getCriticalDamage(true)) + "%]" : ""));
+
             }
             lore.add("");
             lore.add(ChatColor.GREEN + "Allocated Points: " + ChatColor.AQUA + stats.getStat(stat) + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + " [+" + stats.getTempStat(stat) + "]" : ""));

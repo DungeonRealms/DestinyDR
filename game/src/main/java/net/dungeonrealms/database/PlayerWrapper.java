@@ -220,9 +220,6 @@ public class PlayerWrapper {
     @Getter
     private List<PendingPurchaseable> pendingPurchaseablesUnlocked = new ArrayList<>();
 
-    @Getter
-    @Setter
-    private String playerName;
 
     @Getter
     @Setter
@@ -1136,7 +1133,7 @@ public class PlayerWrapper {
     public String getDisplayName() {
         PlayerRank rank = getRank();
         ChatColor nameColor = rank.isAtLeast(PlayerRank.TRIALGM) ? ChatColor.AQUA : getAlignment().getNameColor();
-        return rank.getChatPrefix() + nameColor + (isOnline() ? getPlayer().getName() : getPlayerName());
+        return rank.getChatPrefix() + nameColor + (isOnline() ? getPlayer().getName() : getUsername());
     }
 
     /**
@@ -1452,10 +1449,9 @@ public class PlayerWrapper {
         for (int k = 0; k < getPendingPurchaseablesUnlocked().size(); k++) {
             PendingPurchaseable item = getPendingPurchaseablesUnlocked().get(k);
             toReturn.append(item.toString());
-            if (k < (getPendingPurchaseablesUnlocked().size() - 1)) toReturn.append("%^&%");
+            if (k < (getPendingPurchaseablesUnlocked().size() - 1)) toReturn.append("%&&%");
         }
 
-        System.out.println("The pending we are saving: " + toReturn.toString());
 
         return toReturn.toString();
     }
@@ -1466,19 +1462,19 @@ public class PlayerWrapper {
             this.pendingPurchaseablesUnlocked = purchases;
             return true;//They dont have any.
         }
-        String[] contents = serialized.split("%^&%");
+        String[] contents = serialized.split("%&&%");
         for (String part : contents) {
             if (part == null || part.isEmpty()) continue;
             try {
                 PendingPurchaseable toAdd = PendingPurchaseable.fromString(part);
                 if (toAdd == null) {
-                    Constants.log.info("An error occurred while parsing " + getPlayerName() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
+                    Constants.log.info("An error occurred while parsing " + getUsername() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
                     return false;
                 }
                 purchases.add(toAdd);
             } catch (Exception e) {
                 e.printStackTrace();
-                Constants.log.info("2 An error occurred while parsing " + getPlayerName() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
+                Constants.log.info("2 An error occurred while parsing " + getUsername() + "'s pending purchaseables for string: " + part + " with the whole: " + serialized);
                 return false;
             }
         }

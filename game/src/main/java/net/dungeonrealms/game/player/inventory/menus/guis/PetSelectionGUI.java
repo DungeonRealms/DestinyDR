@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory.menus.guis;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -17,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -47,17 +49,24 @@ public class PetSelectionGUI extends GUIMenu {
             PetData hisData = playerPets.get(pets);
 
             AtomicBoolean isLocked = new AtomicBoolean(hisData == null || !hisData.isUnlocked());
-            if (pets.isSubGetsFree() && wrapper.getRank().isSUB())
+            if (pets.isSubGetsFree() && wrapper.getRank().isSUB() || pets.isSubPlusPlusGetsFree() && wrapper.getRank().isLifetimeSUB())
                 isLocked.set(false);
+
+            List<String> lore = Lists.newArrayList(
+                    ChatColor.GRAY + "Left Click: " + ChatColor.WHITE + "Summon Pet",
+                    ChatColor.GRAY + "Right Click: " + ChatColor.WHITE + "Rename Pet",
+                    "");
+            if(pets.getDescription() != null){
+                lore.add(ChatColor.GRAY + ChatColor.ITALIC.toString() + pets.getDescription());
+                lore.add("");
+            }
+            lore.add(ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()));
+            lore.add((isLocked.get() ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked.get() ? "" : "UN") + "LOCKED");
 
             NBTTagCompound compound = new NBTTagCompound();
             compound.setString("id", pets.getEntityType().getName());
-            setItem(i++, new GUIItem(new NBTWrapper(ItemManager.createItem(Material.MONSTER_EGG, ChatColor.WHITE + pets.getDisplayName(), (short) pets.getEggShortData(),
-                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
-                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
-                    "",
-                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + (hisData != null && hisData.getPetName() != null ? hisData.getPetName() : pets.getDisplayName()),
-                    (isLocked.get() ? ChatColor.RED : ChatColor.GREEN) + "" + ChatColor.BOLD + (isLocked.get() ? "" : "UN") + "LOCKED")).set("EntityTag", compound).build()).setClick(e -> {
+            setItem(i++, new GUIItem(new NBTWrapper(ItemManager.createItem(Material.MONSTER_EGG, ChatColor.GREEN + pets.getDisplayName(), (short) pets.getEggShortData())).set("EntityTag", compound).build())
+                    .setLore(lore).setClick(e -> {
 
                 if (isLocked.get()) {
                     player.sendMessage(ChatColor.RED + "You do " + ChatColor.BOLD + "NOT" + ChatColor.RED + " have access to this pet!");

@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
@@ -98,6 +99,11 @@ public class RestrictionListener implements Listener {
                     p.getInventory().remove(is);
                     break;
                 }
+            }
+
+            NBTWrapper wrapper = new NBTWrapper(is);
+            if (wrapper.hasTag("profileItem")) {
+                p.getInventory().remove(is);
             }
         }
     }

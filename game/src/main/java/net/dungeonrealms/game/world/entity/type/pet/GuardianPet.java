@@ -3,10 +3,9 @@ package net.dungeonrealms.game.world.entity.type.pet;
 import net.dungeonrealms.common.game.util.PacketUtils;
 import net.dungeonrealms.game.world.entity.type.CustomNavigationGuardian;
 import net.minecraft.server.v1_9_R2.*;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
-
-import org.bukkit.entity.Player;
 
 /**
  * Created by Rar349 and iFamassxD on 4/30/2017.
@@ -17,11 +16,11 @@ public class GuardianPet extends EntityGuardian implements Ownable {
         super(world);
         setElder(false);
     }
-    
+
     @Override
     public void setOwner(Player player) {
-    	// Displays the guardian on your screen effect.
-    	PacketUtils.sendPacket(player, new PacketPlayOutGameStateChange(10, 0.0F));
+        // Displays the guardian on your screen effect.
+        PacketUtils.sendPacket(player, new PacketPlayOutGameStateChange(10, 0.0F));
     }
 
     @Override
@@ -31,12 +30,24 @@ public class GuardianPet extends EntityGuardian implements Ownable {
 
     @Override
     public void setGoalTarget(@Nullable EntityLiving entityliving) {
-    	// Don't set goals.
+        // Don't set goals.
     }
 
     @Override
     protected void r() {
-    	// Don't register default AI
+        // Don't register default AI
+    }
+
+    @Override
+    protected void M() {
+        if (this.isElder()) {
+            //Remove that effect..
+            if (!this.cZ()) {
+                this.a(new BlockPosition(this), 16);
+            }
+        } else {
+            super.M();
+        }
     }
 
     @Override
@@ -55,7 +66,7 @@ public class GuardianPet extends EntityGuardian implements Ownable {
 
     @Override // On Tick
     public void n() {
-        if(this.onGround) {
+        if (this.onGround) {
             this.motY += 0.5D; //Bounce if on ground.
             this.onGround = false;
             this.impulse = true; // Unknown.

@@ -76,6 +76,11 @@ public class CommandMobDebug extends BaseCommand {
             armor.addItem(item);
         }
 
+        ItemStack lastUsedHelmet = EntityAPI.lastUsedHelmetItem.get(entity);
+        if(lastUsedHelmet != null) {
+            armor.addItem(lastUsedHelmet);
+        }
+
         ItemStack hand = ((LivingEntity) entity).getEquipment().getItemInMainHand();
         if (hand != null && hand.getType() != Material.AIR) {
             items++;

@@ -45,10 +45,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -58,6 +55,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Redone by Kneesnap on April 19th, 2017.
  */
 public class EntityAPI {
+
+    public static WeakHashMap<Entity, ItemStack> lastUsedHelmetItem = new WeakHashMap<>();
 
     private static Random random = ThreadLocalRandom.current();
 
@@ -398,7 +397,6 @@ public class EntityAPI {
     /**
      * Recalculates a monster's attributes.
      *
-     * @param ent
      */
     public static void calculateAttributes(DRMonster m) {
         AttributeList attributes = m.getAttributes();
@@ -409,8 +407,12 @@ public class EntityAPI {
 
         // if we have a skull we need to generate a helmet so mob stats are calculated correctly
         // TODO: Verify 3 is the correct slot.
-        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier)))
-            armorSet[3] = new ItemArmor().setTier(tier).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(m.getBukkit()))).generateItem();
+        if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier))) {
+            armorSet[3] = new ItemArmor().setTier(tier).setType(ItemType.HELMET).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(m.getBukkit()))).generateItem();
+            lastUsedHelmetItem.put(m.getBukkit(), armorSet[3]);
+        } else if(lastUsedHelmetItem.containsKey(m.getBukkit())) {
+            lastUsedHelmetItem.remove(m.getBukkit());
+        }
 
         attributes.addStats(m.getBukkit().getEquipment().getItemInMainHand());
         for (ItemStack armor : armorSet)

@@ -208,7 +208,7 @@ public class DamageAPI {
             double critIncrease = 0.0;
             if(attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
-                critIncrease = int_val * 0.025;
+                critIncrease = int_val * 0.0025;
             }
             damage *= (2 + critIncrease);
 

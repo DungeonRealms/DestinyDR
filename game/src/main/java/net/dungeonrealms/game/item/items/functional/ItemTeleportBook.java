@@ -12,6 +12,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -43,7 +44,9 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 	}
 
 	public TeleportLocation getTeleportLocation() {
-		if(teleportLocation == null) return TeleportLocation.getRandomBookTP();
+		if(teleportLocation == null){
+			return TeleportLocation.getRandomBookTP();
+		}
 		return teleportLocation;
 	}
 

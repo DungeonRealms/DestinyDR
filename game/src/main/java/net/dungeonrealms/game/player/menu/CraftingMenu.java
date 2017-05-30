@@ -17,6 +17,7 @@ import net.dungeonrealms.game.item.items.functional.ecash.*;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -47,10 +48,10 @@ public class CraftingMenu implements GenericMechanic, Listener {
                 PacketType type = packet.getType();
                 if (type == CLIENT_COMMAND && packet.getClientCommands().read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
                     if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-                        player.getOpenInventory().getTopInventory().setItem(1, new ItemPlayerProfile(player).generateItem());
-                        player.getOpenInventory().getTopInventory().setItem(2, new ItemHearthstone(player).generateItem());
-                        player.getOpenInventory().getTopInventory().setItem(3, new ItemPetSelector().generateItem());
-                        player.getOpenInventory().getTopInventory().setItem(4, new ItemMountSelection().generateItem());
+                        player.getOpenInventory().getTopInventory().setItem(1, getProfileItem(new ItemPlayerProfile(player).generateItem()));
+                        player.getOpenInventory().getTopInventory().setItem(2, getProfileItem(new ItemHearthstone(player).generateItem()));
+                        player.getOpenInventory().getTopInventory().setItem(3, getProfileItem(new ItemPetSelector().generateItem()));
+                        player.getOpenInventory().getTopInventory().setItem(4, getProfileItem(new ItemMountSelection().generateItem()));
                     }
                     GameAPI.runAsSpectators(player, (spectator) -> {
                         spectator.sendMessage(ChatColor.YELLOW + player.getName() + " opened their inventory.");
@@ -94,9 +95,12 @@ public class CraftingMenu implements GenericMechanic, Listener {
     public static void addPetItem(Player player) {
         if (PlayerManager.hasItem(player.getInventory(), ItemType.PET))
             return;
-        player.getInventory().addItem(new ItemPetSelector().generateItem());
+        player.getInventory().addItem(getProfileItem(new ItemPetSelector().generateItem()));
     }
 
+    private static ItemStack getProfileItem(ItemStack item){
+        return new NBTWrapper(item).setInt("profileItem", 1).build();
+    }
     public static void addMuleItem(Player player) {
         if (PlayerManager.hasItem(player.getInventory(), ItemType.MULE))
             return;

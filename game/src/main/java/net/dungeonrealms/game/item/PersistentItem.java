@@ -118,8 +118,9 @@ public abstract class PersistentItem {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <T extends Enum<T>> T getEnum(String key, Class<? extends Enum> cls, T defaultValue) {
         try {
-            return (T) cls.getMethod("valueOf").invoke(null, getTagString(key));
+            return (T) Enum.valueOf(cls, getTagString(key));
         } catch (Exception e) {
+            e.printStackTrace();
             return defaultValue;
         }
     }

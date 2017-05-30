@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandPacketLog extends BaseCommand {
 	
 	public CommandPacketLog (String command, String usage, String description) {
-		super(command, usage, description);
+		super(command, usage, description, null, Lists.newArrayList("plog"));
 	}
 
 	@Override

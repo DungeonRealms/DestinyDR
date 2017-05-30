@@ -10,6 +10,7 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
+import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
@@ -25,7 +26,6 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -104,7 +104,8 @@ public class PvEListener implements Listener {
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         AttackResult res = null;
-        if (!ItemWeapon.isWeapon(held)) {
+        //1 damage for melee staffing..
+        if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager()) && ItemWeaponStaff.isStaff(held)) {
             res = new AttackResult(damager, receiver);
             res.setDamage(1);
             if (dpsDummy) {
