@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.inventory.menus.guis.MountSelectionGUI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,6 +45,6 @@ public class ItemMountSelection extends FunctionalItem implements ItemInventoryE
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         evt.setCancelled(true);
-        new MountSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> new MountSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction()), 1);
     }
 }

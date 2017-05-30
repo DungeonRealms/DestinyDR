@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item.items.functional.ecash;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
@@ -9,6 +10,7 @@ import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,12 +21,12 @@ public class ItemPetSelector extends FunctionalItem implements ItemInventoryEven
     private EnumPets pet;
     private String petName;
 
-    public ItemPetSelector(ItemStack item){
+    public ItemPetSelector(ItemStack item) {
         super(item);
     }
+
     public ItemPetSelector() {
         super(ItemType.PET_SELECTOR);
-        setUndroppable(true);
     }
 
     public ItemPetSelector(EnumPets pet) {
@@ -56,6 +58,6 @@ public class ItemPetSelector extends FunctionalItem implements ItemInventoryEven
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         evt.setCancelled(true);
-        new PetSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> new PetSelectionGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction()), 1);
     }
 }

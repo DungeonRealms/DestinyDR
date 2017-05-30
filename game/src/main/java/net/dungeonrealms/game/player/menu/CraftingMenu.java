@@ -68,7 +68,7 @@ public class CraftingMenu implements GenericMechanic, Listener {
         HandlerList.unregisterAll(this);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onCraftingInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
@@ -94,7 +94,7 @@ public class CraftingMenu implements GenericMechanic, Listener {
     public static void addPetItem(Player player) {
         if (PlayerManager.hasItem(player.getInventory(), ItemType.PET))
             return;
-        player.getInventory().addItem(new ItemPet().generateItem());
+        player.getInventory().addItem(new ItemPetSelector().generateItem());
     }
 
     public static void addMuleItem(Player player) {

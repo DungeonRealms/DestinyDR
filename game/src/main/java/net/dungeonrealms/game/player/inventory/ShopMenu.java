@@ -185,7 +185,6 @@ public abstract class ShopMenu {
             if(action != null && action.name().startsWith("PICKUP_")){
                 //CAnt close the inventory on a pickup_all action etc otherwise throws exceptions.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    player.closeInventory();
                     reopenWithDelay(player);
                 });
                 return;
@@ -193,7 +192,7 @@ public abstract class ShopMenu {
             reopenWithDelay(player);
             return;
         }
-        
+
         player.openInventory(getInventory());
         ShopMenuListener.getMenus().put(player, this);
     }

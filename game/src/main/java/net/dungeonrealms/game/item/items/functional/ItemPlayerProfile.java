@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.player.inventory.menus.guis.PlayerProfileGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,7 +48,8 @@ public class ItemPlayerProfile extends FunctionalItem implements ItemInventoryLi
     @Override
     public void onInventoryClick(ItemInventoryEvent evt) {
         evt.setCancelled(true);
-        new PlayerProfileGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction());
+        //Delay that open like 1 click..
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> new PlayerProfileGUI(evt.getPlayer(), null).open(evt.getPlayer(), evt.getEvent().getAction()), 1);
     }
 
 
