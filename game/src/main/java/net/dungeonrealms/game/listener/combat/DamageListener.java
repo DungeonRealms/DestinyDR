@@ -415,7 +415,7 @@ public class DamageListener implements Listener {
         event.getDrops().clear();
         p.setGameMode(GameMode.SPECTATOR);
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 1));
-        p.teleport(respawnLocation);
+        GameAPI.teleport(p, respawnLocation);
         p.setFireTicks(0);
         p.setFallDistance(0);
         EntityMechanics.setVelocity(p, p.getVelocity().zero());
@@ -469,14 +469,14 @@ public class DamageListener implements Listener {
     public void onPlayerSplashPotion(PotionSplashEvent event) {
         if (!(event.getPotion().getShooter() instanceof Player)) return;
         PotionItem potion = new PotionItem(event.getPotion().getItem());
-        if(potion == null) return;
+        if (potion == null) return;
         event.setCancelled(true);
 
         for (LivingEntity entity : event.getAffectedEntities()) {
             if (!GameAPI.isPlayer(entity)) {
                 continue;
             }
-            HealthHandler.heal((Player)event.getPotion().getShooter(), potion.getHealAmount(),true);
+            HealthHandler.heal((Player) event.getPotion().getShooter(), potion.getHealAmount(), true);
         }
     }
 
@@ -802,7 +802,7 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player)
             event.setCancelled(true);
     }
-
+    
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
@@ -814,7 +814,7 @@ public class DamageListener implements Listener {
             List<Player> spectators = GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 1).stream().filter((pl) -> pl.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(pl) && pl.getSpectatorTarget() != null && pl.getSpectatorTarget().equals(event.getPlayer())).collect(Collectors.toList());
             spectators.forEach((pl) -> {
                 pl.setSpectatorTarget(null);
-                pl.teleport(event.getTo());
+                GameAPI.teleport(pl, event.getTo());
             });
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -17,7 +17,8 @@ import java.util.function.Consumer;
 /**
  * Created by Rar349 on 5/10/2017.
  */
-@AllArgsConstructor @Getter
+@AllArgsConstructor
+@Getter
 public enum Purchaseables {
 
     LOOT_BUFF_20("Loot Buff", "\n20% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 0, true, true, ChatColor.AQUA),
@@ -32,14 +33,14 @@ public enum Purchaseables {
     SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, false, ChatColor.GOLD),
 
     WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
-    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD, true, 2),
-    DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 8, false, true, ChatColor.LIGHT_PURPLE, true, 5),
+    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, ChatColor.GOLD, true, 2),
+    DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 2, false, true, ChatColor.LIGHT_PURPLE, true, 5),
 
-    COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, ChatColor.BLACK, true),
-    EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, ChatColor.GREEN, true),
-    IRON_ORE_HAT("Iron Ore Hat", "\nA helmet made of precious ore", Material.IRON_ORE, WebstoreCategories.HATS, 11, false, true, ChatColor.WHITE, true),
-    DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, ChatColor.AQUA, true),
-    GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, ChatColor.GOLD, true),
+    COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, ChatColor.WHITE, true),
+    EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, ChatColor.GREEN, true),
+    IRON_ORE_HAT("Iron Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T3 Mining with Treasure Find!", Material.IRON_ORE, WebstoreCategories.HATS, 11, false, true, ChatColor.AQUA, true),
+    DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T4 Mining with Treasure Find!", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, ChatColor.LIGHT_PURPLE, true),
+    GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T5 Mining with Treasure Find!", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, ChatColor.GOLD, true),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, ChatColor.AQUA),
@@ -75,7 +76,7 @@ public enum Purchaseables {
         if (showColors) {
             for (int index = 0; index < toReturn.size(); index++) {
                 String line = toReturn.get(index);
-                toReturn.set(index, getDescriptionColor() + line);
+                toReturn.set(index, getDescriptionColor() + ChatColor.translateAlternateColorCodes('&', line));
             }
         }
         return toReturn;
@@ -84,9 +85,9 @@ public enum Purchaseables {
     public String getName() {
         return this.getName(true);
     }
-    
+
     public ChatColor getDescriptionColor() {
-    	return ChatColor.GRAY;
+        return ChatColor.GRAY;
     }
 
     public String getName(boolean showColor) {
@@ -101,7 +102,7 @@ public enum Purchaseables {
         int num = 0;
         for (Purchaseables item : Purchaseables.values())
             if (item.getCategory() == category)
-            	num++;
+                num++;
 
         return num;
     }
@@ -113,11 +114,11 @@ public enum Purchaseables {
 
     public int getNumberOwned(PlayerWrapper wrapper) {
         if (wrapper == null)
-        	return -1;
-        
+            return -1;
+
         if (!isShouldStore())
-        	return this == SCRAP_TAB ? (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? 1 : 0) : -1;
-        
+            return this == SCRAP_TAB ? (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? 1 : 0) : -1;
+
         Integer number = wrapper.getPurchaseablesUnlocked().get(this);
         return number != null ? number : 0;
     }
@@ -129,7 +130,7 @@ public enum Purchaseables {
     public String getOwnedDisplayString(PlayerWrapper wrapper) {
         int numOwned = getNumberOwned(wrapper);
         return numOwned > 0 ? ChatColor.GREEN + ChatColor.BOLD.toString() + (isCanHaveMultiple() ? "OWNED: " + numOwned : "UNLOCKED")
-        		: ChatColor.RED + ChatColor.BOLD.toString() + (isCanHaveMultiple() ? "NONE OWNED" : "LOCKED");
+                : ChatColor.RED + ChatColor.BOLD.toString() + (isCanHaveMultiple() ? "NONE OWNED" : "LOCKED");
     }
 
     public void setNumberOwned(PlayerWrapper wrapper, int owned) {
@@ -142,61 +143,63 @@ public enum Purchaseables {
             throw new Exception("We can not store this purchase! It might be handled differently!");
         wrapper.getPurchaseablesUnlocked().put(this, owned);
 
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        if (autoSave)
+            SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
     }
 
     public static final int NOT_STOREABLE = -1, NO_MULTIPLES = 0, SUCCESS = 1, NONE_OWNED = 2, SUCESS_REMOVED_ALL = 3, FAILED = 4;
 
 
-    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId,boolean autoSave, Consumer<Integer> callback) {
+    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
-        PendingPurchaseable pending = new PendingPurchaseable(this,whoPurchased,datePurchased,amount, transactionId);
+        PendingPurchaseable pending = new PendingPurchaseable(this, whoPurchased, datePurchased, amount, transactionId);
         wrapper.getPendingPurchaseablesUnlocked().add(pending);
-        if(autoSave) {
-            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
-        } else if(callback != null){
+        if (autoSave) {
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+        } else if (callback != null) {
             callback.accept(0);
         }
         return SUCCESS;
 
     }
 
-    public int removeNumberPending(PlayerWrapper wrapper,int amount, boolean autoSave, Consumer<Integer> callback) {
+    public int removeNumberPending(PlayerWrapper wrapper, int amount, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
         List<PendingPurchaseable> pendingList = wrapper.getPendingPurchaseablesUnlocked();
         int currentNumberTracking = amount;
-        for(int index = 0; index < pendingList.size(); index++) {
-            if(currentNumberTracking <= 0) break;
+        for (int index = 0; index < pendingList.size(); index++) {
+            if (currentNumberTracking <= 0) break;
             PendingPurchaseable pending = pendingList.get(index);
             if (!pending.getPurchaseables().equals(this)) continue;
-            if(pending.getNumberPurchased() > currentNumberTracking) {
+            if (pending.getNumberPurchased() > currentNumberTracking) {
                 pending.setNumberPurchased(pending.getNumberPurchased() - currentNumberTracking);
                 currentNumberTracking = 0;
                 break;
             }
-                pendingList.remove(index);
-                currentNumberTracking -= pending.getNumberPurchased();
+            pendingList.remove(index);
+            currentNumberTracking -= pending.getNumberPurchased();
         }
 
-        if(autoSave) {
-            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
-        } else if(callback != null) callback.accept(0);
-        if(currentNumberTracking == amount) return NONE_OWNED;
-        if(currentNumberTracking > 0) return SUCESS_REMOVED_ALL;
+        if (autoSave) {
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+        } else if (callback != null) callback.accept(0);
+        if (currentNumberTracking == amount) return NONE_OWNED;
+        if (currentNumberTracking > 0) return SUCESS_REMOVED_ALL;
         return SUCCESS;
 
     }
 
     public static boolean removePending(PlayerWrapper wrapper, String transactionID, boolean autoSave, Consumer<Integer> callback) {
         List<PendingPurchaseable> pendingList = wrapper.getPendingPurchaseablesUnlocked();
-        for(int index = 0; index < pendingList.size(); index++) {
+        for (int index = 0; index < pendingList.size(); index++) {
             PendingPurchaseable pending = pendingList.get(index);
-            if(!pending.getTransactionId().equals(transactionID)) continue;
+            if (!pending.getTransactionId().equals(transactionID)) continue;
             pendingList.remove(index);
-            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
-            else if(callback != null) callback.accept(0);
+            if (autoSave)
+                SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+            else if (callback != null) callback.accept(0);
             return true;
         }
 
@@ -204,7 +207,7 @@ public enum Purchaseables {
     }
 
     public int addNumberUnlocked(PlayerWrapper wrapper, int amount, Consumer<Integer> callback) {
-        return this.addNumberUnlocked(wrapper,amount,true, callback);
+        return this.addNumberUnlocked(wrapper, amount, true, callback);
     }
 
     public int addNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave, Consumer<Integer> callback) {
@@ -215,13 +218,14 @@ public enum Purchaseables {
 
 
         wrapper.getPurchaseablesUnlocked().put(this, amount + currentNumberUnlocked);
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
-        else if(callback != null) callback.accept(0);
+        if (autoSave)
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+        else if (callback != null) callback.accept(0);
         return SUCCESS;
     }
 
     public int removeNumberUnlocked(PlayerWrapper wrapper, int amount, Consumer<Integer> callback) {
-        return this.removeNumberUnlocked(wrapper,amount,true, callback);
+        return this.removeNumberUnlocked(wrapper, amount, true, callback);
     }
 
     public int removeNumberUnlocked(PlayerWrapper wrapper, int amount, boolean autoSave, Consumer<Integer> callback) {
@@ -229,15 +233,17 @@ public enum Purchaseables {
         Integer currentNumberUnlocked = wrapper.getPurchaseablesUnlocked().get(this);
         if (currentNumberUnlocked == null) return NONE_OWNED;
 
-        if(currentNumberUnlocked - amount <= 0) {
+        if (currentNumberUnlocked - amount <= 0) {
             wrapper.getPurchaseablesUnlocked().remove(this);
-            if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
-            else if(callback != null) callback.accept(0);
+            if (autoSave)
+                SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+            else if (callback != null) callback.accept(0);
             return SUCESS_REMOVED_ALL;
         }
 
         wrapper.getPurchaseablesUnlocked().put(this, currentNumberUnlocked - amount);
-        if(autoSave)SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+        if (autoSave)
+            SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
         return SUCCESS;
     }
 }

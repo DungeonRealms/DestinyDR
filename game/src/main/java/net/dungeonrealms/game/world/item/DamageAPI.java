@@ -288,7 +288,7 @@ public class DamageAPI {
         float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(held);
         for (Entity entity : ents) {
             //  ARE WE AN ALLOWED ENTITY  //
-            if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)))
+            if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)) || entity.isInvulnerable())
                 continue;
             //  NO DAMAGE IN SAFE ZONES  //
             if (GameAPI.isInSafeRegion(event.getEntity().getLocation()) || GameAPI.isInSafeRegion(damager.getLocation()))

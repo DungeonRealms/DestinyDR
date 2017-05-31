@@ -357,7 +357,7 @@ public class RealmListener implements Listener {
         if (event.getTo().getY() <= 0) {
 
             Location normalWorld = realm.getPortalLocation().clone().add(0, 1, 0);
-            p.teleport(normalWorld);
+            GameAPI.teleport(p, normalWorld);
             //Teleporting twice prevents teleporting far up
             p.teleport(normalWorld);
             return;

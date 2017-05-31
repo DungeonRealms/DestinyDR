@@ -265,7 +265,7 @@ public class Realm {
             if (kickMessage != null && !isOwner(p))
                 p.sendMessage(kickMessage);
 
-            p.teleport(portalLocation);
+            GameAPI.teleport(p, portalLocation);
         });
     }
 

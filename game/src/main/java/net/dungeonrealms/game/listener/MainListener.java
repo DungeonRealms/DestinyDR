@@ -108,6 +108,8 @@ public class MainListener implements Listener {
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN && !EnumEntityType.PET.isType(event.getEntity()))
             event.setCancelled(true);
+
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -368,7 +370,7 @@ public class MainListener implements Listener {
 
                 if (event.getTo().distanceSquared(offer.centerPoint) >= 300) {
 //                    event.setCancelled(true);
-                    player.teleport(event.getFrom());
+                    GameAPI.teleport(player, event.getFrom());
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING:" + ChatColor.RED
                             + " You are too far from the DUEL START POINT, please turn back or you will "
                             + ChatColor.UNDERLINE + "FORFEIT.");
@@ -509,7 +511,7 @@ public class MainListener implements Listener {
             if (player.getVehicle() != null)
                 player.getVehicle().eject();
 
-            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
+            GameAPI.teleport(player, KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
             else
@@ -518,7 +520,7 @@ public class MainListener implements Listener {
         }
         if (GameAPI.isInSafeRegion(event.getTo()) || GameAPI.isNonPvPRegion(event.getTo())) {
             event.setCancelled(true);
-            player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
+            GameAPI.teleport(player, new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
             if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
             else

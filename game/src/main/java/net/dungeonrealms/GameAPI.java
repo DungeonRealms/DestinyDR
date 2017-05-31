@@ -10,13 +10,12 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -47,7 +46,6 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.UUIDHelper;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
-import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
@@ -86,7 +84,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
-
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -108,8 +105,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -122,7 +117,10 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -143,6 +141,35 @@ public class GameAPI {
      */
     public static Set<UUID> IGNORE_QUIT_EVENT = new ConcurrentSet<>();
 
+
+    /**
+     * Unfortunately, Bukkit does NOT call the PlayerTeleportEvent if the entity has a passenger.. so for BetaZombies to stay cool, we need to do it ourselves,
+     * life could be worse though.
+     *
+     * @param player
+     * @param location
+     */
+    public static void teleport(Player player, Location location) {
+        if (player.getPassenger() != null) {
+            Bukkit.getLogger().info("Removing " + player.getPassenger().getType() + " from " + player.getName() + " before teleporting!");
+            player.getPassenger().eject();
+            if (player.getPassenger() != null)
+                player.getPassenger().eject();
+
+            Player pl = PetUtils.getPets().entrySet().stream().filter(entry -> entry.getValue().equals(player.getPassenger())).findFirst().map(Map.Entry::getKey).orElse(null);
+            if (pl != null) {
+                //Fucking hell pls just get off me head..
+                player.getPassenger().teleport(pl);
+            }
+        }
+        //Stop riding any mounts..
+        if (player.getVehicle() != null) {
+            player.getVehicle().eject();
+            MountUtils.removeMount(player);
+        }
+
+        player.teleport(location);
+    }
 
     private static class PlayerLogoutWatchdog extends BukkitRunnable {
         private Player player;
@@ -501,58 +528,62 @@ public class GameAPI {
         }
         getClient().sendNetworkMessage(task, message, contents);
     }
-    
+
     /**
      * Broadcast a staff message on all shards.
+     *
      * @param message
      */
     public static void sendStaffMessage(String message) {
-    	sendStaffMessage(PlayerRank.PMOD, message);
+        sendStaffMessage(PlayerRank.PMOD, message);
     }
-    
+
     /**
      * Broadcast an error cross-shard.
      */
     public static void sendError(String error) {
-    	sendStaffMessage(PlayerRank.GM, ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + error);
+        sendStaffMessage(PlayerRank.GM, ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + error);
     }
-    
+
     /**
      * Broadcast a warning cross-shard.
+     *
      * @param warning
      */
     public static void sendWarning(String warning) {
-    	sendStaffMessage(PlayerRank.GM, ChatColor.RED + "[WARNING] " + ChatColor.WHITE + warning);
+        sendStaffMessage(PlayerRank.GM, ChatColor.RED + "[WARNING] " + ChatColor.WHITE + warning);
     }
-    
+
     /**
      * Broadcast a message cross-server and potentially to discord to any player with at least the given rank.
      */
     public static void sendStaffMessage(PlayerRank minRank, String message) {
-    	sendStaffMessage(minRank, message, false);
+        sendStaffMessage(minRank, message, false);
     }
-    
+
     /**
      * Broadcast a message cross-server to any player with at least the given rank.
+     *
      * @param minRank
      * @param message
      * @param ignOnly
      */
     public static void sendStaffMessage(PlayerRank minRank, String message, boolean ignOnly) {
-    	sendNetworkMessage((ignOnly ? "IG_" : "") + "StaffMessage", minRank.name(),
-    			message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET));
+        sendNetworkMessage((ignOnly ? "IG_" : "") + "StaffMessage", minRank.name(),
+                message.replace("{SERVER}", ChatColor.GOLD + "" + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RESET));
     }
 
     public static void sendDevMessage(String message) {
         sendStaffMessage(PlayerRank.DEV, message);
     }
-    
+
     /**
      * Send a ComponentBuilt message cross-shard.
+     *
      * @param cb
      */
     public static void sendShardMessage(ComponentBuilder cb) {
-    	sendNetworkMessage("BroadcastRaw", ComponentSerializer.toString(cb.create()));
+        sendNetworkMessage("BroadcastRaw", ComponentSerializer.toString(cb.create()));
     }
 
     /**
@@ -620,7 +651,7 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
-    	ApplicableRegionSet region = getRegion(location);
+        ApplicableRegionSet region = getRegion(location);
         return region != null && region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
                 && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
@@ -634,16 +665,16 @@ public class GameAPI {
         ApplicableRegionSet region = getRegion(location);
         return region != null && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
-    
+
     private static ApplicableRegionSet getRegion(Location l) {
-    	if (l == null || l.getWorld() == null)
-    		return null;
-    	
-    	 RegionManager regionManager = getWorldGuard().getRegionManager(l.getWorld());
-         if (regionManager == null)
-        	 return null;
-         
-         return regionManager.getApplicableRegions(l);
+        if (l == null || l.getWorld() == null)
+            return null;
+
+        RegionManager regionManager = getWorldGuard().getRegionManager(l.getWorld());
+        if (regionManager == null)
+            return null;
+
+        return regionManager.getApplicableRegions(l);
     }
 
     /**
@@ -1016,14 +1047,14 @@ public class GameAPI {
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED); // Remove 1.9 Combat delay.
         instance.setBaseValue(1024.0D);
-        
+
         // Load Permissions.
         for (PlayerRank pr : PlayerRank.values())
-        	if (rank.isAtLeast(pr))
-        		for (String perm : pr.getPerms())
-        			player.addAttachment(DungeonRealms.getInstance()).setPermission(perm, true);
+            if (rank.isAtLeast(pr))
+                for (String perm : pr.getPerms())
+                    player.addAttachment(DungeonRealms.getInstance()).setPermission(perm, true);
 
-        if(player.getName().equalsIgnoreCase("logon1027")) { // Unsure if we're ready to give him CM, so I'll keep him hardcoded til he gets the rank.
+        if (player.getName().equalsIgnoreCase("logon1027")) { // Unsure if we're ready to give him CM, so I'll keep him hardcoded til he gets the rank.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
@@ -1463,9 +1494,9 @@ public class GameAPI {
     }
 
     public static ItemStack getItem(Player player, EquipmentSlot slot) {
-    	return getItem(player.getEquipment(), slot);
+        return getItem(player.getEquipment(), slot);
     }
-    
+
     public static ItemStack getItem(EntityEquipment e, EquipmentSlot slot) {
         switch (slot) {
             case HAND:
@@ -1607,9 +1638,9 @@ public class GameAPI {
     }
 
     public static void addSmallCooldown(Metadatable m, Metadata type, int milliseconds) {
-    	type.set(m, System.currentTimeMillis() + milliseconds);
+        type.set(m, System.currentTimeMillis() + milliseconds);
     }
-    
+
     public static void addCooldown(Metadatable m, Metadata type, int seconds) {
         addSmallCooldown(m, type, seconds * 1000);
     }

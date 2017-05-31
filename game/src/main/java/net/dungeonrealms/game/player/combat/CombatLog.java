@@ -114,7 +114,7 @@ public class CombatLog implements GenericMechanic {
                     break;
             }
         }
-        player.teleport(TeleportLocation.CYRENNICA.getLocation());
+        GameAPI.teleport(player, TeleportLocation.CYRENNICA.getLocation());
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {

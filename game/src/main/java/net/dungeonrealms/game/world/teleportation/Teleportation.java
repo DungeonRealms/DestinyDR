@@ -119,7 +119,7 @@ public class Teleportation implements GenericMechanic {
                             if (CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
                             } else {
-                                player.teleport(teleportTo.getLocation());
+                                GameAPI.teleport(player, teleportTo.getLocation());
                             }
                             
                             TeleportAPI.removePlayerCurrentlyTeleporting(uuid);

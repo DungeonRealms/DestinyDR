@@ -5,11 +5,13 @@ import lombok.Setter;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.minecraft.server.v1_9_R2.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Setter
 public class BetaZombie extends ZombiePet implements Ownable {
@@ -17,7 +19,7 @@ public class BetaZombie extends ZombiePet implements Ownable {
 	private Player owner;
     @Getter private long lastBrainEat;
     private int lastTick;
-
+    private long lastRide = System.currentTimeMillis() - 5000;
     public BetaZombie(World world) {
         super(world);
     }
@@ -27,6 +29,12 @@ public class BetaZombie extends ZombiePet implements Ownable {
     	// Override default AI.
         this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+    }
+
+    @Override
+    public void stopRiding() {
+        lastRide = System.currentTimeMillis();
+        super.stopRiding();
     }
 
     @Override
@@ -42,8 +50,10 @@ public class BetaZombie extends ZombiePet implements Ownable {
 
         if (lastTick % 4 == 0) { // If we're too far away or in a different world, teleport.
             if (!owner.getWorld().equals(this.getBukkitEntity().getWorld()) || getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 15) {
-                if (this.isPassenger())
+                if (this.isPassenger()) {
                     this.getBukkitEntity().eject();
+                    this.lastRide = System.currentTimeMillis();
+                }
                 this.getBukkitEntity().teleport(owner.getLocation());
             }
         }
@@ -66,8 +76,10 @@ public class BetaZombie extends ZombiePet implements Ownable {
             if(!(ent instanceof Player)) continue;
             Player player = (Player) ent;
             if(player.equals(owner)) continue;
-            if(ThreadLocalRandom.current().nextInt(20) == 0) {
+            //OR if its been 5 seocnds since he has dismounted.
+            if(ThreadLocalRandom.current().nextInt(20) == 0 || System.currentTimeMillis() - lastRide > TimeUnit.SECONDS.toMillis(10)) {
                 player.setPassenger(getBukkitEntity());
+                Bukkit.getLogger().info("Setting passenger!");
                 return;
             }
         }

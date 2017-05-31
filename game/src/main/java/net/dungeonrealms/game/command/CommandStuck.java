@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -49,7 +50,7 @@ public class CommandStuck extends BaseCommand {
             while (!loc.getBlock().getType().equals(Material.AIR)) {
                 loc.add(0, 2, 0);
             }
-            player.teleport(loc);
+            GameAPI.teleport(player, loc);
             return true;
         }
 
