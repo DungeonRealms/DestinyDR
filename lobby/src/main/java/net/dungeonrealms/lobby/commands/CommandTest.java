@@ -16,14 +16,18 @@ public class CommandTest extends BaseCommand {
         super("gotest", "/<command>", "Send yourself to the test server.");
     }
 
+    public static boolean subOnly = true;
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player) || !Lobby.getInstance().isLoggedIn((Player)sender))
             return false;
 
         // Player must a PMOD+.
-        /*if (!Rank.isPMOD((Player) sender))
-            return false;*/
+        if (subOnly && !Rank.isSubscriber((Player) sender)) {
+            sender.sendMessage(ChatColor.RED + "You must be a" + ChatColor.UNDERLINE + " subscriber" + ChatColor.RED + " to connect to this shard!");
+            return false;
+        }
 
         // Send the user to the new test lobby.
         sender.sendMessage(ChatColor.YELLOW + ChatColor.ITALIC.toString() + "Attempting to send you to the new test server...");
