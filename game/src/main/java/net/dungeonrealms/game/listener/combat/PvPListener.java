@@ -43,8 +43,9 @@ public class PvPListener implements Listener {
             Player defender = (Player) event.getEntity();
 
             // Projectiles can be knocked back into the player.
-            if (attacker.equals(event.getEntity()))
+            if (attacker.equals(event.getEntity()) || defender.hasMetadata("NPC")) {
                 return;
+            }
 
             if (defender.getGameMode() != GameMode.SURVIVAL)
                 return;

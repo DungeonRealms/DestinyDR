@@ -419,7 +419,6 @@ public class HealthHandler implements GenericMechanic {
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
             return;
 
-        Bukkit.getLogger().info("Setting hp: " + newHP);
         if (newHP <= 0 && handlePlayerDeath(player, attacker))
             return;
 

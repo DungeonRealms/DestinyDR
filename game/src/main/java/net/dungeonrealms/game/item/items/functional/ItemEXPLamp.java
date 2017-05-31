@@ -51,13 +51,14 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
                 evt.setUsed(true);
                 evt.setCancelled(true);
 
+                String name = evt.getSwappedItem().getItemMeta().getDisplayName();
                 ProfessionItem item = (ProfessionItem) ProfessionItem.constructItem(evt.getSwappedItem());
                 item.addExperience(evt.getPlayer(), xpAmount);
 
                 evt.setSwappedItem(item.generateItem());
 
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.1F);
-                player.sendMessage(ChatColor.GRAY + "Applied " + ChatColor.GREEN + ChatColor.BOLD + Utils.format(xpAmount) + " EXP" + ChatColor.GRAY + " to your " + evt.getSwappedItem().getItemMeta().getDisplayName() + ChatColor.GRAY + "!");
+                player.sendMessage(ChatColor.GRAY + "Applied " + ChatColor.GREEN + ChatColor.BOLD + Utils.format(xpAmount) + " EXP" + ChatColor.GRAY + " to your " + name + ChatColor.GRAY + "!");
 
                 wrapper.getPlayerGameStats().addStat(PlayerGameStats.StatColumn.LAMPS_APPLIED);
 
@@ -71,8 +72,12 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
     public void onClick(ItemClickEvent evt) {
         if (expType == ExpType.PLAYER) {
             //Claim?
-            evt.setUsed(true);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
+            if (wrapper.getLevel() >= 100) {
+                evt.getPlayer().sendMessage(ChatColor.RED + "You are already max level!");
+                return;
+            }
+            evt.setUsed(true);
             wrapper.addExperience(xpAmount, false, false, false);
             evt.getPlayer().sendMessage(ChatColor.YELLOW.toString() + Math.round(xpAmount) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(wrapper.getExperience() + xpAmount) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
             evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .8F);

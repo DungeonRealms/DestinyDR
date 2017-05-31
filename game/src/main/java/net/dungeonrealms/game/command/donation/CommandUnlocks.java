@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.donation;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.CategoryGUI;
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player;
 public class CommandUnlocks extends BaseCommand {
 
     public CommandUnlocks() {
-        super("unlocks","/unlocks", "Open your unlockables menu");
+        super("unlocks","/unlocks", "Open your unlockables menu", null, Lists.newArrayList("purchases"));
     }
 
     @Override

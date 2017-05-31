@@ -266,7 +266,7 @@ public class Chat {
     	
     	// Handle guild chat.
     	if (wrapper.isInGuild() && wrapper.getToggles().getState(Toggles.GUILD_CHAT)) {
-    		wrapper.getGuild().sendGuildMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + wrapper.getGuild().getTag() +
+    		wrapper.getGuild().sendGuildMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + wrapper.getGuild().getTag() + ChatColor.DARK_AQUA + "> " +
     				ChatColor.DARK_AQUA + ChatColor.GRAY + player.getName() + ": " + message, false);
     		return;
     	}

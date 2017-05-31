@@ -8,6 +8,7 @@ import net.dungeonrealms.game.quests.Quests;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -36,5 +37,12 @@ public class NPCListener implements Listener {
 				npc.setAnimation(npc.getAnimation());
 			}
 		}
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		for(Quest q : Quests.getInstance().questStore.getList())
+			if(q.isQuestNPC(event.getEntity()))
+				event.setCancelled(true);
 	}
 }

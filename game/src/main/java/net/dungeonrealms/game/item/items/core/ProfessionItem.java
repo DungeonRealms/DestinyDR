@@ -190,7 +190,7 @@ public abstract class ProfessionItem extends ItemGear {
 
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
-        pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(xpGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
+        pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(xpGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
                 + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(getXP() - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getNeededXP() + " EXP]");
 
         if (professionBuffBonus > 0) {
@@ -200,11 +200,11 @@ public abstract class ProfessionItem extends ItemGear {
                     ChatColor.GRAY + "[" + getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + getNeededXP() + " EXP]");
         }
 
-        if (getXP() > getNeededXP()) {
+        if (getNeededXP() > 0 && getXP() > getNeededXP()) {
             int extraXP = getXP() - getNeededXP();
             levelUp(p);
 
-            if (extraXP > 0)
+            if (extraXP > 0 && getNeededXP() > 0)
                 addExperience(p, extraXP);
         }
 

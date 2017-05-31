@@ -31,7 +31,7 @@ public class BannerCreatorMenu extends AbstractMenu {
         setDestroyOnExit(true);
 
         final ItemStack currentBanner = banner == null ? new ItemStack(Material.BANNER, 1, (byte) 15) : banner;
-        BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta();
+        BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta().clone();
 
         GUIDisplayer bannerPreview = new GUIDisplayer(currentBanner);
         bannerPreview.getItemStack().setItemMeta(bannerMeta);

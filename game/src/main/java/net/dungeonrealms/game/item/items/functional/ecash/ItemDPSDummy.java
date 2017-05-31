@@ -137,7 +137,7 @@ public class ItemDPSDummy extends FunctionalItem implements ItemClickEvent.ItemC
     }
 
 
-    public DPSDummy getDPSDummy(Player player) {
+    public static DPSDummy getDPSDummy(Player player) {
         return dpsDummies.values().stream().filter(dummy -> dummy.getOwner().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 

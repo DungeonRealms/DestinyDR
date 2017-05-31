@@ -331,6 +331,11 @@ public class MainListener implements Listener {
             DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
             if (offer != null)
                 offer.handleLogOut(player);
+
+            DPSDummy dummy = ItemDPSDummy.getDPSDummy(player);
+            if (dummy != null) {
+                dummy.destroy();
+            }
         }
 
         player.updateInventory();
