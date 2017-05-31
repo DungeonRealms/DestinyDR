@@ -73,8 +73,9 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
             //Claim?
             evt.setUsed(true);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
-            wrapper.addExperience(xpAmount, false, true, false);
-            evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, .8F);
+            wrapper.addExperience(xpAmount, false, false, false);
+            evt.getPlayer().sendMessage(ChatColor.YELLOW.toString() + Math.round(xpAmount) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(wrapper.getExperience() + xpAmount) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
+            evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .8F);
             evt.setCancelled(true);
         }
     }

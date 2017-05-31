@@ -585,7 +585,6 @@ public class InventoryListener implements Listener {
             VanillaItem vi = new VanillaItem(event.getCurrentItem());
             if (!vi.isSoulboundBypass(trade.getOppositePlayer(player)) && !ItemManager.isItemTradeable(event.getCurrentItem())) {
                 player.sendMessage(ChatColor.RED + "You can't trade this item.");
-                Bukkit.getLogger().info("Soulbound bypassable for " + trade.getOppositePlayer(player).getName() + " : " + vi.isSoulboundBypass(trade.getOppositePlayer(player)));
                 event.setCancelled(true);
                 return;
             }

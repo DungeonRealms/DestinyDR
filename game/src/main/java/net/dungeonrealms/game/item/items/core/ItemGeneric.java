@@ -317,8 +317,11 @@ public abstract class ItemGeneric extends PersistentItem {
      * Can this item be traded to a specified player?
      */
     public boolean isSoulboundBypass(Player p) {
-        Bukkit.getLogger().info("Type: " + getItemType());
-        Bukkit.getLogger().info("Traders: " + this.soulboundAllowedTraders + " Time: " + this.soulboundTrade + " Soulbound: " + isSoulbound());
+        //Not sure this is possible.
+        if (this.soulboundTrade == -1) {
+            if (hasTag("soulboundTrade"))
+                this.soulboundTrade = getTag().getLong("soulboundTrade");
+        }
         return !isSoulbound() || this.soulboundTrade > System.currentTimeMillis() && this.soulboundAllowedTraders.contains(p.getName());
     }
 

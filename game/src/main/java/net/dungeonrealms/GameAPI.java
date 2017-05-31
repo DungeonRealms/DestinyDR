@@ -942,6 +942,7 @@ public class GameAPI {
             playerWrapper.setFirstLogin(System.currentTimeMillis());
             sendStaffMessage(PlayerRank.PMOD, ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!", true);
 
+            //Giving them gear here, dont bother in the quest then?
             ItemManager.giveStarter(player, true);
             player.teleport((DungeonRealms.isEvent() ? TeleportLocation.EVENT_AREA : TeleportLocation.STARTER).getLocation());
         }
