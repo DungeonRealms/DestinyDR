@@ -116,6 +116,38 @@ public class ShardSelector extends AbstractMenu {
 
             set(getSize(), button);
         }
+
+
+
+        GUIButton button = new GUIButton(new ItemStack(Material.TNT)) {
+
+            @Override
+            public void action(GUIButtonClickEvent event) throws Exception {
+                Player player = event.getWhoClicked();
+                player.closeInventory();
+
+                player.performCommand("gotest");
+
+            }
+        };
+
+        List<String> lore = new ArrayList<>();
+
+        lore.add(ChatColor.RED + "Test content early.");
+
+        lore.add(ChatColor.GREEN + "This shard is online!");
+        lore.add(ChatColor.WHITE + "Click here to load your");
+        lore.add(ChatColor.WHITE + "character onto this shard.");
+        lore.add(" ");
+
+        lore.add(ChatColor.GRAY + "Load: " + ChatColor.GREEN + "Extremely Low");
+        lore.add(ChatColor.GRAY + "Online: ?/?");
+        lore.add(ChatColor.GRAY + "Build:" + ChatColor.GOLD + "#0");
+
+        button.setDisplayName(ChatColor.DARK_RED + ChatColor.BOLD.toString() + "BETA LOBBY");
+        button.setLore(lore);
+
+        set(getSize(), button);
     }
 
 
