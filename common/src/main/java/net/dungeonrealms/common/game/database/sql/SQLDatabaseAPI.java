@@ -14,8 +14,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.ini4j.Ini;
 
 import java.io.File;
+import java.io.FileReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
@@ -261,12 +263,39 @@ public class SQLDatabaseAPI {
         }
     }
 
+    /*public FTPClient getFTPClient() {
+        FTPClient ftpClient = new FTPClient();
+
+        try {
+            Ini ini = new Ini();
+            ini.load(new FileReader("credentials.ini"));
+            ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
+            ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+        } catch (Exception e) {
+            Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
+            e.printStackTrace();
+        }
+        return ftpClient;
+    }*/
+
     @Getter
     private volatile Set<String> sqlQueries = new ConcurrentSet<>();
 
     public void init() {
         Bukkit.getLogger().info("Attempting to connect to MySQL database...");
+
         try {
+            Ini ini = new Ini();
+            ini.load(new FileReader("credentials.ini"));
+            this.database = new SQLDatabase(ini.get("DB", "host"), ini.get("DB", "username"), ini.get("DB", "password"), ini.get("DB", "database"));
+        } catch (Exception e) {
+            Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
+            e.printStackTrace();
+        }
+
+        /*try {
             this.file = new File("sqlcredentials.yml");
             if (!this.file.exists())
                 this.file.createNewFile();
@@ -275,7 +304,7 @@ public class SQLDatabaseAPI {
             this.database = new SQLDatabase(this.config.getString("host"), this.config.getString("username"), config.getString("password"), config.getString("database"));
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         this.saveRunnable = () -> {
             //Dont do anything.. no queries..

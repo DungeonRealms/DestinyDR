@@ -4,8 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -19,7 +19,6 @@ import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.type.pet.PetData;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -141,7 +140,8 @@ public class CommandEss extends BaseCommand {
                                 EnumPets pet = EnumPets.getByName(petType);
                                 wrapper.setActivePet(pet);
                                 wrapper.getPetsUnlocked().put(pet, new PetData(null, true));
-                                wrapper.saveData(true, null, (wrappa) -> {
+
+                                SQLDatabaseAPI.getInstance().executeQuery(QueryType.SET_PETS.getQuery(wrapper.getSerializePetString(), wrapper.getAccountID()), cb -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
                                 });
@@ -199,7 +199,8 @@ public class CommandEss extends BaseCommand {
                                 playerMounts.add(mount);
                                 wrapper.setActiveMount(mount);
 
-                                wrapper.saveData(true, null, (wrappa) -> {
+
+                                SQLDatabaseAPI.getInstance().executeQuery(wrapper.getQuery(QueryType.SET_MOUNTS, wrapper.getMountsUnlocked(), wrapper.getAccountID()), cb -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
                                 });
@@ -338,7 +339,7 @@ public class CommandEss extends BaseCommand {
                                     int finalSubLength = subscriptionLength;
                                     wrapper.setRank(PlayerRank.getFromPrefix(rankName));
                                     wrapper.setRankExpiration(finalSubLength);
-                                    wrapper.saveData(true, null, (wrappa) -> {
+                                    SQLDatabaseAPI.getInstance().executeQuery(wrapper.getQuery(QueryType.UPDATE_RANK, PlayerRank.getFromPrefix(rankName).getInternalName(), finalSubLength, wrapper.getAccountID()), cb -> {
                                         GameAPI.updatePlayerData(uuid, UpdateType.RANK);
                                         commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     });
