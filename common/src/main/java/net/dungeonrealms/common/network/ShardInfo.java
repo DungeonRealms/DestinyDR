@@ -34,7 +34,8 @@ public enum ShardInfo implements Serializable {
 
     // -- NEW SERVER TEST SHARDS -- //
     TESTUS0("TEST-US0", "testus0", new ServerAddress("158.69.121.40", 40012)),
-    TEST("TEST", "test", new ServerAddress("158.69.121.40", 40013));
+    TEST("TEST", "test", new ServerAddress("158.69.121.40", 40013)),
+    BETA1("BETA-1", "beta1", new ServerAddress("8.26.94.224", 40001));
 
 
     @Getter
