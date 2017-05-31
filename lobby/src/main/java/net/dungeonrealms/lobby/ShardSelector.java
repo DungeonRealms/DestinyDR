@@ -11,6 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.lobby.commands.CommandTest;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -143,6 +144,8 @@ public class ShardSelector extends AbstractMenu {
         lore.add(ChatColor.GRAY + "Load: " + ChatColor.GREEN + "Extremely Low");
         lore.add(ChatColor.GRAY + "Online: ?/?");
         lore.add(ChatColor.GRAY + "Build:" + ChatColor.GOLD + "#0");
+        lore.add(" ");
+        lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "Access: " + ChatColor.GOLD + ChatColor.BOLD.toString() + (CommandTest.subOnly ? "SUB ONLY" : "COMMUNITY"));
 
         button.setDisplayName(ChatColor.DARK_RED + ChatColor.BOLD.toString() + "BETA LOBBY");
         button.setLore(lore);

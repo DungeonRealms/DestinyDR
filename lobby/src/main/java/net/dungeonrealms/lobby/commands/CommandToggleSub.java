@@ -24,7 +24,7 @@ public class CommandToggleSub extends BaseCommand {
 
         if (Rank.isDev((Player) sender) || (sender).isOp()) {
             CommandTest.subOnly = !CommandTest.subOnly;
-            sender.sendMessage(CommandTest.subOnly ? "The beta shard is now in nub only mode!" : "The beta shard is now in community mode!");
+            sender.sendMessage(CommandTest.subOnly ? "The beta shard is now in sub only mode!" : "The beta shard is now in community mode!");
             return true;
         }
         return false;
