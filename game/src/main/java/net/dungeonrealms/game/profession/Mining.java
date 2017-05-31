@@ -130,7 +130,7 @@ public class Mining implements GenericMechanic, Listener {
         //  ADD PLAYER XP  //
         int xpGain = oreTier.getXP();
         PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-        pw.addExperience(xpGain / 12, false, true);
+        pw.addExperience(xpGain / 12, false, true, true);
 
         Material type = e.getBlock().getType();
         int oreToAdd = 0;
@@ -165,7 +165,6 @@ public class Mining implements GenericMechanic, Listener {
             //Spawn treasure?
             block.setType(Material.CHEST);
             Byte direction = direction(p);
-            System.out.println("The block direction: " + direction);
             block.setData(direction);
             treasureChests.add(e.getBlock().getLocation());
             l.getWorld().playSound(l, Sound.ENTITY_WITHER_BREAK_BLOCK, 1, 1.8F);
@@ -194,9 +193,6 @@ public class Mining implements GenericMechanic, Listener {
                 treasureItems.put(itemEnt, stand -> {
                     stand.remove();
                     giveLoot(p, loot);
-                    for(int k = 0; k < 500; k++) {
-                        giveLoot(p,createTreasureFindItem(oreTier));
-                    }
                     p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_TOUCH, 1, 1.2F);
                 });
             }, 20);
@@ -213,7 +209,6 @@ public class Mining implements GenericMechanic, Listener {
         pickaxe.addExperience(p, xpGain);
         ItemStack hand = pickaxe.generateItem();
         p.getEquipment().setItemInMainHand(hand);
-        Bukkit.getLogger().info("Dura: " + hand.getDurability());
         p.updateInventory();
 
         //  DOUBLE ORE  //

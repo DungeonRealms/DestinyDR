@@ -1309,7 +1309,7 @@ public class PlayerWrapper {
         return TimeUtil.formatDifference((this.muteExpire - System.currentTimeMillis()) / 1_000);
     }
 
-    public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
+    public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage, boolean giveBonus) {
         int level = getLevel();
         if (level >= 100 || experienceToAdd <= 0)
             return;
@@ -1321,10 +1321,12 @@ public class PlayerWrapper {
 
         // Bonuses
         int expBonus = 0;
-        if (getRank().isSubPlus()) {
-            expBonus = (int) (experienceToAdd * 0.1);
-        } else if (getRank().isSUB()) {
-            expBonus = (int) (experienceToAdd * 0.05);
+        if(giveBonus) {
+            if (getRank().isSubPlus()) {
+                expBonus = (int) (experienceToAdd * 0.1);
+            } else if (getRank().isSUB()) {
+                expBonus = (int) (experienceToAdd * 0.05);
+            }
         }
 
         int futureExperience = experience + experienceToAdd + expBonus;
@@ -1340,7 +1342,7 @@ public class PlayerWrapper {
         if (futureExperience >= xpNeeded) {
             int continuedExperience = futureExperience - xpNeeded;
             updateLevel(level + 1, true);
-            addExperience(continuedExperience, isParty, displayMessage);
+            addExperience(continuedExperience, isParty, displayMessage, giveBonus);
         } else {
             setExperience(futureExperience);
             if (displayMessage) {

@@ -3,18 +3,19 @@ package net.dungeonrealms.common.game.database.sql;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.util.UUIDFetcher;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
@@ -40,6 +41,8 @@ public class SQLDatabaseAPI {
     private Map<Integer, UUIDName> accountIdNames = new HashMap<>();
     private Runnable saveRunnable;
 
+    private File file;
+    private FileConfiguration config;
 
     public void shutdown() {
         Bukkit.getLogger().info("Shutting down SQL Server Executor Thread...");
@@ -94,7 +97,7 @@ public class SQLDatabaseAPI {
                         SQLDatabaseAPI.getInstance().executeUpdate(complete -> {
                             SQLDatabaseAPI.getInstance().executeQuery(String.format("SELECT character_id FROM characters WHERE account_id = '%s' ORDER BY created DESC LIMIT 1;", accountID), false, results -> {
                                 try {
-                                    if(results.first()) {
+                                    if (results.first()) {
                                         int newCharID = results.getInt("character_id");
                                         SQLDatabaseAPI.getInstance().executeBatch(completed -> {
                                                     pendingPlayerCreations.remove(uuid);
@@ -174,8 +177,8 @@ public class SQLDatabaseAPI {
     }
 
     public void addQuery(String query) {
-    	if (query != null)
-    		this.sqlQueries.add(query);
+        if (query != null)
+            this.sqlQueries.add(query);
     }
 
 
@@ -263,7 +266,16 @@ public class SQLDatabaseAPI {
 
     public void init() {
         Bukkit.getLogger().info("Attempting to connect to MySQL database...");
-        this.database = new SQLDatabase("158.69.121.40", "root", "N963GSvR2xwM9D5S5b4934HfDH", "dungeonrealms");
+        try {
+            this.file = new File("sqlcredentials.yml");
+            if (!this.file.exists())
+                this.file.createNewFile();
+            this.config = YamlConfiguration.loadConfiguration(this.file);
+
+            this.database = new SQLDatabase(this.config.getString("host"), this.config.getString("username"), config.getString("password"), config.getString("database"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         this.saveRunnable = () -> {
             //Dont do anything.. no queries..
@@ -346,21 +358,21 @@ public class SQLDatabaseAPI {
     public Integer getAccountIdFromUUID(UUID uuid) {
         for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
             if (uuid.equals(entry.getValue().getUuid()))
-            	return entry.getKey();
+                return entry.getKey();
         return null;
     }
 
     public String getNameFromUUID(UUID uuid) {
         for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
             if (uuid.equals(entry.getValue().getUuid()))
-            	return entry.getValue().getName();
+                return entry.getValue().getName();
         return null;
     }
 
     public String getUsernameFromUUID(UUID uuid) {
         for (Map.Entry<Integer, UUIDName> entry : this.accountIdNames.entrySet())
             if (uuid.equals(entry.getValue().getUuid()))
-            	return entry.getValue().getName();
+                return entry.getValue().getName();
         return null;
     }
 
@@ -425,20 +437,21 @@ public class SQLDatabaseAPI {
             }, SERVER_EXECUTOR_SERVICE);
         }
     }
-    
+
     /**
      * Does this ResultSet have the given data?
+     *
      * @param set
      * @param name
      * @return
      */
     public static boolean hasColumn(ResultSet set, String name) {
-    	try {
-    		set.findColumn(name);
-    		return true;
-    	} catch (Exception e) {
-    		return false;
-    	}
+        try {
+            set.findColumn(name);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static String filterSQLInjection(String string) {
@@ -448,7 +461,7 @@ public class SQLDatabaseAPI {
     /**
      * Escape a string sent to the database.
      */
-	public static String escape(String str) {
-		return str != null ? "'" + StringEscapeUtils.escapeSql((String) str) + "'" : null;
-	}
+    public static String escape(String str) {
+        return str != null ? "'" + StringEscapeUtils.escapeSql((String) str) + "'" : null;
+    }
 }

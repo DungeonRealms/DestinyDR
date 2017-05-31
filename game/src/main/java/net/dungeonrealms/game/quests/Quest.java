@@ -254,7 +254,7 @@ public class Quest implements ISaveable {
 		
 		//This delay is purely for "cosmetic" purposes.
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
-				() -> PlayerWrapper.getWrapper(player).addExperience(this.getXPReward(), false, true), 40);
+				() -> PlayerWrapper.getWrapper(player).addExperience(this.getXPReward(), false, true, true), 40);
 	}
 	
 	private void startQuest(Player player, QuestPlayerData data){

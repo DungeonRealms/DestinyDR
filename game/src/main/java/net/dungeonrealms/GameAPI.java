@@ -1594,7 +1594,7 @@ public class GameAPI {
         //TODO: Update last voted. with System.cuttentTimeMiollis
 
         // Reward to player with their EXP increase.
-        pw.addExperience(expToGive, false, true);
+        pw.addExperience(expToGive, false, true, true);
         final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());

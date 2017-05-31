@@ -417,7 +417,7 @@ public class Fishing implements GenericMechanic, Listener {
 
 
                 PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
-                pw.addExperience(exp / 8, false, true);
+                pw.addExperience(exp / 8, false, true, true);
                 pw.getPlayerGameStats().addStat(StatColumn.FISH_CAUGHT);
 
                 if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() >= random.nextInt(100) + 1) {

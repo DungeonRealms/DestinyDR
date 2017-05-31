@@ -73,7 +73,7 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
             //Claim?
             evt.setUsed(true);
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
-            wrapper.addExperience(xpAmount, false, true);
+            wrapper.addExperience(xpAmount, false, true, false);
             evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, .8F);
             evt.setCancelled(true);
         }

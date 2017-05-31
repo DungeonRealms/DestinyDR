@@ -92,7 +92,7 @@ public class Achievements {
         ParticleAPI.spawnParticle(Particle.TOWN_AURA, player.getLocation().add(0, 2, 0), 10, 1F);
         
         if (achievement.getReward() > 0)
-            wrapper.addExperience(achievement.getReward(), false, true);
+            wrapper.addExperience(achievement.getReward(), false, true, true);
 
         for (EnumAchievementCount count : EnumAchievementCount.values())
             if (count.getRequirement() == wrapper.getAchievements().size())

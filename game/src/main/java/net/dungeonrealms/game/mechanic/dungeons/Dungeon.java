@@ -212,7 +212,7 @@ public abstract class Dungeon {
 
                 ItemStack bankNote = new ItemGemNote(boss.getBossType().getName(), perPlayerDrop).generateItem();
                 GameAPI.giveOrDropItem(player, bankNote);
-                PlayerWrapper.getWrapper(player).addExperience(getType().getXP(), false, true);
+                PlayerWrapper.getWrapper(player).addExperience(getType().getXP(), false, true, true);
             }
 
             final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);

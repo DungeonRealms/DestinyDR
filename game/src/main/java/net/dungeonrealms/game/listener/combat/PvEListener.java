@@ -204,15 +204,15 @@ public class PvEListener implements Listener {
                     //  DISTRIBUTE EVENLY  //
                     exp /= nearbyPartyMembers.size();
                     for (Player player : nearbyPartyMembers)
-                        PlayerWrapper.getWrapper(player).addExperience(exp, true, true);
+                        PlayerWrapper.getWrapper(player).addExperience(exp, true, true, true);
                 } else {
-                    wrapper.addExperience(exp, false, true);
+                    wrapper.addExperience(exp, false, true, true);
                 }
             } else {
-                wrapper.addExperience(exp, false, true);
+                wrapper.addExperience(exp, false, true, true);
             }
         } else {
-            wrapper.addExperience(exp, false, true);
+            wrapper.addExperience(exp, false, true, true);
         }
 
         StatColumn[] tierStats = new StatColumn[]{StatColumn.T1_MOB_KILLS, StatColumn.T2_MOB_KILLS, StatColumn.T3_MOB_KILLS, StatColumn.T4_MOB_KILLS, StatColumn.T5_MOB_KILLS};
