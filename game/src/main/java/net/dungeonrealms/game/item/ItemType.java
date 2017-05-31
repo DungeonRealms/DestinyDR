@@ -86,7 +86,8 @@ public enum ItemType {
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),
 	PORTAL_RUNE("portalRune", ItemPortalRune.class),
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
-	OPEN_PROFILE("profile", ItemPlayerProfile.class);
+	OPEN_PROFILE("profile", ItemPlayerProfile.class),
+	EXP_LAMP("expLamp", ItemEXPLamp.class);
 	
 	private final String NBT;
 	private final Class<? extends PersistentItem> itemClass;

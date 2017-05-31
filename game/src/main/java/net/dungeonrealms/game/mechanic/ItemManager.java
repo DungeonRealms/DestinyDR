@@ -307,9 +307,10 @@ public class ItemManager {
         whitelistItemDrop(player, drop.getWorld().dropItem(drop.clone().add(0, 1, 0), item));
     }
 
-    public static void whitelistItemDrop(Player player, org.bukkit.entity.Item item) {
+    public static org.bukkit.entity.Item whitelistItemDrop(Player player, org.bukkit.entity.Item item) {
         if (player != null)
             Metadata.WHITELIST.set(item, player.getName());
+        return item;
     }
 
     /**

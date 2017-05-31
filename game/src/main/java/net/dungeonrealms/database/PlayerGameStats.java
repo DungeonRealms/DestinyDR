@@ -86,6 +86,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         DUELS_LOST("duels_lost"),
         ORBS_USED("orbs_used"),
         SUCCESSFUL_ENCHANTS("enchants_succeeded"),
+        LAMPS_APPLIED("lamps_used"),
         FAILED_ENCHANTS("enchants_failed"),
         ECASH_SPENT("ecash_spent"),
         GEMS_EARNED("gems_earned"),

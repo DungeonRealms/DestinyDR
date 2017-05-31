@@ -17,7 +17,7 @@ import java.util.List;
 public class HatGUI extends GUIMenu implements WebstoreGUI {
 
     public HatGUI(Player player) {
-        super(player, 9,"Cosmetic Hat Selection");
+        super(player, 18, "Cosmetic Hat Selection");
     }
 
     @Override
@@ -33,21 +33,36 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
             boolean unlocked = webItem.isUnlocked(wrapper);
             String unlockedLine = webItem.getOwnedDisplayString(wrapper);
 
-            if(unlocked && wrapper.getActiveHatOverride() != null && wrapper.getActiveHatOverride().getLinkedPurchaseable().equals(webItem)) {
-                    unlockedLine = ChatColor.GREEN + ChatColor.BOLD.toString() + "SELECTED";
+            boolean selected = unlocked && wrapper.getActiveHatOverride() != null && wrapper.getActiveHatOverride().getLinkedPurchaseable().equals(webItem);
+            if (selected) {
+                unlockedLine = ChatColor.GREEN + ChatColor.BOLD.toString() + "SELECTED";
             }
 
             lore.add(unlockedLine);
+            if (selected)
+                lore.add(ChatColor.GRAY + "Click to deactivate this hat!");
+            else if (unlocked)
+                lore.add(ChatColor.GRAY + "Click to activate this hat!");
 
             ItemStack toDisplay = new ItemStack(webItem.getItemType());
             toDisplay.setDurability((short) webItem.getMeta());
             setItem(webItem.getGuiSlot(), new GUIItem(toDisplay).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
-                if(!unlocked) {
+                if (!unlocked) {
                     sendNotUnlocked(player);
                     return;
                 }
-                player.sendMessage(ChatColor.GREEN + "You have activated your " + ChatColor.UNDERLINE.toString() + webItem.getName(false));
-                wrapper.setActiveHatOverride(CosmeticOverrides.getOverrideFromPurchaseable(webItem));
+
+                CosmeticOverrides override = CosmeticOverrides.getOverrideFromPurchaseable(webItem);
+
+                if (wrapper.getActiveHatOverride() == override) {
+                    wrapper.setActiveHatOverride(null);
+                    player.sendMessage(webItem.getName(false) + ChatColor.RED + " - " + ChatColor.BOLD + "DISABLED");
+                    reconstructGUI(player);
+                    return;
+                }
+
+                player.sendMessage(webItem.getName(false) + ChatColor.GREEN + " - " + ChatColor.GREEN + ChatColor.BOLD + "ACTIVATED");
+                wrapper.setActiveHatOverride(override);
                 OverrideListener.updatePlayersHat(player);
                 reconstructGUI(player);
             }));

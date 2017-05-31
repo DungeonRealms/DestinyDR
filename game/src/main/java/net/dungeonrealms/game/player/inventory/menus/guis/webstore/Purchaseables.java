@@ -31,8 +31,15 @@ public enum Purchaseables {
     SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, false, ChatColor.GOLD),
     SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, false, ChatColor.GOLD),
 
-    WIZARD_HAT("Wizard Hat", "\nEvery helmet you wear will look like\na wizard hat!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
-    CROWN("Gold Crown", "\nEvery helmet you wear will look like\na kings crown!", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD, true, 2),
+    WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
+    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, ChatColor.GOLD, true, 2),
+    DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 8, false, true, ChatColor.LIGHT_PURPLE, true, 5),
+
+    COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, ChatColor.BLACK, true),
+    EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, ChatColor.GREEN, true),
+    IRON_ORE_HAT("Iron Ore Hat", "\nA helmet made of precious ore", Material.IRON_ORE, WebstoreCategories.HATS, 11, false, true, ChatColor.WHITE, true),
+    DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, ChatColor.AQUA, true),
+    GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, ChatColor.GOLD, true),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, ChatColor.AQUA),
@@ -144,7 +151,8 @@ public enum Purchaseables {
     public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId,boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
-        wrapper.getPendingPurchaseablesUnlocked().add(new PendingPurchaseable(this,whoPurchased,datePurchased,amount, transactionId));
+        PendingPurchaseable pending = new PendingPurchaseable(this,whoPurchased,datePurchased,amount, transactionId);
+        wrapper.getPendingPurchaseablesUnlocked().add(pending);
         if(autoSave) {
             SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
         } else if(callback != null){

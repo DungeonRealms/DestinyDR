@@ -9,6 +9,7 @@ import net.dungeonrealms.game.command.moderation.CommandLootChest;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootTable.PossibleLoot;
 
 import org.bukkit.Bukkit;
@@ -121,6 +122,7 @@ public class LootManager implements GenericMechanic, Listener {
 		
 		Player p = e.getPlayer();
 		e.setCancelled(true);
+		if(Mining.treasureChests.add(p.getLocation()))return;
 		LootSpawner spawner = getSpawner(block.getLocation());
 		if (!GameAPI.isMainWorld(block) || spawner == null) {
 			p.sendMessage(ChatColor.GRAY + "The chest is locked.");

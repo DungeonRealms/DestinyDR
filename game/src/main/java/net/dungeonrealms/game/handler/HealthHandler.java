@@ -198,7 +198,7 @@ public class HealthHandler implements GenericMechanic {
 
         //  GENERATE LEVEL STRING  //
         int playerLevel = pw.getLevel();
-        String playerLevelInfo = ChatColor.AQUA + "" + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
+        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
 
         String separator = ChatColor.WHITE + " - ";
 
@@ -209,7 +209,7 @@ public class HealthHandler implements GenericMechanic {
         } else if (GameAPI.isNonPvPRegion(player.getLocation())) {
             hpColor = ChatColor.YELLOW;
         }
-        String playerHPInfo = hpColor + "" + ChatColor.BOLD + "HP " + hpColor + currentHP
+        String playerHPInfo = hpColor.toString() + ChatColor.BOLD + "HP " + hpColor + currentHP
                 + (currentHP != maxHP ? ChatColor.BOLD + " / " + hpColor + (int) maxHP : "");
 
         //  GENERATE XP STRING  //

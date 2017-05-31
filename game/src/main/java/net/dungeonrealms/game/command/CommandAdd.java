@@ -6,17 +6,12 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.mechanic.data.PotionTier;
-import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.items.core.CombatItem;
-import net.dungeonrealms.game.item.items.core.ItemArmor;
-import net.dungeonrealms.game.item.items.core.ItemFishingPole;
-import net.dungeonrealms.game.item.items.core.ItemPickaxe;
-import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
-import net.dungeonrealms.game.item.items.functional.PotionItem;
+import net.dungeonrealms.game.mechanic.data.PotionTier;
+import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemBank;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -26,7 +21,7 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.BuffMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,7 +37,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -72,57 +67,57 @@ public class CommandAdd extends BaseCommand {
             LivingEntity target;
             ItemStack held = player.getEquipment().getItemInMainHand();
             switch (args[0]) {
-            	case "save":
-            		if (held == null || held.getType() == Material.AIR) {
-            			player.sendMessage(ChatColor.RED + "You must be holding an item");
-            			return true;
-            		}
-            		
-            		if (args.length == 1) {
-            			player.sendMessage(ChatColor.RED + "Syntax: /ad save <name>");
-            			return true;
-            		}
-            		
-            		ItemGenerator.saveItem(held, args[1]);
-            		player.sendMessage(ChatColor.GREEN + "Saved " + args[1] + ".");
-            		break;
-            	case "load":
+                case "save":
+                    if (held == null || held.getType() == Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You must be holding an item");
+                        return true;
+                    }
+
+                    if (args.length == 1) {
+                        player.sendMessage(ChatColor.RED + "Syntax: /ad save <name>");
+                        return true;
+                    }
+
+                    ItemGenerator.saveItem(held, args[1]);
+                    player.sendMessage(ChatColor.GREEN + "Saved " + args[1] + ".");
+                    break;
+                case "load":
                 case "nameditem":
                     if (args.length > 1) {
                         String namedItem = args[1];
                         ItemStack itemStack = ItemGenerator.getNamedItem(namedItem);
                         player.getInventory().addItem(itemStack);
                         if (itemStack == null)
-                        	player.sendMessage(ChatColor.RED + "Item not found.");
+                            player.sendMessage(ChatColor.RED + "Item not found.");
                     } else {
                         player.sendMessage(ChatColor.RED + "/ad " + args[0] + " <name>");
                     }
                     break;
                 case "attributes":
-                	player.sendMessage(ChatColor.GREEN + "Player Attributes:");
-                	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-                	for (AttributeType at : pw.getAttributes().getAttributes())
-                		player.sendMessage(ChatColor.YELLOW + at.getNBTName() + ": " + ChatColor.RED + pw.getAttributes().getAttribute(at).toString());
-                	break;
+                    player.sendMessage(ChatColor.GREEN + "Player Attributes:");
+                    PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+                    for (AttributeType at : pw.getAttributes().getAttributes())
+                        player.sendMessage(ChatColor.YELLOW + at.getNBTName() + ": " + ChatColor.RED + pw.getAttributes().getAttribute(at).toString());
+                    break;
                 case "armor":
                 case "weapon":
-                	//TODO: Attribute editor.
+                    //TODO: Attribute editor.
                     try {
-                    	CombatItem gear = args[0].equals("armor") ? new ItemArmor() : new ItemWeapon();
-                        
+                        CombatItem gear = args[0].equals("armor") ? new ItemArmor() : new ItemWeapon();
+
                         if (args.length >= 2)
-                        	gear.setTier(ItemTier.getByTier(Integer.parseInt(args[1])));
+                            gear.setTier(ItemTier.getByTier(Integer.parseInt(args[1])));
 
                         if (args.length >= 3)
-                        	gear.setType(ItemType.valueOf(args[2].toUpperCase()));
+                            gear.setType(ItemType.valueOf(args[2].toUpperCase()));
 
                         if (args.length >= 4)
-                        	gear.setRarity(ItemRarity.valueOf(args[3].toUpperCase()));
-                        
+                            gear.setRarity(ItemRarity.valueOf(args[3].toUpperCase()));
+
                         player.getInventory().addItem(gear.generateItem());
 
                     } catch (Exception ex) {
-                	    ex.printStackTrace();
+                        ex.printStackTrace();
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
@@ -130,10 +125,10 @@ public class CommandAdd extends BaseCommand {
                     ItemGenerator.loadModifiers();
                     break;
                 case "item":
-                	new GUIItemBank(player);
-                	break;
+                    new GUIItemBank(player);
+                    break;
                 case "pick":
-                	int level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
+                    int level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
                     player.getInventory().addItem(new ItemPickaxe().setLevel(level).generateItem());
                     break;
                 case "rod":
@@ -145,20 +140,20 @@ public class CommandAdd extends BaseCommand {
                         player.getInventory().addItem(new ItemScrap(ScrapTier.getScrapTier(i)).generateItem());
                     break;
                 case "potion":
-                	for (PotionTier p : PotionTier.values()) {
-                		PotionItem item = new PotionItem(p);
-                		player.getInventory().addItem(item.generateItem());
-                		item.setSplash(true);
-                		player.getInventory().addItem(item.generateItem());
-            		}
+                    for (PotionTier p : PotionTier.values()) {
+                        PotionItem item = new PotionItem(p);
+                        player.getInventory().addItem(item.generateItem());
+                        item.setSplash(true);
+                        player.getInventory().addItem(item.generateItem());
+                    }
                     break;
                 case "food":
                     player.setFoodLevel(1);
                     for (EnumHealingFood food : EnumHealingFood.values())
-                    	player.getInventory().addItem(new ItemHealingFood(food).generateItem());
+                        player.getInventory().addItem(new ItemHealingFood(food).generateItem());
                     break;
                 case "buff":
-                	BuffMechanics.spawnBuff(player);
+                    BuffMechanics.spawnBuff(player);
                     break;
                 case "armorench":
                 case "armorenchant":
@@ -219,7 +214,25 @@ public class CommandAdd extends BaseCommand {
                             player.sendMessage(ChatColor.GREEN + "Spawned " + tl.getDisplayName() + " teleport book.");
                         }
                     }
-                break;
+                    break;
+                case "xplamp":
+                    if (args.length == 3) {
+                        ItemEXPLamp.ExpType type;
+                        try {
+                            type = ItemEXPLamp.ExpType.valueOf(args[1]);
+                        } catch (Exception e) {
+                            player.sendMessage(ChatColor.RED + "Invalid type! Valid types: PLAYER, PROFESSION");
+                            return true;
+                        }
+
+                        int exp = StringUtils.isNumeric(args[2]) ? Integer.parseInt(args[2]) : 1;
+                        ItemEXPLamp lamp = new ItemEXPLamp(type, exp);
+                        player.getInventory().addItem(lamp.generateItem());
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Invalid args! /ad xplamp <xpType> <amount>");
+                        return true;
+                    }
+                    break;
                 /*case "ecash_buff":
                     if (args.length >= 2) {
                         int buffDuration = 1800;
@@ -238,32 +251,32 @@ public class CommandAdd extends BaseCommand {
                     }
                     break;*/
                 case "stats":
-                	PlayerWrapper.getWrapper(player).calculateAllAttributes();
-                	player.sendMessage(ChatColor.GREEN + "Recalculated.");
-                	break;
+                    PlayerWrapper.getWrapper(player).calculateAllAttributes();
+                    player.sendMessage(ChatColor.GREEN + "Recalculated.");
+                    break;
                 case "einfo":
-                	target = getEntity(player, args);
-                	boolean monster = EntityAPI.isMonster(target);
-                	player.sendMessage("Name: " + target.getCustomName());
-                	player.sendMessage("HP: " + HealthHandler.getHP(target));
-                	player.sendMessage("Monster: " + monster);
-                	if (monster) {
-                		player.sendMessage("Tier: " + EntityAPI.getTier(target));
-                		if (EntityAPI.isElemental(target))
-                			player.sendMessage("Element: " + EntityAPI.getElement(target).getPrefix());
-                		player.sendMessage("Attributes: " + EntityAPI.getAttributes(target));
-                	}
-                	break;
+                    target = getEntity(player, args);
+                    boolean monster = EntityAPI.isMonster(target);
+                    player.sendMessage("Name: " + target.getCustomName());
+                    player.sendMessage("HP: " + HealthHandler.getHP(target));
+                    player.sendMessage("Monster: " + monster);
+                    if (monster) {
+                        player.sendMessage("Tier: " + EntityAPI.getTier(target));
+                        if (EntityAPI.isElemental(target))
+                            player.sendMessage("Element: " + EntityAPI.getElement(target).getPrefix());
+                        player.sendMessage("Attributes: " + EntityAPI.getAttributes(target));
+                    }
+                    break;
                 case "invsee":
-                	target = getEntity(player, args);
-                	
-                	Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, target.getCustomName());
-                	EntityEquipment e = target.getEquipment();
-                	inventory.addItem(e.getItemInMainHand());
-                	inventory.addItem(e.getArmorContents());
-                	player.sendMessage(ChatColor.YELLOW + "Opening inventory of " + target.getCustomName() + ".");
-                	player.openInventory(inventory);
-                	break;
+                    target = getEntity(player, args);
+
+                    Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, target.getCustomName());
+                    EntityEquipment e = target.getEquipment();
+                    inventory.addItem(e.getItemInMainHand());
+                    inventory.addItem(e.getArmorContents());
+                    player.sendMessage(ChatColor.YELLOW + "Opening inventory of " + target.getCustomName() + ".");
+                    player.openInventory(inventory);
+                    break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
                     break;
@@ -272,27 +285,27 @@ public class CommandAdd extends BaseCommand {
 
         return true;
     }
-    
+
     private LivingEntity getEntity(Player player, String[] args) {
-    	return getEntity(player, args, 1);
+        return getEntity(player, args, 1);
     }
-    
+
     private LivingEntity getEntity(Player player, String[] args, int startIndex) {
-    	String search = "";
-    	for (int i = startIndex; i < args.length; i++)
-    		search += ( i == startIndex ? "" : " ") + args[i];
-    	
-    	final String finalSearch = search;
-    	LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity
-    			&& getName(e).contains(finalSearch)).findAny().orElse(null);
-    	if (target == null) {
-    		player.sendMessage(ChatColor.RED + "Entity not found.");
-    		return player;
-    	}
-    	return target;
+        String search = "";
+        for (int i = startIndex; i < args.length; i++)
+            search += (i == startIndex ? "" : " ") + args[i];
+
+        final String finalSearch = search;
+        LivingEntity target = (LivingEntity) player.getNearbyEntities(10, 10, 10).stream().filter(e -> e instanceof LivingEntity
+                && getName(e).contains(finalSearch)).findAny().orElse(null);
+        if (target == null) {
+            player.sendMessage(ChatColor.RED + "Entity not found.");
+            return player;
+        }
+        return target;
     }
-    
+
     private String getName(Entity e) {
-    	return e.getName() != null && e.getName().length() > 0 ? ChatColor.stripColor(e.getCustomName()) : "";
+        return e.getName() != null && e.getName().length() > 0 ? ChatColor.stripColor(e.getCustomName()) : "";
     }
 }

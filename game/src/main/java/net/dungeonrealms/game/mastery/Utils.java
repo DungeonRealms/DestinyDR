@@ -355,10 +355,10 @@ public class Utils {
     }
 
     public static String getItemName(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR || !item.hasItemMeta())
+        if (item == null || item.getType() == Material.AIR)
             return "NOTHING";
         ItemMeta meta = item.getItemMeta();
-        if (meta.hasDisplayName())
+        if (meta != null && meta.hasDisplayName())
             return meta.getDisplayName();
 
         return capitalizeWords(item.getType().name().toLowerCase().replaceAll("_", " "));
