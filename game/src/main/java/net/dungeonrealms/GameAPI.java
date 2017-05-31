@@ -18,7 +18,7 @@ import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.common.game.util.*;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -85,6 +85,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -997,7 +998,7 @@ public class GameAPI {
         ShardType shardType = shard.getType();
         if (shardType != ShardType.DEFAULT) {
             player.sendMessage("");
-            player.sendMessage(ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + shardType.name() + ChatColor.DARK_AQUA + " shard.");
+            Utils.sendCenteredMessage(player, ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + shardType.name() + ChatColor.DARK_AQUA + " shard.");
             for (String s : shardType.getInfo())
                 player.sendMessage(ChatColor.GRAY + s);
         }
@@ -1058,6 +1059,11 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+        }
+
+        if(playerWrapper.getPendingPurchaseablesUnlocked().size() > 0) {
+            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN + "You have new items in your mailbox! **");
+            player.sendMessage(ChatColor.GRAY + "Use /mailbox to respond to these items!");
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {

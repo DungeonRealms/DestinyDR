@@ -112,8 +112,8 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     if (ItemGear.isCustomTool(item)) {
                         remove(inv, uniqueID);
                         // THIS WILL REMOVED THE DUPLICATE ITEMS //
-                        if (traceCount(inv, uniqueID) == 0)
-                            inv.addItem(item);
+//                        if (traceCount(inv, uniqueID) == 0)
+//                            inv.addItem(item);
                     } else if (traceCount(inv, uniqueID) == 0) {
                         //wat?
                         Bukkit.getLogger().info("Adding " + item + " into " + inv.getName() + " from " + p.getName());

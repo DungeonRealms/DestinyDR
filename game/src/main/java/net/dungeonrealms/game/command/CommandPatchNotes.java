@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.tool.PatchTools;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandPatchNotes extends BaseCommand {
 
     public CommandPatchNotes() {
-        super("patchnotes", "/<command>", "Shows patch for current build", "patch");
+        super("patchnotes", "/<command>", "Shows patch for current build", null, Lists.newArrayList("patch"));
     }
 
     @Override

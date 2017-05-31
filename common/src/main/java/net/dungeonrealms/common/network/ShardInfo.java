@@ -75,7 +75,7 @@ public enum ShardInfo implements Serializable {
     	YOUTUBE("YouTubers Only", ChatColor.RED, PlayerRank.YOUTUBER, "REDSTONE"),
     	SUPPORT("Support Agents Only", ChatColor.BLUE, PlayerRank.SUPPORT,"PRISMARINE_SHARD"),
     	DEVELOPMENT("", ChatColor.AQUA, PlayerRank.GM, "DIAMOND", "Please be aware your data is seperate from the live servers."),
-    	BETA("Test content early.", ChatColor.DARK_RED, "TNT", "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.", "Please report bugs to a GM or Developer."),
+    	BETA("Test new and experimental content early.", ChatColor.DARK_RED, "TNT", "You will be testing a " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " version of Dungeon Realms with " + ChatColor.UNDERLINE + "experimental" + ChatColor.GRAY + " content. The point of this Shard is to find any remaining issues within this massive code overhaul.", "", "Please report bugs to a GM or Developer on DISCORD or through the forums."),
     	SUBSCRIBER("Subscribers Only", ChatColor.GREEN, PlayerRank.SUB, "EMERALD"),
     	BRAZILLIAN("Brazilian Shard", ChatColor.YELLOW, PlayerRank.DEFAULT, "SAPLING", 3, new String[] {"The official language of this server is " + ChatColor.UNDERLINE + "Portuguese" + ChatColor.GRAY + "."}),
     	ROLEPLAY("Role-playing Shard", ChatColor.YELLOW, "BOOK"),

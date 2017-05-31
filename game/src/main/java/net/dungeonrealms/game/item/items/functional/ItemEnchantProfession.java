@@ -6,8 +6,10 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +57,19 @@ public abstract class ItemEnchantProfession extends ItemEnchantScroll {
      * @param attr
      */
     public ItemEnchantProfession addEnchant(ProfessionAttribute attr) {
-        this.attributes.setStat(attr, Utils.randInt(attr.getPercentRange()[0], attr.getPercentRange()[1]));
+        Item.ItemTier tier = getTier();
+
+        if (tier != null) {
+            int minRange = tier.ordinal() - 1;
+            int maxRange = tier.ordinal();
+            if (maxRange >= attr.getPercentRange().length)
+                maxRange = attr.getPercentRange()[attr.getPercentRange().length - 1];
+
+            int current = Utils.randInt(attr.getPercentRange()[minRange], attr.getPercentRange()[maxRange]);
+            this.attributes.setStat(attr, attr.getRandomValueFromTier(tier));
+
+            Bukkit.getLogger().info("Adding " + current + " profession from " + minRange + " - " + maxRange);
+        }
         return this;
     }
 

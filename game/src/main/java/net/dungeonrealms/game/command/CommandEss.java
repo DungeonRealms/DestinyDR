@@ -141,11 +141,10 @@ public class CommandEss extends BaseCommand {
                                 EnumPets pet = EnumPets.getByName(petType);
                                 wrapper.setActivePet(pet);
                                 wrapper.getPetsUnlocked().put(pet, new PetData(null, true));
-
-                                SQLDatabaseAPI.getInstance().executeQuery(QueryType.SET_PETS.getQuery(wrapper.getSerializePetString(), wrapper.getAccountID()), cb -> {
+                                wrapper.executeUpdate(QueryType.SET_PETS, cb -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
-                                });
+                                }, wrapper.getSerializePetString(), wrapper.getAccountID());
                             });
                         });
                     } else {
@@ -199,12 +198,10 @@ public class CommandEss extends BaseCommand {
 
                                 playerMounts.add(mount);
                                 wrapper.setActiveMount(mount);
-
-
-                                SQLDatabaseAPI.getInstance().executeQuery(wrapper.getQuery(QueryType.SET_MOUNTS, wrapper.getMountsUnlocked(), wrapper.getAccountID()), cb -> {
+                                wrapper.executeUpdate(QueryType.SET_MOUNTS, cb -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
-                                });
+                                }, wrapper.getMountsUnlocked(), wrapper.getAccountID());
                             });
                         });
 
@@ -340,10 +337,10 @@ public class CommandEss extends BaseCommand {
                                     int finalSubLength = subscriptionLength;
                                     wrapper.setRank(PlayerRank.getFromPrefix(rankName));
                                     wrapper.setRankExpiration(finalSubLength);
-                                    SQLDatabaseAPI.getInstance().executeQuery(wrapper.getQuery(QueryType.UPDATE_RANK, PlayerRank.getFromPrefix(rankName).getInternalName(), finalSubLength, wrapper.getAccountID()), cb -> {
+                                    wrapper.executeUpdate(QueryType.UPDATE_RANK, cb -> {
                                         GameAPI.updatePlayerData(uuid, UpdateType.RANK);
                                         commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                    });
+                                    }, PlayerRank.getFromPrefix(rankName).getInternalName(), finalSubLength, wrapper.getAccountID());
                                 } else {
                                     commandSender.sendMessage(ChatColor.RED + "Invalid rank, please use: SUB | SUB+");
                                     return;

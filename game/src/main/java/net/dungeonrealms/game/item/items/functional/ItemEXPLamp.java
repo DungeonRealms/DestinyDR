@@ -79,7 +79,7 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
             }
             evt.setUsed(true);
             wrapper.addExperience(xpAmount, false, false, false);
-            evt.getPlayer().sendMessage(ChatColor.YELLOW.toString() + Math.round(xpAmount) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(wrapper.getExperience() + xpAmount) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
+            evt.getPlayer().sendMessage(ChatColor.YELLOW.toString() + "+ " + Math.round(xpAmount) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(wrapper.getExperience() + xpAmount) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
             evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .8F);
             evt.setCancelled(true);
         }
@@ -104,7 +104,7 @@ public class ItemEXPLamp extends FunctionalItem implements ItemClickEvent.ItemCl
     protected String[] getLore() {
         return new String[]{
                 ChatColor.GRAY + "A bottle of knowledge",
-                ChatColor.GRAY + "containing " + ChatColor.GREEN + ChatColor.UNDERLINE + xpAmount + ChatColor.GREEN + ChatColor.BOLD + " EXP",
+                ChatColor.GRAY + "containing " + ChatColor.GREEN + ChatColor.UNDERLINE + Utils.format(xpAmount) + ChatColor.GREEN + ChatColor.BOLD + " EXP",
                 "",
                 ChatColor.GRAY + expType.getDescription()};
     }

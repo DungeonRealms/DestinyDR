@@ -16,6 +16,7 @@ import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
@@ -140,8 +141,10 @@ public abstract class ProfessionItem extends ItemGear {
             ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
             ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
             int currentAmount = getAttributes().hasAttribute(pa) ? getAttributes().get(pa).getValue() : 0;
-            int newAmount = Utils.randInt(pa.getPercentRange()[0], pa.getPercentRange()[1]);
+            int newAmount = pa.getRandomValueFromTier(getTier());
             int toUse = currentAmount >= newAmount ? currentAmount + 1 : newAmount;
+            int maxStat = pa.getMaxFromTier(getTier());
+            if(toUse > maxStat)toUse = maxStat;
             getAttributes().setStat(pa, toUse);
         }
 

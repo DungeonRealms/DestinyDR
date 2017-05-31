@@ -8,6 +8,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -117,12 +118,16 @@ public class PunishAPI {
      * @param kickMessage Kick message for player if they're connected to the proxy
      */
     public static void kick(String playerName, String kickMessage, Consumer<UUID> doBefore) {
-        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, uuid -> {
+        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (UUID uuid) -> {
             if (uuid != null) {
                 if (doBefore != null)
                     doBefore.accept(uuid);
             }
             //Kick from bungee..
+            Player local = Bukkit.getPlayer(playerName);
+            if(local != null) {
+                local.kickPlayer("kickMessage");
+            }
             BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", playerName, kickMessage);
         });
     }

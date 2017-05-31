@@ -296,6 +296,22 @@ public class Item {
 
     public interface ProfessionAttribute extends AttributeType {
         int[] getPercentRange();
+
+        default int getRandomValueFromTier(ItemTier tier){
+            int minRange = tier.ordinal() - 1;
+            int maxRange = tier.ordinal();
+            if (maxRange >= getPercentRange().length)
+                maxRange = getPercentRange()[getPercentRange().length - 1];
+
+            return Math.max(Utils.randInt(getPercentRange()[minRange], getPercentRange()[maxRange]), 1);
+        }
+
+        default int getMaxFromTier(ItemTier tier){
+            int maxRange = tier.ordinal();
+            if (maxRange >= getPercentRange().length)
+                maxRange = getPercentRange()[getPercentRange().length - 1];
+            return getPercentRange()[maxRange];
+        }
     }
 
     public enum AttributeBank {

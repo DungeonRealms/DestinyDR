@@ -46,7 +46,7 @@ public class CommandDonation extends BaseCommand {
             if (args.length > 1) {
                 String helpAction = args[1];
                 if (helpAction.equals("add"))
-                    sender.sendMessage("Use /drdonation add <player> <purchaseable> <amount> <toMailbox> <transactionID>");
+                    sender.sendMessage("Use /drdonation add <player> <purchaseable> <amount> <toMailbox> <transactionID> <whoBought>");
                 else if (helpAction.equals("remove"))
                     sender.sendMessage("Use /drdonation remove <player> <purchaseable> <amount> <toMailbox> <transactionID>");
                 else if (helpAction.equals("removepending"))
@@ -209,17 +209,20 @@ public class CommandDonation extends BaseCommand {
             }
 
             String transactionID = "-1";
+            String whoBought = sender.getName();
 
             if (isAdd && fromPending) {
-                if (args.length < 6) {
+                if (args.length < 7) {
                     sender.sendMessage("No transaction ID specified. Using -1 as a default.");
-                    sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID>'");
+                    sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID> <whoBought>'");
                 } else {
                     transactionID = args[5];
+                    whoBought = args[6];
                 }
             }
 
             final String realTransactionID = transactionID;
+            final String realWhoBought = whoBought;
 
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
                 if (uuid == null) {
@@ -257,7 +260,7 @@ public class CommandDonation extends BaseCommand {
                             sender.sendMessage("Unknown return code!");
                         }
                     } else if (isAdd && fromPending) {
-                        int returnCode = item.addNumberPending(wrapper, amount, sender.getName(), Utils.getDateString(), realTransactionID, true, (rows) -> {
+                        int returnCode = item.addNumberPending(wrapper, amount, realWhoBought, Utils.getDateString(), realTransactionID, true, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                             BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
                                     "You have new items in your mailbox! **");

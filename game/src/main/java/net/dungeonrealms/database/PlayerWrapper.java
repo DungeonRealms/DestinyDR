@@ -766,6 +766,10 @@ public class PlayerWrapper {
         SQLDatabaseAPI.getInstance().addQuery(getQuery(t, args));
     }
 
+    public void executeUpdate(QueryType t, Consumer<Integer> callback, Object... args) {
+        SQLDatabaseAPI.getInstance().executeUpdate(callback, getQuery(t, args), true);
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public String getQuery(QueryType t, Object... args) {
 
@@ -1321,7 +1325,7 @@ public class PlayerWrapper {
 
         // Bonuses
         int expBonus = 0;
-        if(giveBonus) {
+        if (giveBonus) {
             if (getRank().isSubPlus()) {
                 expBonus = (int) (experienceToAdd * 0.1);
             } else if (getRank().isSUB()) {

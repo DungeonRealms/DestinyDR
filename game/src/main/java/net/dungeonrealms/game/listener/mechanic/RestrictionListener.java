@@ -287,6 +287,16 @@ public class RestrictionListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onDropItem(PlayerDropItemEvent event) {
+        NBTWrapper wrapper = new NBTWrapper(event.getItemDrop().getItemStack());
+        if (wrapper.hasTag("profileItem")) {
+            event.getItemDrop().remove();
+            Bukkit.getLogger().info("Removing " + event.getItemDrop().getType() + " From " + event.getPlayer().getName());
+        }
+
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         checkPlayersArmorIsValid((Player) event.getPlayer());

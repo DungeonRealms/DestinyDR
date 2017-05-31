@@ -179,7 +179,6 @@ public class EntityMechanics implements GenericMechanic {
                 // Remove.
                 MONSTERS_LEASHED.remove(entity);
                 MONSTER_LAST_ATTACK.remove(entity);
-                Bukkit.getLogger().info("Returning entity to base: " + entity.getType());
                 tryToReturnMobToBase(((CraftEntity) entity).getHandle());
                 // Reset goal.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
