@@ -22,8 +22,8 @@ public class CommandTest extends BaseCommand {
             return false;
 
         // Player must a PMOD+.
-        if (!Rank.isPMOD((Player) sender))
-            return false;
+        /*if (!Rank.isPMOD((Player) sender))
+            return false;*/
 
         // Send the user to the new test lobby.
         sender.sendMessage(ChatColor.YELLOW + ChatColor.ITALIC.toString() + "Attempting to send you to the new test server...");
