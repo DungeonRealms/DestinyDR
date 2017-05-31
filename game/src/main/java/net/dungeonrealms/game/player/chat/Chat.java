@@ -11,6 +11,7 @@ import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.handler.FriendHandler;
+import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.player.json.JSONMessage;
 
 import org.bukkit.Bukkit;
@@ -68,7 +69,7 @@ public class Chat {
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
 
         if (player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")) {
-            player.closeInventory();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.closeInventory());
         }
 
         if (chatListeners.remove(player) != null) {

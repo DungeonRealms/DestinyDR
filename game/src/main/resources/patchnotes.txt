@@ -1,6 +1,6 @@
 Build <build>
 &8&lChanges&0
- &l* &0&a&l2x&0 Drop Rates<h>New drop rates!!</h>
+ &l* &0&a&l2x&0 Drop Rates
  &l* &0Orbs now tradeable for 180 T3 Scrap
  &l* &0Buffed Fishing Mechanics
  &l* &0Added Cosmetics

@@ -321,7 +321,7 @@ public class ShopListener implements Listener {
         BankMechanics.shopPricing.put(player.getName(), item);
         player.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
 
-        Chat.listenForNumber(player, 1, Integer.MAX_VALUE / 64, price -> {
+        Chat.listenForNumber(player, 1, 1_000_000, price -> {
             if (!player.getWorld().equals(shop.block1.getWorld()) || player.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
                 player.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
                 cancelPricingItem(player);

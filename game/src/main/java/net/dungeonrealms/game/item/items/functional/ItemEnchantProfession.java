@@ -54,16 +54,18 @@ public abstract class ItemEnchantProfession extends ItemEnchantScroll {
      *
      * @param attr
      */
-    public void addEnchant(ProfessionAttribute attr) {
+    public ItemEnchantProfession addEnchant(ProfessionAttribute attr) {
         this.attributes.setStat(attr, Utils.randInt(attr.getPercentRange()[0], attr.getPercentRange()[1]));
+        return this;
     }
 
-    public void addEnchant(ProfessionAttribute attr, int level) {
+    public ItemEnchantProfession addEnchant(ProfessionAttribute attr, int level) {
         if (level == -1) {
             addEnchant(attr);
-            return;
+            return this;
         }
         this.attributes.setStat(attr, level);
+        return this;
     }
 
     @Override

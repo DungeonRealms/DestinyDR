@@ -49,6 +49,7 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -299,7 +300,7 @@ public class Mining implements GenericMechanic, Listener {
         } else if (r.nextInt(100) == 5) {
             return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else if (r.nextInt(750) == 5) {
-            return new ItemEnchantPickaxe().generateItem();
+            return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).generateItem();
         } else {
             List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.CARROT_ITEM, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
