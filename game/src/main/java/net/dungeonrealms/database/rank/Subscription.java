@@ -1,12 +1,12 @@
 package net.dungeonrealms.database.rank;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -51,6 +51,10 @@ public class Subscription {
      * @since 1.0
      */
     public void handleLogin(Player player, PlayerWrapper wrapper) {
+        if(wrapper == null){
+            Bukkit.getLogger().info("Null wrapper for " + player);
+            return;
+        }
         int subLength = checkSubscription(player.getUniqueId(), wrapper.getRankExpiration());
         if (subLength > 0) {
             showSubscriptionExpiry(player, subLength);

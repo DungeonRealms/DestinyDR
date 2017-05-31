@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
@@ -426,6 +427,7 @@ public class CommandEss extends BaseCommand {
                 PlayerRank currentRank = wrapper.getRank();
                 if (newRank.isAtLeast(currentRank)) {
                     if (newRank == PlayerRank.SUB_PLUS_PLUS) {
+                        BungeeUtils.sendPlayerMessage(wrapper.getUsername(), "                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
                         Rank.setRank(uuid, rankName, done -> GameAPI.updatePlayerData(uuid, UpdateType.RANK));
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");

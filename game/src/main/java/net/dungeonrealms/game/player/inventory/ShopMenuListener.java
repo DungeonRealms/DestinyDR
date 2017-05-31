@@ -97,7 +97,7 @@ public class ShopMenuListener implements Listener {
             return;
         }
 
-        boolean res = shop.getCallback().onClick(p, shop)
+        boolean res = shop.getCallback() != null && shop.getCallback().onClick(p, shop)
                 && (shop.getShards() > 0 || shop.getPrice() > 0 || shop.getECashCost() > 0);
 
         // Remove currency.

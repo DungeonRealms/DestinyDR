@@ -64,7 +64,7 @@ public class CommandList extends BaseCommand {
 
             // Format player name + rank properly.
             String playerName = PlayerWrapper.getWrapper(player).getChatName();
-            playerName = playerName.substring(0, playerName.length() - 4);
+//            playerName = playerName.substring(0, playerName.length() - 4);
 
             String messageString = ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " ");
             if (!isModerator) {

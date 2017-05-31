@@ -36,19 +36,12 @@ public class FunctionalItemListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onInventoryClick(InventoryClickEvent evt) {
-		System.out.println("The inventoryClick debug 1!");
 		if(!CHECKED_CLICKS.contains(evt.getAction()))
 			return;
-
-		System.out.println("The inventoryClick debug 2!");
-
 		FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt));
-
-
 		//Two events get called for this, one for the item we're placing, and the one we're pulling.
 		if (evt.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
 			FunctionalItem.attemptUseItem(new ItemInventoryEvent(evt, true));
-			System.out.println("The inventoryClick debug 3!");
 		}
 	}
 	

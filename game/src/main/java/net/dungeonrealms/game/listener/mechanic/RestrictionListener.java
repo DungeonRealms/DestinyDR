@@ -472,7 +472,6 @@ public class RestrictionListener implements Listener {
 
         Entity damager = event.getDamager();
         Entity receiver = event.getEntity();
-        Bukkit.getLogger().info("Damage event: " + damager + " rec: " + receiver + " cancelled: " + event.isCancelled());
         boolean isAttackerPlayer = false;
         boolean isDefenderPlayer = false;
         boolean isDefenderDummy = EnumEntityType.DPS_DUMMY.isType(receiver);

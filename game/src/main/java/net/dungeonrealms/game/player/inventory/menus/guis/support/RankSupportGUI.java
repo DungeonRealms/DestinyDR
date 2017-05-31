@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,8 +31,8 @@ public class RankSupportGUI extends SupportGUI {
                 getWrapper().setRank(rank);
                 Player p = getWrapper().getPlayer();
 
+                BungeeUtils.sendPlayerMessage(getWrapper().getUsername(), "                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
                 if (p != null && p.isOnline()) {
-                    p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getPrefix());
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                 }
                 getWrapper().setRankExpiration(0);

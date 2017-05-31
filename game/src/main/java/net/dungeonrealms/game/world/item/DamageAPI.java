@@ -397,7 +397,6 @@ public class DamageAPI {
 
     public static void applyArmorReduction(AttackResult res, boolean takeDura) {
 
-        System.out.println("Applying armor reduction to" + res.getDamage());
         CombatEntity attacker = res.getAttacker();
         CombatEntity defender = res.getDefender();
         double originalDamage = res.getDamage();
@@ -534,7 +533,6 @@ public class DamageAPI {
                 totalArmorReduction *= LEVEL_REDUCTION[potionTier];
         }
 
-        System.out.println("Final dmg = " + res.getDamage());
 
         res.setDamage(Math.max(1, damage));
         res.setTotalArmor(totalArmor);

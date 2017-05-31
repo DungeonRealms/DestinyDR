@@ -8,14 +8,12 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
-import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -100,7 +98,7 @@ public class EnergyHandler implements GenericMechanic {
                 continue;
             }
             PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
-            if (playerWrapper == null || !playerWrapper.isAttributesLoaded()) {
+            if (playerWrapper == null || !playerWrapper.isAttributesLoaded() || playerWrapper.getAttributes() == null) {
                 continue; // player data not yet loaded
             }
             if (getPlayerCurrentEnergy(player) == 1.0F) {
@@ -212,11 +210,8 @@ public class EnergyHandler implements GenericMechanic {
         if (!PlayerWrapper.getWrapper(player).isVulnerable())
             return;
 
-        if (GameAPI.isInSafeRegion(player.getLocation())) {
-            if (!duel) {
-                Bukkit.getLogger().info("Cancelling energy reduction in safe zone.");
-                return;
-            }
+        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) {
+            return;
         }
         if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
             //No..

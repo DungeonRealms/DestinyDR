@@ -74,7 +74,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                             return;
                         }
                         item.getPurchaseables().addNumberUnlocked(wrapper, item.getNumberPurchased(), null);
-                        player.sendMessage(ChatColor.GREEN + "Successfully claimed " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + " from " + item.getWhoPurchased());
+                        player.sendMessage(ChatColor.GREEN + "Successfully claimed " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + ChatColor.GREEN + " from " + item.getWhoPurchased());
                         wrapper.updatePurchaseLog("claimed", item.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
                     }, () -> {
                         player.sendMessage(ChatColor.RED + item.getPurchaseables().getName(false).toUpperCase() + " CLAIMING - CANCELLED");

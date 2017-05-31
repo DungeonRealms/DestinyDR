@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.donation;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.BaseCommand;
@@ -21,7 +22,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -35,57 +35,61 @@ public class CommandDonation extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        boolean hasPerms = Rank.isDev(sender) || (sender instanceof ConsoleCommandSender);
-        if(!hasPerms) return true;
+        boolean hasPerms = Rank.isDev(sender) || (sender instanceof ConsoleCommandSender) || sender instanceof Player && Rank.isSupport((Player) sender) && DungeonRealms.isSupport();
+        if (!hasPerms) return true;
 
-        if(args.length < 1) return false;
+        if (args.length < 1) return false;
 
 
         String action = args[0];
-        if(action.equalsIgnoreCase("help")) {
-                if(args.length > 1) {
-                    String helpAction = args[1];
-                    if(helpAction.equals("add")) sender.sendMessage("Use /drdonation add <player> <purchaseable> <amount> <toMailbox> <transactionID>");
-                    else if(helpAction.equals("remove")) sender.sendMessage("Use /drdonation remove <player> <purchaseable> <amount> <toMailbox> <transactionID>");
-                    else if(helpAction.equals("removepending")) sender.sendMessage("Use /drdonation removepending <player> <transactionId>");
-                    else if(helpAction.equals("chargeback")) sender.sendMessage("Use /drdonation chargeback <uuid> <transactionId>");
-                    else {
-                        sender.sendMessage("Invalid help action! Use '/drdonation help' for help!");
-                    }
-                    return true;
-                }
-                sender.sendMessage("Use '/drdonation help <action>' for more help!");
-                sender.sendMessage("ACTION: add");
-                sender.sendMessage("ACTION: remove");
-                sender.sendMessage("ACTION: chargeback");
-                sender.sendMessage("ACTION: removepending");
-                sender.sendMessage("");
-                for(Purchaseables item : Purchaseables.values()) {
-                    if(!item.isShouldStore()) continue;
-                    sender.sendMessage("PURCHASEABLE: " + item.name());
+        if (action.equalsIgnoreCase("help")) {
+            if (args.length > 1) {
+                String helpAction = args[1];
+                if (helpAction.equals("add"))
+                    sender.sendMessage("Use /drdonation add <player> <purchaseable> <amount> <toMailbox> <transactionID>");
+                else if (helpAction.equals("remove"))
+                    sender.sendMessage("Use /drdonation remove <player> <purchaseable> <amount> <toMailbox> <transactionID>");
+                else if (helpAction.equals("removepending"))
+                    sender.sendMessage("Use /drdonation removepending <player> <transactionId>");
+                else if (helpAction.equals("chargeback"))
+                    sender.sendMessage("Use /drdonation chargeback <uuid> <transactionId>");
+                else {
+                    sender.sendMessage("Invalid help action! Use '/drdonation help' for help!");
                 }
                 return true;
+            }
+            sender.sendMessage("Use '/drdonation help <action>' for more help!");
+            sender.sendMessage("ACTION: add");
+            sender.sendMessage("ACTION: remove");
+            sender.sendMessage("ACTION: chargeback");
+            sender.sendMessage("ACTION: removepending");
+            sender.sendMessage("");
+            for (Purchaseables item : Purchaseables.values()) {
+                if (!item.isShouldStore()) continue;
+                sender.sendMessage("PURCHASEABLE: " + item.name());
+            }
+            return true;
         }
 
-        if(action.equalsIgnoreCase("removepending")) {
-            if(args.length < 3) {
+        if (action.equalsIgnoreCase("removepending")) {
+            if (args.length < 3) {
                 sender.sendMessage("Use /drdonation removepending <player> <transactionId>");
             }
             String playerName = args[1];
             String transactionID = args[2];
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false,(uid) -> {
-                if(uid == null) {
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uid) -> {
+                if (uid == null) {
                     sender.sendMessage("This player has never logged into dungeon realms!");
                     return;
                 }
                 PlayerWrapper.getPlayerWrapper(uid, (wrapper) -> {
-                    if(wrapper == null) {
+                    if (wrapper == null) {
                         sender.sendMessage("Something went wrong loading the playerwrapper!");
                         return;
                     }
 
-                    boolean removed = Purchaseables.removePending(wrapper,transactionID,true, (rows) -> {
+                    boolean removed = Purchaseables.removePending(wrapper, transactionID, true, (rows) -> {
                         GameAPI.sendNetworkMessage("donation", uid.toString());
                     });
                     sender.sendMessage(removed ? "Successfully removed the transaction!" : "Could not find any pending purchases with that transaction id");
@@ -94,8 +98,8 @@ public class CommandDonation extends BaseCommand {
             });
 
             return true;
-        } else if(action.equalsIgnoreCase("chargeback")) {
-            if(args.length < 3) {
+        } else if (action.equalsIgnoreCase("chargeback")) {
+            if (args.length < 3) {
                 sender.sendMessage("Please use /drdonation chargeback <uuid> <transactionID>");
                 return true;
             }
@@ -103,7 +107,7 @@ public class CommandDonation extends BaseCommand {
 
             try {
                 playerId = UUID.fromString(args[1]);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 sender.sendMessage("Invalid uuid specified!");
                 Constants.log.info("/drdonation chargeback was used with an invalid UUID. The UUID: " + args[1]);
                 return true;
@@ -112,7 +116,7 @@ public class CommandDonation extends BaseCommand {
             String transactionID = args[2];
 
             PlayerWrapper.getPlayerWrapper(playerId, false, true, (wrapper) -> {
-                if(wrapper == null) {
+                if (wrapper == null) {
                     Constants.log.info("/drdonation chargeback was used with a UUID that has never logged in. The UUID: " + args[1]);
                     sender.sendMessage("/drdonation chargeback was used with a UUID that has never logged in. The UUID: " + args[1]);
                     return;
@@ -122,33 +126,33 @@ public class CommandDonation extends BaseCommand {
                 SQLDatabaseAPI.getInstance().executeQuery(wrapper.getQuery(QueryType.SELECT_LOG, playerId.toString(), transactionID, "claimed"), true, (set) -> {
                     try {
                         if (set == null || !set.first()) {
-                            for(int k = 0; k < wrapper.getPendingPurchaseablesUnlocked().size(); k++) {
+                            for (int k = 0; k < wrapper.getPendingPurchaseablesUnlocked().size(); k++) {
                                 PendingPurchaseable pending = wrapper.getPendingPurchaseablesUnlocked().get(k);
-                                if(pending != null && pending.getTransactionId().equals(transactionID)) {
+                                if (pending != null && pending.getTransactionId().equals(transactionID)) {
                                     wrapper.getPendingPurchaseablesUnlocked().remove(k);
                                     SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
                                         GameAPI.sendNetworkMessage("donation", playerId.toString());
-                                    }, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(),wrapper.getAccountID()));
+                                    }, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
                                 }
                             }
                             return;
                         } else {
-                                //they claimed it so ban them.
-                                StringBuilder discordMessage = new StringBuilder(wrapper.getUsername());
-                                discordMessage.append(" has been perm banned for charging back!");
+                            //they claimed it so ban them.
+                            StringBuilder discordMessage = new StringBuilder(wrapper.getUsername());
+                            discordMessage.append(" has been perm banned for charging back!");
 
-                                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + discordMessage);
+                            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + discordMessage);
 
-                                Player online = Bukkit.getPlayer(playerId);
-                                if (online != null) {
-                                    CombatLog.removeFromCombat(online);
-                                    CombatLog.removeFromPVP(online);
-                                }
+                            Player online = Bukkit.getPlayer(playerId);
+                            if (online != null) {
+                                CombatLog.removeFromCombat(online);
+                                CombatLog.removeFromPVP(online);
+                            }
 
-                                sender.sendMessage(discordMessage.toString());
-                                PunishAPI.ban(playerId, wrapper.getUsername(), 0, 0, "Charge Back", null);
+                            sender.sendMessage(discordMessage.toString());
+                            PunishAPI.ban(playerId, wrapper.getUsername(), 0, 0, "Charge Back", null);
                         }
-                    } catch(SQLException e) {
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 });
@@ -157,7 +161,7 @@ public class CommandDonation extends BaseCommand {
             return true;
         }
 
-        if(args.length < 4) return false;
+        if (args.length < 4) return false;
 
         String playerName = args[1];
         int amount;
@@ -165,25 +169,25 @@ public class CommandDonation extends BaseCommand {
         try {
             item = Purchaseables.valueOf(args[2]);
             amount = Integer.parseInt(args[3]);
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             sender.sendMessage("Amount must be a number!");
             return true;
-        } catch(Exception e) {
+        } catch (Exception e) {
             sender.sendMessage("Invalid purchaseable: " + args[2] + "Use '/drdonation help' for help!");
             return true;
         }
 
-        if(item == null) return true;
+        if (item == null) return true;
 
-        if(!item.isShouldStore()) {
+        if (!item.isShouldStore()) {
             sender.sendMessage("This is a special case item. It can not be used with /drdonation");
             return true;
         }
 
 
-        if(action.equalsIgnoreCase("add") || action.equalsIgnoreCase("remove")) {
+        if (action.equalsIgnoreCase("add") || action.equalsIgnoreCase("remove")) {
             boolean isAdd = action.equalsIgnoreCase("add");
-            if(args.length < 5) {
+            if (args.length < 5) {
                 sender.sendMessage("You must include a pending boolean at the end of the command for add / remove!");
                 sender.sendMessage("/drdonation <action> <player> <purchaseable> <amount> <fromPending>");
                 return true;
@@ -192,22 +196,22 @@ public class CommandDonation extends BaseCommand {
             boolean fromPending;
             try {
                 fromPending = Boolean.valueOf(args[4]);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 sender.sendMessage("fromPending must be a true or false!");
                 return true;
             }
             if (isAdd && amount < 1) {
                 sender.sendMessage("Use the action 'remove' to remove items!");
                 return true;
-            } else if(!isAdd && amount < 1 && amount != -1) {
+            } else if (!isAdd && amount < 1 && amount != -1) {
                 sender.sendMessage("Please use only positive amounts or -1 to remove all occurances.");
                 return true;
             }
 
             String transactionID = "-1";
 
-            if(isAdd && fromPending) {
-                if(args.length < 6) {
+            if (isAdd && fromPending) {
+                if (args.length < 6) {
                     sender.sendMessage("No transaction ID specified. Using -1 as a default.");
                     sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID>'");
                 } else {
@@ -217,18 +221,18 @@ public class CommandDonation extends BaseCommand {
 
             final String realTransactionID = transactionID;
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName,false, (uuid) -> {
-                if(uuid == null) {
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+                if (uuid == null) {
                     sender.sendMessage("That player has never logged onto Dungeon Realms!");
                     return;
                 }
                 PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
-                    if(wrapper == null) {
+                    if (wrapper == null) {
                         sender.sendMessage("Something went wrong while fetching the players wrapper!");
                         return;
                     }
 
-                    if(isAdd && !fromPending) {
+                    if (isAdd && !fromPending) {
                         int returnCode = item.addNumberUnlocked(wrapper, amount, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                         });
@@ -239,8 +243,8 @@ public class CommandDonation extends BaseCommand {
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
-                    } else if(!isAdd && fromPending) {
-                        int returnCode = item.removeNumberPending(wrapper,amount,true, (rows) -> {
+                    } else if (!isAdd && fromPending) {
+                        int returnCode = item.removeNumberPending(wrapper, amount, true, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                         });
                         if (returnCode == Purchaseables.NONE_OWNED) {
@@ -252,14 +256,14 @@ public class CommandDonation extends BaseCommand {
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
-                    } else if(isAdd && fromPending) {
-                        int returnCode = item.addNumberPending(wrapper,amount,sender.getName(),Utils.getDateString(),realTransactionID,true, (rows) -> {
+                    } else if (isAdd && fromPending) {
+                        int returnCode = item.addNumberPending(wrapper, amount, sender.getName(), Utils.getDateString(), realTransactionID, true, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                             BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
                                     "You have new items in your mailbox! **");
                             BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GRAY + "Use /mailbox to view them!");
                         });
-                        String uuidString =((sender instanceof Player) ? ((Player)sender).getUniqueId().toString() : "-1");
+                        String uuidString = ((sender instanceof Player) ? ((Player) sender).getUniqueId().toString() : "-1");
                         //-1 for ^ if console
                         wrapper.updatePurchaseLog("addedPending", realTransactionID, System.currentTimeMillis(), uuidString);
                         if (returnCode == Purchaseables.NO_MULTIPLES) {
@@ -269,8 +273,8 @@ public class CommandDonation extends BaseCommand {
                         } else {
                             sender.sendMessage("Unknown return code!");
                         }
-                    } else if(!isAdd && !fromPending) {
-                        int returnCode = item.removeNumberUnlocked(wrapper,amount, (rows) -> {
+                    } else if (!isAdd && !fromPending) {
+                        int returnCode = item.removeNumberUnlocked(wrapper, amount, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                         });
                         if (returnCode == Purchaseables.NONE_OWNED) {

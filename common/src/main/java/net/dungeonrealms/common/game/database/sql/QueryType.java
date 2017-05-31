@@ -29,7 +29,7 @@ public enum QueryType {
     UNBAN_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'ban';"),
     UNMUTE_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'mute';"),
     UPDATE_COLLECTION_BIN("UPDATE characters SET collection_storage = '%s' WHERE character_id = '%s';"),
-    UPDATE_HEARTH_STONE("UPDATE characters SET currentHearthStone = '%s' WHERE characters.character_id = '%s';"),
+    UPDATE_HEARTH_STONE("UPDATE characters SET currentHearthStone = %s WHERE characters.character_id = '%s';"),
     UPDATE_RANK("UPDATE ranks SET rank = '%s', expiration = '%s' WHERE account_id = '%s';"),
     INSERT_FRIENDS("INSERT IGNORE INTO friends(account_id, friend_id, status) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE status = '%s';"),
     INSERT_BAN("INSERT IGNORE INTO punishments(account_id, type, issued, expiration, punisher_id, reason, quashed) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');"),

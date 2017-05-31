@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
@@ -74,8 +75,8 @@ public class CommandSetRank extends BaseCommand {
                 sender.sendMessage(ChatColor.GREEN + "Setting rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + (newRank == PlayerRank.DEFAULT ? "DEFAULT" : newRank.getInternalName()) + ChatColor.GREEN + ".");
                 Player p = wrapper.getPlayer();
                 wrapper.setRank(newRank);
+                BungeeUtils.sendPlayerMessage(wrapper.getUsername(), "                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
                 if (p != null && p.isOnline()) {
-                    p.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank.getPrefix());
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> ScoreboardHandler.getInstance().updatePlayerName(p));
                 }
