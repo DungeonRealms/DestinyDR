@@ -224,81 +224,95 @@ public class CommandDonation extends BaseCommand {
             final String realTransactionID = transactionID;
             final String realWhoBought = whoBought;
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, true, (uuid) -> {
                 if (uuid == null) {
                     sender.sendMessage("That player has never logged onto Dungeon Realms!");
                     return;
                 }
-                PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
-                    if (wrapper == null) {
-                        sender.sendMessage("Something went wrong while fetching the players wrapper!");
-                        return;
-                    }
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if (accountID == null) {
+                    Bukkit.getLogger().info("No account id found for: " + uuid + ", generating new account...");
+                    SQLDatabaseAPI.getInstance().createDataForPlayer(uuid, playerName, "0.0.0.0", created -> {
+                        Bukkit.getLogger().info("Created new account with account ID: " + created + ", attempting to add purchasble...");
+                        addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought, realTransactionID, sender);
+                    });
+                    return;
+                }
 
-                    if (isAdd && !fromPending) {
-                        if(item.isSpecialCaseClaim()) {
-                            sender.sendMessage("This purchaseable is a special case claim! You may only add it to mailbox!");
-                            return;
-                        }
-                        int returnCode = item.addNumberUnlocked(wrapper, amount, (rows) -> {
-                            GameAPI.sendNetworkMessage("donation", uuid.toString());
-                        });
-                        if (returnCode == Purchaseables.NO_MULTIPLES) {
-                            sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
-                        } else if (returnCode == Purchaseables.SUCCESS) {
-                            sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
-                        } else {
-                            sender.sendMessage("Unknown return code!");
-                        }
-                    } else if (!isAdd && fromPending) {
-                        int returnCode = item.removeNumberPending(wrapper, amount, true, (rows) -> {
-                            GameAPI.sendNetworkMessage("donation", uuid.toString());
-                        });
-                        if (returnCode == Purchaseables.NONE_OWNED) {
-                            sender.sendMessage(playerName + " did not have any " + item.name());
-                        } else if (returnCode == Purchaseables.SUCCESS) {
-                            sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
-                        } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
-                            sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
-                        } else {
-                            sender.sendMessage("Unknown return code!");
-                        }
-                    } else if (isAdd && fromPending) {
-                        int returnCode = item.addNumberPending(wrapper, amount, realWhoBought, Utils.getDateString(), realTransactionID, true, (rows) -> {
-                            GameAPI.sendNetworkMessage("donation", uuid.toString());
-                            BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
-                                    "You have new items in your mailbox! **");
-                            BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GRAY + "Use /mailbox to view them!");
-                        });
-                        String uuidString = ((sender instanceof Player) ? ((Player) sender).getUniqueId().toString() : "-1");
-                        //-1 for ^ if console
-                        wrapper.updatePurchaseLog("addedPending", realTransactionID, System.currentTimeMillis(), uuidString);
-                        if (returnCode == Purchaseables.NO_MULTIPLES) {
-                            sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
-                        } else if (returnCode == Purchaseables.SUCCESS) {
-                            sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
-                        } else {
-                            sender.sendMessage("Unknown return code!");
-                        }
-                    } else if (!isAdd && !fromPending) {
-                        int returnCode = item.removeNumberUnlocked(wrapper, amount, (rows) -> {
-                            GameAPI.sendNetworkMessage("donation", uuid.toString());
-                        });
-                        if (returnCode == Purchaseables.NONE_OWNED) {
-                            sender.sendMessage(playerName + " did not have any " + item.name());
-                        } else if (returnCode == Purchaseables.SUCCESS) {
-                            sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
-                        } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
-                            sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
-                        } else {
-                            sender.sendMessage("Unknown return code!");
-                        }
-                    }
-                });
+                addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought, realTransactionID, sender);
             });
 
         }
 
         return true;
+    }
+
+    public void addPurchasble(UUID uuid, String playerName, Purchaseables item, int amount, boolean isAdd, boolean fromPending, String realWhoBought, String realTransactionID, CommandSender sender) {
+        PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
+            if (wrapper == null) {
+                sender.sendMessage("Something went wrong while fetching the players wrapper!");
+                return;
+            }
+
+            if (isAdd && !fromPending) {
+                if (item.isSpecialCaseClaim()) {
+                    sender.sendMessage("This purchaseable is a special case claim! You may only add it to mailbox!");
+                    return;
+                }
+                int returnCode = item.addNumberUnlocked(wrapper, amount, (rows) -> {
+                    GameAPI.sendNetworkMessage("donation", uuid.toString());
+                });
+                if (returnCode == Purchaseables.NO_MULTIPLES) {
+                    sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
+                } else if (returnCode == Purchaseables.SUCCESS) {
+                    sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
+                } else {
+                    sender.sendMessage("Unknown return code!");
+                }
+            } else if (!isAdd && fromPending) {
+                int returnCode = item.removeNumberPending(wrapper, amount, true, (rows) -> {
+                    GameAPI.sendNetworkMessage("donation", uuid.toString());
+                });
+                if (returnCode == Purchaseables.NONE_OWNED) {
+                    sender.sendMessage(playerName + " did not have any " + item.name());
+                } else if (returnCode == Purchaseables.SUCCESS) {
+                    sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
+                } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
+                    sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
+                } else {
+                    sender.sendMessage("Unknown return code!");
+                }
+            } else if (isAdd && fromPending) {
+                int returnCode = item.addNumberPending(wrapper, amount, realWhoBought, Utils.getDateString(), realTransactionID, true, (rows) -> {
+                    GameAPI.sendNetworkMessage("donation", uuid.toString());
+                    BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
+                            "You have new items in your mailbox! **");
+                    BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GRAY + "Use /mailbox to view them!");
+                });
+                String uuidString = ((sender instanceof Player) ? ((Player) sender).getUniqueId().toString() : "-1");
+                //-1 for ^ if console
+                wrapper.updatePurchaseLog("addedPending", realTransactionID, System.currentTimeMillis(), uuidString);
+                if (returnCode == Purchaseables.NO_MULTIPLES) {
+                    sender.sendMessage("This player already has this item unlocked and they can not have multiples!");
+                } else if (returnCode == Purchaseables.SUCCESS) {
+                    sender.sendMessage("Success! Added " + amount + " " + item.name() + " to " + playerName + "!");
+                } else {
+                    sender.sendMessage("Unknown return code!");
+                }
+            } else if (!isAdd && !fromPending) {
+                int returnCode = item.removeNumberUnlocked(wrapper, amount, (rows) -> {
+                    GameAPI.sendNetworkMessage("donation", uuid.toString());
+                });
+                if (returnCode == Purchaseables.NONE_OWNED) {
+                    sender.sendMessage(playerName + " did not have any " + item.name());
+                } else if (returnCode == Purchaseables.SUCCESS) {
+                    sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "!");
+                } else if (returnCode == Purchaseables.SUCESS_REMOVED_ALL) {
+                    sender.sendMessage("Success! Removed " + amount + " " + item.name() + " to " + playerName + "! They no longer have any!");
+                } else {
+                    sender.sendMessage("Unknown return code!");
+                }
+            }
+        });
     }
 }

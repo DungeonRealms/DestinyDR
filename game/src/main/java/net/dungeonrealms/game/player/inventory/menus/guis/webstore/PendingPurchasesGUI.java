@@ -58,7 +58,7 @@ public class PendingPurchasesGUI extends GUIMenu {
             lore.add(ChatColor.GRAY + ChatColor.BOLD.toString() + "Right Click" + ChatColor.GRAY + " to " + ChatColor.RED + ChatColor.BOLD + "DENY");
             System.out.println(item.getPurchaseables().name() + " has meta " + item.getPurchaseables().getMeta());
             GUIItem pendingItem = new GUIItem(item.getPurchaseables().getItemType()).setDurability((short) item.getPurchaseables().getMeta()).setName(item.getPurchaseables().getName(true)).setLore(lore);
-            if(item.getPurchaseables().getCategory().equals(WebstoreCategories.PETS)) {
+            if (item.getPurchaseables().getCategory().equals(WebstoreCategories.PETS)) {
                 EnumPets pets = (EnumPets) item.getPurchaseables().getSpecialArgs()[0];
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setString("id", pets.getEntityType().getName());
@@ -81,7 +81,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                     player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
                     player.sendMessage("");
                     Chat.promptPlayerConfirmation(player, () -> {
-                        if(item.getPurchaseables().isSpecialCaseClaim()) {
+                        if (item.getPurchaseables().isSpecialCaseClaim()) {
                             handleSpecialCaseClaim(wrapper, item);
                         } else {
                             boolean didRemove = wrapper.getPendingPurchaseablesUnlocked().remove(item);
@@ -102,10 +102,10 @@ public class PendingPurchasesGUI extends GUIMenu {
                     player.sendMessage(ChatColor.GOLD + "Are you sure you want to deny this purchase? This cannot be undone!");
 
                     player.sendMessage("");
-                    player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "(" + ChatColor.RED + ChatColor.BOLD.toString() + "!" + ChatColor.YELLOW + ChatColor.BOLD.toString() + ")" + ChatColor.DARK_RED + ChatColor.BOLD.toString() + " WARNING!" + ChatColor.RED + " Denying pending purchases is permanent! Your purchase will NOT be refunded!");
-                    player.sendMessage(ChatColor.RED + "If you deny this you can never get it back!");
+                    player.sendMessage(ChatColor.DARK_RED + ChatColor.BOLD.toString() + " WARNING!" + ChatColor.RED + " Denying pending purchases is permanent! Your purchase will NOT be refunded!");
+                    Utils.sendCenteredMessage(player, ChatColor.RED + "If you deny this you can never get it back!");
 
-                    player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
+                    Utils.sendCenteredMessage(player, ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
                     player.sendMessage("");
                     Chat.promptPlayerConfirmation(player, () -> {
                         boolean didRemove = wrapper.getPendingPurchaseablesUnlocked().remove(item);
@@ -114,7 +114,7 @@ public class PendingPurchasesGUI extends GUIMenu {
                             return;
                         }
                         SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
-                        player.sendMessage(ChatColor.GREEN + "Successfully denied " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + " from " + item.getWhoPurchased());
+                        player.sendMessage(ChatColor.GREEN + "Successfully denied " + item.getNumberPurchased() + " " + item.getPurchaseables().getName() + ChatColor.GREEN + " from " + item.getWhoPurchased());
                         wrapper.updatePurchaseLog("denied", item.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
                     }, () -> {
                         player.sendMessage(ChatColor.RED + item.getPurchaseables().getName(false).toUpperCase() + " CLAIMING - CANCELLED");
@@ -127,28 +127,28 @@ public class PendingPurchasesGUI extends GUIMenu {
 
     public void handleSpecialCaseClaim(PlayerWrapper wrapper, PendingPurchaseable toClaim) {
         Purchaseables purchaseable = toClaim.getPurchaseables();
-        if(purchaseable.equals(Purchaseables.SUB_PLUS_PLUS)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS_PLUS, 0);
-        } else if(purchaseable.equals(Purchaseables.SUB_MONTHLY)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
-        } else if(purchaseable.equals(Purchaseables.SUB_PLUS_MONTHLY)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
-        } else if(purchaseable.equals(Purchaseables.SUB_ONE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
-        } else if(purchaseable.equals(Purchaseables.SUB_PLUS_ONE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
-        } else if(purchaseable.equals(Purchaseables.SUB_THREE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(90));
-        } else if(purchaseable.equals(Purchaseables.SUB_PLUS_THREE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(90));
-        } else if(purchaseable.equals(Purchaseables.SUB_SIX_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(180));
-        } else if(purchaseable.equals(Purchaseables.SUB_PLUS_SIX_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(180));
-        } else if(purchaseable.equals(Purchaseables.SUB_TWELVE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
-        } else if(purchaseable.equals(Purchaseables.SUB_PLUS_TWELVE_MONTH)) {
-            handleSpecialCaseClaimRank(wrapper,toClaim,PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
+        if (purchaseable.equals(Purchaseables.SUB_PLUS_PLUS)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS_PLUS, 0);
+        } else if (purchaseable.equals(Purchaseables.SUB_MONTHLY)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
+        } else if (purchaseable.equals(Purchaseables.SUB_PLUS_MONTHLY)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
+        } else if (purchaseable.equals(Purchaseables.SUB_ONE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
+        } else if (purchaseable.equals(Purchaseables.SUB_PLUS_ONE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(30));
+        } else if (purchaseable.equals(Purchaseables.SUB_THREE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(90));
+        } else if (purchaseable.equals(Purchaseables.SUB_PLUS_THREE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(90));
+        } else if (purchaseable.equals(Purchaseables.SUB_SIX_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(180));
+        } else if (purchaseable.equals(Purchaseables.SUB_PLUS_SIX_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(180));
+        } else if (purchaseable.equals(Purchaseables.SUB_TWELVE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
+        } else if (purchaseable.equals(Purchaseables.SUB_PLUS_TWELVE_MONTH)) {
+            handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
         } else {
             throw new IllegalArgumentException("Missing logic for special case purchaseable!");
         }
@@ -156,10 +156,10 @@ public class PendingPurchasesGUI extends GUIMenu {
 
     public void handleSpecialCaseClaimRank(PlayerWrapper wrapper, PendingPurchaseable toClaim, PlayerRank toSet, long expireTime) {
         wrapper.setRank(toSet);
-        wrapper.setRankExpiration((int)expireTime);
+        wrapper.setRankExpiration((int) expireTime);
         Rank.getCachedRanks().put(wrapper.getUuid(), wrapper.getRank());
         SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
-            if(rows == null || rows <= 0) {
+            if (rows == null || rows <= 0) {
                 wrapper.getPlayer().sendMessage(ChatColor.RED + "Something went wrong while trying to claim your rank!");
                 wrapper.getPlayer().sendMessage(ChatColor.GRAY + "Please try again later or contact a staff member if the problem persists!");
                 return;
@@ -170,8 +170,8 @@ public class PendingPurchasesGUI extends GUIMenu {
                 return;
             }
             wrapper.updatePurchaseLog("claimed", toClaim.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
-            SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+            wrapper.executeUpdate(QueryType.UPDATE_PURCHASES, null, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID());
             GameAPI.sendNetworkMessage("Rank", wrapper.getUuid().toString(), toSet.getInternalName());
-        },wrapper.getQuery(QueryType.SET_RANK, wrapper.getRank().getInternalName(), wrapper.getAccountID()));
+        }, QueryType.SET_RANK.getQuery(wrapper.getRank().getInternalName(), wrapper.getAccountID()));
     }
 }

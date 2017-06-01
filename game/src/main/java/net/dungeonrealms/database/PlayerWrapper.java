@@ -368,12 +368,19 @@ public class PlayerWrapper {
                 //We need to get the most updated last_used variable when pulling this..
                 this.lastIP = result.getString("ip_addresses.ip_address");
                 this.lastTimeIPUsed = result.getLong("ip_addresses.last_used");
-                this.hearthstone = TeleportLocation.valueOf(result.getString("characters.currentHearthStone"));
+                this.hearthstone = TeleportLocation.getByName(result.getString("characters.currentHearthStone"));
 
                 this.alignmentTime = result.getInt("characters.alignmentTime");
-                this.alignment = EnumPlayerAlignments.valueOf(result.getString("characters.alignment"));
+                this.alignment = EnumPlayerAlignments.get(result.getString("characters.alignment"));
 
                 this.currencyTab = new CurrencyTab(this.uuid).deserializeCurrencyTab(result.getString("users.currencyTab"));
+
+                PlayerRank rank = PlayerRank.getFromInternalName(result.getString("ranks.rank"));
+                if (rank != null && rank != PlayerRank.DEFAULT)
+                    Rank.getCachedRanks().put(this.uuid, rank);
+                else {
+                    Rank.getCachedRanks().remove(this.uuid);
+                }
                 this.rankExpiration = result.getInt("ranks.expiration");
 
                 this.realmTitle = result.getString("realm.title");

@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParticleEffectGUI extends GUIMenu {
     public ParticleEffectGUI(Player player, GUIMenu previous) {
@@ -45,25 +46,26 @@ public class ParticleEffectGUI extends GUIMenu {
             boolean activated = wrapper.getActiveTrail() == effect;
             lore.add("");
 
+            AtomicBoolean isUnlocked = new AtomicBoolean(wrapper.hasEffectUnlocked(effect));
+            if(effect == ParticleAPI.ParticleEffect.GOLD_BLOCK) isUnlocked.set(Purchaseables.GOLDEN_CURSE.isUnlocked(wrapper));
+
             if (activated) {
                 lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACTIVATED");
                 lore.add(ChatColor.GRAY + "Click to de-activate this effect.");
-            } else {
-                if (wrapper.hasEffectUnlocked(effect)) {
+            } else if (isUnlocked.get()) {
                     lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED");
                     lore.add(ChatColor.GRAY + "Click to activate this effect.");
-                } else {
+            } else {
                     lore.add(ChatColor.RED.toString() + ChatColor.BOLD + "LOCKED");
                     if (effect.getPrice() > 0) {
                         lore.add("");
                         lore.add(ChatColor.GREEN + "Cost: " + ChatColor.WHITE.toString() + effect.getPrice() + ChatColor.GREEN + " E-Cash");
                     }
-                }
             }
 
 
             setItem(i++, new GUIItem(effect.getSelectionItem()).setName(ChatColor.GREEN + effect.getDisplayName()).setEnchanted(activated).setLore(lore).setClick(e -> {
-                if (!wrapper.hasEffectUnlocked(effect)) {
+                if (!isUnlocked.get()) {
                     //Unlock?
                     if (effect.getPrice() <= 0) {
                         player.sendMessage(ChatColor.GREEN + "You do not have this effect unlocked!");

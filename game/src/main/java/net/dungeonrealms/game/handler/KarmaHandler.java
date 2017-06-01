@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -71,6 +72,10 @@ public class KarmaHandler implements GenericMechanic, Listener {
                 if (playerAlignments.getName().equalsIgnoreCase(rawName))
                     return playerAlignments;
             return null;
+        }
+
+        public static EnumPlayerAlignments get(String rawName) {
+            return Arrays.stream(values()).filter(playerAlignments -> playerAlignments.name().equals(rawName)).findFirst().orElse(null);
         }
     }
 

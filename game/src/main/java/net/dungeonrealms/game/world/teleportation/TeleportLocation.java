@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.teleportation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -112,7 +113,10 @@ public enum TeleportLocation {
     			teleportable.add(tl);
     	return teleportable.get(Utils.randInt(0, teleportable.size() - 1));
 	}
-	
+
+	public static TeleportLocation getByName(String name){
+		return Arrays.stream(TeleportLocation.values()).filter(loc -> loc.name().equals(name)).findFirst().orElse(TeleportLocation.CYRENNICA);
+	}
 	public String getDBString() {
 		return x + "," + y + "," + z + "," + yaw + "," + pitch;
 	}

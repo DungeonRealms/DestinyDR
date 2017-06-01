@@ -82,6 +82,7 @@ public enum PlayerRank {
     }
     
     public static PlayerRank getFromInternalName(String name) {
+        if(name == null)return null;
         return Arrays.stream(values()).filter(rank -> rank.getInternalName().equals(name.toLowerCase())).findFirst().orElse(null);
     }
     
