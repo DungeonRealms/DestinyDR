@@ -60,7 +60,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)) || (shardID.equalsIgnoreCase("BETA-1")))
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)) || (shardID.equalsIgnoreCase("BETA-1")) || shardID.contains("TEST"))
                 continue;
 
             GUIButton button = new GUIButton(getShardItem(shardID)) {
