@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class CommandPack extends BaseCommand {
     public CommandPack() {
-        super("Recieve the resource pack.", "/<command>", "Receive the resource pack", null, Lists.newArrayList("resourcepack", "texturepack"));
+        super("pack", "/<command>", "Receive the resource pack", null, Lists.newArrayList("resourcepack", "texturepack"));
     }
 
     @Override
