@@ -191,7 +191,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     return;
                 }
             }
-            if (sendToLobby) {
+            if (sendToLobby && player != null) {
                 player.connect(getProxy().getServerInfo("Lobby"));
             }
         });
@@ -291,13 +291,14 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         if (lastSpaceIndex >= 0) partialPlayerName = partialPlayerName.substring(lastSpaceIndex + 1);
 
         for (ProxiedPlayer p : getProxy().getPlayers()) {
-            if (p.getName().toLowerCase().startsWith(partialPlayerName) && !this.vanishedPlayers.contains(p.getUniqueId())) ev.getSuggestions().add(p.getName());
+            if (p.getName().toLowerCase().startsWith(partialPlayerName) && !this.vanishedPlayers.contains(p.getUniqueId()))
+                ev.getSuggestions().add(p.getName());
         }
     }
 
 
     @EventHandler
-    public void onPlayerLeave(PlayerDisconnectEvent event){
+    public void onPlayerLeave(PlayerDisconnectEvent event) {
         //Remove them from the list if they disconnect.
         this.vanishedPlayers.remove(event.getPlayer().getUniqueId());
     }
@@ -338,11 +339,11 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return servers;
     }
 
-    public void hidePlayer(UUID uuid){
-        if(!this.vanishedPlayers.contains(uuid))this.vanishedPlayers.add(uuid);
+    public void hidePlayer(UUID uuid) {
+        if (!this.vanishedPlayers.contains(uuid)) this.vanishedPlayers.add(uuid);
     }
 
-    public void unhidePlayer(UUID uuid){
+    public void unhidePlayer(UUID uuid) {
         this.vanishedPlayers.remove(uuid);
     }
 
