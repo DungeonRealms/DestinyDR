@@ -61,11 +61,15 @@ public class ReflectionAPI {
     }
 
     @SneakyThrows
-    public static Object getObjectFromField(String fieldName, Object instance) {
-        Field field = getDeclaredField(instance.getClass(), fieldName);
+    public static Object getObjectFromField(String fieldName, Class<?> from, Object instance) {
+        Field field = getDeclaredField(from, fieldName);
         if (field != null)
             return field.get(instance);
         return null;
+    }
+    @SneakyThrows
+    public static Object getObjectFromField(String fieldName, Object instance) {
+        return getObjectFromField(fieldName, instance.getClass(), instance);
     }
 
     /**
