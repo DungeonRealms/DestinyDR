@@ -119,6 +119,7 @@ public class Mining implements GenericMechanic, Listener {
 
         e.setCancelled(true);
 
+        if(!isMineable(block.getLocation()))return;
         ItemPickaxe pickaxe = new ItemPickaxe(item);
         Player p = e.getPlayer();
 
@@ -299,12 +300,12 @@ public class Mining implements GenericMechanic, Listener {
             return oreHelm;
         } else if (r.nextInt(250) == 5) {
             return new ItemOrb().generateItem();
-        } else if (r.nextInt(100) == 5) {
+        } else if (r.nextInt(75) == 5) {
             return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else if (r.nextInt(750) == 5) {
             return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).generateItem();
         } else {
-            List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.CARROT_ITEM, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
+            List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
         }
 
@@ -389,7 +390,7 @@ public class Mining implements GenericMechanic, Listener {
     private static void updateConfig() {
         List<String> save = new ArrayList<>();
         for (Location l : oreLocations.keySet())
-            save.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + oreLocations.get(l));
+            save.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + oreLocations.get(l).getTier());
         DungeonRealms.getInstance().getConfig().set("orespawns", save);
         DungeonRealms.getInstance().saveConfig();
     }

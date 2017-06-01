@@ -12,14 +12,15 @@ import org.bukkit.entity.Player;
 public class HearthstoneSupportGUI extends SupportGUI {
 
     public HearthstoneSupportGUI(Player viewer, String other) {
-        super(viewer,other,45,other + "'s Hearthstone Management");
+        super(viewer, other, 45, other + "'s Hearthstone Management");
     }
 
     @Override
     protected void setItems() {
         int slot = 0;
-        for(TeleportLocation loc : TeleportLocation.values()) {
-            setItem(slot++,new GUIItem(Material.QUARTZ).setName(loc.getDisplayName()).setLore("Click to set their hearthstone location to: " + loc.getDisplayName()).setClick((evt)-> {
+        for (TeleportLocation loc : TeleportLocation.values()) {
+            setItem(slot++, new GUIItem(Material.QUARTZ).setName(loc.getDisplayName()).setLore("Click to set their hearthstone location to: " + loc.getDisplayName())
+                    .setClick((evt) -> {
                 getWrapper().setHearthstone(loc);
                 getWrapper().runQuery(QueryType.UPDATE_HEARTH_STONE, loc.getDBString(), getWrapper().getCharacterID());
                 player.sendMessage("Success!");

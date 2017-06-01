@@ -681,7 +681,8 @@ public class PlayerWrapper {
             statement.addBatch(getCharacterReplaceQuery(player));
             //User query.
             statement.addBatch(getUsersUpdateQuery(isOnline));
-            statement.addBatch(this.getPlayerGameStats().getUpdateStatement());
+            if (this.getPlayerGameStats() != null)
+                statement.addBatch(this.getPlayerGameStats().getUpdateStatement());
             String playerStats = getPlayerStats().getUpdateStatement();
             statement.addBatch(playerStats);
             Bukkit.getLogger().info("Player Stats: " + playerStats);

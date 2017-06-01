@@ -142,9 +142,9 @@ public class RealmMaterialFactory {
 
         // items.add( new RealmMaterialItem(new ItemStack(Material.PISTON_BASE, 64, (short)80));
         // items.add( new RealmMaterialItem(new ItemStack(Material.PISTON_STICKY_BASE, 64, (short)120));
-        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 1)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 2)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 3)));
+//        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 1)));
+//        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 2)));
+//        items.add(new RealmMaterialItem(new ItemStack(Material.SAPLING, 15, (short) 3)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 50, (short) 0)));
         items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 55, (short) 1)));

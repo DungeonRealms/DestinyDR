@@ -28,9 +28,9 @@ public enum Purchaseables {
     LEVEL_BUFF_20("Level Buff", "\n20% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 8, true, true, ChatColor.GREEN),
     LEVEL_BUFF_40("Level Buff", "\n40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 17, true, true, ChatColor.GREEN),
 
-    SUB("Sub Rank", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 0, false, false, ChatColor.GREEN),
-    SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, false, ChatColor.GOLD),
-    SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, false, ChatColor.GOLD),
+    SUB("Sub Rank", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 0, false, true, ChatColor.GREEN),
+    SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, true, ChatColor.GOLD),
+    SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, ChatColor.GOLD),
 
     WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
     CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, ChatColor.GOLD, true, 2),
