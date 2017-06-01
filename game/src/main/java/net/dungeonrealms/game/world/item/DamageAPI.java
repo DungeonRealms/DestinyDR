@@ -660,15 +660,15 @@ public class DamageAPI {
 
         if (unitVector.length() > 0) unitVector.normalize();
 
-        Bukkit.getLogger().info("Damaged Velocity: " + damaged.getVelocity().toString());
-        Bukkit.getLogger().info("UnitVector Velocity: " + unitVector.toString());
+//        Bukkit.getLogger().info("Damaged Velocity: " + damaged.getVelocity().toString());
+//        Bukkit.getLogger().info("UnitVector Velocity: " + unitVector.toString());
 
         HitTracker tracker = hitTrackerMap.computeIfAbsent(attacker.getUniqueId(), t -> new HitTracker());
 
         int hitCounter = tracker.trackHit(damaged);
         unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .35 : hitCounter == 2 ? .25 : 0.10));
 
-        Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
+//        Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
 
         EntityMechanics.setVelocity(damaged, unitVector.multiply(hitCounter >= 2 ? .35 : .45));
     }

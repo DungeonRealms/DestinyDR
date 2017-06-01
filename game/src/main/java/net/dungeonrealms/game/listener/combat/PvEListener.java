@@ -11,6 +11,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
@@ -104,6 +105,10 @@ public class PvEListener implements Listener {
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         AttackResult res = null;
+        if(ProfessionItem.isProfessionItem(held)){
+            event.setCancelled(true);
+            event.setDamage(0.0);
+        }
         //1 damage for melee staffing..
         if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager()) && ItemWeaponStaff.isStaff(held)) {
             res = new AttackResult(damager, receiver);
