@@ -1,6 +1,14 @@
 Build <build>
-&8&lChanges&0
- &l* &0Added Treasure Find to Pickaxes<h>Gain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
- &l* &0Orbs now tradeable for 180 T3 Scrap
- &l* &0Buffed Fishing Mechanics
- &l* &0Added Cosmetics
+ &8&lAdditions&0
+ &l* &0Mining Treasure Find<h>&7&lTreasure Find,,Gain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
+ &l* &0Sales Manager
+ &l* &0Hats
+ &l* &0Mobile Musicbox
+ &l* &0DPS Dummy
+ &l* &0Golden Curse
+ &l* &0New Pets
+ &l* &0Item Name Tags
+ &8&lChanges&0
+ &l* &0Fishing Mechanics<h>&7&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &a- Fish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>
+ &l* &0PVP Knockback
+ &l* &0Recoded 90% of Dungeon Realms<h>This has by far taken up most,of our time developing but it,paves the way for the future,of Dungeon Realms.</h>

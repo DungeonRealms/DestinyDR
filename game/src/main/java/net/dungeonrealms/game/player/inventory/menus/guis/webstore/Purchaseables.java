@@ -21,53 +21,68 @@ import java.util.function.Consumer;
 @Getter
 public enum Purchaseables {
 
-    LOOT_BUFF_20("Loot Buff", "\n20% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 0, true, true, ChatColor.AQUA),
-    LOOT_BUFF_40("Loot Buff", "\n40% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 9, true, true, ChatColor.AQUA),
-    PROFESSION_BUFF_20("Profession Buff", "\n20% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 4, true, true, ChatColor.GOLD),
-    PROFESSION_BUFF_40("Profession Buff", "\n40% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 13, true, true, ChatColor.GOLD),
-    LEVEL_BUFF_20("Level Buff", "\n20% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 8, true, true, ChatColor.GREEN),
-    LEVEL_BUFF_40("Level Buff", "\n40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 17, true, true, ChatColor.GREEN),
+    LOOT_BUFF_20("Loot Buff", "\n20% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 0, true, true,false, ChatColor.AQUA),
+    LOOT_BUFF_40("Loot Buff", "\n40% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 9, true, true,false, ChatColor.AQUA),
+    PROFESSION_BUFF_20("Profession Buff", "\n20% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 4, true, true,false, ChatColor.GOLD),
+    PROFESSION_BUFF_40("Profession Buff", "\n40% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 13, true, true,false, ChatColor.GOLD),
+    LEVEL_BUFF_20("Level Buff", "\n20% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 8, true, true,false, ChatColor.GREEN),
+    LEVEL_BUFF_40("Level Buff", "\n40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 17, true, true,false, ChatColor.GREEN),
 
-    SUB("Sub Rank", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 0, false, true, ChatColor.GREEN),
-    SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, true, ChatColor.GOLD),
-    SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, ChatColor.GOLD),
+    SUB("Sub Rank", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 0, false, false, false,ChatColor.GREEN),
+    SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, false,false, ChatColor.GOLD),
+    SUB_PLUS_PLUS("Sub++ Rank", "\nIn-game Subscriber++ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true,true, ChatColor.GOLD),
 
-    WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, ChatColor.WHITE, true, 4),
-    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, ChatColor.GOLD, true, 2),
-    DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 2, false, true, ChatColor.LIGHT_PURPLE, true, 5),
+    SUB_MONTHLY("Sub Rank (Monthly)", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+    SUB_PLUS_MONTHLY("Sub+ Rank (Monthly)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
 
-    COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, ChatColor.WHITE, true),
-    EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, ChatColor.GREEN, true),
-    IRON_ORE_HAT("Iron Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T3 Mining with Treasure Find!", Material.IRON_ORE, WebstoreCategories.HATS, 11, false, true, ChatColor.AQUA, true),
-    DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T4 Mining with Treasure Find!", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, ChatColor.LIGHT_PURPLE, true),
-    GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T5 Mining with Treasure Find!", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, ChatColor.GOLD, true),
+    SUB_ONE_MONTH("Sub Rank (1 Month)", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+    SUB_PLUS_ONE_MONTH("Sub+ Rank (1 Month)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
 
-    SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, ChatColor.GOLD),
-    JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, ChatColor.AQUA),
-    ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, ChatColor.GREEN),
-    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, ChatColor.GOLD, true),
-    DPS_DUMMY("DPS Dummy", "A squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, ChatColor.GREEN);
+    SUB_THREE_MONTH("Sub Rank (3 Month)", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+    SUB_PLUS_THREE_MONTH("Sub+ Rank (3 Month)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+
+    SUB_SIX_MONTH("Sub Rank (6 Month)", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+    SUB_PLUS_SIX_MONTH("Sub+ Rank (6 Month)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+
+    SUB_TWELVE_MONTH("Sub Rank (1 Year)", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+    SUB_PLUS_TWELVE_MONTH("Sub+ Rank (1 Year)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
+
+    WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, false, ChatColor.WHITE, true, 4),
+    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, false, ChatColor.GOLD, true, 2),
+    DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 2, false, true, false, ChatColor.LIGHT_PURPLE, true, 5),
+
+    COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, false, ChatColor.WHITE, true),
+    EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, false, ChatColor.GREEN, true),
+    IRON_ORE_HAT("Iron Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T3 Mining with Treasure Find!", Material.IRON_ORE, WebstoreCategories.HATS, 11, false, true, false, ChatColor.AQUA, true),
+    DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T4 Mining with Treasure Find!", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, false, ChatColor.LIGHT_PURPLE, true),
+    GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T5 Mining with Treasure Find!", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, false, ChatColor.GOLD, true),
+
+    SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, false, ChatColor.GOLD),
+    JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),
+    ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
+    GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, false, ChatColor.GOLD, true),
+    DPS_DUMMY("DPS Dummy", "A squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, false, ChatColor.GREEN);
 
     private String name;
     private String description;
     private Material itemType;
     private WebstoreCategories category;
     private int guiSlot;
-    private boolean canHaveMultiple, shouldStore;
+    private boolean canHaveMultiple, shouldStore, isSpecialCaseClaim;
     private ChatColor displayNameColor;
     private boolean enabled;
     private int meta;
 
-    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore) {
-        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, ChatColor.WHITE);
+    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim) {
+        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, ChatColor.WHITE);
     }
 
-    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, ChatColor displayNameColor) {
-        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, displayNameColor, true);
+    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim, ChatColor displayNameColor) {
+        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, displayNameColor, true);
     }
 
-    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, ChatColor displayNameColor, boolean enabled) {
-        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore, displayNameColor, enabled, 0);
+    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim, ChatColor displayNameColor, boolean enabled) {
+        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, displayNameColor, enabled, 0);
     }
 
     public List<String> getDescription(boolean showColors) {

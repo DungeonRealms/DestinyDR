@@ -15,17 +15,17 @@ public class ItemHearthStoneRelocator extends ItemGeneric {
 
 	@Getter @Setter
 	private TeleportLocation location;
-	
+
 	public ItemHearthStoneRelocator(ItemStack item) {
 		super(item);
 		setLocation(TeleportLocation.valueOf(getTagString("loc")));
 	}
-	
+
 	public ItemHearthStoneRelocator(TeleportLocation loc) {
 		super(ItemType.HEARTHSTONE_RELOCATE);
 		setLocation(loc);
 	}
-	
+
 	@Override
 	public void updateItem() {
 		setTagString("loc", getLocation().name());

@@ -8,8 +8,6 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONArray;
 
 import java.util.List;
@@ -80,10 +78,14 @@ public class JSONMessage {
     }
 
     public void addHoverText(List<String> lines, String hoveredText) {
+        addHoverText(lines, hoveredText, ChatColor.WHITE, true);
+    }
+
+    public void addHoverText(List<String> lines, String hoveredText, ChatColor color, boolean bold) {
         JsonObject o = new JsonObject();
         o.addProperty("text", hoveredText);
-        o.addProperty("color", "white");
-        o.addProperty("bold", true);
+        o.addProperty("color", color.name().toLowerCase());
+        o.addProperty("bold", bold);
         JsonObject u = new JsonObject();
         u.addProperty("action", "show_text");
 

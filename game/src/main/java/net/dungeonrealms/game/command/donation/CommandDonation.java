@@ -236,6 +236,10 @@ public class CommandDonation extends BaseCommand {
                     }
 
                     if (isAdd && !fromPending) {
+                        if(item.isSpecialCaseClaim()) {
+                            sender.sendMessage("This purchaseable is a special case claim! You may only add it to mailbox!");
+                            return;
+                        }
                         int returnCode = item.addNumberUnlocked(wrapper, amount, (rows) -> {
                             GameAPI.sendNetworkMessage("donation", uuid.toString());
                         });

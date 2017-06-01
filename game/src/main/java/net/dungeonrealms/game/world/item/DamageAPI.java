@@ -660,24 +660,6 @@ public class DamageAPI {
 
         if (unitVector.length() > 0) unitVector.normalize();
 
-//        org.bukkit.util.Vector vect = damaged.getVelocity();
-//
-//        Vector direction = attacker.getEyeLocation().getDirection();
-//        if(vect.getX() != 0)
-//            vect.setX(vect.getX() + direction.getX());
-//        else
-//            vect.setX(direction.getX());
-//
-//        if(vect.getY() != 0)
-//            vect.setY(vect.getY() + direction.getY());
-//        else
-//            vect.setY(direction.getY() + 1);
-//
-//        if(vect.getZ() != 0)
-//            vect.setZ(vect.getZ() + direction.getZ());
-//        else
-//            vect.setZ(direction.getZ());
-
         Bukkit.getLogger().info("Damaged Velocity: " + damaged.getVelocity().toString());
         Bukkit.getLogger().info("UnitVector Velocity: " + unitVector.toString());
 
@@ -687,22 +669,8 @@ public class DamageAPI {
         unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .35 : hitCounter == 2 ? .25 : 0.10));
 
         Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
-//        Bukkit.getLogger().info("Direction: " + direction.toString());
-//        Bukkit.getLogger().info("current: " + vect.toString());
-//
-//        Bukkit.getLogger().info("if normalized: " + vect.clone().normalize().toString());
 
-
-        //Dont cause NaN.
-//        if (unitVector.length() > 0) unitVector.normalize();
-
-
-//        unitVector.setY(0.35);
-//        if (speed > 1) unitVector.setY(0.2);
-//        if (attacker.getVelocity().getY() > 0) unitVector.setY(0);
-        // Set speed and push entity:
-
-        EntityMechanics.setVelocity(damaged, unitVector.multiply(.45));
+        EntityMechanics.setVelocity(damaged, unitVector.multiply(hitCounter >= 2 ? .35 : .45));
     }
 
     public static void knockbackEntity(Player p, Entity ent, double speed) {

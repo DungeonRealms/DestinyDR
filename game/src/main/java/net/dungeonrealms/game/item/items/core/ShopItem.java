@@ -37,7 +37,7 @@ public class ShopItem extends ItemGeneric {
 
     @Getter
     private ShopItemClick callback;
-    
+
     protected List<String> originalLore;
 
     public ShopItem(ItemStack item) {
@@ -85,18 +85,18 @@ public class ShopItem extends ItemGeneric {
     public void updateItem() {
     	if (this.originalLore != null)
     		this.originalLore.forEach(this::addLore);
-    	
+
         if (getECashCost() > 0) {
             addLore(ChatColor.WHITE + "" + getECashCost() + ChatColor.GREEN + " E-Cash");
             setTagInt("eCash", getECashCost());
         }
-        
+
         if (getShards() > 0) {
             addLore(ChatColor.WHITE + "" + getShards() + getShardTier().getColor() + " Portal Key Shards");
             setTagInt("shardTier", getShardTier().getTier());
             setTagInt("shards", getShards());
         }
-        
+
         super.updateItem();
     }
 

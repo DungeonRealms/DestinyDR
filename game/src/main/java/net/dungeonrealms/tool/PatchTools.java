@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.minecraft.server.v1_9_R2.ChatBaseComponent;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftMetaBook;
@@ -59,16 +59,16 @@ public class PatchTools implements GenericMechanic {
             String str;
             int curCharacters = 0;
 
+            int MAX_PER_PAGE = 190;
             StringBuilder builder = new StringBuilder();
             JSONMessage message = new JSONMessage(" ", ChatColor.BLACK);
             while ((str = in.readLine()) != null) {
-                curCharacters += 2; // line breaks count as 2 characters
                 String text = ChatColor.BLACK + ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER));
 
-                if (curCharacters >= 180) {
-                    curCharacters = 0;
+                if (builder.length() >= MAX_PER_PAGE) {
                     pages.add(ChatBaseComponent.ChatSerializer.a(message.toString()));
                     message = new JSONMessage(" ", ChatColor.BLACK);
+                    Bukkit.getLogger().info("ADding page: " + builder.toString());
                     builder = new StringBuilder();
                 }
 
@@ -79,19 +79,17 @@ public class PatchTools implements GenericMechanic {
                     String hoverText = split[1].split("</h>")[0];
                     text = split[0];
                     System.out.println("Page: " + hoverText + " Text: " + text);
-                    message.addHoverText(Lists.newArrayList(hoverText), text + "\n");
+                    text += "\n";
+                    message.addHoverText(Lists.newArrayList(hoverText), text, ChatColor.BLACK, false);
                 } else {
                     message.addText(text + "\n", ChatColor.BLACK);
                 }
-
-                if (text.trim().length() > 0)
-                    curCharacters += text.length();
-
+//
                 builder.append(text);
                 builder.append("\n");
             }
 
-            if (curCharacters < 180)
+            if (builder.length() < 180)
                 pages.add(ChatBaseComponent.ChatSerializer.a(message.toString()));
 
             in.close();
