@@ -23,16 +23,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     public void collide(Entity e) {}
 
     @Override
-    protected void r() {
-        this.goalSelector.a(1, new PathfinderGoalFloat(this));
-        this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.goalSelector.a(3, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(4, new PathfinderGoalRandomLookaround(this));
-        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, EntityHuman.class));
-        this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-    }
-
-    @Override
     public void setMonster(EnumMonster m) {
     	this.monsterType = m;
     }
