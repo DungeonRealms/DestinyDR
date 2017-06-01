@@ -189,6 +189,10 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     return;
                 }
             }
+
+            if (sendToLobby) {
+                player.connect(getProxy().getServerInfo("Lobby"));
+            }
         });
     }
 
