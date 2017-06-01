@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.CustomPet;
 import net.minecraft.server.v1_9_R2.WorldServer;
 import org.bukkit.ChatColor;

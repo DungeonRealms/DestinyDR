@@ -10,6 +10,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -54,7 +56,14 @@ public class PendingPurchasesGUI extends GUIMenu {
             lore.add("");
             lore.add(ChatColor.GRAY + ChatColor.BOLD.toString() + "Left Click" + ChatColor.GRAY + " to " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM");
             lore.add(ChatColor.GRAY + ChatColor.BOLD.toString() + "Right Click" + ChatColor.GRAY + " to " + ChatColor.RED + ChatColor.BOLD + "DENY");
+            System.out.println(item.getPurchaseables().name() + " has meta " + item.getPurchaseables().getMeta());
             GUIItem pendingItem = new GUIItem(item.getPurchaseables().getItemType()).setDurability((short) item.getPurchaseables().getMeta()).setName(item.getPurchaseables().getName(true)).setLore(lore);
+            if(item.getPurchaseables().getCategory().equals(WebstoreCategories.PETS)) {
+                EnumPets pets = (EnumPets) item.getPurchaseables().getSpecialArgs()[0];
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setString("id", pets.getEntityType().getName());
+                pendingItem.getTag().set("EntityTag", compound);
+            }
             pendingItem.setClick((evt) -> {
                 if (evt.getClick() == ClickType.LEFT) {
 

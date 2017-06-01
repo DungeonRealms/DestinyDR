@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.listener;
 
-import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import org.bukkit.entity.Player;
 

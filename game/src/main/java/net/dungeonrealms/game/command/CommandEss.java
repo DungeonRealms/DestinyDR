@@ -19,7 +19,6 @@ import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -114,43 +113,6 @@ public class CommandEss extends BaseCommand {
                     return true;
                 case "hearthstone":
                     commandSender.sendMessage("Disabled.");
-                    break;
-                case "pet":
-                    if (args.length == 3) {
-                        String playerName = args[1];
-                        String petType = args[2];
-                        String petName;
-                        petName = petType;
-                        String petNameFriendly = petName.toUpperCase().replace("_", " ");
-
-                        if (!GameAPI.isStringPet(petName)) {
-                            commandSender.sendMessage(ChatColor.RED + "The pet " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " does not exist.");
-                            return false;
-                        }
-
-                        SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
-                            if (uuid == null) {
-                                commandSender.sendMessage(ChatColor.RED + "This person has never logged into Dungeon Realms");
-                                return;
-                            }
-                            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                                if (wrapper == null) {
-                                    commandSender.sendMessage(ChatColor.RED + "Something went wrong when loading the data!");
-                                    return;
-                                }
-                                EnumPets pet = EnumPets.getByName(petType);
-                                wrapper.setActivePet(pet);
-                                wrapper.getPetsUnlocked().put(pet, new PetData(null, true));
-                                wrapper.executeUpdate(QueryType.SET_PETS, cb -> {
-                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                                    GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
-                                }, wrapper.getSerializePetString(), wrapper.getAccountID());
-                            });
-                        });
-                    } else {
-                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr pet <player> <pet>");
-                        return false;
-                    }
                     break;
                 case "namtag":
                 case "storeitems":

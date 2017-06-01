@@ -7,7 +7,7 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
-import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;

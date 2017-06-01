@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.pet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -46,7 +47,7 @@ public enum EnumPets {
     ENDERMAN(EndermanPet.class, EntityType.ENDERMAN, Sound.ENTITY_ENDERMEN_SCREAM, false),
     GUARDIAN(GuardianPet.class, EntityType.GUARDIAN, Sound.ENTITY_GUARDIAN_AMBIENT, .3F, false),
     ELDER_GAURDIAN(GuardianPet.class, EntityType.GUARDIAN,  Sound.ENTITY_GUARDIAN_AMBIENT, .4F,  org.bukkit.ChatColor.GREEN + "An exclusive " + ChatColor.GREEN + org.bukkit.ChatColor.BOLD + "SUB++" + ChatColor.GREEN + " only pet!", false, true, true, false),
-    BABY_SHEEP(BabySheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT),
+    BABY_SHEEP(BabySheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT,false),
     RAINBOW_SHEEP(RainbowSheepPet.class, EntityType.SHEEP, Sound.ENTITY_SHEEP_AMBIENT, false),
     BETA_ZOMBIE(BetaZombie.class, EntityType.ZOMBIE, Sound.ENTITY_ZOMBIE_AMBIENT, .3F, false),
 
@@ -207,5 +208,10 @@ public enum EnumPets {
             if (ep.getName().equalsIgnoreCase(rawName.replaceAll("_", "")) || ep.name().equalsIgnoreCase(rawName))
                 return ep;
         return null;
+    }
+
+    public String getPlayersPetName(PlayerWrapper wrapper) {
+        String customName = wrapper.getPetsUnlocked().get(this);
+        return customName != null ? customName : getDisplayName();
     }
 }

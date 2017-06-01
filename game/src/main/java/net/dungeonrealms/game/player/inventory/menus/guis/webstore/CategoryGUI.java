@@ -3,7 +3,6 @@ package net.dungeonrealms.game.player.inventory.menus.guis.webstore;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
-import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

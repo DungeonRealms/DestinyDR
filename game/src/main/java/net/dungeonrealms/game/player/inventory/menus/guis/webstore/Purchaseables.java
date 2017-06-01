@@ -6,8 +6,10 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +19,6 @@ import java.util.function.Consumer;
 /**
  * Created by Rar349 on 5/10/2017.
  */
-@AllArgsConstructor
 @Getter
 public enum Purchaseables {
 
@@ -57,6 +58,28 @@ public enum Purchaseables {
     DIAMOND_ORE_HAT("Diamond Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T4 Mining with Treasure Find!", Material.DIAMOND_ORE, WebstoreCategories.HATS, 12, false, true, false, ChatColor.LIGHT_PURPLE, true),
     GOLD_ORE_HAT("Gold Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T5 Mining with Treasure Find!", Material.GOLD_ORE, WebstoreCategories.HATS, 13, false, true, false, ChatColor.GOLD, true),
 
+    WOLF_PET("Wolf Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 0, false, true, false, ChatColor.GREEN, true, EntityType.WOLF.getTypeId(), EnumPets.WOLF),
+    ENDERMITE_PET("Endermite Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 1, false, true, false, ChatColor.GREEN, true, EntityType.ENDERMITE.getTypeId(), EnumPets.ENDERMITE),
+    CAVE_SPIDER_PET("Wolf Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 2, false, true, false, ChatColor.GREEN, true, EntityType.CAVE_SPIDER.getTypeId(), EnumPets.CAVE_SPIDER),
+    BABY_ZOMBIE_PET("Baby Zombie Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 3, false, true, false, ChatColor.GREEN, true, EntityType.ZOMBIE.getTypeId(), EnumPets.BABY_ZOMBIE),
+    BABY_PIG_ZOMBIE_PET("Baby Pig Zombie Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 4, false, true, false, ChatColor.GREEN, true, EntityType.PIG_ZOMBIE.getTypeId(), EnumPets.BABY_PIG_ZOMBIE),
+    OCELOT_PET("Ocelot Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 5, false, true, false, ChatColor.GREEN, true, EntityType.OCELOT.getTypeId(), EnumPets.OCELOT),
+    RABBIT_PET("Rabbit Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 6, false, true, false, ChatColor.GREEN, true, EntityType.RABBIT.getTypeId(), EnumPets.RABBIT),
+    CHICKEN_PET("Chicken Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 7, false, true, false, ChatColor.GREEN, true, EntityType.CHICKEN.getTypeId(), EnumPets.CHICKEN),
+    BAT_PET("Bat Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 8, false, true, false, ChatColor.GREEN, true, EntityType.BAT.getTypeId(), EnumPets.BAT),
+    SLIME_PET("Slime Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 9, false, true, false, ChatColor.GREEN, true, EntityType.SLIME.getTypeId(), EnumPets.SLIME),
+    MAGMA_CUBE_PET("Magma Cube Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 10, false, true, false, ChatColor.GREEN, true, EntityType.MAGMA_CUBE.getTypeId(), EnumPets.MAGMA_CUBE),
+    ENDERMAN_PET("Enderman Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 11, false, true, false, ChatColor.GREEN, true, EntityType.ENDERMAN.getTypeId(), EnumPets.ENDERMAN),
+    GUARDIAN_PET("Guardian Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 12, false, true, false, ChatColor.GREEN, true, EntityType.GUARDIAN.getTypeId(), EnumPets.GUARDIAN),
+    ELDER_GUARDIAN_PET("Elder Guardian Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 13, false, true, false, ChatColor.GREEN, true, EntityType.GUARDIAN.getTypeId(), EnumPets.ELDER_GAURDIAN),
+    BABY_SHEEP_PET("Baby Sheep Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 14, false, true, false, ChatColor.GREEN, true, EntityType.SHEEP.getTypeId(), EnumPets.BABY_SHEEP),
+    RAINBOW_SHEEP_PET("Rainbow Sheep Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 15, false, true, false, ChatColor.GREEN, true, EntityType.SHEEP.getTypeId(), EnumPets.RAINBOW_SHEEP),
+    BETA_ZOMBIE_PET("Beta Zombie Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 16, false, true, false, ChatColor.GREEN, true, EntityType.ZOMBIE.getTypeId(), EnumPets.BETA_ZOMBIE),
+    SILVERFISH_PET("Silverfish Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 17, false, true, false, ChatColor.GREEN, true, EntityType.SILVERFISH.getTypeId(), EnumPets.SILVERFISH),
+    SNOWMAN_PET("Snowman Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 18, false, true, false, ChatColor.GREEN, true, EntityType.SNOWMAN.getTypeId(), EnumPets.SNOWMAN),
+    INDEPENDENCE_CREEPER_PET("Independence Creeper Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 19, false, true, false, ChatColor.GREEN, true, EntityType.CREEPER.getTypeId(), EnumPets.INDEPENDENCE_CREEPER),
+
+
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, false, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
@@ -72,6 +95,7 @@ public enum Purchaseables {
     private ChatColor displayNameColor;
     private boolean enabled;
     private int meta;
+    private Object[] specialArgs;
 
     Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim) {
         this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, ChatColor.WHITE);
@@ -83,6 +107,25 @@ public enum Purchaseables {
 
     Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim, ChatColor displayNameColor, boolean enabled) {
         this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, displayNameColor, enabled, 0);
+    }
+
+    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim, ChatColor displayNameColor, boolean enabled, int meta) {
+        this(name, description, itemType, category, guiSlot, hasMultiples, shouldStore,isSpecialCaseClaim, displayNameColor, enabled, meta,null);
+    }
+
+    Purchaseables(String name, String description, Material itemType, WebstoreCategories category, int guiSlot, boolean hasMultiples, boolean shouldStore, boolean isSpecialCaseClaim, ChatColor displayNameColor, boolean enabled, int meta, Object... specialArgs) {
+        this.name = name;
+        this.description = description;
+        this.itemType = itemType;
+        this.category = category;
+        this.guiSlot = guiSlot;
+        this.canHaveMultiple = hasMultiples;
+        this.shouldStore = shouldStore;
+        this.isSpecialCaseClaim = isSpecialCaseClaim;
+        this.displayNameColor = displayNameColor;
+        this.enabled = enabled;
+        this.meta = meta;
+        this.specialArgs = specialArgs;
     }
 
     public List<String> getDescription(boolean showColors) {

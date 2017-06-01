@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mechanic.data.MuleTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;

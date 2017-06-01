@@ -187,7 +187,7 @@ public abstract class MobSpawner {
     }
 
     public boolean hasCustomName() {
-        return this.getCustomName() != null;
+        return this.getCustomName() != null && !getCustomName().trim().isEmpty();
     }
 
     public String getSerializedString() {
@@ -200,6 +200,9 @@ public abstract class MobSpawner {
 
         builder.append(getMonsterType().getIdName());
 
+        if(this instanceof EliteMobSpawner){
+            builder.append("*");
+        }
         if (hasCustomName())
             builder.append("(").append(getCustomName()).append(")");
 

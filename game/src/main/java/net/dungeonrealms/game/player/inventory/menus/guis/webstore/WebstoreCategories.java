@@ -19,6 +19,7 @@ public enum WebstoreCategories {
 
     SUBSCRIPTIONS("Subscriptions", "\nUnlock access to all " + ChatColor.GREEN + ChatColor.BOLD + "SUB " + ChatColor.GRAY + "shards\nalong with access to many\nCosmetics and other perks!\n \nClick here to view all subscriptions!", Material.EMERALD,0, ChatColor.GREEN),
     GLOBAL_BUFFS("Global Buffs", "\nClick here to view all global buffs!", Material.DIAMOND,8, ChatColor.AQUA),
+    PETS("Pets", "\nClick here to view all pets!", Material.NAME_TAG,1, ChatColor.GREEN),
     HATS("Cosmetics", "\nStand out from the rest with\nwith these Cosmetic Overrides!\n \nClick here to view all cosmetic gear items!", Material.SAPLING,4, ChatColor.AQUA, ChatColor.GRAY),
     MISCELLANEOUS("Misc Items", "\nClick here to view all miscellaneous items!", Material.BLAZE_ROD,5, ChatColor.GOLD);
 
@@ -67,6 +68,7 @@ public enum WebstoreCategories {
         if(category == SUBSCRIPTIONS) return new SubscriptionsGUI(player);
         if(category == MISCELLANEOUS) return new MiscGUI(player);
         if(category == HATS) return new HatGUI(player);
+        if (category == PETS) return new PetSelectionGUI(player,null);
         return null;
     }
 

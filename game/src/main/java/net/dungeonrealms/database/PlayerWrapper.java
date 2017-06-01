@@ -49,7 +49,6 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -212,7 +211,7 @@ public class PlayerWrapper {
     @Getter
     private Set<EnumMounts> mountsUnlocked = new HashSet<>();
     @Getter
-    private Map<EnumPets, PetData> petsUnlocked = new HashMap<>();
+    private Map<EnumPets, String> petsUnlocked = new HashMap<>();
 
     @Getter
     private Map<Purchaseables, Integer> purchaseablesUnlocked = new HashMap<>();
@@ -476,8 +475,8 @@ public class PlayerWrapper {
     }
 
     public String getPetName(EnumPets pets) {
-        PetData petData = this.petsUnlocked.get(pets);
-        return petData != null && petData.getPetName() != null ? petData.getPetName() : pets.getDisplayName();
+        String petName = this.petsUnlocked.get(pets);
+        return petName != null ? petName : pets.getDisplayName();
     }
 
     public void fullyReloadPurchaseables(Consumer<Boolean> callback) {
@@ -511,12 +510,10 @@ public class PlayerWrapper {
             for (String str : list) {
                 String type;
                 String name = null;
-                boolean unlocked = false;
                 if (str.contains("@")) {
                     String[] contents = str.split("@");
                     type = contents[0];
                     name = contents[1];
-                    unlocked = Boolean.valueOf(contents[2]);
                 } else {
                     type = str;
                 }
@@ -527,7 +524,7 @@ public class PlayerWrapper {
                     continue;
                 }
 
-                this.petsUnlocked.put(pets, new PetData(name, unlocked));
+                this.petsUnlocked.put(pets, name);
             }
         }
     }
@@ -536,7 +533,7 @@ public class PlayerWrapper {
         if (this.petsUnlocked.isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
 
-        this.petsUnlocked.forEach((pet, data) -> builder.append(pet.getName()).append(data != null && data.getPetName() != null ? "@" + data.getPetName() : "@" + pet.getDisplayName()).append("@" + (data != null && data.isUnlocked())).append(","));
+        this.petsUnlocked.forEach((pet, name) -> builder.append(pet.getName()).append(name != null ? "@" + name : "@" + pet.getDisplayName()).append(","));
 
         return builder.toString();
     }

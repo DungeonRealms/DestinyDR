@@ -420,6 +420,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));
             cm.registerCommand(new CommandWhois("whois", "/<command> [args]", "Get which shard a player is playing on if any."));
             cm.registerCommand(new CommandPacketLog("packetlog", "/<command> [args]", "Log all data a user sends"));
+            cm.registerCommand(new CommandPack());
+
 //            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke());

@@ -8,9 +8,8 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.inventory.menus.guis.PetSelectionGUI;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.game.world.entity.type.pet.PetData;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -97,8 +96,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
                 return;
             }
 
-            PetData pt = pw.getPetsUnlocked().computeIfAbsent(toRename, data -> new PetData(null, false));
-            pt.setPetName(checkedPetName);
+            pw.getPetsUnlocked().put(toRename, checkedPetName);
             if (pet != null)
                 pet.setCustomName(pw.getRank().getChatColor() + checkedPetName);
 
