@@ -1,14 +1,18 @@
 Build <build>
  &8&lAdditions&0
- &l* &0Mining Treasure Find<h>&7&lTreasure Find,,Gain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
- &l* &0Sales Manager
- &l* &0Hats
- &l* &0Mobile Musicbox
- &l* &0DPS Dummy
- &l* &0Golden Curse
- &l* &0New Pets
- &l* &0Item Name Tags
+ &l* &0Pick Treasure Find<h>&a&lTreasure Find,,&aGain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
+ &l* &0Sales Manager<h>&a&lHow it Works,,&7After an item is sold from a shop on the,&7current shard its sale goes into the Sales Manager!,,&7View recently sold items to have a better idea on prices!</h>
+ &l* &0Hats<h>&a&lHats?!,&7With these Cosmetic Overrides you'll be sure to stand out,&7Obtain these new snazzy hats through in game,&7means or through the Dungeon Realms shop!</h>
+ &l* &0New Pets<h>&aAdded some interesting pets with some new mechanics!,,&a&lPets Added,&7- Beta Zombie,&7- Guardian,&7- Elder Guardian,&7- Baby Sheep,&7- Rainbow Sheep,&7- Enderman,&7- Slime</h>
+ &l* &0Mobile Musicbox<h>&a&lWhat is this?,,&7We missed the old days where,&7attention was given to detail.,&7With these new cosmetics we hope it,&7gives some new life to Dungeon Realms!</h>
+ &l* &0DPS Dummy<h>&a&lWhats this?,,&7A DPS dummy is used to track how much,&7DPS your character can dish out.,,&7Place it anywhere and have your friends take a swing!</h>
+ &l* &0Golden Curse<h>&a&lWhats this?,,&7Walk around like a king with this old school trail!,&7Everything you touch will turn into Gold!</h>
+ &l* &0Wisdom<h>&a&lWhat is this?,,&7Ancient knowledge that can be obtained,&7through Mining with Treasure Find!,,&7Profession Wisdom can be applied to any,&7Profession Item to increase its experience.</h>
+ &l* &0Item Name Tags<h>&a&lWhat is this?,,&7Rename your most sentimental gear to&7,keep a special place in your heart!,&7&oObtain one through the store today!</h>
  &8&lChanges&0
- &l* &0Fishing Mechanics<h>&7&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &a- Fish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>
- &l* &0PVP Knockback
- &l* &0Recoded 90% of Dungeon Realms<h>This has by far taken up most,of our time developing but it,paves the way for the future,of Dungeon Realms.</h>
+ &l* &0Fishing Mechanics<h>&a&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &aFish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>
+ &l* &0PVP Knockback<h>&a&lHow is it Different?,,&7To combat being sent flying into the,&7air after a few consecutive hits,&7in a short period knockback will be lessened.</h>
+ &l* &0T5 Staffs<h>&a&lWhat's changed?,,&7T5 Staff projectiles will NO longer,&7collide with other projectiles.&7</h>
+ &l* &0Mob Staffs<h>&a&lWhat's changed?,,&7Staff projectiles from Tier 4+,&7now pass through other non player mobs.</h>
+ &l* &0Profile Menu<h>&a&lWhat's changed?,,&7We have combined the /stats menu with,&7the /profile menu for a cleaner experience.</h>
+ &l* &0Recoded 90% of Dungeon Realms<h>&7This has by far taken up most,&7of our time developing but it,&7paves the way for the future,&7of Dungeon Realms.</h>
