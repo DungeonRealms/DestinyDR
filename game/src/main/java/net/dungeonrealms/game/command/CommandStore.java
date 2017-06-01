@@ -80,23 +80,6 @@ public class CommandStore extends BaseCommand {
                     thisItem = AntiDuplication.getInstance().applyAntiDupe(thisItem);
                     items.add(thisItem);
                     break;
-                case "global_buff":
-                    if (args.length >= 3) {
-                        int buffDuration = 1800;
-                        int buffBonus = 20;
-
-                        if (args.length >= 4) {
-                            buffDuration = Integer.parseInt(args[3]) * 60;
-                        }
-                        if (args.length >= 5) {
-                            buffBonus = Integer.parseInt(args[4]);
-                        }
-
-                        items.add(new ItemBuff(EnumBuff.valueOf(args[2].toUpperCase()), buffDuration, buffBonus).generateItem());
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Not enough args.");
-                    }
-                    break;
                 case "scroll":
                     if (args.length >= 4) {
                         String scrollType = args[2].toLowerCase();

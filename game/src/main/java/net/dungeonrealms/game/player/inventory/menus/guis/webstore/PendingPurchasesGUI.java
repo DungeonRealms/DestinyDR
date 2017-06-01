@@ -51,7 +51,7 @@ public class PendingPurchasesGUI extends GUIMenu {
             lore.addAll(item.getPurchaseables().getDescription());
             lore.add("");
             lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "Amount: " + ChatColor.GREEN + ChatColor.UNDERLINE.toString() + item.getNumberPurchased());
-            lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "Purchased By: " + ChatColor.GREEN + ChatColor.UNDERLINE.toString() + item.getWhoPurchased());
+            lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "Purchased By: " + ChatColor.GREEN + ChatColor.UNDERLINE.toString() + item.getWhoPurchased() + " (" + item.getWhoPurchaseEnjinID() + ")");
             lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "Purchased: " + ChatColor.GREEN + ChatColor.UNDERLINE.toString() + item.getTimePurchased());
             lore.add("");
             lore.add(ChatColor.GRAY + ChatColor.BOLD.toString() + "Left Click" + ChatColor.GRAY + " to " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM");

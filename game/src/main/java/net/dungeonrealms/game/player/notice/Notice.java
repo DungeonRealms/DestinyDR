@@ -6,10 +6,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.tool.PatchTools;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -20,16 +18,16 @@ import org.bukkit.entity.Player;
  */
 public class Notice {
 
-	@Getter
-	private static Notice instance = new Notice();
+    @Getter
+    private static Notice instance = new Notice();
 
     public Notice() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
             Bukkit.getOnlinePlayers().forEach(this::executeVoteReminder);
         }, 0L, 6000L);
-        
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
-        	Bukkit.getOnlinePlayers().forEach(GameAPI::sendStatNotification);
+            Bukkit.getOnlinePlayers().forEach(GameAPI::sendStatNotification);
         }, 0, (20 * 60) * 10);
     }
 
@@ -43,20 +41,29 @@ public class Notice {
      */
     public void doLogin(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
         String lastViewedBuild = wrapper.getLastViewedBuild();
 
         int lastSeenBuild = -1;
         int serverBuild = Integer.parseInt(Constants.BUILD_NUMBER.substring(1));
-        if(lastViewedBuild != null && lastViewedBuild.length() > 1) {
-            String build = lastViewedBuild.substring(1);
-            double last = Double.parseDouble(build);
+        if (lastViewedBuild != null && lastViewedBuild.length() > 1) {
+            double last = 0;
+            if (lastViewedBuild.contains("#")) {
+                String build = lastViewedBuild.substring(1);
+                last = Double.parseDouble(build);
+            } else {
+                try {
+                    last = Double.parseDouble(lastViewedBuild);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             lastSeenBuild = (int) last;
         }
         int noteSize = wrapper.getLastNoteSize();
-        
-        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (PatchTools.getSize() != noteSize)))
+
+        if (lastViewedBuild == null || (serverBuild > lastSeenBuild || PatchTools.getSize() != noteSize))
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player, wrapper), 150);
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeVoteReminder(player), 300);
@@ -84,7 +91,7 @@ public class Notice {
             return;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
-        if(wrapper == null) return;
+        if (wrapper == null) return;
 
 
         long vote = wrapper.getLastVote();

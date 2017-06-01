@@ -208,10 +208,10 @@ public enum Purchaseables {
     public static final int NOT_STOREABLE = -1, NO_MULTIPLES = 0, SUCCESS = 1, NONE_OWNED = 2, SUCESS_REMOVED_ALL = 3, FAILED = 4;
 
 
-    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased, String datePurchased, String transactionId, boolean autoSave, Consumer<Integer> callback) {
+    public int addNumberPending(PlayerWrapper wrapper, int amount, String whoPurchased,String whoPurchasedEnjinID, String datePurchased, String transactionId, boolean autoSave, Consumer<Integer> callback) {
         if (!this.isShouldStore()) return NOT_STOREABLE;//This item is stored and handled seperately!
 
-        PendingPurchaseable pending = new PendingPurchaseable(this, whoPurchased, datePurchased, amount, transactionId);
+        PendingPurchaseable pending = new PendingPurchaseable(this, whoPurchased,whoPurchasedEnjinID, datePurchased, amount, transactionId);
         wrapper.getPendingPurchaseablesUnlocked().add(pending);
         if (autoSave) {
             SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));

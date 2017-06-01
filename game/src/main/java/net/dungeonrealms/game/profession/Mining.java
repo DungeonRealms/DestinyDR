@@ -204,6 +204,7 @@ public class Mining implements GenericMechanic, Listener {
                 if (block.getType() == Material.CHEST) {
                     block.getWorld().playEffect(block.getLocation().add(0.5, .5, .5), Effect.STEP_SOUND, Material.CHEST);
                     block.setType(Material.STONE);
+                    treasureChests.add(block.getLocation());
                 }
             }, 20 * 5);
         }

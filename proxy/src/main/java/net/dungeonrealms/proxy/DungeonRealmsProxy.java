@@ -151,7 +151,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     try {
                         ping = ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 20);
                     } catch (Exception e) {
-                        isOnline = true;
+                        isOnline = false;
                     }
 
                     if (!isOnline || ping.getDescription().getText().contains("offline")) {
@@ -190,6 +190,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
                     return;
                 }
+            }
+            if (sendToLobby) {
+                player.connect(getProxy().getServerInfo("Lobby"));
             }
         });
     }

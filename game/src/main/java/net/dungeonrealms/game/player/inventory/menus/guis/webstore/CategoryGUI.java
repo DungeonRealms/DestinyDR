@@ -35,11 +35,6 @@ public class CategoryGUI extends GUIMenu {
             }));
         }
 
-        setItem(3, new GUIItem(Material.NAME_TAG).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Pets").setLore("", ChatColor.GRAY + "Click here to display all pets!").setClick((evt) -> {
-            if(evt.getClick() == ClickType.LEFT) {
-                new PetSelectionGUI(player, this).open(player,evt.getAction());
-            }
-        }));
 
     }
 }

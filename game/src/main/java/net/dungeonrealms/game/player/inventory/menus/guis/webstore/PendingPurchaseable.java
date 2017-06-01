@@ -18,6 +18,7 @@ public class PendingPurchaseable {
 
     @NonNull private Purchaseables purchaseables;
     @NonNull private String whoPurchased;
+    @NonNull private String whoPurchaseEnjinID;
     @NonNull private String timePurchased;
     @Setter
     @NonNull private int numberPurchased;
@@ -26,7 +27,7 @@ public class PendingPurchaseable {
 
     @Override
     public String toString() {
-        return purchaseables.name() + delimiter + whoPurchased + delimiter + timePurchased + delimiter + numberPurchased + delimiter + transactionId;
+        return purchaseables.name() + delimiter + whoPurchased + delimiter + whoPurchaseEnjinID + delimiter + timePurchased + delimiter + numberPurchased + delimiter + transactionId;
     }
 
     //Didnt use Json because this class is so small. Json is very hard on the DBMS.
@@ -35,10 +36,11 @@ public class PendingPurchaseable {
             String[] parts = serialized.split(delimiter);
             Purchaseables item = Purchaseables.valueOf(parts[0]);
             String purchased = parts[1];
-            String time = parts[2];
-            int numPurchased = Integer.valueOf(parts[3]);
-            String transactionId = parts[4];
-            return new PendingPurchaseable(item,purchased,time,numPurchased,transactionId);
+            String purchasedEnjinID = parts[2];
+            String time = parts[3];
+            int numPurchased = Integer.valueOf(parts[4]);
+            String transactionId = parts[5];
+            return new PendingPurchaseable(item,purchased,purchasedEnjinID,time,numPurchased,transactionId);
         } catch(Exception e) {
             e.printStackTrace();
             return null;

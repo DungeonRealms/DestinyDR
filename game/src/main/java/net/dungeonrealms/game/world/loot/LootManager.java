@@ -122,7 +122,7 @@ public class LootManager implements GenericMechanic, Listener {
 		
 		Player p = e.getPlayer();
 		e.setCancelled(true);
-		if(Mining.treasureChests.add(p.getLocation()))return;
+		if(Mining.treasureChests.contains(p.getLocation()))return;
 		LootSpawner spawner = getSpawner(block.getLocation());
 		if (!GameAPI.isMainWorld(block) || spawner == null) {
 			p.sendMessage(ChatColor.GRAY + "The chest is locked.");

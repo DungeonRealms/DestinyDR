@@ -210,19 +210,22 @@ public class CommandDonation extends BaseCommand {
 
             String transactionID = "-1";
             String whoBought = sender.getName();
+            String enjinUsernameID = "-1";
 
             if (isAdd && fromPending) {
                 if (args.length < 7) {
                     sender.sendMessage("No transaction ID specified. Using -1 as a default.");
-                    sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID> <whoBought>'");
+                    sender.sendMessage("To specify a transaction ID use '/drdonation add <player> <purchaseable> <amount> <fromPending> <transactionID> <whoBought> <whoBoughtEnjinID>'");
                 } else {
                     transactionID = args[5];
                     whoBought = args[6];
+                    enjinUsernameID = args[7];
                 }
             }
 
             final String realTransactionID = transactionID;
             final String realWhoBought = whoBought;
+            final String realEnjinID = enjinUsernameID;
 
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, true, (uuid) -> {
                 if (uuid == null) {
@@ -234,12 +237,12 @@ public class CommandDonation extends BaseCommand {
                     Bukkit.getLogger().info("No account id found for: " + uuid + ", generating new account...");
                     SQLDatabaseAPI.getInstance().createDataForPlayer(uuid, playerName, "0.0.0.0", created -> {
                         Bukkit.getLogger().info("Created new account with account ID: " + created + ", attempting to add purchasble...");
-                        addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought, realTransactionID, sender);
+                        addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought,realEnjinID, realTransactionID, sender);
                     });
                     return;
                 }
 
-                addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought, realTransactionID, sender);
+                addPurchasble(uuid, playerName, item, amount, isAdd, fromPending, realWhoBought,realEnjinID, realTransactionID, sender);
             });
 
         }
@@ -247,7 +250,7 @@ public class CommandDonation extends BaseCommand {
         return true;
     }
 
-    public void addPurchasble(UUID uuid, String playerName, Purchaseables item, int amount, boolean isAdd, boolean fromPending, String realWhoBought, String realTransactionID, CommandSender sender) {
+    public void addPurchasble(UUID uuid, String playerName, Purchaseables item, int amount, boolean isAdd, boolean fromPending, String realWhoBought, String realWhoBoughtEnjinID, String realTransactionID, CommandSender sender) {
         PlayerWrapper.getPlayerWrapper(uuid, (wrapper) -> {
             if (wrapper == null) {
                 sender.sendMessage("Something went wrong while fetching the players wrapper!");
@@ -283,7 +286,7 @@ public class CommandDonation extends BaseCommand {
                     sender.sendMessage("Unknown return code!");
                 }
             } else if (isAdd && fromPending) {
-                int returnCode = item.addNumberPending(wrapper, amount, realWhoBought, Utils.getDateString(), realTransactionID, true, (rows) -> {
+                int returnCode = item.addNumberPending(wrapper, amount, realWhoBought,realWhoBoughtEnjinID, Utils.getDateString(), realTransactionID, true, (rows) -> {
                     GameAPI.sendNetworkMessage("donation", uuid.toString());
                     BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
                             "You have new items in your mailbox! **");

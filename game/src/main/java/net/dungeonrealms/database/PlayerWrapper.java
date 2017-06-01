@@ -837,10 +837,7 @@ public class PlayerWrapper {
                 obj = SQLDatabaseAPI.escape((String) obj);
 
             args[i] = obj;
-            if (t == QueryType.CHARACTER_UPDATE) System.out.println("finalArgs[" + i + "]: " + args[i]);
         }
-
-        if (t == QueryType.CHARACTER_UPDATE) System.out.println("finalArgs Elements: " + args.length);
 
         return t.getQuery(args);
     }
