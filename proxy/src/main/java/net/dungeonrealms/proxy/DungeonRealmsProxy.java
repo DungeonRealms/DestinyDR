@@ -13,6 +13,7 @@ import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.proxy.command.CommandAlert;
 import net.dungeonrealms.proxy.command.CommandMaintenance;
+import net.dungeonrealms.proxy.command.CommandSetMOTD;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
 import net.dungeonrealms.proxy.listener.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
@@ -76,6 +77,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, StaffSecurity.getInstance());
 
         this.getProxy().getPluginManager().registerCommand(this, new CommandMaintenance());
+        this.getProxy().getPluginManager().registerCommand(this, new CommandSetMOTD());
+
         this.getProxy().getPluginManager().registerCommand(this, new CommandAlert());
 
         try {
@@ -190,7 +193,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                 }
             }
 
-            if (sendToLobby) {
+            if (sendToLobby && player != null) {
                 player.connect(getProxy().getServerInfo("Lobby"));
             }
         });
