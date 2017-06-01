@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.mechanic;
 
 import com.google.common.collect.Lists;
-
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -17,10 +16,8 @@ import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,6 +49,7 @@ public class ItemManager {
     public static void giveStarter(Player player) {
         giveStarter(player, false);
     }
+
     private static DecimalFormat df = new DecimalFormat("#.##");
 
     /**
@@ -71,11 +69,11 @@ public class ItemManager {
         EntityEquipment e = player.getEquipment();
         Map<EquipmentSlot, ItemStack> starter = ItemGenerator.getEliteGear("starter");
         for (EquipmentSlot eq : starter.keySet()) {
-        	ItemStack c = GameAPI.getItem(e, eq);
-        	if (c == null || c.getType() == Material.AIR)
-        		GameAPI.setItem(player, eq, starter.get(eq));
+            ItemStack c = GameAPI.getItem(e, eq);
+            if (c == null || c.getType() == Material.AIR)
+                GameAPI.setItem(player, eq, starter.get(eq));
         }
-        
+
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
     }
 
@@ -104,11 +102,10 @@ public class ItemManager {
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                 playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
 
-        if(TutorialIsland.onTutorialIsland(p.getLocation())) {
+        if (TutorialIsland.onTutorialIsland(p.getLocation())) {
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
-                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/skip" + pretty_align + "\n" + "to skip the tutorial!" + new_line;
-        }
-        else if (playerAlignment != EnumPlayerAlignments.LAWFUL) {
+                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/skip to skip the tutorial!" + new_line;
+        } else if (playerAlignment != EnumPlayerAlignments.LAWFUL) {
             String time = String.valueOf(pw.getAlignmentTime());
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s.." + new_line;
@@ -403,7 +400,7 @@ public class ItemManager {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(name);
         List<String> l = new ArrayList<>();
-        if(lore != null)
+        if (lore != null)
             for (String s : lore)
                 l.add(ChatColor.GRAY + s);
         meta.setLore(l);
