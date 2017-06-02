@@ -12,11 +12,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public enum FishingTier implements ProfessionTier {
 
-    TIER_1(0, 20, 10, 250, EnumAchievements.FISHINGROD_LEVEL_I, "Basic", "wood and thread"),
-    TIER_2(20, 18, 20, 430, EnumAchievements.FISHINGROD_LEVEL_II, "Advanced", "oak wood and thread"),
-    TIER_3(40, 15, 30, 820, EnumAchievements.FISHINGROD_LEVEL_III, "Expert", "ancient oak wood and spider silk"),
-    TIER_4(60, 15, 40, 1050, EnumAchievements.FISHINGROD_LEVEL_IV, "Supreme", "jungle bamboo and spider silk"),
-    TIER_5(80, 15, 50, 1230, EnumAchievements.FISHINGROD_LEVEL_IV, "Master", "rich mahogany and enchanted silk");
+    TIER_1(0, 20, 10, 100, EnumAchievements.FISHINGROD_LEVEL_I, "Basic", "wood and thread"),
+    TIER_2(20, 18, 20, 250, EnumAchievements.FISHINGROD_LEVEL_II, "Advanced", "oak wood and thread"),
+    TIER_3(40, 15, 30, 300, EnumAchievements.FISHINGROD_LEVEL_III, "Expert", "ancient oak wood and spider silk"),
+    TIER_4(60, 15, 40, 500, EnumAchievements.FISHINGROD_LEVEL_IV, "Supreme", "jungle bamboo and spider silk"),
+    TIER_5(80, 15, 50, 600, EnumAchievements.FISHINGROD_LEVEL_IV, "Master", "rich mahogany and enchanted silk");
 
     @Getter
     private int level;

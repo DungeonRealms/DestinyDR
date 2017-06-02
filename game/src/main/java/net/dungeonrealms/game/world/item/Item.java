@@ -417,7 +417,7 @@ public class Item {
         MINING_SUCCESS("MINING SUCCESS", "miningSuccess", 2, 2, 3, 4, 5),
         TRIPLE_ORE("TRIPLE ORE", "tripleOre", 2, 2, 3, 4, 5),
         DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25),
-        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, 1, 2, 3, 3);
+        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, -1, 2, 3, 3);
 
         private String prefix;
         @Getter

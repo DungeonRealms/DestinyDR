@@ -54,7 +54,7 @@ public abstract class ItemGear extends ItemGeneric {
     @Setter
     private int enchantCount;
 
-    private int durability;
+    protected int durability;
     private AttributeList attributes;
     private boolean rollStats;
 

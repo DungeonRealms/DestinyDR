@@ -16,7 +16,6 @@ import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
@@ -76,11 +75,14 @@ public abstract class ProfessionItem extends ItemGear {
 
     @Override
     public void onItemBreak(Player player) {
-        player.sendMessage(ChatColor.RED + "Your tool bursts into white light, leaving behind its kin.");
-        setLevel(1);
-        setXP(0);
-        setDestroyed(false);//TEST
-        player.getInventory().addItem(generateItem());
+        if (getLevel() == 100) {
+            player.sendMessage(ChatColor.RED + "Your tool bursts into white light, leaving behind its kin.");
+            setLevel(1);
+            setXP(0);
+            setDestroyed(false);//TEST
+            this.durability = MAX_DURABILITY;
+            player.getInventory().addItem(generateItem());
+        }
     }
 
     public ProfessionItem setLevel(int i) {
@@ -144,7 +146,7 @@ public abstract class ProfessionItem extends ItemGear {
             int newAmount = pa.getRandomValueFromTier(getTier());
             int toUse = currentAmount >= newAmount ? currentAmount + 1 : newAmount;
             int maxStat = pa.getMaxFromTier(getTier());
-            if(toUse > maxStat)toUse = maxStat;
+            if (toUse > maxStat) toUse = maxStat;
             getAttributes().setStat(pa, toUse);
         }
 
