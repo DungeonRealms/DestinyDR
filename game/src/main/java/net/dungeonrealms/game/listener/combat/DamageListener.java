@@ -788,6 +788,7 @@ public class DamageListener implements Listener {
             }
         }
 
+        res.setCause(event.getCause());
         res.setDamage(dmg);
         HealthHandler.damageEntity(res);
     }

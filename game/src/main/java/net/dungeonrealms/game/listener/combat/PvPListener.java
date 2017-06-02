@@ -63,7 +63,7 @@ public class PvPListener implements Listener {
             EntityHuman defend = ((CraftPlayer) defender).getHandle();
             defender.setSprinting(false);
 
-            GamePlayer damagerGP = GameAPI.getGamePlayer(defender);
+            GamePlayer damagerGP = GameAPI.getGamePlayer(attacker);
 
             //Dont tag them if they are in a duel..
             if (!isDuel) {

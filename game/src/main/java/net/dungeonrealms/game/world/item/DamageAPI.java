@@ -297,6 +297,13 @@ public class DamageAPI {
             if (entity.equals(damager))
                 continue;
 
+            //He has pvp toggled off so dont do damage to players with polearm.
+            if(attacker != null) {
+                if(!attacker.getToggles().getState(Toggles.PVP)) {
+                    if(entity instanceof Player) continue;
+                }
+            }
+
             float totalEnergyCost = (float) (energyCostPerSwing * .25);
             //Cant do anymore damage.
             if (!damagerIsMob && EnergyHandler.getPlayerCurrentEnergy((Player) damager) < totalEnergyCost) break;
