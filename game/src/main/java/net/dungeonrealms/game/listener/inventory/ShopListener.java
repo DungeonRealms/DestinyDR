@@ -19,7 +19,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -45,25 +44,25 @@ public class ShopListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void playerOpenShopInventory(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-        	return;
-        
+            return;
+
         Block block = event.getClickedBlock();
         Player p = event.getPlayer();
-        
+
         if (block == null || block.getType() != Material.CHEST || p.isSneaking())
-        	return;
-        
+            return;
+
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null || Metadata.PRICING.has(p) || Metadata.SHARDING.has(p)) // Don't allow people buying items or sharding to open it.
-        	return;
-        
+            return;
+
         event.setCancelled(true);
-        
+
         if (!GameAPI.isNonPvPRegion(p.getLocation())) {
-        	p.sendMessage(ChatColor.RED + "You cannot access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
-        	return;
+            p.sendMessage(ChatColor.RED + "You cannot access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
+            return;
         }
-        
+
         if (Chat.listened(p)) {
             p.sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
             return;
@@ -79,7 +78,7 @@ public class ShopListener implements Listener {
     @EventHandler
     public void playerCloseShopInventory(InventoryCloseEvent event) {
         if (GameAPI.isShop(event.getInventory()))
-        	event.getPlayer().setCanPickupItems(true);
+            event.getPlayer().setCanPickupItems(true);
     }
 
     /**
@@ -155,10 +154,30 @@ public class ShopListener implements Listener {
                 return;
             }
 
-            if (event.getRawSlot() == (shop.getInvSize() - 2)) {
+            if (event.getRawSlot() == shop.getInvSize() - 2) {
                 //Delete Shop
                 event.setCancelled(true);
                 shop.deleteShop(false, null);
+                return;
+            }
+
+            if (event.getRawSlot() == shop.getInvSize() - 5) {
+                //Description
+                event.setCancelled(true);
+                clicker.sendMessage(ChatColor.GREEN + "Please enter your new shop description!");
+                Chat.listenForMessage(clicker, evt -> {
+                    if (evt.getMessage().equals("cancel")) {
+                        clicker.sendMessage(ChatColor.RED + "Setting Shop Description - " + ChatColor.BOLD + "CANCELLED");
+                        return;
+                    }
+                    shop.setDescription(evt.getMessage());
+                    clicker.sendMessage(ChatColor.GREEN + "Your shop description is now: " + ChatColor.GRAY + evt.getMessage());
+                });
+                return;
+            }
+
+            if (event.getRawSlot() >= (shop.getInvSize() - 9) && event.getRawSlot() < shop.getInvSize()) {
+                event.setCancelled(true);
                 return;
             }
 
@@ -235,11 +254,11 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
                             return;
                         }
-                    	
-                    	//  CHANGES THE ITEM PRICE  //
-                    	VanillaItem i = new VanillaItem(shop.inventory.getItem(event.getRawSlot()));
-                    	i.setPrice(price);
-                    	shop.inventory.setItem(event.getRawSlot(), i.generateItem());
+
+                        //  CHANGES THE ITEM PRICE  //
+                        VanillaItem i = new VanillaItem(shop.inventory.getItem(event.getRawSlot()));
+                        i.setPrice(price);
+                        shop.inventory.setItem(event.getRawSlot(), i.generateItem());
                         clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
                     }, () -> clicker.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
@@ -258,7 +277,7 @@ public class ShopListener implements Listener {
                 return;
             }
 
-            if (event.getRawSlot() >= (shop.getInvSize() - 2))
+            if (event.getRawSlot() >= (shop.getInvSize() - 9))
                 return;
 
             final ItemStack itemClicked = event.getCurrentItem();
@@ -273,14 +292,14 @@ public class ShopListener implements Listener {
             if (!Metadata.PRICING.has(clicker)) {
                 int itemPrice = new VanillaItem(itemClicked).getPrice();
                 if (itemPrice <= 0)
-                	return;
-                
+                    return;
+
                 if (!shiftClick) {
-                	Metadata.PRICING.set(clicker, true);
+                    Metadata.PRICING.set(clicker, true);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
                     clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
                     Chat.listenForNumber(clicker, 1, 64, quantity -> {
-                    	Metadata.PRICING.remove(clicker);
+                        Metadata.PRICING.remove(clicker);
 
                         //  PREVENT PURCHASING FROM AN INVALID SHOP  //
                         if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
@@ -303,7 +322,7 @@ public class ShopListener implements Listener {
 
                         attemptPurchaseItem(clicker, shop, event.getRawSlot(), itemClicked, quantity);
                     }, () -> {
-                    	Metadata.PRICING.remove(clicker);
+                        Metadata.PRICING.remove(clicker);
                         clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                     });
                 } else if (event.isShiftClick()) {
@@ -329,13 +348,13 @@ public class ShopListener implements Listener {
             }
 
             if (BankMechanics.shopPricing.get(player.getName()) == null) return;
-            if (shop.inventory.firstEmpty() >= 0) {
+            if (shop.inventory.firstEmpty() >= 0 && shop.inventory.firstEmpty() < (shop.inventory.getSize() - 9)) {
                 int slot = shop.inventory.firstEmpty();
-                
+
                 VanillaItem i = new VanillaItem(BankMechanics.shopPricing.get(player.getName()));
                 i.setPrice(price);
                 shop.inventory.setItem(slot, i.generateItem());
-                
+
                 player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
 
                 player.sendMessage(new String[]{
@@ -376,14 +395,14 @@ public class ShopListener implements Listener {
             cancelPricingItem(player);
             return;
         }
-    	
-    	//  MAKE SURE WE CAN PAY FOR THIS  //
-    	int itemPrice = new VanillaItem(item).getPrice();
-    	
+
+        //  MAKE SURE WE CAN PAY FOR THIS  //
+        int itemPrice = new VanillaItem(item).getPrice();
+
         int totalPrice = quantity * itemPrice;
         if (totalPrice > 0 && (BankMechanics.getGemsInInventory(player) < totalPrice)) {
-        	player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
-        	player.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
+            player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
+            player.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
             return;
         }
 
@@ -402,6 +421,7 @@ public class ShopListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Transaction successful.");
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
         player.updateInventory();
+        shop.addPurchaseHistory(Utils.getItemName(toGive), totalPrice, quantity);
 
         //  REMOVE THE ITEM FROM THE SHOP  //
         int remainingStock = item.getAmount() - quantity;
@@ -432,7 +452,7 @@ public class ShopListener implements Listener {
 
         //  CALCULATE HOW MANY ITEMS ARE LEFT  //
         int itemsLeft = 0;
-        for (int i = 0; i < shop.inventory.getContents().length - 2; i++)
+        for (int i = 0; i < shop.inventory.getContents().length - 9; i++)
             if (shop.inventory.getContents()[i] != null && shop.inventory.getContents()[i].getType() != Material.AIR)
                 itemsLeft++;
 
@@ -463,10 +483,10 @@ public class ShopListener implements Listener {
         shop.hologram.removeLine(1);
         shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + Shop.HEART);
     }
-    
+
     public ItemStack removePrice(ItemStack item) {
-    	VanillaItem i = new VanillaItem(item);
-    	i.removePrice();
-    	return i.generateItem();
+        VanillaItem i = new VanillaItem(item);
+        i.removePrice();
+        return i.generateItem();
     }
 }

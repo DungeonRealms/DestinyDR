@@ -134,6 +134,12 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
+    private String shopDescription;
+    @Getter
+    private LinkedList<String> purchaseHistory = new LinkedList<>();
+
+    @Getter
+    @Setter
     private boolean combatLogged = false, shopOpened = false, loggerDied = false;
 
     @Getter
@@ -1443,9 +1449,9 @@ public class PlayerWrapper {
             setLevel(newLevel);
             Utils.sendCenteredMessage(getPlayer(), ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             getPlayer().playSound(getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-
-            ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
         }
+
+        ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
 
         for (EnumAchievementLevel ael : EnumAchievementLevel.values())
             if (ael.getLevelRequirement() == newLevel)

@@ -4,6 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -24,9 +25,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,8 +50,14 @@ public class Shop {
     public int shopLevel = 1;
     public Inventory inventory;
     public String shopName;
+    @Getter
+    @Setter
+    private String description;
     public int viewCount;
     public List<String> uniqueViewers = new ArrayList<>();
+    @Getter
+    @Setter
+    private LinkedList<String> purchaseHistory = new LinkedList<>();
 
     public static final String HEART = "❤";
 
@@ -68,31 +78,105 @@ public class Shop {
         viewCount = 0;
         this.characterID = characterID;
         this.uniqueViewers = new ArrayList<>();
+        this.purchaseHistory.addAll(wrapper.getPurchaseHistory());
+        this.description = wrapper.getShopDescription();
     }
 
-    private ItemStack getOpenShopButton(){
+    private ItemStack getOpenShopButton() {
         return new NBTWrapper(ItemManager.createItem(Material.INK_SACK,
-                ChatColor.GREEN.toString() + "Click to OPEN Shop", DyeColor.GRAY.getDyeData(),
+                ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Click to OPEN Shop", DyeColor.GRAY.getDyeData()," ",
                 ChatColor.GRAY + "This will open your shop to the public.")).setString("status", "off").build();
     }
 
-    private ItemStack getDeleteShopButton(){
+    private ItemStack getDeleteShopButton() {
         return new NBTWrapper(ItemManager.createItem(Material.BARRIER,
-                ChatColor.GREEN.toString() + "Click to DELETE Shop",
+                ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Click to DELETE Shop"," ",
                 ChatColor.GRAY + "This will safely delete your shop")).setString("statusClose", "disabledInventorySessionChecker")
                 .build();
     }
+
+    private ItemStack getDescriptionShopButton() {
+        String description = this.description == null ? "No Description" : this.description;
+        ItemStack stack = new NBTWrapper(ItemManager.createItem(Material.SKULL_ITEM,
+                ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + ownerName + "'s Shop", (short) 3," ",
+                ChatColor.GRAY + description))
+                .build();
+        ItemMeta meta = stack.getItemMeta();
+        ((SkullMeta) meta).setOwner(ownerName);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    private ItemStack getPurchaseHistoryShopButton() {
+        ItemStack stack = new NBTWrapper(ItemManager.createItem(Material.BOOK_AND_QUILL,
+                ChatColor.GREEN + ChatColor.BOLD.toString() + "Shop Ledger"))
+                .build();
+        ItemMeta meta = stack.getItemMeta();
+
+        List<String> lists = Lists.newArrayList("");
+        if (purchaseHistory.size() <= 0) {
+            lists.add(ChatColor.GRAY + "No items recently sold.");
+        } else {
+            lists.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "Recently Sold");
+            lists.addAll(purchaseHistory);
+        }
+
+        meta.setLore(lists);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    private ItemStack getFillerShopItem() {
+        return new NBTWrapper(ItemManager.createItem(Material.STAINED_GLASS_PANE, (short) 15, " ")).build();
+    }
+
     private Inventory createNewInv(UUID uuid) {
         int invSize = getInvSize();
         Inventory inv = Bukkit.createInventory(null, invSize, shopName + " - @" + Bukkit.getPlayer(uuid).getName());
-        inv.setItem(invSize - 1, getOpenShopButton());
-
-        inv.setItem(invSize - 2, getDeleteShopButton());
+        fillBottomRow(inv);
         return inv;
     }
 
+    private void fillBottomRow(Inventory inv) {
+        int invSize = getInvSize();
+        inv.setItem(invSize - 1, getOpenShopButton());
+        inv.setItem(invSize - 2, getDeleteShopButton());
+
+        inv.setItem(invSize - 5, getDescriptionShopButton());
+        inv.setItem(invSize - 9, getPurchaseHistoryShopButton());
+        for (int slot = invSize - 1; slot >= invSize - 9; slot--) {
+            ItemStack current = inv.getItem(slot);
+            if (current != null && !current.getType().equals(Material.AIR)) continue;
+            inv.setItem(slot, getFillerShopItem());
+        }
+
+    }
+
+    public void addPurchaseHistory(String itemName, int gemPrice, int quantity) {
+        purchaseHistory.add(ChatColor.GREEN.toString() + ChatColor.BOLD + " * " + ChatColor.GREEN + quantity + "x " + itemName + " " + ChatColor.GREEN + ChatColor.BOLD + gemPrice + "g");
+        if (purchaseHistory.size() > 5) {
+            purchaseHistory.remove(0);
+        }
+        inventory.setItem(inventory.getSize() - 9, getPurchaseHistoryShopButton());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(ownerUUID);
+        if (wrapper != null) {
+            wrapper.getPurchaseHistory().clear();
+            wrapper.getPurchaseHistory().addAll(purchaseHistory);
+        }
+    }
+
+    public void setDescription(String newDescription) {
+        if (newDescription.length() > 32) newDescription = newDescription.substring(0, 32);
+        this.description = newDescription;
+        inventory.setItem(getInvSize() - 5, getDescriptionShopButton());
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(ownerUUID);
+        if (wrapper != null) {
+            wrapper.setShopDescription(newDescription);
+        }
+    }
+
     public int getInvSize() {
-        return 9 * this.shopLevel;
+        return (9 * this.shopLevel) + 9;
     }
 
     public Player getOwner() {
@@ -161,7 +245,8 @@ public class Shop {
     private void saveCollectionBin(boolean shutDown, Player player, PreparedStatement state) {
         Inventory inv = Bukkit.createInventory(null, inventory.getSize(), "Collection Bin");
         int count = 0;
-        for (ItemStack stack : inventory) {
+        for (int slot = 0; slot < inventory.getSize() - 9; slot++) {
+            ItemStack stack = inventory.getItem(slot);
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
             if (stack != null && stack.getType() != Material.AIR) {
                 if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status") || stack.getType() == Material.BARRIER && nms.hasTag() && nms.getTag().hasKey("statusClose"))
@@ -228,7 +313,7 @@ public class Shop {
             hologram.insertTextLine(0, ChatColor.RED + shopName);
             hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " " + HEART);
         } else {
-            inventory.setItem(inventory.getSize() - 1,  new NBTWrapper(ItemManager.createItem(Material.INK_SACK,
+            inventory.setItem(inventory.getSize() - 1, new NBTWrapper(ItemManager.createItem(Material.INK_SACK,
                     ChatColor.RED.toString() + "Click to " + ChatColor.BOLD + "CLOSE" + ChatColor.RED + " Shop",
                     DyeColor.LIME.getDyeData(), ChatColor.GRAY + "This will allow you to edit your stock.")).setString("status", "on")
                     .build());
@@ -311,7 +396,8 @@ public class Shop {
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] items = inventory.getContents();
             inventory = createNewInv(p.getUniqueId());
-            for (ItemStack stack : items) {
+            for (int slot = 0; slot < items.length - 9; slot++) {
+                ItemStack stack = items[slot];
                 if (stack == null || stack.getType() == Material.AIR) {
                     continue;
                 }

@@ -135,20 +135,6 @@ public class Storage {
             if (callback != null)
                 callback.accept(this.collection_bin);
         });
-        //Pulling collection bin from cached doc.
-//        String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
-//        if (stringInv.length() > 1) {
-//            Inventory inv = ItemSerialization.fromString(stringInv);
-//            for (ItemStack item : inv.getContents())
-//                if (item != null && item.getType() == Material.AIR)
-//                    inv.addItem(item);
-
-//        Player p = Bukkit.getPlayer(ownerUUID);
-//        if (p != null)
-//            p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
-//        this.collection_bin = inv;
-        //Clears the collectionbin from the database...
-//        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
     }
 
 
@@ -160,6 +146,13 @@ public class Storage {
     }
 
     public void upgrade() {
+        ItemStack[] bankItems = inv.getContents();
+        inv = getNewStorage();
+        for (int i = 0; i < bankItems.length; i++) {
+            ItemStack item = bankItems[i];
+            if (item == null || item.getType() == Material.AIR) continue;
+            inv.setItem(i, item);
+        }
     }
 
     public void openBank(Player player) {
