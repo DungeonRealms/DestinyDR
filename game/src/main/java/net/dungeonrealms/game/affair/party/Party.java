@@ -162,7 +162,7 @@ public class Party {
     public void sendChat(Player pl, String message) {
     	String chat = PREFIX + pl.getName() + ChatColor.GRAY + ": " + Chat.checkForBannedWords(message);
 
-    	JSONMessage admin = Chat.applyShowItem(pl, ChatColor.RED + "" + ChatColor.BOLD + "(AS " + pl.getName() + " ) " + chat);
+    	JSONMessage admin = Chat.applyShowItem(pl, ChatColor.RED.toString() + ChatColor.BOLD + "(AS " + pl.getName() + " ) " + chat);
     	JSONMessage player = Chat.applyShowItem(pl, chat);
 
     	for (Player p : getAllMembers()) {
