@@ -66,12 +66,12 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
             player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleId, 12);
             player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleId, 12);
         }
-		
-		PlayerWrapper.getWrapper(player).sendDebug(ChatColor.GREEN
-				+ "You used an Item Scrap to repair 3% durability to " + (int) gear.getDurabilityPercent() + "%");
-		
-		evt.setSwappedItem(gear.generateItem());
-	}
+
+        PlayerWrapper.getWrapper(player).sendDebug(ChatColor.GREEN
+                + "You used an Item Scrap to repair 3% durability to " + (int) Math.ceil(gear.getDurabilityPercent()) + "%");
+
+        evt.setSwappedItem(gear.generateItem());
+    }
 
 	@Override
 	protected String getDisplayName() {
