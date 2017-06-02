@@ -178,6 +178,7 @@ public class Quest implements ISaveable {
 		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
 		
 		QuestProgress qp = data.getQuestProgress(this);
+		if(qp == null)return;
 		QuestStage stage = qp.getCurrentStage();
 		if(!qp.isDoingQuest())
 			return;

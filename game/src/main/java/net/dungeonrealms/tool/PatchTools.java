@@ -78,7 +78,7 @@ public class PatchTools implements GenericMechanic {
                     String[] split = text.split("\\<h>");
                     String hoverText = split[1].split("</h>")[0];
                     text = split[0];
-                    System.out.println("Page: " + hoverText + " Text: " + text);
+                    System.out.println("Line: " + hoverText + " Text: " + text);
                     text += "\n";
                     message.addHoverText(Lists.newArrayList(hoverText), text, ChatColor.BLACK, false);
                 } else {
@@ -89,9 +89,9 @@ public class PatchTools implements GenericMechanic {
                 builder.append("\n");
             }
 
-            if (builder.length() < 180)
+            if (builder.length() < 250) {
                 pages.add(ChatBaseComponent.ChatSerializer.a(message.toString()));
-
+            }
             in.close();
         } catch (Exception e) {
             e.printStackTrace();

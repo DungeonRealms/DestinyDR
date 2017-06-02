@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.party;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.md_5.bungee.api.ChatColor;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandPChat extends BaseCommand {
 
     public CommandPChat() {
-        super("pchat", "/<command> [args]", "Talk in party chat.", "p");
+        super("pchat", "/<command> [args]", "Talk in party chat.", null, Lists.newArrayList("p"));
     }
 
     @Override

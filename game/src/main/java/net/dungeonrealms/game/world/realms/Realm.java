@@ -648,7 +648,12 @@ public class Realm {
     }
 
     public void sendInformation(Player player) {
-        PlayerWrapper realmOwner = PlayerWrapper.getPlayerWrapper(player);
+        Player owner = Bukkit.getPlayer(getOwner());
+        if(owner == null){
+            player.sendMessage(ChatColor.RED + "This realm owner is no longer online.");
+            return;
+        }
+        PlayerWrapper realmOwner = PlayerWrapper.getPlayerWrapper(owner);
         if (realmOwner == null) return;
         player.sendMessage(ChatColor.LIGHT_PURPLE + "This portal teleports to " + ChatColor.BOLD + realmOwner.getDisplayName() + "'s" + ChatColor.LIGHT_PURPLE + " Realm");
 
