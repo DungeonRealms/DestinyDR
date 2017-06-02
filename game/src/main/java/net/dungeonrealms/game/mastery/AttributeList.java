@@ -52,7 +52,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 		if(!hasAttribute(t))
 			return;
 		ModifierRange range = getAttribute(t);
-		int newVal = (int) Math.round(range.getValue() * multiplier) + 1;
+		int newVal = (int) Math.round(range.getValLow() * multiplier) + 1;
 		if(t.isRange()) {
 			int highVal = (int) Math.round(range.getValHigh() * multiplier) + 1;
 			range.setVal(newVal, highVal);

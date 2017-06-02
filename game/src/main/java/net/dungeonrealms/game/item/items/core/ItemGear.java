@@ -206,7 +206,7 @@ public abstract class ItemGear extends ItemGeneric {
 
         // Show protection status.
         if (isProtected())
-            addLore(ChatColor.GOLD + "Protected");
+            addLore(ChatColor.WHITE + ChatColor.BOLD.toString() + "Protected");
 
         // UPDATE DISPLAY NAME //
         getMeta().setDisplayName(generateItemName());

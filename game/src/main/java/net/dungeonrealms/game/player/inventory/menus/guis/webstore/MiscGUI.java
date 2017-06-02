@@ -114,7 +114,7 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                         player.sendMessage(ChatColor.GRAY + "Please try again later or contact an administrator if the problem persists!");
                                         return;
                                     }
-                                    player.getInventory().addItem(new ItemNameTag(null).generateItem());
+                                    player.getInventory().addItem(new ItemNameTag().generateItem());
                                     player.sendMessage(ChatColor.GREEN + "An item name tag has been added to your inventory.");
                                 });
                             } else {
