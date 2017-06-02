@@ -21,19 +21,19 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 	@Getter @Setter
 	private ScrapTier tier;
-	
+
 	public ItemScrap(ScrapTier tier) {
 		super(ItemType.SCRAP);
 		setAntiDupe(false);
 		setTier(tier);
 	}
-	
+
 	public ItemScrap(ItemStack item) {
 		super(item);
 		setAntiDupe(false);
 		setTier(ScrapTier.getScrapTier(getTagInt(TIER)));
 	}
-	
+
 	@Override
 	public void updateItem() {
 		setTagInt(TIER, tier.getTier());
@@ -46,21 +46,21 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 			return;
 		ItemGear gear = (ItemGear)PersistentItem.constructItem(evt.getSwappedItem());
 		Player player = evt.getPlayer();
-		
+
 		if (!gear.canRepair())
 			return;
-		
+
 		evt.setCancelled(true);
 		if (gear instanceof ProfessionItem && ((ProfessionItem)gear).getLevel() >= 100) {
 			player.sendMessage(ChatColor.RED + "This item is much too warn to be repaired.");
 			return;
 		}
-		
+
 		gear.scrapRepair();
 		evt.setUsed(true);
-		
+
 		int particleId = gear.getRepairParticle(getTier());
-		
+
 		for (int i = 0; i < 6; i++) {
             player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleId, 12);
             player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleId, 12);
@@ -94,7 +94,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 		i.setAmount(1);
 		return i;
 	}
-	
+
 	public static boolean isScrap(ItemStack item) {
 		return isType(item, ItemType.SCRAP);
 	}

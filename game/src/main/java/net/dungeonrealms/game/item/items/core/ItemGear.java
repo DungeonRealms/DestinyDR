@@ -454,7 +454,7 @@ public abstract class ItemGear extends ItemGeneric {
      * Handles adding durability back when a scrap is used.
      */
     public void scrapRepair() {
-        double newDura = (double) MAX_DURABILITY * (1D / 33D);
+        double newDura = (double) MAX_DURABILITY * 0.03D;
         this.durability = Math.min(this.durability + (int) newDura, MAX_DURABILITY);
     }
 

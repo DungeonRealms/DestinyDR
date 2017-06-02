@@ -177,7 +177,7 @@ public class DamageAPI {
         //  LIFESTEAL  //
         if (attacker.isPlayer() && attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL)) {
             double lifeToHeal = ((double) attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() / 100) * damage;
-            HealthHandler.heal(attacker.getPlayer(), (int) lifeToHeal + 1,false);
+            HealthHandler.heal(attacker.getPlayer(), (int) lifeToHeal + 1, false);
         }
 
         //  STRENGTH BUFF  //
@@ -206,7 +206,7 @@ public class DamageAPI {
                 defender.getEntity().getWorld().playSound(attacker.getEntity().getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             double critIncrease = 0.0;
-            if(attacker.isPlayer()) {
+            if (attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 critIncrease = int_val * 0.0025;
             }

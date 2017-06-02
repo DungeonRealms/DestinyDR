@@ -509,7 +509,6 @@ public class Fishing implements GenericMechanic, Listener {
                 EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
                 //The bobber is down, get the timer?
                 int ticks = (int) ReflectionAPI.getObjectFromField("av", fishHook);
-                Bukkit.getLogger().info("Max Fish ticks: " + ticks);
                 fishHook.getBukkitEntity().setMetadata("maxTicks", new FixedMetadataValue(DungeonRealms.getInstance(), ticks));
             });
         } else if (e.getState() == State.FAILED_ATTEMPT) {

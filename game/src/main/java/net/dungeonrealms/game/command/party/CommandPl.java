@@ -34,9 +34,16 @@ public class CommandPl extends BaseCommand {
         	player.sendMessage(ChatColor.RED + args[0] + " is offline.");
         	return true;
         }
-        
+
+        if(invite == player) return true;
+
         if (!Affair.isInParty(player))
         	Affair.createParty(player);
+
+        if(Affair.isInParty(player)) {
+            player.sendMessage(ChatColor.RED + "This person is already in a party!");
+            return true;
+        }
         Affair.getParty(player).invite(player, invite);
         return true;
     }
