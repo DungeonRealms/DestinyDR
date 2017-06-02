@@ -30,6 +30,7 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 	public ItemTeleportBook(TeleportLocation tl) {
 		super(ItemType.TELEPORT_BOOK);
 		setTeleportLocation(tl);
+		setAntiDupe(false);
 	}
 	
 	public ItemTeleportBook(ItemStack item) {
