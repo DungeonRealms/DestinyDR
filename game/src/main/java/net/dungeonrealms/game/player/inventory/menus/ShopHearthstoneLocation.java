@@ -12,10 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class ShopHearthstoneLocation extends ShopMenu {
+public class ShopHearthstoneLocation extends GUIMenu {
 
 	public ShopHearthstoneLocation(Player player) {
-		super(player, "Hearthstone Re-Location", 1);
+		super(player, 9, "Hearthstone Re-Location");
+		open(player, null);
 	}
 
 	@Override
@@ -41,9 +42,10 @@ public class ShopHearthstoneLocation extends ShopMenu {
 			return true;
 		};
 
+		int slot = 0;
 
 		for (TeleportLocation tl : TeleportLocation.values())
 			if (tl.canBeABook())
-				addItem(new ShopItem(new ItemHearthStoneRelocator(tl), cb)).setPrice(tl.getPrice());
+				setItem(slot++, new ShopItem(new ItemHearthStoneRelocator(tl), cb).setGems(tl.getPrice()));
 	}
 }

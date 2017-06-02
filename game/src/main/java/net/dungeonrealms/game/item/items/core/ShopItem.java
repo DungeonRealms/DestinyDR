@@ -116,6 +116,11 @@ public class ShopItem extends ItemGeneric {
         return this;
     }
 
+    public ShopItem setGems(int price) {
+        setPrice(price);
+        return this;
+    }
+
     public interface ShopItemClick {
         public boolean onClick(Player p, ShopItem shop);
     }

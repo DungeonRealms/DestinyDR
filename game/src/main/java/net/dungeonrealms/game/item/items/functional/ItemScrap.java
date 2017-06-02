@@ -68,7 +68,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
         }
 		
 		PlayerWrapper.getWrapper(player).sendDebug(ChatColor.GREEN
-				+ "You used an Item Scrap to repair 3% durability to " + gear.getDurabilityPercent() + "%");
+				+ "You used an Item Scrap to repair 3% durability to " + (int) gear.getDurabilityPercent() + "%");
 		
 		evt.setSwappedItem(gear.generateItem());
 	}
