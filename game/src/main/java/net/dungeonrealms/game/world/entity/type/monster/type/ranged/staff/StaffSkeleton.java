@@ -35,7 +35,7 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
     @Override
     protected void r() {
         super.r();
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 15, 40, 25.0F));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 25, 40, 25.0F));
     }
 
     //    @Override

@@ -19,7 +19,6 @@ import java.util.UUID;
 public class PlayerStats implements LoadableData, SaveableData {
     private UUID playerUUID;
     public int freeResets;
-    private int level;
     public int resetAmounts;
     public boolean reset = true;
     private Map<Stats, Integer> statMap = new HashMap<>();
@@ -34,9 +33,6 @@ public class PlayerStats implements LoadableData, SaveableData {
 
     }
 
-    public void setPlayerLevel(int lvl) {
-        level = lvl;
-    }
 
     public void setTempStat(Stats s, int val) {
         tempStatMap.put(s, val);
@@ -109,10 +105,10 @@ public class PlayerStats implements LoadableData, SaveableData {
 
 
     public void lvlUp() {
-        int lvl = level + 1;
+        int lvl = getLevel() + 1;
         if (lvl == 10 || lvl == 50)
             addReset();
-        setPlayerLevel(lvl);
+//        setPlayerLevel(lvl);
     }
 
     /**
@@ -145,7 +141,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public int getLevel() {
-        return level;
+        return PlayerWrapper.getPlayerWrapper(playerUUID).getLevel();
     }
 
     public void addReset() {
