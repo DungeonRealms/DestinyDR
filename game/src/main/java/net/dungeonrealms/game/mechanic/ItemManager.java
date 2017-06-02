@@ -60,12 +60,6 @@ public class ItemManager {
      */
     public static void giveStarter(Player player, boolean isNew) {
 
-        for (int i = 0; i < 3; i++)
-            player.getInventory().addItem(new PotionItem(PotionTier.TIER_1).setUntradeable(true).generateItem());
-
-        if (isNew)
-            player.getInventory().addItem(new VanillaItem(new ItemStack(Material.BREAD, 3)).setUntradeable(true).generateItem());
-
         EntityEquipment e = player.getEquipment();
         Map<EquipmentSlot, ItemStack> starter = ItemGenerator.getEliteGear("starter");
         for (EquipmentSlot eq : starter.keySet()) {
@@ -73,6 +67,13 @@ public class ItemManager {
             if (c == null || c.getType() == Material.AIR)
                 GameAPI.setItem(player, eq, starter.get(eq));
         }
+
+
+        for (int i = 0; i < 3; i++)
+            player.getInventory().addItem(new PotionItem(PotionTier.TIER_1).setUntradeable(true).generateItem());
+
+        if (isNew)
+            player.getInventory().addItem(new VanillaItem(new ItemStack(Material.BREAD, 3)).setUntradeable(true).generateItem());
 
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
     }
