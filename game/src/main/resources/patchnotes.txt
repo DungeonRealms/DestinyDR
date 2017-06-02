@@ -1,5 +1,6 @@
 Build <build>
  &8&lAdditions&0
+ &l* &0Shop Info<h>&a&lWhat was added?,,&7Now receive a full row of shop space!,,&7Added Shop Ledgers that now,&7show recently sold items from,&7the shop you are viewing.,&7Set your shop description,&7with the skull in your shop!</h>
  &l* &0Pick Treasure Find<h>&a&lTreasure Find,,&aGain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
  &l* &0Sales Manager<h>&a&lHow it Works,,&7After an item is sold from a shop on the,&7current shard its sale goes into the Sales Manager!,,&7View recently sold items to have a better idea on prices!</h>
  &l* &0Hats<h>&a&lHats?!,&7With these Cosmetic Overrides you'll be sure to stand out,&7Obtain these new snazzy hats through in game,&7means or through the Dungeon Realms shop!</h>

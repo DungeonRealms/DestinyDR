@@ -101,7 +101,6 @@ public abstract class FakeEquipment {
                                 if (currentHat != null) {
                                     helmet.setType(currentHat.getItemType());
                                     helmet.setDurability(currentHat.getDurability());
-                                    Bukkit.getLogger().info("Set in inventory slot : " + slot + " window: " + contain.windowId);
                                 }
                             }
                         }
