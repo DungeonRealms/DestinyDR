@@ -201,7 +201,7 @@ public class MainListener implements Listener {
         } catch (Exception e) {
             player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
             PlayerWrapper.getPlayerWrappers().remove(player.getUniqueId());
-            GameAPI.sendStaffMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "There was an error while loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on {SHARD}.");
+            GameAPI.sendStaffMessage(ChatColor.RED + "[WARNING] " + ChatColor.WHITE + "There was an error while loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on {SERVER}.");
             e.printStackTrace();
             return;
         }

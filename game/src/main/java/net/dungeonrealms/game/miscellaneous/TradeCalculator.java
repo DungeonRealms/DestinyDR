@@ -123,7 +123,7 @@ public class TradeCalculator {
                 }
             }
 
-            ItemStack scrap = new ItemScrap(ScrapTier.getScrapTier(Math.max(2, oreTier.getTier()))).generateItem();
+            ItemStack scrap = new ItemScrap(ScrapTier.getScrapTier(oreTier.getTier())).generateItem();
             int giveScrap = (int) (currentOre * Math.max(0.5D, Math.pow(2, -oreTier.getTier() + 1)));
             while (giveScrap > 0) {
                 int sub = Math.min(giveScrap, 64);
