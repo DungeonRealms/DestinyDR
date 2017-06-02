@@ -165,9 +165,17 @@ public class Party {
     	JSONMessage admin = Chat.applyShowItem(pl, ChatColor.RED.toString() + ChatColor.BOLD + "(AS " + pl.getName() + " ) " + chat);
     	JSONMessage player = Chat.applyShowItem(pl, chat);
 
+    	boolean isJSON = message.contains("@i@");
     	for (Player p : getAllMembers()) {
-    		player.sendToPlayer(p);
-    		GameAPI.runAsSpectators(p, admin::sendToPlayer);
+    		if(isJSON) {
+				player.sendToPlayer(p);
+				GameAPI.runAsSpectators(p, admin::sendToPlayer);
+			} else {
+    			p.sendMessage(message);
+    			GameAPI.runAsSpectators(p, spect -> {
+    				spect.sendMessage(message);
+				});
+			}
     	}
     }
 
