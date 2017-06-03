@@ -16,4 +16,5 @@ Build <build>
  &l* &0T5 Staffs<h>&a&lWhat's changed?,,&7T5 Staff projectiles will NO longer,&7collide with other projectiles.&7</h>
  &l* &0Mob Staffs<h>&a&lWhat's changed?,,&7Staff projectiles from Tier 4+,&7now pass through other non player mobs.</h>
  &l* &0Profile Menu<h>&a&lWhat's changed?,,&7We have combined the /stats menu with,&7the /profile menu for a cleaner experience.</h>
+ &l* &0Item Mailbox<h>&a&lWhat is it?,,&7/mailbox is now the way you claim,&7all purchases from the DR store.,,&7With this system it should not be,&7possible to be maliciously banned,&7for chargebacks from another user.</h>
  &l* &0Recoded 90% of Dungeon Realms<h>&7This has by far taken up most,&7of our time developing but it,&7paves the way for the future,&7of Dungeon Realms.</h>

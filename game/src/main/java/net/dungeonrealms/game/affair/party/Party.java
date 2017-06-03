@@ -171,9 +171,9 @@ public class Party {
 				player.sendToPlayer(p);
 				GameAPI.runAsSpectators(p, admin::sendToPlayer);
 			} else {
-    			p.sendMessage(message);
+    			p.sendMessage(chat);
     			GameAPI.runAsSpectators(p, spect -> {
-    				spect.sendMessage(message);
+    				spect.sendMessage(chat);
 				});
 			}
     	}

@@ -387,7 +387,7 @@ public class DamageListener implements Listener {
 
         //  DROP ITEMS  //
         for (ItemStack stack : event.getDrops())
-            if (stack != null && stack.getType() != Material.SKULL_ITEM)
+            if (stack != null && stack.getType() != Material.AIR && stack.getType() != Material.SKULL_ITEM)
                 event.getEntity().getWorld().dropItemNaturally(deathLocation, stack);
 
         Location respawnLocation;

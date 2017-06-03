@@ -153,7 +153,8 @@ public class DonationEffects implements GenericMechanic {
 
     public void activateLocalBuff(Buff buff) {
         boolean existingBuff = hasBuff(buff.getType());
-        this.buffMap.get(buff.getType()).add(buff);
+        LinkedList<Buff> buffs = this.buffMap.computeIfAbsent(buff.getType(), k -> new LinkedList<>());
+        buffs.add(buff);
         saveBuffData();
 
         if (existingBuff) {
