@@ -276,7 +276,7 @@ public class LootManager implements GenericMechanic, Listener {
 	 * Calculates the delay multiplier for loot spawns based on playercount.
 	 */
 	public static double getDelayMultiplier() {
-		return Math.max(0.2D, (150D - (Bukkit.getOnlinePlayers().size() * 1.75D)));
+		return Math.max(0.2D, (150D - (Bukkit.getOnlinePlayers().size() * 1.75D)) / 100D);
 	}
 
 	/**
