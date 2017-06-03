@@ -157,7 +157,8 @@ public class Mining implements GenericMechanic, Listener {
 
         //  FAILED  //
         if (oreToAdd == 0) {
-            p.getEquipment().setItemInMainHand(pickaxe.generateItem());
+            pickaxe.updateItem(p);
+//            p.getEquipment().setItemInMainHand(pickaxe.generateItem());
             p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
             return;
         }
@@ -212,8 +213,7 @@ public class Mining implements GenericMechanic, Listener {
         System.out.println("Adding the xp on block break: " + xpGain);
 
         pickaxe.addExperience(p, xpGain);
-        ItemStack hand = pickaxe.generateItem();
-        p.getEquipment().setItemInMainHand(hand);
+        pickaxe.updateItem(p);
         p.updateInventory();
 
         //  DOUBLE ORE  //

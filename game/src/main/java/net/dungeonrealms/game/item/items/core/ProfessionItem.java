@@ -16,9 +16,7 @@ import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -126,7 +124,8 @@ public abstract class ProfessionItem extends ItemGear {
     protected ProfessionAttribute getRandomProfessionAttribute() {
         ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
         ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
-        if(pa.getMaxFromTier(getTier()) <= 0 || pa.getMinFromTier(getTier()) <= 0) return getRandomProfessionAttribute();
+        if (pa.getMaxFromTier(getTier()) <= 0 || pa.getMinFromTier(getTier()) <= 0)
+            return getRandomProfessionAttribute();
         return pa;
     }
 
@@ -221,6 +220,17 @@ public abstract class ProfessionItem extends ItemGear {
         }
 
 //        p.getEquipment().setItemInMainHand(generateItem());
+    }
+
+    public void updateItem(Player player) {
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (item != null && item.getType() != Material.AIR && item.equals(getItem())) {
+                player.getInventory().setItem(i, generateItem());
+                player.updateInventory();
+                return;
+            }
+        }
     }
 
     /**

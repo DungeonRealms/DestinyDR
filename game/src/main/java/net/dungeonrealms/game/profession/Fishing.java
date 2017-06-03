@@ -430,7 +430,10 @@ public class Fishing implements GenericMechanic, Listener {
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
 
-                pl.getEquipment().setItemInMainHand(pole.generateItem());
+
+                //Update the rod.
+                pole.updateItem(pl);
+//                pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
 
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);

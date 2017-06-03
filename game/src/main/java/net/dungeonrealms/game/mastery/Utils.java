@@ -152,7 +152,9 @@ public class Utils {
     }
 
     public static int randInt(int min, int max) {
-        return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
+        int bound = max - min + 1;
+        if(bound <= 0)return 0;
+        return ThreadLocalRandom.current().nextInt(bound) + min;
     }
 
     public static boolean isInt(String s) {
