@@ -63,10 +63,13 @@ public class ItemManager {
         EntityEquipment e = player.getEquipment();
         Map<EquipmentSlot, ItemStack> starter = ItemGenerator.getEliteGear("starter");
         for (EquipmentSlot eq : starter.keySet()) {
+            if (eq == EquipmentSlot.HAND)
+                continue;
             ItemStack c = GameAPI.getItem(e, eq);
             if (c == null || c.getType() == Material.AIR)
                 GameAPI.setItem(player, eq, starter.get(eq));
         }
+        player.getInventory().addItem(starter.get(EquipmentSlot.HAND));
 
 
         for (int i = 0; i < 3; i++)

@@ -16,7 +16,7 @@ import lombok.Getter;
 public enum EnumNamedElite {
 
 	// TIER 1 //
-    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -953, 72, 744, -1, 1),
+    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -953, 72, 744, 300, 1),
     
     // TIER 2 //
     COPJAK("Cop'jak", 2, EnumMonster.Troll1, CustomEntityType.MELEE_ZOMBIE, -82, 99, 1270, 1500, 2),

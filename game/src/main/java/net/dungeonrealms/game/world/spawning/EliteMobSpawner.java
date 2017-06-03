@@ -41,7 +41,17 @@ public class EliteMobSpawner extends MobSpawner {
     }
 
     @Override
+    public int getRespawnDelay() {
+        return getEliteType() != null ? getEliteType().getRespawnDelay() : super.getRespawnDelay();
+    }
+
+    @Override
     public int[] getDelays() {
         return new int[]{300, 500, 750, 1000, 1500};
+    }
+
+    @Override
+    public boolean canSpawnMobs() {
+        return super.canSpawnMobs() && (isDungeon() || !GameAPI.getNearbyPlayersAsync(getLocation(), 24).isEmpty());
     }
 }
