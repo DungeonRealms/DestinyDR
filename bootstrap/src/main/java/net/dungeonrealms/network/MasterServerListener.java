@@ -47,7 +47,7 @@ public class MasterServerListener extends Listener {
                         int bonusAmount = Integer.parseInt(in.readUTF());
                         String playerName = in.readUTF();
                         String friendlyName = type.equalsIgnoreCase("level") ? "XP" : type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
-//                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
+                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
                         break;
             	}
             } catch(Exception e) {
