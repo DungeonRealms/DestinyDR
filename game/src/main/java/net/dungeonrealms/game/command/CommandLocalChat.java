@@ -2,10 +2,12 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 
+import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Brad on 08/06/2015.
@@ -25,6 +27,7 @@ public class CommandLocalChat extends BaseCommand {
             return true;
         }
 
+        Chat.sendChatMessage((Player) sender, String.join(" ", args), false, true);
         return true;
     }
 }

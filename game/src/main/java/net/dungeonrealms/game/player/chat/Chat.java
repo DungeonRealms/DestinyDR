@@ -234,11 +234,14 @@ public class Chat {
                     return wrapper != null && (channel != ChatChannel.TRADE || wrapper.getToggles().getState(Toggles.TRADE_CHAT));
         		}).collect(Collectors.toList());
     }
-    
-    /**
-     * Send a chat message as the supplied player.
-     */
+
     public static void sendChatMessage(Player player, String message, boolean forceGlobal) {
+        sendChatMessage(player, message, forceGlobal, false);
+    }
+        /**
+         * Send a chat message as the supplied player.
+         */
+    public static void sendChatMessage(Player player, String message, boolean forceGlobal, boolean forceLocal) {
     	PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
     	if (wrapper == null)
     		return;
@@ -259,13 +262,13 @@ public class Chat {
 		}
     	
     	// Handle party chat.
-    	if (Affair.isPartyChat(player)) {
+    	if (Affair.isPartyChat(player) && !forceGlobal && !forceLocal) {
     		Affair.getInstance().sendPartyChat(player, message);
 			return;
 		}
     	
     	// Handle guild chat.
-    	if (wrapper.isInGuild() && wrapper.getToggles().getState(Toggles.GUILD_CHAT)) {
+    	if (wrapper.isInGuild() && wrapper.getToggles().getState(Toggles.GUILD_CHAT) && !forceGlobal && !forceLocal) {
     		wrapper.getGuild().sendGuildMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + wrapper.getGuild().getTag() + ChatColor.DARK_AQUA + "> " +
     				ChatColor.DARK_AQUA + ChatColor.GRAY + player.getName() + ": " + message, false);
     		return;

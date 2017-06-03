@@ -1,12 +1,10 @@
 package net.dungeonrealms.game.item.items.core;
 
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -44,7 +42,7 @@ public class ItemArmor extends CombatItem {
             boolean needToForce = mRare != null && genned < desiredMin;
             //If we are forcing a min amount of items, make the items that arent forced random rarities.
             armor.setRarity(needToForce ? mRare : mRare != null && genned >= desiredMin ? Item.ItemRarity.getRandomRarity() : getRarity());
-            if(needToForce)genned++;
+            if (needToForce) genned++;
             ret[i] = armor.generateItem();
         }
         return ret;
@@ -54,7 +52,10 @@ public class ItemArmor extends CombatItem {
     protected void applyEnchantStats() {
         getAttributes().multiplyStat(ArmorAttributeType.HEALTH_POINTS, 1.05);
         getAttributes().multiplyStat(ArmorAttributeType.HEALTH_REGEN, 1.05);
-        getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 1);
+
+        if (getAttributes().containsKey(ArmorAttributeType.ENERGY_REGEN))
+            getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 1);
+
     }
 
     @Override
@@ -71,7 +72,7 @@ public class ItemArmor extends CombatItem {
 
     @Override
     protected void onItemBreak(Player player) {
-    	PlayerWrapper.getWrapper(player).calculateAllAttributes();
+        PlayerWrapper.getWrapper(player).calculateAllAttributes();
     }
 
     public static boolean isArmor(ItemStack item) {
