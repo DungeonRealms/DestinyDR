@@ -7,6 +7,8 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.pathfinders.PathfinderGoalMeleeAttackWell;
 import net.minecraft.server.v1_9_R2.*;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     protected EnumMonster monsterType;
 
@@ -72,7 +74,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
             ItemStack itemstack = this.getItemInMainHand();
             //Only give them this bow one if this have a bow.
             if (itemstack != null && itemstack.getItem().equals(Items.BOW)) {
-                byte b0 = 20;
+                byte b0 = (byte) (20 + ThreadLocalRandom.current().nextInt(10));
                 this.goalShoot.b(b0);
                 this.goalSelector.a(4, this.goalShoot);
             } else {

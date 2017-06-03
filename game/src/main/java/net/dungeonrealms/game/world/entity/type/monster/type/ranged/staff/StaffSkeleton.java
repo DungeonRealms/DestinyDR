@@ -24,7 +24,6 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        System.out.println("Calling staff skeleton shoot!");
         DamageAPI.fireStaffProjectile((LivingEntity) getBukkitEntity(), new ItemWeaponStaff(getHeld()));
     }
 
