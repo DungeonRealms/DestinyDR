@@ -593,7 +593,7 @@ public class HealthHandler implements GenericMechanic {
                 PlayerWrapper atk = PlayerWrapper.getWrapper((Player) attacker);
                 String customNameAppended = Metadata.CUSTOM_NAME.get(defender).asString();
                 ChatColor npcTierColor = GameAPI.getTierColor(EntityAPI.getTier(defender));
-                atk.sendDebug(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + npcTierColor + customNameAppended + npcTierColor + " [" + (int) (newHP < 0 ? 0 : newHP) + "HP]");
+                atk.sendDebug(ChatColor.RED + "     " + (int) Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + npcTierColor + customNameAppended + npcTierColor + " [" + (int) (newHP < 0 ? 0 : newHP) + "HP]");
             }
         }
 
