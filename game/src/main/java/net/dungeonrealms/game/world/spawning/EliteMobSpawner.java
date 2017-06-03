@@ -44,12 +44,4 @@ public class EliteMobSpawner extends MobSpawner {
     public int[] getDelays() {
         return new int[]{300, 500, 750, 1000, 1500};
     }
-
-    @Override
-    protected boolean canSpawnMobs() {
-        boolean nearby = GameAPI.arePlayersNearby(getLocation(), 24);
-        if (nearby)
-            setCounter(0);
-        return super.canSpawnMobs() && (nearby || isDungeon());
-    }
 }
