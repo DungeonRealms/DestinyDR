@@ -19,7 +19,7 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 
 public abstract class ItemEnchantScroll extends FunctionalItem implements ItemClickListener, ItemInventoryListener {
 	
-	@Getter @Setter
+	@Getter
 	private ItemTier tier;
 	
 	protected String enchantType;
@@ -34,6 +34,11 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 		super(stack);
 		if (hasTag(TIER))
 			setTier(ItemTier.getByTier(getTagInt(TIER)));
+	}
+
+	public ItemEnchantScroll setTier(ItemTier tier) {
+		this.tier = tier;
+		return this;
 	}
 
 	protected abstract boolean isApplicable(ItemStack item);

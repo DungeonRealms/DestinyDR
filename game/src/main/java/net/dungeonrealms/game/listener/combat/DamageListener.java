@@ -335,8 +335,9 @@ public class DamageListener implements Listener {
                     gear.damageItem(p, durabilityLoss);
 
                     event.getDrops().remove(item);
+
                     //Dont drop if its not 0, 75% of the time.
-                    if (ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
+                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
                         gearToSave.add(persis.generateItem());
                     } else {
                         //Drop?

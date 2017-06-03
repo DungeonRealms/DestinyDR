@@ -569,7 +569,6 @@ public class HealthHandler implements GenericMechanic {
         double newHP = currentHP - damage;
 
         if (currentHP <= 0 && !isDPSDummy) {
-            System.out.println("Current HP = " + currentHP);
             if (!defender.isDead())
                 defender.setHealth(0);
             return;
