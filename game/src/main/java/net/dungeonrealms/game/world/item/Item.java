@@ -312,6 +312,13 @@ public class Item {
                 maxRange = getPercentRange()[getPercentRange().length - 1];
             return getPercentRange()[maxRange];
         }
+
+        default int getMinFromTier(ItemTier tier){
+            int maxRange = tier.ordinal();
+            if (maxRange < 0)
+                maxRange = 0;
+            return getPercentRange()[maxRange];
+        }
     }
 
     public enum AttributeBank {
@@ -470,6 +477,7 @@ public class Item {
         public int getChance() {
             return 100;
         }
+
     }
 
     public enum WeaponAttributeType implements AttributeType {

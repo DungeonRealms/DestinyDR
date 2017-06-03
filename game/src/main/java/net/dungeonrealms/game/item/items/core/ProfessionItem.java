@@ -123,6 +123,13 @@ public abstract class ProfessionItem extends ItemGear {
         return null;
     }
 
+    protected ProfessionAttribute getRandomProfessionAttribute() {
+        ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
+        ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
+        if(pa.getMaxFromTier(getTier()) <= 0 || pa.getMinFromTier(getTier()) <= 0) return getRandomProfessionAttribute();
+        return pa;
+    }
+
     /**
      * Level up this item.
      */
@@ -140,8 +147,8 @@ public abstract class ProfessionItem extends ItemGear {
 
         //Apply new stat.
         if (getTier() != oldTier) {
-            ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
-            ProfessionAttribute pa = attributes[ThreadLocalRandom.current().nextInt(attributes.length)];
+//            ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
+            ProfessionAttribute pa = getRandomProfessionAttribute();
             int currentAmount = getAttributes().hasAttribute(pa) ? getAttributes().get(pa).getValue() : 0;
             int newAmount = pa.getRandomValueFromTier(getTier());
             int toUse = currentAmount >= newAmount ? currentAmount + 1 : newAmount;
