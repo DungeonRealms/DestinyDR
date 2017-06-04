@@ -80,6 +80,7 @@ public class CommandGInvite extends BaseCommand {
                     member.setAccepted(false);
                     member.setWhenJoined(System.currentTimeMillis());
                     guild.getMembers().put(foundPlayer.getAccountID(), member);
+                    foundPlayer.setGuildID(guild.getGuildID());
                     GameAPI.sendNetworkMessage("Guilds", "invite", DungeonRealms.getShard().getPseudoName(),String.valueOf(guild.getGuildID()), guild.getDisplayName(), p_name, String.valueOf(foundPlayer.getAccountID()), player.getName());
                 }, QueryType.GUILD_INVITE.getQuery(foundPlayer.getAccountID(), guild.getGuildID(), "MEMBER", System.currentTimeMillis(), 0));
             });

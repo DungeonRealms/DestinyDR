@@ -186,7 +186,7 @@ public class GuildWrapper {
             return;
         }
 
-        PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
+        PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT IGNORE INTO guilds(name, displayname, tag, motd, banner) VALUES (?, ?, ?, ?, ?)");
         statement.setString(1, this.getName());
         statement.setString(2, this.getDisplayName());
         statement.setString(3, this.getTag());
@@ -200,7 +200,7 @@ public class GuildWrapper {
                 if (rs.first()) {
                     int guildID = rs.getInt("guild_id");
                     setGuildID(guildID);
-                    PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?);");
+                    PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("INSERT IGNORE INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES (?, ?, ?, ?, ?);");
                     GuildMember ownerMember = members.values().stream().findFirst().get();
                     statement2.setInt(1, ownerMember.getAccountID());
                     statement2.setInt(2, guildID);

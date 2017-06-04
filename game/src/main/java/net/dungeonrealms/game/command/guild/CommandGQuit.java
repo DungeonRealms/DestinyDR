@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -74,7 +75,7 @@ public class CommandGQuit extends BaseCommand {
                         if(memberWrapper != null)
                             memberWrapper.setGuildID(0);
                     }
-                    GameAPI.sendNetworkMessage("Guilds", "disband", gId + "");
+                    GameAPI.sendNetworkMessage("Guilds", "disband", DungeonRealms.getShard().getPseudoName(),String.valueOf(gId));
                 }, QueryType.DELETE_GUILD.getQuery(pw.getGuildID()), true);
             } else {
                 SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {

@@ -34,34 +34,35 @@ public class CommandGAccept extends BaseCommand {
 
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null)return true;
+        if (wrapper == null) return true;
 
 
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
-        if(guild == null) {
+        if (guild == null) {
             player.sendMessage(ChatColor.RED + "You have no pending guild invites!");
             return false;
         }
         GuildMember member = guild.getMembers().get(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(player.getUniqueId()));
 
-        if(member == null) {
+        if (member == null) {
             player.sendMessage(ChatColor.RED + "You have no pending guild invites!");
             return false;
         }
 
-        if(member.isAccepted()) {
+        if (member.isAccepted()) {
             player.sendMessage(ChatColor.RED + "You have no pending guild invites!");
 //            player.sendMessage(ChatColor.RED + "You already accepted this guild invitation!");
             return false;
         }
 
-            wrapper.setGuildID(guild.getGuildID());
+        wrapper.setGuildID(guild.getGuildID());
         member.setAccepted(true);
         player.sendMessage(ChatColor.DARK_AQUA + "You have joined '" + ChatColor.BOLD + guild.getDisplayName() + "'" + ChatColor.DARK_AQUA + ".");
         player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
         guild.sendGuildMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY.toString() + " has " +
                 ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild.");
-        GameAPI.sendNetworkMessage("Guilds", "accept", DungeonRealms.getShard().getPseudoName(),String.valueOf(guild.getGuildID()), String.valueOf(member.getAccountID()));
+        GameAPI.sendNetworkMessage("Guilds", "accept", DungeonRealms.getShard().getPseudoName(), String.valueOf(guild.getGuildID()), String.valueOf(member.getAccountID()));
+
         return false;
     }
 

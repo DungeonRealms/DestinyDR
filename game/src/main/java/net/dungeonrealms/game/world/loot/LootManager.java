@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootTable.PossibleLoot;
 
+import net.dungeonrealms.game.world.realms.Realms;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -122,17 +123,19 @@ public class LootManager implements GenericMechanic, Listener {
 			return;
 		
 		Player p = e.getPlayer();
-		e.setCancelled(true);
 		boolean isTreasure = Mining.treasureChests.contains(p.getLocation());
 		LootSpawner spawner = getSpawner(block.getLocation());
-		
-		if (DungeonManager.isDungeon(block.getWorld()) || (spawner == null && GameAPI.isMainWorld(block.getWorld()))
-		    		|| isTreasure) {
+
+		//Is a realm cehst?
+		if(spawner == null && Realms.getInstance().isInRealm(p))return;
+
+		e.setCancelled(true);
+		if (DungeonManager.isDungeon(block.getWorld()) || spawner == null && GameAPI.isMainWorld(block.getWorld()) || isTreasure) {
 			if (!isTreasure)
 				p.sendMessage(ChatColor.GRAY + "The chest is locked.");
 			return;
 		}
-		
+
 		if (!GameAPI.getNearbyMonsters(block.getLocation(), 10).isEmpty()) {
 			p.sendMessage(ChatColor.RED + "It is " + ChatColor.BOLD + "NOT" + ChatColor.RESET + ChatColor.RED + " safe to open that right now");
 			p.sendMessage(ChatColor.GRAY + "Eliminate the monsters in the area first.");

@@ -83,23 +83,4 @@ public class DataListener implements Listener {
         SQLDatabaseAPI.getInstance().getAccountIdNames().put(wrapper.getAccountID(), new UUIDName(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
 //        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().setResourcePack(Constants.RESOURCE_PACK), 1);
     }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        onDC(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerKick(PlayerKickEvent event) {
-        onDC(event.getPlayer());
-    }
-
-    private void onDC(Player player) {
-    	PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
-        if(wrapper == null)
-        	return;
-        //We need to remove this instance of the player after they have left the server.. Keep that object for some more use tho.
-        wrapper.setPlayer(null);
-//        wrapper.saveData(true, event.getPlayer(), true, (newWrapper) -> newWrapper.setPlayingStatus(false));
-    }
 }
