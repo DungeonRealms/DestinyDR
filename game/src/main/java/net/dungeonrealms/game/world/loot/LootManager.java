@@ -7,6 +7,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.command.moderation.CommandLootChest;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Mining;
@@ -122,10 +123,13 @@ public class LootManager implements GenericMechanic, Listener {
 		
 		Player p = e.getPlayer();
 		e.setCancelled(true);
-		if(Mining.treasureChests.contains(p.getLocation()))return;
+		boolean isTreasure = Mining.treasureChests.contains(p.getLocation());
 		LootSpawner spawner = getSpawner(block.getLocation());
-		if (!GameAPI.isMainWorld(block) || spawner == null) {
-			p.sendMessage(ChatColor.GRAY + "The chest is locked.");
+		
+		if (DungeonManager.isDungeon(block.getWorld()) || (spawner == null && GameAPI.isMainWorld(block.getWorld()))
+		    		|| isTreasure) {
+			if (!isTreasure)
+				p.sendMessage(ChatColor.GRAY + "The chest is locked.");
 			return;
 		}
 		
