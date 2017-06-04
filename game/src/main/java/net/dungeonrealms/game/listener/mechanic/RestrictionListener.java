@@ -76,35 +76,46 @@ public class RestrictionListener implements Listener {
     }
 
     //Illegal item check.
-    public static  void checkForIllegalItems(Player p) {
+    public static void checkForIllegalItems(Player p) {
         for (ItemStack is : p.getInventory().getContents()) {
             if (is == null || is.getType() == Material.AIR)
                 continue;
 
-            if (is.getType() == Material.SKULL_ITEM) {
-                //Dragon skull.
-                if (is.getDurability() == (short) 5 && !is.hasItemMeta()) {
-                    p.getInventory().remove(is);
-                    Bukkit.getLogger().info("Removed illegal Dragon head from " + p.getName());
-                    continue;
-                }
-            }
-
             if (!p.isOnline()) return;
             if (!is.hasItemMeta()) continue;
             if (!is.getItemMeta().hasLore()) continue;
-            for (String s : is.getItemMeta().getLore()) {
-                if (s.equals(ChatColor.GRAY + "Display Item")) {
-                    p.getInventory().remove(is);
-                    break;
-                }
-            }
 
-            NBTWrapper wrapper = new NBTWrapper(is);
-            if (wrapper.hasTag("profileItem")) {
-                p.getInventory().remove(is);
+            if (isIllegalItem(is)) {
+                p.getInventory().removeItem(is);
             }
         }
+
+        if (p.getInventory().getItemInOffHand() != null && p.getInventory().getItemInOffHand().getType() != Material.AIR) {
+            if (isIllegalItem(p.getInventory().getItemInOffHand())) {
+                p.getInventory().setItemInOffHand(null);
+            }
+        }
+    }
+
+    public static boolean isIllegalItem(ItemStack is) {
+        if(is.getType() == Material.AIR)return false;
+        if (is.getType() == Material.SKULL_ITEM) {
+            //Dragon skull.
+            if (is.getDurability() == (short) 5 && !is.hasItemMeta()) {
+                return true;
+            }
+        }
+
+        if(is.getItemMeta().hasLore()) {
+            for (String s : is.getItemMeta().getLore()) {
+                if (s.equals(ChatColor.GRAY + "Display Item")) {
+                    return true;
+                }
+            }
+        }
+
+        NBTWrapper wrapper = new NBTWrapper(is);
+        return wrapper.hasTag("profileItem");
     }
 
     private void checkPlayersArmorIsValid(Player p) {
@@ -300,6 +311,11 @@ public class RestrictionListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        checkForIllegalItems(event.getPlayer());
     }
 
     // Level restrictions on equipment removed on 7/18/16 Build#131
