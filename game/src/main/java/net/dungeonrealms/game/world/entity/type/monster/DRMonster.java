@@ -246,7 +246,7 @@ public interface DRMonster {
                     ItemGear gear = (ItemGear) PersistentItem.constructItem(drop);
                     gear.damageItem(null, Utils.randInt(0, ItemGear.MAX_DURABILITY - (int) (ItemGear.MAX_DURABILITY / 7.5)));
                     //drop the gear peice.
-                    ItemManager.whitelistItemDrop(killer, loc, persis.generateItem());
+                    ItemManager.whitelistItemDrop(killer, loc, gear.generateItem());
                 }
             }
         }
