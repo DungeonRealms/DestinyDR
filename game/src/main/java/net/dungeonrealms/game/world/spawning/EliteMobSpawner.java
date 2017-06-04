@@ -3,10 +3,10 @@ package net.dungeonrealms.game.world.spawning;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.util.ChatColor;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 /**
@@ -32,7 +32,7 @@ public class EliteMobSpawner extends MobSpawner {
     public EliteMobSpawner(Location l, String displayName, EnumMonster m, int tier, int respawnDelay, int spread) {
         super(l, m, displayName, tier, 1, "low", respawnDelay, 1, spread);
         if (this.customName != null && !this.customName.isEmpty())
-            this.customName = Item.ItemTier.getByTier(tier).getColor() + ChatColor.BOLD.toString() + displayName;
+            this.customName = Item.ItemTier.getByTier(tier).getColor() + ChatColor.BOLD.toString() + ChatColor.stripColor(displayName);
     }
 
     @Override

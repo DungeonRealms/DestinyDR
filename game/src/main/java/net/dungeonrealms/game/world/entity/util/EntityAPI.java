@@ -27,10 +27,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 import net.minecraft.server.v1_9_R2.PathfinderGoalSelector;
 import net.minecraft.server.v1_9_R2.World;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Creature;
@@ -111,6 +108,8 @@ public class EntityAPI {
         if (elite != null)
             Metadata.NAMED_ELITE.set(entity, elite);
 
+        if (entity != null)
+            entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true, Color.AQUA));
         return entity;
     }
 
@@ -396,7 +395,6 @@ public class EntityAPI {
 
     /**
      * Recalculates a monster's attributes.
-     *
      */
     public static void calculateAttributes(DRMonster m) {
         AttributeList attributes = m.getAttributes();
@@ -410,7 +408,7 @@ public class EntityAPI {
         if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier))) {
             armorSet[3] = new ItemArmor().setTier(tier).setType(ItemType.HELMET).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(m.getBukkit()))).generateItem();
             lastUsedHelmetItem.put(m.getBukkit(), armorSet[3]);
-        } else if(lastUsedHelmetItem.containsKey(m.getBukkit())) {
+        } else if (lastUsedHelmetItem.containsKey(m.getBukkit())) {
             lastUsedHelmetItem.remove(m.getBukkit());
         }
 
