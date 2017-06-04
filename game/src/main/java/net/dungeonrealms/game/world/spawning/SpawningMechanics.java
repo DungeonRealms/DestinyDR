@@ -51,8 +51,15 @@ public class SpawningMechanics implements GenericMechanic {
     
     public static void saveConfig() {
     	List<String> config = new ArrayList<String>();
-    	for (MobSpawner s : getSpawners())
+    	for (MobSpawner s : getSpawners()) {
+			if(s instanceof EliteMobSpawner){
+				EliteMobSpawner spawner = (EliteMobSpawner)s;
+				//We dont want to save these elite spawn places because the code already does this for us.
+				if(spawner.getEliteType() != null)
+					continue;
+			}
     		config.add(s.getSerializedString());
+		}
     	DungeonRealms.getInstance().getConfig().set("spawners", config);
     	DungeonRealms.getInstance().saveConfig();
     }
