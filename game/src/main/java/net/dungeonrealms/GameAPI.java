@@ -359,6 +359,15 @@ public class GameAPI {
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
+        //Incase anything realm related happens, it doesnt just wipe people
+        try {
+            long realmStart = System.currentTimeMillis();
+            Bukkit.getLogger().info("Removing all realms sync...");
+            Realms.getInstance().removeAllRealms(false);
+            Bukkit.getLogger().info("Removed all realms sync in " + (System.currentTimeMillis() - realmStart) + "ms");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         GameAPI.logoutAllPlayers();
 
