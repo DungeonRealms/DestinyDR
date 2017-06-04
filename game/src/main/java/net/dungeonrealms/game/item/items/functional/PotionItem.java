@@ -96,14 +96,13 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
             return;
         }
 
-        evt.setUsed(true);
-        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
         if(isSplash()) {
-            System.out.println("Calling the splash code!");
             evt.setCancelled(false);
         } else {
+            evt.setUsed(true);
             HealthHandler.heal(evt.getPlayer(), getHealAmount(),true);
         }
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
     }
 
     private void findNextPotion(Player player, EquipmentSlot slot) {
