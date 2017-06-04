@@ -204,7 +204,7 @@ public class BankListener implements Listener {
                         return;
                     }
 
-                    if (!canItemBeStored(cursor)) {
+                    if (!canItemBeStored(cursor) && !ItemManager.isItemPermanentlyUntradeable(cursor)) {
                         player.sendMessage(ChatColor.RED + "You can't store this item.");
                         return;
                     }
@@ -241,7 +241,7 @@ public class BankListener implements Listener {
                 return;
             }
 
-            if (!canItemBeStored(item)) {
+            if (!canItemBeStored(item) && !ItemManager.isItemPermanentlyUntradeable(item)) {
                 player.sendMessage(ChatColor.RED + "This item cannot be stored.");
                 return;
             }
@@ -304,7 +304,7 @@ public class BankListener implements Listener {
         if (isMoney && !muleStorage)
             handleMoneyDeposit(evt);
 
-        if (!canItemBeStored(attemptAdd)) {
+        if (!canItemBeStored(attemptAdd) && (muleStorage || !ItemManager.isItemPermanentlyUntradeable(attemptAdd))) {
             evt.setCancelled(true);
             evt.setResult(Event.Result.DENY);
             return;

@@ -58,6 +58,7 @@ public class Buff implements Serializable {
 	 */
 	public void deactivate() {
 		final DonationEffects de = DonationEffects.getInstance();
+		de.getQueuedBuffs(type).remove(this);
 		Buff nextBuff = de.getQueuedBuffs(type).poll();
 		
 		Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
