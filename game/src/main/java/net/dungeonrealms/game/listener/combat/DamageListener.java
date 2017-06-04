@@ -352,9 +352,9 @@ public class DamageListener implements Listener {
             p.getEquipment().setArmorContents(new ItemStack[4]);
 
             //  KEEP PROFESSION ITEMS AND MAIN WEAPON  //
-            new ArrayList<>(event.getDrops()).forEach(is -> {
+            new ArrayList<>(event.getDrops()).stream().filter((i) -> i != null).forEach(is -> {
                 if (ProfessionItem.isProfessionItem(is) ||
-                        !skipWeapon && is.equals(p.getInventory().getItem(p.getInventory().getHeldItemSlot()))) {
+                        !skipWeapon && is.equals(p.getInventory().getItem(0))) {
                     PersistentItem item = PersistentItem.constructItem(is);
                     if (item instanceof ItemGear) {
                         ItemGear gear = (ItemGear) item;

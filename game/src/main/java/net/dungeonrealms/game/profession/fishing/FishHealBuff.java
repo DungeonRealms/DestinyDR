@@ -20,7 +20,7 @@ public class FishHealBuff extends FishBuff {
 
 	@Override
 	public void applyBuff(Player player) {
-		HealthHandler.heal(player, (getValue() / 100D) * HealthHandler.getMaxHP(player), true);
+		HealthHandler.heal(player, (int) (getValue() / 100D * HealthHandler.getMaxHP(player)), true);
 	}
 
 	@Override

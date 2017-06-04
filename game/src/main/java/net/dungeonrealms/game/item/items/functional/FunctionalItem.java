@@ -60,7 +60,9 @@ public abstract class FunctionalItem extends ItemGeneric {
         	return;
 
         //Check that the FunctionalItem is not null, and that the usagetype supplied is allowed for this item.
-        if (ice.getItem() == null || !Arrays.asList(ice.getItem().getUsage()).contains(ice.getUsage()))
+        ItemUsage[] usage = ice.getItem().getUsage();
+        //No usage found? nothing to do then..
+        if (ice.getItem() == null || usage == null || !Arrays.asList(usage).contains(ice.getUsage()))
             return;
 
         try {
