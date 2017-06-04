@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster.base;
 import net.dungeonrealms.game.item.items.core.ItemWeaponSword;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.util.pathfinders.PathfinderGoalMeleeAttackWell;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +33,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
     @Override
     protected void r() {
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
-        this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 2.0D, false));
+        this.goalSelector.a(2, new PathfinderGoalMeleeAttackWell(this, 2.0D, false));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));

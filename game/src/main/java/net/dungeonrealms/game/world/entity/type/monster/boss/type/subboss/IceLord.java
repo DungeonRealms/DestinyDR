@@ -6,6 +6,7 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRGolem;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.pathfinders.PathfinderGoalMeleeAttackWell;
 import net.dungeonrealms.game.world.item.Item;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +32,7 @@ public class IceLord extends DRGolem implements DRMonster {
 
     @Override
     protected void r() {
-        this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.1D, true));
+        this.goalSelector.a(1, new PathfinderGoalMeleeAttackWell(this, 1.1D, false));
         this.goalSelector.a(2, new PathfinderGoalMoveTowardsTarget(this, 1.2D, 32.0F));
         this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
         this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 0.6D));

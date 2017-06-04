@@ -86,7 +86,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 
 	@Override
 	protected String getDisplayName() {
-		return ChatColor.WHITE + "" + ChatColor.BOLD + "Scroll: " + tier.getColor() + "Enchant " + tier.getWeaponName() + " " + this.enchantType;
+		return ChatColor.WHITE + "" + ChatColor.BOLD + "Scroll: " + tier.getColor() + "Enchant " + (this instanceof ItemEnchantArmor ? tier.getArmorName() : tier.getWeaponName()) + " " + this.enchantType;
 	}
 
 	@Override
