@@ -1,11 +1,10 @@
 package net.dungeonrealms.game.player.trade;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -66,11 +65,11 @@ public class Trade {
         p1.openInventory(inv);
         p2.openInventory(inv);
     }
-    
-    public void setDividerColor(DyeColor dye){
-    	ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ");
-    	separator.setDurability(dye.getData());
-    	inv.setItem(4, separator);
+
+    public void setDividerColor(DyeColor dye) {
+        ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ");
+        separator.setDurability(dye.getData());
+        inv.setItem(4, separator);
         inv.setItem(13, separator);
         inv.setItem(22, separator);
         inv.setItem(31, separator);
@@ -82,7 +81,7 @@ public class Trade {
 
         int spacesLeft = 32 - (title.length() + rPName.length());
 
-        for(int i = 0; i < spacesLeft; i++){
+        for (int i = 0; i < spacesLeft; i++) {
             title += " ";
         }
         title += rPName;
@@ -137,21 +136,23 @@ public class Trade {
             if (i == 8)
                 continue;
             if (isLeftSlot(i)) {
-                p1.getInventory().addItem(item);
+                GameAPI.giveOrDropItem(p1, item);
             } else if (isRightSlot(i)) {
-                p2.getInventory().addItem(item);
+                GameAPI.giveOrDropItem(p2, item);
             }
         }
 
         if (p1.getItemOnCursor() != null) {
             ItemStack item = p1.getItemOnCursor().clone();
             p1.setItemOnCursor(null);
-            p1.getInventory().addItem(item);
+            GameAPI.giveOrDropItem(p1, item);
+
         }
         if (p2.getInventory() != null) {
             ItemStack item = p2.getItemOnCursor().clone();
             p2.setItemOnCursor(null);
-            p2.getInventory().addItem(item);
+            GameAPI.giveOrDropItem(p2, item);
+//            p2.getInventory().addItem(item);
 
         }
         p1.setCanPickupItems(true);
@@ -235,17 +236,28 @@ public class Trade {
     }
 
     public void changeReady() {
-        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP");
-        item.setDurability(DyeColor.LIME.getWoolData());
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("status", "notready");
-        nms.setTag(nbt);
-        nms.c(ChatColor.YELLOW + "READY UP");
-        inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
-        inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
+//        ItemStack item = ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP");
+//        item.setDurability(DyeColor.GRAY.getWoolData());
+//        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//        NBTTagCompound nbt = new NBTTagCompound();
+//        nbt.setString("status", "notready");
+//        nms.setTag(nbt);
+//        nms.c(ChatColor.YELLOW + "READY UP");
+
+        ItemStack item =
+                new NBTWrapper(ItemManager.createItem(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP", DyeColor.GRAY.getDyeData(), ChatColor.GRAY + "Click to accept trade"))
+                        .setString("status", "notready").build();
+
+        inv.setItem(0, item);
+        inv.setItem(8, item);
         p1Ready = false;
         p2Ready = false;
+        playSound(Sound.BLOCK_ANVIL_FALL, 1.8F);
+    }
+
+    public void playSound(Sound sound, float speed) {
+        p1.playSound(p1.getLocation(), sound, .3F, speed);
+        p2.playSound(p2.getLocation(), sound, .3F, speed);
 
     }
 
@@ -276,8 +288,8 @@ public class Trade {
         }
     }
 
-    public Player getOppositePlayer(Player player){
-        if(p1.equals(player))return p2;
+    public Player getOppositePlayer(Player player) {
+        if (p1.equals(player)) return p2;
         return p1;
     }
 }

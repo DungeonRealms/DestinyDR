@@ -624,10 +624,14 @@ public class InventoryListener implements Listener {
                 return;
             }
             Player clicker = (Player) event.getWhoClicked();
-            trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-            trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-            trade.changeReady();
-            trade.setDividerColor(DyeColor.RED);
+            if(trade.p1Ready || trade.p2Ready) {
+                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                trade.changeReady();
+                trade.setDividerColor(DyeColor.RED);
+                clicker.updateInventory();
+            }
+            Bukkit.getLogger().info("Modifiing!");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
                     trade.setDividerColor(DyeColor.WHITE);

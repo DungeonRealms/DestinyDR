@@ -52,7 +52,11 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 		evt.setCancelled(true);
 		if (gear instanceof ProfessionItem && ((ProfessionItem)gear).getLevel() >= 100) {
-			player.sendMessage(ChatColor.RED + "This item is much too warn to be repaired.");
+			player.sendMessage(ChatColor.RED + "This item is much too worn to be repaired.");
+			return;
+		}
+
+		if(getTier().getTier() != gear.getTier().getTierId()){
 			return;
 		}
 
