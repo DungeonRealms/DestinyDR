@@ -137,7 +137,9 @@ public class DungeonManager implements GenericMechanic {
     
     public static Set<MobSpawner> getSpawns(World w, DungeonType type) {
 		Set<MobSpawner> spawns = new ConcurrentSet<>();
-		spawns.addAll(getDungeonSpawns().get(type));
+//		spawns.addAll(getDungeonSpawns().get(type));
+		//Clone mob spawners?
+		getDungeonSpawns().get(type).forEach(sp -> spawns.add(sp.clone()));
     	spawns.forEach(ms -> ms.getLocation().setWorld(w));
     	return spawns;
     }

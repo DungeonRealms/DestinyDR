@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
@@ -81,6 +82,7 @@ public class CommandGInvite extends BaseCommand {
                     member.setWhenJoined(System.currentTimeMillis());
                     guild.getMembers().put(foundPlayer.getAccountID(), member);
                     foundPlayer.setGuildID(guild.getGuildID());
+                    BungeeUtils.sendPlayerMessage(foundPlayer.getUsername(), ChatColor.GRAY + "You have been invited to the guild " + ChatColor.DARK_AQUA + guild.getDisplayName());
                     GameAPI.sendNetworkMessage("Guilds", "invite", DungeonRealms.getShard().getPseudoName(),String.valueOf(guild.getGuildID()), guild.getDisplayName(), p_name, String.valueOf(foundPlayer.getAccountID()), player.getName());
                 }, QueryType.GUILD_INVITE.getQuery(foundPlayer.getAccountID(), guild.getGuildID(), "MEMBER", System.currentTimeMillis(), 0));
             });

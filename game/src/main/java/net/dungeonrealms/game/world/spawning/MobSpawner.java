@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
@@ -28,7 +29,7 @@ import java.util.Set;
  *
  * @author Unknown
  */
-public abstract class MobSpawner {
+public abstract class MobSpawner implements Cloneable {
 
     @Getter //Where do we spawn them?
     private Location location;
@@ -138,6 +139,12 @@ public abstract class MobSpawner {
         as.setInvulnerable(true);
     }
 
+    @Override
+    @SneakyThrows
+    public MobSpawner clone() {
+        return (MobSpawner) super.clone();
+    }
+
     public void createEditInformation() {
         if (this.editHologram != null && !this.editHologram.isDeleted())
             this.editHologram.delete();
@@ -200,7 +207,7 @@ public abstract class MobSpawner {
 
         builder.append(getMonsterType().getIdName());
 
-        if(this instanceof EliteMobSpawner){
+        if (this instanceof EliteMobSpawner) {
             builder.append("*");
         }
         if (hasCustomName())
@@ -290,7 +297,7 @@ public abstract class MobSpawner {
             entity = EntityAPI.spawnCustomMonster(spawn, getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
         }
 
-        if(entity == null){
+        if (entity == null) {
             Bukkit.getLogger().info("Unable to create entity: " + level + " At: " + spawn);
             return null;
         }
