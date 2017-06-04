@@ -12,6 +12,7 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.functional.*;
+import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
@@ -96,6 +97,7 @@ public class RealmListener implements Listener {
                 }
             }, 15 * 20L);
 
+            RestrictionListener.checkForIllegalItems(player);
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
             Realm realmFrom = Realms.getInstance().getRealm(event.getFrom());
 

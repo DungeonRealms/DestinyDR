@@ -76,7 +76,7 @@ public class RestrictionListener implements Listener {
     }
 
     //Illegal item check.
-    private void checkForIllegalItems(Player p) {
+    public static  void checkForIllegalItems(Player p) {
         for (ItemStack is : p.getInventory().getContents()) {
             if (is == null || is.getType() == Material.AIR)
                 continue;
@@ -86,9 +86,8 @@ public class RestrictionListener implements Listener {
                 if (is.getDurability() == (short) 5 && !is.hasItemMeta()) {
                     p.getInventory().remove(is);
                     Bukkit.getLogger().info("Removed illegal Dragon head from " + p.getName());
+                    continue;
                 }
-
-                continue;
             }
 
             if (!p.isOnline()) return;

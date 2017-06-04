@@ -270,6 +270,7 @@ public abstract class ItemGear extends ItemGeneric {
             ParticleAPI.spawnParticle(Particle.LAVA, p.getLocation().add(0, 2.5, 0), 75, 1F);
             p.sendMessage(ChatColor.RED + "While dealing with magical enchants, your item VANISHED.");
             setDestroyed(true);
+            return;
         }
 
         applyEnchantStats();
