@@ -75,7 +75,7 @@ public class PlayerGameStats implements LoadableData, SaveableData {
         TIME_PLAYED("time_played", "played"),
         LOOT_OPENED("loot_opened", "loot"),
         ORE_MINED("ore_mined", "mined"),
-        FISH_CAUGHT("fish_caught", "fished"),
+        FISH_CAUGHT("fish_caught", "fish"),
 
         LAWFUL_KILLS("lawful_kills"),
         UNLAWFUL_KILLS("unlawful_kills"),
