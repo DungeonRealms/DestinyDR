@@ -99,6 +99,13 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
                     cancel();
                     return;
                 }
+                //cancel summon once in combat.
+                if(CombatLog.isInCombat(player)){
+                    player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
+                    cancel();
+                    return;
+                }
+
                 count++;
                 if (count < max) {
                     player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING" + ChatColor.WHITE + " ... " + (max - count) + ChatColor.BOLD + "s");

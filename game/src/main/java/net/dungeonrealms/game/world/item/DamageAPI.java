@@ -163,10 +163,11 @@ public class DamageAPI {
             for (ElementalAttribute ea : ElementalAttribute.values()) {
                 if (attacker.getAttributes().hasAttribute(ea.getAttack())) {
                     applyDebuff(defender.getEntity(), ea, weaponTier);
-                    double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
-                    int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                    damageBoost = damageBoost * (vitValue * 0.9996);
-                    damage += damageBoost;
+//                    double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+//                    int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+//                    damageBoost = damageBoost * (vitValue * 0.009996);
+//                    damage += damageBoost;
+                    damage += attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
                 }
             }
 
