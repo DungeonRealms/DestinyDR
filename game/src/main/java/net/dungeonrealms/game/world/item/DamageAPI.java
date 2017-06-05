@@ -95,10 +95,14 @@ public class DamageAPI {
 
                 if (type == ItemType.AXE) {
                     critHit += 3;
+                    int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                    damage = damage * (1 + (strValue * 0.0001));
                 } else if (type == ItemType.SWORD) {
-                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.23);
+                    int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                    damage = damage * (1 + (vitValue * 0.0001));
                 } else if (type == ItemType.POLEARM) {
-                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue() * 0.23);
+                    int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
+                    damage = damage * (1 + (strValue * 0.0002));
                 }
             }
         } else {
@@ -159,7 +163,10 @@ public class DamageAPI {
             for (ElementalAttribute ea : ElementalAttribute.values()) {
                 if (attacker.getAttributes().hasAttribute(ea.getAttack())) {
                     applyDebuff(defender.getEntity(), ea, weaponTier);
-                    damage += attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+                    double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+                    int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                    damageBoost = damageBoost * (vitValue * 0.9996);
+                    damage += damageBoost;
                 }
             }
 
