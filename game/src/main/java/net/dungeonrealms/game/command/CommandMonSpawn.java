@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
@@ -25,7 +26,7 @@ public class CommandMonSpawn extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-        if (s instanceof ConsoleCommandSender)
+        if (s instanceof ConsoleCommandSender || (s instanceof Player && !Rank.isGM((Player) s)))
             return false;
         
         if (args.length < 5) {
