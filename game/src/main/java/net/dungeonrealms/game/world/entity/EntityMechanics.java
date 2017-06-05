@@ -13,7 +13,6 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojec
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
@@ -22,8 +21,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.potion.CraftPotionUtil;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
@@ -181,7 +179,7 @@ public class EntityMechanics implements GenericMechanic {
                 MONSTER_LAST_ATTACK.remove(entity);
                 tryToReturnMobToBase(((CraftEntity) entity).getHandle());
                 // Reset goal.
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
+//                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ei.setGoalTarget(null, TargetReason.CUSTOM, true), 220L);
             }
 
             MONSTER_LAST_ATTACK.put(entity, lastAttack - 1);
@@ -189,20 +187,39 @@ public class EntityMechanics implements GenericMechanic {
     }
 
     private void tryToReturnMobToBase(Entity entity) {
-        SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
-                .forEach(mobSpawner -> {
-                    EntityArmorStand eas = (EntityArmorStand) ((CraftEntity) mobSpawner.getArmorStand()).getHandle();
-                    EntityInsentient entityInsentient = (EntityInsentient) entity;
-                    entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
-                    Location l = mobSpawner.getLocation();
-                    PathEntity path = entityInsentient.getNavigation().a(l.getX(), l.getY(), l.getZ());
-                    entityInsentient.getNavigation().a(path, 2);
-                    double distance = mobSpawner.getArmorStand().getLocation().distance(entity.getBukkitEntity().getLocation());
-                    if (distance > 30 && !entity.dead) {
-                        entity.getBukkitEntity().teleport(mobSpawner.getArmorStand().getLocation());
-                        entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
-                    }
-                });
+        MetadataValue val = Metadata.SPAWN_LOCATION.get(entity.getBukkitEntity());
+        if (val == null || val.value() == null) {
+            return;
+        }
+        EntityInsentient entityInsentient = (EntityInsentient) entity;
+        Location spawn = (Location) val.value();
+
+        entityInsentient.setGoalTarget(null);
+        PathEntity path = entityInsentient.getNavigation().a(spawn.getX(), spawn.getY(), spawn.getZ());
+        if (path == null || path.c() == null) {
+            //Cant walk back? Just teleport.
+            entity.getBukkitEntity().teleport(spawn);
+            entityInsentient.setGoalTarget(null);
+        } else {
+            entityInsentient.getNavigation().a(path, 2);
+            entityInsentient.setGoalTarget(null);
+        }
+//            SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
+//                    .forEach(mobSpawner -> {
+//                        Bukkit.getLogger().info("Calling walk back! found in spawner!");
+//                        EntityArmorStand eas = (EntityArmorStand) ((CraftEntity) mobSpawner.getArmorStand()).getHandle();
+//                        EntityInsentient entityInsentient = (EntityInsentient) entity;
+//                        entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+//                        Location l = mobSpawner.getLocation();
+//                        PathEntity path = entityInsentient.getNavigation().a(l.getX(), l.getY(), l.getZ());
+//                        entityInsentient.getNavigation().a(path, 2);
+//                        double distance = mobSpawner.getArmorStand().getLocation().distance(entity.getBukkitEntity().getLocation());
+//                        if ((distance > 30 || path == null) && !entity.dead) {
+//                            Bukkit.getLogger().info("Path null!");
+//                            entity.getBukkitEntity().teleport(mobSpawner.getArmorStand().getLocation());
+//                            entityInsentient.setGoalTarget(eas, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+//                        }
+//                    });
     }
 }
 

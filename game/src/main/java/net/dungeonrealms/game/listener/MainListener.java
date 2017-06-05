@@ -29,6 +29,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -50,14 +51,18 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.minecraft.server.v1_9_R2.EntityArmorStand;
-import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -913,6 +918,27 @@ public class MainListener implements Listener {
                 || GameAPI.isInSafeRegion(event.getTarget().getLocation())
                 || !PlayerWrapper.getWrapper((Player) event.getTarget()).isVulnerable())
             event.setCancelled(true);
+
+        if (event.getEntity() instanceof LivingEntity) {
+            EntityInsentient insent = (EntityInsentient) ((CraftLivingEntity) event.getEntity()).getHandle();
+            PathEntity current = (PathEntity) ReflectionAPI.getObjectFromField("c", NavigationAbstract.class, insent.getNavigation());
+            if (current != null) {
+                PathPoint lastPoint = current.c();
+                if (lastPoint != null) {
+                    int x = lastPoint.a, y = lastPoint.b, z = lastPoint.c;
+
+                    Location l = Metadata.SPAWN_LOCATION.has(event.getEntity()) ? (Location) Metadata.SPAWN_LOCATION.get(event.getEntity()).value() : null;
+
+                    if (l != null && l.getBlockX() == x && l.getBlockY() == y && l.getBlockZ() == z) {
+                        //Its our path home... fuck off.
+                        event.setCancelled(true);
+                        event.setTarget(null);
+                        //reset..
+                        insent.getNavigation().a(current, 2);
+                    }
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

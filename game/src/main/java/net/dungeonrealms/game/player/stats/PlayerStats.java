@@ -103,6 +103,12 @@ public class PlayerStats implements LoadableData, SaveableData {
         return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.0025;
     }
 
+    public double getElementalResist(boolean temp) {
+        return (temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.04;
+    }
+    public double getElementalDamage(boolean temp) {
+        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.05;
+    }
 
     public void lvlUp() {
         int lvl = getLevel() + 1;
@@ -129,6 +135,7 @@ public class PlayerStats implements LoadableData, SaveableData {
                 valid = true;
             }
         }
+        PlayerWrapper.getPlayerWrapper(playerUUID).calculateAllAttributes();
         return valid;
     }
 

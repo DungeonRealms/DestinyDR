@@ -28,7 +28,7 @@ public class CommandMonSpawn extends BaseCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender || (s instanceof Player && !Rank.isGM((Player) s)))
             return false;
-        
+
         if (args.length < 5) {
         	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <eliteName> <display_name>");
         	return true;

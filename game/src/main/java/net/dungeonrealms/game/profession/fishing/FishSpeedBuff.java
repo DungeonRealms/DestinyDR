@@ -20,7 +20,7 @@ public class FishSpeedBuff extends FishBuff {
 
 	@Override
 	public void applyBuff(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, getDuration() * 20, getTier().getTier() >= 4 ? 2 : 1));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, getDuration() * 20, getTier().getTier() >= 4 ? 1 : 0));
 	}
 
 	@Override

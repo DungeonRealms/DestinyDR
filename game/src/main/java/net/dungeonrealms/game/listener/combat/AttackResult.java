@@ -28,6 +28,7 @@ public class AttackResult {
 	private Projectile projectile;
 	
 	private double damage;
+
 	private double totalArmor;
 	private double totalArmorReduction;
 	
@@ -77,8 +78,9 @@ public class AttackResult {
 		String defenderName = Metadata.CUSTOM_NAME.get(receiver).asString();
         
     	Player hologramOwner = getAttacker().isPlayer() ? getAttacker().getPlayer() : (getDefender().isPlayer() ? (Player)receiver : null);
-		
-        if (getResult() != DamageResultType.NORMAL) {
+
+    	//Take into account elementalDamage.
+		if (getResult() != DamageResultType.NORMAL) {
         	if (getAttacker() != null)
         		getAttacker().getEntity().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT " + getResult().getPastTenseName() + "* (" + defenderName + ChatColor.RED + ChatColor.BOLD + ")");
         	
@@ -97,9 +99,10 @@ public class AttackResult {
         
         if (hologramOwner != null)
         	DamageAPI.createDamageHologram(hologramOwner, receiver.getLocation(), getDamage());
+
         HealthHandler.damageEntity(this);
 	}
-	
+
 	public boolean checkChaoticPrevention() {
 		PlayerWrapper receiver = PlayerWrapper.getWrapper(getDefender().getPlayer());
 		PlayerWrapper damager = PlayerWrapper.getWrapper(getAttacker().getPlayer());

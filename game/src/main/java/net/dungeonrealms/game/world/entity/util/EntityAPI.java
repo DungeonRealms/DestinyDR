@@ -108,8 +108,10 @@ public class EntityAPI {
         if (elite != null)
             Metadata.NAMED_ELITE.set(entity, elite);
 
-        if (entity != null)
+        if (entity != null) {
             entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true, Color.AQUA));
+            MetadataUtils.Metadata.SPAWN_LOCATION.set(entity, loc);
+        }
         return entity;
     }
 
@@ -133,6 +135,8 @@ public class EntityAPI {
 
         if (monster.isPassive())
             Metadata.PASSIVE.set(e, true);
+
+        MetadataUtils.Metadata.SPAWN_LOCATION.set(e, loc);
         return e;
     }
 
@@ -415,7 +419,7 @@ public class EntityAPI {
         attributes.addStats(m.getBukkit().getEquipment().getItemInMainHand());
         for (ItemStack armor : armorSet)
             attributes.addStats(armor);
-        attributes.applyStatBonuses();
+        attributes.applyStatBonuses(null);
     }
 
     public static void showHPBar(DRMonster monster) {

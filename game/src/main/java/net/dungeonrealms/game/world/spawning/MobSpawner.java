@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
@@ -301,6 +302,7 @@ public abstract class MobSpawner implements Cloneable {
             Bukkit.getLogger().info("Unable to create entity: " + level + " At: " + spawn);
             return null;
         }
+
         getSpawnedMonsters().add(entity);
         return entity;
     }

@@ -474,10 +474,10 @@ public class DamageListener implements Listener {
         event.setCancelled(true);
 
         for (LivingEntity entity : event.getAffectedEntities()) {
-            if (!GameAPI.isPlayer(entity)) {
+            if (!GameAPI.isPlayer(entity))
                 continue;
-            }
-            HealthHandler.heal((Player) event.getPotion().getShooter(), potion.getHealAmount(), true);
+
+            HealthHandler.heal(entity, potion.getHealAmount(), true);
         }
     }
 

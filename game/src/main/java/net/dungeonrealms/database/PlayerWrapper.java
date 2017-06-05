@@ -50,6 +50,7 @@ import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -1083,7 +1084,7 @@ public class PlayerWrapper {
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
 
         // apply stat bonuses (str, dex, int, and vit)
-        getAttributes().applyStatBonuses();
+        getAttributes().applyStatBonuses(this);
         HealthHandler.updatePlayerHP(getPlayer());
 
         // so energy regen doesn't start before attributes have been loaded
@@ -1494,6 +1495,10 @@ public class PlayerWrapper {
         }
         this.pendingPurchaseablesUnlocked = purchases;
         return true;
+    }
+
+    public String getAttribute(Item.AttributeType type) {
+        return getAttributes().getAttribute(type).toString();
     }
 
     public void updatePurchaseLog(String action, String transaction_id, long date, String uuid) {

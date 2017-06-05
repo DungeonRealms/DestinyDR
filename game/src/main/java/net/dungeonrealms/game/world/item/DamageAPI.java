@@ -103,26 +103,13 @@ public class DamageAPI {
                 } else if (type == ItemType.POLEARM) {
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0002));
+                } else if (type == ItemType.STAFF) {
+                    int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+                    damage = damage * (1 + (intValue * 0.0002));
+                } else if (type == ItemType.BOW) {
+                    int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
+                    damage = damage * (1 + (dexValue * 0.0001));
                 }
-            }
-        } else {
-
-            //  STAT BONUS  //
-            switch (res.getProjectile().getType()) {
-                case ARROW:
-                case TIPPED_ARROW:
-                    damage += (damage / 100D) * (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.15);
-                    break;
-                case SNOWBALL:
-                case SMALL_FIREBALL:
-                case ENDER_PEARL:
-                case FIREBALL:
-                case WITHER_SKULL:
-                case DRAGON_FIREBALL:
-                    damage += (damage / 100) * (attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.2);
-                    break;
-                default:
-                    break;
             }
         }
 
@@ -163,11 +150,20 @@ public class DamageAPI {
             for (ElementalAttribute ea : ElementalAttribute.values()) {
                 if (attacker.getAttributes().hasAttribute(ea.getAttack())) {
                     applyDebuff(defender.getEntity(), ea, weaponTier);
-//                    double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
-//                    int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-//                    damageBoost = damageBoost * (vitValue * 0.009996);
-//                    damage += damageBoost;
-                    damage += attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+                    //Ele Resist for Vit
+                    double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+
+                    int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+
+                    damageBoost = damageBoost * (1 + (attackerIntValue * 0.0005));
+                    int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                    double damageBoostReduction = damageBoost * (defenderVitValue * 0.0004);
+                    damageBoost -= damageBoostReduction;
+
+                    damage += damageBoost;
+
+//                    res.setElementalDamage(damageBoost);
+                    //damage += attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
                 }
             }
 
@@ -216,7 +212,7 @@ public class DamageAPI {
             double critIncrease = 0.0;
             if (attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
-                critIncrease = int_val * 0.0025;
+                critIncrease = int_val * 0.0003;
             }
             damage *= (2 + critIncrease);
 
@@ -306,9 +302,9 @@ public class DamageAPI {
                 continue;
 
             //He has pvp toggled off so dont do damage to players with polearm.
-            if(attacker != null) {
-                if(!attacker.getToggles().getState(Toggles.PVP)) {
-                    if(entity instanceof Player) continue;
+            if (attacker != null) {
+                if (!attacker.getToggles().getState(Toggles.PVP)) {
+                    if (entity instanceof Player) continue;
                 }
             }
 
@@ -492,22 +488,30 @@ public class DamageAPI {
         }
 
         //  ELEMENTAL DAMAGE  //
-        int elementalDamage = 0;
-        int armorResistance = 0;
+        double elementalDamage = 0;
+        double elementalResistance = 0;
 
         if (attacker.isPlayer()) {
             for (ElementalAttribute ea : ElementalAttribute.values()) {
                 //  ADD DAMAGE  //
-                int eDamage = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+                double eDamage = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
                 if (res.hasProjectile()) {
                     if (res.getProjectile().hasMetadata(ea.getAttack().getNBTName()))
                         eDamage = res.getProjectile().getMetadata(ea.getAttack().getNBTName()).get(0).asInt();
                 }
+                //double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
+
+                int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+
+                eDamage = eDamage * (1 + (attackerIntValue * 0.0005));
+                int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                double damageBoostReduction = eDamage * (defenderVitValue * 0.0004);
+                eDamage -= damageBoostReduction;
                 elementalDamage += eDamage;
 
                 //  ADD RESISTANCE  //
                 if (ea.getResist() != null)
-                    armorResistance += defender.getAttributes().getAttribute(ea.getResist()).getValue();
+                    elementalResistance += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
             }
         } else if (EntityAPI.isElemental(attacker.getEntity())) {
             ElementalAttribute ea = EntityAPI.getElement(attacker.getEntity());
@@ -522,11 +526,11 @@ public class DamageAPI {
 
         //  APPLY ELEMENTAL  //
         damage -= elementalDamage;
-        damage *= (100 - totalArmor) / 100D;
+        damage *= (100 - Math.min(75, totalArmor)) / 100D;
 
         // elemental damage ignores 80% but add on resistance
         if (elementalDamage != 0)
-            damage += (0.8 * elementalDamage) * ((double) (100 - armorResistance)) / 100d;
+            damage += (0.8 * elementalDamage) * ((double) (100 - elementalResistance)) / 100d;
 
         //  ARMOR BONUS  //
         if (defender.getEntity().hasMetadata("armorBonus"))

@@ -52,7 +52,8 @@ public class MetadataUtils {
 		MAX_HP(50),
 		HP_REGEN(5),
 		INVULNERABLE(false),
-		
+		SPAWN_LOCATION(null),
+
 		// Players
 		SHARDING(false),
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
