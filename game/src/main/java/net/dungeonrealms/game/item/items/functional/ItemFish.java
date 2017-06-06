@@ -88,7 +88,7 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
 
         boolean shouldCook = !isCooked() && evt.hasBlock();
         if(shouldCook) shouldCook = isCookable(evt.getClickedBlock().getType());
-        if(!shouldCook) {
+        if(!shouldCook && evt.getClickedBlock() != null) {
             Block above = evt.getClickedBlock().getRelative(BlockFace.UP);
             if(above != null) {
                 if(above.getType().equals(Material.FIRE) || above.getType().equals(Material.LAVA) || above.getType().equals(Material.STATIONARY_LAVA)) shouldCook = true;
