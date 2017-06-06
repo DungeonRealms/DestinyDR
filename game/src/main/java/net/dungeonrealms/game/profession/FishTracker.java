@@ -39,11 +39,12 @@ public class FishTracker extends HashMap<Integer, Integer> {
         if (sent <= System.currentTimeMillis()) {
             if (isAutoFisher()) {
                 sent = System.currentTimeMillis() + 20_000;
-                GameAPI.sendWarning(ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.");
+                GameAPI.sendStaffMessage(PlayerRank.HEADGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
+//                GameAPI.sendWarning(ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.");
                 MetadataUtils.Metadata.AUTO_FISHING.set(pl, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else if (isSuspiciousAutoFisher()) {
                 sent = System.currentTimeMillis() + 10_000;
-//                GameAPI.sendStaffMessage(PlayerRank.TRIALGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
+                GameAPI.sendStaffMessage(PlayerRank.HEADGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
                 MetadataUtils.Metadata.AUTO_FISHING.set(pl, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(60));
             }
         }
