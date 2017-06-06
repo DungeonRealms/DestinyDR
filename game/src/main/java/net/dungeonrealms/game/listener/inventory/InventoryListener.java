@@ -631,7 +631,6 @@ public class InventoryListener implements Listener {
                 trade.setDividerColor(DyeColor.RED);
                 clicker.updateInventory();
             }
-            Bukkit.getLogger().info("Modifiing!");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
                     trade.setDividerColor(DyeColor.WHITE);

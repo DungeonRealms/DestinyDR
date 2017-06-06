@@ -30,11 +30,12 @@ public class ItemPlayerJournal extends FunctionalItem implements ItemClickListen
 	
 	public ItemPlayerJournal() {
 		super(ItemType.PLAYER_JOURNAL);
-		setUndroppable(true);
+		setPermUntradeable(true);
 	}
 	
 	public ItemPlayerJournal(ItemStack item) {
 		super(item);
+		setPermUntradeable(true);
 	}
 
 	@Override

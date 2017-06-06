@@ -6,12 +6,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.ItemGem;
-import net.dungeonrealms.game.item.items.functional.ItemGemNote;
-import net.dungeonrealms.game.item.items.functional.ItemGemPouch;
-import net.dungeonrealms.game.item.items.functional.ItemMoney;
+import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.EnumUpgrade;
@@ -21,6 +19,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -204,7 +203,7 @@ public class BankListener implements Listener {
                         return;
                     }
 
-                    if (!canItemBeStored(cursor) && !ItemManager.isItemPermanentlyUntradeable(cursor)) {
+                    if (!canItemBeStored(cursor) && !ItemManager.isItemPermanentlyUntradeable(cursor) || PersistentItem.isType(cursor, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(cursor, ItemType.PORTAL_RUNE)) {
                         player.sendMessage(ChatColor.RED + "You can't store this item.");
                         return;
                     }
@@ -241,7 +240,7 @@ public class BankListener implements Listener {
                 return;
             }
 
-            if (!canItemBeStored(item) && !ItemManager.isItemPermanentlyUntradeable(item)) {
+            if (!canItemBeStored(item) && !ItemManager.isItemPermanentlyUntradeable(item) || PersistentItem.isType(item, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(item, ItemType.PORTAL_RUNE)) {
                 player.sendMessage(ChatColor.RED + "This item cannot be stored.");
                 return;
             }
@@ -304,7 +303,7 @@ public class BankListener implements Listener {
         if (isMoney && !muleStorage)
             handleMoneyDeposit(evt);
 
-        if (!canItemBeStored(attemptAdd) && (muleStorage || !ItemManager.isItemPermanentlyUntradeable(attemptAdd))) {
+        if (!canItemBeStored(attemptAdd) && (muleStorage || !ItemManager.isItemPermanentlyUntradeable(attemptAdd)) || PersistentItem.isType(attemptAdd, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(attemptAdd, ItemType.PORTAL_RUNE)) {
             evt.setCancelled(true);
             evt.setResult(Event.Result.DENY);
             return;

@@ -28,12 +28,13 @@ public class ItemPortalRune extends FunctionalItem implements ItemClickListener 
 	
 	public ItemPortalRune(Player player) {
 		super(ItemType.PORTAL_RUNE);
-		setUndroppable(true);
+		setPermUntradeable(true);
 		this.owner = player;
 	}
 	
 	public ItemPortalRune(ItemStack item) {
 		super(item);
+		setPermUntradeable(true);
 	}
 
 	@Override
