@@ -435,6 +435,16 @@ public class MainListener implements Listener {
             bl.setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
+    @EventHandler
+    public void onPlayerInteractFire(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        Block above = event.getClickedBlock().getLocation().add(0,1,0).getBlock();
+        if(above == null) return;
+        if(above.getType().equals(Material.FIRE)) {
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     public void onPlayerInteractGoldenCurse(PlayerInteractEvent event) {

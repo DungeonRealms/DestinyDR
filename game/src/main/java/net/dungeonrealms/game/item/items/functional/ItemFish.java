@@ -15,6 +15,8 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -84,8 +86,17 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
     public void onClick(ItemClickEvent evt) {
         Player p = evt.getPlayer();
 
+        boolean shouldCook = !isCooked() && evt.hasBlock();
+        if(shouldCook) shouldCook = isCookable(evt.getClickedBlock().getType());
+        if(!shouldCook) {
+            Block above = evt.getClickedBlock().getRelative(BlockFace.UP);
+            if(above != null) {
+                if(above.getType().equals(Material.FIRE) || above.getType().equals(Material.LAVA) || above.getType().equals(Material.STATIONARY_LAVA)) shouldCook = true;
+            }
+        }
+
         //  Cook.
-        if (!isCooked() && evt.hasBlock() && isCookable(evt.getClickedBlock().getType())) {
+        if (shouldCook) {
             if (evt.getClickedBlock().getState() instanceof Furnace) //Activate the furnace. (Cosmetic)
                 ((Furnace) evt.getClickedBlock().getState()).setBurnTime((short) 20);
             p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
@@ -130,7 +141,7 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
     protected String getDisplayName() {
         FishBuff buff = getFishBuff();
         String name = buff != null ? buff.getItemName(getFishType()) + " " : " " + getFishType().getName();
-        return getTier().getColor() + (isCooked() ? "Grilled" : "Raw") + name;
+        return getTier().getColor() + (isCooked() ? "Grilled" : "Raw") + " " + name.trim();
     }
 
     @Override
