@@ -1,16 +1,15 @@
 package net.dungeonrealms.game.item.items.core;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 /**
  * An item that can be put in a menu shop.
@@ -46,10 +45,19 @@ public class ShopItem extends ItemGeneric {
         this.originalLore = getItem().getItemMeta().getLore();
     }
 
+
     public ShopItem(ItemGeneric purchase) {
         this(purchase, (player, item) -> {
             item.getSoldItem().setAntiDupe(true);
-            GameAPI.giveOrDropItem(player, item.getSoldItem().generateItem());
+            ItemGeneric toGive = item.getSoldItem();
+            if (toGive instanceof ProfessionItem) {
+                try {
+                    toGive = toGive.getClass().newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            GameAPI.giveOrDropItem(player, toGive.generateItem());
             return true;
         });
     }
@@ -83,8 +91,8 @@ public class ShopItem extends ItemGeneric {
 
     @Override
     public void updateItem() {
-    	if (this.originalLore != null)
-    		this.originalLore.forEach(this::addLore);
+        if (this.originalLore != null)
+            this.originalLore.forEach(this::addLore);
 
         if (getECashCost() > 0) {
             addLore(ChatColor.WHITE + "" + getECashCost() + ChatColor.GREEN + " E-Cash");
