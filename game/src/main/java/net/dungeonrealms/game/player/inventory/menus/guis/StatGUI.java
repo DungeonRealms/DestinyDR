@@ -58,7 +58,7 @@ public class StatGUI extends GUIMenu {
 
             for(StatBoost boost : stat.getStatBoosts()) {
                 String prefix = ChatColor.stripColor(boost.getType().getPrefix());
-                hookLore.add(ChatColor.GOLD + prefix + ChatColor.AQUA + df.format(stats.getStat(stat) * boost.getMultiplier()) + boost.getType().getSuffix() + " " + (buy ? ChatColor.GREEN + "[+" + df.format(temp * boost.getMultiplier()) + "]" : ""));
+                hookLore.add(ChatColor.GOLD + prefix + ChatColor.AQUA + df.format(stats.getStat(stat) * (boost.getMultiplier() * 100)) + boost.getType().getSuffix() + " " + (buy ? ChatColor.GREEN + "[+" + df.format(temp * (boost.getMultiplier() * 100)) + "]" : ""));
             }
 
             setItem(stat.getGuiSlot() + 9, new GUIItem(Material.TRIPWIRE_HOOK).setName(ChatColor.RED + stat.getDisplayName() + " Bonuses: " + stats.getStat(stat) + (buy ? ChatColor.GREEN + "[+" + temp + "]" : "")).setLore(hookLore));

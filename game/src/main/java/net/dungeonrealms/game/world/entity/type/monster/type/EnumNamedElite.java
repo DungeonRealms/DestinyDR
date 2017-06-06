@@ -30,6 +30,7 @@ public enum EnumNamedElite {
     // TIER 4 //
     BLAYSHAN("Blayshan The Naga", 4, EnumMonster.Naga, CustomEntityType.MELEE_ZOMBIE, -278, 85, -202, 2500, 3),
     DURANOR("Duranor the Cruel", 4, EnumMonster.Imp, CustomEntityType.MELEE_SKELETON, -124, 162, -3167, 1300, 1),
+//    MOUNTAIN_KING("Mountain King", 4, EnumMonster.Skeleton2, CustomEntityType.BOW_SKELETON, -1649, 149, 1388, 1300, 1),
     MOTHER_OF_DOOM("Mother of Doom", 4, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, -191, 144, -3621, 1200, 2),
     
     // TIER 5 //

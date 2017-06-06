@@ -92,7 +92,7 @@ public class PlayerProfileGUI extends GUIMenu {
             lore.add(ChatColor.AQUA + ChatColor.BOLD.toString() + "Stat Bonuses");
             for (StatBoost boost : stat.getStatBoosts()) {
                 String prefix = ChatColor.stripColor(boost.getType().getPrefix());
-                lore.add(" " + ChatColor.GOLD + prefix.replace("+", "") + ChatColor.AQUA + df.format(stats.getStat(stat) * boost.getMultiplier()) + boost.getType().getSuffix() + " " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getTempStat(stat) * boost.getMultiplier()) + "]" : ""));
+                lore.add(" " + ChatColor.GOLD + prefix.replace("+", "") + ChatColor.AQUA + df.format(stats.getStat(stat) * (boost.getMultiplier() * 100)) + boost.getType().getSuffix() + " " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getTempStat(stat) * (boost.getMultiplier() * 100)) + "]" : ""));
             }
 
             int tempStats = stats.getTempStat(stat);
