@@ -1,75 +1,86 @@
 package net.dungeonrealms.game.quests.objectives;
 
+import com.google.gson.JsonObject;
 import net.dungeonrealms.game.quests.QuestNPC;
 import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.gui.GuiBase;
 import net.dungeonrealms.game.quests.gui.GuiStageEditor;
-
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import com.google.gson.JsonObject;
-
 public class ObjectiveNextNPC implements QuestObjective {
-	
-	private QuestStage stage;
-	
-	@Override
-	public GuiBase createEditorGUI(Player player, QuestStage stage) {
-		return new GuiStageEditor(player, stage);
-	}
 
-	@Override
-	public boolean isCompleted(Player player, QuestStage stage, QuestNPC currentNPC) {
-		return currentNPC == stage.getNPC();
-	}
+    private QuestStage stage;
 
-	@Override
-	public String getName() {
-		return "Speak";
-	}
+    @Override
+    public GuiBase createEditorGUI(Player player, QuestStage stage) {
+        return new GuiStageEditor(player, stage);
+    }
 
-	@Override
-	public Material getIcon() {
-		return Material.LEASH;
-	}
+    @Override
+    public boolean isCompleted(Player player, QuestStage stage, QuestNPC currentNPC) {
+        return currentNPC == stage.getNPC();
+    }
 
-	@Override
-	public String[] getDescription() {
-		return new String[] {"Speak to the next NPC."};
-	}
+    @Override
+    public String getName() {
+        return "Speak";
+    }
 
-	@Override
-	public String getTaskDescription(Player player, QuestStage stage) {
-		if(stage == null || stage.getNPC() == null)
-			return "Cannot find next NPC in Quest.";
-		return "Speak to " + stage.getNPC().getName() + " " + Quests.getRegionDirections(stage.getNPC().getLocation());
-	}
+    @Override
+    public Material getIcon() {
+        return Material.LEASH;
+    }
 
-	@Override
-	public JsonObject saveJSON() {
-		return new JsonObject();
-	}
+    @Override
+    public String[] getDescription() {
+        return new String[]{"Speak to the next NPC."};
+    }
 
-	@Override
-	public void loadJSON(JsonObject o) {
-		
-	}
+    @Override
+    public String getTaskDescription(Player player, QuestStage stage) {
+        if (stage == null || stage.getNPC() == null)
+            return "Cannot find next NPC in Quest.";
 
-	@Override
-	public void setQuestStage(QuestStage qs) {
-		this.stage = qs;
-	}
-	
-	public void onStart(Player player){
-		//Does not work? Has to do with something scoreboard related.
-		/*if(this.stage.getNPC() != null)
+        if (stage.getNPC().getLocation() != null)
+            player.setCompassTarget(stage.getNPC().getLocation());
+
+        return "Speak to " + stage.getNPC().getName() + " " + Quests.getRegionDirections(stage.getNPC().getLocation());
+    }
+
+    @Override
+    public JsonObject saveJSON() {
+        return new JsonObject();
+    }
+
+    @Override
+    public void loadJSON(JsonObject o) {
+
+    }
+
+    @Override
+    public void setQuestStage(QuestStage qs) {
+        this.stage = qs;
+    }
+
+    @Override
+    public void onStart(Player player) {
+        //Does not work? Has to do with something scoreboard related.
+        /*if(this.stage.getNPC() != null)
 			this.stage.getNPC().setGlowing(player, ChatColor.GREEN);*/
-	}
-	
-	public void onEnd(Player player){
+//        if (stage.getNPC().getLocation() != null)
+//            player.setCompassTarget(stage.getNPC().getLocation());
+
+        Bukkit.getLogger().info("Setting compass location to " + player.getCompassTarget() + " Previous: " + (stage.getPrevious() != null ? stage.getPrevious().getNPC().getLocation() : null));
+    }
+
+    @Override
+    public void onEnd(Player player) {
 		/*if(this.stage.getNPC() != null && this.stage.getNPC().isLoaded())
 			GlowAPI.setGlowing(this.stage.getNPC().getNPCEntity().getEntity(), false, player);*/
-	}
+		player.setCompassTarget(TeleportLocation.CYRENNICA.getLocation());
+    }
 }

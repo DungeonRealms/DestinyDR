@@ -68,7 +68,10 @@ public abstract class FakeEquipment {
                     int slot = packet.getIntegers().read(0);
                     if (slot != ((CraftPlayer) observingPlayer).getHandle().defaultContainer.windowId)
                         return;
+
                     ItemStack[] items = packet.getItemArrayModifier().read(0);
+
+
                     try {
 //                        String data = MetadataUtils.Metadata.ACTIVE_HAT.get(observingPlayer).asString();
 //                        if (data != null && !data.isEmpty()) {
@@ -90,12 +93,14 @@ public abstract class FakeEquipment {
                     try {
                         int windowId = packet.getIntegers().read(0);
                         int slot = packet.getIntegers().read(1);
+
+
                         Container contain = ((CraftPlayer) observingPlayer).getHandle().defaultContainer;
                         if (contain == null || contain.windowId != windowId)
                             return;
+                        ItemStack helmet = packet.getItemModifier().read(0);
 
                         if (slot == 5) {
-                            ItemStack helmet = packet.getItemModifier().read(0);
                             if (helmet != null && helmet.getType() != Material.AIR) {
                                 CosmeticOverrides currentHat = getActiveOverride(observingPlayer);
                                 if (currentHat != null) {

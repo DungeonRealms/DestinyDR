@@ -85,6 +85,7 @@ public enum ItemType {
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),
 	PORTAL_RUNE("portalRune", ItemPortalRune.class),
+	QUEST_COMPASS("questCompass", ItemQuestCompass.class),
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
 	OPEN_PROFILE("profile", ItemPlayerProfile.class),
 	EXP_LAMP("expLamp", ItemEXPLamp.class);

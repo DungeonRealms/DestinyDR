@@ -37,6 +37,7 @@ public class Quests implements GenericMechanic {
     public HashMap<Player, QuestPlayerData> playerDataMap = new HashMap<Player, QuestPlayerData>();
     private static Quests INSTANCE = new Quests();
 
+    @Override
     public void startInitialization() {
         Bukkit.getPluginManager().registerEvents(new NPCListener(), DungeonRealms.getInstance());
         Bukkit.getPluginManager().registerEvents(new KillObjectiveListener(), DungeonRealms.getInstance());

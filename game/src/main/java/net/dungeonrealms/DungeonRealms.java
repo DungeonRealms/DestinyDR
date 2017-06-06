@@ -41,6 +41,7 @@ import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
+import net.dungeonrealms.game.command.test.CommandTestDot;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
@@ -60,6 +61,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
+import net.dungeonrealms.game.mechanic.dot.DotManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -259,6 +261,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new CraftingMenu());
         MechanicManager.registerMechanic(new PacketLogger());
         MechanicManager.registerMechanic(new OverrideListener());
+        MechanicManager.registerMechanic(new DotManager());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());
@@ -307,6 +310,7 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
+        cm.registerCommand(new CommandTestDot());
         cm.registerCommand(new CommandItemEdit());
         cm.registerCommand(new CommandGraveyard());
         // Commands always registered regardless of server.

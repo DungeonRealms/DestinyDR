@@ -1,6 +1,9 @@
-package net.dungeonrealms.game.mechanic.dot;
+package net.dungeonrealms.game.mechanic.dot.impl;
 
 import net.dungeonrealms.common.game.util.ChatColor;
+import net.dungeonrealms.game.mechanic.dot.DamageOverTime;
+import net.dungeonrealms.game.mechanic.dot.DotManager;
+import net.dungeonrealms.game.mechanic.dot.DotType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

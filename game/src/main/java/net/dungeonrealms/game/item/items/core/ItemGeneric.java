@@ -362,7 +362,6 @@ public abstract class ItemGeneric extends PersistentItem {
         for (int i = 0; i < this.lore.size(); i++) {
             if (this.lore.get(i).startsWith(startsWith)) {
                 this.lore.remove(i);
-                return;
             }
         }
     }
