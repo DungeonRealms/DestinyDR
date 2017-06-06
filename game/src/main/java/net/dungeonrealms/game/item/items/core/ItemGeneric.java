@@ -251,11 +251,10 @@ public abstract class ItemGeneric extends PersistentItem {
 
         if (getPrice() > 0) {
             setTagInt("price", getPrice());
+            removeLore(ChatColor.GREEN + "Price: ");
             if (isShowPrice()) {
                 setTagBool("showPrice", true);
                 addLore(ChatColor.GREEN + "Price: " + ChatColor.WHITE + getPrice() + "g" + ChatColor.GREEN + " each");
-            } else {
-                removeLore(ChatColor.GREEN + "Price: ");
             }
         } else if (hasTag("price")) {
             removeLore(ChatColor.GREEN + "Price: ");
@@ -359,6 +358,7 @@ public abstract class ItemGeneric extends PersistentItem {
     }
 
     protected void removeLore(String startsWith) {
+        if(this.lore == null || this.lore.isEmpty())return;
         for (int i = 0; i < this.lore.size(); i++) {
             if (this.lore.get(i).startsWith(startsWith)) {
                 this.lore.remove(i);

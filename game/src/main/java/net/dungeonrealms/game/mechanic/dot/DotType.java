@@ -10,7 +10,7 @@ import net.dungeonrealms.common.game.util.ChatColor;
 public enum DotType {
 
     FIRE(false, ChatColor.RED.toString(), ChatColor.GOLD + "♨"),
-    HEALING(true, ChatColor.GREEN.toString(), ChatColor.YELLOW + "☕");
+    HEALING(true, ChatColor.DARK_PURPLE.toString(), ChatColor.YELLOW + "☕");
 
     private boolean isHeal;
     private String prefix;

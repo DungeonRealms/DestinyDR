@@ -257,6 +257,7 @@ public class ShopListener implements Listener {
 
                         //  CHANGES THE ITEM PRICE  //
                         VanillaItem i = new VanillaItem(shop.inventory.getItem(event.getRawSlot()));
+//                        i.updateItem();
                         i.setPrice(price);
                         shop.inventory.setItem(event.getRawSlot(), i.generateItem());
                         clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
