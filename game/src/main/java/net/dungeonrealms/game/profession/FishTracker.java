@@ -39,6 +39,7 @@ public class FishTracker extends HashMap<Integer, Integer> {
         if (sent <= System.currentTimeMillis()) {
             if (isAutoFisher()) {
                 sent = System.currentTimeMillis() + 20_000;
+                //Dont send to UNO, this prevents them from fishing anything worth their time. THIS IS NDA TOP SECRET
                 GameAPI.sendStaffMessage(PlayerRank.HEADGM, ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.", true);
 //                GameAPI.sendWarning(ChatColor.RED + pl.getName() + " has thrown " + getFlagsThrown() + " (" + wurstFlags + ") Auto Fishing flags with the delay of " + getLastCatchSpeed() + " ticks, caught " + getFishCaught() + " total fish.");
                 MetadataUtils.Metadata.AUTO_FISHING.set(pl, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));

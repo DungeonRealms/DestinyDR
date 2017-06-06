@@ -1,5 +1,6 @@
 package net.dungeonrealms.database.punishment;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.common.game.database.sql.QueryType;
@@ -30,14 +31,13 @@ public class PunishAPI {
     public static void ban(UUID uuid, String playerName, int punisherID, long duration, String reason, Consumer<UUID> doBefore) {
         if (uuid == null) return;
 
+        SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Updated " + uuid.toString() + "'s Ban to the database.."), QueryType.INSERT_BAN.getQuery(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid), "ban", System.currentTimeMillis(), duration != 0 ? System.currentTimeMillis() + duration * 1000 : duration, punisherID, reason.isEmpty() ? "N/A" : reason, 0));
+
         // KICK PLAYER //
         if (duration == 0)
             kick(playerName, ChatColor.RED + "You have been permanently banned from DungeonRealms." + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
         else
             kick(playerName, ChatColor.RED + "You are banned until " + timeString((int) (duration / 60)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
-
-
-        SQLDatabaseAPI.getInstance().executeUpdate(updates -> Bukkit.getLogger().info("Updated " + uuid.toString() + "'s Ban to the database.."), QueryType.INSERT_BAN.getQuery(SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid), "ban", System.currentTimeMillis(), duration != 0 ? System.currentTimeMillis() + duration * 1000 : duration, punisherID, reason.isEmpty() ? "N/A" : reason, 0));
 
         PlayerWrapper.getPlayerWrapper(uuid, false, true, wrapper -> {
             //Update if online for some reason?
@@ -126,7 +126,7 @@ public class PunishAPI {
             //Kick from bungee..
             Player local = Bukkit.getPlayer(playerName);
             if(local != null) {
-                local.kickPlayer("kickMessage");
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> local.kickPlayer("kickMessage"));
             }
             BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", playerName, kickMessage);
         });
