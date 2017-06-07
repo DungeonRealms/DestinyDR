@@ -326,7 +326,7 @@ public class Item {
     public enum AttributeBank {
         WEAPON(WeaponAttributeType.values(), 0.2, new double[]{0.07, 0.7, 1, 3.35, 4.48}),
         ARMOR(ArmorAttributeType.values(), 0.24, new double[]{1, 1.25, 1.5, 3.25, 4.75}),
-        SHIELD(new AttributeType[]{ArmorAttributeType.BLOCK, ArmorAttributeType.DODGE, ArmorAttributeType.REFLECTION, ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE, ArmorAttributeType.HEALTH_POINTS, ArmorAttributeType.ITEM_FIND, ArmorAttributeType.GEM_FIND}, 0.24, new double[]{1, 1.25, 1.5, 3.25, 4.75}),
+        SHIELD(new AttributeType[]{ArmorAttributeType.MELEE_ABSORBTION, ArmorAttributeType.MAGE_ABSORBTION, ArmorAttributeType.RANGE_ABSORBTION,ArmorAttributeType.BLOCK, ArmorAttributeType.DODGE, ArmorAttributeType.REFLECTION, ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE, ArmorAttributeType.HEALTH_POINTS, ArmorAttributeType.ITEM_FIND, ArmorAttributeType.GEM_FIND}, 0.24, new double[]{1, 1.25, 1.5, 3.25, 4.75}),
         FISHING_ROD(FishingAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3}),
         PICKAXE(PickaxeAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3});
 
@@ -606,7 +606,10 @@ public class Item {
         ICE_RESISTANCE("ICE RESISTANCE: ", "%", "iceResistance", "", "Ice Resist", 6),
         POISON_RESISTANCE("POISON RESISTANCE: ", "%", "poisonResistance", "Poison Resist", "", 7),
         GEM_FIND("GEM FIND: ", "%", "gemFind", "", "Golden", "Pickpocketing", 8),
-        ITEM_FIND("ITEM FIND: +", "%", "itemFind", "", "Treasure", 9);
+        ITEM_FIND("ITEM FIND: +", "%", "itemFind", "", "Treasure", 9),
+        MELEE_ABSORBTION("MELEE ABSORB: +","%","meleeAbsorb",100,true,"","Melee Absorption","",11),
+        MAGE_ABSORBTION("MAGIC ABSORB: +","%","mageAbsorb",100,true,"","Magic Absorption","",11),
+        RANGE_ABSORBTION("RANGE ABSORB: +","%","rangeAbsorb",100,true,"","Range Absorption","",11);
 
         @Getter
         private String prefix;

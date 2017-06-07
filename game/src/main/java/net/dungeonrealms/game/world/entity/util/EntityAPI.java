@@ -30,6 +30,7 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -104,9 +105,19 @@ public class EntityAPI {
                 GameAPI.setItem(entity, e, i);
             }
         }
+
+
         Metadata.ELITE.set(entity, true);
         if (elite != null)
             Metadata.NAMED_ELITE.set(entity, elite);
+
+
+        if (entity != null && ((CraftLivingEntity) entity).getHandle() instanceof DRMonster) {
+            DRMonster eli = (DRMonster) ((CraftLivingEntity) entity).getHandle();
+            calculateAttributes(eli);
+            HealthHandler.calculateHP(entity);
+            HealthHandler.setHP(entity, HealthHandler.getMaxHP(entity));
+        }
 
         if (entity != null) {
             entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true, Color.AQUA));

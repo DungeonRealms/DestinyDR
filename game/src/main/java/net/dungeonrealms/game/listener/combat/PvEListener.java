@@ -16,6 +16,8 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
+import net.dungeonrealms.game.mechanic.rifts.Rift;
+import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
@@ -105,7 +107,7 @@ public class PvEListener implements Listener {
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         AttackResult res = null;
-        if(ProfessionItem.isProfessionItem(held)){
+        if (ProfessionItem.isProfessionItem(held)) {
             event.setCancelled(true);
             event.setDamage(0.0);
         }
@@ -146,7 +148,7 @@ public class PvEListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
         LivingEntity monster = event.getEntity();
-        if (!EnumEntityType.HOSTILE_MOB.isType(monster)) 
+        if (!EnumEntityType.HOSTILE_MOB.isType(monster))
             return;
 
         Player killer = monster.getKiller();
@@ -170,6 +172,12 @@ public class PvEListener implements Listener {
         EntityAPI.getEntityAttributes().remove(drMonster);
         drMonster.onMonsterDeath(highestDamage);
 
+        Rift active = RiftMechanics.getInstance().getActiveRift();
+        //Handle rift mob deaths?
+        if (active != null) {
+            if (active.getSpawnedEntities().contains(event.getEntity()))
+                active.onRiftMinionDeath(event.getEntity(), event);
+        }
         //Handle Quest Kill Objective
         //This has to be declared a second time as final to be used in .forEach
         final Player questReward = highestDamage;
@@ -178,9 +186,11 @@ public class PvEListener implements Listener {
                     .forEach(stage -> ((ObjectiveKill) stage.getObjective()).handleKill(questReward, event.getEntity(), drMonster));
 
         if (EntityAPI.isBoss(monster))
-        	return; // We don't need to run the code past here for bosses.
-        
+            return; // We don't need to run the code past here for bosses.
+
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
+        int eliteBonusXP = (int)(exp * 0.3);
+        if(EntityAPI.isElite(monster)) exp += eliteBonusXP;
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(highestDamage);
@@ -193,6 +203,8 @@ public class PvEListener implements Listener {
                 killer.sendMessage(ChatColor.GRAY + "They have been awarded the XP.");
             }
         }
+
+        boolean added = false;
         if (Affair.isInParty(highestDamage)) {
             List<Player> nearbyPlayers = GameAPI.getNearbyPlayers(highestDamage.getLocation(), 10);
             List<Player> nearbyPartyMembers = new ArrayList<>();
@@ -206,18 +218,24 @@ public class PvEListener implements Listener {
                     //  ADD BOOST  //
                     if (nearbyPartyMembers.size() > 2 && nearbyPartyMembers.size() <= 8)
                         exp *= 1.1 + (((double) nearbyPartyMembers.size() - 2) / 10);
+
                     //  DISTRIBUTE EVENLY  //
                     exp /= nearbyPartyMembers.size();
                     for (Player player : nearbyPartyMembers)
                         PlayerWrapper.getWrapper(player).addExperience(exp, true, true, true);
-                } else {
-                    wrapper.addExperience(exp, false, true, true);
+                    added = true;
                 }
-            } else {
-                wrapper.addExperience(exp, false, true, true);
             }
-        } else {
+        }
+
+        if (!added) {
             wrapper.addExperience(exp, false, true, true);
+            if (EntityAPI.isElite(monster))
+                killer.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
+                        .toString() + ChatColor.BOLD + "ELITE BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                        + "+" + ChatColor.YELLOW + Math.round(eliteBonusXP) + ChatColor.BOLD + " EXP " +
+                        ChatColor.GRAY + "[" + Math.round(eliteBonusXP) + ChatColor.BOLD + "/" +
+                        ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
         }
 
         StatColumn[] tierStats = new StatColumn[]{StatColumn.T1_MOB_KILLS, StatColumn.T2_MOB_KILLS, StatColumn.T3_MOB_KILLS, StatColumn.T4_MOB_KILLS, StatColumn.T5_MOB_KILLS};

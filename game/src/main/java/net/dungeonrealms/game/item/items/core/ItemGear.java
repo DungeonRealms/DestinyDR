@@ -391,8 +391,9 @@ public abstract class ItemGear extends ItemGeneric {
             if (im.canApply(getItemType())) {
                 ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 
-                if (mc != null)
+                if (mc != null) {
                     attemptAddModifier(conditionMap, mc, im, rand, isReroll);
+                }
             }
         }
 

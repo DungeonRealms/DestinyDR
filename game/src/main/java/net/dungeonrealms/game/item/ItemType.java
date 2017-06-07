@@ -89,7 +89,8 @@ public enum ItemType {
 	QUEST_COMPASS("questCompass", ItemQuestCompass.class),
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
 	OPEN_PROFILE("profile", ItemPlayerProfile.class),
-	EXP_LAMP("expLamp", ItemEXPLamp.class);
+	EXP_LAMP("expLamp", ItemEXPLamp.class),
+	RIFT_FRAGMENT("riftFragment", ItemRiftFragment.class);
 	
 	private final String NBT;
 	private final Class<? extends PersistentItem> itemClass;

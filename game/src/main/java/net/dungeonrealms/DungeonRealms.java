@@ -43,6 +43,7 @@ import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.CommandTestDot;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
+import net.dungeonrealms.game.command.test.CommandTestRift;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.handler.*;
@@ -64,6 +65,7 @@ import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.dot.DotManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
+import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
 import net.dungeonrealms.game.player.inventory.ShopMenuListener;
@@ -262,6 +264,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new PacketLogger());
         MechanicManager.registerMechanic(new OverrideListener());
         MechanicManager.registerMechanic(new DotManager());
+        MechanicManager.registerMechanic(RiftMechanics.getInstance());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());
@@ -311,6 +314,7 @@ public class DungeonRealms extends JavaPlugin {
         CommandManager cm = new CommandManager();
 
         cm.registerCommand(new CommandTestDot());
+        cm.registerCommand(new CommandTestRift());
         cm.registerCommand(new CommandItemEdit());
         cm.registerCommand(new CommandGraveyard());
         // Commands always registered regardless of server.
@@ -394,6 +398,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandOreEdit());
         cm.registerCommand(new CommandLootChest());
         cm.registerCommand(new CommandHats());
+        cm.registerCommand(new CommandRifts());
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));

@@ -47,7 +47,8 @@ public class MetadataUtils {
 		ENTITY_TYPE(EnumEntityType.class),
 		ELEMENT(ElementalAttribute.class),
 		PASSIVE(false),
-		
+		RIFT_MOB(false),
+
 		CURRENT_HP(50),
 		MAX_HP(50),
 		HP_REGEN(5),

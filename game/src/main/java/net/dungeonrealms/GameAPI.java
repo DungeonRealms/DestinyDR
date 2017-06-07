@@ -294,6 +294,7 @@ public class GameAPI {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         int level = wrapper.getLevel();
         int mob_level = EntityAPI.getLevel(kill);
+        //boolean isElite = EntityAPI.isElite(kill);
         int xp;
         double amplifier = 1.0;
         if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level

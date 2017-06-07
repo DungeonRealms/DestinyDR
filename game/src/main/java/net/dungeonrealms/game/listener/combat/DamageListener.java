@@ -662,7 +662,7 @@ public class DamageListener implements Listener {
                 return;
             }
             //Dont even despawn the boss.. or elites
-            if (EntityAPI.isElite(e))
+            if (EntityAPI.isElite(e) || Metadata.RIFT_MOB.has(e))
                 return;
 
             if (MountUtils.isMount(e) && e instanceof Horse) {

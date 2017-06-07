@@ -376,6 +376,17 @@ public class InventoryListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void offHandClick(InventoryClickEvent event) {
+	    if(event.getClickedInventory() == null || event.getClickedInventory().getType() == null) return;
+	    if(event.getClickedInventory().getType() != InventoryType.PLAYER) return;
+	    if(!(event.getWhoClicked() instanceof Player)) return;
+	    if(event.getSlot() != 40) return;
+	    ItemStack newArmor = event.getCursor();
+	    ItemStack oldArmor = event.getInventory().getItem(event.getSlot());
+	    handleArmorDifferences(oldArmor,newArmor,(Player)event.getWhoClicked());
+    }
+
     //Armor
 
     /**
@@ -457,7 +468,7 @@ public class InventoryListener implements Listener {
     			ModifierRange armorVal = armorChanges.getAttribute(t);
     			ModifierRange newVal = wp.getAttributes().getAttribute(t);
     			
-    			p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED + "")
+    			p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED.toString())
     					+ armorVal.getValue() + t.getSuffix()
     					+ " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
     					+ newVal.getValue() + t.getSuffix() + "]");

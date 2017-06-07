@@ -152,12 +152,15 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onHandSwap(PlayerSwapHandItemsEvent event) {
+        System.out.println("Hello hand swap!");
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
-        if(event.getMainHandItem() != null || event.getOffHandItem() != null) wrapper.calculateAllAttributes();
+        if (event.getMainHandItem() != null || event.getOffHandItem() != null) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> wrapper.calculateAllAttributes(), 2);
+            System.out.println("Hello hand swap! 2");
+        }
     }
-
 
 
     /**
@@ -443,13 +446,14 @@ public class MainListener implements Listener {
             bl.setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
+
     @EventHandler
     public void onPlayerInteractFire(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null) return;
-        Block above = event.getClickedBlock().getLocation().add(0,1,0).getBlock();
-        if(above == null) return;
-        if(above.getType().equals(Material.FIRE)) {
+        Block above = event.getClickedBlock().getLocation().add(0, 1, 0).getBlock();
+        if (above == null) return;
+        if (above.getType().equals(Material.FIRE)) {
             event.setCancelled(true);
         }
     }
@@ -842,7 +846,9 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUnload(ChunkUnloadEvent event) {
         if (!DungeonManager.isDungeon(event.getWorld()))
-            removeEntities(event.getChunk());
+            if (removeEntities(event.getChunk())) {
+                event.setCancelled(true);
+            }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -853,11 +859,24 @@ public class MainListener implements Listener {
     /**
      * Removes entites on chunk load / unload
      */
-    private void removeEntities(Chunk chunk) {
+    private boolean removeEntities(Chunk chunk) {
         boolean mainWorld = GameAPI.isMainWorld(chunk.getWorld());
-        Arrays.stream(chunk.getEntities())
-                .filter(e -> !(e instanceof Player || e instanceof Hanging || (mainWorld && e instanceof Item)))
-                .forEach(Entity::remove);
+
+        boolean hadRiftMob = false;
+        for (Entity ent : chunk.getEntities()) {
+            if (!(ent instanceof Player || ent instanceof Hanging || (mainWorld && ent instanceof Item))) {
+                if (Metadata.RIFT_MOB.has(ent)) {
+                    hadRiftMob = true;
+                    continue;
+                }
+                ent.remove();
+            }
+        }
+//        Arrays.stream(chunk.getEntities())
+//                .filter(e -> !(e instanceof Player || e instanceof Hanging || (mainWorld && e instanceof Item) || Metadata.RIFT_MOB.has(e)))
+//                .forEach(Entity::remove);
+
+        return hadRiftMob;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

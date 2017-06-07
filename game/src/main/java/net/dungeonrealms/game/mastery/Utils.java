@@ -64,8 +64,8 @@ public class Utils {
     }
 
     public static void addChatColor(List<String> toAdd, ChatColor color) {
-        for(int i = 0; i < toAdd.size(); i++) {
-            toAdd.set(i,color + toAdd.get(i));
+        for (int i = 0; i < toAdd.size(); i++) {
+            toAdd.set(i, color + toAdd.get(i));
         }
     }
 
@@ -142,18 +142,18 @@ public class Utils {
     public static String format(int number) {
         return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
-    
+
     public static boolean randChance(int chance) {
-    	return randInt(chance) == 0;
+        return randInt(chance) == 0;
     }
-    
+
     public static int randInt(int max) {
-    	return randInt(0, max - 1);
+        return randInt(0, max - 1);
     }
 
     public static int randInt(int min, int max) {
         int bound = max - min + 1;
-        if(bound <= 0)return 0;
+        if (bound <= 0) return 0;
         return ThreadLocalRandom.current().nextInt(bound) + min;
     }
 
@@ -364,5 +364,10 @@ public class Utils {
             return meta.getDisplayName();
 
         return capitalizeWords(item.getType().name().toLowerCase().replaceAll("_", " "));
+    }
+
+    public static Location getRandomLocationNearby(Location loc, int radius) {
+        Random r = ThreadLocalRandom.current();
+        return loc.clone().add((r.nextBoolean() ? -1 : 1) * (r.nextInt(radius) + 1), 0, (r.nextBoolean() ? -1 : 1) * (r.nextInt(radius) + 1));
     }
 }

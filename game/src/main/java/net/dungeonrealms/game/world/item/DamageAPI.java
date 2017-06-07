@@ -104,13 +104,16 @@ public class DamageAPI {
                 } else if (type == ItemType.POLEARM) {
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0002));
-                } else if (type == ItemType.STAFF) {
-                    int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
-                    damage = damage * (1 + (intValue * 0.0002));
-                } else if (type == ItemType.BOW) {
-                    int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
-                    damage = damage * (1 + (dexValue * 0.0001));
                 }
+            }
+        } else if(attacker.isPlayer()) {
+            ItemType type = weapon.getItemType();
+             if (type == ItemType.STAFF) {
+                int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+                damage = damage * (1 + (intValue * 0.0002));
+            } else if (type == ItemType.BOW) {
+                int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
+                damage = damage * (1 + (dexValue * 0.0001));
             }
         }
 
@@ -221,6 +224,27 @@ public class DamageAPI {
         //  DAMAGE CAP  //
         if (!attacker.isPlayer())
             damage = Math.min(damage, weaponTier * 600);
+
+        //Armor Reduction.
+        ItemType type = weapon.getItemType();
+        boolean isBlocking = attacker.isPlayer() && attacker.getPlayer().isBlocking();
+        if(type.equals(ItemType.AXE) || type.equals(ItemType.SWORD) || type.equals(ItemType.POLEARM)) {
+            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
+            if(!isBlocking) reductionPercent /= 2;
+            double damageReduction = reductionPercent / 100;
+            damage = damage * (1 - damageReduction);
+        } else if(type.equals(ItemType.BOW)) {
+            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
+            if(!isBlocking) reductionPercent /= 2;
+            double damageReduction = reductionPercent / 100;
+            damage = damage * (1 - damageReduction);
+        } else if(type.equals(ItemType.STAFF)) {
+            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
+            if(!isBlocking) reductionPercent /= 2;
+            double damageReduction = reductionPercent / 100;
+            damage = damage * (1 - damageReduction);
+        }
+
 
         res.setDamage(damage);
         return;

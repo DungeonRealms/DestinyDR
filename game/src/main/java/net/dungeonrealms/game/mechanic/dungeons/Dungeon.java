@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class Dungeon {
 
+    @Setter
     private DungeonType type;
     private int time;
     private int killCount;
@@ -57,7 +58,6 @@ public abstract class Dungeon {
     private List<BossType> spawnedBosses = new ArrayList<>();
     private World world;
     private boolean taunted;
-    @Getter
     @Setter
     private int maxMobCount;
     private DungeonBoss boss;

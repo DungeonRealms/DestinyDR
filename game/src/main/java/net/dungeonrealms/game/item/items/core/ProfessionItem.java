@@ -79,7 +79,7 @@ public abstract class ProfessionItem extends ItemGear {
             setXP(0);
             setDestroyed(false);//TEST
             this.durability = MAX_DURABILITY;
-            player.getInventory().addItem(generateItem());
+            updateItem(player);
         }
     }
 
