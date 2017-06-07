@@ -31,7 +31,8 @@ public enum ItemType {
 	CHESTPLATE("chestplate", ItemArmorChestplate.class, GeneratedItemType.CHESTPLATE),
 	LEGGINGS("leggings", ItemArmorLeggings.class, GeneratedItemType.LEGGINGS),
 	BOOTS("boots", ItemArmorBoots.class, GeneratedItemType.BOOTS),
-	
+	SHIELD("shield", ItemArmorShield.class, GeneratedItemType.SHIELD),
+
 	//  PROFESSION TOOLS  //
 	PICKAXE("pick", ItemPickaxe.class, GeneratedItemType.PICKAXE),
 	FISHING_POLE("rod", ItemFishingPole.class, GeneratedItemType.FISHING_ROD),

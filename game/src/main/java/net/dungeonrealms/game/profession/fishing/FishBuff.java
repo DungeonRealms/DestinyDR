@@ -139,7 +139,7 @@ public abstract class FishBuff {
         pw.getAttributes().addStats(add);
 
         player.setMetadata(meta, new FixedMetadataValue(DungeonRealms.getInstance(), true));
-        player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + getValue() + ChatColor.BOLD
+        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "      " + ChatColor.GREEN + getValue() + ChatColor.BOLD
                 + getBuffSuffix() + ChatColor.GREEN + " FROM FISH " + ChatColor.GRAY + " [" + getDuration() + "s]");
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {

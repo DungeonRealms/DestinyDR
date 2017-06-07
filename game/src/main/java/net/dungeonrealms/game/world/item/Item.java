@@ -39,6 +39,8 @@ public class Item {
         LEGGINGS(AttributeBank.ARMOR, new Material[]{Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.GOLD_LEGGINGS}, new String[]{"Leather Leggings", "Chainmail Leggings", "Platemail Leggings", "Magic Platemail Leggings", "Legendary Platemail Leggings"}, 2),
         BOOTS(AttributeBank.ARMOR, new Material[]{Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS, Material.GOLD_BOOTS}, new String[]{"Leather Boots", "Chainmail Boots", "Platemail Boots", "Magic Platemail Boots", "Legendary Platemail Boots"}, 1),
 
+        SHIELD(AttributeBank.SHIELD, Material.SHIELD, new String[]{"Broken Buckler", "Rusty Buckler", "Magic Buckler", "Ancient Buckler", "Legendary Buckler"}, 3),
+
         // PROFESSION
         PICKAXE(AttributeBank.PICKAXE, new Material[]{Material.WOOD_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.GOLD_PICKAXE}, new String[]{"", "", "", "", ""}, 0),
         FISHING_ROD(AttributeBank.FISHING_ROD, Material.FISHING_ROD, new String[]{"", "", "", "", ""}, 0);
@@ -324,6 +326,7 @@ public class Item {
     public enum AttributeBank {
         WEAPON(WeaponAttributeType.values(), 0.2, new double[]{0.07, 0.7, 1, 3.35, 4.48}),
         ARMOR(ArmorAttributeType.values(), 0.24, new double[]{1, 1.25, 1.5, 3.25, 4.75}),
+        SHIELD(new AttributeType[]{ArmorAttributeType.BLOCK, ArmorAttributeType.DODGE, ArmorAttributeType.REFLECTION, ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE, ArmorAttributeType.HEALTH_POINTS, ArmorAttributeType.ITEM_FIND, ArmorAttributeType.GEM_FIND}, 0.24, new double[]{1, 1.25, 1.5, 3.25, 4.75}),
         FISHING_ROD(FishingAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3}),
         PICKAXE(PickaxeAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3});
 

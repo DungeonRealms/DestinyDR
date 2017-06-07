@@ -152,6 +152,14 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onHandSwap(PlayerSwapHandItemsEvent event) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
+        if(event.getMainHandItem() != null || event.getOffHandItem() != null) wrapper.calculateAllAttributes();
+    }
+
+
+
     /**
      * Monitors and checks the players language.
      */

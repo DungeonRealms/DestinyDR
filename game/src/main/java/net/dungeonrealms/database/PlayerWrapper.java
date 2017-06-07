@@ -32,6 +32,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
@@ -1077,6 +1078,11 @@ public class PlayerWrapper {
 
         for (ItemStack armor : getPlayer().getInventory().getArmorContents())
             getAttributes().addStats(armor);
+
+        ItemStack offHand = getPlayer().getInventory().getItemInOffHand();
+        if(offHand != null && offHand.getType() != Material.AIR && ItemArmorShield.isShield(offHand)) {
+            getAttributes().addStats(offHand);
+        }
 
         this.currentWeapon = AntiDuplication.getUniqueEpochIdentifier(hand);
 

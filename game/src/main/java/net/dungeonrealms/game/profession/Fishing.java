@@ -205,7 +205,7 @@ public class Fishing implements GenericMechanic, Listener {
     public enum FishBuffType {
         DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
         HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
-        REGEN(FishRegenBuff.class, "+", "% HP", "Healing", "Regeneration", 0),
+        REGEN(FishRegenBuff.class, "+", " HP", "Healing", "Regeneration", 0),
         SPEED(FishSpeedBuff.class, "SPEED ", " BUFF", "", "Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
@@ -536,6 +536,10 @@ public class Fishing implements GenericMechanic, Listener {
             if (tracker != null) {
                 tracker.trackWurstTrap(pl, System.currentTimeMillis());
             }
+        }else if(e.getState() == State.CAUGHT_ENTITY){
+            e.setCancelled(true);
+            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK, 1, .97F);
+            Bukkit.getLogger().info("Cancelling entity catch for " + e.getPlayer().getName());
         }
     }
 

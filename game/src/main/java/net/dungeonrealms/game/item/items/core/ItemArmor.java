@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemArmor extends CombatItem {
 
     public final static ItemType[] ARMOR = new ItemType[]{ItemType.BOOTS, ItemType.LEGGINGS, ItemType.CHESTPLATE, ItemType.HELMET};
+    public final static ItemType[] ARMOR_SHIELD = new ItemType[]{ItemType.BOOTS, ItemType.LEGGINGS, ItemType.CHESTPLATE, ItemType.HELMET, ItemType.SHIELD};
 
     public ItemArmor() {
         this(ARMOR);
@@ -32,12 +33,12 @@ public class ItemArmor extends CombatItem {
     /**
      * Generates an entire armor set with the parameters of this item.
      */
-    public ItemStack[] generateArmorSet() {
+    public ItemStack[] generateArmorSet(boolean withShield) {
         int desiredMin = Math.max(getMinRarityItems(), 1);
         Item.ItemRarity mRare = getMaxRarity();
         int genned = 0;
-        ItemStack[] ret = new ItemStack[ARMOR.length];
-        for (int i = 0; i < ARMOR.length; i++) {
+        ItemStack[] ret = new ItemStack[withShield ? ARMOR_SHIELD.length : ARMOR.length];
+        for (int i = 0; i < (withShield ? ARMOR_SHIELD.length : ARMOR.length); i++) {
             ItemArmor armor = (ItemArmor) new ItemArmor(ARMOR[i]).setTier(getTier()).setGlowing(isGlowing());
             boolean needToForce = mRare != null && genned < desiredMin;
             //If we are forcing a min amount of items, make the items that arent forced random rarities.
@@ -46,6 +47,10 @@ public class ItemArmor extends CombatItem {
             ret[i] = armor.generateItem();
         }
         return ret;
+    }
+
+    public ItemStack[] generateArmorSet() {
+        return generateArmorSet(false);
     }
 
     @Override
@@ -77,6 +82,6 @@ public class ItemArmor extends CombatItem {
 
     public static boolean isArmor(ItemStack item) {
         return ItemArmorHelmet.isHelmet(item) || ItemArmorChestplate.isChestplate(item)
-                || ItemArmorLeggings.isLeggings(item) || ItemArmorBoots.isBoots(item);
+                || ItemArmorLeggings.isLeggings(item) || ItemArmorBoots.isBoots(item) || ItemArmorShield.isShield(item);
     }
 }

@@ -60,6 +60,12 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
 
+    @Override
+    public void o() {
+        super.o();
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
+    }
+
     double maxMove = 4;
     double currentMove = 0;
 

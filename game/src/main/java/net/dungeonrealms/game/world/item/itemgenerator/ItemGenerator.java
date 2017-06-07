@@ -251,5 +251,6 @@ public class ItemGenerator {
         am.new StrDexVitInt();
         am.new StrDexVitInt();
         am.new Thorns();
+        am.new ShieldHP();
     }
 }
