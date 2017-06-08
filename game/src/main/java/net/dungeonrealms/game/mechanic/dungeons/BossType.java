@@ -46,10 +46,16 @@ public enum BossType {
 			"I have nothing to say to you foolish mortals, except for this: Burn.",
 			"You...have... defeated me...ARGHHHH!!!!!",
 	   		-54, 158, 646,
-    		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
+    		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F),
+
+	RiftEliteBoss("Rift Jumper Mega Hulk", CustomEntityType.RIFT_ELITE, "evil fire demon known as",
+			"I have nothing to say to you foolish mortals, except for this: Burn.",
+			"You...have... defeated me...ARGHHHH!!!!!",
+			-1, 1, 1,
+			Sound.BLOCK_PORTAL_TRAVEL, 1F, 1F);
 	
 	
-	
+
 	/*Aceron("aceron", "Aceron The Wicked", "", "", "", true), //Dark depths of aceron.
 	
 	Albranir("albranir", "Albranir", "",

@@ -81,6 +81,7 @@ public enum EnumMonster {
 	Lizardman(l(CustomEntityType.MELEE_ZOMBIE), "Lizardman", ItemType.POLEARM, SkullTextures.LIZARD, new String[] {"Giant", "Tough"}, 10, ElementalAttribute.FIRE),
 
     Wolf(l(CustomEntityType.DR_WOLF), "Fierce Wolf", null, 10, ElementalAttribute.ICE),
+    Giant(l(CustomEntityType.DR_GIANT), "Undead Giant", null, 10, ElementalAttribute.PURE),
     Undead(l(CustomEntityType.MELEE_ZOMBIE), "Undead", ItemType.SWORD, SkullTextures.UNDEAD),
     
     Witch(l(CustomEntityType.DR_WITCH), "Old Hag", null, 100, ElementalAttribute.POISON), // witches do poison damage 100% of the time
@@ -95,6 +96,8 @@ public enum EnumMonster {
     InfernalLordsGuard(l(CustomEntityType.INFERNAL_GUARD), "Infernal Lords Guard", null, 30, ElementalAttribute.FIRE),
     FireLord(l(CustomEntityType.FIRE_LORD), "Fire Lord of the Abyss", null, 30, ElementalAttribute.FIRE),
     IceLord(l(CustomEntityType.ICE_LORD), "Ice Lord of the Abyss", null, 70, ElementalAttribute.ICE),
+
+    RiftElite(l(CustomEntityType.RIFT_ELITE), "Jumper of Rifts", null, 50, ElementalAttribute.PURE),
 
 
     // Vanilla NonHostiles
@@ -235,6 +238,7 @@ public enum EnumMonster {
         CUSTOM_PET(CustomPet.class, EntityType.SILVERFISH),
 
         //  BASE  //
+        DR_GIANT(DRSpider.class, EntityType.GIANT),
         DR_SPIDER(DRSpider.class, EntityType.CAVE_SPIDER),
         DR_WITHER(DRWitherSkeleton.class, EntityType.SKELETON),
         DR_BLAZE(DRBlaze.class, EntityType.BLAZE),
@@ -262,6 +266,7 @@ public enum EnumMonster {
         MAYEL(Mayel.class, EntityType.SKELETON),
         BURICK(Burick.class, EntityType.SKELETON),
         INFERNAL(InfernalAbyss.class, EntityType.SKELETON),
+        RIFT_ELITE(RiftEliteBoss.class, EntityType.GIANT),
         // MOUNTS //
         HORSE(HorseMount.class, EntityType.HORSE);
 

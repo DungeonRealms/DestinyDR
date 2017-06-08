@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
@@ -15,9 +17,17 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.ItemClickListener {
 
     private Item.ItemTier fragmentTier;
+
+    private static final int ANIMATION_TIME = 30;
+    private static final int RIFT_COST = 30;
+
+    private static Cache<UUID, Item.ItemTier> summoning = CacheBuilder.newBuilder().expireAfterWrite(ANIMATION_TIME, TimeUnit.SECONDS).build();
 
     public ItemRiftFragment(ItemStack item) {
         super(item);
@@ -54,15 +64,22 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
                 player.sendMessage(ChatColor.RED + "You must have 30 Rift Fragments to summon this rift!");
                 return;
             }
+
+            Item.ItemTier currentlySummoning = summoning.getIfPresent(player.getUniqueId());
+            if (currentlySummoning != null) {
+                player.sendMessage(ChatColor.RED + "You are already summoning a Tier " + currentlySummoning.getTierId() + " Rift.");
+                player.sendMessage(ChatColor.GRAY + "Please wait until it is complete.");
+                return;
+            }
+
             if (GameAPI.isInSafeRegion(evt.getPlayer().getLocation())) {
-                if (amount > 30)
-                    evt.getItem().getItem().setAmount(evt.getItem().getItem().getAmount() - amount);
+                if (amount > RIFT_COST)
+                    evt.getItem().getItem().setAmount(evt.getItem().getItem().getAmount() - RIFT_COST);
                 else
                     evt.setResultItem(null);
 
                 player.updateInventory();
                 //TODO: Summon breach.
-//How should this spawn?
                 player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.1F);
                 //TODO: Animation?
 

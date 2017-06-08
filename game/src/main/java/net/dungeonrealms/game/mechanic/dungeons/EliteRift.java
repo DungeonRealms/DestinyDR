@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -22,8 +23,10 @@ public class EliteRift extends Dungeon {
 
 
     private MapData map;
+    @Setter
+    private int tier;
     public EliteRift(List<Player> players) {
-        super(DungeonType.T1_ELITE_RIFT, players);
+        super(DungeonType.ELITE_RIFT, players);
         map = MapData.values()[ThreadLocalRandom.current().nextInt(MapData.values().length)];
     }
 
@@ -68,14 +71,16 @@ public class EliteRift extends Dungeon {
 
     @Getter
     private enum MapData {
-        VARENGLADE("varenglade", new Location(null,-363,59,16)),
-        INFERNAL("infernalAbyss", new Location(null,-55,157,670));
+        VARENGLADE("varenglade", new Location(null,-363,59,16),new Location(null,-363,59,-12)),
+        INFERNAL("infernalAbyss", new Location(null,-55,157,670),new Location(null,-55,157,647));
 
         private String worldName;
         private Location spawnLocation;
-        MapData(String worldName, Location spawnLocation) {
+        private Location bossLocation;
+        MapData(String worldName, Location spawnLocation, Location bossLocation) {
             this.worldName = worldName;
             this.spawnLocation = spawnLocation;
+            this.bossLocation = bossLocation;
         }
     }
 
@@ -86,7 +91,7 @@ public class EliteRift extends Dungeon {
 
     @Override
     public boolean canBossSpawn() {
-        return false;
+        return true;
     }
 
     @Override
@@ -108,5 +113,11 @@ public class EliteRift extends Dungeon {
 
         //for (MobSpawner spawn : spawns)
           //  maxMobCount += spawn.getSpawnAmount();
+    }
+
+    @Override
+    public DungeonBoss spawnBoss(BossType type) {
+        Location loc = map.getBossLocation();
+        return spawnBoss(type, new Location(getWorld(),loc.getX(),loc.getY(),loc.getZ()));
     }
 }

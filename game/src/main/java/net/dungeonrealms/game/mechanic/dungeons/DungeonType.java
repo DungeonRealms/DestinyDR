@@ -49,11 +49,7 @@ public enum DungeonType {
             4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
             l(BossType.InfernalAbyss, BossType.InfernalGhast, BossType.InfernalGuard)),
 
-    T1_ELITE_RIFT("T1 Elite Rift", "t1eliteRift", "t1riftdungeon", StatColumn.T1_MOB_KILLS, EliteRift.class, null, null,1,0,0,0,0,1000,null,l(null)),
-    T2_ELITE_RIFT("T2 Elite Rift", "t2eliteRift", "t2riftdungeon", StatColumn.T2_MOB_KILLS, EliteRift.class, null, null,2,0,0,0,0,1000,null,l(null)),
-    T3_ELITE_RIFT("T3 Elite Rift", "t3eliteRift", "t3riftdungeon", StatColumn.T3_MOB_KILLS, EliteRift.class, null, null,3,0,0,0,0,1000,null,l(null)),
-    T4_ELITE_RIFT("T4 Elite Rift", "t4eliteRift", "t4riftdungeon", StatColumn.T4_MOB_KILLS, EliteRift.class, null, null,4,0,0,0,0,1000,null,l(null)),
-    T5_ELITE_RIFT("T5 Elite Rift", "t5eliteRift", "t5riftdungeon", StatColumn.T5_MOB_KILLS, EliteRift.class, null, null,5,0,0,0,0,1000,null,l(null));
+    ELITE_RIFT("Elite Rift", "eliteRift", "riftdungeon", StatColumn.T1_MOB_KILLS, EliteRift.class, null, null,1,0,0,0,0,1000,null,l(BossType.RiftEliteBoss));
 
     private String name;
     private String internalName;
