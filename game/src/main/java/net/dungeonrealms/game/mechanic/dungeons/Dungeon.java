@@ -54,16 +54,16 @@ public abstract class Dungeon {
     private int killCount;
     //    private Set<Entity> aliveMonsters = new ConcurrentSet<>();
     private Map<Entity, Location> trackedMonsters = new ConcurrentHashMap<>();
-    private Set<MobSpawner> spawns = new ConcurrentSet<>();
+    protected Set<MobSpawner> spawns = new ConcurrentSet<>();
     private List<BossType> spawnedBosses = new ArrayList<>();
-    private World world;
+    protected World world;
     private boolean taunted;
     @Setter
-    private int maxMobCount;
+    protected int maxMobCount;
     private DungeonBoss boss;
     @Setter
     private boolean editMode, finished = false;
-    private List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
+    protected List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
 
     public Dungeon(DungeonType dungeon, List<Player> players) {
         this.type = dungeon;
@@ -110,7 +110,7 @@ public abstract class Dungeon {
     /**
      * Creates the world from a zip file.
      */
-    private void createWorld() {
+    protected void createWorld() {
         final String worldName = "DUNGEON_" + System.currentTimeMillis() + "/";
         Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
             Bukkit.getLogger().info("[Dungeons] Creating world '" + worldName + "'.");

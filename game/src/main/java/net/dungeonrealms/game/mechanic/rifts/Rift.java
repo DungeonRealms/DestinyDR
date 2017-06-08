@@ -3,11 +3,14 @@ package net.dungeonrealms.game.mechanic.rifts;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
+import com.google.common.collect.Lists;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.util.TimeUtil;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
@@ -16,6 +19,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.skull.Skull;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
@@ -24,6 +28,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -47,11 +52,11 @@ public class Rift {
     private transient RiftState riftState;
     private transient Set<Entity> spawnedEntities = new ConcurrentSet<>();
 
-    private transient Map<Location, MaterialData> changedBlocks = new ConcurrentHashMap<>();
+    protected transient Map<Location, MaterialData> changedBlocks = new ConcurrentHashMap<>();
     private transient int spawned = 0, aliveTime;
     private static final transient int MAX_ALIVE = 60 * 20;
     private transient long lastMobSpawn;
-    private transient Hologram hologram;
+    private transient List<Hologram> hologram;
 
     public Rift(Location spawn, int tier, Item.ElementalAttribute elementalType, String nearbyCity) {
         this.x = spawn.getBlockX();
@@ -95,7 +100,7 @@ public class Rift {
 
         if (EntityAPI.isElite(minion)) {
             //Drop the crystal??
-            minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 3, .9F);
+            minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, (float) (2 + Math.random()), (float) (Math.random() / 2 + .7F));
 
         }
     }
@@ -142,7 +147,11 @@ public class Rift {
     }
 
     public void createRift() {
-        this.hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(.65, 3, .65));
+        if (this.hologram == null) this.hologram = Lists.newArrayList();
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(.5, 3, 3.5)));
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(.5, 3, -2.5)));
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(3.5, 3, .5)));
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(-2.5, 3, .5)));
         this.updateHologram();
         onRiftStart();
     }
@@ -151,15 +160,17 @@ public class Rift {
         if (this.hologram == null) return;
         String line1 = Item.ItemTier.getByTier(getTier()).getColor().toString() + ChatColor.BOLD + "Rift";
         String line2 = ChatColor.RED + "Closing in " + ChatColor.BOLD + TimeUtil.formatDifference(MAX_ALIVE - aliveTime);
-        String line3 = ChatColor.RED.toString() + getSpawnedEntities().size() + " / " + getMaxMobLimit();
-        if (this.hologram.size() < 3) {
-            this.hologram.appendTextLine(line1);
-            this.hologram.appendTextLine(line2);
-            this.hologram.appendTextLine(line3);
-        } else {
-            ((TextLine) this.hologram.getLine(0)).setText(line1);
-            ((TextLine) this.hologram.getLine(1)).setText(line2);
-            ((TextLine) this.hologram.getLine(2)).setText(line3);
+        String line3 = ChatColor.RED.toString() + ChatColor.BOLD + getSpawnedEntities().size() + " Alive";
+        for (Hologram holo : hologram) {
+            if (holo.size() < 3) {
+                holo.appendTextLine(line1);
+                holo.appendTextLine(line2);
+                holo.appendTextLine(line3);
+            } else {
+                ((TextLine) holo.getLine(0)).setText(line1);
+                ((TextLine) holo.getLine(1)).setText(line2);
+                ((TextLine) holo.getLine(2)).setText(line3);
+            }
         }
     }
 
@@ -178,9 +189,10 @@ public class Rift {
             this.changedBlocks.clear();
         }
 
-        this.hologram.delete();
-        this.hologram = null;
-
+        if (this.hologram != null && this.hologram.size() > 0) {
+            this.hologram.forEach(h -> h.delete());
+            this.hologram.clear();
+        }
 //Not us anymore..
         RiftMechanics.getInstance().setActiveRift(null);
     }
@@ -188,18 +200,23 @@ public class Rift {
     public Entity spawnMob() {
         this.spawned++;
 
+        Item.ItemTier t = Item.ItemTier.getByTier(tier);
         Location spawn = getLocation();
 //        Location loc = Utils.getRandomLocationNearby(spawn, 3);
         Random r = ThreadLocalRandom.current();
-        Location loc = r.nextBoolean() ? spawn.add(-3, 0, 0) : r.nextBoolean() ? spawn.add(0, 0, 4) : r.nextBoolean() ? spawn.add(4, 0, 0) : spawn.add(0, 0, -3);
+        Location loc = r.nextInt(3) == 0 ? spawn.add(-3, 0, 0) : r.nextInt(3) == 0 ? spawn.add(0, 0, 4) : r.nextBoolean() ? spawn.add(4, 0, 0) : spawn.add(0, 0, -3);
         LivingEntity entity;
         if (this.spawned == getMaxMobLimit()) {
-            entity = (LivingEntity) EntityAPI.spawnElite(loc.add(0, .35, 0), null, EnumMonster.Golem, tier, tier * 20, "Rift Walker");
+            entity = (LivingEntity) EntityAPI.spawnElite(loc.add(0, .35, 0), null, EnumMonster.WitherSkeleton, tier, tier * 20, t.getColor() + ChatColor.BOLD.toString() + "Rift Walker");
             ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, .5, 0), .5F, 50, .3F);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_WITHER_SPAWN, 3, 1.4F);
+            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(.5F);
+            entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(35);
         } else {
-            entity = (LivingEntity) EntityAPI.spawnCustomMonster(loc.add(0, .35, 0), EnumMonster.Acolyte, tier * 20, tier, null, "Rift Minion");
+            entity = (LivingEntity) EntityAPI.spawnCustomMonster(loc.add(0, .35, 0), r.nextInt(10) == 5 ? EnumMonster.StaffZombie : EnumMonster.Skeleton, tier * 20, tier, null, "Rift Minion");
         }
 
+        boolean elite = EntityAPI.isElite(entity);
         if (entity.getEquipment() != null && entity.getEquipment().getHelmet() != null && entity.getEquipment().getHelmet().getType().equals(Material.SKULL_ITEM)) {
             if (skullItem == null)
                 skullItem = Skull.getCustomSkull("http://textures.minecraft.net/texture/f3f9bc52bed6e8dce5bd3b16457dee975241f898da3a29f857ef047b544a98");
@@ -209,10 +226,19 @@ public class Rift {
         entity.setRemoveWhenFarAway(false);
         MetadataUtils.Metadata.RIFT_MOB.set(entity, true);
 
+        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1.1F, 1.1F);
         DRMonster monster = (DRMonster) ((CraftLivingEntity) entity).getHandle();
-        if (monster.getAttributes() != null)
-            monster.getAttributes().multiplyStat(Item.WeaponAttributeType.DAMAGE, 1.25);
 
+        if(r.nextInt(4) == 0 || elite) {
+            ItemStack shield = new ItemArmor().setType(ItemType.SHIELD).setRarity(Item.ItemRarity.RARE).setTier(getTier()).generateItem();
+            entity.getEquipment().setItemInOffHand(shield);
+            monster.calculateAttributes();
+        }
+        if (monster.getAttributes() != null) {
+            if(elite)
+                monster.getAttributes().multiplyStat(Item.ArmorAttributeType.HEALTH_POINTS, 1.5);
+            monster.getAttributes().multiplyStat(Item.WeaponAttributeType.DAMAGE, 1.25);
+        }
         this.spawnedEntities.add(entity);
         return entity;
     }

@@ -1,11 +1,18 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import com.google.common.collect.Lists;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.ItemClickListener {
@@ -37,7 +44,33 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
 
     @Override
     public void onClick(ItemClickEvent evt) {
+        int amount = evt.getItem().getItem().getAmount();
 
+        evt.setCancelled(true);
+        Block block = evt.getClickedBlock();
+        Player player = evt.getPlayer();
+        if (block != null) {
+            if (amount < 30) {
+                player.sendMessage(ChatColor.RED + "You must have 30 Rift Fragments to summon this rift!");
+                return;
+            }
+            if (GameAPI.isInSafeRegion(evt.getPlayer().getLocation())) {
+                if (amount > 30)
+                    evt.getItem().getItem().setAmount(evt.getItem().getItem().getAmount() - amount);
+                else
+                    evt.setResultItem(null);
+
+                player.updateInventory();
+                //TODO: Summon breach.
+//How should this spawn?
+                player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.1F);
+                //TODO: Animation?
+
+                DungeonManager.createDungeon(DungeonType.T1_ELITE_RIFT, Lists.newArrayList(player));
+            } else {
+                evt.getPlayer().sendMessage(ChatColor.RED + "You must be in a Safe Zone to summon a Rift!");
+            }
+        }
     }
 
     @Override
@@ -52,7 +85,7 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
                 ChatColor.GRAY + ChatColor.ITALIC.toString() + "the Rift Walkers, a trail",
                 ChatColor.GRAY + ChatColor.ITALIC.toString() + "that leads back to home.",
                 "",
-                ChatColor.GRAY + "Combine with 30 Fragments",
+                ChatColor.GRAY + "Click with 30 Fragments",
                 ChatColor.GRAY + "to summon a Rift."};
     }
 

@@ -130,6 +130,7 @@ public enum DungeonType {
     }
 
     private void loadSpawnData() {
+        if(this.equals(DungeonType.T1_ELITE_RIFT) || this.equals(DungeonType.T2_ELITE_RIFT) || this.equals(DungeonType.T3_ELITE_RIFT) || this.equals(DungeonType.T4_ELITE_RIFT) || this.equals(DungeonType.T5_ELITE_RIFT)) return;
         // Load mob spawns.
         File f = new File(GameAPI.getDataFolder() + "/dungeonSpawns/" + getInternalName() + ".dat");
         if (!f.exists()) {

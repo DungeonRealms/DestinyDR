@@ -8,14 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.material.MaterialData;
+import org.bukkit.event.block.BlockFadeEvent;
 
 import java.io.File;
 import java.io.FileReader;
@@ -59,6 +58,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
+        Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
         this.loadRifts();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             this.spawnRift();
@@ -117,6 +117,13 @@ public class RiftMechanics implements GenericMechanic, Listener {
         //Get rift, then create.
         this.activeRift = getRandomRift();
         this.activeRift.createRift();
+    }
+
+    @EventHandler
+    public void onBlockFade(BlockFadeEvent event) {
+        if (GameAPI.isMainWorld(event.getBlock().getWorld())) {
+            event.setCancelled(true);
+        }
     }
 
     public WorldRift getRandomRift() {

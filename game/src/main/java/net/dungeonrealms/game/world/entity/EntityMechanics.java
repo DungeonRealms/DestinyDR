@@ -202,7 +202,7 @@ public class EntityMechanics implements GenericMechanic {
             entity.getBukkitEntity().teleport(spawn);
             entityInsentient.setGoalTarget(null);
         } else {
-            entityInsentient.getNavigation().a(path, 2);
+            entityInsentient.getNavigation().a(path, 1.56);
             entityInsentient.setGoalTarget(null);
         }
 //            SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))

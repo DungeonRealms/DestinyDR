@@ -1,23 +1,16 @@
 package net.dungeonrealms.game.mechanic.rifts;
 
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item;
-import net.minecraft.server.v1_9_R2.EntitySheep;
-import net.minecraft.server.v1_9_R2.EnumColor;
-import net.minecraft.server.v1_9_R2.TileEntityBeacon;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R2.block.CraftBeacon;
 import org.bukkit.entity.Entity;
 import org.bukkit.material.MaterialData;
 
-import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class WorldRift extends Rift {
     public WorldRift(Location spawn, int tier, Item.ElementalAttribute elementalType, String nearbyCity) {
@@ -41,27 +34,16 @@ public class WorldRift extends Rift {
 
     @Override
     public void onRiftEnd() {
+        this.changedBlocks.forEach((loc, mat) -> {
+            if (ThreadLocalRandom.current().nextInt(3) == 0) return;
+            ParticleAPI.spawnBlockParticles(loc, loc.getBlock().getType());
+        });
         super.onRiftEnd();
-        Location beaconLocation = getLocation();
-        if (beaconLocation.getBlock().getType() == Material.BEACON) {
-            beaconLocation.getBlock().setType(Material.AIR);
-            ParticleAPI.spawnBlockParticles(beaconLocation.clone().add(.5, .5, .5), Material.BEACON);
-        }
     }
 
     @Override
     public void onRiftTick() {
         super.onRiftTick();
-        Block beaconBlock = getLocation().getBlock();
-        if (beaconBlock.getType() == Material.BEACON) {
-            List<TileEntityBeacon.BeaconColorTracker> colorTracker =
-                    (List<TileEntityBeacon.BeaconColorTracker>) ReflectionAPI.getObjectFromField("g", TileEntityBeacon.class, ((CraftBeacon) beaconBlock.getState()).getTileEntity());
-            if (colorTracker != null) {
-                colorTracker.clear();
-                //Add beacon color?
-                colorTracker.add(new TileEntityBeacon.BeaconColorTracker(EntitySheep.a(EnumColor.BLUE)));
-            }
-        }
     }
 
 
@@ -69,12 +51,25 @@ public class WorldRift extends Rift {
     public Entity spawnMob() {
         Entity spawned = super.spawnMob();
 
-        if (EntityAPI.isElite(spawned)) {
-            Block block = getLocation().subtract(0, 1, 0).getBlock();
-            if (block.getType() == Material.STAINED_GLASS)
-                block.setData(DyeColor.RED.getWoolData());
-        }
+        if (EntityAPI.isElite(spawned))
+            setGlassColor(DyeColor.RED);
+
         return spawned;
+    }
+
+    public void setGlassColor(DyeColor color) {
+        Location loc = getLocation();
+        Block block = loc.clone().subtract(0, 1, 0).getBlock();
+        if (block.getType() != Material.STAINED_GLASS)
+            changeBlock(block.getLocation(), Material.STAINED_GLASS);
+        block.setData(color.getWoolData());
+
+
+        Block above = loc.add(0, 2, 0).getBlock();
+        if (above.getType() != Material.STAINED_GLASS)
+            changeBlock(above.getLocation(), Material.STAINED_GLASS);
+
+        above.setData(color.getWoolData());
     }
 
     @Override
@@ -91,40 +86,30 @@ public class WorldRift extends Rift {
         createPortal(beaconLocation.clone().add(0, 0, 2), (byte) 1);
         createPortal(beaconLocation.clone().add(0, 0, -2), (byte) 3);
 
-        changeBlock(beaconBlock.getRelative(BlockFace.UP), new MaterialData(Material.STAINED_GLASS.getId(), DyeColor.LIME.getWoolData()));
         changeBlock(beaconBlock.getLocation(), Material.BEACON);
 
         int radius = 1;
         for (int x = -radius; x < radius + 1; x++) {
             for (int z = -radius; z < radius + 1; z++) {
-                Location iron = beaconBlock.getRelative(x, -1, z).getLocation();
-                changeBlock(iron, Material.IRON_BLOCK);
+                //Roof of obby.
+                changeBlock(beaconBlock.getRelative(x, 4, z), new MaterialData(Material.OBSIDIAN));
+                changeBlock(beaconBlock.getRelative(x, -1, z).getLocation(), Material.IRON_BLOCK);
             }
         }
+
+        Item.ItemTier tier = Item.ItemTier.getByTier(getTier());
+        setGlassColor(tier.getDyeColor());
+        //Dont block?
         super.createRift();
     }
 
     private void createPortal(Location l, byte data) {
-//        for (int side = 0; side < 2; side++) {
-//            int xIncr = side == 0 ? data == (byte) 1 ? 1 : -1 : 0;
-//            int yIncr = side == 0 ? data == (byte) 2 ? 1 : -1 : 0;
-//            for (int i = 0; i < 3; i++)
-//                changeBlock(l.clone().add(xIncr, i, yIncr), Material.OBSIDIAN);
-//        }
+        boolean firstFace = data == (byte) 1 || data == (byte) 3;
 
-        if (data == (byte) 1 || data == (byte) 3) {
-            for (int i = 0; i < 3; i++)
-                changeBlock(l.clone().add(1, i, 0), Material.OBSIDIAN);
-
-            for (int i = 0; i < 3; i++)
-                changeBlock(l.clone().add(-1, i, 0), Material.OBSIDIAN);
-        } else {
-            for (int i = 0; i < 3; i++)
-                changeBlock(l.clone().add(0, i, 1), Material.OBSIDIAN);
-
-            for (int i = 0; i < 3; i++)
-                changeBlock(l.clone().add(0, i, -1), Material.OBSIDIAN);
-        }
+        for (int i = 0; i < 3; i++)
+            changeBlock(l.clone().add(firstFace ? -1 : 0, i, firstFace ? 0 : -1), Material.OBSIDIAN);
+        for (int i = 0; i < 3; i++)
+            changeBlock(l.clone().add(firstFace ? 1 : 0, i, firstFace ? 0 : 1), Material.OBSIDIAN);
 
         if (data == (byte) 1 || data == (byte) 3) {
             changeBlock(l.clone().add(0, 0, data == 1 ? -1 : 1), Material.OBSIDIAN);

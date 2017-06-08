@@ -49,7 +49,8 @@ public enum EnumMonster {
     PassiveSkeleton1(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Skeleton", ItemType.BOW, SkullTextures.SKELETON, l("Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"), 5, ElementalAttribute.PURE),
     Skeleton1(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Skeleton", ItemType.BOW, SkullTextures.SKELETON, l("Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"), 5, ElementalAttribute.PURE),
     Skeleton2(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.BOW_SKELETON), "Chaos Skeleton", ItemType.BOW, SkullTextures.SKELETON, 5, ElementalAttribute.PURE),
-    
+    WitherSkeleton(l(CustomEntityType.MELEE_WITHER), "Skeleton", ItemType.SWORD, SkullTextures.SKELETON, 5, ElementalAttribute.FIRE),
+
     // Pirates
     Pirate(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Pirate", null, SkullTextures.PIRATE),
     RangedPirate(l(CustomEntityType.BOW_SKELETON), "Ranged Pirate", null, SkullTextures.PIRATE, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), l("")),

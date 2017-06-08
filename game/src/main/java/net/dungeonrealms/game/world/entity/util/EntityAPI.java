@@ -428,6 +428,11 @@ public class EntityAPI {
         }
 
         attributes.addStats(m.getBukkit().getEquipment().getItemInMainHand());
+
+        //Calc off hand.
+        if (m.getBukkit().getEquipment().getItemInOffHand() != null)
+            attributes.addStats(m.getBukkit().getEquipment().getItemInOffHand());
+
         for (ItemStack armor : armorSet)
             attributes.addStats(armor);
         attributes.applyStatBonuses(null);

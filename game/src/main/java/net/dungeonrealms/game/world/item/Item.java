@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
@@ -146,27 +147,29 @@ public class Item {
 
     @Getter
     public enum ItemTier {
-        TIER_1(0, new Integer[]{1, 5}, 2, ChatColor.WHITE, Material.LEATHER, "Wooden", "Leather"),
-        TIER_2(5, new Integer[]{5, 10}, 3, ChatColor.GREEN, Material.IRON_FENCE, "Stone", "Chainmail"),
-        TIER_3(10, new Integer[]{10, 20}, 4, ChatColor.AQUA, Material.IRON_INGOT, "Iron"),
-        TIER_4(15, new Integer[]{20, 25}, 5, ChatColor.LIGHT_PURPLE, Material.DIAMOND, "Diamond"),
-        TIER_5(25, new Integer[]{25, 100}, 6, ChatColor.YELLOW, Material.GOLD_INGOT, "Gold");
+        TIER_1(0, new Integer[]{1, 5}, 2, ChatColor.WHITE, DyeColor.WHITE, Material.LEATHER, "Wooden", "Leather"),
+        TIER_2(5, new Integer[]{5, 10}, 3, ChatColor.GREEN, DyeColor.GREEN, Material.IRON_FENCE, "Stone", "Chainmail"),
+        TIER_3(10, new Integer[]{10, 20}, 4, ChatColor.AQUA, DyeColor.LIGHT_BLUE, Material.IRON_INGOT, "Iron"),
+        TIER_4(15, new Integer[]{20, 25}, 5, ChatColor.LIGHT_PURPLE, DyeColor.PURPLE, Material.DIAMOND, "Diamond"),
+        TIER_5(25, new Integer[]{25, 100}, 6, ChatColor.YELLOW, DyeColor.YELLOW, Material.GOLD_INGOT, "Gold");
 
         private int tierId;
         private int levelRequirement;
         private Integer[] rangeValues;
         private int attributeRange;
         private ChatColor color;
+        private DyeColor dyeColor;
         private Material material;
         private String weaponName;
         private String armorName;
 
-        ItemTier(int levelReq, Integer[] range, int attribute, ChatColor c, Material m, String name) {
-            this(levelReq, range, attribute, c, m, name, name);
+        ItemTier(int levelReq, Integer[] range, int attribute, ChatColor c, DyeColor color, Material m, String name) {
+            this(levelReq, range, attribute, c,color, m, name, name);
         }
 
-        ItemTier(int levelReq, Integer[] rangeValues, int attributeRange, ChatColor color, Material m, String weaponName, String armorName) {
+        ItemTier(int levelReq, Integer[] rangeValues, int attributeRange, ChatColor color, DyeColor dye, Material m, String weaponName, String armorName) {
             this.tierId = ordinal() + 1;
+            this.dyeColor = dye;
             this.levelRequirement = levelReq;
             this.rangeValues = rangeValues;
             this.attributeRange = attributeRange;
