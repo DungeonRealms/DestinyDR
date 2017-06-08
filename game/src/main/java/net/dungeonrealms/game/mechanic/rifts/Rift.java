@@ -27,6 +27,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class Rift {
 
     private String nearbyCity;
 
-    private transient RiftState riftState;
+    public transient RiftState riftState;
     private transient Set<Entity> spawnedEntities = new ConcurrentSet<>();
 
     protected transient Map<Location, MaterialData> changedBlocks = new ConcurrentHashMap<>();
@@ -76,6 +77,10 @@ public class Rift {
     public void onRiftEnd() {
         this.destroy();
 
+        sendSealedMessage();
+    }
+
+    public void sendSealedMessage() {
         Bukkit.broadcastMessage(ChatColor.RED + "The Rift near " + getNearbyCity() + " has been sealed!");
     }
 
@@ -148,10 +153,8 @@ public class Rift {
 
     public void createRift() {
         if (this.hologram == null) this.hologram = Lists.newArrayList();
-        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(.5, 3, 3.5)));
-        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(.5, 3, -2.5)));
-        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(3.5, 3, .5)));
-        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(-2.5, 3, .5)));
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(3, 5, 1.5)));
+        this.hologram.add(HologramsAPI.createHologram(DungeonRealms.getInstance(), getLocation().add(3, 5, -1.5)));
         this.updateHologram();
         onRiftStart();
     }
@@ -184,17 +187,22 @@ public class Rift {
             spawnedEntities.clear();
         }
 
-        if (this.changedBlocks != null) {
-            this.changedBlocks.forEach((loc, mat) -> loc.getBlock().setTypeIdAndData(mat.getItemTypeId(), mat.getData(), false));
-            this.changedBlocks.clear();
-        }
+        returnBlocks();
 
         if (this.hologram != null && this.hologram.size() > 0) {
             this.hologram.forEach(h -> h.delete());
             this.hologram.clear();
         }
+
 //Not us anymore..
         RiftMechanics.getInstance().setActiveRift(null);
+    }
+
+    public void returnBlocks() {
+        if (this.changedBlocks != null) {
+            this.changedBlocks.forEach((loc, mat) -> loc.getBlock().setTypeIdAndData(mat.getItemTypeId(), mat.getData(), false));
+            this.changedBlocks.clear();
+        }
     }
 
     public Entity spawnMob() {
@@ -204,7 +212,9 @@ public class Rift {
         Location spawn = getLocation();
 //        Location loc = Utils.getRandomLocationNearby(spawn, 3);
         Random r = ThreadLocalRandom.current();
-        Location loc = r.nextInt(3) == 0 ? spawn.add(-3, 0, 0) : r.nextInt(3) == 0 ? spawn.add(0, 0, 4) : r.nextBoolean() ? spawn.add(4, 0, 0) : spawn.add(0, 0, -3);
+
+        boolean leftSide = r.nextBoolean();
+        Location loc = leftSide ? spawn.add(1.5, 10 + r.nextInt(2), -1) : spawn.add(1.5, 10 + r.nextInt(2), 1);
         LivingEntity entity;
         if (this.spawned == getMaxMobLimit()) {
             entity = (LivingEntity) EntityAPI.spawnElite(loc.add(0, .35, 0), null, EnumMonster.WitherSkeleton, tier, tier * 20, t.getColor() + ChatColor.BOLD.toString() + "Rift Walker");
@@ -214,6 +224,12 @@ public class Rift {
             entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(35);
         } else {
             entity = (LivingEntity) EntityAPI.spawnCustomMonster(loc.add(0, .35, 0), r.nextInt(10) == 5 ? EnumMonster.StaffZombie : EnumMonster.Skeleton, tier * 20, tier, null, "Rift Minion");
+        }
+
+        if (leftSide) {
+            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(-.45F, -Math.random() * .5)));
+        } else {
+            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(.45F, Math.random() * .5)));
         }
 
         boolean elite = EntityAPI.isElite(entity);
@@ -229,13 +245,13 @@ public class Rift {
         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1.1F, 1.1F);
         DRMonster monster = (DRMonster) ((CraftLivingEntity) entity).getHandle();
 
-        if(r.nextInt(4) == 0 || elite) {
+        if (r.nextInt(4) == 0 || elite) {
             ItemStack shield = new ItemArmor().setType(ItemType.SHIELD).setRarity(Item.ItemRarity.RARE).setTier(getTier()).generateItem();
             entity.getEquipment().setItemInOffHand(shield);
             monster.calculateAttributes();
         }
         if (monster.getAttributes() != null) {
-            if(elite)
+            if (elite)
                 monster.getAttributes().multiplyStat(Item.ArmorAttributeType.HEALTH_POINTS, 1.5);
             monster.getAttributes().multiplyStat(Item.WeaponAttributeType.DAMAGE, 1.25);
         }
@@ -253,15 +269,19 @@ public class Rift {
         return this.spawnedEntities;
     }
 
-    public void changeBlock(Location location, Material toSet) {
-        changeBlock(location.getBlock(), new MaterialData(toSet));
+    public Block changeBlock(Block block, Material toSet) {
+        return changeBlock(block, new MaterialData(toSet));
     }
 
-    public void changeBlock(Location location, MaterialData toSet) {
-        changeBlock(location.getBlock(), toSet);
+    public Block changeBlock(Location location, Material toSet) {
+        return changeBlock(location.getBlock(), new MaterialData(toSet));
     }
 
-    public void changeBlock(Block blo, MaterialData toSet) {
+    public Block changeBlock(Location location, MaterialData toSet) {
+        return changeBlock(location.getBlock(), toSet);
+    }
+
+    public Block changeBlock(Block blo, MaterialData toSet) {
         if (this.changedBlocks == null) this.changedBlocks = new ConcurrentHashMap<>();
 
         MaterialData current = new MaterialData(blo.getType(), blo.getData());
@@ -272,5 +292,6 @@ public class Rift {
         }
         this.changedBlocks.put(blo.getLocation(), current);
         blo.setTypeIdAndData(toSet.getItemType().getId(), toSet.getData(), false);
+        return blo;
     }
 }

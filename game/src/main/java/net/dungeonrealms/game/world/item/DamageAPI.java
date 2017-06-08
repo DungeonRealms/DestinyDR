@@ -605,8 +605,6 @@ public class DamageAPI {
         double accuracy = !(attacker instanceof Player) ? 85 + Utils.randInt(staff.getTier().getTierId() * 3) : attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
         org.bukkit.util.Vector vector = null;
 
-        if (target != null)
-            vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
 
         boolean kilitanStaff = "kilatan".equals(GameAPI.getCustomID(staff.getItem()));
         Projectile projectile = null;

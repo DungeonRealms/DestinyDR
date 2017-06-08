@@ -5,7 +5,11 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
@@ -23,8 +27,7 @@ public class EliteRift extends Dungeon {
 
 
     private MapData map;
-    @Setter
-    private int tier;
+    private int tier = 1;
     public EliteRift(List<Player> players) {
         super(DungeonType.ELITE_RIFT, players);
         map = MapData.values()[ThreadLocalRandom.current().nextInt(MapData.values().length)];
@@ -55,6 +58,10 @@ public class EliteRift extends Dungeon {
 
     public File getZipFile(String name) {
         return new File(GameAPI.getDataFolder() + "/dungeons/" + name + ".zip");
+    }
+
+    public void setTier(int tier) {
+        if(tier < 1 || tier > 5) throw new IllegalArgumentException("Tier is out of range!");
     }
 
     @Override
@@ -116,8 +123,34 @@ public class EliteRift extends Dungeon {
     }
 
     @Override
+    public ItemWeapon getGeneralMobWeapon() {
+        return (ItemWeapon) new ItemWeapon().setTier(tier).setRarity(Item.ItemRarity.UNIQUE);
+    }
+
+    @Override
+    public void giveMount() {
+        //No mount
+    }
+
+    @Override
+    public ItemArmor getGeneralMobArmorSet() {
+        return (ItemArmor) new ItemArmor().setTier(tier).setMaxRarity(Item.ItemRarity.UNIQUE, 3);
+    }
+
+    @Override
     public DungeonBoss spawnBoss(BossType type) {
         Location loc = map.getBossLocation();
         return spawnBoss(type, new Location(getWorld(),loc.getX(),loc.getY(),loc.getZ()));
+    }
+
+    @Override
+    public void removePlayers(boolean success) {
+        if (!success)
+            announce(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.RESET + "You have failed, Adventurers.");
+        for (Player p : getAllPlayers()) {
+            GameAPI.teleport(p, TeleportLocation.CYRENNICA.getLocation());
+
+            DungeonManager.removeDungeonItems(p);
+        }
     }
 }

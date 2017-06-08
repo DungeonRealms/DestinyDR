@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
 
+import net.dungeonrealms.game.mechanic.dungeons.EliteRift;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,7 +41,12 @@ public class DungeonJoin extends BaseCommand {
         	player.sendMessage(ChatColor.RED + "Your party is not in a dungeon.");
         	return true;
         }
-        
+
+        if(p.getDungeon() != null && p.getDungeon() instanceof EliteRift) {
+            player.sendMessage(ChatColor.RED + "Your party is not in a dungeon.");
+            return true;
+        }
+
         if (!GameAPI.isInSafeRegion(player.getLocation())) {
         	player.sendMessage(ChatColor.RED + "You cannot join a dungeon from this location.");
         	return true;

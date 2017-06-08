@@ -189,8 +189,8 @@ public class PvEListener implements Listener {
             return; // We don't need to run the code past here for bosses.
 
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
-        int eliteBonusXP = (int)(exp * 0.3);
-        if(EntityAPI.isElite(monster)) exp += eliteBonusXP;
+        int eliteBonusXP = (int) (exp * 0.3);
+        if (EntityAPI.isElite(monster)) exp += eliteBonusXP;
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(highestDamage);
@@ -230,7 +230,7 @@ public class PvEListener implements Listener {
 
         if (!added) {
             wrapper.addExperience(exp, false, true, true);
-            if (EntityAPI.isElite(monster))
+            if (EntityAPI.isElite(monster) && killer != null)
                 killer.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
                         .toString() + ChatColor.BOLD + "ELITE BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
                         + "+" + ChatColor.YELLOW + Math.round(eliteBonusXP) + ChatColor.BOLD + " EXP " +

@@ -2,10 +2,8 @@ package net.dungeonrealms.game.command.test;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.game.mechanic.dungeons.BossType;
-import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
+import net.dungeonrealms.game.mechanic.dungeons.*;
+import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,7 +24,8 @@ public class CommandTestRift extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(!(sender instanceof Player)) return false;
-        Dungeon d = createDungeon(DungeonType.T1_ELITE_RIFT, Arrays.asList((Player)sender));
+        EliteRift d = (EliteRift)createDungeon(DungeonType.ELITE_RIFT, Arrays.asList((Player)sender));
+        d.setOurTier(5);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             d.spawnBoss(BossType.RiftEliteBoss);
         }, 20);

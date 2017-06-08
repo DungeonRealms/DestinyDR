@@ -10,6 +10,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.InfernalAbyss.InfernalListener;
 import net.dungeonrealms.game.mechanic.dungeons.Varenglade.VarengladeListener;
+import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
+import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRiftListener;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -49,7 +51,7 @@ public enum DungeonType {
             4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
             l(BossType.InfernalAbyss, BossType.InfernalGhast, BossType.InfernalGuard)),
 
-    ELITE_RIFT("Elite Rift", "eliteRift", "riftdungeon", StatColumn.T1_MOB_KILLS, EliteRift.class, null, null,1,0,0,0,0,1000,null,l(BossType.RiftEliteBoss));
+    ELITE_RIFT("Elite Rift", "eliteRift", "riftdungeon", StatColumn.T1_MOB_KILLS, EliteRift.class, EliteRiftListener.class, null,1,0,0,0,0,1000,null,l(BossType.RiftEliteBoss));
 
     private String name;
     private String internalName;
@@ -126,7 +128,7 @@ public enum DungeonType {
     }
 
     private void loadSpawnData() {
-        if(this.equals(DungeonType.T1_ELITE_RIFT) || this.equals(DungeonType.T2_ELITE_RIFT) || this.equals(DungeonType.T3_ELITE_RIFT) || this.equals(DungeonType.T4_ELITE_RIFT) || this.equals(DungeonType.T5_ELITE_RIFT)) return;
+        if(this.equals(DungeonType.ELITE_RIFT)) return;
         // Load mob spawns.
         File f = new File(GameAPI.getDataFolder() + "/dungeonSpawns/" + getInternalName() + ".dat");
         if (!f.exists()) {

@@ -54,6 +54,13 @@ public class ReflectionAPI {
     }
 
     @SneakyThrows
+    public static void setField(String fieldName, Class<?> clazz, Object instance, Object value) {
+        Field field = getDeclaredField(clazz, fieldName);
+        if (field != null)
+            field.set(instance, value);
+    }
+
+    @SneakyThrows
     public static void setField(String fieldName, Object instance, Object value) {
         Field field = getDeclaredField(instance.getClass(), fieldName);
         if (field != null)

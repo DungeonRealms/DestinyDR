@@ -681,6 +681,13 @@ public class RealmListener implements Listener {
         MountUtils.removeMount(event.getPlayer());
 
         if (GameAPI.isMainWorld(event.getPlayer().getLocation())) {
+
+            // Gets the realm based on the location of the portal entered.
+            Realm realm = Realms.getInstance().getRealm(event.getFrom());
+
+            if (realm == null || !realm.isOpen()) {
+                return;
+            }
             // Player is entering a realm.
             if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in a duel!");
@@ -692,11 +699,6 @@ public class RealmListener implements Listener {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
             }
 
-            // Gets the realm based on the location of the portal entered.
-            Realm realm = Realms.getInstance().getRealm(event.getFrom());
-
-            if (realm == null || !realm.isOpen())
-                return;
 
             // Saves their location so they don't spawn in the realm if they logout.
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());

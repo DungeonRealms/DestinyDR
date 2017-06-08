@@ -71,7 +71,7 @@ public class DungeonManager implements GenericMechanic {
         // Spawns dungeon mobs every few half a second.
     	Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
     		for (Dungeon d : getDungeons()) {
-    			if(d.getType().equals(DungeonType.T1_ELITE_RIFT) || d.getType().equals(DungeonType.T2_ELITE_RIFT) || d.getType().equals(DungeonType.T3_ELITE_RIFT) || d.getType().equals(DungeonType.T4_ELITE_RIFT) || d.getType().equals(DungeonType.T5_ELITE_RIFT)) continue;
+    			if(d.getType().equals(DungeonType.ELITE_RIFT)) continue;
     			// Spawns in normal mob spawns.
     			for (MobSpawner spawner : d.getSpawns()) {
     				spawner.getLocation().setWorld(d.getWorld());

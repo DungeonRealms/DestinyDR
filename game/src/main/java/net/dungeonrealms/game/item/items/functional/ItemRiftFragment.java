@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
+import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -83,7 +84,13 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
                 player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.1F);
                 //TODO: Animation?
 
-                DungeonManager.createDungeon(DungeonType.T1_ELITE_RIFT, Lists.newArrayList(player));
+                RiftPortal portal = new RiftPortal(player, evt.getClickedBlock());
+                if (portal.canPlacePortals()) {
+
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot place a Rift Portal here!");
+                }
+                DungeonManager.createDungeon(DungeonType.ELITE_RIFT, Lists.newArrayList(player));
             } else {
                 evt.getPlayer().sendMessage(ChatColor.RED + "You must be in a Safe Zone to summon a Rift!");
             }

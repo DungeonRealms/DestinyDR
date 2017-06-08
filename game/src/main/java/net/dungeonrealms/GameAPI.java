@@ -50,6 +50,7 @@ import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
+import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -794,6 +795,7 @@ public class GameAPI {
         Realms.getInstance().handleLogout(player);
         HealthHandler.handleLogout(player);
         Chat.listenForMessage(player, null);
+        RiftMechanics.getInstance().handleLogout(player);
 
         // Remove dungeonitems from inventory.
         DungeonManager.removeDungeonItems(player);

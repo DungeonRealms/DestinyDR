@@ -60,7 +60,7 @@ public abstract class Dungeon {
     private boolean taunted;
     @Setter
     protected int maxMobCount;
-    private DungeonBoss boss;
+    protected DungeonBoss boss;
     @Setter
     private boolean editMode, finished = false;
     protected List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
