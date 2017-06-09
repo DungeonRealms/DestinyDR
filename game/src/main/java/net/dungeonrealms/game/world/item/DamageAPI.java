@@ -605,6 +605,10 @@ public class DamageAPI {
         double accuracy = !(attacker instanceof Player) ? 85 + Utils.randInt(staff.getTier().getTierId() * 3) : attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
         org.bukkit.util.Vector vector = null;
 
+        if(target != null) {
+            vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+        }
+
 
         boolean kilitanStaff = "kilatan".equals(GameAPI.getCustomID(staff.getItem()));
         Projectile projectile = null;
@@ -708,7 +712,7 @@ public class DamageAPI {
         HitTracker tracker = hitTrackerMap.computeIfAbsent(attacker.getUniqueId(), t -> new HitTracker());
 
         int hitCounter = tracker.trackHit(damaged);
-        unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .35 : hitCounter == 2 ? .25 : 0.10));
+        unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .25 : hitCounter == 2 ? .15 : 0.05));
 
 //        Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
 

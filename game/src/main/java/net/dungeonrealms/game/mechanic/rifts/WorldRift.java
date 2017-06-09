@@ -127,7 +127,7 @@ public class WorldRift extends Rift {
     @Override
     public void onRiftTick() {
         super.onRiftTick();
-        if (highestPortal != null && highestPortal.getChunk().isLoaded() && highestPortal.getType() == Material.END_GATEWAY) {
+        if (riftState == RiftState.SPAWNING && highestPortal != null && highestPortal.getChunk().isLoaded() && highestPortal.getType() == Material.END_GATEWAY) {
             TileEntityEndGateway gateway = ((CraftEndGateway) highestPortal.getState()).getTileEntity();
             ReflectionAPI.setField("f", TileEntityEndGateway.class, gateway, 120);
             ReflectionAPI.setField("g", TileEntityEndGateway.class, gateway, 0);
@@ -156,18 +156,20 @@ public class WorldRift extends Rift {
             }
         }
 
-        //Remove all old blocks, but keep them if they are already changed to what we want.
-        changedBlocks.forEach((loc, material) -> {
-            Block block = loc.getBlock();
-            if (changes.contains(block) || block.getType() != Material.OBSIDIAN && block.getType() != Material.END_GATEWAY)
-                return;
+        if(clearPrevious) {
+            //Remove all old blocks, but keep them if they are already changed to what we want.
+            changedBlocks.forEach((loc, material) -> {
+                Block block = loc.getBlock();
+                if (changes.contains(block) || block.getType() != Material.OBSIDIAN && block.getType() != Material.END_GATEWAY)
+                    return;
 
-            if (ThreadLocalRandom.current().nextBoolean())
-                ParticleAPI.spawnBlockParticles(loc, block.getType() == Material.END_GATEWAY ? Material.PORTAL : block.getType());
+                if (ThreadLocalRandom.current().nextBoolean())
+                    ParticleAPI.spawnBlockParticles(loc, block.getType() == Material.END_GATEWAY ? Material.PORTAL : block.getType());
 
-            block.setTypeIdAndData(material.getItemTypeId(), material.getData(), false);
-            changedBlocks.remove(loc);
-        });
+                block.setTypeIdAndData(material.getItemTypeId(), material.getData(), false);
+                changedBlocks.remove(loc);
+            });
+        }
     }
 
     private List<Block> createObsidianLine(Location location, int length) {

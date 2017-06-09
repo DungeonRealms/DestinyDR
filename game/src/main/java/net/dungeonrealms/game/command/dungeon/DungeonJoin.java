@@ -5,7 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
 
-import net.dungeonrealms.game.mechanic.dungeons.EliteRift;
+import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

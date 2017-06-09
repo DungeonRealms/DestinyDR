@@ -98,6 +98,7 @@ public enum EnumMonster {
     IceLord(l(CustomEntityType.ICE_LORD), "Ice Lord of the Abyss", null, 70, ElementalAttribute.ICE),
 
     RiftElite(l(CustomEntityType.RIFT_ELITE), "Jumper of Rifts", null, 50, ElementalAttribute.PURE),
+    RiftMinion(l(CustomEntityType.STAFF_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_ZOMBIE, CustomEntityType.BOW_ZOMBIE), "Rift Slave", null, SkullTextures.RIFT,5, ElementalAttribute.POISON),
 
 
     // Vanilla NonHostiles

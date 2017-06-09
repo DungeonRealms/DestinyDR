@@ -2,13 +2,11 @@ package net.dungeonrealms.game.item.items.functional;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
-import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
@@ -73,24 +71,27 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
                 return;
             }
 
-            if (GameAPI.isInSafeRegion(evt.getPlayer().getLocation())) {
+            if (GameAPI.isInSafeRegion(evt.getPlayer().getLocation()) && GameAPI.isMainWorld(evt.getPlayer().getLocation())) {
+
+                RiftPortal portal = new RiftPortal(player, evt.getClickedBlock(), fragmentTier.getTierId());
+                if (portal.canPlacePortals()) {
+                    summoning.put(player.getUniqueId(), fragmentTier);
+                    portal.createPortals(done -> {
+                        summoning.invalidate(player.getUniqueId());
+                        Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Enter the Rift at your own risk!");
+                        Utils.sendCenteredMessage(player, ChatColor.GRAY + "You have " + ChatColor.BOLD + "6" + ChatColor.GRAY + " attempts to defeat this rift!");
+                    });
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot place a Rift Portal here!");
+                    return;
+                }
+
                 if (amount > RIFT_COST)
                     evt.getItem().getItem().setAmount(evt.getItem().getItem().getAmount() - RIFT_COST);
                 else
                     evt.setResultItem(null);
-
                 player.updateInventory();
-                //TODO: Summon breach.
                 player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.1F);
-                //TODO: Animation?
-
-                RiftPortal portal = new RiftPortal(player, evt.getClickedBlock());
-                if (portal.canPlacePortals()) {
-
-                } else {
-                    player.sendMessage(ChatColor.RED + "You cannot place a Rift Portal here!");
-                }
-                DungeonManager.createDungeon(DungeonType.ELITE_RIFT, Lists.newArrayList(player));
             } else {
                 evt.getPlayer().sendMessage(ChatColor.RED + "You must be in a Safe Zone to summon a Rift!");
             }
@@ -106,8 +107,8 @@ public class ItemRiftFragment extends FunctionalItem implements ItemClickEvent.I
     protected String[] getLore() {
         return new String[]{
                 ChatColor.GRAY + ChatColor.ITALIC.toString() + "A lost Fragment fallen from",
-                ChatColor.GRAY + ChatColor.ITALIC.toString() + "the Rift Walkers, a trail",
-                ChatColor.GRAY + ChatColor.ITALIC.toString() + "that leads back to home.",
+                ChatColor.GRAY + ChatColor.ITALIC.toString() + "the Rift Walkers",
+                ChatColor.GRAY + ChatColor.ITALIC.toString() + "A trail that leads back to home.",
                 "",
                 ChatColor.GRAY + "Click with 30 Fragments",
                 ChatColor.GRAY + "to summon a Rift."};

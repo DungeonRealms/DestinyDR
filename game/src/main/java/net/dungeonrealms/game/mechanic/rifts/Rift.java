@@ -11,7 +11,9 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -24,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
@@ -90,13 +93,22 @@ public class Rift {
 
     public void onRiftStart() {
         spawned = aliveTime = 0;
-        Bukkit.broadcastMessage(ChatColor.RED + ChatColor.BOLD.toString() + " *** " + ChatColor.RED + "A Rift is beginning to open near " + getNearbyCity() + "! " + ChatColor.BOLD + "***");
+
+        for (Player pl : Bukkit.getOnlinePlayers())
+            Utils.sendCenteredMessage(pl, ChatColor.RED + ChatColor.BOLD.toString() + " *** " + ChatColor.RED + "A Rift is beginning to open near " + getNearbyCity() + "! " + ChatColor.BOLD + "***");
+
         Bukkit.broadcastMessage(ChatColor.GRAY + "Defeat the Rift Mobs to close it and receive a Rift Fragment!");
         this.riftState = RiftState.SPAWNING;
         Bukkit.getLogger().info("Creating rift at " + getLocation());
     }
 
+    public boolean isRiftMinion(Entity entity){
+        if(this.spawnedEntities == null)return false;
+        return this.spawnedEntities.contains(entity);
+    }
     public void onRiftMinionDeath(Entity minion, EntityDeathEvent event) {
+
+        Bukkit.getLogger().info("On Rift Minion Death!");
         this.spawnedEntities.remove(minion);
         if (this.getSpawnedEntities().size() == 0 && spawned >= getMaxMobLimit()) {
             //DONE?
@@ -107,6 +119,16 @@ public class Rift {
             //Drop the crystal??
             minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, (float) (2 + Math.random()), (float) (Math.random() / 2 + .7F));
 
+            //Drop shit?
+            ItemStack item = new ItemRiftFragment(Item.ItemTier.getByTier(getTier())).generateItem();
+            item.setAmount(ThreadLocalRandom.current().nextInt(3) + 1);
+            minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), item);
+
+            if (ThreadLocalRandom.current().nextInt(100_000) == 5) {
+                minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, (float) (5 + Math.random()), .7F);
+                minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), new ItemArmor().setType(ItemType.SHIELD).setRarity(Item.ItemRarity.COMMON).setTier(Item.ItemTier.getByTier(getTier())).generateItem());
+                ParticleAPI.spawnParticle(Particle.CRIT, minion.getLocation().add(0, 1, 0), 30, .3F, .4F);
+            }
         }
     }
 
@@ -141,7 +163,6 @@ public class Rift {
                 //Its going to spawn the elite, make sure no mobs are left.
                 Set<Entity> ent = getSpawnedEntities();
                 if (ent.size() > 0) {
-//                    Bukkit.getLogger().info("Not spawning Golem due to entities remaining!");
                     this.updateHologram();
                     return;
                 }
@@ -178,23 +199,22 @@ public class Rift {
     }
 
     public void destroy() {
-        spawned = aliveTime = 0;
-        riftState = RiftState.WAITING;
-        if (!spawnedEntities.isEmpty()) {
-            for (Entity ent : spawnedEntities) {
+        this.spawned = aliveTime = 0;
+        this.riftState = RiftState.WAITING;
+        if (!this.spawnedEntities.isEmpty()) {
+            for (Entity ent : this.spawnedEntities) {
                 ent.remove();
             }
-            spawnedEntities.clear();
+            this.spawnedEntities.clear();
         }
 
-        returnBlocks();
+        this.returnBlocks();
 
         if (this.hologram != null && this.hologram.size() > 0) {
             this.hologram.forEach(h -> h.delete());
             this.hologram.clear();
         }
 
-//Not us anymore..
         RiftMechanics.getInstance().setActiveRift(null);
     }
 
@@ -250,6 +270,7 @@ public class Rift {
             entity.getEquipment().setItemInOffHand(shield);
             monster.calculateAttributes();
         }
+
         if (monster.getAttributes() != null) {
             if (elite)
                 monster.getAttributes().multiplyStat(Item.ArmorAttributeType.HEALTH_POINTS, 1.5);

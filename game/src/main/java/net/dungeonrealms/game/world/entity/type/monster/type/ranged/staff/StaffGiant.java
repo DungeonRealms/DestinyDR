@@ -47,6 +47,5 @@ public class StaffGiant extends DRGiant implements IRangedEntity{
     @Override
     public void a(EntityLiving entityLiving, float v) {
         DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponStaff(getHeld()));
-        System.out.println("Fired his staff projectile!");
     }
 }

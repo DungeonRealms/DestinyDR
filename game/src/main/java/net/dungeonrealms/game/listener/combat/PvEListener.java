@@ -29,6 +29,7 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -175,8 +176,10 @@ public class PvEListener implements Listener {
         Rift active = RiftMechanics.getInstance().getActiveRift();
         //Handle rift mob deaths?
         if (active != null) {
-            if (active.getSpawnedEntities().contains(event.getEntity()))
+            if (active.isRiftMinion(event.getEntity()))
                 active.onRiftMinionDeath(event.getEntity(), event);
+            else
+                Bukkit.getLogger().info("Didnt contain!");
         }
         //Handle Quest Kill Objective
         //This has to be declared a second time as final to be used in .forEach

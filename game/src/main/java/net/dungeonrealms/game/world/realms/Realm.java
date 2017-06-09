@@ -21,6 +21,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
+import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
@@ -109,7 +110,7 @@ public class Realm {
      * Opens a realm portal at a given location. Grabs the realm from FTP if needed.
      */
     public void openPortal(Player player, Location location) {
-    	if (!canPlacePortal(player, location))
+        if (!canPlacePortal(player, location))
             return;
 
         loadRealm(player, () -> {
@@ -201,6 +202,12 @@ public class Realm {
 
         if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
             player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        RiftPortal nearby = RiftPortal.getNearbyRiftPortal(location, 16);
+        if (nearby != null) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal so close to a Rift Portal!");
             return false;
         }
 
@@ -498,8 +505,8 @@ public class Realm {
 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-            	player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
-            	GameAPI.sendError("Failed to load " + getName() + "'s realm on {SERVER}.");
+                player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
+                GameAPI.sendError("Failed to load " + getName() + "'s realm on {SERVER}.");
                 Realms.getInstance().getRealmMap().remove(getOwner());
                 e.printStackTrace();
             }
@@ -649,7 +656,7 @@ public class Realm {
 
     public void sendInformation(Player player) {
         Player owner = Bukkit.getPlayer(getOwner());
-        if(owner == null){
+        if (owner == null) {
             player.sendMessage(ChatColor.RED + "This realm owner is no longer online.");
             return;
         }

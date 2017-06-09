@@ -21,10 +21,10 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedGiant;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffGiant;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -36,10 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Rar349 6/8/2017
  */
-public class RiftEliteBoss extends MeleeGiant implements DungeonBoss {
+public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
 
-	// Are mobs not allowed to spawn due to a cooldown?
-	private boolean cooldown = false;
 	private int ourTier;
 
     public RiftEliteBoss(World world) {
@@ -50,30 +48,12 @@ public class RiftEliteBoss extends MeleeGiant implements DungeonBoss {
 
     @Override
     public void onBossAttacked(Player player) {
-    	if (!canSpawnMobs())
-    		return;
-    	
-    	// Spawn minions.
-    	ParticleAPI.spawnParticle(Particle.SPELL, getBukkitEntity().getLocation(), 100, 1F);
-        for (int i = 0; i < 4; i++)
-            spawnMinion(EnumMonster.MayelPirate, "Mayel's Crew", 1);
-        say("Come to my call, brothers!");
+
     }
 
     public void setOurTier(int newTier) {
         this.ourTier = newTier;
         super.setTier(newTier);
-    }
-
-    private boolean canSpawnMobs() {
-    	boolean temp = cooldown;
-    	
-    	if (!cooldown) {
-    		cooldown = true;
-    		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> cooldown = false, 100L);
-    	}
-    	
-        return getPercentHP() <= 0.8D && !temp;
     }
 
     @Override
@@ -103,4 +83,19 @@ public class RiftEliteBoss extends MeleeGiant implements DungeonBoss {
 
     @Override
     public void collide(Entity e) {}
+
+    @Override
+    public void a(EntityLiving entityLiving, float v) {
+        //Don't shoot. We are just extending staff giant so that he doesn't path right on top of us. He needs to target us but doesn't need to attack us.
+    }
+
+    public Player getTarget() {
+        try {
+            EntityLiving living = getGoalTarget();
+            CraftHumanEntity humanEnt = ((EntityHuman) living).getBukkitEntity();
+            return (Player) humanEnt;
+        } catch(Exception e) {
+            return null;
+        }
+    }
 }

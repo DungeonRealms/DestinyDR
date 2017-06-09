@@ -296,6 +296,15 @@ public class Realms implements GenericMechanic {
         return EnumPriority.BISHOPS;
     }
 
+    public Realm getNearbyRealm(Location location, int radius) {
+        radius *= radius;
+        for (Realm realm : realms.values()) {
+            if (realm.getPortalLocation() != null && realm.getPortalLocation().getWorld() != null && realm.getPortalLocation().getWorld().equals(location.getWorld()) && realm.getPortalLocation().distanceSquared(location) <= radius)
+                return realm;
+        }
+        return null;
+    }
+
     /**
      * Returns the player's realm tier. May be called by something such as ItemManager#createPortalRune, which calls before a realm object is loaded.
      *

@@ -62,7 +62,7 @@ public abstract class Dungeon {
     protected int maxMobCount;
     protected DungeonBoss boss;
     @Setter
-    private boolean editMode, finished = false;
+    protected boolean editMode, finished = false;
     protected List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
 
     public Dungeon(DungeonType dungeon, List<Player> players) {
@@ -82,6 +82,21 @@ public abstract class Dungeon {
             player.setFallDistance(0F);
             player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "How dare you enter my domain!");
         }
+    }
+
+    /**
+     * Used for rifts to add players in.
+     *
+     * @param player
+     */
+    public void addPlayer(Player player) {
+        if (!this.allowedPlayers.contains(player))
+            this.allowedPlayers.add(player);
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        pw.setStoredLocation(player.getLocation());
+        GameAPI.teleport(player, getWorld().getSpawnLocation());
+        player.setFallDistance(0F);
+        player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "Travelled all this way just to die adventurer?!");
     }
 
     /**
@@ -137,7 +152,7 @@ public abstract class Dungeon {
      * Called when a player kills the boss.
      */
     public void completeDungeon() {
-        if(finished)return;
+        if (finished) return;
         finished = true;
         announce(ChatColor.YELLOW + "You will be teleported out in 30 seconds...");
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> removePlayers(true), 600);
@@ -151,7 +166,7 @@ public abstract class Dungeon {
      * Boss drops their items.
      */
     @SuppressWarnings("deprecation")
-    private void giveDrops() {
+    protected void giveDrops() {
         LivingEntity livingEntity = getBoss().getBukkit();
         Random random = ThreadLocalRandom.current();
 
@@ -388,6 +403,7 @@ public abstract class Dungeon {
         if (CrashDetector.crashDetected)
             return;
 
+        finished = true;
         Bukkit.getLogger().info("[Dungeons] Terminating " + getType().getName() + ", instance '" + getWorld().getName() + "'.");
         // Move players out.
         removePlayers(false);

@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
@@ -28,6 +29,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.FileReader;
@@ -80,7 +83,14 @@ public class RiftMechanics implements GenericMechanic, Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (this.activeRift != null)
                 this.activeRift.onRiftTick();
+
         }, 20, 20);
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (RiftPortal portal : RiftPortal.getRiftPortalMap().values())
+                portal.onUpdate();
+        }, 20, 5);
+
     }
 
     @SneakyThrows
@@ -148,20 +158,8 @@ public class RiftMechanics implements GenericMechanic, Listener {
 
         RiftPortal portal = RiftPortal.getRiftPortalFromBlock(event.getFrom().getBlock());
         if (portal == null) return;
-        if (!portal.isDoneGenerating()) {
-            event.setCancelled(true);
-        }
-
-        Party party = Affair.getParty(portal.getPortalOwner());
-        if (party != null) {
-            if (party.isMember(event.getPlayer())) {
-                //Let them teleport?
-//                EndGateway
-                return;
-            }
-        }
         event.setCancelled(true);
-        event.getPlayer().sendMessage(ChatColor.RED + "You must be in " + portal.getPortalOwner().getName() + "'s Party to enter their Rift!");
+        handlePortalTeleport(event.getPlayer(), portal, event.getFrom());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -180,6 +178,43 @@ public class RiftMechanics implements GenericMechanic, Listener {
                 }
             }, 1);
         }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Bukkit.getLogger().info("Teleport event: " + event);
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
+            event.setCancelled(true);
+            if (event.getFrom() == null || !GameAPI.isMainWorld(event.getFrom().getWorld())) return;
+
+            RiftPortal portal = RiftPortal.getRiftPortalFromBlock(event.getFrom().getBlock());
+            if (portal == null) return;
+
+            handlePortalTeleport(event.getPlayer(), portal, event.getFrom());
+        }
+    }
+
+    private void handlePortalTeleport(Player player, RiftPortal portal, Location from) {
+        Party party = Affair.getParty(portal.getPortalOwner());
+
+        if (portal.isDoneGenerating()) {
+            if (party != null) {
+                if (party.isMember(player)) {
+                    portal.handlePortalUse(player, from.getBlock());
+                    return;
+                }
+            } else if (player.equals(portal.getPortalOwner())) {
+                Affair.createParty(portal.getPortalOwner());
+                portal.handlePortalUse(player, from.getBlock());
+                return;
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "Please wait for the rift to fully open!");
+            player.setVelocity(new Vector(1, 0, 0));
+        }
+        player.sendMessage(ChatColor.RED + "You must be in " + portal.getPortalOwner().getName() + "'s Party to enter their Rift!");
+        player.setVelocity(new Vector(1, 0, 0));
+
     }
 
     public void handleLogout(Player player) {

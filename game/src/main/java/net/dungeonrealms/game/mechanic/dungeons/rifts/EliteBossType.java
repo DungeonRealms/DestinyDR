@@ -6,5 +6,5 @@ package net.dungeonrealms.game.mechanic.dungeons.rifts;
 public enum EliteBossType {
 
     CLEAR_FLOOR,
-    AURA
+    ZONE_ONLY
 }
