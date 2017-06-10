@@ -12,7 +12,8 @@ public class CustomEntityTippedArrow extends EntityTippedArrow implements Custom
 
     @Override
     protected void a(MovingObjectPosition movingobjectposition) {
-        if (onCollision(movingobjectposition, this.shooter))
+        if (onCollision(movingobjectposition, this.shooter)) {
             super.a(movingobjectposition);
+        }
     }
 }

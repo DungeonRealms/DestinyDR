@@ -690,6 +690,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+        Bukkit.getLogger().info("Entity Damage: " + event.isCancelled());
         if (event.getEntity().getType() != EntityType.ITEM_FRAME)
             return;
 

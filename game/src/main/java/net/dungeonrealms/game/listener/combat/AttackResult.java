@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.CustomEntityTippedArrow;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -108,7 +109,7 @@ public class AttackResult {
 		PlayerWrapper damager = PlayerWrapper.getWrapper(getAttacker().getPlayer());
 		Player defender = getDefender().getPlayer();
 		Player attacker = getAttacker().getPlayer();
-		
+
 		if (getWeightedDamage() >= HealthHandler.getHP(defender) && receiver.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
             if (damager.getAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 if (getAttacker().getWrapper().getToggles().getState(Toggles.CHAOTIC_PREVENTION)) {

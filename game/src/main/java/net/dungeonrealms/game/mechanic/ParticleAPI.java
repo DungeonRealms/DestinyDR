@@ -151,4 +151,18 @@ public class ParticleAPI {
     public static void spawnParticle(Particle p, Location loc, double xOff, double yOff, double zOff, int count, float speed) {
         GameAPI.getNearbyPlayersAsync(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
     }
+
+    /**
+     * Spawns a particle at the given location. Async Safe.
+     * @param p
+     * @param loc
+     * @param xOff
+     * @param yOff
+     * @param zOff
+     * @param count
+     * @param speed
+     */
+    public static void spawnParticleWithData(Particle p, Location loc, double xOff, double yOff, double zOff, int count, float speed, int data) {
+        GameAPI.getNearbyPlayersAsync(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, speed, xOff, yOff, zOff, data));
+    }
 }

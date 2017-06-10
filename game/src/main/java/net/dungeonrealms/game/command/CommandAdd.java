@@ -93,6 +93,16 @@ public class CommandAdd extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "/ad " + args[0] + " <name>");
                     }
                     break;
+                case "riftcrystal":
+                case "riftfragment":
+                    int t = Integer.parseInt(args[1]);
+                    int amount = args.length == 3 ? Integer.parseInt(args[2]) : 1;
+                    if (args[0].equals("riftcrystal")) {
+                        player.getInventory().addItem(new ItemRiftCrystal(ItemTier.getByTier(t), amount).generateItem());
+                    } else if (args[1].equals("riftfragment")) {
+                        player.getInventory().addItem(new ItemRiftFragment(ItemTier.getByTier(t), amount).generateItem());
+                    }
+                    break;
                 case "attributes":
                     player.sendMessage(ChatColor.GREEN + "Player Attributes:");
                     PlayerWrapper pw = PlayerWrapper.getWrapper(player);

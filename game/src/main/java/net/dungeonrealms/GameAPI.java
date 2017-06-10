@@ -1250,6 +1250,33 @@ public class GameAPI {
         return false;
     }
 
+    public static boolean isAnyMaterialNearby(Block block, int maxradius, List<Material> materials) {
+        BlockFace[] faces = new BlockFace[]{BlockFace.UP, BlockFace.NORTH, BlockFace.EAST};
+        BlockFace[][] orth = {{BlockFace.NORTH, BlockFace.EAST}, {BlockFace.UP, BlockFace.EAST},
+                {BlockFace.NORTH, BlockFace.UP}};
+        for (int r = 0; r <= maxradius; r++) {
+            for (int s = 0; s < 6; s++) {
+                BlockFace f = faces[s % 3];
+                BlockFace[] o = orth[s % 3];
+                if (s >= 3) {
+                    f = f.getOppositeFace();
+                }
+                if (!(block.getRelative(f, r) == null)) {
+                    Block c = block.getRelative(f, r);
+                    for (int x = -r; x <= r; x++) {
+                        for (int y = -r; y <= r; y++) {
+                            Block a = c.getRelative(o[0], x).getRelative(o[1], y);
+                            if (materials.contains(a.getType())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean removePortalShardsFromPlayer(Player player, ShardTier tier, int amount) {
         if (amount <= 0)
             return amount == 0;

@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -108,14 +109,23 @@ public class DungeonManager implements GenericMechanic {
                 return;
             }
 
-            if (d.getAllPlayers().isEmpty() && !(d instanceof EliteRift)) {
-                d.remove();
-                return;
+            if (d.getAllPlayers().isEmpty()) {
+                if (!(d instanceof EliteRift)) {
+                    d.remove();
+                    return;
+                } else {
+                    //Check if we have any lives left?
+                    RiftPortal portal = RiftPortal.getPortalFromDungeon(d);
+                    if (portal != null && portal.getAttemptsLeft() <= 0) {
+                        portal.removePortals(true);
+                        return;
+                    }
+                }
             }
 
             d.attemptTaunt();
 
-            if(!(d instanceof EliteRift)) {
+            if (!(d instanceof EliteRift)) {
                 // Give reminders.
                 for (int r : REMINDERS)
                     if (d.getTime() == r * 20 * 60)

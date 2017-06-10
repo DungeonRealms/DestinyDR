@@ -48,7 +48,7 @@ public enum BossType {
 	   		-54, 158, 646,
     		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F),
 
-	RiftEliteBoss("Rift Jumper Mega Hulk", CustomEntityType.RIFT_ELITE, "evil fire demon known as",
+	RiftEliteBoss("Rift Lurker", CustomEntityType.RIFT_ELITE, "evil fire demon known as",
 			"I have nothing to say to you foolish mortals, except for this: Burn.",
 			"You...have... defeated me...ARGHHHH!!!!!",
 			-1, 1, 1,

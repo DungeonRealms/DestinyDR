@@ -11,15 +11,16 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.functional.ItemRiftCrystal;
+import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.EntityArrow;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -30,6 +31,7 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -91,6 +93,42 @@ public class RiftMechanics implements GenericMechanic, Listener {
                 portal.onUpdate();
         }, 20, 5);
 
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Player pl : GameAPI.asyncTracker) {
+                //Alive for alteast 10 seconds?
+                if (pl.isOnline() && pl.getTicksLived() >= 20 * 10) {
+                    for (int i = 0; i < pl.getInventory().getSize(); i++) {
+                        ItemStack item = pl.getInventory().getItem(i);
+                        //Should be a nono, but I want this to be fast so pls dun change
+                        if (item != null && item.getType() != Material.AIR && item.getType() == Material.PRISMARINE_SHARD && item.getAmount() >= ItemRiftFragment.RIFT_COST) {
+                            int newFragment = item.getAmount() - ItemRiftFragment.RIFT_COST;
+
+                            PersistentItem persis = PersistentItem.constructItem(item);
+                            if (persis != null && persis instanceof ItemRiftFragment) {
+                                ItemRiftFragment fragment = (ItemRiftFragment) persis;
+
+                                ItemRiftCrystal newCrystal = new ItemRiftCrystal(fragment.getFragmentTier(), 1);
+                                if (newFragment <= 0) {
+                                    //Just set this slot to the new one?
+                                    pl.getInventory().setItem(i, newCrystal.generateItem());
+                                } else {
+                                    item.setAmount(newFragment);
+                                    //Add
+                                    GameAPI.giveOrDropItem(pl, newCrystal.generateItem());
+                                }
+
+                                pl.updateInventory();
+//                                pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, .5F, .8F);
+                                pl.playSound(pl.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1.1F);
+                                pl.playSound(pl.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 1, .4F);
+                                pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_ARMOR, 1, 1.1F);
+                                pl.sendMessage(fragment.getFragmentTier().getColor().toString() + ChatColor.BOLD + "* Your bag rustles as your Rift Fragments combine *");
+                            }
+                        }
+                    }
+                }
+            }
+        }, 20, 20 * 3);
     }
 
     @SneakyThrows
@@ -180,17 +218,23 @@ public class RiftMechanics implements GenericMechanic, Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        Bukkit.getLogger().info("Teleport event: " + event);
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
             event.setCancelled(true);
             if (event.getFrom() == null || !GameAPI.isMainWorld(event.getFrom().getWorld())) return;
 
-            RiftPortal portal = RiftPortal.getRiftPortalFromBlock(event.getFrom().getBlock());
-            if (portal == null) return;
+            Block block = event.getTo().getBlock();
+            //Use the bottom block.
+            if (block.getRelative(BlockFace.DOWN).getType() == Material.END_GATEWAY)
+                block = block.getRelative(BlockFace.DOWN);
 
-            handlePortalTeleport(event.getPlayer(), portal, event.getFrom());
+            RiftPortal portal = RiftPortal.getRiftPortalFromBlock(block);
+            if (portal == null) {
+                return;
+            }
+
+            handlePortalTeleport(event.getPlayer(), portal, block.getLocation());
         }
     }
 
@@ -221,7 +265,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
         RiftPortal active = RiftPortal.getRiftPortal(player);
         if (active != null) {
             //Destroy rift.
-            active.removePortals();
+            active.removePortals(false);
         }
     }
 

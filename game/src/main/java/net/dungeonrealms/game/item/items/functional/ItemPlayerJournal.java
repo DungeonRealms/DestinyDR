@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item.items.functional;
 
 import java.util.Arrays;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -93,9 +94,9 @@ public class ItemPlayerJournal extends FunctionalItem implements ItemClickListen
             
 			if (b1.getType() != Material.AIR || b2.getType() != Material.AIR)
 				return;
-			
-			boolean foundNearbyBlocks = GameAPI.isMaterialNearby(b1, 2, Material.CHEST)
-					|| GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) || GameAPI.isMaterialNearby(b1, 3, Material.PORTAL);
+
+			//Just scan once and do like 4 compares instead of 4 loops.
+			boolean foundNearbyBlocks = GameAPI.isAnyMaterialNearby(b1, 2, Lists.newArrayList(Material.CHEST, Material.ENDER_CHEST, Material.PORTAL, Material.END_GATEWAY));
 			
 			if (!GameAPI.isInSafeRegion(b1.getLocation()) || foundNearbyBlocks || !GameAPI.isMainWorld(b1.getWorld())) {
 				player.sendMessage(ChatColor.RED + "You cannot place a shop here.");

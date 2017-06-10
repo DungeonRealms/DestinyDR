@@ -194,7 +194,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
 
                 }, 1L);
             } else {
-                player.sendMessage("You can't place a shop there");
+                player.sendMessage(ChatColor.RED + "You can't place a shop there!");
             }
         }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
         player.closeInventory();

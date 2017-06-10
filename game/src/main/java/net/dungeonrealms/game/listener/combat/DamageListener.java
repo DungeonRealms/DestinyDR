@@ -155,6 +155,9 @@ public class DamageListener implements Listener {
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
+        if (event.getDamager() instanceof Projectile) {
+            event.setCancelled(true);
+        }
         // Players who are still logging in are invulnerable.
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         if (pw == null || !pw.isAttributesLoaded())
@@ -804,7 +807,7 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player)
             event.setCancelled(true);
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL)

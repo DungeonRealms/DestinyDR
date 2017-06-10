@@ -272,8 +272,8 @@ public class RestrictionListener implements Listener {
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
-        if (!ItemWeapon.isWeapon(i))
-            return;
+//        if (!ItemWeapon.isWeapon(i))
+//            return;
 
         if (!canPlayerUseItem(p, i)) {
             event.setCancelled(true);
@@ -281,9 +281,12 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        // Play the noise.
-        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
-        PlayerWrapper.getPlayerWrapper(p).updateWeapon();
+
+        if(ItemWeapon.isWeapon(i)) {
+            // Play the noise.
+            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
+        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerWrapper.getPlayerWrapper(p).updateWeapon(), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

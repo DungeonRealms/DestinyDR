@@ -53,7 +53,8 @@ public enum ItemType {
 	SHOP("shopItem", ShopItem.class),
 //	MOUNT_SELECTOR("mountSelect", ItemMountSelector.class),
 	MOUNT_SKIN_SELECTOR("mountSkinSel", ItemMountSkin.class),
-	
+	RIFT_FRAGMENT("riftFragment", ItemRiftFragment.class),
+	RIFT_CRYSTAL("riftCrystal", ItemRiftCrystal.class),
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
@@ -89,9 +90,7 @@ public enum ItemType {
 	QUEST_COMPASS("questCompass", ItemQuestCompass.class),
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
 	OPEN_PROFILE("profile", ItemPlayerProfile.class),
-	EXP_LAMP("expLamp", ItemEXPLamp.class),
-	RIFT_FRAGMENT("riftFragment", ItemRiftFragment.class);
-	
+	EXP_LAMP("expLamp", ItemEXPLamp.class);
 	private final String NBT;
 	private final Class<? extends PersistentItem> itemClass;
 	private final GeneratedItemType type;

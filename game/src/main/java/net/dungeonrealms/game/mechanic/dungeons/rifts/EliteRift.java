@@ -6,41 +6,54 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.*;
 import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.type.monster.boss.RiftEliteBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.lingala.zip4j.core.ZipFile;
+import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.EntityAreaEffectCloud;
+import net.minecraft.server.v1_9_R2.EntityDragonFireball;
+import net.minecraft.server.v1_9_R2.EntityEnderDragon;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftAreaEffectCloud;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Created by Rar349 on 6/7/2017.
@@ -58,21 +71,20 @@ public class EliteRift extends Dungeon {
     private MapData map;
     @Setter
     private int ourTier = 1;
-    @Getter
-    private EliteBossType bossType;
     private int taskID = -1;
     private long lastMinionSpawn;
     @Getter
     private long startTime;
     private int totalSpawnedMinions = 0;
 
-    private CraftAreaEffectCloud cloud;
+    //@Getter
+    //private Block currentBlackHole;
+    @Getter
+    private List<Block> blackHoles = new CopyOnWriteArrayList<>();
 
     public EliteRift(List<Player> players) {
         super(DungeonType.ELITE_RIFT, players);
         map = MapData.values()[ThreadLocalRandom.current().nextInt(MapData.values().length)];
-        //bossType = EliteBossType.values()[ThreadLocalRandom.current().nextInt(EliteBossType.values().length)];
-        bossType = EliteBossType.ZONE_ONLY;
     }
 
     @Override
@@ -108,7 +120,7 @@ public class EliteRift extends Dungeon {
     }
 
     private boolean canSpawnAMinion() {
-        return System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 10 && totalSpawnedMinions < 50;
+        return !isFinished() && System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 10 && totalSpawnedMinions < 50;
     }
 
     public int getNumberOfSpawnedMinions() {
@@ -125,6 +137,7 @@ public class EliteRift extends Dungeon {
         return toReturn;
     }
 
+
     public void spawnAMinion() {
         if (!canSpawnAMinion()) return;
 
@@ -133,6 +146,8 @@ public class EliteRift extends Dungeon {
         LivingEntity le = (LivingEntity) EntityAPI.spawnCustomMonster(loc, monsterType, Utils.randInt(25, 50), ourTier, null, "Rift Minion");
         le.setRemoveWhenFarAway(false);
         le.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(60);
+        getWorld().playSound(loc,Sound.ENTITY_ENDERMEN_TELEPORT, 1f, 1f);
+        ParticleAPI.spawnParticle(Particle.PORTAL, loc.clone().add(.5, 1, .5), .24F, 1F, .24F, 30, .1F);
         minions.add(le);
         lastMinionSpawn = System.currentTimeMillis();
         totalSpawnedMinions++;
@@ -140,6 +155,7 @@ public class EliteRift extends Dungeon {
 
     private Location getRandomMinionLocation() {
         Location center = getMap().getCenterLocation().clone();
+        center.add(0,4,0);
         center.setWorld(getWorld());
         center.add(ThreadLocalRandom.current().nextInt(getMap().getMapRadius()), 0, ThreadLocalRandom.current().nextInt(getMap().getMapRadius()));
         return center;
@@ -147,55 +163,143 @@ public class EliteRift extends Dungeon {
 
     public void tick() {
         if (getWorld() == null) return;
-        spawnAMinion();
-        if (bossType.equals(EliteBossType.CLEAR_FLOOR)) {
-            for (Map.Entry<Location, Tuple<MaterialData, Long>> entry : blockTypes.entrySet()) {
-                Location blockLoc = entry.getKey();
-                Tuple<MaterialData, Long> values = entry.getValue();
-                MaterialData data = values.a();
-                Long time = values.b();
-                if (System.currentTimeMillis() - time > 20000) {
-                    Block b = getWorld().getBlockAt(blockLoc);
-                    b.setType(data.getItemType());
-                    b.setData(data.getData());
-                    blockTypes.remove(blockLoc);
-                }
-            }
 
-            if (!isFinished() && System.currentTimeMillis() - startTime > 10000) {
-                RiftEliteBoss boss = (RiftEliteBoss) getBoss();
-                Player target = boss.getTarget();
-                if (target != null) {
-                    if (target.getWorld() == getWorld()) {
-                        Long lastMovement = lastMovements.get(target);
-                        if (lastMovement != null && (System.currentTimeMillis() - lastMovement < 3000)) return;
-                        Block bl = target.getLocation().subtract(0, 1, 0).getBlock();
-                        for (int x = bl.getX() - 2; x < bl.getX() + 2; x++) {
-                            for (int z = bl.getZ() - 2; z < bl.getZ() + 2; z++) {
-                                Location newBlockLoc = new Location(getWorld(), x, bl.getY(), z);
-                                Block newBlock = newBlockLoc.getBlock();
-                                if (newBlock == null || newBlock.getType().equals(Material.STATIONARY_LAVA) || newBlock.getType().equals(Material.AIR) || newBlock.getType().equals(Material.LAVA))
-                                    continue;
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                    MaterialData data = new MaterialData(newBlock.getType(), newBlock.getData());
-                                    this.getBlockTypes().put(newBlock.getLocation(), new Tuple<>(data, System.currentTimeMillis()));
-                                    newBlock.setType(Material.STATIONARY_LAVA);
-                                }, 5);
-                            }
-                        }
+        RiftEliteBoss boss = (RiftEliteBoss) this.boss;
+        spawnAMinion();
+
+        if (bossInLava()) handleBossInLava();
+        else if (!boss.isInAir() && ThreadLocalRandom.current().nextInt(100) == 4) boss.jump(4);
+
+        repairBlocksNaturally();
+
+        if (!isFinished() && System.currentTimeMillis() - startTime > 10000) {
+            Player target = boss.getTarget();
+            if (target != null) {
+                if (target.getWorld() == getWorld()) {
+                    Long lastMovement = lastMovements.get(target);
+                    if (lastMovement == null || (System.currentTimeMillis() - lastMovement > 3000)) {
+                        handlePlayerNotMoving(target);
                     }
                 }
             }
-        } else if (bossType.equals(EliteBossType.ZONE_ONLY)) {
-            boolean canTeleport;
-            if(cloud == null) canTeleport = true;
-            else if(!cloud.hasMetadata("lastTeleport")) canTeleport = true;
-            else {
-                Long lastTeleport = cloud.getMetadata("lastTeleport").get(0).asLong();
-                canTeleport = System.currentTimeMillis() - lastTeleport > 10000;
-            }
+        }
 
-            if(canTeleport) setCurrentAOELocation(getRandomMinionLocation());
+    }
+
+    public Block getNearestBlackHole(Player player) {
+        double lowestDistance = Double.MAX_VALUE;
+        Block toReturn = null;
+        for(Block block : getBlackHoles()){
+            double distance = block.getLocation().distanceSquared(player.getLocation());
+            if(distance > (10*10)) continue;
+            if(distance < lowestDistance) {
+                toReturn = block;
+                lowestDistance = distance;
+            }
+        }
+
+        return toReturn;
+    }
+
+    public void clearBlackHoles() {
+        for(Block block : blackHoles) {
+            if (block == null || block.getType() != Material.END_GATEWAY) continue;
+            block.setType(Material.AIR);
+        }
+
+        blackHoles.clear();
+
+    }
+
+    private void pullPlayersToBlackHole() {
+        RiftEliteBoss boss = (RiftEliteBoss) this.boss;
+        if(!boss.getStage().equals(RiftEliteBoss.BossStage.BLACK_HOLE) || getBlackHoles().isEmpty()) return;
+            for(Player player : getWorld().getPlayers()) {
+                Block blackHole = getNearestBlackHole(player);
+                if(blackHole == null) continue;
+                double distance = blackHole.getLocation().distanceSquared(player.getLocation());
+                Vector current = player.getVelocity();
+                Vector vel = current.add(blackHole.getLocation().toVector().subtract(player.getLocation().toVector()));
+                /*if(vel.length() != 0)
+                    vel.normalize();*/
+
+                int maxDistance = 100;
+
+                player.setVelocity(vel.multiply(0.0003 * (maxDistance - distance)));
+                System.out.println(player.getVelocity().toString());
+                ((CraftPlayer)player).getHandle().velocityChanged = true; //keep running.
+            }
+    }
+
+    private boolean bossInLava() {
+        if(boss == null || boss.getBukkit() == null || boss.getBukkit().isDead()) return false;
+        Block standing = boss.getBukkit().getLocation().getBlock();
+        Block under = boss.getBukkit().getLocation().clone().subtract(0,1,0).getBlock();
+        return standing.getType().equals(Material.LAVA) || standing.getType().equals(Material.STATIONARY_LAVA) || under.getType().equals(Material.LAVA) || under.getType().equals(Material.STATIONARY_LAVA);
+    }
+
+    private void handleBossInLava() {
+        RiftEliteBoss boss = (RiftEliteBoss) getBoss();
+        boss.jump(4);
+        Block bl = boss.getBukkit().getLocation().subtract(0, 1, 0).getBlock();
+        repairBlocks(bl.getLocation(),3);
+    }
+
+    public void repairBlocksNaturally() {
+        repairBlocksNaturally(false);
+    }
+
+    public void repairBlocksNaturally(boolean overrideTime) {
+        for (Map.Entry<Location, Tuple<MaterialData, Long>> entry : blockTypes.entrySet()) {
+            Location blockLoc = entry.getKey();
+            Tuple<MaterialData, Long> values = entry.getValue();
+            MaterialData data = values.a();
+            Long time = values.b();
+            if (overrideTime || System.currentTimeMillis() - time > 20000) {
+                Block b = getWorld().getBlockAt(blockLoc);
+                b.setType(data.getItemType());
+                b.setData(data.getData());
+                blockTypes.remove(blockLoc);
+            }
+        }
+    }
+
+    private void repairBlocks(Location center, int radius) {
+        for (int x = center.getBlock().getX() - radius; x < center.getBlock().getX() + radius; x++) {
+            for (int z = center.getBlock().getZ() - radius; z < center.getBlock().getZ() + radius; z++) {
+                Location newBlockLoc = new Location(getWorld(), x, center.getBlock().getY(), z);
+                for(Map.Entry<Location, Tuple<MaterialData, Long>> entry : blockTypes.entrySet()) {
+                    Location mapLoc = entry.getKey();
+                    if(mapLoc.getX() == newBlockLoc.getX() && mapLoc.getZ() == newBlockLoc.getZ()) {
+                        Tuple<MaterialData, Long> values = entry.getValue();
+                        MaterialData data = values.a();
+                        Block b = getWorld().getBlockAt(mapLoc);
+                        b.setType(data.getItemType());
+                        b.setData(data.getData());
+                        blockTypes.remove(mapLoc);
+                    }
+                }
+            }
+        }
+    }
+
+    private void handlePlayerNotMoving(Player player) {
+        RiftEliteBoss boss = (RiftEliteBoss)this.boss;
+        if(boss.getStage().equals(RiftEliteBoss.BossStage.LAVA_TRAIL) && (System.currentTimeMillis() - boss.getLastStageSwitch() > 5000)) {
+            Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
+            for (int x = bl.getX() - 2; x < bl.getX() + 2; x++) {
+                for (int z = bl.getZ() - 2; z < bl.getZ() + 2; z++) {
+                    Location newBlockLoc = new Location(getWorld(), x, bl.getY(), z);
+                    Block newBlock = newBlockLoc.getBlock();
+                    if (newBlock == null || newBlock.getType().equals(Material.STATIONARY_LAVA) || newBlock.getType().equals(Material.AIR) || newBlock.getType().equals(Material.LAVA))
+                        continue;
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        MaterialData data = new MaterialData(newBlock.getType(), newBlock.getData());
+                        this.getBlockTypes().put(newBlock.getLocation(), new Tuple<>(data, System.currentTimeMillis()));
+                        newBlock.setType(Material.STATIONARY_LAVA);
+                    }, 5);
+                }
+            }
         }
     }
 
@@ -275,11 +379,16 @@ public class EliteRift extends Dungeon {
     public DungeonBoss spawnBoss(BossType type) {
         Location loc = map.getBossLocation();
         //if (bossType.equals(EliteBossType.CLEAR_FLOOR)) {
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (getWorld() == null) return;
-            tick();
-        }, 5, 5);
-        //}
+        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new Runnable() {
+
+            int ticks = 0;
+            @Override
+            public void run() {
+                if (ticks++ % 5 == 0) tick();
+                pullPlayersToBlackHole();
+
+            }
+        },1,1);
         return spawnBoss(type, new Location(getWorld(), loc.getX(), loc.getY(), loc.getZ()));
     }
 
@@ -333,9 +442,39 @@ public class EliteRift extends Dungeon {
 
         RiftPortal associate = RiftPortal.getPortalFromDungeon(this);
         if (associate != null) {
-            associate.removePortals();
+            associate.removePortals(false);
         }
         if (taskID > -1) Bukkit.getScheduler().cancelTask(taskID);
+    }
+
+    @Override
+    protected void giveDrops() {
+        LivingEntity livingEntity = getBoss().getBukkit();
+
+            // Drop the item.
+            ItemStack drop = new ItemArmorShield().setTier(ourTier).setRarity(ThreadLocalRandom.current().nextInt(100) > 60 ? Item.ItemRarity.UNIQUE : Item.ItemRarity.RARE).setGlowing(true).generateItem();
+
+            drop.getEnchantments().keySet().forEach(ench -> drop.removeEnchantment(ench));
+            EnchantmentAPI.removeGlow(drop);
+
+            // Remove any enchants.
+            ItemMeta meta = drop.getItemMeta();
+            drop.setItemMeta(meta);
+
+
+            // Drop the item.
+            ItemStack reward = drop;
+            livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
+
+            // Alert the players.
+            List<String> hoveredChat = new ArrayList<>();
+            hoveredChat.add(meta.hasDisplayName() ? meta.getDisplayName() : reward.getType().name());
+            if (meta.hasLore())
+                hoveredChat.addAll(meta.getLore());
+
+            final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
+            normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
+            livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
     }
 
     @Override
@@ -356,27 +495,10 @@ public class EliteRift extends Dungeon {
             b.setData(data.getData());
             blockTypes.remove(blockLoc);
         }
-    }
 
-
-    public void setCurrentAOELocation(Location loc) {
-        if (!this.bossType.equals(EliteBossType.ZONE_ONLY))
-            throw new IllegalStateException("Illegal boss type for AOE!");
-        if (this.cloud == null) {
-            EntityAreaEffectCloud entity = new EntityAreaEffectCloud(((CraftWorld) getWorld()).getHandle());
-            this.cloud = new CraftAreaEffectCloud((CraftServer) Bukkit.getServer(), entity);
-            this.cloud.setDuration(Integer.MAX_VALUE);
-            this.cloud.setColor(Color.RED);
-            this.cloud.setRadius(5000);
-            this.cloud.setParticle(Particle.REDSTONE);
-            ((CraftWorld) getWorld()).getHandle().addEntity(this.cloud.getHandle(), CreatureSpawnEvent.SpawnReason.CUSTOM);
-            entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-            this.cloud.addCustomEffect(new PotionEffect(PotionEffectType.GLOWING,0,0),true);
-            this.cloud.setRadiusPerTick(1);
-            this.cloud.setRadiusOnUse(1);
-            this.cloud.setBasePotionData(new PotionData(PotionType.NIGHT_VISION));
+        for(Entity ent : minions) {
+            if(ent == null) continue;
+            ent.remove();
         }
-        this.cloud.teleport(loc);
-        this.cloud.setMetadata("lastTeleport", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
 }

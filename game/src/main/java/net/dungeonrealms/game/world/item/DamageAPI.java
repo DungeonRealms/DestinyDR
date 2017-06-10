@@ -32,17 +32,19 @@ import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.EntityArrow;
+import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -106,9 +108,9 @@ public class DamageAPI {
                     damage = damage * (1 + (strValue * 0.0002));
                 }
             }
-        } else if(attacker.isPlayer()) {
+        } else if (attacker.isPlayer()) {
             ItemType type = weapon.getItemType();
-             if (type == ItemType.STAFF) {
+            if (type == ItemType.STAFF) {
                 int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 damage = damage * (1 + (intValue * 0.0002));
             } else if (type == ItemType.BOW) {
@@ -228,19 +230,17 @@ public class DamageAPI {
         //Armor Reduction.
         ItemType type = weapon.getItemType();
         boolean isBlocking = attacker.isPlayer() && attacker.getPlayer().isBlocking();
-        if(type.equals(ItemType.AXE) || type.equals(ItemType.SWORD) || type.equals(ItemType.POLEARM)) {
-            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
-            if(!isBlocking) reductionPercent /= 2;
-            double damageReduction = reductionPercent / 100;
-            damage = damage * (1 - damageReduction);
-        } else if(type.equals(ItemType.BOW)) {
-            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
-            if(!isBlocking) reductionPercent /= 2;
-            double damageReduction = reductionPercent / 100;
-            damage = damage * (1 - damageReduction);
-        } else if(type.equals(ItemType.STAFF)) {
-            int reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
-            if(!isBlocking) reductionPercent /= 2;
+        Integer reductionPercent = null;
+        if (type.equals(ItemType.AXE) || type.equals(ItemType.SWORD) || type.equals(ItemType.POLEARM)) {
+            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
+        } else if (type.equals(ItemType.BOW)) {
+            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
+        } else if (type.equals(ItemType.STAFF)) {
+            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
+        }
+
+        if (reductionPercent != null) {
+            if (!isBlocking) reductionPercent /= 2;
             double damageReduction = reductionPercent / 100;
             damage = damage * (1 - damageReduction);
         }
@@ -605,7 +605,7 @@ public class DamageAPI {
         double accuracy = !(attacker instanceof Player) ? 85 + Utils.randInt(staff.getTier().getTierId() * 3) : attributes.getAttribute(WeaponAttributeType.PRECISION).getValue();
         org.bukkit.util.Vector vector = null;
 
-        if(target != null) {
+        if (target != null) {
             vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
         }
 
@@ -719,13 +719,18 @@ public class DamageAPI {
         EntityMechanics.setVelocity(damaged, unitVector.multiply(hitCounter >= 2 ? .35 : .45));
     }
 
-    public static void knockbackEntity(Player p, Entity ent, double speed) {
+    public static void knockbackEntity(Entity p, Entity ent, double speed) {
         if (ent instanceof Horse || ent instanceof ArmorStand) {
             return;
         }
         // Get velocity unit vector:
         org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector());
 
+        if (unitVector.length() == 0 && p instanceof Projectile) {
+            //Recalc off direction?
+            unitVector = p.getLocation().getDirection().normalize();
+            Bukkit.getLogger().info("Recalcing vector due to projectile code.");
+        }
         //Dont cause NaN.
         if (unitVector.length() > 0) unitVector.normalize();
 
@@ -736,6 +741,38 @@ public class DamageAPI {
 
         EntityMechanics.setVelocity(ent, unitVector.multiply(speed));
     }
+
+    public static void knockbackEntityVanilla(Entity entity, float strength, Location damagerLocation) {
+        double d0 = damagerLocation.getX() - entity.getLocation().getX();
+        double d1 = damagerLocation.getZ() - entity.getLocation().getZ();
+//        this.impulse = true;
+        float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
+        org.bukkit.util.Vector vel = entity.getVelocity();
+        vel.divide(new Vector(2, 1, 2));
+
+        vel.subtract(new Vector(d0 / (double) f1 * (double) strength, 0, d1 / (double) f1 * (double) strength));
+//        this.motX /= 2.0D;
+//        this.motZ /= 2.0D;
+//        this.motX -= d0 / (double) f1 * (double) f;
+//        this.motZ -= d1 / (double) f1 * (double) f;
+        if (entity.isOnGround()) {
+//            this.motY /= 2.0D;
+            vel.divide(new Vector(1, 2, 1));
+            vel.add(new Vector(0, strength, 0));
+//            this.motY += (double) f;
+            if (vel.getY() > 0.4000000059604645D) {
+                vel.setY(0.4000000059604645D);
+            }
+        }
+
+
+        EntityMechanics.setVelocity(entity, vel);
+//        entity.setVelocity(vel);
+        //Dont stop sprinting?
+//        Bukkit.getLogger().info("Setting vel: " + vel.toString());
+//        ((CraftEntity) entity).getHandle().velocityChanged = false;
+    }
+
 
     @SuppressWarnings("deprecation")
     public static void newKnockbackEntity(Player p, Entity ent, double speed) {

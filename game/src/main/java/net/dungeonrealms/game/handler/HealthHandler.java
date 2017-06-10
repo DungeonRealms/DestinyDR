@@ -29,12 +29,17 @@ import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_9_R2.EntityHuman;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
+import net.minecraft.server.v1_9_R2.SoundEffects;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.AbstractProjectile;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -272,7 +277,7 @@ public class HealthHandler implements GenericMechanic {
             if (pw == null || !pw.isAttributesLoaded())
                 continue;
 
-            heal(player, getRegen(player),false);
+            heal(player, getRegen(player), false);
         }
     }
 
@@ -288,8 +293,9 @@ public class HealthHandler implements GenericMechanic {
             return;
 
         int newHP = getHP(e);
-    	if(showDebug)PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
-    			+ ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+        if (showDebug)
+            PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
+                    + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
     }
 
     /**
@@ -409,6 +415,23 @@ public class HealthHandler implements GenericMechanic {
         } else { // foreign damage
             DamageType type = DamageType.getByReason(cause);
             defender.sendDebug(ChatColor.RED + "     -" + (int) Math.ceil(damage) + ChatColor.BOLD + " HP " + type.getDisplay() + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
+
+        if (res.hasProjectile() && res.getDefender().isPlayer()) {
+            //Knockback?
+            Player pl = res.getDefender().getPlayer();
+
+            res.getDefender().getPlayer().playEffect(EntityEffect.HURT);
+            Projectile shot = res.getProjectile();
+
+            if (shot instanceof Arrow) {
+                shot.remove();
+                EntityHuman human = ((CraftPlayer) pl).getHandle();
+                human.k(human.bY() + 1);
+                ((AbstractProjectile) shot).getHandle().a(SoundEffects.t, 1.0F, 1.2F / (ThreadLocalRandom.current().nextFloat() * 0.2F + 0.9F));
+            }
+
+            DamageAPI.knockbackEntityVanilla(res.getDefender().getPlayer(), .25F, res.getAttacker().getEntity().getLocation());
         }
 
         Random r = ThreadLocalRandom.current();

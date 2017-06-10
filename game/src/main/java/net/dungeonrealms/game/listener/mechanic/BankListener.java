@@ -9,7 +9,10 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
-import net.dungeonrealms.game.item.items.functional.*;
+import net.dungeonrealms.game.item.items.functional.ItemGem;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
+import net.dungeonrealms.game.item.items.functional.ItemGemPouch;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.EnumUpgrade;
@@ -19,7 +22,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -189,8 +191,9 @@ public class BankListener implements Listener {
 
                 if (!evt.isLeftClick() && !evt.isRightClick())
                     return;
+                boolean isEmptyPouch = ItemGemPouch.isPouch(evt.getCursor()) && ((ItemGemPouch) PersistentItem.constructItem(evt.getCursor())).getGemValue() <= 0;
 
-                if (ItemMoney.isMoney(evt.getCursor())) {
+                if (ItemMoney.isMoney(evt.getCursor()) && !isEmptyPouch) {
                     // Deposit money.
                     handleMoneyDeposit(evt);
                     updateBank(evt.getInventory(), player.getUniqueId());
@@ -203,7 +206,7 @@ public class BankListener implements Listener {
                         return;
                     }
 
-                    if (!canItemBeStored(cursor) && !ItemManager.isItemPermanentlyUntradeable(cursor) || PersistentItem.isType(cursor, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(cursor, ItemType.PORTAL_RUNE)) {
+                    if (!canItemBeStored(cursor) && !isEmptyPouch && !ItemManager.isItemPermanentlyUntradeable(cursor) || PersistentItem.isType(cursor, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(cursor, ItemType.PORTAL_RUNE)) {
                         player.sendMessage(ChatColor.RED + "You can't store this item.");
                         return;
                     }
@@ -231,8 +234,10 @@ public class BankListener implements Listener {
         } else if (evt.isShiftClick()) {
             evt.setCancelled(true);
             ItemStack item = evt.getCurrentItem();
-            if(item == null || item.getType() == Material.AIR)return;
-            if (ItemMoney.isMoney(item)) {
+            if (item == null || item.getType() == Material.AIR) return;
+
+            boolean isEmptyPouch = ItemGemPouch.isPouch(item) && ((ItemGemPouch) PersistentItem.constructItem(item)).getGemValue() <= 0;
+            if (ItemMoney.isMoney(item) && isEmptyPouch) {
                 evt.setCancelled(true);
                 depositAllMoney(player);
 //                handleMoneyDeposit(evt);
@@ -290,7 +295,8 @@ public class BankListener implements Listener {
 
         Player player = (Player) evt.getWhoClicked();
         boolean isMoney = ItemMoney.isMoney(attemptAdd);
-        if (bottomInventory && !muleStorage) {
+        boolean isEmptyPouch = isMoney && ItemGemPouch.isPouch(attemptAdd) && ((ItemGemPouch) PersistentItem.constructItem(attemptAdd)).getGemValue() <= 0;
+        if (bottomInventory && !muleStorage && !isEmptyPouch) {
             //Check for add all gems / money?
             if (evt.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && isMoney) {
                 evt.setCancelled(true);
@@ -300,15 +306,18 @@ public class BankListener implements Listener {
         }
 
 
-        if (isMoney && !muleStorage)
+        if (isMoney && !muleStorage && !isEmptyPouch)
             handleMoneyDeposit(evt);
 
         if (!canItemBeStored(attemptAdd) && (muleStorage || !ItemManager.isItemPermanentlyUntradeable(attemptAdd)) || PersistentItem.isType(attemptAdd, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(attemptAdd, ItemType.PORTAL_RUNE)) {
-            evt.setCancelled(true);
-            evt.setResult(Event.Result.DENY);
-            return;
+            if (!isEmptyPouch) {
+                evt.setCancelled(true);
+                evt.setResult(Event.Result.DENY);
+                Bukkit.getLogger().info("Cant store.");
+                return;
+            }
         }
-        Bukkit.getLogger().info("Can be stored: " + canItemBeStored(attemptAdd) + " for " + attemptAdd);
+        Bukkit.getLogger().info("Can be stored: " + canItemBeStored(attemptAdd) + " for " + attemptAdd + " Pouch: " + isEmptyPouch);
     }
 
     /**

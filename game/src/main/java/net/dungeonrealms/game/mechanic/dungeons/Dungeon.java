@@ -212,8 +212,8 @@ public abstract class Dungeon {
 
         int perPlayerDrop = groupSize == 0 ? gemDrop : Math.round(gemDrop / groupSize);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            announce(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
-            announce(ChatColor.DARK_PURPLE + "Each player receives " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + perPlayerDrop + ChatColor.DARK_PURPLE + " gems!");
+            announce(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
+            announce(ChatColor.DARK_PURPLE + "Each player receives " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + perPlayerDrop + ChatColor.DARK_PURPLE + " gems!");
 
             if (groupSize == 0) {
                 Bukkit.getLogger().warning("Tried to give rewards to a dungeon with nobody in it?");

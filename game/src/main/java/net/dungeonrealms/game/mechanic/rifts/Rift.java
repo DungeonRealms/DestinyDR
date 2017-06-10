@@ -244,6 +244,7 @@ public class Rift {
             entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(35);
         } else {
             entity = (LivingEntity) EntityAPI.spawnCustomMonster(loc.add(0, .35, 0), r.nextInt(10) == 5 ? EnumMonster.StaffZombie : EnumMonster.Skeleton, tier * 20, tier, null, "Rift Minion");
+            entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(20);
         }
 
         if (leftSide) {
