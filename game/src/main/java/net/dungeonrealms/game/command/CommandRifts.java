@@ -23,7 +23,7 @@ public class CommandRifts extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
-            if (!Rank.isDev(sender)) return true;
+            if (!Rank.isHeadGM((Player) sender)) return true;
         }
 
 // /rift add <tier> <nearbyCity>

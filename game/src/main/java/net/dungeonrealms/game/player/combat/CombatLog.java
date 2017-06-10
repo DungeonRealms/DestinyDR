@@ -15,6 +15,7 @@ import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
@@ -147,7 +148,7 @@ public class CombatLog implements GenericMechanic {
      */
     public static void addToPVP(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null || !wrapper.isVulnerable() || inPVP(player))
+        if(wrapper == null || !wrapper.isVulnerable() || inPVP(player) || DuelingMechanics.isDueling(player.getUniqueId()))
         	return;
 
         PVP_COMBAT.put(player, 10);

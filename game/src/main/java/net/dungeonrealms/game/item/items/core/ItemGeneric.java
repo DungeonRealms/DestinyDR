@@ -176,9 +176,6 @@ public abstract class ItemGeneric extends PersistentItem {
             if (time > System.currentTimeMillis()) {
                 this.soulboundTrade = time;
                 this.soulboundAllowedTraders = Arrays.asList(getTagString("soulboundBypass").split(","));
-                Bukkit.getLogger().info("Soulbound trade: " + time + " with bypassers: " + this.soulboundAllowedTraders.toString() + " New Time: " + this.soulboundTrade);
-            } else {
-                Bukkit.getLogger().info("Time seems to have already passed: " + time);
             }
         }
 

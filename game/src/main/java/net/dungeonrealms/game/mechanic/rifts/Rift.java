@@ -11,6 +11,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -102,10 +103,11 @@ public class Rift {
         Bukkit.getLogger().info("Creating rift at " + getLocation());
     }
 
-    public boolean isRiftMinion(Entity entity){
-        if(this.spawnedEntities == null)return false;
+    public boolean isRiftMinion(Entity entity) {
+        if (this.spawnedEntities == null) return false;
         return this.spawnedEntities.contains(entity);
     }
+
     public void onRiftMinionDeath(Entity minion, EntityDeathEvent event) {
 
         Bukkit.getLogger().info("On Rift Minion Death!");
@@ -119,7 +121,12 @@ public class Rift {
             //Drop the crystal??
             minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, (float) (2 + Math.random()), (float) (Math.random() / 2 + .7F));
 
-            //Drop shit?
+            if(ThreadLocalRandom.current().nextInt(10) == 2) {
+                ItemStack shield = new ItemArmorShield().setTier(Item.ItemTier.getByTier(getTier())).setRarity(ThreadLocalRandom.current().nextInt(100) > 90 ? Item.ItemRarity.UNCOMMON : Item.ItemRarity.COMMON).setGlowing(true).generateItem();
+                minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), shield);
+            }
+
+          //Drop shit?
             ItemStack item = new ItemRiftFragment(Item.ItemTier.getByTier(getTier())).generateItem();
             item.setAmount(ThreadLocalRandom.current().nextInt(3) + 1);
             minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), item);
@@ -285,7 +292,11 @@ public class Rift {
         if (this.spawnedEntities == null) this.spawnedEntities = new ConcurrentSet<>();
 
         for (Entity ent : this.spawnedEntities) {
-            if (ent.isDead()) this.spawnedEntities.remove(ent);
+            if (ent.isDead() || !ent.isValid()) {
+                Bukkit.getLogger().info("Removing dead entity: " + ent);
+                spawned--;
+                this.spawnedEntities.remove(ent);
+            }
         }
 
         return this.spawnedEntities;

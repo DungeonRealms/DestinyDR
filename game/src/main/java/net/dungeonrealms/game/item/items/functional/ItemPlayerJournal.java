@@ -96,7 +96,7 @@ public class ItemPlayerJournal extends FunctionalItem implements ItemClickListen
 				return;
 
 			//Just scan once and do like 4 compares instead of 4 loops.
-			boolean foundNearbyBlocks = GameAPI.isAnyMaterialNearby(b1, 2, Lists.newArrayList(Material.CHEST, Material.ENDER_CHEST, Material.PORTAL, Material.END_GATEWAY));
+			boolean foundNearbyBlocks = GameAPI.isAnyMaterialNearby(b1, 3, Lists.newArrayList(Material.CHEST, Material.ENDER_CHEST, Material.PORTAL, Material.END_GATEWAY, Material.ENDER_PORTAL_FRAME));
 			
 			if (!GameAPI.isInSafeRegion(b1.getLocation()) || foundNearbyBlocks || !GameAPI.isMainWorld(b1.getWorld())) {
 				player.sendMessage(ChatColor.RED + "You cannot place a shop here.");

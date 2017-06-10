@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.world.shops;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -146,6 +148,13 @@ public class ShopMechanics implements GenericMechanic, Listener {
             }
             if (player.getWorld() != block.getWorld()) {
                 player.sendMessage(ChatColor.RED + "You cannot place a shop in this world.");
+                return;
+            }
+
+            boolean foundNearbyBlocks = GameAPI.isAnyMaterialNearby(block, 3, Lists.newArrayList(Material.CHEST, Material.ENDER_CHEST, Material.PORTAL, Material.END_GATEWAY, Material.ENDER_PORTAL_FRAME));
+
+            if (foundNearbyBlocks) {
+                player.sendMessage(ChatColor.RED + "You cannot place a shop here.");
                 return;
             }
 

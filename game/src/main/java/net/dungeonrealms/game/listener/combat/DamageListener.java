@@ -116,13 +116,11 @@ public class DamageListener implements Listener {
         if (GameAPI.isPlayer(event.getDamager()))
             if (GameAPI.getGamePlayer((Player) event.getDamager()) == null) {
                 event.setCancelled(true);
-                System.out.println("Cancelling entity damage 1");
             }
 
         if (GameAPI.isPlayer(event.getEntity()))
             if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) {
                 event.setCancelled(true);
-                System.out.println("Cancelling entity damage 2");
             }
     }
 
@@ -299,7 +297,6 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handlePlayerDeath(PlayerDeathEvent event) {
-        System.out.println("Fired player death event.");
         event.setDeathMessage("");
         final Player p = event.getEntity();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
@@ -428,8 +425,8 @@ public class DamageListener implements Listener {
         p.setGameMode(GameMode.SURVIVAL);
         //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-            PlayerManager.checkInventory(p);
             gearToSave.forEach(p.getInventory()::addItem);
+            PlayerManager.checkInventory(p);
             ItemManager.giveStarter(p);
         });
 

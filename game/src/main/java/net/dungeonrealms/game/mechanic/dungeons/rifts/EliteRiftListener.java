@@ -65,6 +65,7 @@ public class EliteRiftListener implements Listener {
         if(evt.getEntityType() != EntityType.FALLING_BLOCK) return;
         if (!DungeonManager.isDungeon(evt.getEntity().getWorld(), DungeonType.ELITE_RIFT)) return;
         EliteRift rift = (EliteRift) DungeonManager.getDungeon(evt.getEntity().getWorld());
+        if (rift == null || rift.isFinished()) return;
         FallingBlock block = (FallingBlock)evt.getEntity();
         if(block.getMaterial().equals(Material.COAL_BLOCK)) {
             evt.setCancelled(true);
@@ -83,6 +84,7 @@ public class EliteRiftListener implements Listener {
 
     @EventHandler
     public void onBlackHole(PlayerTeleportEvent evt) {
+        if (!DungeonManager.isDungeon(evt.getFrom().getWorld(), DungeonType.ELITE_RIFT)) return;
         if(evt.getCause() == PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
             evt.setCancelled(true);
             GameAPI.teleport(evt.getPlayer(), TeleportLocation.CYRENNICA.getLocation());

@@ -9,7 +9,6 @@ public interface CustomProjectileFireball extends CustomProjectile {
     @Override
     default boolean onCollision(MovingObjectPosition movingobjectposition, Entity shooter) {
         if (movingobjectposition.entity != null && (movingobjectposition.entity instanceof EntityFireball || !(movingobjectposition.entity instanceof EntityHuman) && !(shooter instanceof EntityHuman))) {
-            Bukkit.getLogger().info("Ignoring Fireball collision with " + movingobjectposition.entity);
             return false;
         }
         return true;

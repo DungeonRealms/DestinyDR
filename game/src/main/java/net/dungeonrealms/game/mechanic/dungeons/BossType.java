@@ -48,9 +48,9 @@ public enum BossType {
 	   		-54, 158, 646,
     		Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F),
 
-	RiftEliteBoss("Rift Lurker", CustomEntityType.RIFT_ELITE, "evil fire demon known as",
-			"I have nothing to say to you foolish mortals, except for this: Burn.",
-			"You...have... defeated me...ARGHHHH!!!!!",
+	RiftEliteBoss("The Rift Lurker", CustomEntityType.RIFT_ELITE, "void rift dweller known as",
+			"Puny race, you will crumble before my might!",
+			"You will never defeat me! This is not over!",
 			-1, 1, 1,
 			Sound.BLOCK_PORTAL_TRAVEL, 1F, 1F);
 	

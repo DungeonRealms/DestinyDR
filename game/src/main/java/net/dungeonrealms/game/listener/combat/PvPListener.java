@@ -7,6 +7,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -40,6 +41,8 @@ public class PvPListener implements Listener {
 
         Player attacker = isProjectile ? (Player) projectile.getShooter() : (Player) event.getDamager();
         if (event.getEntity() instanceof Player) {
+
+            if(MetadataUtils.Metadata.SHARDING.has(attacker)) return;
             Player defender = (Player) event.getEntity();
 
             // Projectiles can be knocked back into the player.

@@ -178,8 +178,6 @@ public class PvEListener implements Listener {
         if (active != null) {
             if (active.isRiftMinion(event.getEntity()))
                 active.onRiftMinionDeath(event.getEntity(), event);
-            else
-                Bukkit.getLogger().info("Didnt contain!");
         }
         //Handle Quest Kill Objective
         //This has to be declared a second time as final to be used in .forEach

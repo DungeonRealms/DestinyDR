@@ -7,6 +7,7 @@ import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.world.item.Item;
@@ -57,9 +58,16 @@ public class ItemRiftCrystal extends FunctionalItem implements ItemClickEvent.It
     @Override
     public void onClick(ItemClickEvent evt) {
         if (evt.hasBlock()) {
+
             int amount = evt.getItem().getItem().getAmount();
             Block block = evt.getClickedBlock();
             Player player = evt.getPlayer();
+
+            if (GameAPI.isCooldown(player, MetadataUtils.Metadata.RIFT_COOLDOWN)) {
+                player.sendMessage(ChatColor.RED + "Please wait 5s before trying to place another Rift Portal.");
+                return;
+            }
+
             if (block != null) {
                 Item.ItemTier currentlySummoning = summoning.getIfPresent(player.getUniqueId());
                 if (currentlySummoning != null) {
@@ -70,10 +78,12 @@ public class ItemRiftCrystal extends FunctionalItem implements ItemClickEvent.It
 
                 RiftPortal existingPortal = RiftPortal.getRiftPortal(player);
                 if (existingPortal != null) {
-                    player.sendMessage(ChatColor.RED + "You already have a Tier " + tier.getTierId() + " Rift Open!");
+                    player.sendMessage(ChatColor.RED + "You already have a Rift Open!");
                     player.sendMessage(ChatColor.GRAY + "Defeat it or use all attempts to seal the rift.");
                     return;
                 }
+
+                GameAPI.addCooldown(player, MetadataUtils.Metadata.RIFT_COOLDOWN, 5);
 
                 if (GameAPI.isInSafeRegion(evt.getPlayer().getLocation()) && GameAPI.isMainWorld(evt.getPlayer().getLocation())) {
 

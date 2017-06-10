@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mechanic.rifts;
 
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +18,7 @@ import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.world.item.Item;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -37,8 +39,7 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -71,7 +72,8 @@ public class RiftMechanics implements GenericMechanic, Listener {
 
 //    private int RESPAWN_TIME = 20 * 60 * 60;
 
-    private int RESPAWN_TIME = 20 * 60 * 5;
+    //1 Hour
+    private int RESPAWN_TIME = 20 * 60 * 60;
 
     @Override
     public void startInitialization() {
@@ -80,7 +82,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             this.spawnRift();
             //Every hour?
-        }, 20 * 10, RESPAWN_TIME);
+        }, RESPAWN_TIME, RESPAWN_TIME);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (this.activeRift != null)
@@ -270,7 +272,39 @@ public class RiftMechanics implements GenericMechanic, Listener {
     }
 
     public WorldRift getRandomRift() {
+        Map<Item.ItemTier, List<WorldRift>> riftMap = new HashMap<>();
+        for (WorldRift rift : worldRiftLocations) {
+            Item.ItemTier tier = Item.ItemTier.getByTier(rift.getTier());
+            List<WorldRift> current = riftMap.computeIfAbsent(tier, l -> Lists.newArrayList());
+            current.add(rift);
+        }
+
+        Random r = ThreadLocalRandom.current();
+        int random = r.nextInt(1000);
+        int tierChosen;
+        if (random < 300 && riftMap.containsKey(Item.ItemTier.TIER_1)) {
+            tierChosen = 1;
+        } else if (random <= 500 && riftMap.containsKey(Item.ItemTier.TIER_2)) {
+            tierChosen = 2;
+        } else if (random <= 700 && riftMap.containsKey(Item.ItemTier.TIER_3)) {
+            tierChosen = 3;
+        } else if (random <= 800 && riftMap.containsKey(Item.ItemTier.TIER_4)) {
+            tierChosen = 4;
+        } else if (random >= 900 && riftMap.containsKey(Item.ItemTier.TIER_5)) {
+            tierChosen = 5;
+        } else {
+            tierChosen = 1;
+        }
+
+        List<WorldRift> available = riftMap.get(Item.ItemTier.getByTier(tierChosen));
+        if (available.size() <= 0) {
+            Bukkit.getLogger().info("Unable to find any rifts for tier " + tierChosen);
+            return getRandomRift();
+        }
+
+        Bukkit.getLogger().info("Found valid rifts for tier: " + tierChosen + "(" + random + " chosen)");
+//        int tierChosen = r.nextInt(4) == 0 && riftMap.containsKey(Item.ItemTier.TIER_5) ? 5 : r.nextInt(4) == 0 && riftMap.containsKey(Item.ItemTier.TIER_4) ? ;
         //get random rift.
-        return this.worldRiftLocations.get(ThreadLocalRandom.current().nextInt(this.worldRiftLocations.size()));
+        return available.get(r.nextInt(available.size()));
     }
 }

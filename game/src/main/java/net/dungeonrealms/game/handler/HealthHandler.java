@@ -682,10 +682,8 @@ public class HealthHandler implements GenericMechanic {
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
 
-        if (EntityAPI.isElite(entity))
-            Bukkit.getLogger().info("Healh Potions from Attributes: " + totalHP);
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
-        double[] eliteModifier = new double[]{1.8, 2.5, 3, 4, 5.5};
+        double[] eliteModifier = new double[]{1.7, 2, 3, 4, 5};
 
         // Apply monster boosts.
         int tier = EntityAPI.getTier(entity);

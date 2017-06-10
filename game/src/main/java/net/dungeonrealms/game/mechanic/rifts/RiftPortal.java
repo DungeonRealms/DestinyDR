@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -97,22 +98,6 @@ public class RiftPortal {
         portalLocations.add(middle.getLocation().add(1, 0, 3));
         portalLocations.add(middle.getLocation().add(-1, 0, 3));
         portalLocations.add(middle.getLocation().add(-3, 0, 0));
-
-//        Location currentPortal = middle.getLocation();
-//        for (int i = 1; i < MAX_PORTALS + 1; i++) {
-//            if (i == 1) {
-//                //Start over in the back left?
-//                //Decrease z by 2 each time.
-//
-//                //Start at back corner.
-//                currentPortal.add(-2, 0, -2);
-//            } else if (i == 4) {
-//                currentPortal = middle.getLocation().add(2, 0, -2);
-//            } else {
-//                currentPortal.add(0, 0, 2);
-//            }
-//            portalLocations.add(currentPortal.clone());
-//        }
     }
 
     public boolean canPlacePortals() {
@@ -121,12 +106,23 @@ public class RiftPortal {
             if (lower.getType() != Material.AIR || lower.getRelative(BlockFace.UP).getType().isSolid() || !lower.getRelative(BlockFace.DOWN).getType().isSolid()) {
                 return false;
             }
+
+            //All blocks MUST be in the safezone.
+            if (!GameAPI.isInSafeRegion(loc)) return false;
         }
 
         if (this.middle.getLocation().getBlock().getType() != Material.AIR &&
                 this.middle.getLocation().add(0, 1, 0).getBlock().getType() != Material.AIR) {
             return false;
         }
+
+        if (GameAPI.isAnyMaterialNearby(middle, 4, Lists.newArrayList(Material.CHEST, Material.ENDER_CHEST, Material.TRAPPED_CHEST, Material.ANVIL, Material.ENDER_PORTAL_FRAME, Material.END_GATEWAY)))
+            return false;
+
+        RiftPortal portal = RiftPortal.getNearbyRiftPortal(this.middle.getLocation(), 15);
+        if (portal != null)
+            return false;
+
 
         Realm nearby = Realms.getInstance().getNearbyRealm(middle.getLocation(), 15);
 
@@ -178,6 +174,7 @@ public class RiftPortal {
         String line2 = tier.getColor() + "Opened by " + getPortalOwner().getName();
         String line3 = ChatColor.LIGHT_PURPLE.toString() + (MAX_PORTALS - portalsUsed) + " Portals Remaining";
         String line4 = ChatColor.WHITE.toString() + "Closing in " + TimeUtil.formatDifference(CLOSING_TIME == -1 ? MAX_ALIVE_TIME : (CLOSING_TIME - System.currentTimeMillis()) / 1000);
+
         if (hologram.size() <= 0) {
             hologram.appendTextLine(line1);
             hologram.appendTextLine(line2);
@@ -201,7 +198,9 @@ public class RiftPortal {
     }
 
     public void onPortalsGenerated() {
+
         CLOSING_TIME = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(MAX_ALIVE_TIME);
+
         for (Block block : portalBlocks) {
             if (block.getType() == Material.END_GATEWAY) {
                 TileEntityEndGateway gateway = ((CraftEndGateway) block.getState()).getTileEntity();
@@ -233,6 +232,9 @@ public class RiftPortal {
         if (portalsUsed == 0) {
             //First spawn?
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+                if (riftInstance.isFinished()) return;
+
                 riftInstance.spawnBoss(BossType.RiftEliteBoss);
             }, 20 * 3);
         }
@@ -292,7 +294,7 @@ public class RiftPortal {
         activeBlockPositions.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
         registerPortal(changeBlock(b, PORTAL, (byte) 2, true));
 
-        b.getWorld().playEffect(b.getLocation().add(0.5, 1, .5), Effect.DRAGON_BREATH, 0);
+//        b.getWorld().playEffect(b.getLocation().add(0.5, 1, .5), Effect.DRAGON_BREATH, 0);
 
         registerPortal(changeBlock(b.getRelative(BlockFace.UP), PORTAL, (byte) 2, true));
     }

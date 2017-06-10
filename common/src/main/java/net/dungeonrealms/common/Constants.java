@@ -32,7 +32,7 @@ public class Constants {
     public static int NET_WRITE_BUFFER_SIZE = 32768;
 
     // BUILD NUMBER //
-    public static String BUILD_NUMBER = "#2";
+    public static String BUILD_NUMBER = "#3";
 
     public static String RESOURCE_PACK = "https://www.dropbox.com/s/5czkvn6j527g5n9/DungeonRealmsPack.zip?dl=1";
     public static String STORE_URL = "www.dungeonrealms.net/oldshop";
