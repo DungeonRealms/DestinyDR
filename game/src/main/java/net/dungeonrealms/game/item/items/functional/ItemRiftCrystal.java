@@ -93,6 +93,12 @@ public class ItemRiftCrystal extends FunctionalItem implements ItemClickEvent.It
                         summoning.put(player.getUniqueId(), tier);
                         RiftPortal.getRiftPortalMap().put(player.getUniqueId(), portal);
                         portal.createPortals(done -> {
+                            if(done == null){
+                                player.sendMessage(ChatColor.RED + "Unable to open a portal through the rift...");
+//                                player.getInventory().addItem(generateItem());
+                                portal.removePortals(false);
+                                return;
+                            }
                             summoning.invalidate(player.getUniqueId());
                             Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Enter the Rift at your own risk!");
                             Utils.sendCenteredMessage(player, ChatColor.GRAY + "You have " + ChatColor.BOLD + "6" + ChatColor.GRAY + " attempts to defeat this rift!");

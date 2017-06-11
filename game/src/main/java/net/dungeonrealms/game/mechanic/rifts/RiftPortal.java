@@ -309,7 +309,7 @@ public class RiftPortal {
         if (this.hologram != null)
             this.hologram.delete();
 
-        if (riftInstance != null && !riftInstance.isFinished())
+        if (riftInstance != null && (!riftInstance.isFinished() || DungeonManager.getDungeons().contains(riftInstance)))
             riftInstance.remove();
 
         riftPortalMap.remove(getPortalOwner().getUniqueId());

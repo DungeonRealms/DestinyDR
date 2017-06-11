@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.HealTracker;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -26,6 +27,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -50,10 +52,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.inventivetalent.bossbar.BossBarAPI;
 import org.inventivetalent.bossbar.BossBarAPI.Style;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -63,6 +63,8 @@ public class HealthHandler implements GenericMechanic {
 
     @Getter
     private static HashMap<UUID, DamageTracker> monsterTrackers = new HashMap<>();
+
+    private volatile static Map<UUID, HealTracker> healTracker = new ConcurrentHashMap<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -74,6 +76,20 @@ public class HealthHandler implements GenericMechanic {
                 Bukkit.getServer().getOnlinePlayers().forEach(HealthHandler::updateBossBar), 0L, 20L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
 
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            healTracker.forEach((id, tracker) -> {
+                String cd = tracker.getHealTimer();
+                if (cd == null || !tracker.getPlayerHealing().isOnline()) {
+                    healTracker.remove(id);
+                    if (tracker.getPlayerHealing().isOnline())
+                        TitleAPI.sendActionBar(tracker.getPlayerHealing(), "", -1);
+
+                    return;
+                }
+
+                TitleAPI.sendActionBar(tracker.getPlayerHealing(), cd, -1);
+            });
+        }, 20, 2);
     }
 
     @Override
@@ -283,21 +299,42 @@ public class HealthHandler implements GenericMechanic {
         }
     }
 
-    public static void heal(Entity e, int amount, boolean showDebug) {
+    public static void trackHeal(Player entity) {
+        HealTracker tracker = healTracker.get(entity.getUniqueId());
+        if (tracker == null) {
+            tracker = new HealTracker(entity);
+            healTracker.put(entity.getUniqueId(), tracker);
+        } else {
+            tracker.trackHeal();
+        }
+    }
+
+    public static boolean heal(Entity e, int amount, boolean showDebug) {
         int currentHP = getHP(e);
         int maxHP = getMaxHP(e);
         if (currentHP >= maxHP || amount <= 0)
-            return; // Don't bother
+            return false; // Don't bother
+
+        if (amount > 0 && e instanceof Player) {
+            //Check alignment for heal decrease?
+            HealTracker tracker = healTracker.get(e.getUniqueId());
+            if (tracker != null && tracker.isOnCooldown()) {
+                amount *= tracker.getHealMultiplier();
+            }
+        }
+
         setHP(e, currentHP + amount);
 
         // Show message to players only.
         if (!(e instanceof Player))
-            return;
+            return true;
 
         int newHP = getHP(e);
         if (showDebug)
             PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
                     + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+
+        return true;
     }
 
     /**
@@ -683,7 +720,7 @@ public class HealthHandler implements GenericMechanic {
 
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
-        totalHP =  (int)(totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
+        totalHP = (int) (totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
 
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[]{1.5, 1.9, 2, 3, 4};

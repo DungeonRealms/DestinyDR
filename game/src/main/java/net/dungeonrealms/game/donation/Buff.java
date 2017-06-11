@@ -61,7 +61,7 @@ public class Buff implements Serializable {
 		de.getQueuedBuffs(type).remove(this);
 		Buff nextBuff = de.getQueuedBuffs(type).poll();
 		
-		Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
+		Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
 				+ "+" + bonusAmount + "% " + ChatColor.stripColor(type.getItemName()) + ChatColor.GOLD + " has expired.");
 		
 		if (nextBuff != null)

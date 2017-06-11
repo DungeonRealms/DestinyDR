@@ -12,7 +12,8 @@ Build <build>
  &l* &0Wisdom<h>&a&lWhat is this?,,&7Ancient knowledge that can be obtained,&7through Mining with Treasure Find!,,&7Profession Wisdom can be applied to any,&7Profession Item to increase its experience.</h>
  &l* &0Item Name Tags<h>&a&lWhat is this?,,&7Rename your most sentimental gear to,&7keep a special place in your heart!,&7&oObtain one through the store today!</h>
  &8&lChanges&0
- &l* &7Fixed Elite HP Mult.<h>&7Previously all elites had their HP multiplied by a value depending on their tier. This multiplier was not functioning in the newest code and has been fixed.</h>
+ &l* &0Potions in PVP<h>&a&lWhat's changed?,,&7Potion Sickness is now briefly applied when healing,&7with potions while chaotic and neutral,&7Each potion used while Sickened will cause,&7it to be less effective. Each potion used will,&7increase your Sickness level.</h>
+ &l* &0Fixed Elite HP Mult.<h>&7Previously all elites had their HP multiplied,&7by a value depending on their tier. This,&7multiplier was not functioning in the,&7newest code and has been fixed.</h>
  &l* &0Fishing Mechanics<h>&a&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &aFish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>
  &l* &0PVP Knockback<h>&a&lHow is it Different?,,&7To combat being sent flying into the,&7air after a few consecutive hits,&7in a short period knockback will be lessened.</h>
  &l* &0T5 Staffs<h>&a&lWhat's changed?,,&7T5 Staff projectiles will NO longer,&7collide with other projectiles.&7</h>

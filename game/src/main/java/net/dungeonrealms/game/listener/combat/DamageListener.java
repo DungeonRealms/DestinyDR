@@ -470,15 +470,25 @@ public class DamageListener implements Listener {
     public void onPlayerSplashPotion(PotionSplashEvent event) {
         if (!(event.getPotion().getShooter() instanceof Player)) return;
         PotionItem potion = new PotionItem(event.getPotion().getItem());
-        if (potion == null) return;
-        event.setCancelled(true);
+        if (potion == null) {
+            Bukkit.getLogger().info("Null potion!");
+            return;
+        }
 
         for (LivingEntity entity : event.getAffectedEntities()) {
-            if (!GameAPI.isPlayer(entity))
+            if (!GameAPI.isPlayer(entity)) {
                 continue;
+            }
 
-            HealthHandler.heal(entity, potion.getHealAmount(), true);
+            boolean healed = HealthHandler.heal(entity, potion.getHealAmount(), true);
+            if (entity instanceof Player && healed) {
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper((Player) entity);
+                if (wrapper != null && (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL))
+                    HealthHandler.trackHeal((Player) entity);
+            }
         }
+
+        event.setCancelled(true);
     }
 
     @EventHandler

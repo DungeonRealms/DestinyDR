@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -110,7 +111,6 @@ public class Rift {
 
     public void onRiftMinionDeath(Entity minion, EntityDeathEvent event) {
 
-        Bukkit.getLogger().info("On Rift Minion Death!");
         this.spawnedEntities.remove(minion);
         if (this.getSpawnedEntities().size() == 0 && spawned >= getMaxMobLimit()) {
             //DONE?
@@ -264,6 +264,7 @@ public class Rift {
             entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(.45F, Math.random() * .75)));
         }
 
+        entity.setMetadata("startVelocity", new FixedMetadataValue(DungeonRealms.getInstance(), entity.getVelocity().clone()));
         boolean elite = EntityAPI.isElite(entity);
         if (entity.getEquipment() != null && entity.getEquipment().getHelmet() != null && entity.getEquipment().getHelmet().getType().equals(Material.SKULL_ITEM)) {
             if (skullItem == null)

@@ -201,6 +201,9 @@ public class EntityMechanics implements GenericMechanic {
             //Cant walk back? Just teleport.
             entity.getBukkitEntity().teleport(spawn);
             entityInsentient.setGoalTarget(null);
+            if (entity.getBukkitEntity().hasMetadata("startVelocity"))
+                EntityMechanics.setVelocity(entity.getBukkitEntity(), ((Vector) entity.getBukkitEntity().getMetadata("startVelocity").get(0).value()).clone());
+
         } else {
             entityInsentient.getNavigation().a(path, 1.56);
             entityInsentient.setGoalTarget(null);

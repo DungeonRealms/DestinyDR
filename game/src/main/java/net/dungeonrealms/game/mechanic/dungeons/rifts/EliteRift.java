@@ -66,6 +66,8 @@ public class EliteRift extends Dungeon {
     private long startTime;
     private int totalSpawnedMinions = 0;
 
+    @Getter
+    private boolean completed = false;
     //@Getter
     //private Block currentBlackHole;
     @Getter
@@ -109,7 +111,7 @@ public class EliteRift extends Dungeon {
     }
 
     private boolean canSpawnAMinion() {
-        return !isFinished() && System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 10 && totalSpawnedMinions < 50;
+        return !isFinished() && System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 20 && totalSpawnedMinions < 50;
     }
 
     public int getNumberOfSpawnedMinions() {
@@ -268,9 +270,14 @@ public class EliteRift extends Dungeon {
     }
 
     private void repairBlocks(Location center, int radius) {
-        for (int x = center.getBlock().getX() - radius; x < center.getBlock().getX() + radius; x++) {
-            for (int z = center.getBlock().getZ() - radius; z < center.getBlock().getZ() + radius; z++) {
-                Location newBlockLoc = new Location(getWorld(), x, center.getBlock().getY(), z);
+        if (center.getWorld() == null && getWorld() != null) {
+            center.setWorld(getWorld());
+        }
+        if (center.getWorld() == null) return;
+        Block block = center.getBlock();
+        for (int x = block.getX() - radius; x < block.getX() + radius; x++) {
+            for (int z = block.getZ() - radius; z < block.getZ() + radius; z++) {
+                Location newBlockLoc = new Location(getWorld(), x, block.getY(), z);
                 for (Map.Entry<Location, Tuple<MaterialData, Long>> entry : blockTypes.entrySet()) {
                     Location mapLoc = entry.getKey();
                     if (mapLoc.getX() == newBlockLoc.getX() && mapLoc.getZ() == newBlockLoc.getZ()) {
@@ -311,7 +318,6 @@ public class EliteRift extends Dungeon {
         if (!this.allowedPlayers.contains(player))
             this.allowedPlayers.add(player);
 
-        regenerateSpawnLocation();
 
         Location location = map.getSpawnLocation();
         location.setWorld(getWorld());
@@ -319,6 +325,9 @@ public class EliteRift extends Dungeon {
         pw.setStoredLocation(player.getLocation());
         GameAPI.teleport(player, location);
         player.setFallDistance(0F);
+
+        if (getWorld() != null)
+            regenerateSpawnLocation();
     }
 
     @Override
@@ -386,6 +395,7 @@ public class EliteRift extends Dungeon {
         //if (bossType.equals(EliteBossType.CLEAR_FLOOR)) {
         new BukkitRunnable() {
             int ticks = 0;
+
             @Override
             public void run() {
                 if (isFinished()) {
@@ -453,6 +463,8 @@ public class EliteRift extends Dungeon {
         if (associate != null) {
             associate.removePortals(false);
         }
+
+//        this.remove();
         if (taskID > -1) Bukkit.getScheduler().cancelTask(taskID);
     }
 
@@ -481,15 +493,28 @@ public class EliteRift extends Dungeon {
         if (meta.hasLore())
             hoveredChat.addAll(meta.getLore());
 
-        final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
+        final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The Rift Lurker has dropped: ", ChatColor.DARK_PURPLE);
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
+
+        String partyMembers = "";
+        for (Player player : getPlayers().isEmpty() ? getAllPlayers() : getPlayers()) {
+
+            partyMembers += player.getName() + ", ";
+
+            PlayerWrapper.getWrapper(player).addExperience(getType().getXP(), false, true, true);
+        }
+        final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
+        Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + Item.ItemTier.getByTier(ourTier).getColor() + ChatColor.BOLD + "The Rift Lurker" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of brave adventurers!");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
     }
+
 
     @Override
     public void completeDungeon() {
         if (finished) return;
         finished = true;
+        completed = true;
         announce(ChatColor.YELLOW + "You will be teleported out in 15 seconds...");
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> removePlayers(true), 300);
         giveShards();
@@ -509,5 +534,10 @@ public class EliteRift extends Dungeon {
             if (ent == null) continue;
             ent.remove();
         }
+
+//        RiftPortal portal = RiftPortal.getPortalFromDungeon(this);
+//        if (portal != null) {
+//            portal.removePortals(false);
+//        }
     }
 }

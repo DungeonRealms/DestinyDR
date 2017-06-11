@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.game.item.ItemType;
@@ -86,21 +87,25 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
     @Override
     public void onClick(ItemClickEvent evt) {
 
-        if (evt.getWrapper().getAlignment() == EnumPlayerAlignments.CHAOTIC) {
-            evt.getPlayer().sendMessage(ChatColor.RED + "You may not use potions whilst chaotic.");
-            return;
-        }
+//        if (evt.getWrapper().getAlignment() == EnumPlayerAlignments.CHAOTIC) {
+//            evt.getPlayer().sendMessage(ChatColor.RED + "You may not use potions whilst chaotic.");
+//            return;
+//        }
 
         if (!isSplash() && HealthHandler.getHP(evt.getPlayer()) >= HealthHandler.getMaxHP(evt.getPlayer())) {
             evt.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
             return;
         }
 
-        if(isSplash()) {
+        if (isSplash()) {
             evt.setCancelled(false);
         } else {
             evt.setUsed(true);
-            HealthHandler.heal(evt.getPlayer(), getHealAmount(),true);
+            HealthHandler.heal(evt.getPlayer(), getHealAmount(), true);
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(evt.getPlayer());
+            if (wrapper != null && (wrapper.getAlignment() == EnumPlayerAlignments.CHAOTIC || wrapper.getAlignment() == EnumPlayerAlignments.NEUTRAL)) {
+                HealthHandler.trackHeal(evt.getPlayer());
+            }
         }
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> findNextPotion(evt.getPlayer(), evt.getHand()));
     }

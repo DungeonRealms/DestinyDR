@@ -116,8 +116,9 @@ public class DungeonManager implements GenericMechanic {
                 } else {
                     //Check if we have any lives left?
                     RiftPortal portal = RiftPortal.getPortalFromDungeon(d);
-                    if (portal != null && portal.getAttemptsLeft() <= 0) {
+                    if (portal != null && (portal.getAttemptsLeft() <= 0 || portal.getRiftInstance() != null && portal.getRiftInstance().isFinished())) {
                         portal.removePortals(true);
+                        Bukkit.getLogger().info("Cleaning up Rift Instance of " + d.toString());
                         return;
                     }
                 }
@@ -226,7 +227,7 @@ public class DungeonManager implements GenericMechanic {
             return null;
         }
 
-        if (getDungeons().size() >= 3) {
+        if (getDungeons().size() >= 10) {
             players.forEach(p -> p.sendMessage(ChatColor.RED + "This shard has the max amount of dungeons open."));
             return null;
         }

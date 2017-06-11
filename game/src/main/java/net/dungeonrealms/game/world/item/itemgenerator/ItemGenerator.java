@@ -116,8 +116,9 @@ public class ItemGenerator {
     	Map<EquipmentSlot, ItemStack> map = new HashMap<>();
     	JsonObject obj = readJSON(eliteName, "elite");
     	for (EquipmentSlot s : EquipmentSlot.values()) {
-    		if (obj != null && obj.has(s.name()))
-    			map.put(s, createItem(obj.get(s.name()).getAsJsonObject(), eliteName));
+    		if (obj != null && obj.has(s.name())) {
+                map.put(s, createItem(obj.get(s.name()).getAsJsonObject(), eliteName));
+            }
     	}
     	return map;
     }

@@ -1074,8 +1074,9 @@ public class GameAPI {
         }
 
         if(playerWrapper.getPendingPurchaseablesUnlocked().size() > 0) {
-            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN + "You have new items in your mailbox! **");
+            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "** " + "You have new items in your mailbox! **");
             player.sendMessage(ChatColor.GRAY + "Use /mailbox to respond to these items!");
+            TitleAPI.sendTitle(player,10,50,10,ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have new items in your mailbox!", ChatColor.RED + "Use /mailbox to respond to these items!");
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
@@ -1093,7 +1094,7 @@ public class GameAPI {
             ScoreboardHandler.getInstance().updatePlayerName(player);
         }, 100L);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> DonationEffects.getInstance().doLogin(player), 100L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> DonationEffects.getInstance().doLogin(player), 300L);
     }
 
     /**

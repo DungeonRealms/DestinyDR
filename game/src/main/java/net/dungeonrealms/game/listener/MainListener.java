@@ -624,6 +624,12 @@ public class MainListener implements Listener {
                 || npcNameStripped.equalsIgnoreCase("Wandering Banker") || npcNameStripped.equalsIgnoreCase("Hallen")
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
                 || npcNameStripped.equalsIgnoreCase("Aeylah")) {
+
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
+            if (wrapper != null && wrapper.getAlignment() != null && wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                event.getPlayer().sendMessage(ChatColor.WHITE + event.getRightClicked().getName() + ChatColor.RED + " > You cannot access the Bank while Chaotic!");
+                return;
+            }
             Storage storage = BankMechanics.getStorage(event.getPlayer().getUniqueId());
             if (storage == null || storage.inv == null) {
                 event.getPlayer().sendMessage(ChatColor.RED + "Please wait while your Bank is being loaded...");
@@ -666,7 +672,8 @@ public class MainListener implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(player);
-        if (Metadata.SHARDING.has(player) || !gp.isAbleToOpenInventory() || gp.isSharding()) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (Metadata.SHARDING.has(player) || !gp.isAbleToOpenInventory() || gp.isSharding() || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             if (!Rank.isTrialGM(player)) {
                 Bukkit.getLogger().info("Cancelling " + player.getName() + " from opening inventory");
                 event.setCancelled(true);

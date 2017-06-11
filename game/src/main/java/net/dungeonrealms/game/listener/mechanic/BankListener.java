@@ -6,6 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
@@ -58,6 +59,11 @@ public class BankListener implements Listener {
         if (!GameAPI.isMainWorld(e.getClickedBlock().getLocation()))
             return;
 
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(e.getPlayer());
+        if(wrapper != null && wrapper.getAlignment() != null && wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC){
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot access the Bank while Chaotic!");
+            return;
+        }
         if (e.getPlayer().isSneaking()) {
             promptUpgradeBank(e.getPlayer());
         } else {

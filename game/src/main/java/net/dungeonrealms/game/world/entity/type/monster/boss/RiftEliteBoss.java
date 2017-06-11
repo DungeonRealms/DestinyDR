@@ -144,7 +144,7 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
     }
 
     private boolean shouldSwitchStages() {
-        return System.currentTimeMillis() - lastStageSwitch >= TimeUnit.SECONDS.toMillis(45);
+        return System.currentTimeMillis() - lastStageSwitch >= TimeUnit.SECONDS.toMillis(25);
     }
 
     private void throwBlackHoles(int numberToThrow) {

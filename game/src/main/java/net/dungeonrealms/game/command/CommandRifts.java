@@ -50,7 +50,7 @@ public class CommandRifts extends BaseCommand {
                 List<WorldRift> rifts = RiftMechanics.getInstance().getWorldRiftLocations();
                 for (int i = 0; i < rifts.size(); i++) {
                     WorldRift rift = rifts.get(i);
-                    sender.sendMessage(ChatColor.RED.toString() + i + ". " + Utils.getStringFromLocation(rift.getLocation(), true) + "  Tier: " + rift.getTier());
+                    sender.sendMessage(ChatColor.RED.toString() + i + ". " + Utils.getStringFromLocation(rift.getLocation(), true) + "  Tier: " + rift.getTier() + " Name: " + rift.getNearbyCity());
                 }
 
                 WorldRift active = RiftMechanics.getInstance().getActiveRift();

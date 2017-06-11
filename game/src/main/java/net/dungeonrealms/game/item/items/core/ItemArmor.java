@@ -5,8 +5,15 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import org.bukkit.DyeColor;
+import org.bukkit.block.Banner;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * A basic class that represents all custom DR armor.
@@ -61,6 +68,42 @@ public class ItemArmor extends CombatItem {
         if (getAttributes().containsKey(ArmorAttributeType.ENERGY_REGEN))
             getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 1);
 
+    }
+
+    @Override
+    public ItemStack generateItem() {
+//        ItemStack item = super.generateItem();
+//        if (getItemType() != null && getItemType() == ItemType.SHIELD) {
+//            ItemMeta meta = item.getItemMeta();
+//            BlockStateMeta blockMeta = (BlockStateMeta) meta;
+//            BlockState state = blockMeta.getBlockState();
+//            Banner banner = (Banner) state;
+//
+//
+//            Item.ItemTier tier = getTier();
+//
+//            if (tier == Item.ItemTier.TIER_2) {
+//                banner.setBaseColor(DyeColor.WHITE);
+//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.BRICKS));
+//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("ss")));
+//            } else if (tier == Item.ItemTier.TIER_3) {
+//                banner.setBaseColor(DyeColor.WHITE);
+//            } else if (tier == Item.ItemTier.TIER_4) {
+//                banner.setBaseColor(DyeColor.LIGHT_BLUE);
+//            } else if (tier == Item.ItemTier.TIER_5) {
+//                banner.setBaseColor(DyeColor.YELLOW);
+//            }
+//
+//            if (tier.getTierId() >= 3 && tier.getTierId() <= 5) {
+//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("gru")));
+//            }
+//
+//            state.update();
+//            blockMeta.setBlockState(state);
+//            banner.update();
+//            item.setItemMeta(blockMeta);
+//        }
+        return super.generateItem();
     }
 
     @Override

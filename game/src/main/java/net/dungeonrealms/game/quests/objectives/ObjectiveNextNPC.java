@@ -73,8 +73,6 @@ public class ObjectiveNextNPC implements QuestObjective {
 			this.stage.getNPC().setGlowing(player, ChatColor.GREEN);*/
 //        if (stage.getNPC().getLocation() != null)
 //            player.setCompassTarget(stage.getNPC().getLocation());
-
-        Bukkit.getLogger().info("Setting compass location to " + player.getCompassTarget() + " Previous: " + (stage.getPrevious() != null ? stage.getPrevious().getNPC().getLocation() : null));
     }
 
     @Override

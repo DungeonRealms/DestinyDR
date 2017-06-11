@@ -139,13 +139,14 @@ public class DonationEffects implements GenericMechanic {
 
     public void doLogin(Player p) {
         for (EnumBuff buffType : EnumBuff.values()) {
-            if (!hasBuff(buffType))
+            if (!hasBuff(buffType)) {
                 continue;
+            }
             Buff buff = getBuff(buffType);
             int minutesLeft = (int) (((buff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
 
             p.sendMessage("");
-            p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + buff.getActivatingPlayer() + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + buff.getBonusAmount() + "% "
+            p.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + buff.getActivatingPlayer() + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + buff.getBonusAmount() + "% "
                     + ChatColor.stripColor(buff.getType().getMiniDescription()) + ChatColor.GOLD + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
             p.sendMessage("");
         }

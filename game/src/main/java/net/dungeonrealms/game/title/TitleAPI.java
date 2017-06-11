@@ -158,8 +158,10 @@ public class TitleAPI implements Listener {
     public static void sendActionBar(Player player, String message) {
         ActionBarMessageEvent actionBarMessageEvent = new ActionBarMessageEvent(player, message);
         Bukkit.getPluginManager().callEvent(actionBarMessageEvent);
-        if (actionBarMessageEvent.isCancelled())
+        if (actionBarMessageEvent.isCancelled()) {
+            Bukkit.getLogger().info("Cancelled message: " + message + " fvor " + player.getName());
             return;
+        }
 
         try {
             Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");

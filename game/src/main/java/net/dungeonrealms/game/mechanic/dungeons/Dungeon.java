@@ -405,8 +405,10 @@ public abstract class Dungeon {
 
         finished = true;
         Bukkit.getLogger().info("[Dungeons] Terminating " + getType().getName() + ", instance '" + getWorld().getName() + "'.");
-        // Move players out.
-        removePlayers(false);
+        if (getAllPlayers().size() > 0) {
+            // Move players out.
+            removePlayers(false);
+        }
 
         boolean save = isEditMode();
 
