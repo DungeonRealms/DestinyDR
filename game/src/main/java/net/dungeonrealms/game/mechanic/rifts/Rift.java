@@ -59,7 +59,7 @@ public class Rift {
 
     protected transient Map<Location, MaterialData> changedBlocks = new ConcurrentHashMap<>();
     private transient int spawned = 0, aliveTime;
-    private static final transient int MAX_ALIVE = 60 * 20;
+    private static final transient int MAX_ALIVE = 60 * 30;
     private transient long lastMobSpawn;
     private transient List<Hologram> hologram;
 
@@ -121,12 +121,12 @@ public class Rift {
             //Drop the crystal??
             minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, (float) (2 + Math.random()), (float) (Math.random() / 2 + .7F));
 
-            if(ThreadLocalRandom.current().nextInt(10) == 2) {
+            if (ThreadLocalRandom.current().nextInt(10) == 2) {
                 ItemStack shield = new ItemArmorShield().setTier(Item.ItemTier.getByTier(getTier())).setRarity(ThreadLocalRandom.current().nextInt(100) > 90 ? Item.ItemRarity.UNCOMMON : Item.ItemRarity.COMMON).setGlowing(true).generateItem();
                 minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), shield);
             }
 
-          //Drop shit?
+            //Drop shit?
             ItemStack item = new ItemRiftFragment(Item.ItemTier.getByTier(getTier())).generateItem();
             item.setAmount(ThreadLocalRandom.current().nextInt(3) + 1);
             minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), item);
@@ -164,6 +164,10 @@ public class Rift {
             return;
         }
 
+        if (aliveTime >= MAX_ALIVE) {
+            onRiftEnd();
+            return;
+        }
         if (this.spawned < getMaxMobLimit() && (System.currentTimeMillis() - lastMobSpawn) / 1000 >= getSpawnDelay()) {
 
             if (this.spawned == getMaxMobLimit() - 1) {
