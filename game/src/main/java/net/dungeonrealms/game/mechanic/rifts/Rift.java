@@ -247,7 +247,7 @@ public class Rift {
             entity = (LivingEntity) EntityAPI.spawnElite(loc.add(0, .35, 0), null, EnumMonster.WitherSkeleton, tier, tier * 20, t.getColor() + ChatColor.BOLD.toString() + "Rift Walker");
             ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, .5, 0), .5F, 50, .3F);
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_WITHER_SPAWN, 3, 1.4F);
-            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(.5F);
+            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(.4F);
             entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(35);
         } else {
             entity = (LivingEntity) EntityAPI.spawnCustomMonster(loc.add(0, .35, 0), r.nextInt(10) == 5 ? EnumMonster.StaffZombie : EnumMonster.Skeleton, tier * 20, tier, null, "Rift Minion");
@@ -255,9 +255,9 @@ public class Rift {
         }
 
         if (leftSide) {
-            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(-.45F, -Math.random() * .5)));
+            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(-.45F, -Math.random() * .75)));
         } else {
-            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(.45F, Math.random() * .5)));
+            entity.setVelocity(new Vector(Math.random() / 2, 0, Math.max(.45F, Math.random() * .75)));
         }
 
         boolean elite = EntityAPI.isElite(entity);

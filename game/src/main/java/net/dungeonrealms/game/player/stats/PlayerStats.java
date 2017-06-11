@@ -175,7 +175,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getEnergyRegen() {
-        return getStat(Stats.INTELLECT) * 0.00015;
+        return 1 + (getStat(Stats.INTELLECT) * 0.00015);
     }
 
     public double getRegen() {

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command.test;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mechanic.dungeons.*;
 import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ public class CommandTestRift extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(!(sender instanceof Player)) return false;
+        if(!Rank.isDev((Player)sender)) return false;
         EliteRift d = (EliteRift)createDungeon(DungeonType.ELITE_RIFT, Arrays.asList((Player)sender));
         d.setOurTier(5);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

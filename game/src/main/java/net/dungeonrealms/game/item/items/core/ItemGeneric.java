@@ -172,7 +172,6 @@ public abstract class ItemGeneric extends PersistentItem {
 
         if (isSoulbound() && hasTag("soulboundTrade")) {
             long time = getTag().getLong("soulboundTrade");
-            Bukkit.getLogger().info("Soulbound trade: " + time);
             if (time > System.currentTimeMillis()) {
                 this.soulboundTrade = time;
                 this.soulboundAllowedTraders = Arrays.asList(getTagString("soulboundBypass").split(","));

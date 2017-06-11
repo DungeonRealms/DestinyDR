@@ -237,7 +237,7 @@ public class BankListener implements Listener {
             if (item == null || item.getType() == Material.AIR) return;
 
             boolean isEmptyPouch = ItemGemPouch.isPouch(item) && ((ItemGemPouch) PersistentItem.constructItem(item)).getGemValue() <= 0;
-            if (ItemMoney.isMoney(item) && isEmptyPouch) {
+            if (ItemMoney.isMoney(item) && !isEmptyPouch) {
                 evt.setCancelled(true);
                 depositAllMoney(player);
 //                handleMoneyDeposit(evt);
@@ -245,7 +245,7 @@ public class BankListener implements Listener {
                 return;
             }
 
-            if (!canItemBeStored(item) && !ItemManager.isItemPermanentlyUntradeable(item) || PersistentItem.isType(item, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(item, ItemType.PORTAL_RUNE)) {
+            if ((!canItemBeStored(item) && !ItemManager.isItemPermanentlyUntradeable(item) || PersistentItem.isType(item, ItemType.PLAYER_JOURNAL) || PersistentItem.isType(item, ItemType.PORTAL_RUNE)) && !isEmptyPouch) {
                 player.sendMessage(ChatColor.RED + "This item cannot be stored.");
                 return;
             }
@@ -398,6 +398,8 @@ public class BankListener implements Listener {
             } else if (num > currentGems) {
                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
                 player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
+            } else if (player.getInventory().firstEmpty() == -1) {
+                player.sendMessage(ChatColor.GRAY + "You do not have enough space for that!");
             } else {
                 player.getInventory().addItem(new ItemGemNote(player.getName(), num).generateItem());
                 PlayerWrapper.getWrapper(player).subtractGems(num);

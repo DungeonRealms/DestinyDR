@@ -94,7 +94,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void regenerateAllPlayerEnergy() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!GameAPI.isPlayer(player)) {
+            if (!GameAPI.isPlayer(player) || !player.isOnline()) {
                 continue;
             }
             PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(player);
@@ -118,7 +118,9 @@ public class EnergyHandler implements GenericMechanic {
                 }
                 regenAmount = regenAmount / 18.9F;
                 if (playerWrapper.getPlayerStats() == null) return;
-                regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getRegen());
+
+                regenAmount = (float)(regenAmount * (1 + (playerWrapper.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.00015)));
+                //regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getEnergyRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }
         }
@@ -202,7 +204,6 @@ public class EnergyHandler implements GenericMechanic {
      * a player and updates their bar.
      * Used when auto-attacking etc.
      *
-     * @param uuid
      * @param amountToRemove
      * @since 1.0
      */

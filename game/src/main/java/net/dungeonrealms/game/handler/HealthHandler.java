@@ -177,8 +177,10 @@ public class HealthHandler implements GenericMechanic {
      */
     public static int getRegen(Player player) {
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        int hpRegen = pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 10;
+        hpRegen += pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.3;
         if (!Metadata.HP_REGEN.has(player) && pw != null)
-            Metadata.HP_REGEN.set(player, pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 10);
+            Metadata.HP_REGEN.set(player, hpRegen);
         return Metadata.HP_REGEN.get(player).asInt();
     }
 
@@ -681,9 +683,10 @@ public class HealthHandler implements GenericMechanic {
 
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
+        totalHP =  (int)(totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
 
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
-        double[] eliteModifier = new double[]{1.7, 2, 3, 4, 5};
+        double[] eliteModifier = new double[]{1.5, 1.9, 2, 3, 4};
 
         // Apply monster boosts.
         int tier = EntityAPI.getTier(entity);

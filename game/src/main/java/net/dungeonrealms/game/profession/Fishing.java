@@ -205,7 +205,7 @@ public class Fishing implements GenericMechanic, Listener {
     public enum FishBuffType {
         DAMAGE(FishDamageBuff.class, "+", "% DMG", "", "Power", 0),
         HEALTH(FishHealBuff.class, "+", "% HP", "", "Healing", 0),
-        REGEN(FishRegenBuff.class, "+", " HP", "Healing", "Regeneration", 0),
+        REGEN(FishRegenBuff.class, "+", " HP", "Healing", "Decrementing Regeneration", 0),
         SPEED(FishSpeedBuff.class, "SPEED ", " BUFF", "", "Agility", 1),
         HUNGER(FishHungerBuff.class, "-", "% HUNGER", "", "Satiety", 0),
         ARMOR(FishArmorBuff.class, "+", "% ARMOR", "", "Defense", 0),
