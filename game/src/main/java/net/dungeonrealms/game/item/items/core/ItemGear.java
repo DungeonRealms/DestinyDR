@@ -2,14 +2,13 @@ package net.dungeonrealms.game.item.items.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -411,9 +410,10 @@ public abstract class ItemGear extends ItemGeneric {
 
         if (isReroll)
             for (AttributeType attribute : this.attributes.getAttributes())
-                if (attribute.isIncludeOnReroll())
+                if (attribute.isIncludeOnReroll()) {
                     keptAttributes.put(attribute, this.attributes.get(attribute));
-
+                    Bukkit.getLogger().info("Attribute kept: " + attribute.getNBTName());
+                }
         this.attributes.clear();
 
         for (ModifierCondition mc : sortedStats) {
@@ -428,8 +428,10 @@ public abstract class ItemGear extends ItemGeneric {
             ModifierRange range = mc.getRange();
             range.generateRandom();
             // Keep the old one if it's not supposed to get rerolled.
-            if (keptAttributes.containsKey(im.getCurrentAttribute()))
+            if (keptAttributes.containsKey(im.getCurrentAttribute())) {
+                Bukkit.getLogger().info("Keeping: " + im.getCurrentAttribute());
                 range = keptAttributes.get(im.getCurrentAttribute());
+            }
 
             // SAVE NEW STAT //
             this.attributes.put(im.getCurrentAttribute(), range.clone());
@@ -438,11 +440,16 @@ public abstract class ItemGear extends ItemGeneric {
     }
 
     private void attemptAddModifier(Map<ModifierCondition, ItemModifier> conditions, ModifierCondition mc, ItemModifier im, Random rand, boolean reRoll) {
-        int belowChance = (mc.getChance() < 0) ? im.getCurrentAttribute().getChance() : mc.getChance();
+        int belowChance = mc.getChance() < 0 ? im.getCurrentAttribute().getChance() : mc.getChance();
 
+        boolean isHPRegen = this.attributes != null && this.attributes.hasAttribute(Item.ArmorAttributeType.HEALTH_REGEN);
         // Randomly add bonus.
-        if (rand.nextInt(100) < belowChance || (im.getCurrentAttribute().isIncludeOnReroll() && reRoll))
+        boolean hpConflict = isHPRegen && im.getCurrentAttribute() == Item.ArmorAttributeType.ENERGY_REGEN;
+        if (im.getCurrentAttribute().isIncludeOnReroll() && reRoll && !hpConflict)
             conditions.put(mc, im);
+        else if (rand.nextInt(100) < belowChance && !hpConflict)
+            conditions.put(mc, im);
+
 
         if (mc.getBonus() != null)
             attemptAddModifier(conditions, mc.getBonus(), im, rand, reRoll);

@@ -606,7 +606,8 @@ public class DamageAPI {
         org.bukkit.util.Vector vector = null;
 
         if (target != null) {
-            vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+            vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector());
+            if(vector.length() != 0)vector.normalize();
         }
 
 
@@ -730,9 +731,10 @@ public class DamageAPI {
             //Recalc off direction?
             unitVector = p.getLocation().getDirection().normalize();
             Bukkit.getLogger().info("Recalcing vector due to projectile code.");
-        }
+      }
+
         //Dont cause NaN.
-        if (unitVector.length() > 0) unitVector.normalize();
+        if (unitVector.length() != 0) unitVector.normalize();
 
         unitVector.setY(0.35);
         if (speed > 1) unitVector.setY(0.2);

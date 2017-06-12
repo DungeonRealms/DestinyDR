@@ -5,11 +5,10 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.listener.combat.AttackResult;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.dungeons.BossType;
-import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffGiant;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -29,19 +28,18 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author Rar349 6/8/2017
  */
 public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
 
-	private int ourTier;
-	@Getter
-	private boolean isInAir = false;
-	@Getter
+    private int ourTier;
+    @Getter
+    private boolean isInAir = false;
+    @Getter
     private BossStage stage = BossStage.NOTHING;
-	@Getter
-	private long lastStageSwitch = 0L;
-	private boolean hasThrownPortal = false;
+    @Getter
+    private long lastStageSwitch = 0L;
+    private boolean hasThrownPortal = false;
 
     public RiftEliteBoss(World world) {
         super(world);
@@ -87,7 +85,8 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
 
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
     public void a(EntityLiving entityLiving, float v) {
@@ -97,13 +96,13 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
     @Override
     public void n() {
         super.n();
-        if(isInAir && getBukkit().isOnGround()) {
+        if (isInAir && getBukkit().isOnGround()) {
             handleGroundStomp();
             isInAir = false;
         }
 
-        if(shouldSwitchStages()) switchStage(getNextStage());
-        if(shouldThrowBlackHoles()) throwBlackHoles(getNumberOfBlackHolesToThrow());
+        if (shouldSwitchStages()) switchStage(getNextStage());
+        if (shouldThrowBlackHoles()) throwBlackHoles(getNumberOfBlackHolesToThrow());
     }
 
     public Player getTarget() {
@@ -111,16 +110,16 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
             EntityLiving living = getGoalTarget();
             CraftHumanEntity humanEnt = ((EntityHuman) living).getBukkitEntity();
             return (Player) humanEnt;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     public void handleGroundStomp() {
-        Block under = getBukkit().getLocation().clone().subtract(0,1,0).getBlock();
-        for(int blocks = 0; blocks < 25; blocks++) {
-            FallingBlock block = getBukkit().getWorld().spawnFallingBlock(getBukkit().getLocation().clone().add(0,1,0), under.getType(),under.getData());
-            block.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-1,1),0.5,ThreadLocalRandom.current().nextDouble(-1,1)).multiply(4));
+        Block under = getBukkit().getLocation().clone().subtract(0, 1, 0).getBlock();
+        for (int blocks = 0; blocks < 25; blocks++) {
+            FallingBlock block = getBukkit().getWorld().spawnFallingBlock(getBukkit().getLocation().clone().add(0, 1, 0), under.getType(), under.getData());
+            block.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-1, 1), 0.5, ThreadLocalRandom.current().nextDouble(-1, 1)).multiply(4));
             block.setHurtEntities(false);
             block.setDropItem(false);
             block.setInvulnerable(true);
@@ -138,8 +137,8 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
         double currentHealth = HealthHandler.getHP(getBukkit());
 
         double percent = 100 * (currentHealth / maxHealth);
-        int toReturn = (int)(4 - (percent / 30));
-        if(toReturn < 1) toReturn = 1;
+        int toReturn = (int) (4 - (percent / 30));
+        if (toReturn < 1) toReturn = 1;
         return toReturn;
     }
 
@@ -148,24 +147,24 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
     }
 
     private void throwBlackHoles(int numberToThrow) {
-        if(!getStage().equals(BossStage.BLACK_HOLE)) return;
+        if (!getStage().equals(BossStage.BLACK_HOLE)) return;
 
         a(EnumHand.MAIN_HAND);
         playSound(Sound.ENTITY_WITHER_SHOOT, 3F, 1.4F);
-        EliteRift rift = (EliteRift)getDungeon();
+        EliteRift rift = (EliteRift) getDungeon();
         double maxY = 1;
         double minY = 0.5;
-        for(int blocks = 0; blocks < numberToThrow; blocks++) {
-            FallingBlock block = getBukkit().getWorld().spawnFallingBlock(getBukkit().getLocation().clone().add(0,1,0), Material.COAL_BLOCK,(byte)0);
+        for (int blocks = 0; blocks < numberToThrow; blocks++) {
+            FallingBlock block = getBukkit().getWorld().spawnFallingBlock(getBukkit().getLocation().clone().add(0, 1, 0), Material.COAL_BLOCK, (byte) 0);
             Vector vec = rift.getMap().getCenterLocation().toVector().subtract(block.getLocation().toVector());
-            vec.setY(ThreadLocalRandom.current().nextDouble(minY,maxY));
+            vec.setY(ThreadLocalRandom.current().nextDouble(minY, maxY));
             maxY -= 0.25;
             minY -= 0.15;
-                if(vec.length() != 0) vec.normalize();
-                vec.multiply(ThreadLocalRandom.current().nextDouble(1,4));
-                vec.add(new Vector(ThreadLocalRandom.current().nextDouble(-1,1), 0, ThreadLocalRandom.current().nextDouble(-1,1)));
+            if (vec.length() != 0) vec.normalize();
+            vec.multiply(ThreadLocalRandom.current().nextDouble(1, 4));
+            vec.add(new Vector(ThreadLocalRandom.current().nextDouble(-1, 1), 0, ThreadLocalRandom.current().nextDouble(-1, 1)));
             //block.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-1,1),0.5,ThreadLocalRandom.current().nextDouble(-1,1)).multiply(1.3));
-            block.setVelocity(vec);
+            EntityMechanics.setVelocity(block, vec);
             block.setHurtEntities(false);
             block.setDropItem(false);
             block.setInvulnerable(true);
@@ -189,7 +188,7 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
     private BossStage getNextStage() {
         BossStage[] stages = BossStage.getBossStages();
         BossStage toReturn = stages[ThreadLocalRandom.current().nextInt(stages.length)];
-        if(toReturn.equals(this.stage)) return getNextStage();
+        if (toReturn.equals(this.stage)) return getNextStage();
         return toReturn;
     }
 
@@ -197,15 +196,17 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
         EliteRift rift = (EliteRift) getDungeon();
         rift.repairBlocksNaturally(true);//Repair all lava blocks.
         rift.clearBlackHoles();
-        if(stage.getToSay() != null) say(stage.getToSay());
-        this.getBukkit().getEquipment().setItemInMainHand(new ItemStack(stage.getWeapon().getItemType(),1,stage.getWeapon().getData()));
+        if (stage.getToSay() != null) say(stage.getToSay());
+        this.getBukkit().getEquipment().setItemInMainHand(new ItemStack(stage.getWeapon().getItemType(), 1, stage.getWeapon().getData()));
         this.stage = stage;
         this.lastStageSwitch = System.currentTimeMillis();
         this.hasThrownPortal = false;
     }
 
     public void jump(int height) {
-        getBukkit().setVelocity(new Vector(0,1,0).normalize().multiply(height));
+        Vector vec = new Vector(0,1,0);
+        if(vec.length() != 0) vec.normalize();
+        EntityMechanics.setVelocity(getBukkit(),vec.multiply(height));
         say("RAAARRRRGGHHHH!!!!!");
         isInAir = true;
     }
@@ -213,24 +214,25 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
 
     @Getter
     public enum BossStage {
-	    NOTHING("You can not defeat me!", new MaterialData(Material.SHIELD)),
+        NOTHING("You can not defeat me!", new MaterialData(Material.SHIELD)),
         LAVA_TRAIL("You better run!", new MaterialData(Material.LAVA_BUCKET)),
         BLACK_HOLE("I WILL CONSUME YOU!!!", new MaterialData(Material.EYE_OF_ENDER));
 
 
-	    private String toSay;
-	    private MaterialData weapon;
-	    BossStage(String toSay, MaterialData weapon) {
-	        this.toSay = toSay;
-	        this.weapon = weapon;
+        private String toSay;
+        private MaterialData weapon;
+
+        BossStage(String toSay, MaterialData weapon) {
+            this.toSay = toSay;
+            this.weapon = weapon;
         }
 
         public static BossStage[] getBossStages() {
-	        BossStage[] toReturn = new BossStage[BossStage.values().length - 1];
-	        int counter = 0;
-	        for(BossStage stage : BossStage.values()) {
-	            if(stage.equals(BossStage.NOTHING)) continue;
-	            toReturn[counter++] = stage;
+            BossStage[] toReturn = new BossStage[BossStage.values().length - 1];
+            int counter = 0;
+            for (BossStage stage : BossStage.values()) {
+                if (stage.equals(BossStage.NOTHING)) continue;
+                toReturn[counter++] = stage;
             }
 
             return toReturn;

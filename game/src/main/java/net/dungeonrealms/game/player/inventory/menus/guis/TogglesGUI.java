@@ -23,14 +23,13 @@ public class TogglesGUI extends GUIMenu {
         int i = 0;
         PlayerWrapper wrapper = PlayerWrapper.getWrapper(player);
         int bottomRow = 27;
-        boolean bottomShowing = wrapper.getRank().isAtLeast(PlayerRank.TRIALGM);
+        boolean bottomShowing = Rank.isTrialGM(player);
 
         for (PlayerToggles.Toggles t : PlayerToggles.Toggles.getToggles(player)) {
             if (!wrapper.getRank().isAtLeast(t.getMinRank()))
                 continue;
             boolean toggle = wrapper.getToggles().getState(t);
 
-            setItem(bottomShowing ? bottomRow++ : i++, new GUIItem(ItemManager.createItem(Material.INK_SACK, t.getDye(toggle).getDyeData(), (toggle ? ChatColor.GREEN : ChatColor.RED) + ChatColor.BOLD.toString() + t.getDisplayName()))
                     .setLore(ChatColor.GRAY + t.getDescription(), "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "Click to " + (toggle ? ChatColor.RED + ChatColor.BOLD.toString() + "DISABLE" : ChatColor.GREEN + ChatColor.BOLD.toString() + "ENABLE"), ChatColor.YELLOW + "Or use /" + t.getCommand())
                     .setClick(e -> {
                         wrapper.getToggles().toggle(t);

@@ -60,10 +60,6 @@ public class WhirlWind extends PowerMove {
                     GameAPI.getNearbyPlayers(entity.getLocation(), 8).forEach(p -> {
                         Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize().multiply(3);
 
-                        if (Double.isNaN(unitVector.getX()) || Double.isNaN(unitVector.getY()) || Double.isNaN(unitVector.getZ())) {
-                            Bukkit.getLogger().info("SERVER CRASH PREVENTED: " + p.getName() + " ENTITY CAUSING: " + entity.toString() + " To set: " + unitVector.toString() + " AT " + p.getLocation());
-                            return;
-                        }
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();

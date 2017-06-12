@@ -14,10 +14,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+
 public class CommandArmorSee extends BaseCommand {
 
     public CommandArmorSee(String command, String usage, String description) {
-        super(command, usage, description);
+        super(command, usage, description,"", Arrays.asList("drarmorsee"));
     }
 
     @Override
@@ -39,7 +41,7 @@ public class CommandArmorSee extends BaseCommand {
                     if (is != null && is.getType() != Material.AIR)
                         inv.addItem(CraftItemStack.asCraftCopy(is));
                 }
-                if (victim.getInventory().getItemInOffHand() != null)
+                if (victim.getInventory().getItemInOffHand() != null && victim.getInventory().getItemInOffHand().getType() != Material.AIR)
                     inv.addItem(victim.getInventory().getItemInOffHand());
             } else {
                 p.sendMessage(ChatColor.RED + "The player " + ent_name + "'s armor data is not loaded, and therefore cannot be displayed.");
@@ -64,6 +66,7 @@ public class CommandArmorSee extends BaseCommand {
                 if (is != null && is.getType() != Material.AIR)
                     inv.addItem(CraftItemStack.asCraftCopy(is));
             }
+            if(ent.getEquipment().getItemInOffHand() != null) inv.addItem(CraftItemStack.asCraftCopy(ent.getEquipment().getItemInOffHand()));
             inv.addItem(CraftItemStack.asCraftCopy(ent.getEquipment().getItemInMainHand()));
         }
 

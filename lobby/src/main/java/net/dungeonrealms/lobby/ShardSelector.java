@@ -51,7 +51,7 @@ public class ShardSelector extends AbstractMenu {
             ShardInfo shard = ShardInfo.getByPseudoName(info.getServerName());
 
             // Don't show shard if you aren't allowed to see them.
-            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB && !shard.getPseudoName().contains("TEST"))
+            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB)
                 continue;
 
             GUIButton button = new GUIButton(new ItemStack(Material.matchMaterial(shard.getType().getIcon()), 1, (short) shard.getType().getMeta())) {

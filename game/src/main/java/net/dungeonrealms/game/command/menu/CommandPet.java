@@ -6,6 +6,7 @@ import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PetSelectionGUI;
 import net.dungeonrealms.game.world.entity.type.pet.CustomPet;
+import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.minecraft.server.v1_9_R2.WorldServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -36,7 +37,11 @@ public class CommandPet extends BaseCommand {
             return true;
         }
         if (args.length == 0) {
-            ItemPet.spawnPet(player);
+            if (PetUtils.hasActivePet(player)) {
+                PetUtils.removePet(player, false);
+            } else {
+                ItemPet.spawnPet(player);
+            }
         } else if (args.length == 1 && args[0].equals("custom") && player.isOp()) {
 
             WorldServer world = ((CraftWorld) player.getWorld()).getHandle();

@@ -244,12 +244,22 @@ public class PetUtils implements GenericMechanic {
     }
 
     public static void removePet(Player p) {
+        removePet(p, true);
+    }
+
+    public static void removePet(Player p, boolean clearActive) {
         if (!hasActivePet(p))
             return;
+
         Entity pet = getPets().get(p);
         pet.remove();
         getPets().remove(p);
-        PlayerWrapper.getPlayerWrapper(p).setActivePet(null);
+
+        // Clear the active pet.
+        if (clearActive) {
+            PlayerWrapper.getPlayerWrapper(p).setActivePet(null);
+        }
+
         p.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
     }
 }

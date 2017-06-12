@@ -23,6 +23,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.fishing.*;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.item.Item.FishingAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -440,11 +441,11 @@ public class Fishing implements GenericMechanic, Listener {
 
                 if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
                     // Give em treasure!
-                    int treasureType = ThreadLocalRandom.current().nextInt(3); // 0, 1
+                    int treasureType = ThreadLocalRandom.current().nextInt(100); // 0, 1
                     ItemStack treasure = null;
-                    if (treasureType == 0) {
+                    if (treasureType <= 25) {
                         treasure = new ItemOrb().generateItem();
-                    } else if (treasureType == 1) {
+                    } else if (treasureType <= 50) {
                         int tierRoll = random.nextInt(100);
 //                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
                         int treasureTier = spotTier;
@@ -459,15 +460,17 @@ public class Fishing implements GenericMechanic, Listener {
                         ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : random.nextInt(100) == 1 ? ItemRarity.UNIQUE : ItemRarity.RARE;
                         treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
                                 .setRarity(rarity).generateItem();
-                    } else if (treasureType == 2) {
+                    } else if (treasureType <= 75) {
                         treasure = new ItemFlightOrb().generateItem();
+                    } else {
+                        treasure = new ItemPeaceOrb().generateItem();
                     }
 
                     if (treasure != null) {
                         GameAPI.giveOrDropItem(pl, treasure);
                         if (e.getHook() != null && e.getHook().getLocation() != null)
                             shootItemStackFromWater(treasure, pl, e.getHook().getLocation());
-                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                        pl.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
                                 + treasure.getItemMeta().getDisplayName());
                     }
                 } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
@@ -567,7 +570,7 @@ public class Fishing implements GenericMechanic, Listener {
         Item item = receiving.getWorld().dropItem(from, stack);
         item.setPickupDelay(Integer.MAX_VALUE);
         thrownItems.add(item);
-        item.setVelocity(stackVelocity);
+        EntityMechanics.setVelocity(item, stackVelocity);
     }
 
     private static Vector calculateVelocity(Vector from, Vector to, int heightGain) {

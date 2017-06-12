@@ -34,7 +34,7 @@ public class EliteRiftListener implements Listener {
         EliteRift rift = (EliteRift) DungeonManager.getDungeon(evt.getPlayer().getWorld());
         RiftEliteBoss boss = (RiftEliteBoss) rift.getBoss();
         if (boss == null || !boss.isAlive() || rift.isFinished()) return;
-        if (boss.getStage().equals(RiftEliteBoss.BossStage.LAVA_TRAIL)) {
+        if (boss.getStage().equals(RiftEliteBoss.BossStage.LAVA_TRAIL) && (System.currentTimeMillis() - boss.getLastStageSwitch() > 1000)) {
             if (!evt.getTo().equals(evt.getFrom()))
                 rift.getLastMovements().put(evt.getPlayer(), System.currentTimeMillis());
 
