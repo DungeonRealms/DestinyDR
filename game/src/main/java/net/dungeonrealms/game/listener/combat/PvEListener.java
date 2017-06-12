@@ -29,9 +29,9 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -102,7 +102,11 @@ public class PvEListener implements Listener {
 
         boolean dpsDummy = EnumEntityType.DPS_DUMMY.isType(event.getEntity());
         ItemStack held = damager.getEquipment().getItemInMainHand();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager, EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
+
+        //Dont remove more energy when damaging.. we take the energy on shoot/
+        if (projectile != null && projectile instanceof Arrow) {
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(damager, EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
+        }
 
         if (!EntityAPI.isBoss(receiver))
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
