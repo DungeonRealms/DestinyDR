@@ -96,8 +96,6 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
         cm.registerCommand(new CommandBuild());
-        cm.registerCommand(new CommandTest());
-        cm.registerCommand(new CommandToggleSub());
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             recentLogouts.asMap().forEach((id, timer) -> timer.decrementAndGet());
