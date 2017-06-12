@@ -178,6 +178,7 @@ public enum Purchaseables {
             return this == SCRAP_TAB ? (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? 1 : 0) : -1;
 
         Integer number = wrapper.getPurchaseablesUnlocked().get(this);
+        if(this == SCRAP_TAB && wrapper != null && wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess) return 1;
         return number != null ? number : 0;
     }
 
