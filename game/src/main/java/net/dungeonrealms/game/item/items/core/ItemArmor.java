@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.core;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
@@ -72,38 +73,37 @@ public class ItemArmor extends CombatItem {
 
     @Override
     public ItemStack generateItem() {
-//        ItemStack item = super.generateItem();
-//        if (getItemType() != null && getItemType() == ItemType.SHIELD) {
-//            ItemMeta meta = item.getItemMeta();
-//            BlockStateMeta blockMeta = (BlockStateMeta) meta;
-//            BlockState state = blockMeta.getBlockState();
-//            Banner banner = (Banner) state;
-//
-//
-//            Item.ItemTier tier = getTier();
-//
-//            if (tier == Item.ItemTier.TIER_2) {
-//                banner.setBaseColor(DyeColor.WHITE);
-//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.BRICKS));
-//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("ss")));
-//            } else if (tier == Item.ItemTier.TIER_3) {
-//                banner.setBaseColor(DyeColor.WHITE);
-//            } else if (tier == Item.ItemTier.TIER_4) {
-//                banner.setBaseColor(DyeColor.LIGHT_BLUE);
-//            } else if (tier == Item.ItemTier.TIER_5) {
-//                banner.setBaseColor(DyeColor.YELLOW);
-//            }
-//
-//            if (tier.getTierId() >= 3 && tier.getTierId() <= 5) {
-//                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("gru")));
-//            }
-//
-//            state.update();
-//            blockMeta.setBlockState(state);
-//            banner.update();
-//            item.setItemMeta(blockMeta);
-//        }
-        return super.generateItem();
+        ItemStack item = super.generateItem();
+        if (getItemType() != null && getItemType() == ItemType.SHIELD) {
+            ItemMeta meta = item.getItemMeta();
+            BlockStateMeta blockMeta = (BlockStateMeta) meta;
+            BlockState state = blockMeta.getBlockState();
+            Banner banner = (Banner) state;
+            Item.ItemTier tier = getTier();
+            banner.setPatterns(Lists.newArrayList());
+            if (tier == Item.ItemTier.TIER_2) {
+                banner.setBaseColor(DyeColor.WHITE);
+                banner.addPattern(new Pattern(DyeColor.SILVER, PatternType.BRICKS));
+                banner.addPattern(new Pattern(DyeColor.SILVER, PatternType.getByIdentifier("ss")));
+            } else if (tier == Item.ItemTier.TIER_3) {
+                banner.setBaseColor(DyeColor.WHITE);
+            } else if (tier == Item.ItemTier.TIER_4) {
+                banner.setBaseColor(DyeColor.LIGHT_BLUE);
+            } else if (tier == Item.ItemTier.TIER_5) {
+                banner.setBaseColor(DyeColor.YELLOW);
+            }
+
+            blockMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
+            if (tier.getTierId() >= 3 && tier.getTierId() <= 5)
+                banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("gru")));
+
+
+            state.update();
+            blockMeta.setBlockState(state);
+            banner.update();
+            item.setItemMeta(blockMeta);
+        }
+        return item;
     }
 
     @Override

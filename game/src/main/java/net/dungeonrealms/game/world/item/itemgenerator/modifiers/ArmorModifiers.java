@@ -526,7 +526,7 @@ public class ArmorModifiers {
 	public class Dodge extends ItemModifier {
 
 		public Dodge() {
-			super(ArmorAttributeType.DODGE, ItemArmor.ARMOR_SHIELD);
+			super(ArmorAttributeType.DODGE, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));
@@ -539,7 +539,7 @@ public class ArmorModifiers {
 	public class Block extends ItemModifier {
 
 		public Block() {
-			super(ArmorAttributeType.BLOCK, ItemArmor.ARMOR_SHIELD);
+			super(ArmorAttributeType.BLOCK, ItemArmor.ARMOR);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 5));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));

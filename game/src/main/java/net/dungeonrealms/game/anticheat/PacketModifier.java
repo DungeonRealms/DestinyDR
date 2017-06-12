@@ -38,7 +38,7 @@ public class PacketModifier implements GenericMechanic {
                 PacketContainer packet = event.getPacket();
                 if (event.getPacketType().equals(PacketType.Play.Server.ENTITY_EQUIPMENT)) {
                     ItemStack original = packet.getItemModifier().read(0);
-                    if (original == null || original.getType() == Material.AIR)
+                    if (original == null || original.getType() == Material.AIR || original.getType() == Material.SHIELD)
                         return;
 
                     final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);

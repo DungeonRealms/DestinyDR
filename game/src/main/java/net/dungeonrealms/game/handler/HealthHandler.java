@@ -481,6 +481,8 @@ public class HealthHandler implements GenericMechanic {
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
             return;
 
+        if(player.isDead()) return;
+
         if (newHP <= 0 && handlePlayerDeath(player, attacker))
             return;
 
@@ -742,8 +744,6 @@ public class HealthHandler implements GenericMechanic {
                 totalHP *= 6;
         }
 
-        if (EntityAPI.isElite(entity))
-            Bukkit.getLogger().info("Healh points after Attributes: " + totalHP);
         setMaxHP(entity, totalHP);
     }
 }

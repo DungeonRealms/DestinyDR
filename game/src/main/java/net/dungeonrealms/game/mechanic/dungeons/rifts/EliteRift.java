@@ -111,7 +111,7 @@ public class EliteRift extends Dungeon {
     }
 
     private boolean canSpawnAMinion() {
-        return !isFinished() && System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 20 && totalSpawnedMinions < 50;
+        return !isFinished() && System.currentTimeMillis() - lastMinionSpawn > 5000 && getNumberOfSpawnedMinions() < 15 && totalSpawnedMinions < 50;
     }
 
     public int getNumberOfSpawnedMinions() {
@@ -319,6 +319,7 @@ public class EliteRift extends Dungeon {
             this.allowedPlayers.add(player);
 
 
+        this.lastMovements.put(player, System.currentTimeMillis());
         Location location = map.getSpawnLocation();
         location.setWorld(getWorld());
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);

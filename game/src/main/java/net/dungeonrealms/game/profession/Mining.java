@@ -210,8 +210,6 @@ public class Mining implements GenericMechanic, Listener {
             }, 20 * 5);
         }
 
-        System.out.println("Adding the xp on block break: " + xpGain);
-
         pickaxe.addExperience(p, xpGain);
         pickaxe.updateItem(p);
         p.updateInventory();

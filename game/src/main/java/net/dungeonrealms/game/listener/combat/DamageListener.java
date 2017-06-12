@@ -301,6 +301,12 @@ public class DamageListener implements Listener {
         final Player p = event.getEntity();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         final Location deathLocation = p.getEyeLocation();
+
+        if (GameAPI.isCooldown(p, Metadata.DEATH_COOLDOWN)) {
+            //Cant die within 2 ticks? Seems like something manages to call this method twice.
+            return;
+        }
+        GameAPI.addSmallCooldown(p, Metadata.DEATH_COOLDOWN, 100);
         p.setExp(0F);
         p.setLevel(0);
 
