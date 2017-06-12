@@ -24,9 +24,13 @@ public class CommandStaffChat extends BaseCommand {
 	public CommandStaffChat(String name, PlayerRank minRank) {
 		this(name, minRank, minRank.getPrefix());
 	}
-	
+
     public CommandStaffChat(String name, PlayerRank rank, String prefix) {
-        super(name + "chat", "/<command> <message>", "Send a message to the " + name + " chat.", Arrays.asList(name.substring(0, 1) + "c"));
+        this(name + "chat",rank,prefix, "/<command> <message>", "Send a message to the " + name + " chat.", name.substring(0, 1) + "c");
+    }
+
+    public CommandStaffChat(String name, PlayerRank rank, String prefix, String... alias) {
+        super(name + "chat", "/<command> <message>", "Send a message to the " + name + " chat.", Arrays.asList(alias));
         this.rank = rank;
         this.prefix = prefix;
     }
