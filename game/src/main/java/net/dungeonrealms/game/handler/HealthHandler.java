@@ -512,7 +512,7 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if (player.hasMetadata("lastDeathTime") && System.currentTimeMillis() - player.getMetadata("lastDeathTime").get(0).asLong() <= 100)
+        if (player.hasMetadata("lastDeathTime") && System.currentTimeMillis() - player.getMetadata("lastDeathTime").get(0).asLong() <= 500)
             return false;
 
         if (!(leAttacker instanceof Player)) {
@@ -555,9 +555,8 @@ public class HealthHandler implements GenericMechanic {
         gp.setPvpTaggedUntil(0);
 
         final LivingEntity finalKiller = leAttacker;
-
+        player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-            player.setMetadata("lastDeathTime", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             player.damage(player.getMaxHealth());
             if (finalKiller != null)
                 KarmaHandler.handlePlayerPsuedoDeath(player, finalKiller);
