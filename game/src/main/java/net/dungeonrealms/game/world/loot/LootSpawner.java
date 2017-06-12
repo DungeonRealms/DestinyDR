@@ -113,7 +113,7 @@ public class LootSpawner {
 		getLocation().getBlock().setType(Material.AIR);
 
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::setContents,
-				(long) (getTickDelay() * LootManager.getDelayMultiplier()));
+				(getTickDelay() * LootManager.getDelayMultiplier()) * 20L);
 		isBroken();
 	}
 	
