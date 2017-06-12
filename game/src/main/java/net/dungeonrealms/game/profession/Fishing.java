@@ -445,14 +445,14 @@ public class Fishing implements GenericMechanic, Listener {
                     ItemStack treasure = null;
                     if (treasureType <= 25) {
                         treasure = new ItemOrb().generateItem();
-                    } else if (treasureType <= 50) {
+                    } else if (treasureType <= 35) {
                         int tierRoll = random.nextInt(100);
 //                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
                         int treasureTier = spotTier;
 
                         if (tierRoll <= 70 || spotTier <= 3) {
                             treasureTier = 3;
-                        } else if (tierRoll <= 85 && spotTier >= 4) {
+                        } else if (tierRoll <= 90 && spotTier >= 4) {
                             treasureTier = 4;
                         } else if (spotTier == 5) {
                             treasureTier = 5;
