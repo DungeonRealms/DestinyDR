@@ -12,7 +12,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -94,13 +93,13 @@ public class ItemArmor extends CombatItem {
                 banner.setBaseColor(DyeColor.YELLOW);
             }
 
-            if (tier.getTierId() >= 3 && tier.getTierId() <= 5)
+            if (tier.getTierId() >= 3 && tier.getTierId() <= 5) {
                 banner.addPattern(new Pattern(DyeColor.GRAY, PatternType.getByIdentifier("gru")));
-
+            }
             blockMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
             blockMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
             blockMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS);
-            if(getTier() != Item.ItemTier.TIER_1) {
+            if (getTier() != Item.ItemTier.TIER_1) {
                 state.update();
                 blockMeta.setBlockState(state);
                 banner.update();

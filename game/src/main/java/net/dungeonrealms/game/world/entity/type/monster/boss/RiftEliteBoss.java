@@ -161,7 +161,7 @@ public class RiftEliteBoss extends StaffGiant implements DungeonBoss {
             maxY -= 0.25;
             minY -= 0.15;
             if (vec.length() != 0) vec.normalize();
-            vec.multiply(ThreadLocalRandom.current().nextDouble(1, 4));
+            vec.multiply(ThreadLocalRandom.current().nextDouble(1, 3));
             vec.add(new Vector(ThreadLocalRandom.current().nextDouble(-1, 1), 0, ThreadLocalRandom.current().nextDouble(-1, 1)));
             //block.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-1,1),0.5,ThreadLocalRandom.current().nextDouble(-1,1)).multiply(1.3));
             EntityMechanics.setVelocity(block, vec);
