@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum QueryType {
     FIX_ONLINE_USERS("UPDATE users SET currentShard = null, is_online = 0 WHERE currentShard = '%s';"),
-    FIX_WHOLE_SHARD("UPDATE users SET is_online = 0 WHERE currentShard = '%s';"),
+    FIX_WHOLE_SHARD("UPDATE users SET is_online = 0, currentShard = null WHERE currentShard = '%s';"),
     SET_ONLINE_STATUS("UPDATE users SET is_online = %s, currentShard = %s WHERE `users`.`account_id` = '%s';"),
     SET_ONLINE_USER("UPDATE users SET is_online = %s WHERE account_id = '%s';"),
     SET_HASSHOP("UPDATE characters SET shopOpened = '%s' WHERE character_id = '%s';"),

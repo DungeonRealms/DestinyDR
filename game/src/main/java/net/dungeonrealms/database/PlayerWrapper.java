@@ -667,7 +667,7 @@ public class PlayerWrapper {
     }
 
     public void setPlayingStatus(boolean playing) {
-        if (playing == this.isPlaying) return;
+        //if (playing == this.isPlaying) return;
         this.isPlaying = playing;
 
         SQLDatabaseAPI.getInstance().executeUpdate(updates -> {
@@ -1115,8 +1115,8 @@ public class PlayerWrapper {
         setAlignmentTime(Math.min(getAlignmentTime() + alignmentTo.getTimer(), alignmentTo.getMaxTimer()));
 
         if (getAlignment() != alignmentTo) {
-            ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
             this.alignment = alignmentTo;
+            ScoreboardHandler.getInstance().updatePlayerName(getPlayer());
         }
     }
 
