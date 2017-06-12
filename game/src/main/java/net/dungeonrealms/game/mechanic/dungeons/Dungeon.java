@@ -374,8 +374,21 @@ public abstract class Dungeon {
      * Can the boss spawn now?
      */
     public boolean canBossSpawn() {
-        return getKillsLeft() == 0;
+        return getKillsLeft() == 0 || getMonstersLeft() == 0;
     }
+
+    public int getMonstersLeft() {
+        if(getTrackedMonsters() == null || getTrackedMonsters().isEmpty()) return 0;
+        int toReturn = 0;
+
+        for(Entity ent : getTrackedMonsters().keySet()) {
+            if(ent == null || ent.isDead() || ent.getWorld() != getWorld()) continue;
+            toReturn++;
+        }
+
+        return toReturn;
+    }
+
 
     /**
      * Announce a message to all players in the dungeon.

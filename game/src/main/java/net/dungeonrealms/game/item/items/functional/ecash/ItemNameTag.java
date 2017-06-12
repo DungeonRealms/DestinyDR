@@ -74,6 +74,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         if (current == null || current.getType() == Material.AIR) return;
         
         if (!canRenameItem(current)) {
+            evt.setCancelled(true);
         	player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "(!) " + ChatColor.RED + "You cannot rename this item!");
         	return;
         }
@@ -98,18 +99,18 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         	if (Chat.containsIllegal(itemName)) {
         		player.sendMessage(ChatColor.RED + "Your desired name contained illegal characters!");
         		player.sendMessage(ChatColor.GRAY + "Remove them and try again.");
-        		returnItem(player, item);
+        		returnItem(player, current);
         		return;
         	}
         	
         	if (itemName.length() >= MAX_LENGTH) {
         		player.sendMessage(ChatColor.RED + "Your desired item name exceeds " + MAX_LENGTH + " characters!");
-        		returnItem(player, item);
+        		returnItem(player, current);
         		return;
         	}
 
         	if(itemName.equalsIgnoreCase("cancel")){
-                returnItem(player, item);
+                returnItem(player, current);
         	    return;
             }
         	String finalItemName = (tier != null ? tier.getColor() : ChatColor.WHITE) + itemName;

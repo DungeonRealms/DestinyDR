@@ -169,6 +169,9 @@ public class CommandAdd extends BaseCommand {
                 case "armorenchant":
                     player.getInventory().addItem(new ItemEnchantArmor(ItemTier.getByTier(Integer.parseInt(args[1]))).generateItem());
                     break;
+                case "orb":
+                    player.getInventory().addItem(new ItemOrb().generateItem());
+                    break;
                 case "weaponench":
                 case "enchant":
                 case "weaponenchant":

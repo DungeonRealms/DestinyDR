@@ -2,25 +2,24 @@ package net.dungeonrealms.game.listener.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
-import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.database.sql.UUIDName;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
-import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -33,15 +32,12 @@ import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
-import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
 import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,7 +57,8 @@ import java.util.UUID;
 
 public class NetworkClientListener extends Listener implements GenericMechanic {
 
-	@Getter private static NetworkClientListener instance = new NetworkClientListener();
+    @Getter
+    private static NetworkClientListener instance = new NetworkClientListener();
 
     private Map<String, Field> cachedPlayerWrapperFields = new HashMap<>();
 
@@ -142,7 +139,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         Constants.log.info("Received WipePlayer packet for " + idToWipe + " (" + uuidToWipe + ")");
                     }
                     PlayerWrapper foundWrapper = PlayerWrapper.getPlayerWrapper(uuidToWipe);
-                    if(foundWrapper != null){
+                    if (foundWrapper != null) {
                         PlayerWrapper.getPlayerWrappers().remove(uuidToWipe);
                     }
                     break;
@@ -152,80 +149,80 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         try {
                             UUID uuid = UUID.fromString(in.readUTF());
                             Player player1 = Bukkit.getPlayer(uuid);
-                            
+
                             String updateType = in.readUTF();
                             UpdateType update = UpdateType.getFromName(updateType);
-                            
+
                             if (update == null) {
-                            	Bukkit.getLogger().warning("Unknown data update type '" + updateType + "'.");
-                            	return;
+                                Bukkit.getLogger().warning("Unknown data update type '" + updateType + "'.");
+                                return;
                             }
-                            
+
                             if (player1 == null)
-                            	return;
+                                return;
 
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player1);
-                            
-                            if (update == UpdateType.MUTE) {
-                            	long previousMute = wrapper.getMuteExpire();
-                            	wrapper.loadPunishment(true, expire -> {
-                            		// Verify their mute time changed, and that they are no longer muted.
-                            		if (expire != previousMute && previousMute > 0 && expire <= 0)
-                            			player1.sendMessage(ChatColor.RED + "You are no longer muted.");
-                            	});
-                            } else if (update == UpdateType.UNLOCKABLES) {
-                            	SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_UNLOCKABLES.getQuery(wrapper.getAccountID()), rs -> {
-                            		if (rs == null) {
-                            			Bukkit.getLogger().info("Unable to get result set on unlockable upgrade, account ID: " + wrapper.getAccountID());
-                            			return;
-                            		}
-                            		try {
-                            			if (rs.first())
-                            				wrapper.loadUnlockables(rs);
-                            			Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
-                            			
-                            			rs.close();
-                            		} catch (Exception e) {
-                            			e.printStackTrace();
-                            		}
-                            	});
-                            } else {
-                            	// Pull the data.
-                            	SQLDatabaseAPI.getInstance().executeQuery(update.getQuery(wrapper), rs -> {
-                            		if (rs == null)
-                            			return;
-                            		try {
-                            			if (rs.first()) {
-                            				Object obj = rs.getObject(update.getColumnName());
-                            				if (update == UpdateType.GEMS) {
-                            					wrapper.setGems((int) obj);
-                            				} else if (update == UpdateType.RANK) {
-                            					wrapper.setRank(PlayerRank.getFromInternalName((String) obj));
 
-                            				} else {
-                            					getField(update.getFieldName()).set(wrapper, obj);
-                            				}
-                            				Bukkit.getLogger().info("Updating " + update.getFieldName() + " to " + obj + " for " + wrapper.getUsername());
-                            			}
-                            			rs.close();
-                            		} catch (SQLException | IllegalAccessException e) {
-                            			e.printStackTrace();
-                            		}
-                            	});
+                            if (update == UpdateType.MUTE) {
+                                long previousMute = wrapper.getMuteExpire();
+                                wrapper.loadPunishment(true, expire -> {
+                                    // Verify their mute time changed, and that they are no longer muted.
+                                    if (expire != previousMute && previousMute > 0 && expire <= 0)
+                                        player1.sendMessage(ChatColor.RED + "You are no longer muted.");
+                                });
+                            } else if (update == UpdateType.UNLOCKABLES) {
+                                SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_UNLOCKABLES.getQuery(wrapper.getAccountID()), rs -> {
+                                    if (rs == null) {
+                                        Bukkit.getLogger().info("Unable to get result set on unlockable upgrade, account ID: " + wrapper.getAccountID());
+                                        return;
+                                    }
+                                    try {
+                                        if (rs.first())
+                                            wrapper.loadUnlockables(rs);
+                                        Bukkit.getLogger().info("Reloading unlockables for " + player1.getName());
+
+                                        rs.close();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } else {
+                                // Pull the data.
+                                SQLDatabaseAPI.getInstance().executeQuery(update.getQuery(wrapper), rs -> {
+                                    if (rs == null)
+                                        return;
+                                    try {
+                                        if (rs.first()) {
+                                            Object obj = rs.getObject(update.getColumnName());
+                                            if (update == UpdateType.GEMS) {
+                                                wrapper.setGems((int) obj);
+                                            } else if (update == UpdateType.RANK) {
+                                                wrapper.setRank(PlayerRank.getFromInternalName((String) obj));
+
+                                            } else {
+                                                getField(update.getFieldName()).set(wrapper, obj);
+                                            }
+                                            Bukkit.getLogger().info("Updating " + update.getFieldName() + " to " + obj + " for " + wrapper.getUsername());
+                                        }
+                                        rs.close();
+                                    } catch (SQLException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                             }
-                    	} catch (Exception ex) {
-                    		ex.printStackTrace();
-                    	}
-            		});
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    });
                     break;
                 case "IG_StaffMessage":
                 case "StaffMessage": {
-                	PlayerRank minRank = PlayerRank.valueOf(in.readUTF());
+                    PlayerRank minRank = PlayerRank.valueOf(in.readUTF());
                     String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                    	PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-                    	if (pw != null && !pw.getToggles().getState(Toggles.STREAM) && pw.getRank().isAtLeast(minRank))
-                    		p.sendMessage(msg);
+                        PlayerWrapper pw = PlayerWrapper.getWrapper(p);
+                        if (pw != null && !pw.getToggles().getState(Toggles.STREAM) && pw.getRank().isAtLeast(minRank))
+                            p.sendMessage(msg);
                     });
                     break;
                 }
@@ -334,16 +331,16 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                             Player player = Bukkit.getPlayer(playerName);
                             if (player == null)
-                            	return;
+                                return;
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                             GamePlayer gp = GameAPI.getGamePlayer(player);
                             if (gp != null) {
-                            	gp.setLastMessager(fromPlayer);
+                                gp.setLastMessager(fromPlayer);
                             }
-                            
+
                             if (wrapper != null && wrapper.getIgnoredFriends().containsKey(uuid))
-                            	return;
-                            
+                                return;
+
                             player.sendMessage(msg);
                             GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "(AS " + player.getName() + ") " + msg));
                             break;
@@ -388,7 +385,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     pitch = 1f;
                                 }
                             }
-                            
+
                             Sound sound = Sound.valueOf(name);
                             if (sound != null)
                                 for (Player p : Bukkit.getOnlinePlayers())
@@ -416,7 +413,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     pitch = 1f;
                                 }
                             }
-                            
+
                             Sound sound = Sound.valueOf(name);
                             if (sound != null)
                                 player.playSound(player.getLocation(), sound, volume, pitch);
@@ -445,7 +442,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             PlayerRank rank = PlayerRank.getFromInternalName(in.readUTF());
                             Rank.getCachedRanks().put(uuid, rank);
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-                            if(wrapper != null) {
+                            if (wrapper != null) {
                                 wrapper.setRank(rank);
                             }
                             break;
@@ -568,7 +565,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     return;
                 }
                 PlayerWrapper kickingPlayerWrapper = PlayerWrapper.getPlayerWrapper(kicking.getUUID());
-                if(kickingPlayerWrapper != null) {
+                if (kickingPlayerWrapper != null) {
                     kickingPlayerWrapper.setGuildID(0);
                 }
                 wrapper.getMembers().remove(accountIdKicking);
@@ -613,10 +610,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 GuildWrapper wrapper = GuildDatabase.getAPI().getGuildWrapper(guildID);
                 if (wrapper == null) return;
                 wrapper.sendGuildMessage(ChatColor.RED + "Your guild has been disbanded!", true);
-                for(GuildMember member : wrapper.getMembers().values()) {
-                    if(member == null) continue;
+                for (GuildMember member : wrapper.getMembers().values()) {
+                    if (member == null) continue;
                     PlayerWrapper playerWrapper = PlayerWrapper.getPlayerWrapper(member.getUUID());
-                    if(playerWrapper != null) {
+                    if (playerWrapper != null) {
                         playerWrapper.setGuildID(0);
                     }
                 }

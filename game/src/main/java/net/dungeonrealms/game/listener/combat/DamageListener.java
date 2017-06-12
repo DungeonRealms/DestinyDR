@@ -742,6 +742,13 @@ public class DamageListener implements Listener {
         if (isPlayer || type.doesAffectMobs()) {
             switch (event.getCause()) {
                 case FALL:
+
+                    if(isPlayer && GameAPI.isCooldown(event.getEntity(), Metadata.WORLD_CHANGE)){
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+
                     float blocks = ent.isInsideVehicle() ? event.getEntity().getVehicle().getFallDistance() : event.getEntity().getFallDistance();
 
                     //OB Algoritm

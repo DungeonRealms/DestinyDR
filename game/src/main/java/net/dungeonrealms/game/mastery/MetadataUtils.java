@@ -61,6 +61,7 @@ public class MetadataUtils {
 		SUMMONING(-1),
 		AUTO_FISHING(-1),
 		ACTIVE_HAT(""),
+		WORLD_CHANGE(-1),
 
 		// Items
 		WHITELIST(""),

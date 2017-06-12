@@ -424,7 +424,8 @@ public class SQLDatabaseAPI {
             } catch (Exception ignored) {
             }
         }
-        Player pl = Bukkit.getPlayer(name);
+
+        Player pl = Bukkit.getPlayerExact(name);
         if (pl != null) {
             if (loadCallback != null) {
                 //Cache this for ourselves as well, so we dont need to hitup db..

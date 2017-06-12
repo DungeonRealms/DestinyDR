@@ -15,6 +15,7 @@ import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.functional.ItemRiftCrystal;
 import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -31,6 +32,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -269,6 +271,12 @@ public class RiftMechanics implements GenericMechanic, Listener {
             //Destroy rift.
             active.removePortals(false);
         }
+    }
+
+    @EventHandler
+    public void worldChangeEvent(PlayerChangedWorldEvent event) {
+        GameAPI.addCooldown(event.getPlayer(), MetadataUtils.Metadata.WORLD_CHANGE, 2);
+//        MetadataUtils.Metadata.WORLD_CHANGE.set(event.getPlayer(), System.currentTimeMillis());
     }
 
     public WorldRift getRandomRift() {
