@@ -150,10 +150,10 @@ public class Rank {
 
         getCachedRanks().put(uuid, rank);
         SQLDatabaseAPI.getInstance().executeUpdate(set -> {
-            if (player != null) {
+            /*if (player != null) {
                 player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + rank.getChatColor() + rank.getInternalName());
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-            }
+            }*/
             if(callback != null)
                 callback.accept(null);
         }, QueryType.UPDATE_RANK.getQuery(sRank, -1, SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid)));

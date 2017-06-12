@@ -353,7 +353,7 @@ public class EliteRift extends Dungeon {
     }
 
     @Override
-    public boolean canBossSpawn() {
+    public boolean canBossSpawn(boolean other) {
         return true;
     }
 
@@ -396,7 +396,6 @@ public class EliteRift extends Dungeon {
     @Override
     public DungeonBoss spawnBoss(BossType type) {
         Location loc = map.getBossLocation();
-        //if (bossType.equals(EliteBossType.CLEAR_FLOOR)) {
         new BukkitRunnable() {
             int ticks = 0;
 

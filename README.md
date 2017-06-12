@@ -9,4 +9,4 @@ Bradez1571, iFamasssxD, Kneesnap, Ingot
 
 
 © DungeonRealms LLC
-DungeonRealms is a trademark of Keeling Systems LLC 
+DungeonRealms is a trademark of Dream Team LLC

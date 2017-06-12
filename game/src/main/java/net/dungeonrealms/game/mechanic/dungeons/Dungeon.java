@@ -373,8 +373,8 @@ public abstract class Dungeon {
     /**
      * Can the boss spawn now?
      */
-    public boolean canBossSpawn() {
-        return getKillsLeft() == 0 || getMonstersLeft() == 0;
+    public boolean canBossSpawn(boolean checkMonstersLeft) {
+        return getKillsLeft() == 0 || (getMonstersLeft() == 0 && checkMonstersLeft);
     }
 
     public int getMonstersLeft() {
@@ -401,7 +401,7 @@ public abstract class Dungeon {
      * Taunts, if possible.
      */
     public boolean attemptTaunt() {
-        if (isTaunted() || !canBossSpawn())
+        if (isTaunted() || !canBossSpawn(false))
             return false;
         announce(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "Do you really wish to fight me?");
         this.taunted = true;

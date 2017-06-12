@@ -35,7 +35,7 @@ public class BossTeleport extends BaseCommand {
         
         Dungeon d = DungeonManager.getDungeon(bcs.getBlock().getWorld());
 
-        if (!d.canBossSpawn() && d.getWorld().getPlayers().stream().filter(p -> Rank.isDev(p)).count() >= 1) {
+        if (!d.canBossSpawn(true) && d.getWorld().getPlayers().stream().filter(p -> Rank.isDev(p)).count() >= 1) {
         	d.announce(ChatColor.RED + "You must kill " + ChatColor.GOLD + d.getKillsLeft() + ChatColor.RED + " more mobs.");
         	return true;
         }
