@@ -111,9 +111,9 @@ public class LootSpawner {
 		world.playSound(getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
 		getLocation().getBlock().getDrops().clear();
 		getLocation().getBlock().setType(Material.AIR);
-
+		int seconds = Math.max(60 * 5, (int) (getTickDelay() * LootManager.getDelayMultiplier()));
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::setContents,
-				(getTickDelay() * LootManager.getDelayMultiplier()) * 20L);
+				seconds * 20L);
 		isBroken();
 	}
 	
