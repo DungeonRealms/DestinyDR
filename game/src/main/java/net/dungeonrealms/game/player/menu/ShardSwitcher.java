@@ -60,7 +60,7 @@ public class ShardSwitcher extends AbstractMenu {
             ShardInfo shard = ShardInfo.getByPseudoName(info.getServerName());
 
             // Don't show shard if you aren't allowed to see them.
-            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB)
+            if (!rank.isAtLeast(shard.getType().getMinRank()) && shard.getType().getMinRank() != PlayerRank.SUB || DungeonRealms.getShard() == shard)
                 continue;
 
             GUIButton button = new GUIButton(new ItemStack(Material.getMaterial(shard.getType().getIcon()), 1, (short) shard.getType().getMeta())) {
