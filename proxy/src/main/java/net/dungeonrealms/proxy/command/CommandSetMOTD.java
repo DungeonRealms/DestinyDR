@@ -28,6 +28,7 @@ public class CommandSetMOTD extends Command {
             String MOTD = query.toString();
 
             Constants.MOTD = MOTD;
+            Constants.setMOTD = MOTD;
             sender.sendMessage(ChatColor.GRAY + "MOTD Set: " + MOTD);
         }
     }

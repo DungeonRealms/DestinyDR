@@ -328,7 +328,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         int players = ping.getPlayers().getOnline();
         ServerPing.PlayerInfo[] sample = ping.getPlayers().getSample();
 
-        ping.setDescription(ChatColor.translateAlternateColorCodes('&', !MAINTENANCE_MODE ? Constants.MOTD : Constants.MAINTENANCE_MOTD));
+        ping.setDescription(ChatColor.translateAlternateColorCodes('&', !MAINTENANCE_MODE ? Constants.MOTD : Constants.setMOTD != null ? Constants.setMOTD : Constants.MAINTENANCE_MOTD));
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 

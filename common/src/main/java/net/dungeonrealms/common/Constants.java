@@ -14,7 +14,8 @@ public class Constants {
 
     public static String MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
 
-    public static String MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
+    public static String setMOTD = null;
+    public static String MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lMaintenance Mode &f&l";
 
     public static long MIN_GAME_TIME = 14100000L;
 
@@ -23,8 +24,8 @@ public class Constants {
     public static int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-//    public static String MASTER_SERVER_IP = "158.69.23.169";
-    public static String MASTER_SERVER_IP = "158.69.121.40";
+    public static String MASTER_SERVER_IP = "158.69.23.169";
+//    public static String MASTER_SERVER_IP = "158.69.121.40";
     // BACKEND SERVER SERVER PORT //
     public static int MASTER_SERVER_PORT = 22965;
 
