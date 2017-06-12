@@ -17,10 +17,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.lobby.bungee.NetworkClientListener;
-import net.dungeonrealms.lobby.commands.CommandBuild;
-import net.dungeonrealms.lobby.commands.CommandLogin;
-import net.dungeonrealms.lobby.commands.CommandSetPin;
-import net.dungeonrealms.lobby.commands.CommandShard;
+import net.dungeonrealms.lobby.commands.*;
 import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
 
@@ -99,6 +96,8 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
         cm.registerCommand(new CommandBuild());
+        cm.registerCommand(new CommandTest());
+        cm.registerCommand(new CommandToggleSub());
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             recentLogouts.asMap().forEach((id, timer) -> timer.decrementAndGet());
