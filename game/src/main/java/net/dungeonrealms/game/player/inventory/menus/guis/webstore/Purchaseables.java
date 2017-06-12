@@ -80,7 +80,7 @@ public enum Purchaseables {
     INDEPENDENCE_CREEPER_PET("Independence Creeper Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 19, false, true, false, ChatColor.GREEN, true, EntityType.CREEPER.getTypeId(), EnumPets.INDEPENDENCE_CREEPER),
 
 
-    SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, false, false, ChatColor.GOLD),
+    SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, true, true, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
     GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, false, ChatColor.GOLD, true),

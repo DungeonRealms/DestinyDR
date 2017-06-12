@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
 import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
@@ -149,9 +150,30 @@ public class PendingPurchasesGUI extends GUIMenu {
             handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
         } else if (purchaseable.equals(Purchaseables.SUB_PLUS_TWELVE_MONTH)) {
             handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
+        } else if (purchaseable.equals(Purchaseables.SCRAP_TAB)) {
+            CurrencyTab tab = wrapper.getCurrencyTab();
+            if (tab != null) {
+                tab.hasAccess = true;
+            } else {
+                tab = new CurrencyTab(wrapper.getUuid());
+                tab.hasAccess = true;
+                wrapper.setCurrencyTab(tab);
+            }
         } else {
             throw new IllegalArgumentException("Missing logic for special case purchaseable!");
         }
+
+        /*
+
+                                        CurrencyTab tab = wrapper.getCurrencyTab();
+                                if (tab != null) {
+                                    tab.hasAccess = access;
+                                } else if (access) {
+                                    tab = new CurrencyTab(online.getUniqueId());
+                                    tab.hasAccess = true;
+                                    wrapper.setCurrencyTab(tab);
+                                }
+         */
     }
 
     public void handleSpecialCaseClaimRank(PlayerWrapper wrapper, PendingPurchaseable toClaim, PlayerRank toSet, long expireTime) {
