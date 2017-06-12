@@ -301,7 +301,8 @@ public enum Purchaseables {
 
         wrapper.getPurchaseablesUnlocked().put(this, currentNumberUnlocked - amount);
         if (autoSave)
-            SQLDatabaseAPI.getInstance().executeUpdate(null, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+            SQLDatabaseAPI.getInstance().executeUpdate(callback, wrapper.getQuery(QueryType.UPDATE_PURCHASES, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID()));
+        else if(callback != null) callback.accept(0);
         return SUCCESS;
     }
 }

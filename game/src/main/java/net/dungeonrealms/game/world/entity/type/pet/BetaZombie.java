@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.pet;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.minecraft.server.v1_9_R2.*;
 
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +77,7 @@ public class BetaZombie extends ZombiePet implements Ownable {
         for(org.bukkit.entity.Entity ent : getBukkitEntity().getNearbyEntities(7, 7, 7)) {
             if(!(ent instanceof Player)) continue;
             Player player = (Player) ent;
-            if(player.equals(owner)) continue;
+            if(player.equals(owner) || player.hasPotionEffect(PotionEffectType.INVISIBILITY) || GameAPI._hiddenPlayers.contains(player)) continue;
             //OR if its been 5 seocnds since he has dismounted.
             if(ThreadLocalRandom.current().nextInt(20) == 0 || System.currentTimeMillis() - lastRide > TimeUnit.SECONDS.toMillis(10)) {
                 player.setPassenger(getBukkitEntity());

@@ -325,6 +325,8 @@ public class EliteRift extends Dungeon {
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         pw.setStoredLocation(player.getLocation());
         GameAPI.teleport(player, location);
+        player.setVelocity(new Vector(0, 0, -(.5F + Math.random())));
+        player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 4, 1.4F);
         player.setFallDistance(0F);
 
         if (getWorld() != null)

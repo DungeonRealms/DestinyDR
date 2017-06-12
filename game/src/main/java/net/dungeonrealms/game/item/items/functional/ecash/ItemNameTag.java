@@ -107,7 +107,11 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         		returnItem(player, item);
         		return;
         	}
-        	
+
+        	if(itemName.equalsIgnoreCase("cancel")){
+                returnItem(player, item);
+        	    return;
+            }
         	String finalItemName = (tier != null ? tier.getColor() : ChatColor.WHITE) + itemName;
         	
         	player.sendMessage("");
