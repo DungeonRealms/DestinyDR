@@ -20,15 +20,23 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import sun.awt.image.ImageWatched;
 
 import java.sql.SQLException;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
  * Created by Rar349 on 5/13/2017.
  */
 public class CommandDonation extends BaseCommand {
+
+    private static LinkedList<String[]> queuedCommands = new LinkedList<>();
+    private static int taskID = -1;
+
     public CommandDonation() {
         super("drdonation", "/<command> <action> <player> <purchaseable> <amount>", "Add an item to the players pending purchases");
     }
@@ -40,7 +48,25 @@ public class CommandDonation extends BaseCommand {
 
         if (args.length < 1) return false;
 
+        if(taskID <= 0) {
+            taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                String[] arguments = queuedCommands.poll();
+                if(arguments != null) executeCommand(sender,arguments);
+            }, 20, 20);
+        }
 
+        if(sender instanceof ConsoleCommandSender) {
+            queuedCommands.add(args);
+            String entireCommand = "drdonation " + String.join(" ", args);
+            System.out.println("Queueing 12 the command for execution: " + entireCommand);
+            return true;
+        }
+
+        return executeCommand(sender,args);
+    }
+
+    public boolean executeCommand(CommandSender sender, String[] args) {
+        System.out.println("Finally executing the queued command: " + "/drdonation " + String.join(" ", args));
         String action = args[0];
         if (action.equalsIgnoreCase("help")) {
             if (args.length > 1) {

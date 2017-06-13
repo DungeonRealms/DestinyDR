@@ -37,7 +37,7 @@ public class CommandAsk extends BaseCommand {
         }
         
         p.sendMessage(ChatColor.GOLD + "Your question has been sent to an online staff member.");
-        GameAPI.sendStaffMessage("&e<QUESTION> &6({SERVER}&6) " + PlayerWrapper.getWrapper(p).getChatName() + "&e" + String.join(" ", args));
+        GameAPI.sendStaffMessage("&e<QUESTION> &6({SERVER}&6) " + PlayerWrapper.getWrapper(p).getChatName() + ":&e " + String.join(" ", args));
 
         return true;
     }

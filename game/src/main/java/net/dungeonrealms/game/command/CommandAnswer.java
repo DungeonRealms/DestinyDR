@@ -40,8 +40,8 @@ public class CommandAnswer extends BaseCommand {
         for (int arg = 2; arg < args.length; arg++) message.append(" ").append(args[arg]);
 
 
-        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.GREEN + "<ANSWERED> " + ChatColor.GOLD + wrapper.getChatName() + ChatColor.GOLD + message);
-        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, ChatColor.RED + "Type " + ChatColor.YELLOW + (DungeonRealms.isMaster() || wrapper.getToggles().getState(Toggles.VANISH) ? "/ask" : "/msg " + sender.getName().toLowerCase()) + " [message] " + ChatColor.RED + "to reply back.");
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), p.getUniqueId().toString(), other, ChatColor.GREEN + "<ANSWERED> " + ChatColor.GOLD + wrapper.getChatName() + ChatColor.GOLD + message);
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), p.getUniqueId().toString(), other, ChatColor.RED + "Type " + ChatColor.YELLOW + (DungeonRealms.isMaster() || wrapper.getToggles().getState(Toggles.VANISH) ? "/ask" : "/msg " + sender.getName().toLowerCase()) + " [message] " + ChatColor.RED + "to reply back.");
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
         GameAPI.sendStaffMessage(ChatColor.GREEN + "<ANSWERED: " + other + "> " + ChatColor.GOLD + "(" + DungeonRealms.getInstance().shardid + ") " + wrapper.getChatName() + ChatColor.YELLOW + message);
 

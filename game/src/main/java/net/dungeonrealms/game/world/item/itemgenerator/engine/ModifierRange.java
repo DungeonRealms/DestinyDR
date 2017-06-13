@@ -57,8 +57,8 @@ public class ModifierRange implements Cloneable {
 		this.high = high;
 		
 		if (high < low || (lowHigh < low && lowHigh > 0)) {
-			Utils.printTrace();
-			Utils.log.info("Received a modifier range with a negative value? Type = " + type.name() + ", Bounds = (" + low + "," + lowHigh + "," + high + ")");
+//			Utils.printTrace();
+//			Utils.log.info("Received a modifier range with a negative value? Type = " + type.name() + ", Bounds = (" + low + "," + lowHigh + "," + high + ")");
 		}
 	}
 	

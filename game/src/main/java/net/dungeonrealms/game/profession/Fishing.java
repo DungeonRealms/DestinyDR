@@ -602,9 +602,13 @@ public class Fishing implements GenericMechanic, Listener {
         int dx = to.getBlockX() - from.getBlockX();
         int dz = to.getBlockZ() - from.getBlockZ();
         double mag = Math.sqrt(dx * dx + dz * dz);
-        double dirx = dx / mag;
-        double dirz = dz / mag;
 
+        double dirx = 1;
+        double dirz = 1;
+        if(mag != 0) {
+            dirx = dx / mag;
+            dirz = dz / mag;
+        }
         // Horizontal velocity components
         double vx = vh * dirx;
         double vz = vh * dirz;

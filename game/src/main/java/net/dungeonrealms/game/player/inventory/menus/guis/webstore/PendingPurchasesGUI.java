@@ -153,9 +153,23 @@ public class PendingPurchasesGUI extends GUIMenu {
         } else if (purchaseable.equals(Purchaseables.SCRAP_TAB)) {
             CurrencyTab tab = wrapper.getCurrencyTab();
             if (tab != null) {
+                boolean didRemove = wrapper.getPendingPurchaseablesUnlocked().remove(toClaim);
+                if (!didRemove) {
+                    player.sendMessage(ChatColor.RED + "Oops! Something went wrong, sorry! Please try again!");
+                    return;
+                }
+                wrapper.updatePurchaseLog("claimed", toClaim.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
+                wrapper.executeUpdate(QueryType.UPDATE_PURCHASES, null, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID());
                 tab.hasAccess = true;
             } else {
-                tab = new CurrencyTab(wrapper.getUuid());
+
+                boolean didRemove = wrapper.getPendingPurchaseablesUnlocked().remove(toClaim);
+                if (!didRemove) {
+                    player.sendMessage(ChatColor.RED + "Oops! Something went wrong, sorry! Please try again!");
+                    return;
+                }
+                wrapper.updatePurchaseLog("claimed", toClaim.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
+                wrapper.executeUpdate(QueryType.UPDATE_PURCHASES, null, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID());       tab = new CurrencyTab(wrapper.getUuid());
                 tab.hasAccess = true;
                 wrapper.setCurrencyTab(tab);
             }
