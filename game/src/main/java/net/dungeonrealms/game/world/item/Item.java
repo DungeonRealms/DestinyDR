@@ -356,7 +356,7 @@ public class Item {
         TRIPLE_CATCH("TRIPLE CATCH", "tripleCatch", 2, 2, 3, 4, 5),
         DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25),
         CATCH_SUCCESS("FISHING SUCCESS", "catchSuccess", 2, 2, 2, 2, 6),
-        JUNK_FIND("JUNK FIND", "junkFind", 11, 12, 13, 14, 15),
+        JUNK_FIND("JUNK FIND", "junkFind", 2, 5, 10, 13, 15),
         TREASURE_FIND("TREASURE FIND", "treasureFind", -1, -1, 1, 2, 3);
 
         private String prefix;
