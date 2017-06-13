@@ -12,7 +12,7 @@ import java.util.Arrays;
 public enum UpdateType {
     GEMS("gems", "SELECT gems FROM characters WHERE character_id = '%s';"),
     HEARTHSTONE("hearthstone", "currentHearthStone", "SELECT currentHearthStone FROM characters WHERE character_id = '%s';"),
-    REALM("upgradingRealm", "upgrading", "SELECT upgrading FROM realm WHERE account_id = '%s';"),
+    REALM("upgradingRealm", "upgrading", "SELECT upgrading FROM realm WHERE character_id = '%s';"),
     ECASH("ecash", "SELECT ecash FROM users WHERE account_id = '%s';"),
     EXP("experience", "SELECT experience FROM characters WHERE account_id = '%s';"),
     RANK("rank", "SELECT rank FROM ranks WHERE account_id = '%s';"),

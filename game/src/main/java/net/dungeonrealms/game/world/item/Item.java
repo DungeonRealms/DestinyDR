@@ -357,7 +357,7 @@ public class Item {
         DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25),
         CATCH_SUCCESS("FISHING SUCCESS", "catchSuccess", 2, 2, 2, 2, 6),
         JUNK_FIND("JUNK FIND", "junkFind", 11, 12, 13, 14, 15),
-        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, 1, 2, 3, 3);
+        TREASURE_FIND("TREASURE FIND", "treasureFind", -1, -1, 1, 2, 3);
 
         private String prefix;
         @Getter
