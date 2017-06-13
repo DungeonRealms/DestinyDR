@@ -570,6 +570,8 @@ public class PlayerWrapper {
         SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_VALID_PUNISHMENTS.getQuery(this.uuid.toString()), async, result -> {
             try {
                 while (result.next()) {
+                    //Not valid.
+                    if(result.getBoolean("quashed"))continue;
                     if (result.getString("type").equals("mute")) {
                         this.muteExpire = result.getLong("expiration");
                         this.muteReason = result.getString("reason");
