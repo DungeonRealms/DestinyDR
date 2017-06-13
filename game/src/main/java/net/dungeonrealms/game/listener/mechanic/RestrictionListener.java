@@ -458,6 +458,10 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
+        if(event.getEntity() instanceof Minecart){
+            event.setCancelled(true);
+            return;
+        }
         if (!GameAPI.isPlayer(event.getEntity()) || PlayerWrapper.getWrapper((Player) event.getEntity()).isVulnerable())
             return;
 

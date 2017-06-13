@@ -27,9 +27,6 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 
-/**
- * Class written by APOLLOSOFTWARE.IO on 6/18/2016
- */
 
 public class ShardSwitcher extends AbstractMenu {
 
