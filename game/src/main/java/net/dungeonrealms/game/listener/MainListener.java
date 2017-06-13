@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
@@ -871,7 +872,7 @@ public class MainListener implements Listener {
 
         boolean hadRiftMob = false;
         for (Entity ent : chunk.getEntities()) {
-            if (!(ent instanceof Player || ent instanceof Hanging || (mainWorld && ent instanceof Item))) {
+            if (!(ent instanceof Player || ent instanceof Hanging || (mainWorld && ent instanceof Item) || ent instanceof Minecart)) {
                 if (Metadata.RIFT_MOB.has(ent)) {
                     hadRiftMob = true;
                     continue;

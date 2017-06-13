@@ -18,7 +18,7 @@ import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
-import net.dungeonrealms.common.game.util.*;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -86,7 +86,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -185,9 +184,15 @@ public class GameAPI {
         public void run() {
             if (player.isOnline()) {
                 IGNORE_QUIT_EVENT.remove(player.getUniqueId());
+
+                PlayerWrapper stillExisting = PlayerWrapper.getPlayerWrapper(player.getUniqueId());
                 TitleAPI.sendTitle(player, 0, 0, 0, "", "");
                 BungeeUtils.sendToServer(player.getName(), "Lobby");
 
+                if (stillExisting != null && stillExisting.isPlaying()) {
+                    Bukkit.getLogger().info("Setting OFFLINE to " + stillExisting.getUsername() + " due to being kicked and still being online.");
+                    SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 0, null, stillExisting.getAccountID());
+                }
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                         () -> BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to requested server. We have sent you to the lobby as a safety measure."), 3 * 20L);
             }
@@ -367,7 +372,7 @@ public class GameAPI {
             Bukkit.getLogger().info("Removing all realms sync...");
             Realms.getInstance().removeAllRealms(false);
             Bukkit.getLogger().info("Removed all realms sync in " + (System.currentTimeMillis() - realmStart) + "ms");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1073,10 +1078,10 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
 
-        if(playerWrapper.getPendingPurchaseablesUnlocked().size() > 0) {
+        if (playerWrapper.getPendingPurchaseablesUnlocked().size() > 0) {
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "** " + "You have new items in your mailbox! **");
             player.sendMessage(ChatColor.GRAY + "Use /mailbox to respond to these items!");
-            TitleAPI.sendTitle(player,10,50,10,ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have new items in your mailbox!", ChatColor.RED + "Use /mailbox to respond to these items!");
+            TitleAPI.sendTitle(player, 10, 50, 10, ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have new items in your mailbox!", ChatColor.RED + "Use /mailbox to respond to these items!");
         }
 
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
