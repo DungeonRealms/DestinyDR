@@ -23,6 +23,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 
@@ -70,6 +71,11 @@ public class ShardSwitcher extends AbstractMenu {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
+                    if(Metadata.SHARDING.has(player)) {
+                        player.sendMessage(ChatColor.RED + "You are already sharding! Please be patient while we transfer you!");
+                        return;
+                    }
+
                     if (info.getOnlinePlayers() >= info.getMaxPlayers() && !rank.isSUB()) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
@@ -116,7 +122,7 @@ public class ShardSwitcher extends AbstractMenu {
                             }
 
                             if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
-                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
+                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
                                 Metadata.SHARDING.remove(player);
