@@ -52,7 +52,7 @@ public class DungeonListener implements Listener {
         if (!GameAPI.isMainWorld(event.getPlayer()) || !event.getNewRegion().toLowerCase().startsWith("instance_"))
             return;
         Player player = event.getPlayer();
-        List<Player> players = Affair.isInParty(player) ? Affair.getParty(player).getAllMembers().stream().filter(p -> p.getLocation().distanceSquared(player.getLocation()) <= 200).collect(Collectors.toList())
+        List<Player> players = Affair.isInParty(player) ? Affair.getParty(player).getAllMembers().stream().filter(p -> p.getWorld().equals(player.getLocation().getWorld()) && p.getLocation().distanceSquared(player.getLocation()) <= 200).collect(Collectors.toList())
                 : Arrays.asList(player);
         DungeonManager.createDungeon(DungeonType.getInternal(event.getNewRegion().split("_")[1]), players);
     }
