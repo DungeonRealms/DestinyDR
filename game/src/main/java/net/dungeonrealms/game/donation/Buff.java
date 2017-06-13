@@ -46,7 +46,7 @@ public class Buff implements Serializable {
 		Bukkit.getServer().broadcastMessage(
 				ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + "(" + fromServer + ") " + ChatColor.RESET + activatingPlayer + ChatColor.GOLD
 						+ " has just activated " + ChatColor.UNDERLINE + "+" + bonusAmount + "% " + ChatColor.stripColor(type.getItemName()) + ChatColor.GOLD
-						+ " for " + formattedTime + " by using 'Global Level EXP Buff' from the store!");
+						+ " for " + formattedTime + " by using a '" + type.getItemName() + "' from the store!");
 		Bukkit.getServer().broadcastMessage("");
 		
 		Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 10f, 1f));
