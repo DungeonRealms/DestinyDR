@@ -691,11 +691,20 @@ public class DamageListener implements Listener {
                 }
             }
 
+            Location spawn = Metadata.SPAWNER_LOCATION.has(e) ? (Location) Metadata.SPAWNER_LOCATION.get(e).value() : null;
+
+            if (spawn != null) {
+                e.teleport(spawn);
+                Bukkit.getLogger().info("Teleporting: " + e.getType() + " to " + Utils.getStringFromLocation(spawn, true));
+                return;
+            }
             Dungeon dungeon = DungeonManager.getDungeon(e.getWorld());
             if (dungeon != null) {
                 dungeon.setMaxMobCount(dungeon.getMaxMobCount() - 1);
                 Bukkit.getLogger().info("Removing max count by 1 due to dieing in dngeon.");
             }
+
+
             e.setMetadata("invalid", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
             Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name() + " from " + event.getCause());
             e.remove();
@@ -882,11 +891,11 @@ public class DamageListener implements Listener {
             if (e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20) {
                 if (random.nextInt(10) == 0)
                     for (int i = 0; i <= 3; i++)
-                        EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
+                        EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), e.getLocation(), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
             }
         } else if (event.getEntity() instanceof SmallFireball && shooter instanceof Blaze && random.nextInt(5) == 0) {
             int tier = EntityAPI.getTier(e);
-            EntityAPI.spawnCustomMonster(e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
+            EntityAPI.spawnCustomMonster(e.getLocation(), e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
         }
     }
 }
