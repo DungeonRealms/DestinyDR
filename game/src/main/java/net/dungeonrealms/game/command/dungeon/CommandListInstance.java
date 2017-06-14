@@ -4,11 +4,12 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
 
 public class CommandListInstance extends BaseCommand {
 
@@ -19,18 +20,18 @@ public class CommandListInstance extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!Rank.isTrialGM((Player) sender))
-        	return true;
+            return true;
 
         sender.sendMessage(ChatColor.GREEN + "Listing all " + DungeonManager.getDungeons().size() + " active dungeons:");
         sender.sendMessage("");
-        
+
         for (Dungeon d : DungeonManager.getDungeons()) {
-        	sender.sendMessage(ChatColor.GOLD + "Dungeon: " + d.getType().getDisplayName());
-        	sender.sendMessage(ChatColor.GOLD + "Players: " + d.getAllPlayers().size());
-        	sender.sendMessage(ChatColor.GOLD + "Time: " + d.getTime());
-        	sender.sendMessage("");
+            sender.sendMessage(ChatColor.GOLD + "Dungeon: " + d.getType().getDisplayName());
+            sender.sendMessage(ChatColor.GOLD + "Players: " + d.getAllPlayers().size() + " (" + Arrays.toString(d.getAllowedPlayers().toArray(new Player[d.getAllowedPlayers().size()])));
+            sender.sendMessage(ChatColor.GOLD + "Time: " + d.getTime());
+            sender.sendMessage("");
         }
-        
+
         return true;
     }
 }

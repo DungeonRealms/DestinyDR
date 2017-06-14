@@ -124,7 +124,7 @@ public abstract class MobSpawner implements Cloneable {
         spawnArmorStand();
     }
 
-    private void spawnArmorStand() {
+    public void spawnArmorStand() {
         ArmorStand as = getLocation().getWorld().spawn(getLocation(), ArmorStand.class);
 
         // Remove old stands. (Shouldn't happen.)
@@ -241,7 +241,7 @@ public abstract class MobSpawner implements Cloneable {
     }
 
     public void spawnIn() {
-        getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(getSpawnedMonsters()::remove);
+        getSpawnedMonsters().stream().filter(ent -> ent != null && (ent.isDead() || !ent.isValid())).forEach(getSpawnedMonsters()::remove);
 
         if (getSpawnedMonsters().size() >= getSpawnAmount() || !canSpawnMobs())
             return;
