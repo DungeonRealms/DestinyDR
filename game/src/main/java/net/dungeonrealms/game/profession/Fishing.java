@@ -329,7 +329,7 @@ public class Fishing implements GenericMechanic, Listener {
                 EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
                 ReflectionAPI.setField("ay", fishHook, MathHelper.a(ThreadLocalRandom.current(), 0.0F, 360.0F));
 
-                int maxHookTime = pl.getName().equals("iFamasssxD") && pl.isSneaking() ? 2 : MathHelper.nextInt(ThreadLocalRandom.current(), 25, 90);
+                int maxHookTime = pl.getName().equals("iFamasssxD") && pl.isSneaking() ? 2 : MathHelper.nextInt(ThreadLocalRandom.current(), 30, 100);
                 ReflectionAPI.setField("ax", fishHook, maxHookTime);
 
                 FishTracker tracker = fishCaughtLog.get(pl.getUniqueId());
@@ -450,9 +450,9 @@ public class Fishing implements GenericMechanic, Listener {
 //                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
                         int treasureTier = spotTier;
 
-                        if (tierRoll <= 70 || spotTier <= 3) {
+                        if (tierRoll <= 85 || spotTier <= 3) {
                             treasureTier = 3;
-                        } else if (tierRoll <= 90 && spotTier >= 4) {
+                        } else if (tierRoll <= 95 && spotTier >= 4) {
                             treasureTier = 4;
                         } else if (spotTier == 5) {
                             treasureTier = 5;
@@ -480,7 +480,7 @@ public class Fishing implements GenericMechanic, Listener {
                     if (junkType < 70) {
                         junk = new PotionItem(PotionTier.getById(spotTier)).generateItem();
                         junk.setAmount(Math.max(1, 6 - spotTier) + random.nextInt(3));
-                    } else if (junkType < 95) {
+                    } else if (junkType < 98) {
                         junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
                         junk.setAmount(Math.max(2, 25 - (spotTier * 5)) + random.nextInt(7));
                     } else {
@@ -488,14 +488,13 @@ public class Fishing implements GenericMechanic, Listener {
 //                        int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
                         int junkTier = spotTier;
 
-                        if (tierRoll <= 70 || spotTier <= 3) {
+                        if (tierRoll <= 85 || spotTier <= 3) {
                             junkTier = 3;
-                        } else if (tierRoll <= 85 && spotTier >= 4) {
+                        } else if (tierRoll <= 95 && spotTier >= 4) {
                             junkTier = 4;
                         } else if (spotTier == 5) {
                             junkTier = 5;
                         }
-//                        junkTier = Math.max(junkTier, spotTier);
                         junk = ItemManager.createRandomCombatItem().setRarity(ItemRarity.COMMON)
                                 .setTier(ItemTier.getByTier(junkTier)).generateItem();
                     }
