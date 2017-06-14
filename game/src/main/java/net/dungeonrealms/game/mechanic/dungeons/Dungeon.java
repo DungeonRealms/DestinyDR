@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.type.monster.boss.Mayel;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -368,9 +369,9 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-//        if(this instanceof InfernalAbyss){
-//            return Math.max(0, (int) (getMaxMobCount() * 0.75D) - getKillCount());
-//        }
+        if(this instanceof BanditTrove){
+            return Math.max(0, (int) (getMaxMobCount() * 0.65D) - getKillCount());
+        }
         return Math.max(0, (int) (getMaxMobCount() * 0.80D) - getKillCount());
     }
 
