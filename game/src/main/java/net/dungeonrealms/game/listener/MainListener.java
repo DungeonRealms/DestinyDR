@@ -155,11 +155,9 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onHandSwap(PlayerSwapHandItemsEvent event) {
-        System.out.println("Hello hand swap!");
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
         if (event.getMainHandItem() != null || event.getOffHandItem() != null) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> wrapper.calculateAllAttributes(), 2);
-            System.out.println("Hello hand swap! 2");
         }
     }
 
