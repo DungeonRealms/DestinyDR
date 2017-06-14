@@ -25,6 +25,8 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
         this.fireProof = false;
         this.setOnFire(Integer.MAX_VALUE);
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(65);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.4F);
+
         setGear();
     }
 
@@ -48,9 +50,6 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBo
         super.setGear();
         ItemArmor am = new ItemArmor();
         am.setTier(4).setRarity(ItemRarity.COMMON);
-        if (am.getAttributes() != null) {
-            am.getAttributes().setStatRange(Item.ArmorAttributeType.DAMAGE, 1, 1);
-        }
         getBukkit().getEquipment().setArmorContents(am.generateArmorSet());
     }
 

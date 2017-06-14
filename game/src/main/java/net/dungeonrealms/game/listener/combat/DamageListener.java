@@ -27,6 +27,8 @@ import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.miscellaneous.Graveyard;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
@@ -688,6 +690,12 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
+
+            Dungeon dungeon = DungeonManager.getDungeon(e.getWorld());
+            if (dungeon != null) {
+                dungeon.setMaxMobCount(dungeon.getMaxMobCount() - 1);
+                Bukkit.getLogger().info("Removing max count by 1 due to dieing in dngeon.");
+            }
             e.setMetadata("invalid", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
             Bukkit.getLogger().info("Removing entity " + e.getType() + " at " + e.getLocation().toString() + " inside: " + e.getLocation().getBlock().getType().name() + " from " + event.getCause());
             e.remove();
@@ -743,7 +751,7 @@ public class DamageListener implements Listener {
             switch (event.getCause()) {
                 case FALL:
 
-                    if(isPlayer && GameAPI.isCooldown(event.getEntity(), Metadata.WORLD_CHANGE)){
+                    if (isPlayer && GameAPI.isCooldown(event.getEntity(), Metadata.WORLD_CHANGE)) {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;

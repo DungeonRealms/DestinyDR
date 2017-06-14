@@ -344,8 +344,6 @@ public abstract class Dungeon {
 
         if (!e.hasMetadata("invalid")) {
             increaseKillCount();
-        } else {
-            maxMobCount--;
         }
     }
 
@@ -367,7 +365,10 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-        return Math.max(0, (int) (getMaxMobCount() * 0.60D) - getKillCount());
+        if(this instanceof InfernalAbyss){
+            return Math.max(0, (int) (getMaxMobCount() * 0.75D) - getKillCount());
+        }
+        return Math.max(0, (int) (getMaxMobCount() * 0.70D) - getKillCount());
     }
 
     /**
