@@ -695,7 +695,7 @@ public class DamageListener implements Listener {
 
             if (spawn != null) {
                 e.teleport(spawn);
-                Bukkit.getLogger().info("Teleporting: " + e.getType() + " to " + Utils.getStringFromLocation(spawn, true));
+//                Bukkit.getLogger().info("Teleporting: " + e.getType() + " to " + Utils.getStringFromLocation(spawn, true));
                 return;
             }
             Dungeon dungeon = DungeonManager.getDungeon(e.getWorld());
