@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
+import com.google.common.collect.Lists;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +65,7 @@ public abstract class Dungeon {
     @Setter
     protected boolean editMode, finished = false;
     protected List<Player> allowedPlayers = new ArrayList<>(); // Only contains the initial list of players who joined.
+    protected Set<UUID> startingMembers = new HashSet<>();
 
     public Dungeon(DungeonType dungeon, List<Player> players) {
         this.type = dungeon;
@@ -81,6 +83,7 @@ public abstract class Dungeon {
             GameAPI.teleport(player, getWorld().getSpawnLocation());
             player.setFallDistance(0F);
             player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "How dare you enter my domain!");
+            this.startingMembers.add(player.getUniqueId());
         }
     }
 
@@ -365,10 +368,10 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-        if(this instanceof InfernalAbyss){
-            return Math.max(0, (int) (getMaxMobCount() * 0.75D) - getKillCount());
-        }
-        return Math.max(0, (int) (getMaxMobCount() * 0.70D) - getKillCount());
+//        if(this instanceof InfernalAbyss){
+//            return Math.max(0, (int) (getMaxMobCount() * 0.75D) - getKillCount());
+//        }
+        return Math.max(0, (int) (getMaxMobCount() * 0.80D) - getKillCount());
     }
 
     /**
