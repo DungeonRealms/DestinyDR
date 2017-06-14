@@ -14,6 +14,7 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -21,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,6 +43,8 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         super(world);
         this.fireProof = true;
         this.collides = true;
+
+        getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true, Color.RED));
     }
 
     public void startEnragedMode() {
@@ -71,7 +73,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 
     @Override
     public void n() {
-        if(ticksLived % 4 == 0) {
+        if (ticksLived % 4 == 0) {
             for (Entity entity : spawnedMobs) {
                 if (entity.isDead())
                     spawnedMobs.remove(entity);

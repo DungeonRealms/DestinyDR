@@ -133,7 +133,8 @@ public class PvEListener implements Listener {
         if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
             //Why cancel the event?
             int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
-            DamageAPI.knockbackEntity(damager, receiver, .45 + .2D * tier);
+            double kb = EntityAPI.isBoss(receiver) ? .25 + .135 * tier : .45 + .2D * tier; //LEss knocback to bosses.
+            DamageAPI.knockbackEntity(damager, receiver, kb);
             damager.updateInventory();
         }
 
