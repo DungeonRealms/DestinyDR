@@ -44,9 +44,9 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         super(world);
         this.fireProof = true;
         this.collides = true;
-        getAttributeInstance(GenericAttributes.c).setValue(.75F);
+        getAttributeInstance(GenericAttributes.c).setValue(.550F);
 
-        getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, true, Color.RED));
+        getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true, Color.RED));
     }
 
     public void startEnragedMode() {
@@ -68,7 +68,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
     @Override
     public void o() {
         super.o();
-        getAttributeInstance(GenericAttributes.c).setValue(.80F);
+        getAttributeInstance(GenericAttributes.c).setValue(.55F);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
     }
 
