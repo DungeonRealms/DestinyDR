@@ -195,6 +195,9 @@ public class EntityMechanics implements GenericMechanic {
         EntityInsentient entityInsentient = (EntityInsentient) entity;
         Location spawn = (Location) val.value();
 
+        if(entity.getWorld().equals(spawn.getWorld()) && entity.getBukkitEntity().getLocation().distanceSquared(spawn) <= 20 * 20)
+            return;
+
         entityInsentient.setGoalTarget(null);
         PathEntity path = entityInsentient.getNavigation().a(spawn.getX(), spawn.getY(), spawn.getZ());
         if (path == null || path.c() == null) {

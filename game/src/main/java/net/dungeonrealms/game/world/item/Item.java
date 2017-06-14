@@ -164,7 +164,7 @@ public class Item {
         private String armorName;
 
         ItemTier(int levelReq, Integer[] range, int attribute, ChatColor c, DyeColor color, Material m, String name) {
-            this(levelReq, range, attribute, c,color, m, name, name);
+            this(levelReq, range, attribute, c, color, m, name, name);
         }
 
         ItemTier(int levelReq, Integer[] rangeValues, int attributeRange, ChatColor color, DyeColor dye, Material m, String weaponName, String armorName) {
@@ -302,7 +302,7 @@ public class Item {
     public interface ProfessionAttribute extends AttributeType {
         int[] getPercentRange();
 
-        default int getRandomValueFromTier(ItemTier tier){
+        default int getRandomValueFromTier(ItemTier tier) {
             int minRange = tier.ordinal() - 1;
             int maxRange = tier.ordinal();
             if (maxRange >= getPercentRange().length)
@@ -311,14 +311,14 @@ public class Item {
             return Math.max(Utils.randInt(getPercentRange()[minRange], getPercentRange()[maxRange]), 1);
         }
 
-        default int getMaxFromTier(ItemTier tier){
+        default int getMaxFromTier(ItemTier tier) {
             int maxRange = tier.ordinal();
             if (maxRange >= getPercentRange().length)
                 maxRange = getPercentRange()[getPercentRange().length - 1];
             return getPercentRange()[maxRange];
         }
 
-        default int getMinFromTier(ItemTier tier){
+        default int getMinFromTier(ItemTier tier) {
             int maxRange = tier.ordinal();
             if (maxRange < 0)
                 maxRange = 0;
@@ -457,7 +457,7 @@ public class Item {
         }
 
         public String getDisplayPrefix() {
-            return null;
+            return prefix;
         }
 
         public String getDisplaySuffix(boolean b) {
@@ -610,9 +610,9 @@ public class Item {
         POISON_RESISTANCE("POISON RESISTANCE: ", "%", "poisonResistance", "Poison Resist", "", 7),
         GEM_FIND("GEM FIND: ", "%", "gemFind", "", "Golden", "Pickpocketing", 8),
         ITEM_FIND("ITEM FIND: +", "%", "itemFind", "", "Treasure", 9),
-        MELEE_ABSORBTION("MELEE ABSORB: +","%","meleeAbsorb",100,true,"","Melee Absorption","",11),
-        MAGE_ABSORBTION("MAGIC ABSORB: +","%","mageAbsorb",100,true,"","Magic Absorption","",11),
-        RANGE_ABSORBTION("RANGE ABSORB: +","%","rangeAbsorb",100,true,"","Range Absorption","",11);
+        MELEE_ABSORBTION("MELEE ABSORB: +", "%", "meleeAbsorb", 100, true, "", "Melee Absorption", "", 11),
+        MAGE_ABSORBTION("MAGIC ABSORB: +", "%", "mageAbsorb", 100, true, "", "Magic Absorption", "", 11),
+        RANGE_ABSORBTION("RANGE ABSORB: +", "%", "rangeAbsorb", 100, true, "", "Range Absorption", "", 11);
 
         @Getter
         private String prefix;

@@ -282,7 +282,16 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                                 UUID senderUUID = UUID.fromString(senderUuid);
                                 UUID uuid = UUID.fromString(friendUUID);
-                                int friendID = content.length == 3 && StringUtils.isNumeric(content[4]) ? Integer.parseInt(content[4]) : SQLDatabaseAPI.getInstance().getAccountIdFromUUID(senderUUID);
+
+                                if (SQLDatabaseAPI.getInstance().getAccountIdFromUUID(senderUUID) == null) {
+                                    Bukkit.getLogger().info("Account id null: " + senderUuid + " (Sender: " + senderName + ")");
+                                    return;
+                                }
+
+                                Integer friendID = content.length == 3 && StringUtils.isNumeric(content[4]) ?
+                                        Integer.parseInt(content[4]) :
+                                        SQLDatabaseAPI.getInstance().getAccountIdFromUUID(senderUUID);
+
                                 Player friend = Bukkit.getPlayer(uuid);
                                 if (friend != null) {
                                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);

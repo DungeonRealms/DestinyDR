@@ -61,6 +61,7 @@ import net.dungeonrealms.game.listener.world.ModerationListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.GraveyardMechanic;
+import net.dungeonrealms.game.mechanic.TrinketMechanics;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.dot.DotManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
@@ -265,6 +266,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new OverrideListener());
         MechanicManager.registerMechanic(new DotManager());
         MechanicManager.registerMechanic(RiftMechanics.getInstance());
+        MechanicManager.registerMechanic(new TrinketMechanics());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());

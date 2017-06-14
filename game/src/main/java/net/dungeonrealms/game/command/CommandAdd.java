@@ -10,6 +10,9 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketType;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
@@ -81,6 +84,35 @@ public class CommandAdd extends BaseCommand {
                     ItemGenerator.saveItem(held, args[1]);
                     player.sendMessage(ChatColor.GREEN + "Saved " + args[1] + ".");
                     break;
+                case "trinket":
+                    if (args.length >= 2 && args[1].equalsIgnoreCase("all")) {
+                        for (TrinketType type : TrinketType.values()) {
+                            //Give all trinkets?
+                            for (Trinket trink : Trinket.values()) {
+                                if (type.getAccessory().contains(trink)) { //Allowed for this type.
+                                    player.getInventory().addItem(new TrinketItem(type, trink).generateItem());
+                                }
+                            }
+                        }
+                    } else if (args.length == 3) {
+                        TrinketType type = TrinketType.getFromName(args[1]);
+
+                        Trinket trinket = Trinket.getFromName(args[2]);
+
+                        if (type == null) {
+                            player.sendMessage(ChatColor.RED + "Invalid trinket! LURE, MINING_GLOVE, RIFT_RING");
+                            return true;
+                        }
+
+                        if (trinket != null) {
+                            player.getInventory().addItem(new TrinketItem(type, trinket).generateItem());
+                        } else {
+                            player.getInventory().addItem(new TrinketItem(type).generateItem());
+                        }
+
+                        player.sendMessage("Trinket added to inventory.");
+                    }
+                    return true;
                 case "load":
                 case "nameditem":
                     if (args.length > 1) {

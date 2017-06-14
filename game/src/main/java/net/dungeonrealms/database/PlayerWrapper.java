@@ -34,6 +34,9 @@ import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.functional.accessories.EnchantTrinketData;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
@@ -571,7 +574,7 @@ public class PlayerWrapper {
             try {
                 while (result.next()) {
                     //Not valid.
-                    if(result.getBoolean("quashed"))continue;
+                    if (result.getBoolean("quashed")) continue;
                     if (result.getString("type").equals("mute")) {
                         this.muteExpire = result.getLong("expiration");
                         this.muteReason = result.getString("reason");
@@ -1082,7 +1085,7 @@ public class PlayerWrapper {
             getAttributes().addStats(armor);
 
         ItemStack offHand = getPlayer().getInventory().getItemInOffHand();
-        if(offHand != null && offHand.getType() != Material.AIR && ItemArmorShield.isShield(offHand)) {
+        if (offHand != null && offHand.getType() != Material.AIR && ItemArmorShield.isShield(offHand)) {
             getAttributes().addStats(offHand);
         }
 
@@ -1090,6 +1093,13 @@ public class PlayerWrapper {
 
         for (Stats stat : Stats.values())
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
+
+        TrinketItem activeTrinket = Trinket.getActiveTrinketItem(getPlayer());
+        if (activeTrinket != null && activeTrinket.getTrinket().getData() instanceof EnchantTrinketData && activeTrinket.getValue() != null) {
+            EnchantTrinketData data = (EnchantTrinketData) activeTrinket.getTrinket().getData();
+            getAttributes().addStat(data.getType(), activeTrinket.getValue());
+            Bukkit.getLogger().info("Adding stat from trinket: " + data.getType());
+        }
 
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses(this);

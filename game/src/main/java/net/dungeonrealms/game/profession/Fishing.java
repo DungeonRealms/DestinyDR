@@ -10,6 +10,7 @@ import net.dungeonrealms.game.command.moderation.CommandFishing;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.functional.*;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -369,7 +370,7 @@ public class Fishing implements GenericMechanic, Listener {
                 return;
             }
 
-            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue();
+            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue() + + Trinket.getTrinketValue(pl, Trinket.FISH_DURABILITY);
 
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
@@ -421,12 +422,12 @@ public class Fishing implements GenericMechanic, Listener {
                 pw.addExperience(exp / 8, false, true, true);
                 pw.getPlayerGameStats().addStat(StatColumn.FISH_CAUGHT);
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() >= random.nextInt(100) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_DOUBLE_FISH) >= random.nextInt(100) + 1) {
                     fishDrop *= 2;
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                 }
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() >= random.nextInt(100) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TRIPLE_FISH) >= random.nextInt(100) + 1) {
                     fishDrop *= 3;
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
@@ -439,7 +440,7 @@ public class Fishing implements GenericMechanic, Listener {
 
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TREASURE_FIND) >= ThreadLocalRandom.current().nextInt(300) + 1) {
                     // Give em treasure!
                     int treasureType = ThreadLocalRandom.current().nextInt(100); // 0, 1
                     ItemStack treasure = null;
@@ -473,7 +474,7 @@ public class Fishing implements GenericMechanic, Listener {
                         pl.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
                                 + treasure.getItemMeta().getDisplayName());
                     }
-                } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
+                } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() + +Trinket.getTrinketValue(pl, Trinket.FISH_JUNK_FIND) >= ThreadLocalRandom.current().nextInt(100) + 1) {
                     int junkType = ThreadLocalRandom.current().nextInt(100) + 1; // 0, 1, 2
                     ItemStack junk = null;
 
@@ -538,7 +539,7 @@ public class Fishing implements GenericMechanic, Listener {
             if (tracker != null) {
                 tracker.trackWurstTrap(pl, System.currentTimeMillis());
             }
-        }else if(e.getState() == State.CAUGHT_ENTITY){
+        } else if (e.getState() == State.CAUGHT_ENTITY) {
             e.setCancelled(true);
             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK, 1, .97F);
             Bukkit.getLogger().info("Cancelling entity catch for " + e.getPlayer().getName());
@@ -604,7 +605,7 @@ public class Fishing implements GenericMechanic, Listener {
 
         double dirx = 1;
         double dirz = 1;
-        if(mag != 0) {
+        if (mag != 0) {
             dirx = dx / mag;
             dirz = dz / mag;
         }

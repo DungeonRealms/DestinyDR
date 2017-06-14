@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.item;
 
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -55,6 +57,8 @@ public enum ItemType {
 	MOUNT_SKIN_SELECTOR("mountSkinSel", ItemMountSkin.class),
 	RIFT_FRAGMENT("riftFragment", ItemRiftFragment.class),
 	RIFT_CRYSTAL("riftCrystal", ItemRiftCrystal.class),
+	TRINKET("trinket", TrinketItem.class),
+	CLUE_SCROLL("clueScroll", ClueScrollItem.class),
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
@@ -91,6 +95,7 @@ public enum ItemType {
 	HEARTHSTONE("hearthstone", ItemHearthstone.class),
 	OPEN_PROFILE("profile", ItemPlayerProfile.class),
 	EXP_LAMP("expLamp", ItemEXPLamp.class);
+
 	private final String NBT;
 	private final Class<? extends PersistentItem> itemClass;
 	private final GeneratedItemType type;
