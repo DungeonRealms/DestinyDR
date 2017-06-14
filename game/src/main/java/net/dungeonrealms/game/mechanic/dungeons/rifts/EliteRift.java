@@ -135,7 +135,7 @@ public class EliteRift extends Dungeon {
 
         Location loc = getRandomMinionLocation();
         EnumMonster monsterType = EnumMonster.RiftMinion;
-        LivingEntity le = (LivingEntity) EntityAPI.spawnCustomMonster(loc, monsterType, Utils.randInt(25, 50), ourTier, null, "Rift Minion");
+        LivingEntity le = (LivingEntity) EntityAPI.spawnCustomMonster(loc, getMap().getCenterLocation().clone(), monsterType, Utils.randInt(25, 50), ourTier, null, "Rift Minion");
         le.setRemoveWhenFarAway(false);
         le.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(60);
         getWorld().playSound(loc, Sound.ENTITY_ENDERMEN_TELEPORT, 1f, 1f);

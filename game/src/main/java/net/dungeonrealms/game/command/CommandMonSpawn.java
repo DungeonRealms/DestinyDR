@@ -80,9 +80,9 @@ public class CommandMonSpawn extends BaseCommand {
         }
 
         if (elite) {
-        	EntityAPI.spawnElite(spawn, eliteFound, type, tier, level, customName);
+        	EntityAPI.spawnElite(spawn, spawn, eliteFound, type, tier, level, customName);
         } else {
-        	EntityAPI.spawnCustomMonster(spawn, type, level, tier, null, customName);
+        	EntityAPI.spawnCustomMonster(spawn, spawn, type, level, tier, null, customName);
         }
         
         return true;

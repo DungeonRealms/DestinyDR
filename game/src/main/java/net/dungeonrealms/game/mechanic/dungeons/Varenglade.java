@@ -2,12 +2,14 @@ package net.dungeonrealms.game.mechanic.dungeons;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -49,5 +51,18 @@ public class Varenglade extends Dungeon {
 	        	w.dropItem(event.getEntity().getLocation().add(0, 1, 0), getKey());
 	        }
 	    }
+
+		@EventHandler(priority = EventPriority.HIGHEST)
+		public void playerWalk(PlayerMoveEvent event) {
+			World w = event.getPlayer().getWorld();
+			if (!DungeonManager.isDungeon(w, DungeonType.VARENGLADE))
+				return;
+
+			if(event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) return;
+
+			if(event.getTo().getY() >= 80) {
+				event.getPlayer().teleport(w.getSpawnLocation());
+			}
+		}
 	}
 }

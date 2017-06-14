@@ -90,13 +90,16 @@ public class PvEListener implements Listener {
 
         event.setDamage(0);
 
-        if (DamageAPI.isInvulnerable(receiver)) {
-            if (EntityAPI.isBoss(receiver))
-                ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked(damager);
-            event.setCancelled(true);
-            damager.updateInventory();
-            return;
+//        if (DamageAPI.isInvulnerable(receiver)) {
+        if (EntityAPI.isBoss(receiver)) {
+            ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked(damager);
+            if (DamageAPI.isInvulnerable(receiver)) {
+                event.setCancelled(true);
+                damager.updateInventory();
+                return;
+            }
         }
+//        }
 
         CombatLog.updateCombat(damager);
 

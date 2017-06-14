@@ -91,7 +91,7 @@ public class InfernalAbyss extends Dungeon {
                         l.getBlock().setType(Material.FIRE);
 
                     if (Utils.randInt(20) == 0 && e.getWorld().getEntities().stream().filter(ent -> ent.getType() == EntityType.MAGMA_CUBE).count() <= 20)
-                        EntityAPI.spawnCustomMonster(l.clone().add(0, 2, 0), EnumMonster.MagmaCube, "low", 3, null);
+                        EntityAPI.spawnCustomMonster(l.clone().add(0, 2, 0), l, EnumMonster.MagmaCube, "low", 3, null);
                 }
             }, 0L, 5L);
 

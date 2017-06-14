@@ -94,7 +94,7 @@ public interface DungeonBoss extends DRMonster {
 
     default Entity spawnMinion(EnumMonster monsterType, String mobName, int tier, boolean highPower) {
         Location loc = getBukkit().getLocation().clone().add(Utils.randInt(0, 6) - 3, 0, Utils.randInt(0, 6) - 3);
-        LivingEntity le = (LivingEntity) EntityAPI.spawnCustomMonster(loc, monsterType, Utils.getRandomFromTier(tier, highPower ? "high" : "low"), tier, null);
+        LivingEntity le = (LivingEntity) EntityAPI.spawnCustomMonster(loc, getBukkit().getLocation().clone(), monsterType, Utils.getRandomFromTier(tier, highPower ? "high" : "low"), tier, null);
         le.setRemoveWhenFarAway(false);
         return le;
     }

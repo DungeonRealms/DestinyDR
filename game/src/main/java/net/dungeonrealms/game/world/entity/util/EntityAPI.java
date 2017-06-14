@@ -62,18 +62,18 @@ public class EntityAPI {
     //TODO: Prevent memory leaks, on death, on despawn. Every few minutes go through this list and clean up the trash.
     private static Map<DRMonster, AttributeList> entityAttributes = new ConcurrentHashMap<>();
 
-    public static Entity spawnElite(Location loc, EnumNamedElite elite) {
-        return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), null);
+    public static Entity spawnElite(Location loc, Location spawnerLocation, EnumNamedElite elite) {
+        return spawnElite(loc, spawnerLocation, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), null);
     }
 
-    public static Entity spawnElite(Location loc, EnumNamedElite elite, String displayName) {
-        return spawnElite(loc, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), displayName);
+    public static Entity spawnElite(Location loc, Location spawnerLocation, EnumNamedElite elite, String displayName) {
+        return spawnElite(loc, spawnerLocation, elite, elite.getMonster(), elite.getTier(), elite.randomLevel(), displayName);
     }
 
     /**
      * Creates an elite without spawning it into the world.
      */
-    public static Entity spawnElite(Location loc, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name) {
+    public static Entity spawnElite(Location loc, Location spawnerLocation, EnumNamedElite elite, EnumMonster monster, int tier, int level, String name) {
         name = name != null ? name : monster.getName();
         LivingEntity entity = spawnEntity(loc, monster, elite != null ? elite.getEntity() : monster.getCustomEntity(), tier, level, name);
 
@@ -122,22 +122,24 @@ public class EntityAPI {
         if (entity != null) {
             entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true, Color.AQUA));
             MetadataUtils.Metadata.SPAWN_LOCATION.set(entity, loc);
+            if (spawnerLocation != null)
+                MetadataUtils.Metadata.SPAWNER_LOCATION.set(entity, spawnerLocation);
         }
         return entity;
     }
 
-    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, String levelRange, int tier, ItemType weaponType) {
-        return spawnCustomMonster(loc, monster, Utils.getRandomFromTier(tier, levelRange), tier, weaponType);
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, String levelRange, int tier, ItemType weaponType) {
+        return spawnCustomMonster(loc, spawnedLocation, monster, Utils.getRandomFromTier(tier, levelRange), tier, weaponType);
     }
 
-    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType) {
-        return spawnCustomMonster(loc, monster, level, tier, weaponType, null);
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType) {
+        return spawnCustomMonster(loc, spawnedLocation, monster, level, tier, weaponType, null);
     }
 
     /**
      * Spawns a custom monster.
      */
-    public static Entity spawnCustomMonster(Location loc, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
         LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName);
 
         // Register mob element.
@@ -148,6 +150,8 @@ public class EntityAPI {
             Metadata.PASSIVE.set(e, true);
 
         MetadataUtils.Metadata.SPAWN_LOCATION.set(e, loc);
+        if (spawnedLocation != null)
+            Metadata.SPAWNER_LOCATION.set(e, spawnedLocation);
         return e;
     }
 

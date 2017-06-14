@@ -43,6 +43,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         super(world);
         this.fireProof = true;
         this.collides = true;
+        getAttributeInstance(GenericAttributes.c).setValue(.75F);
 
         getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true, Color.RED));
     }

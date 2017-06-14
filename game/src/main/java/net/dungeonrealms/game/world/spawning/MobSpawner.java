@@ -293,9 +293,9 @@ public abstract class MobSpawner implements Cloneable {
         int level = Utils.getRandomFromTier(getTier(), getLvlRange());
         if (this instanceof EliteMobSpawner) {
             EliteMobSpawner ms = (EliteMobSpawner) this;
-            entity = EntityAPI.spawnElite(spawn, ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
+            entity = EntityAPI.spawnElite(spawn, getLocation().clone(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
         } else {
-            entity = EntityAPI.spawnCustomMonster(spawn, getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
+            entity = EntityAPI.spawnCustomMonster(spawn, getLocation().clone(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
         }
 
         if (entity == null) {

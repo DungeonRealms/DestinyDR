@@ -54,6 +54,7 @@ public class MetadataUtils {
 		HP_REGEN(5),
 		INVULNERABLE(false),
 		SPAWN_LOCATION(null),
+		SPAWNER_LOCATION(null),
 
 		// Players
 		SHARDING(false),
