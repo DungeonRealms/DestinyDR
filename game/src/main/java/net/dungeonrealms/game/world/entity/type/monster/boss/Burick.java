@@ -21,6 +21,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import sun.net.www.content.text.Generic;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -60,12 +61,14 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         DamageAPI.setDamageBonus(getBukkit(), 100);
         DamageAPI.setArmorBonus(getBukkit(), 30);
         getAttributeInstance(GenericAttributes.c).setValue(1.00d);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue() * 2);
         getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
 
     @Override
     public void o() {
         super.o();
+        getAttributeInstance(GenericAttributes.c).setValue(.80F);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
     }
 
@@ -107,7 +110,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 
     @Override
     public void onBossAttacked(Player attacker) {
-
+        getAttributeInstance(GenericAttributes.c).setValue(.75F);
         if (getPercentHP() <= 0.5F && canAddsRespawn) {
             spawnWave();
             ParticleAPI.spawnParticle(Particle.SPELL, getBukkitEntity().getLocation(), 100, 1F);

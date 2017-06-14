@@ -36,7 +36,6 @@ import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -607,7 +606,7 @@ public class DamageAPI {
 
         if (target != null) {
             vector = target.getLocation().toVector().subtract(attacker.getLocation().toVector());
-            if(vector.length() != 0)vector.normalize();
+            if (vector.length() != 0) vector.normalize();
         }
 
 
@@ -731,7 +730,7 @@ public class DamageAPI {
             //Recalc off direction?
             unitVector = p.getLocation().getDirection().normalize();
             Bukkit.getLogger().info("Recalcing vector due to projectile code.");
-      }
+        }
 
         //Dont cause NaN.
         if (unitVector.length() != 0) unitVector.normalize();
@@ -745,23 +744,17 @@ public class DamageAPI {
     }
 
     public static void knockbackEntityVanilla(Entity entity, float strength, Location damagerLocation) {
+
         double d0 = damagerLocation.getX() - entity.getLocation().getX();
         double d1 = damagerLocation.getZ() - entity.getLocation().getZ();
-//        this.impulse = true;
         float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
         org.bukkit.util.Vector vel = entity.getVelocity();
         vel.divide(new Vector(2, 1, 2));
 
         vel.subtract(new Vector(d0 / (double) f1 * (double) strength, 0, d1 / (double) f1 * (double) strength));
-//        this.motX /= 2.0D;
-//        this.motZ /= 2.0D;
-//        this.motX -= d0 / (double) f1 * (double) f;
-//        this.motZ -= d1 / (double) f1 * (double) f;
         if (entity.isOnGround()) {
-//            this.motY /= 2.0D;
             vel.divide(new Vector(1, 2, 1));
             vel.add(new Vector(0, strength, 0));
-//            this.motY += (double) f;
             if (vel.getY() > 0.4000000059604645D) {
                 vel.setY(0.4000000059604645D);
             }
@@ -769,10 +762,6 @@ public class DamageAPI {
 
 
         EntityMechanics.setVelocity(entity, vel);
-//        entity.setVelocity(vel);
-        //Dont stop sprinting?
-//        Bukkit.getLogger().info("Setting vel: " + vel.toString());
-//        ((CraftEntity) entity).getHandle().velocityChanged = false;
     }
 
 

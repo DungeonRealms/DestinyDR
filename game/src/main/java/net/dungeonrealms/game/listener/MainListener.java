@@ -7,7 +7,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
@@ -31,6 +30,7 @@ import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
+import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -851,10 +851,21 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUnload(ChunkUnloadEvent event) {
-        if (!DungeonManager.isDungeon(event.getWorld()))
+        if (!DungeonManager.isDungeon(event.getWorld())) {
             if (removeEntities(event.getChunk())) {
                 event.setCancelled(true);
             }
+        } else {
+            if (event.getChunk().getEntities().length > 0) {
+                Dungeon dungeon = DungeonManager.getDungeon(event.getWorld());
+                if (dungeon != null) {
+                    //Cancell...
+//                    Bukkit.getLogger().info("cancelling: " + event.getChunk().getEntities().length);
+                    event.setCancelled(true);
+                }
+            }
+        }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -865,6 +876,7 @@ public class MainListener implements Listener {
     /**
      * Removes entites on chunk load / unload
      */
+
     private boolean removeEntities(Chunk chunk) {
         boolean mainWorld = GameAPI.isMainWorld(chunk.getWorld());
 

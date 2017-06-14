@@ -31,6 +31,7 @@ import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -136,8 +137,13 @@ public class PvEListener implements Listener {
         if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
             //Why cancel the event?
             int tier = new ItemWeaponBow(damager.getInventory().getItemInMainHand()).getTier().getId();
-            double kb = EntityAPI.isBoss(receiver) ? .25 + .135 * tier : .45 + .2D * tier; //LEss knocback to bosses.
-            DamageAPI.knockbackEntity(damager, receiver, kb);
+            boolean boss = EntityAPI.isBoss(receiver);
+            double kb = boss ? .25 + .135 * tier : .45 + .2D * tier; //LEss knocback to bosses.
+
+            float kbResis = boss ? 1F - (float) receiver.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue() : 1;
+
+            DamageAPI.knockbackEntity(damager, receiver, kbResis * kb);
+
             damager.updateInventory();
         }
 
