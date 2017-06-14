@@ -369,7 +369,7 @@ public class HealthHandler implements GenericMechanic {
     public static void damagePlayer(AttackResult res, DamageCause cause, boolean updateCombat) {
         Player player = res.getDefender().getPlayer();
         LivingEntity attacker = res.getAttacker().getEntity();
-        double damage = res.getWeightedDamage();
+        double damage = res.getDamage();
 
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
@@ -377,7 +377,6 @@ public class HealthHandler implements GenericMechanic {
         boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT;
 
         if (player.isDead()) {
-            Bukkit.getLogger().info("Cancelling damage event for " + player.getName() + " due to being dead.");
             return;
         }
         if (damage < 0) {
@@ -617,7 +616,7 @@ public class HealthHandler implements GenericMechanic {
 
         LivingEntity defender = res.getDefender().getEntity();
         LivingEntity attacker = res.getAttacker().getEntity();
-        double damage = res.getWeightedDamage();
+        double damage = res.getDamage();
 
         boolean isDPSDummy = EnumEntityType.DPS_DUMMY.isType(defender);
 

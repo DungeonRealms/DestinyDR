@@ -39,6 +39,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -507,6 +508,7 @@ public class DamageAPI {
             //We need to swap this?
             ParticleAPI.spawnBlockParticles(attacker.getEntity().getLocation(), Material.LEAVES);
             AttackResult result = new AttackResult(defender.getEntity(), attacker.getEntity());
+            result.setCause(EntityDamageEvent.DamageCause.THORNS);
             result.setDamage(damageFromThorns);
             HealthHandler.damageEntity(result);
         }
@@ -534,8 +536,10 @@ public class DamageAPI {
                 elementalDamage += eDamage;
 
                 //  ADD RESISTANCE  //
-                if (ea.getResist() != null)
+                if (ea.getResist() != null) {
                     elementalResistance += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
+
+                }
             }
         } else if (EntityAPI.isElemental(attacker.getEntity())) {
             ElementalAttribute ea = EntityAPI.getElement(attacker.getEntity());
@@ -551,11 +555,10 @@ public class DamageAPI {
         //  APPLY ELEMENTAL  //
         damage -= elementalDamage;
         damage *= (100 - Math.min(75, totalArmor)) / 100D;
-
         // elemental damage ignores 80% but add on resistance
-        if (elementalDamage != 0)
+        if (elementalDamage != 0) {
             damage += (0.8 * elementalDamage) * ((double) (100 - elementalResistance)) / 100d;
-
+        }
         //  ARMOR BONUS  //
         if (defender.getEntity().hasMetadata("armorBonus"))
             totalArmor += (defender.getEntity().getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
