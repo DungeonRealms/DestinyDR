@@ -370,7 +370,7 @@ public class Fishing implements GenericMechanic, Listener {
                 return;
             }
 
-            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue() + + Trinket.getTrinketValue(pl, Trinket.FISH_DURABILITY);
+            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_DURABILITY);
 
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
