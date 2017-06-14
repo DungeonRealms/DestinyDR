@@ -333,7 +333,7 @@ public class EnergyHandler implements GenericMechanic {
             case STONE_SWORD:
                 return 0.071F;
             case IRON_SWORD:
-                return 0.0833F;
+                return 0.0960F;
             case DIAMOND_SWORD:
                 return 0.125F;
             case GOLD_SWORD:
@@ -344,7 +344,7 @@ public class EnergyHandler implements GenericMechanic {
             case STONE_AXE:
                 return 0.09996F;
             case IRON_AXE:
-                return 0.12F;
+                return 0.13F;
             case DIAMOND_AXE:
                 return 0.15F;
             case GOLD_AXE:
