@@ -12,7 +12,7 @@ public enum ScrapTier {
 
     TIER1(1, "Leather", ChatColor.WHITE, Material.LEATHER, (byte) 0, 25, 80, 70, -1),
     TIER2(2, "Chain", ChatColor.GREEN, Material.IRON_FENCE, (byte) 0, 30, 140, 125, -1),
-    TIER3(3, "Iron", ChatColor.AQUA, Material.INK_SACK, (byte) 7, 42, 110, 100, 180),
+    TIER3(3, "Iron", ChatColor.AQUA, Material.INK_SACK, (byte) 7, 42, 110, 100, 150),
     TIER4(4, "Diamond", ChatColor.LIGHT_PURPLE, Material.INK_SACK, DyeColor.LIGHT_BLUE.getDyeData(), 57, 88, 80, 60),
     TIER5(5, "Gold", ChatColor.YELLOW, Material.INK_SACK, DyeColor.YELLOW.getDyeData(), 41, 33, 30, 20);
 
