@@ -374,7 +374,7 @@ public class HealthHandler implements GenericMechanic {
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
 
-        boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT;
+        boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT || res.getCause() == DamageCause.THORNS;
 
         if (player.isDead()) {
             return;
