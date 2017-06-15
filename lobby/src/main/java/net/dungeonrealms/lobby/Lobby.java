@@ -5,22 +5,24 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.lobby.bungee.NetworkClientListener;
-import net.dungeonrealms.lobby.commands.*;
+import net.dungeonrealms.lobby.commands.CommandBuild;
+import net.dungeonrealms.lobby.commands.CommandLogin;
+import net.dungeonrealms.lobby.commands.CommandSetPin;
+import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
-
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -33,26 +35,32 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;import java.util.concurrent.TimeUnit;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Lobby extends JavaPlugin implements Listener {
 
-    @Getter private GameClient client;
-    @Getter private static Lobby instance;
-    @Getter private GhostFactory ghostFactory;
+    @Getter
+    private GameClient client;
+    @Getter
+    private static Lobby instance;
+    @Getter
+    private GhostFactory ghostFactory;
 
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
-    @Getter private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
+    @Getter
+    private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
 
     @Override
     public void onEnable() {
@@ -105,7 +113,7 @@ public class Lobby extends JavaPlugin implements Listener {
     public void sendClientMessage(String task, String message, String[] contents) {
         if (this.client != null)
             this.client.sendNetworkMessage(task, message, contents);
-        
+
     }
 
     @Override
@@ -113,12 +121,56 @@ public class Lobby extends JavaPlugin implements Listener {
         SQLDatabaseAPI.getInstance().shutdown();
     }
 
+    private DecimalFormat decimalFormat = new DecimalFormat("#.#");
+
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer().isOp() && isLoggedIn(event.getPlayer()))
-            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
-        else
-            event.setCancelled(true);
+//        if (event.getPlayer().isOp() && isLoggedIn(event.getPlayer()))
+//            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
+//        else {
+        Player player = event.getPlayer();
+        PlayerRank rank = Rank.getPlayerRank(event.getPlayer().getUniqueId());
+        if (player.hasMetadata("chatCD") && player.getMetadata("chatCD").size() > 0) {
+            long time = player.getMetadata("chatCD").get(0).asLong();
+
+            int MAX_WAIT = rank.isAtLeast(PlayerRank.PMOD) ? 3 : rank.isSUB() ? 10 : 20;
+
+            double timeLeft = MAX_WAIT - (System.currentTimeMillis() - time) / 1_000D;
+
+            if (timeLeft > 0) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "Please wait " + decimalFormat.format(timeLeft) + "s before sending another chat message.");
+                return;
+            }
+        }
+
+
+        String prefix;
+        if (rank != null) {
+            prefix = rank.getChatPrefix();
+        } else {
+            prefix = "";
+        }
+
+        String msg = event.getMessage();
+
+        if (rank == null || !rank.isAtLeast(PlayerRank.GM))
+            msg = ChatUtil.checkForBannedWords(msg);
+
+        if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
+            if (!Rank.isGM(player)) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+                return;
+            }
+        }
+
+        if (rank != null && !rank.isAtLeast(PlayerRank.TRIALGM))
+            player.setMetadata("chatCD", new FixedMetadataValue(Lobby.getInstance(), System.currentTimeMillis()));
+
+        event.setFormat(prefix + event.getPlayer().getName() + ": " + ChatColor.WHITE + msg);
+//        }
     }
 
     @EventHandler
@@ -168,6 +220,9 @@ public class Lobby extends JavaPlugin implements Listener {
 
     }
 
+    public Location getLobbyLocation(World world) {
+        return new Location(world, 36.873, 142, 21, 179.4F, -2.5F);
+    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -180,7 +235,8 @@ public class Lobby extends JavaPlugin implements Listener {
             player.setDisplayName(rankColor);
             player.setCustomName(rankColor);
 
-            player.teleport(new Location(player.getWorld(), -420.512, 8.5, -149.540));
+//            player.teleport(new Location(player.getWorld(), -420.512, 8.5, -149.540));
+            player.teleport(getLobbyLocation(player.getWorld()));
 
             if (!player.isOp())
                 player.getInventory().clear();
@@ -224,8 +280,14 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if ((event.getPlayer().getGameMode() != GameMode.CREATIVE) && (event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR))
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR)
             event.getPlayer().setAllowFlight(true);
+
+
+        if (event.getTo().getY() < 0) {
+            event.getPlayer().teleport(getLobbyLocation(event.getPlayer().getWorld()));
+//            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -244,7 +306,7 @@ public class Lobby extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemClick(PlayerInteractEvent e) {
         final Player p = e.getPlayer();
-        if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             if (!e.hasItem()) return;
             if (e.getItem().getType() != Material.COMPASS) return;
@@ -260,8 +322,10 @@ public class Lobby extends JavaPlugin implements Listener {
                 p.sendMessage(ChatColor.RED + "Please wait while we create your player data for the first time...");
                 return;
             }
-            new ShardSelector(p).open(p);
 
+            new ShardSelector(p).open(p);
+        }else{
+            e.setCancelled(true);
         }
     }
 
