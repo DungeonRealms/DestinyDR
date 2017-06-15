@@ -32,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -256,6 +257,18 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(Lobby.getInstance(), () -> this.allowedStaff.remove(event.getPlayer().getUniqueId()), 1L);
     }
 
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onInteractAt(PlayerInteractAtEntityEvent event) {
+        if (!event.getPlayer().isOp()) {
+            event.setCancelled(true);
+        }
+
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreProcess(PlayerCommandPreprocessEvent event) {
@@ -324,7 +337,7 @@ public class Lobby extends JavaPlugin implements Listener {
             }
 
             new ShardSelector(p).open(p);
-        }else{
+        } else {
             e.setCancelled(true);
         }
     }
