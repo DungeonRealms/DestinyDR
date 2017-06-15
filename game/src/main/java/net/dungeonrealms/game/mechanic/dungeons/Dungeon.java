@@ -369,9 +369,9 @@ public abstract class Dungeon {
      * Gets the amount of mobs left needed to kill.
      */
     public int getKillsLeft() {
-        if(this instanceof BanditTrove){
-            return Math.max(0, (int) (getMaxMobCount() * 0.65D) - getKillCount());
-        }
+//        if(this instanceof BanditTrove){
+//            return Math.max(0, (int) (getMaxMobCount() * 0.65D) - getKillCount());
+//        }
         return Math.max(0, (int) (getMaxMobCount() * 0.80D) - getKillCount());
     }
 
