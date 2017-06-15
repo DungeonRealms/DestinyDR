@@ -25,6 +25,7 @@ import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,6 +34,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -255,6 +257,17 @@ public class Lobby extends JavaPlugin implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Bukkit.getScheduler().runTaskLater(Lobby.getInstance(), () -> this.allowedStaff.remove(event.getPlayer().getUniqueId()), 1L);
+    }
+
+    @EventHandler
+    public void onEntityDamage(HangingBreakEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (!event.getPlayer().isOp())
+            event.setCancelled(true);
     }
 
     @EventHandler
