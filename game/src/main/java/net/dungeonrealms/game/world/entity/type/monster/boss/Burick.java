@@ -61,7 +61,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         DamageAPI.setDamageBonus(getBukkit(), 100);
         DamageAPI.setArmorBonus(getBukkit(), 30);
         getAttributeInstance(GenericAttributes.c).setValue(1.00d);
-        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue() * 1.458);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue() * 1.25);
         getBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
 
