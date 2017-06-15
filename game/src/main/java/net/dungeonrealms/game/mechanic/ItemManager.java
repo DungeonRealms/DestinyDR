@@ -208,7 +208,7 @@ public class ItemManager {
 
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + pw.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
-                + "          XP" + "\n" + ChatColor.BLACK + "       " + pw.getExperience() + "/" + pw.getEXPNeeded();
+                + "          EXP" + "\n" + ChatColor.BLACK + "       " + pw.getExperience() + "/" + pw.getEXPNeeded();
 
 
         int str_val = pw.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
