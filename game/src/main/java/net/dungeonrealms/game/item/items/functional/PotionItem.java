@@ -112,7 +112,6 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 
     private void findNextPotion(Player player, EquipmentSlot slot) {
         int slotCount = -1;
-        if(player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) return;
         for (ItemStack stack : player.getInventory().getContents()) {
             slotCount++;
             if (!isPotion(stack))
