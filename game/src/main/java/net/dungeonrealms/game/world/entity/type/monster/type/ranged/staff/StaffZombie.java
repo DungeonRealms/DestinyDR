@@ -16,7 +16,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
     public StaffZombie(World world) {
         super(world, EnumMonster.StaffZombie);
 
-        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(25D);
+//        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(25D);
         EntityAPI.clearAI(goalSelector, targetSelector);
 
         this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.3D, 30, 45, 15.0F));

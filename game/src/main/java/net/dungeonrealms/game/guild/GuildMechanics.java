@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -427,7 +428,7 @@ public class GuildMechanics {
 
 
     private boolean checkForProfanity(String text) {
-        for (String s : Chat.bannedWords)
+        for (String s : ChatUtil.bannedWords)
             if (text.equalsIgnoreCase(s) || text.toLowerCase().contains(s.toLowerCase()))
                 return true;
         return false;

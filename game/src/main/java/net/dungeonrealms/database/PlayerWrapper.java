@@ -1095,9 +1095,13 @@ public class PlayerWrapper {
             getAttributes().addStat(stat.getType(), this.getPlayerStats().getStat(stat));
 
         TrinketItem activeTrinket = Trinket.getActiveTrinketItem(getPlayer());
-        if (activeTrinket != null && activeTrinket.getTrinket().getData() instanceof EnchantTrinketData && activeTrinket.getValue() != null) {
-            EnchantTrinketData data = (EnchantTrinketData) activeTrinket.getTrinket().getData();
-            getAttributes().addStat(data.getType(), activeTrinket.getValue());
+        if (activeTrinket != null && activeTrinket.getTrinketData() instanceof EnchantTrinketData && activeTrinket.getValue() != null) {
+            EnchantTrinketData data = (EnchantTrinketData) activeTrinket.getTrinketData();
+            if (data.getType() == null) {
+                Bukkit.getLogger().info("Null enchant: " + data.getType() + " Tinker: " + activeTrinket.toString());
+            } else {
+                getAttributes().addStat(data.getType(), activeTrinket.getValue());
+            }
         }
 
         // apply stat bonuses (str, dex, int, and vit)

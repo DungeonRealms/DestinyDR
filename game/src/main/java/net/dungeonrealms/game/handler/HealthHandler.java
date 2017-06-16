@@ -10,6 +10,8 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
@@ -480,7 +482,7 @@ public class HealthHandler implements GenericMechanic {
         if (cause == DamageCause.FIRE_TICK && newHP <= 0)
             return;
 
-        if(player.isDead()) return;
+        if (player.isDead()) return;
 
         if (newHP <= 0 && handlePlayerDeath(player, attacker))
             return;
@@ -530,6 +532,8 @@ public class HealthHandler implements GenericMechanic {
         if (leAttacker instanceof Player) {
             PlayerWrapper killer = PlayerWrapper.getWrapper((Player) leAttacker);
             killerName = killer.getChatName();
+
+            ClueUtils.handlePlayerKilled((Player) leAttacker, player);
 
             if (Achievements.hasAchievement(player.getUniqueId(), EnumAchievements.INFECTED))
                 Achievements.giveAchievement(killer.getPlayer(), EnumAchievements.INFECTED);
@@ -625,6 +629,11 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
+        if (attacker instanceof Player && !(defender instanceof Player)) {
+            if (defender.getCustomName() != null && defender.getCustomName().contains("Rift Minion") && Trinket.hasActiveTrinket((Player)attacker, Trinket.RIFT_DAMAGE_INCREASE)) {
+                damage += damage * .10;
+            }
+       }
 
         double maxHP = isDPSDummy ? 0 : getMaxHP(defender);
         double currentHP = isDPSDummy ? 0 : getHP(defender);

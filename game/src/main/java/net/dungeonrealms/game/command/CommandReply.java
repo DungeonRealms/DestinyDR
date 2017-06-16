@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -52,7 +53,7 @@ public class CommandReply extends BaseCommand {
             msg += " " + args[i];
         }
 
-        if(Chat.containsIllegal(msg)){
+        if(ChatUtil.containsIllegal(msg)){
             player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
             return true;
         }

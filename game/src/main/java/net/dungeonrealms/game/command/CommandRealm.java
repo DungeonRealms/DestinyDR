@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.ChatColor;
@@ -43,7 +44,7 @@ public class CommandRealm extends BaseCommand {
 
         String fixedTitle = SQLDatabaseAPI.filterSQLInjection(Chat.checkForBannedWords(newTitle.toString()));
 
-        if (Chat.containsIllegal(fixedTitle)) {
+        if (ChatUtil.containsIllegal(fixedTitle)) {
             player.sendMessage(ChatColor.RED + "Your realm title must not contain illegal characters!");
             return true;
         }

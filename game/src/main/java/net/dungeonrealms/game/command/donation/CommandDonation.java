@@ -313,6 +313,7 @@ public class CommandDonation extends BaseCommand {
                 }
             } else if (isAdd && fromPending) {
                 int returnCode = item.addNumberPending(wrapper, amount, realWhoBought,realWhoBoughtEnjinID, Utils.getDateString(), realTransactionID, true, (rows) -> {
+                    System.out.println("Is calling the number pending callback for the player: " + wrapper.getUsername());
                     GameAPI.sendNetworkMessage("donation", uuid.toString());
                     BungeeUtils.sendPlayerMessage(wrapper.getUsername(), ChatColor.GREEN.toString() + ChatColor.BOLD + "** " + ChatColor.GREEN +
                             "You have new items in your mailbox! **");

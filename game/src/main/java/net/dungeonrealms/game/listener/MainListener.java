@@ -9,6 +9,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -172,7 +173,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        if (Chat.containsIllegal(event.getMessage())) {
+        if (ChatUtil.containsIllegal(event.getMessage())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "Message contains illegal characters.");
             return;

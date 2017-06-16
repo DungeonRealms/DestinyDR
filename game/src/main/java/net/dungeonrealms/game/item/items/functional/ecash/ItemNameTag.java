@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.functional.ecash;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
@@ -96,7 +97,7 @@ public class ItemNameTag extends FunctionalItem implements ItemClickEvent.ItemCl
         	String itemName = Chat.checkForBannedWords(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', SQLDatabaseAPI.filterSQLInjection(chat.getMessage()))));
         	ItemTier tier = ItemTier.getByTier(new VanillaItem(current).getTagInt(TIER));
         	
-        	if (Chat.containsIllegal(itemName)) {
+        	if (ChatUtil.containsIllegal(itemName)) {
         		player.sendMessage(ChatColor.RED + "Your desired name contained illegal characters!");
         		player.sendMessage(ChatColor.GRAY + "Remove them and try again.");
         		returnItem(player, current);

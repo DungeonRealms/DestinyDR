@@ -4,8 +4,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -64,7 +66,20 @@ public class DungeonJoin extends BaseCommand {
         }
 
         p.announce(player.getName() + " has re-entered the dungeon.");
-        player.teleport(p.getDungeon().getWorld().getSpawnLocation());
+
+        if (Trinket.hasActiveTrinket(player, Trinket.DUNGEON_TELEPORT, true) &&
+                p.getDungeon().getBoss() != null && p.getDungeon().hasSpawned(p.getDungeon().getBoss().getBossType())) {
+            Player teleportTp = p.getOwner() != null && p.getOwner().getWorld().equals(p.getDungeon().getWorld()) ? p.getOwner() : p.getAllMembers().stream().filter(pl -> !pl.equals(player) && pl.getWorld().equals(p.getDungeon().getWorld())).findFirst().orElse(null);
+            if (teleportTp != null) {
+                player.teleport(teleportTp);
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 1.4F);
+            } else {
+                player.teleport(p.getDungeon().getWorld().getSpawnLocation());
+                player.sendMessage(ChatColor.RED + "Unable to find a Party Member to teleport to.");
+            }
+        } else {
+            player.teleport(p.getDungeon().getWorld().getSpawnLocation());
+        }
         player.setFallDistance(0F);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 3, 1));
         return true;

@@ -7,10 +7,14 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
+import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -21,7 +25,9 @@ import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.profession.fishing.*;
+import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -370,7 +376,7 @@ public class Fishing implements GenericMechanic, Listener {
                 return;
             }
 
-            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_DURABILITY);
+            int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue();
 
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
@@ -389,6 +395,14 @@ public class Fishing implements GenericMechanic, Listener {
                     }
                 }
 
+                if(Trinket.hasActiveTrinket(pl, Trinket.FISH_DAY_SUCCESS) && (pl.getWorld().getFullTime() <= 13_000 || pl.getWorld().getFullTime() >= 23_000)){
+                    successRate += 3 + ThreadLocalRandom.current().nextInt(3);
+                    Bukkit.getLogger().info("Adding success: " + successRate);
+                }
+                if(Trinket.hasActiveTrinket(pl, Trinket.FISH_NIGHT_SUCCESS) && (pl.getWorld().getFullTime() >= 13_000 || pl.getWorld().getFullTime() <= 23_000)){
+                    successRate += 3 + ThreadLocalRandom.current().nextInt(3);
+                    Bukkit.getLogger().info("Adding success: " + successRate);
+                }
                 if (tracker.isSuspiciousAutoFisher() && successRate > 5) {
                     successRate = 5; //Auto fail.
                     Bukkit.getLogger().info("Setting " + pl.getName() + " success rate to " + successRate + " due to being an suspected auto fisher..");
@@ -422,12 +436,12 @@ public class Fishing implements GenericMechanic, Listener {
                 pw.addExperience(exp / 8, false, true, true);
                 pw.getPlayerGameStats().addStat(StatColumn.FISH_CAUGHT);
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_DOUBLE_FISH) >= random.nextInt(100) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.DOUBLE_CATCH).getValue() >= random.nextInt(100) + 1) {
                     fishDrop *= 2;
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                 }
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TRIPLE_FISH) >= random.nextInt(100) + 1) {
+                if (pole.getAttributes().getAttribute(FishingAttributeType.TRIPLE_CATCH).getValue() >= random.nextInt(100) + 1) {
                     fishDrop *= 3;
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
@@ -438,9 +452,25 @@ public class Fishing implements GenericMechanic, Listener {
 //                pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
 
+
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
 
-                if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TREASURE_FIND) >= ThreadLocalRandom.current().nextInt(300) + 1) {
+                if(random.nextInt(300_000) == 3){
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+                    wrapper.getPurchaseablesUnlocked().put(Purchaseables.FISH_BOWL, 1);
+                    wrapper.setActiveHatOverride(CosmeticOverrides.FISH_BOWL);
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .5F);
+                    Quest.spawnFirework(pl.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.GREEN).withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
+                    pl.sendMessage(ChatColor.GREEN + "* Your line snags on a fishbowl floating in the water! *");
+                    shootItemStackFromWater(new ItemStack(Material.SAPLING, 1, (short)3), pl, e.getHook().getLocation());
+                }else if(random.nextInt(5_000) == 3){
+                    ClueScrollItem clue = new ClueScrollItem(ClueScrollType.FISHING);
+                    GameAPI.giveOrDropItem(pl, clue.generateItem());
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .5F);
+                    //Quest.spawnFirework(pl.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.GREEN).withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
+                    //pl.sendMessage(ChatColor.GREEN + "* Your line snags on a fishbowl floating in the water! *");
+                    shootItemStackFromWater(new ItemStack(Material.MAP, 1), pl, e.getHook().getLocation());
+                } else if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() >= ThreadLocalRandom.current().nextInt(300) + 1) {
                     // Give em treasure!
                     int treasureType = ThreadLocalRandom.current().nextInt(100); // 0, 1
                     ItemStack treasure = null;
@@ -469,12 +499,13 @@ public class Fishing implements GenericMechanic, Listener {
 
                     if (treasure != null) {
                         GameAPI.giveOrDropItem(pl, treasure);
+                        ClueUtils.handleTreasureFindFishing(pl, treasure);
                         if (e.getHook() != null && e.getHook().getLocation() != null)
                             shootItemStackFromWater(treasure, pl, e.getHook().getLocation());
                         pl.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
                                 + treasure.getItemMeta().getDisplayName());
                     }
-                } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() + +Trinket.getTrinketValue(pl, Trinket.FISH_JUNK_FIND) >= ThreadLocalRandom.current().nextInt(100) + 1) {
+                } else if (pole.getAttributes().getAttribute(FishingAttributeType.JUNK_FIND).getValue() >= ThreadLocalRandom.current().nextInt(100) + 1) {
                     int junkType = ThreadLocalRandom.current().nextInt(100) + 1; // 0, 1, 2
                     ItemStack junk = null;
 
@@ -521,6 +552,7 @@ public class Fishing implements GenericMechanic, Listener {
                                 + junk.getItemMeta().getDisplayName());
                     }
                 } else {
+                    ClueUtils.handleFishAFish(pl,fish);
                     GameAPI.giveOrDropItem(pl, fish);
                     if (e.getHook() != null && e.getHook().getLocation() != null)
                         shootItemStackFromWater(fish, pl, e.getHook().getLocation());
@@ -613,6 +645,13 @@ public class Fishing implements GenericMechanic, Listener {
         double vx = vh * dirx;
         double vz = vh * dirz;
 
+        if(Double.isNaN(vx) || Double.isNaN(vz)){
+            Vector newVect =  from.subtract(to);
+            if(newVect.length() != 0)
+                newVect.normalize();
+            Bukkit.getLogger().info("Shooting in " + newVect.toString());
+            return newVect.multiply(1.1D);
+        }
         return new Vector(vx, vy, vz);
     }
 

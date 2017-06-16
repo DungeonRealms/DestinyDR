@@ -15,6 +15,7 @@ import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.functional.ItemRiftCrystal;
 import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -75,16 +76,41 @@ public class RiftMechanics implements GenericMechanic, Listener {
 //    private int RESPAWN_TIME = 20 * 60 * 60;
 
     //1 Hour
-    private int RESPAWN_TIME = 20 * 60 * 60;
+    private int RESPAWN_TIME = 5 * 60 + 20;
+
+    @Getter
+    @Setter
+    private int spawnTimer = RESPAWN_TIME;
+
+    private WorldRift nextRift;
 
     @Override
     public void startInitialization() {
         Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
         this.loadRifts();
+        this.nextRift = getRandomRift();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            this.spawnRift();
+
+            if (spawnTimer <= 0) {
+                this.spawnTimer = RESPAWN_TIME;
+                this.spawnRift();
+            } else {
+                spawnTimer--;
+
+                if (spawnTimer == 60 * 5 && nextRift != null) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (Trinket.hasActiveTrinket(player, Trinket.UPCOMING_RIFT, true)) {
+                            Bukkit.getLogger().info("Sending alert to " + player.getName() + " 5minutes early for next rift..");
+                            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1.4F);
+                            player.sendMessage("");
+                            player.sendMessage(ChatColor.GRAY + "You feel an unworldly presence near " + ChatColor.LIGHT_PURPLE + this.nextRift.getNearbyCity() + ChatColor.GRAY + "...");
+                            player.sendMessage("");
+                        }
+                    }
+                }
+            }
             //Every hour?
-        }, RESPAWN_TIME, RESPAWN_TIME);
+        }, 20, 20);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (this.activeRift != null)
@@ -182,8 +208,9 @@ public class RiftMechanics implements GenericMechanic, Listener {
         }
 
         //Get rift, then create.
-        this.activeRift = getRandomRift();
+        this.activeRift = this.nextRift != null ? this.nextRift : getRandomRift();
         this.activeRift.createRift();
+        this.nextRift = getRandomRift();
     }
 
     @EventHandler

@@ -324,13 +324,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         }
                         case "donation": {
 
+
                             UUID uuid = UUID.fromString(in.readUTF());
 
+                            System.out.println("Got the plugin message to fully reload the players payments for: " + uuid.toString());
                             //This is just a broad message telling the shard "reload all of his purchases".
 
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
                             if (wrapper == null) return;//We dont care because they are not on this shard.
-                            wrapper.fullyReloadPurchaseables(null);
+                            System.out.println("Got the plugin message to fully reload the players payments for 2 : " + uuid.toString());
+                            wrapper.fullyReloadPurchaseables((rows) -> {
+                                System.out.println("Got the plugin message to fully reload the players payments for 3 : " + uuid.toString());
+                            });
                             break;
                         }
                         case "PrivateMessage": {

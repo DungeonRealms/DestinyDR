@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
 
@@ -37,7 +38,7 @@ public class CommandAsk extends BaseCommand {
         }
         
         p.sendMessage(ChatColor.GOLD + "Your question has been sent to an online staff member.");
-        GameAPI.sendStaffMessage("&e<QUESTION> &6({SERVER}&6) " + PlayerWrapper.getWrapper(p).getChatName() + ":&e " + String.join(" ", args));
+        GameAPI.sendStaffMessage(PlayerRank.PMOD,"&e<QUESTION> &6({SERVER}&6) " + PlayerWrapper.getWrapper(p).getChatName() + ":&e " + String.join(" ", args));
 
         return true;
     }

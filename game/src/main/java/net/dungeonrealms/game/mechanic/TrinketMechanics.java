@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -10,7 +12,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +27,11 @@ public class TrinketMechanics implements GenericMechanic, Listener {
         return EnumPriority.CARDINALS;
     }
 
-    private Map<UUID, TrinketItem> lastTrinketItem = new HashMap<>();
+    public static volatile Map<UUID, TrinketItem> lastTrinketItem = new HashMap<>();
 
-    private boolean ENABLED = false;
     @Override
     public void startInitialization() {
-        if(ENABLED) {
+        if (DungeonRealms.isMaster() || DungeonRealms.getShard().getType() == ShardInfo.ShardType.DEVELOPMENT) {
             Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
             Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                 for (PlayerWrapper wrapper : PlayerWrapper.getPlayerWrappers().values()) {
@@ -57,6 +61,15 @@ public class TrinketMechanics implements GenericMechanic, Listener {
 
                 }
             }, 20, 20);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onSheer(PlayerShearEntityEvent event) {
+        if (event.getPlayer().getInventory().getItemInMainHand() != null) {
+            if (TrinketItem.isType(event.getPlayer().getInventory().getItemInMainHand(), ItemType.TRINKET)) {
+                event.setCancelled(true);
+            }
         }
     }
 

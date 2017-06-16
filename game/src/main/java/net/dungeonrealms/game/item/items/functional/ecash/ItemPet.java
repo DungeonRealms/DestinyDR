@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
@@ -91,7 +92,7 @@ public class ItemPet extends FunctionalItem implements ItemClickListener {
 
             String checkedPetName = SQLDatabaseAPI.filterSQLInjection(Chat.checkForBannedWords(name));
 
-            if (Chat.containsIllegal(checkedPetName)) {
+            if (ChatUtil.containsIllegal(checkedPetName)) {
                 player.sendMessage(ChatColor.RED + "Your pet name contains illegal characters!");
                 return;
             }

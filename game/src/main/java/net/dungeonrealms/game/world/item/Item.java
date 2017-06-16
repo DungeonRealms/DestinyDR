@@ -12,6 +12,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
+
 /**
  * A compilation of enumerations related to items including
  * ItemType, ItemTier, and ItemRarity along with convenience
@@ -296,6 +298,14 @@ public class Item {
                 if (ChatColor.stripColor(type.getPrefix().replace("+", "").trim()).equalsIgnoreCase(name)) return type;
             }
             return null;
+        }
+
+        public static AttributeType getByName(String name) {
+            for (WeaponAttributeType type : WeaponAttributeType.values()) {
+                if (type.getNBTName().equalsIgnoreCase(name)) return type;
+            }
+
+            return Arrays.stream(ArmorAttributeType.values()).filter(type -> type.getNBTName().equalsIgnoreCase(name)).findFirst().orElse(null);
         }
     }
 

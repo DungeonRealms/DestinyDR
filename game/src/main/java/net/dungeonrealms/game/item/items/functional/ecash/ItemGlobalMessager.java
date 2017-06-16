@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.item.ItemType;
@@ -64,7 +65,7 @@ public class ItemGlobalMessager extends FunctionalItem implements ItemClickListe
 
             final String fixedMessage = Chat.checkForBannedWords(msg);
 
-            if (Chat.containsIllegal(fixedMessage)) {
+            if (ChatUtil.containsIllegal(fixedMessage)) {
                 player.sendMessage(ChatColor.RED + "Your message contains illegal characters!");
                 return;
             }

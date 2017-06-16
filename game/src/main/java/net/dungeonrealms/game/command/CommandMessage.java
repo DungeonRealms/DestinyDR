@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
@@ -43,7 +44,7 @@ public class CommandMessage extends BaseCommand {
         String message = String.join(" ", Arrays.asList(args));
         message = message.substring(playerName.length() + 1);
         
-        if(Chat.containsIllegal(message)){
+        if(ChatUtil.containsIllegal(message)){
             player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
             return true;
         }

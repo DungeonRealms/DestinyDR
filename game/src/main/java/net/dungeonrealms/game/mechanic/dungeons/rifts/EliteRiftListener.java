@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.util.ChatColor;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.RiftEliteBoss;
@@ -37,20 +38,23 @@ public class EliteRiftListener implements Listener {
         if (boss.getStage().equals(RiftEliteBoss.BossStage.LAVA_TRAIL) && (System.currentTimeMillis() - boss.getLastStageSwitch() > 1000)) {
             if (!evt.getTo().equals(evt.getFrom()))
                 rift.getLastMovements().put(evt.getPlayer(), System.currentTimeMillis());
-
+            boolean hasObsidianFeet = Trinket.hasActiveTrinket(evt.getPlayer(), Trinket.RIFT_LAVA_TRAIL, true);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 Block bl = evt.getFrom().clone().subtract(0, 1, 0).getBlock();
-                if (!bl.getType().equals(Material.AIR) && !bl.getType().equals(Material.STATIONARY_LAVA) && !bl.getType().equals(Material.LAVA)) {
+                if (!bl.getType().equals(Material.AIR) && (!bl.getType().equals(Material.STATIONARY_LAVA) && !bl.getType().equals(Material.LAVA) && !hasObsidianFeet || !bl.getType().equals(Material.OBSIDIAN) && hasObsidianFeet)) {
                     Material type = bl.getType();
                     MaterialData data = new MaterialData(type, bl.getData());
                     rift.getBlockTypes().put(bl.getLocation(), new Tuple<>(data, System.currentTimeMillis()));
-                    bl.setTypeIdAndData(Material.STATIONARY_LAVA.getId(), (byte) 0, false);
+
+                    bl.setTypeIdAndData(hasObsidianFeet ? Material.OBSIDIAN.getId() : Material.STATIONARY_LAVA.getId(), (byte) 0, false);
+
                 }
             }, 5);
         }
         //Bertt??
         int minYCoord = rift.getMap().getSpawnLocation().getBlockY();
         int hisY = evt.getPlayer().getLocation().getBlockY();
+
         if (hisY < minYCoord && evt.getPlayer().getLocation().getBlock().getType() != Material.AIR) {
             GameAPI.teleport(evt.getPlayer(), TeleportLocation.CYRENNICA.getLocation());
             evt.getPlayer().sendMessage(ChatColor.RED + "You fell into the unknown!");

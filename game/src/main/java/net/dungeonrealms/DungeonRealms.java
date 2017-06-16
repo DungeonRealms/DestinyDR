@@ -44,10 +44,12 @@ import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.CommandTestDot;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
 import net.dungeonrealms.game.command.test.CommandTestRift;
+import net.dungeonrealms.game.command.test.CommandTestTranslated;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.handler.*;
 import net.dungeonrealms.game.item.FunctionalItemListener;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueListener;
 import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
@@ -301,6 +303,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new PvEListener(), this);
         pm.registerEvents(new CurrencyTabListener(), this);
         pm.registerEvents(new OverrideListener(), this);
+        pm.registerEvents(new ClueListener(), this);
 
         if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
@@ -316,6 +319,7 @@ public class DungeonRealms extends JavaPlugin {
         CommandManager cm = new CommandManager();
 
         cm.registerCommand(new CommandTestDot());
+        cm.registerCommand(new CommandTestTranslated());
         cm.registerCommand(new CommandTestRift());
         cm.registerCommand(new CommandItemEdit());
         cm.registerCommand(new CommandGraveyard());

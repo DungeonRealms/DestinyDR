@@ -13,6 +13,8 @@ import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingF
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketType;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
@@ -100,7 +102,7 @@ public class CommandAdd extends BaseCommand {
                         Trinket trinket = Trinket.getFromName(args[2]);
 
                         if (type == null) {
-                            player.sendMessage(ChatColor.RED + "Invalid trinket! LURE, MINING_GLOVE, RIFT_RING");
+                            player.sendMessage(ChatColor.RED + "Invalid trinket! LURE, MINING_GLOVE, RIFT_RING, COMBAT");
                             return true;
                         }
 
@@ -111,8 +113,15 @@ public class CommandAdd extends BaseCommand {
                         }
 
                         player.sendMessage("Trinket added to inventory.");
+                    } else if (args.length == 2) {
+                        if (args[1].equalsIgnoreCase("combat") || args[1].equalsIgnoreCase("jewel")) {
+                            player.getInventory().addItem(new TrinketItem(TrinketType.COMBAT, Trinket.COMBAT).generateItem());
+                        }
                     }
                     return true;
+                case "clue":
+                    player.getInventory().addItem(new ClueScrollItem(ClueScrollType.COMBAT).generateItem());
+                    break;
                 case "load":
                 case "nameditem":
                     if (args.length > 1) {

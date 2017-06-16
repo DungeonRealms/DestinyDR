@@ -13,6 +13,9 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.functional.ItemRiftFragment;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -126,9 +129,24 @@ public class Rift {
                 minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), shield);
             }
 
+            double chance = getTier() == 1 ? .01 : getTier() == 2 ? .5 : getTier() == 3 ? 2 : getTier() == 4 ? 4 : getTier() == 5 ? 8 : 0;
+            if (ThreadLocalRandom.current().nextDouble(100) <= chance) {
+                minion.getWorld().dropItem(minion.getLocation(), new TrinketItem(TrinketType.RIFT_RING).generateItem());
+                minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 3, 1);
+                minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_WITHER_SPAWN, 3, 1.5F);
+                //30% on rift lurker
+            }
+
             //Drop shit?
             ItemStack item = new ItemRiftFragment(Item.ItemTier.getByTier(getTier())).generateItem();
-            item.setAmount(ThreadLocalRandom.current().nextInt(3) + 1);
+
+            LivingEntity min = (LivingEntity) minion;
+            if (min.getKiller() != null && Trinket.hasActiveTrinket(min.getKiller(), Trinket.INCREASED_RIFT)) {
+                item.setAmount(ThreadLocalRandom.current().nextInt(3) + 2);
+            } else {
+                item.setAmount(ThreadLocalRandom.current().nextInt(3) + 1);
+            }
+
             minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), item);
 
             if (ThreadLocalRandom.current().nextInt(100_000) == 5) {
@@ -298,7 +316,6 @@ public class Rift {
 
         for (Entity ent : this.spawnedEntities) {
             if (ent.isDead() || !ent.isValid()) {
-                Bukkit.getLogger().info("Removing dead entity: " + ent);
                 spawned--;
                 this.spawnedEntities.remove(ent);
             }

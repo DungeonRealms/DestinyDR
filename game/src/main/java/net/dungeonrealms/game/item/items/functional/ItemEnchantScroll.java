@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -58,10 +59,10 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
 		ItemStack upgradeItem = evt.getSwappedItem();
+		evt.setCancelled(true);
 		if (!isApplicable(upgradeItem))
 			return;
 		
-		evt.setCancelled(true);
 		ItemGear gear = (ItemGear)PersistentItem.constructItem(upgradeItem);
 		
 		if (gear.getTier() != getTier() && !(this instanceof ItemEnchantProfession)) {
@@ -73,11 +74,14 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
         	evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further.");
         	return;
         }
-		
+
+
 		//  ENCHANT ITEM  //
 		evt.setUsed(true);
 		enchant(evt.getPlayer(), gear);
 		evt.setSwappedItem(gear.generateItem());
+
+		ClueUtils.handleAddEnchantToItem(evt.getPlayer(), this, evt.getSwappedItem());
 	}
 	
 	public void enchant(Player player, ItemGear gear) {

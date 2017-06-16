@@ -350,7 +350,6 @@ public class SQLDatabaseAPI {
                         UUID uuid = UUID.fromString(rs.getString("users.uuid"));
                         this.accountIdNames.put(id, new UUIDName(uuid, name));
                         this.cachedNames.put(name, uuid);
-                        Bukkit.getLogger().info("Loaded id " + id + " for " + name);
                     } catch (Exception e) {
                         Bukkit.getLogger().info("Problem loading id " + rs.getString("users.username") + " from database!");
                         e.printStackTrace();

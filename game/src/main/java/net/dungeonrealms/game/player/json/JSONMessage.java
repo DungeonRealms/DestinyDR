@@ -90,7 +90,7 @@ public class JSONMessage {
         u.addProperty("action", "show_text");
 
         String lore = JSONArray.toJSONString(lines);
-        lore = lore.replace(":", "|").replace("\\", "").replace(",", "\n").replace("\"", "").replace("_", " ");
+        lore = lore.replace(":", "|").replace("\\", "").replace(",", "\n").replace("\"", "").replace("'", ",").replace("_", " ");
         lore = lore.substring(1, lore.length() - 1);
         u.addProperty("value", lore);
         o.add("hoverEvent", u);

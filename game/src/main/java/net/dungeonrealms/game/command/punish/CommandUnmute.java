@@ -53,7 +53,8 @@ public class CommandUnmute extends BaseCommand {
 
         PunishAPI.unmute(p_uuid);
         sender.sendMessage(ChatColor.RED.toString() + "You have unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+        //GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+        GameAPI.sendStaffMessage(ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
         return false;
     }
 }

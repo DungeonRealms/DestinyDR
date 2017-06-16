@@ -54,7 +54,8 @@ public class CommandUnban extends BaseCommand {
                 }
                 PunishAPI.unban(p_uuid);
                 sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
-                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                //GameAPI.sendNetworkMessage("StaffMessage",ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                GameAPI.sendStaffMessage(ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
                 GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /unban " + p_name);
             });
         });

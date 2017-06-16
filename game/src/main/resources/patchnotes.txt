@@ -1,5 +1,9 @@
 Build <build>
- &8&lAdditions&0
+ &8&lRecent Changes&0
+ &l
+ &l* &0Added Treasure Scrolls<h>&a&lWhat are these?,,&7Treasure Scrolls can be obtained,&7through various ways while playing.,,&7You can gain Treasure Scrolls while,&7mining' fishing and killing monsters.,&7Once obtained you can turn,&7them into their respective NPC,&7to obtain an Objective.,&7Upon completion you will be,&7rewarded with a random &aTrinket.</h>
+ &l* &0Added Trinkets<h>&a&lWhat are these?,&b&lTrinkets,&7Trinkets can give interesting effects,&7to players when used in their Trinket Slot!,&7You can obtain Trinkets by,&7completing Treasure Scrolls!,,&7There are &a&l4 &7different trinket types.,&7Trinkets can give various types of bonuses!,&7Check out the Forums Announcements,&7for more specific information on Trinkets.</h>
+ &l* &0Fish Bowl<h>&a&lWhat is this?,&7You can now very rarely find Fish Bowls when fishing!</h>
  &l* &0Rifts<h>&a&lWhat is this?,,&7&oThe Rift Lurkers have managed to open Rifts in space time.,&7&oThey are sending their minions into Andalucia to wreak havoc!,,&7Find and defeat these Rifts to acquire their arcane protection.</h>
  &l* &0Shop Info<h>&a&lWhat was added?,,&7Now receive a full row of shop space!,,&7Added Shop Ledgers that now,&7show recently sold items from,&7the shop you are viewing.,&7Set your shop description,&7with the skull in your shop!</h>
  &l* &0Pick Treasure Find<h>&a&lTreasure Find,,&aGain some Treasure when mining with this new enchantment!,&7Treasure Find is the only way to obtain super rare ore hats!</h>
@@ -11,7 +15,6 @@ Build <build>
  &l* &0Golden Curse<h>&a&lWhats this?,,&7Walk around like a king with this old school trail!,&7Everything you touch will turn into Gold!</h>
  &l* &0Wisdom<h>&a&lWhat is this?,,&7Ancient knowledge that can be obtained,&7through Mining with Treasure Find!,,&7Profession Wisdom can be applied to any,&7Profession Item to increase its experience.</h>
  &l* &0Item Name Tags<h>&a&lWhat is this?,,&7Rename your most sentimental gear to,&7keep a special place in your heart!,&7&oObtain one through the store today!</h>
- &8&lChanges&0
  &l* &0Potions in PVP<h>&a&lWhat's changed?,,&7Potion Sickness is now briefly applied when healing,&7with potions while chaotic and neutral,&7Each potion used while Sickened will cause,&7it to be less effective. Each potion used will,&7increase your Sickness level.</h>
  &l* &0Fixed Elite HP Mult.<h>&7Previously all elites had their HP multiplied,&7by a value depending on their tier. This,&7multiplier was not functioning in the,&7newest code and has been fixed.</h>
  &l* &0Fishing Mechanics<h>&a&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &aFish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>

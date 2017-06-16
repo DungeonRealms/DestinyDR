@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.pet.CreeperPet;
@@ -231,6 +232,8 @@ public class PetUtils implements GenericMechanic {
             player.sendMessage(ChatColor.RED + "You left your pet at home, in Andalucia.");
             return;
         }
+
+        ClueUtils.handleSpawnPet(player,pet);
 
         // Apply color prefix.
         petName = Rank.getRank(player).getChatColor() + petName;

@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
@@ -167,7 +168,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
 
-                    if (Chat.containsIllegal(shopName)) {
+                    if (ChatUtil.containsIllegal(shopName)) {
                         player.sendMessage(ChatColor.RED + "Shop name contains illegal characters.");
                         return;
                     }

@@ -11,6 +11,10 @@ import net.dungeonrealms.game.item.items.functional.ItemEXPLamp;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -49,7 +53,6 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -91,6 +94,9 @@ public class Mining implements GenericMechanic, Listener {
         if (pickaxe.getTier() == ItemTier.TIER_2) {
             p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, 0));
         } else if (pickaxe.getTier().getId() == oreTier.getTier()) {
+            //Ignore this.
+            if (Trinket.hasActiveTrinket(p, Trinket.NO_MINING_FATIGUE, true)) return;
+
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
         }
     }
@@ -119,7 +125,7 @@ public class Mining implements GenericMechanic, Listener {
 
         e.setCancelled(true);
 
-        if(!isMineable(block.getLocation()))return;
+        if (!isMineable(block.getLocation())) return;
         ItemPickaxe pickaxe = new ItemPickaxe(item);
         Player p = e.getPlayer();
 
@@ -196,6 +202,7 @@ public class Mining implements GenericMechanic, Listener {
                 treasureItems.put(itemEnt, stand -> {
                     stand.remove();
                     giveLoot(p, loot);
+                    ClueUtils.handleTreasureFindMining(p, loot, oreTier);
                     p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_TOUCH, 1, 1.2F);
                 });
             }, 20);
@@ -232,8 +239,10 @@ public class Mining implements GenericMechanic, Listener {
         GameAPI.giveOrDropItem(p, ore);
 
 
-        if (oreToAdd > 0)
+        if (oreToAdd > 0) {
             Quests.getInstance().triggerObjective(p, ObjectiveMineOre.class);
+            ClueUtils.handleOreMined(p, oreTier);
+        }
 
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.GEM_FIND).getValue() >= rand.nextInt(100) + 1) {
             int tier = oreTier.getTier() - 1;
@@ -241,11 +250,23 @@ public class Mining implements GenericMechanic, Listener {
 
             //  DROP GEMS  //
             if (amount > 0) {
-                Item is = p.getWorld().dropItemNaturally(block.getLocation().add(.5, 1.2, .5), new ItemGem(amount).generateItem());
-                is.setVelocity(new Vector(0, -.3D, 0));
+                if (Trinket.hasActiveTrinket(p, Trinket.MINE_GEM_TELEPORT)) {
+                    GameAPI.giveOrDropItem(p, new ItemGem(amount).generateItem());
+                    p.playSound(p.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 1.4F);
+                } else {
+                    Item is = p.getWorld().dropItemNaturally(block.getLocation().add(.5, 1.2, .5), new ItemGem(amount).generateItem());
+                    is.setVelocity(new Vector(0, -.3D, 0));
+                }
                 pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)");
             }
         }
+
+        if (rand.nextInt(2000) == 3) {
+            ClueScrollItem clue = new ClueScrollItem(ClueScrollType.MINING);
+            GameAPI.giveOrDropItem(p, clue.generateItem());
+            p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .5F);
+        }
+
     }
 
     public Byte direction(Player player) {

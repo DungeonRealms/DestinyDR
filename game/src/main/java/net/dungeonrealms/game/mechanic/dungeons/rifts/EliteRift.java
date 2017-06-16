@@ -10,7 +10,8 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.*;
@@ -500,6 +501,12 @@ public class EliteRift extends Dungeon {
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
 
+        double chance = ourTier == 1 ? 1 : ourTier == 2 ? 3 : ourTier == 3 ? 5 : ourTier == 4 ? 10 : ourTier == 5 ? 20 : 0;
+        if (ThreadLocalRandom.current().nextDouble(100) <= chance) {
+            livingEntity.getWorld().dropItem(livingEntity.getLocation(), new TrinketItem(TrinketType.RIFT_RING).generateItem());
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 3, 1);
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITHER_SPAWN, 3, 1.5F);
+        }
         String partyMembers = "";
         for (Player player : getPlayers().isEmpty() ? getAllPlayers() : getPlayers()) {
 

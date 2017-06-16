@@ -12,6 +12,9 @@ import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
@@ -27,9 +30,8 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -157,6 +159,7 @@ public interface DRMonster {
     }
 
     default void checkItemDrop(Player killer) {
+        if(killer != null)ClueUtils.handleMobKilled(killer,this);
         LivingEntity ent = getBukkit();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(killer);
 
@@ -189,6 +192,7 @@ public interface DRMonster {
         boolean elite = Metadata.ELITE.has(ent);
         int chance = elite ? dr.getEliteDropChance() : dr.getNormalDropChance();
 
+
         // If it's a named elite, bring the drop chances down.
         if (Metadata.NAMED_ELITE.has(ent))
             chance /= 3;
@@ -196,6 +200,13 @@ public interface DRMonster {
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LOOT))
             chance += chance * (DonationEffects.getInstance().getBuff(EnumBuff.LOOT).getBonusAmount() / 100f);
 
+            int clueRoll = random.nextInt(10000);
+            boolean isClueDrop = clueRoll <= (tier == 5 ? 10 : tier == 4 ? 8 : tier == 3 ? 5 : tier == 2 ? 3 : 1);
+            if (isClueDrop) {
+                ClueScrollItem clue = new ClueScrollItem(ClueScrollType.COMBAT);
+                killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), clue.generateItem()));
+            }
 
         if (gemRoll < (gemChance * gemFind)) {
             if (gemRoll >= gemChance)

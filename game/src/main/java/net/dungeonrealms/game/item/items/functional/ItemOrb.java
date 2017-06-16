@@ -10,6 +10,7 @@ import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -73,6 +74,8 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
             ParticleAPI.spawnParticle(Particle.LAVA, player.getLocation().add(0, 2.5, 0), 75, 1F);
         }
+
+        ClueUtils.handleUseOrb(player,oldItem,newItem);
 
         pw.calculateAllAttributes();
 
