@@ -328,8 +328,7 @@ public class EntityAPI {
             return getMonster(e).getAttributes();
         }
 
-        Utils.printTrace();
-        Bukkit.getLogger().warning("Could not get attributes from " + e.getName() + "!");
+//        Utils.printTrace();
         return new AttributeList();
     }
 

@@ -57,13 +57,9 @@ public class DPSDummy {
             stand.setLeftLegPose(new EulerAngle(random.nextInt(90), random.nextInt(360), random.nextInt(90) + 270));
             stand.setRightLegPose(new EulerAngle(random.nextInt(90), random.nextInt(360), random.nextInt(90) + 270));
 
-            Bukkit.getLogger().info("Left: X" + stand.getLeftLegPose().getX() + " Y:" + stand.getLeftLegPose().getY() + " Z: " + stand.getLeftLegPose().getZ());
-            Bukkit.getLogger().info("Right: X" + stand.getRightLegPose().getX() + " Y:" + stand.getRightLegPose().getY() + " Z: " + stand.getRightLegPose().getZ());
-
             //Below 90x above 270z
             stand.setLeftArmPose(new EulerAngle(random.nextInt(360), random.nextInt(360), random.nextInt(360)));
             stand.setRightArmPose(new EulerAngle(random.nextInt(360), random.nextInt(360), random.nextInt(360)));
-            Bukkit.getLogger().info("Head: X" + stand.getHeadPose().getX() + " Y:" + stand.getHeadPose().getY() + " Z: " + stand.getHeadPose().getZ());
         }
     }
 
