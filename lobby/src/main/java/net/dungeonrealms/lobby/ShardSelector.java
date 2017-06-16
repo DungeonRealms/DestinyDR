@@ -14,15 +14,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ShardSelector extends AbstractMenu {
 
+//    private Set<UUID> accepted = new HashSet<>();
     public ShardSelector(Player player) {
         super(Lobby.getInstance(), "DungeonRealms Shards", AbstractMenu.round(getFilteredServers().size()), player.getUniqueId());
         setDestroyOnExit(true);
@@ -61,11 +64,13 @@ public class ShardSelector extends AbstractMenu {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
+
                     if (info.getOnlinePlayers() >= info.getMaxPlayers() && !rank.isSUB()) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
                                 ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store" + ChatColor.RED + " to bypass this."
                         });
+                        return;
                     }
 
                     if (!rank.isAtLeast(shard.getType().getMinRank())) {
@@ -76,6 +81,31 @@ public class ShardSelector extends AbstractMenu {
                         return;
                     }
 
+                    if (player.hasMetadata("denied")) {
+                        //CANT!!!
+                        player.sendMessage(ChatColor.RED + "You do NOT have the Dungeon Realms Resource Pack Enabled.");
+                        player.sendMessage(ChatColor.RED + "Some Aspects of the game will NOT make any sense.");
+                        player.sendMessage(ChatColor.GRAY + "Please enter this code to " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM" + ChatColor.GRAY + " you do not wish to download our resource pack.");
+
+                        int number = ThreadLocalRandom.current().nextInt(9000) + 1000;
+
+                        player.sendMessage(ChatColor.GRAY + "Pack Bypass Code: " + ChatColor.BOLD + ChatColor.UNDERLINE + number);
+                        player.playSound(player.getLocation(), Sound.ENTITY_GHAST_AMBIENT, 1, 1.8F);
+
+                        Lobby.chatCallbacks.put(player.getUniqueId(), chatEvent -> {
+                            String msg = chatEvent.getMessage();
+                            Lobby.chatCallbacks.remove(player.getUniqueId());
+                            if (msg.equals(String.valueOf(number))) {
+                                Bukkit.getLogger().info(player.getName() + " Manually entered " + number + " to not have to download pack.." );
+                                player.sendMessage(ChatColor.RED + "Coded entered successfully, Please Just use /pack to install the pack instead :(");
+                                BungeeUtils.sendToServer(player.getName(), info.getServerName());
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You entered an INVALID code!");
+                                player.sendMessage(ChatColor.GRAY + "Please try to select a server again, or just download the Resource Pack with /pack and not have to do this :)");
+                            }
+                        });
+                        return;
+                    }
                     BungeeUtils.sendToServer(player.getName(), info.getServerName());
                 }
             };

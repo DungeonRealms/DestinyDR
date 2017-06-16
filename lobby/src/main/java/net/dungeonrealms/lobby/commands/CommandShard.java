@@ -5,7 +5,6 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.Lobby;
 import net.dungeonrealms.lobby.ShardSelector;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -28,12 +27,18 @@ public class CommandShard extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        if(!Lobby.getInstance().isLoggedIn(player)){
+        if (!Lobby.getInstance().isLoggedIn(player)) {
             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can do this.");
             return false;
         }
-        
+
         if (args.length == 0 || !Rank.isTrialGM(player)) {
+            if (Lobby.chatCallbacks.containsKey(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "Please finish entering your Pack Bypass code.");
+                player.sendMessage(ChatColor.GRAY + "Since you decided to not use our Custom Resource Pack, you must enter a code before logging in.");
+                player.sendMessage(ChatColor.GRAY + "If you'd like to not have to enter this code every time, simply install our resource pack by using /pack.");
+                return true;
+            }
             new ShardSelector(player).open(player);
             return true;
         }

@@ -25,7 +25,6 @@ import net.dungeonrealms.lobby.effect.GhostFactory;
 import net.dungeonrealms.network.GameClient;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,12 +43,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 
 public class Lobby extends JavaPlugin implements Listener {
@@ -64,6 +61,8 @@ public class Lobby extends JavaPlugin implements Listener {
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
     @Getter
     private Cache<UUID, AtomicInteger> recentLogouts = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build();
+
+    public static Map<UUID, Consumer<AsyncPlayerChatEvent>> chatCallbacks = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -132,6 +131,13 @@ public class Lobby extends JavaPlugin implements Listener {
 //        if (event.getPlayer().isOp() && isLoggedIn(event.getPlayer()))
 //            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
 //        else {
+
+        Consumer<AsyncPlayerChatEvent> callback = chatCallbacks.get(event.getPlayer().getUniqueId());
+        if (callback != null) {
+            event.setCancelled(true);
+            callback.accept(event);
+            return;
+        }
         Player player = event.getPlayer();
         PlayerRank rank = Rank.getPlayerRank(event.getPlayer().getUniqueId());
         if (player.hasMetadata("chatCD") && player.getMetadata("chatCD").size() > 0) {
@@ -256,6 +262,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        chatCallbacks.remove(event.getPlayer().getUniqueId());
         Bukkit.getScheduler().runTaskLater(Lobby.getInstance(), () -> this.allowedStaff.remove(event.getPlayer().getUniqueId()), 1L);
     }
 
@@ -349,6 +356,11 @@ public class Lobby extends JavaPlugin implements Listener {
                 return;
             }
 
+            if (chatCallbacks.containsKey(p.getUniqueId())) {
+                p.sendMessage(ChatColor.RED + "Please finish entering your Pack Bypass code.");
+                p.sendMessage(ChatColor.GRAY + "Since you decided to not use our Custom Resource Pack, you must enter a code before logging in.");
+                return;
+            }
             new ShardSelector(p).open(p);
         } else {
             e.setCancelled(true);
