@@ -160,7 +160,7 @@ public class EnergyListener implements Listener {
         if (!(GameAPI.isPlayer(event.getEntity()))) return;
         Player player = (Player) event.getEntity();
         if (event.getFoodLevel() < player.getFoodLevel()) {
-            if (Math.random() <= .80) {
+            if (Math.random() <= .70) {
                 event.setCancelled(true);
                 return;
             }
