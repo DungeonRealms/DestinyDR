@@ -73,10 +73,10 @@ public class RiftMechanics implements GenericMechanic, Listener {
         return EnumPriority.CARDINALS;
     }
 
-//    private int RESPAWN_TIME = 20 * 60 * 60;
+    private int RESPAWN_TIME = 20 * 60 * 60;
 
     //1 Hour
-    private int RESPAWN_TIME = 5 * 60 + 20;
+//    private int RESPAWN_TIME = 5 * 60 + 20;
 
     @Getter
     @Setter
