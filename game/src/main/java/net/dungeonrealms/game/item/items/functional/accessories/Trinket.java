@@ -16,12 +16,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public enum Trinket {
     //    MULTI_LINE(Item.ItemRarity.RARE, "Multirod", new AbstractTrinketData("Cast two lines at once"), 20),
-    FISH_TREASURE_FIND(Item.ItemRarity.RARE, "Lucky", new EnchantTrinketData(Item.FishingAttributeType.TREASURE_FIND, 1, 1), 4),
     FISH_TRIPLE_FISH(Item.ItemRarity.UNCOMMON, "Bountiful", new EnchantTrinketData(Item.FishingAttributeType.TRIPLE_CATCH, 1, 3), 15),
     FISH_JUNK_FIND(Item.ItemRarity.UNCOMMON, "Spelunker", new EnchantTrinketData(Item.FishingAttributeType.JUNK_FIND, 4, 8), 15),
     FISH_CATCH_SUCCESS(Item.ItemRarity.UNCOMMON, "Trusty", new EnchantTrinketData(Item.FishingAttributeType.CATCH_SUCCESS, 4, 8), 15),
     FISH_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.FishingAttributeType.DURABILITY, 10, 20), 30),
     FISH_DOUBLE_FISH(Item.ItemRarity.COMMON, "Ample", new EnchantTrinketData(Item.FishingAttributeType.DOUBLE_CATCH, 1, 5), 30),
+    FISH_TREASURE_FIND(Item.ItemRarity.RARE, "Lucky", new EnchantTrinketData(Item.FishingAttributeType.TREASURE_FIND, 1, 1), 4),
     FISH_SCALER(Item.ItemRarity.UNCOMMON, null, new AbstractTrinketData("Cleans fish of any effects"), 10),
     FISH_DAY_SUCCESS(Item.ItemRarity.UNCOMMON, null, "the Sun", new AbstractTrinketData("Better Fishing during Daylight"), 10),
     FISH_NIGHT_SUCCESS(Item.ItemRarity.COMMON, null, "the Moon", new AbstractTrinketData("Better Fishing during the Night"), 20),

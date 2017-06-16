@@ -65,6 +65,12 @@ public class DamageAPI {
         if (!ItemWeapon.isWeapon(item))
             return;
 
+        if(attacker.getAttributes() == null){
+            if(attacker.isPlayer()){
+                Bukkit.getLogger().info("Null attacker attributes for " + attacker.getPlayer().getName());
+            }
+            return;
+        }
 
         ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
         int weaponTier = weapon.getTier().getId();
