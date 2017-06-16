@@ -97,11 +97,11 @@ public class ShardSelector extends AbstractMenu {
                             Lobby.chatCallbacks.remove(player.getUniqueId());
                             if (msg.equals(String.valueOf(number))) {
                                 Bukkit.getLogger().info(player.getName() + " Manually entered " + number + " to not have to download pack.." );
-                                player.sendMessage(ChatColor.RED + "Coded entered successfully, Please Just use /pack to install the pack instead :(");
+                                player.sendMessage(ChatColor.RED + "Coded entered successfully, Please Just use /pack to install the pack instead");
                                 BungeeUtils.sendToServer(player.getName(), info.getServerName());
                             } else {
                                 player.sendMessage(ChatColor.RED + "You entered an INVALID code!");
-                                player.sendMessage(ChatColor.GRAY + "Please try to select a server again, or just download the Resource Pack with /pack and not have to do this :)");
+                                player.sendMessage(ChatColor.GRAY + "Please try to select a server again, or just download the Resource Pack with /pack and not have to do this");
                             }
                         });
                         return;
