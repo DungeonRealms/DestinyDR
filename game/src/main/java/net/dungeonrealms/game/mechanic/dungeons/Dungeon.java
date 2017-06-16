@@ -123,7 +123,7 @@ public abstract class Dungeon {
         this.spawns = DungeonManager.getSpawns(getWorld(), getType());
 
         for (MobSpawner spawn : spawns)
-            maxMobCount += Math.min(3, spawn.getSpawnAmount());
+            maxMobCount += spawn.getSpawnAmount();
     }
 
     /**
