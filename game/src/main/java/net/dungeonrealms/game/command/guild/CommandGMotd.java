@@ -35,10 +35,10 @@ public class CommandGMotd extends BaseCommand {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to view " + ChatColor.BOLD + "/gmotd.");
             return true;
         }
-        String guildName = wrapper.getName();
+        String guildTag = wrapper.getTag();
 
         if (args.length == 0) {
-            GuildMechanics.getInstance().showMotd(player, guildName, wrapper.getMotd());
+            GuildMechanics.getInstance().showMotd(player, guildTag, wrapper.getMotd());
             return true;
         }
 
@@ -62,7 +62,7 @@ public class CommandGMotd extends BaseCommand {
             GameAPI.sendNetworkMessage("Guilds", "setmotd", DungeonRealms.getShard().getPseudoName(),wrapper.getGuildID() + "", player.getName(), motd);
 
             player.sendMessage(ChatColor.GRAY + "You have updated the guild " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + "MOTD" + ChatColor.GRAY + " to:");
-            GuildMechanics.getInstance().showMotd(player, guildName, wrapper.getMotd());
+            GuildMechanics.getInstance().showMotd(player, guildTag, wrapper.getMotd());
             return true;
         }
         return false;
