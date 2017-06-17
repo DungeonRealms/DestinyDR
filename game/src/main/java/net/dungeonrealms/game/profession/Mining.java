@@ -158,7 +158,7 @@ public class Mining implements GenericMechanic, Listener {
         }
 
         //  DAMAGE ITEM  //
-        if (rand.nextInt(100) > pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DURABILITY).getValue())
+        if (rand.nextInt(100) > pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DURABILITY).getValue() + Trinket.getTrinketValue(p, Trinket.MINE_DURABILITY))
             pickaxe.damageItem(p, oreToAdd > 0 ? 2 : 1);
 
         //  FAILED  //
@@ -170,7 +170,7 @@ public class Mining implements GenericMechanic, Listener {
         }
 
         Location l = block.getLocation();
-        if (rand.nextInt(100) < pickaxe.getAttributes().getAttribute(PickaxeAttributeType.TREASURE_FIND).getValue()) {
+        if (rand.nextInt(100) < pickaxe.getAttributes().getAttribute(PickaxeAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(p, Trinket.MINE_TREASURE_FIND)) {
             //Spawn treasure?
             block.setType(Material.CHEST);
             Byte direction = direction(p);
@@ -222,13 +222,13 @@ public class Mining implements GenericMechanic, Listener {
         p.updateInventory();
 
         //  DOUBLE ORE  //
-        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DOUBLE_ORE).getValue() >= rand.nextInt(100) + 1) {
+        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DOUBLE_ORE).getValue() + Trinket.getTrinketValue(p, Trinket.MIN_DOUBLE_ORE) >= rand.nextInt(100) + 1) {
             oreToAdd *= 2;
             pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
         }
 
         //  TRIPLE ORE  //
-        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.TRIPLE_ORE).getValue() >= rand.nextInt(100) + 1) {
+        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.TRIPLE_ORE).getValue() + Trinket.getTrinketValue(p, Trinket.MINE_TRIPLE_ORE) >= rand.nextInt(100) + 1) {
             oreToAdd *= 3;
             pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
         }
@@ -244,7 +244,7 @@ public class Mining implements GenericMechanic, Listener {
             ClueUtils.handleOreMined(p, oreTier);
         }
 
-        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.GEM_FIND).getValue() >= rand.nextInt(100) + 1) {
+        if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.GEM_FIND).getValue() + Trinket.getTrinketValue(p, Trinket.MINE_GEM_FIND) >= rand.nextInt(100) + 1) {
             int tier = oreTier.getTier() - 1;
             int amount = (int) (Utils.randInt(GEM_FIND_MIN[tier], GEM_FIND_MAX[tier]) * 0.8);
 
