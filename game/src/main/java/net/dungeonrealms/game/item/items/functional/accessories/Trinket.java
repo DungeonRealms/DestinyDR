@@ -27,13 +27,13 @@ public enum Trinket {
     FISH_NIGHT_SUCCESS(Item.ItemRarity.COMMON, null, "the Moon", new AbstractTrinketData("Better Fishing during the Night"), 20),
 
 
-    NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 3),
-    MINE_TREASURE_FIND(Item.ItemRarity.UNCOMMON, "Lucky", new EnchantTrinketData(Item.PickaxeAttributeType.TREASURE_FIND, 1, 1), 15),
-    MINE_GEM_FIND(Item.ItemRarity.UNCOMMON, "Opulent", new EnchantTrinketData(Item.PickaxeAttributeType.GEM_FIND, 1, 5), 15),
+    NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 1),
+    MINE_TREASURE_FIND(Item.ItemRarity.UNCOMMON, "Lucky", new EnchantTrinketData(Item.PickaxeAttributeType.TREASURE_FIND, 1, 1), 20),
+    MINE_GEM_FIND(Item.ItemRarity.UNCOMMON, "Opulent", new EnchantTrinketData(Item.PickaxeAttributeType.GEM_FIND, 1, 5), 20),
     MINE_GEM_TELEPORT(Item.ItemRarity.RARE, "Magnetic", new AbstractTrinketData("Gem Find gems are automatically picked up"), 3),
     MINE_TRIPLE_ORE(Item.ItemRarity.UNCOMMON, "Bountiful", new EnchantTrinketData(Item.PickaxeAttributeType.TRIPLE_ORE, 1, 3), 15),
-    MINE_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.PickaxeAttributeType.DURABILITY, 5, 15), 20),
-    MIN_DOUBLE_ORE(Item.ItemRarity.COMMON, "Ample", new EnchantTrinketData(Item.PickaxeAttributeType.DOUBLE_ORE, 1, 5), 20),
+    MINE_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.PickaxeAttributeType.DURABILITY, 5, 15), 25),
+    MIN_DOUBLE_ORE(Item.ItemRarity.COMMON, "Ample", new EnchantTrinketData(Item.PickaxeAttributeType.DOUBLE_ORE, 1, 5), 25),
 
     //Rifts
     RIFT_LAVA_TRAIL(Item.ItemRarity.RARE, "Cooling", new AbstractTrinketData("Lava trail is now obsidian trail"), 20),
