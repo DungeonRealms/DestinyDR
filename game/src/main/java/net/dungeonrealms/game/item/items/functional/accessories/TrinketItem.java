@@ -202,7 +202,10 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
                     fish.removeTag("buffType");
                     fish.removeTag("fishVal");
 
-                    evt.setSwappedItem(fish.generateItem());
+                    ItemStack is = fish.generateItem();
+                    is.setAmount(evt.getSwappedItem().getAmount());
+                    is.setDurability(evt.getSwappedItem().getDurability());
+                    evt.setSwappedItem(is);
 
                     Player player = evt.getPlayer();
                     new BukkitRunnable() {
