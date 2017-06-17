@@ -92,7 +92,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
             if (spawnTimer <= 0) {
-                this.spawnTimer = RESPAWN_TIME;
+                this.spawnTimer = RESPAWN_TIME + ThreadLocalRandom.current().nextInt(30) * 60; //1 - 1:30 hours.
                 this.spawnRift();
             } else {
                 spawnTimer--;
