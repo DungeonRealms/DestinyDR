@@ -17,9 +17,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public enum Trinket {
     //    MULTI_LINE(Item.ItemRarity.RARE, "Multirod", new AbstractTrinketData("Cast two lines at once"), 20),
     FISH_TRIPLE_FISH(Item.ItemRarity.UNCOMMON, "Bountiful", new EnchantTrinketData(Item.FishingAttributeType.TRIPLE_CATCH, 1, 3), 15),
-    FISH_JUNK_FIND(Item.ItemRarity.UNCOMMON, "Spelunker", new EnchantTrinketData(Item.FishingAttributeType.JUNK_FIND, 4, 8), 15),
+    FISH_JUNK_FIND(Item.ItemRarity.UNCOMMON, "Spelunker", new EnchantTrinketData(Item.FishingAttributeType.JUNK_FIND, 1, 5), 15),
     FISH_CATCH_SUCCESS(Item.ItemRarity.UNCOMMON, "Trusty", new EnchantTrinketData(Item.FishingAttributeType.CATCH_SUCCESS, 4, 8), 15),
-    FISH_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.FishingAttributeType.DURABILITY, 10, 20), 30),
+    FISH_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.FishingAttributeType.DURABILITY, 5, 15), 30),
     FISH_DOUBLE_FISH(Item.ItemRarity.COMMON, "Ample", new EnchantTrinketData(Item.FishingAttributeType.DOUBLE_CATCH, 1, 5), 30),
     FISH_TREASURE_FIND(Item.ItemRarity.RARE, "Lucky", new EnchantTrinketData(Item.FishingAttributeType.TREASURE_FIND, 1, 1), 4),
     FISH_SCALER(Item.ItemRarity.UNCOMMON, null, new AbstractTrinketData("Cleans fish of any effects"), 10),
@@ -29,10 +29,10 @@ public enum Trinket {
 
     NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 3),
     MINE_TREASURE_FIND(Item.ItemRarity.UNCOMMON, "Lucky", new EnchantTrinketData(Item.PickaxeAttributeType.TREASURE_FIND, 1, 1), 15),
-    MINE_GEM_FIND(Item.ItemRarity.UNCOMMON, "Opulent", new EnchantTrinketData(Item.PickaxeAttributeType.GEM_FIND, 3, 5), 15),
+    MINE_GEM_FIND(Item.ItemRarity.UNCOMMON, "Opulent", new EnchantTrinketData(Item.PickaxeAttributeType.GEM_FIND, 1, 5), 15),
     MINE_GEM_TELEPORT(Item.ItemRarity.RARE, "Magnetic", new AbstractTrinketData("Gem Find gems are automatically picked up"), 3),
     MINE_TRIPLE_ORE(Item.ItemRarity.UNCOMMON, "Bountiful", new EnchantTrinketData(Item.PickaxeAttributeType.TRIPLE_ORE, 1, 3), 15),
-    MINE_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.PickaxeAttributeType.DURABILITY, 8, 15), 20),
+    MINE_DURABILITY(Item.ItemRarity.COMMON, "Sturdy", new EnchantTrinketData(Item.PickaxeAttributeType.DURABILITY, 5, 15), 20),
     MIN_DOUBLE_ORE(Item.ItemRarity.COMMON, "Ample", new EnchantTrinketData(Item.PickaxeAttributeType.DOUBLE_ORE, 1, 5), 20),
 
     //Rifts
