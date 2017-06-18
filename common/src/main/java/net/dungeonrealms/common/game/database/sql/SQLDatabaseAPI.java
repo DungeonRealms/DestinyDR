@@ -40,7 +40,7 @@ public class SQLDatabaseAPI {
     private Cache<String, UUID> cachedNames = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
     @Getter
-    private Map<Integer, UUIDName> accountIdNames = new HashMap<>();
+    private volatile Map<Integer, UUIDName> accountIdNames = new ConcurrentHashMap<>();
     private Runnable saveRunnable;
 
     private File file;

@@ -11,6 +11,7 @@ import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -111,7 +112,9 @@ public class EnergyHandler implements GenericMechanic {
             }
             // get regenAmount, 10% base energy regen (calculated here because it's hidden)
 
-            float regenAmount = (((float) playerWrapper.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).getValue()) / 100.0F) + 0.20F;
+            ModifierRange range = playerWrapper.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN);
+            if(range == null)return;
+            float regenAmount = (float) range.getValue() / 100.0F + 0.20F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.05F;

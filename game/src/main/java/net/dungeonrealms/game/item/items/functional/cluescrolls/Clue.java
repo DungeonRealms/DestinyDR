@@ -69,15 +69,12 @@ public enum Clue {
 
     public String getFormattedHint(int[] rolledStats) {
         if(rolledStats == null) {
-            System.out.println("Returning the entire hint!");
             return this.hint;
         }
         String hint = this.hint;
         for(int stat : rolledStats) {
-            System.out.println("The stat: " + stat);
             hint = hint.replaceFirst("<range>", String.valueOf(stat));
         }
-        System.out.println("Returning the formatted hint!: " + hint);
         return hint;
     }
 }

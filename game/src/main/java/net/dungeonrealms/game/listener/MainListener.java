@@ -467,6 +467,7 @@ public class MainListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper == null)return;
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
             MaterialData m = new MaterialData(block.getType(), block.getData());
@@ -487,20 +488,20 @@ public class MainListener implements Listener {
      *
      * @param event
      */
-    @EventHandler
-    public void onMountedPlayerChunkChange(PlayerMoveEvent event) {
-        Player p = event.getPlayer();
-        if (p.getVehicle() == null) return;
-
-        if (!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
-            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
-                for (Player player : GameAPI.getNearbyPlayers(p.getLocation(), 100, true)) {
-                    PacketPlayOutMount packetPlayOutMount = new PacketPlayOutMount(((CraftEntity) p).getHandle());
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutMount);
-                }
-            });
-        }
-    }
+//    @EventHandler
+//    public void onMountedPlayerChunkChange(PlayerMoveEvent event) {
+//        Player p = event.getPlayer();
+//        if (p.getVehicle() == null) return;
+//
+//        if (!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
+//            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
+//                for (Player player : GameAPI.getNearbyPlayersAsync(p.getLocation(), 50)) {
+//                    PacketPlayOutMount packetPlayOutMount = new PacketPlayOutMount(((CraftEntity) p).getHandle());
+//                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutMount);
+//                }
+//            });
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {

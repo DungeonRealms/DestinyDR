@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
@@ -25,7 +24,6 @@ import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -49,7 +47,7 @@ import java.util.UUID;
  */
 public class InventoryListener implements Listener {
 
-	@EventHandler
+    @EventHandler
     public void handleMechantClose(InventoryCloseEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("Merchant"))
             return;
@@ -60,114 +58,118 @@ public class InventoryListener implements Listener {
         player.updateInventory();
     }
 
-	@EventHandler
-	public void handleMerchantClick(InventoryClickEvent event) {
-    	Player player = (Player) event.getWhoClicked();
-    	int slot = event.getRawSlot();
-    	Inventory window = event.getInventory();
-    	if (slot < 0 || !event.getInventory().getTitle().equalsIgnoreCase("Merchant"))
-    		return; // Ignore dropping cursor or if this isn't a merchant.
+    @EventHandler
+    public void handleMerchantClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        int slot = event.getRawSlot();
+        Inventory window = event.getInventory();
+        if (slot < 0 || !event.getInventory().getTitle().equalsIgnoreCase("Merchant"))
+            return; // Ignore dropping cursor or if this isn't a merchant.
 
-    	if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-    		event.setCancelled(true); // Don't allow this, it could allow taking items from the other side of the menu.
-    		return;
-    	}
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+            event.setCancelled(true); // Don't allow this, it could allow taking items from the other side of the menu.
+            return;
+        }
 
-    	if (slot < window.getSize()) {
-    		// Clicking inside the trade window.
+        if (slot < window.getSize()) {
+            // Clicking inside the trade window.
 
-    		if (!isLeft(slot)) {
-    			event.setCancelled(true);
-    			player.updateInventory();
-    			return;
-    		}
+            if (!isLeft(slot)) {
+                event.setCancelled(true);
+                player.updateInventory();
+                return;
+            }
 
-    		if (slot == 0) { // Accept trade.
-    			event.setCancelled(true);
+            if (slot == 0) { // Accept trade.
+                event.setCancelled(true);
 
-    			List<ItemStack> merchant = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
-    			int freeSlots = (int) Arrays.stream(player.getInventory().getContents()).filter(i -> i == null
-    					|| i.getType() == Material.AIR).count();
+                List<ItemStack> merchant = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
+                int freeSlots = (int) Arrays.stream(player.getInventory().getContents()).filter(i -> i == null
+                        || i.getType() == Material.AIR).count();
 
-    			if (freeSlots < merchant.size()) {
-    				player.sendMessage(ChatColor.RED + "Please free " + (merchant.size() - freeSlots) + " inventory slots.");
-    				return;
-    			}
+                if (freeSlots < merchant.size()) {
+                    player.sendMessage(ChatColor.RED + "Please free " + (merchant.size() - freeSlots) + " inventory slots.");
+                    return;
+                }
 
-    			window.clear(); // Clear the items out.
-    			merchant.forEach(player.getInventory()::addItem);
-    			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
+                window.clear(); // Clear the items out.
+                merchant.forEach(player.getInventory()::addItem);
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
 
-    			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2F);
-    			player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
-    			player.sendMessage(ChatColor.GREEN + "Trade accepted.");
+                player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2F);
+                player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
+                player.sendMessage(ChatColor.GREEN + "Trade accepted.");
 
-    			return;
-    		}
-    	} else {
-    		// In player's inventory.
-    		if (event.isShiftClick()) {
-    			event.setCancelled(true);
-    			int newSlot = firstAllowed(window); // Find the right slot to shift-click this into.
-    			if (newSlot > -1) {
-    				// Attempt to find the right place to shift click this to.
-    				window.setItem(newSlot, event.getCurrentItem());
-    				event.setCurrentItem(null);
-    			}
-    		}
-    	}
+                return;
+            }
+        } else {
+            // In player's inventory.
+            if (event.isShiftClick()) {
+                event.setCancelled(true);
+                int newSlot = firstAllowed(window); // Find the right slot to shift-click this into.
+                if (newSlot > -1) {
+                    // Attempt to find the right place to shift click this to.
+                    window.setItem(newSlot, event.getCurrentItem());
+                    event.setCurrentItem(null);
+                }
+            }
+        }
 
-    	// Run next tick so the items from this action get applied.
-    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-    		// Update offer.
-    		List<ItemStack> merchantOffer = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
-    		List<Integer> slots = getMerchantSlots(window);
-    		slots.forEach(s -> window.setItem(s, null));
+        // Run next tick so the items from this action get applied.
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            // Update offer.
+            List<ItemStack> merchantOffer = TradeCalculator.calculateMerchantOffer(getPlayerOffer(window));
+            List<Integer> slots = getMerchantSlots(window);
+            slots.forEach(s -> {
+                if (s < window.getSize()) {
+                    window.setItem(s, null);
+                }
+            });
 
-    		int mSlot = 0;
-    		for (ItemStack i : merchantOffer) {
-    			window.setItem(slots.get(mSlot), i);
-    			mSlot++;
-    		}
+            int mSlot = 0;
+            for (ItemStack i : merchantOffer) {
+                window.setItem(slots.get(mSlot), i);
+                mSlot++;
+            }
 
-    		player.updateInventory();
-    	});
+            player.updateInventory();
+        });
     }
 
     private List<ItemStack> getPlayerOffer(Inventory window) {
-    	List<ItemStack> playerOffer = new ArrayList<>();
-    	for (int i : getPlayerSlots(window)) {
-    		ItemStack item = window.getItem(i);
-    		if (item != null && item.getType() != Material.AIR)
-    			playerOffer.add(item);
-    	}
-    	return playerOffer;
+        List<ItemStack> playerOffer = new ArrayList<>();
+        for (int i : getPlayerSlots(window)) {
+            ItemStack item = window.getItem(i);
+            if (item != null && item.getType() != Material.AIR)
+                playerOffer.add(item);
+        }
+        return playerOffer;
     }
 
     private int firstAllowed(Inventory i) {
-    	return getPlayerSlots(i).stream().filter(s -> i.getItem(s) == null
-    			|| i.getItem(s).getType() == Material.AIR).findFirst().orElse(-1);
+        return getPlayerSlots(i).stream().filter(s -> i.getItem(s) == null
+                || i.getItem(s).getType() == Material.AIR).findFirst().orElse(-1);
     }
 
     private boolean isLeft(int slot) {
-    	return slot % 9 < 4;
+        return slot % 9 < 4;
     }
 
     private List<Integer> getPlayerSlots(Inventory i) {
-    	List<Integer> slots = new ArrayList<>();
-    	for (int y = 0; y < i.getSize() / 9; y++)
-    		for (int x = 0; x < 4; x++)
-    			if (x + y > 0) // Don't add the first slot, since it has the accept button
-    				slots.add(x + (y * 9));
-    	return slots;
+        List<Integer> slots = new ArrayList<>();
+        for (int y = 0; y < i.getSize() / 9; y++)
+            for (int x = 0; x < 4; x++)
+                if (x + y > 0) // Don't add the first slot, since it has the accept button
+                    slots.add(x + (y * 9));
+        return slots;
     }
 
     private List<Integer> getMerchantSlots(Inventory i) {
-    	List<Integer> slots = new ArrayList<>();
-    	for (int y = 0; y < i.getSize() / 9; y++)
-    		for (int x = 0; x < 4; x++)
-    			slots.add(x + (y * 9) + 5);
-    	return slots;
+        List<Integer> slots = new ArrayList<>();
+        for (int y = 0; y < i.getSize() / 9; y++)
+            for (int x = 0; x < 4; x++)
+                slots.add(x + (y * 9) + 5);
+        return slots;
     }
 
 
@@ -378,13 +380,13 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void offHandClick(InventoryClickEvent event) {
-	    if(event.getClickedInventory() == null || event.getClickedInventory().getType() == null) return;
-	    if(event.getClickedInventory().getType() != InventoryType.PLAYER) return;
-	    if(!(event.getWhoClicked() instanceof Player)) return;
-	    if(event.getSlot() != 40) return;
-	    ItemStack newArmor = event.getCursor();
-	    ItemStack oldArmor = event.getInventory().getItem(event.getSlot());
-	    handleArmorDifferences(oldArmor,newArmor,(Player)event.getWhoClicked());
+        if (event.getClickedInventory() == null || event.getClickedInventory().getType() == null) return;
+        if (event.getClickedInventory().getType() != InventoryType.PLAYER) return;
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (event.getSlot() != 40) return;
+        ItemStack newArmor = event.getCursor();
+        ItemStack oldArmor = event.getInventory().getItem(event.getSlot());
+        handleArmorDifferences(oldArmor, newArmor, (Player) event.getWhoClicked());
     }
 
     //Armor
@@ -407,15 +409,15 @@ public class InventoryListener implements Listener {
             player.updateInventory();
             return;
         }
-        
+
         if (CombatLog.isInCombat(player) && (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE))) {
-			player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
-					"cannot" + ChatColor.RED + " switch armor right now.");
-			event.setCancelled(true);
-			player.updateInventory();
-			return;
-		}
-        
+            player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
+                    "cannot" + ChatColor.RED + " switch armor right now.");
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
+
         handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
     }
 
@@ -430,50 +432,50 @@ public class InventoryListener implements Listener {
      */
 
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
-    	p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
-    	
-    	// Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
-    	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-    		// recalculate attributes
-    		PlayerWrapper wp = PlayerWrapper.getWrapper(p);
-    		
-    		boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
-    		boolean hasNewArmor = ItemArmor.isArmor(newArmor);
-    		
-    		String oldArmorName = Utils.getItemName(oldArmor);
-    		String newArmorName = Utils.getItemName(newArmor);
-    		
-    		
-    		// display differences to player
-    		p.sendMessage(ChatColor.GRAY + oldArmorName + ChatColor.WHITE +
-    				ChatColor.BOLD + " -> " + ChatColor.GRAY + newArmorName);
-    		
-    		AttributeList armorChanges = new AttributeList();
-    		
-    		// Show stats for the armor being removed.
-    		if (hasOldArmor) {
-    			ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
-    			armorChanges.removeStats(removedArmor.getAttributes());
-    		}
-    		
-    		// Show stats for the armor being equipped.
-    		if (hasNewArmor) {
-    			ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
-    			armorChanges.addStats(addedArmor.getAttributes());
-    		}
-    		
-    		wp.calculateAllAttributes();
-    		
-    		for (AttributeType t : armorChanges.keySet()) {
-    			ModifierRange armorVal = armorChanges.getAttribute(t);
-    			ModifierRange newVal = wp.getAttributes().getAttribute(t);
-    			
-    			p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED.toString())
-    					+ armorVal.getValue() + t.getSuffix()
-    					+ " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
-    					+ newVal.getValue() + t.getSuffix() + "]");
-    		}
-    	});	
+        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+
+        // Don't remove this delay, it prevents armor stacking. (Something with ArmorEquipEvent.)
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            // recalculate attributes
+            PlayerWrapper wp = PlayerWrapper.getWrapper(p);
+
+            boolean hasOldArmor = ItemArmor.isArmor(oldArmor);
+            boolean hasNewArmor = ItemArmor.isArmor(newArmor);
+
+            String oldArmorName = Utils.getItemName(oldArmor);
+            String newArmorName = Utils.getItemName(newArmor);
+
+
+            // display differences to player
+            p.sendMessage(ChatColor.GRAY + oldArmorName + ChatColor.WHITE +
+                    ChatColor.BOLD + " -> " + ChatColor.GRAY + newArmorName);
+
+            AttributeList armorChanges = new AttributeList();
+
+            // Show stats for the armor being removed.
+            if (hasOldArmor) {
+                ItemArmor removedArmor = (ItemArmor) PersistentItem.constructItem(oldArmor);
+                armorChanges.removeStats(removedArmor.getAttributes());
+            }
+
+            // Show stats for the armor being equipped.
+            if (hasNewArmor) {
+                ItemArmor addedArmor = (ItemArmor) PersistentItem.constructItem(newArmor);
+                armorChanges.addStats(addedArmor.getAttributes());
+            }
+
+            wp.calculateAllAttributes();
+
+            for (AttributeType t : armorChanges.keySet()) {
+                ModifierRange armorVal = armorChanges.getAttribute(t);
+                ModifierRange newVal = wp.getAttributes().getAttribute(t);
+
+                p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED.toString())
+                        + armorVal.getValue() + t.getSuffix()
+                        + " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
+                        + newVal.getValue() + t.getSuffix() + "]");
+            }
+        });
     }
 
 
@@ -635,7 +637,7 @@ public class InventoryListener implements Listener {
                 return;
             }
             Player clicker = (Player) event.getWhoClicked();
-            if(trade.p1Ready || trade.p2Ready) {
+            if (trade.p1Ready || trade.p2Ready) {
                 trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
                 trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
                 trade.changeReady();
@@ -653,9 +655,9 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // This case is not caught by ArmorEquipEvent.
     public void playerDoWeirdArmorThing(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")
-        		|| event.getAction() != InventoryAction.HOTBAR_SWAP
-        		|| event.getSlotType() != InventoryType.SlotType.ARMOR)
-        	return;
+                || event.getAction() != InventoryAction.HOTBAR_SWAP
+                || event.getSlotType() != InventoryType.SlotType.ARMOR)
+            return;
         event.setCancelled(true);
     }
 }

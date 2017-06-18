@@ -29,7 +29,7 @@ public class CommandItemEdit extends BaseCommand {
 		if (!(sender instanceof Player) || !Rank.isGM((Player) sender))
 			return true;
 		
-		if (!DungeonRealms.isMaster() && !DungeonRealms.isBeta()) {
+		if (!DungeonRealms.isMaster() && !DungeonRealms.isBeta() && !Rank.isDev((Player) sender)) {
 			sender.sendMessage(ChatColor.RED + "This command can only be run on the master shard.");
 			return true;
 		}
