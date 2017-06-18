@@ -488,6 +488,7 @@ public class Fishing implements GenericMechanic, Listener {
                         } else if (spotTier == 5) {
                             treasureTier = 5;
                         }
+
                         ItemRarity rarity = random.nextInt(100) <= 75 ? ItemRarity.UNCOMMON : random.nextInt(100) == 1 ? ItemRarity.UNIQUE : ItemRarity.RARE;
                         treasure = ItemManager.createRandomCombatItem().setTier(ItemTier.getByTier(treasureTier))
                                 .setRarity(rarity).generateItem();

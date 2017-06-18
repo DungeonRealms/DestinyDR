@@ -147,7 +147,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                             Storage storage = BankMechanics.getStorage(pl.getUniqueId());
                             if (storage != null) {
-                                storage.updateBin(bin -> {
+                                storage.update(false, false, bin -> {
                                     if (bin != null && Arrays.stream(bin.getContents()).filter(is -> is != null && is.getType() != Material.AIR).count() > 0) {
                                         if (pl.isOnline()) {
                                             pl.sendMessage(ChatColor.RED + "There are items waiting in your collection bin.");
