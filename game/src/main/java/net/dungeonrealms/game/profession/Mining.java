@@ -323,8 +323,8 @@ public class Mining implements GenericMechanic, Listener {
         } else if (r.nextInt(75) == 5) {
             return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else if (r.nextInt(750) == 5) {
-            //return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).setTier(ItemTier.getByTier(tier.getTier())).generateItem();
-            return pick.getEnchant().generateItem();
+            return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).setTier(ItemTier.getByTier(tier.getTier())).generateItem();
+            //return pick.getEnchant().generateItem();
         } else {
             List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);

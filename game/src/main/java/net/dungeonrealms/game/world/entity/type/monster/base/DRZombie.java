@@ -29,6 +29,13 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     }
 
     @Override
+    protected void initAttributes() {
+        super.initAttributes();
+        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(17D);
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.259F);
+    }
+
+    @Override
     protected void o() {
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true, new Class[]{EntityPigZombie.class, EntitySkeleton.class, EntityZombie.class}));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));

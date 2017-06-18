@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.miscellaneous;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.CombatItem;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
@@ -13,10 +14,7 @@ import net.dungeonrealms.game.world.item.Item.ItemTier;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Calculates the items a merchant will give to a player.
@@ -44,13 +42,13 @@ public class TradeCalculator {
             if (is == null || is.getType() == Material.AIR)
                 continue;
 
-            if(!ItemManager.isItemTradeable(is)) continue;
+            if (!ItemManager.isItemTradeable(is)) continue;
 
             //  POTION  //
             if (PotionItem.isPotion(is)) {
                 PotionItem potion = new PotionItem(is);
                 if (potion.getTier() != PotionTier.TIER_5)
-                	potions.add(potion);
+                    potions.add(potion);
             }
 
             //  ORE  //
@@ -125,7 +123,7 @@ public class TradeCalculator {
 
             ItemStack scrap = new ItemScrap(ScrapTier.getScrapTier(oreTier.getTier())).generateItem();
             int giveScrap = (int) (currentOre * Math.max(0.5D, Math.pow(2, -oreTier.getTier() + 1)));
-            if(oreTier.getTier() == 1 || oreTier.getTier() == 2) giveScrap *= 2;
+            if (oreTier.getTier() == 1 || oreTier.getTier() == 2) giveScrap *= 2;
             while (giveScrap > 0) {
                 int sub = Math.min(giveScrap, 64);
                 giveScrap -= sub;
@@ -140,23 +138,26 @@ public class TradeCalculator {
             int scrapAmt = scraps.get(tier);
             ItemTier currTier = ItemTier.getByTier(tier.getTier());
 
-            while (scrapAmt >= tier.getOrbPrice() && tier.getOrbPrice() >= 0) {
-                scrapAmt -= tier.getOrbPrice();
-                merchantOffer.add(new ItemOrb());
-            }
+            List<Integer> highestPrices = Lists.newLinkedList(Lists.newArrayList(tier.getWepEnchPrice(), tier.getArmEnchPrice(), tier.getOrbPrice()));
+            Collections.sort(highestPrices);
+            Collections.reverse(highestPrices);
 
-            while (scrapAmt >= tier.getWepEnchPrice() && tier.getWepEnchPrice() >= 0) {
-                scrapAmt -= tier.getWepEnchPrice();
-                merchantOffer.add(new ItemEnchantWeapon(currTier));
-            }
-
-            while (scrapAmt >= tier.getArmEnchPrice() && tier.getArmEnchPrice() >= 0) {
-                scrapAmt -= tier.getArmEnchPrice();
-                merchantOffer.add(new ItemEnchantArmor(currTier));
+            for (Integer price : highestPrices) {
+                if (scrapAmt >= price && price > 0) {
+                    //Can get this?
+                    if (price == tier.getWepEnchPrice()) {
+                        merchantOffer.add(new ItemEnchantWeapon(currTier));
+                    } else if (price == tier.getArmEnchPrice()) {
+                        merchantOffer.add(new ItemEnchantArmor(currTier));
+                    } else if (price == tier.getOrbPrice()) {
+                        merchantOffer.add(new ItemOrb());
+                    }
+                    scrapAmt -= price;
+                }
             }
 
             ItemStack scrap = new ItemScrap(tier.downgrade()).generateItem();
-            double mult = (tier == ScrapTier.TIER1 ? 0.5D : (tier == ScrapTier.TIER5 ? 3D : 2D));
+            double mult = tier == ScrapTier.TIER1 ? 0.5D : tier == ScrapTier.TIER5 ? 3D : 2D;
             int leftOver = (int) (scrapAmt * mult);
             while (leftOver > 0) {
                 int sub = Math.min(leftOver, 64);
