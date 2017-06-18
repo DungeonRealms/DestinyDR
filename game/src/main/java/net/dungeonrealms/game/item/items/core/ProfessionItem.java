@@ -83,6 +83,8 @@ public abstract class ProfessionItem extends ItemGear {
             setDestroyed(false);//TEST
             this.durability = MAX_DURABILITY;
             updateItem(player);
+        } else {
+            player.sendMessage(ChatColor.RED + "Your tool bursts in your hands");
         }
     }
 
@@ -155,7 +157,7 @@ public abstract class ProfessionItem extends ItemGear {
             int newAmount = pa.getRandomValueFromTier(getTier());
             int maxThisTier = pa.getMaxFromTier(oldTier);
             boolean canAddOne = newAmount < maxThisTier;
-            int toUse = currentAmount == newAmount && canAddOne ? currentAmount + 1 : newAmount;
+            int toUse = currentAmount == newAmount && canAddOne ? currentAmount + 1 : currentAmount > newAmount ? currentAmount : newAmount;
             int maxStat = pa.getMaxFromTier(ItemTier.TIER_5);
             if (toUse > maxStat) toUse = maxStat;
             getAttributes().setStat(pa, toUse);
