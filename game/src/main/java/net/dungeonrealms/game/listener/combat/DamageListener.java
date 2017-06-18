@@ -252,7 +252,7 @@ public class DamageListener implements Listener {
             Tameable mount = (Tameable) e;
             if (mount instanceof Horse && ((Horse) mount).getVariant() == Variant.MULE)
                 return;
-            if (mount.getOwner().equals(event.getDamager()) && mount.getOwner() instanceof Player)
+            if (mount.getOwner() instanceof Player && event.getDamager().equals(mount.getOwner()))
                 MountUtils.removeMount((Player) mount.getOwner());
         }
     }
