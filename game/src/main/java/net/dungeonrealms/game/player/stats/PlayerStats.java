@@ -75,6 +75,10 @@ public class PlayerStats implements LoadableData, SaveableData {
             setTempStat(s, val - 1);
     }
 
+    public double getHPPercent(boolean temp) {
+        return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.034);
+    }
+
     public double getSwordDMG(boolean temp) {
         return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.01);
     }

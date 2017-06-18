@@ -52,6 +52,7 @@ public enum Purchaseables {
     CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, false, ChatColor.GOLD, true, 2),
     DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 2, false, true, false, ChatColor.LIGHT_PURPLE, true, 5),
     FISH_BOWL("Fish Bowl", "\nA fishbowl that fits on your head.", Material.SAPLING, WebstoreCategories.HATS, 3, false, true, false, ChatColor.AQUA, true, 3),
+    PIRATE_HAT("Pirate Hat", "\nThe hat from an old Pirate Captain", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, false, ChatColor.GREEN, true, 1),
 
     COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, false, ChatColor.WHITE, true),
     EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, false, ChatColor.GREEN, true),

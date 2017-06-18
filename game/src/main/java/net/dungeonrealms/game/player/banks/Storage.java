@@ -93,12 +93,13 @@ public class Storage {
     /**
      * Used to update inventory size when upgraded.
      */
-    public void update(Consumer<Inventory> callback) {
-        Inventory inventory = getNewStorage();
-        if (inv != null)
-            inventory.setContents(inv.getContents());
-        this.inv = inventory;
-
+    public void update(boolean storage, boolean async, Consumer<Inventory> callback) {
+        if (storage) {
+            Inventory inventory = getNewStorage();
+            if (inv != null)
+                inventory.setContents(inv.getContents());
+            this.inv = inventory;
+        }
         SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_COLLECTION_BIN.getQuery(this.characterID), rs -> {
             try {
                 if (rs.first()) {
@@ -107,23 +108,17 @@ public class Storage {
                         //We have some collection bin data..
                         Inventory inv = ItemSerialization.fromString(newBin);
                         Bukkit.getLogger().info("Loading " + newBin + " for " + this.characterID);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            Player p = Bukkit.getPlayer(ownerUUID);
-                            if (p != null)
-                                p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
+                        if (!async) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                Player p = Bukkit.getPlayer(ownerUUID);
+                                if (p != null)
+                                    p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
 
-                            //Clear old bin?
-                            if (this.collection_bin != null) {
-                                this.collection_bin.clear();
-                                //Close thier views..
-                                Lists.newArrayList(this.collection_bin.getViewers()).forEach(HumanEntity::closeInventory);
-                            }
-
-                            this.collection_bin = inv;
-                            SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
-                            if (callback != null)
-                                callback.accept(this.collection_bin);
-                        });
+                                updateBin(callback);
+                            });
+                        } else {
+                            updateBin(callback);
+                        }
                         return;
                     } else {
                         this.collection_bin = null;
@@ -137,6 +132,19 @@ public class Storage {
         });
     }
 
+    public void updateBin(Consumer<Inventory> callback) {
+        //Clear old bin?
+        if (this.collection_bin != null) {
+            this.collection_bin.clear();
+            //Close thier views..
+            Lists.newArrayList(this.collection_bin.getViewers()).forEach(HumanEntity::closeInventory);
+        }
+
+        this.collection_bin = inv;
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
+        if (callback != null)
+            callback.accept(this.collection_bin);
+    }
 
     public boolean hasSpace() {
         for (ItemStack stack : inv.getContents())

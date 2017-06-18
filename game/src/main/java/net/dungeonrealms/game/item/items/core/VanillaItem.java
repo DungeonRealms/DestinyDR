@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item.items.core;
 
 import lombok.Setter;
 import net.dungeonrealms.game.item.ItemType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -27,8 +28,9 @@ public class VanillaItem extends ItemGeneric {
         ItemMeta meta = item.getItemMeta();
         if (meta.hasLore())
             meta.getLore().forEach(this::addLore); // Lore gets wiped when an item is generated, don't let that happen.
-        if (meta.hasDisplayName())
+        if (meta.hasDisplayName()) {
             setDisplayName(meta.getDisplayName());
+        }
     }
 
     // Change visibility.
@@ -54,13 +56,17 @@ public class VanillaItem extends ItemGeneric {
         ItemStack item = getStack().clone();
         if (item.getType() == Material.AIR) return;
         getMeta().setLore(this.lore);
+
+        if (displayName != null)
+            getMeta().setDisplayName(displayName);
         item.setItemMeta(getMeta());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (!nms.hasTag())
             return;
 
-        if (nms.getTag().hasKey("display"))
+        if (nms.getTag().hasKey("display")) {
             getTag().set("display", nms.getTag().get("display"));
+        }
     }
 
     @Override

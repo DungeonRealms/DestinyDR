@@ -31,6 +31,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
@@ -41,6 +43,7 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -121,6 +124,41 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
             String task = in.readUTF();
 
 
+            if (task.equals("ShopsClosed")) {
+                String shardFrom = in.readUTF();
+
+                if (shardFrom.equals(DungeonRealms.getShard().getPseudoName())) return;
+
+                String accountIdString = in.readUTF();
+
+                for (String intID : accountIdString.split(",")) {
+                    if (intID == null || intID.isEmpty()) continue;
+                    if (org.apache.commons.lang.StringUtils.isNumeric(intID)) {
+                        int id = Integer.parseInt(intID);
+                        PlayerWrapper wrapper = PlayerWrapper.getWrapperByCharacterID(id);
+                        if (wrapper != null && wrapper.getPlayer() != null && wrapper.getPlayer().isOnline()) {
+                            Bukkit.getLogger().info("Reloading shop for " + wrapper.getUsername());
+
+                            if (!DungeonRealms.getInstance().isAlmostRestarting())
+                                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> pl.closeInventory());
+
+                            pl.sendMessage(ChatColor.RED + "Your shop has been closed on " + shardFrom + "!");
+
+                            Storage storage = BankMechanics.getStorage(pl.getUniqueId());
+                            if (storage != null) {
+                                storage.updateBin(bin -> {
+                                    if (bin != null && Arrays.stream(bin.getContents()).filter(is -> is != null && is.getType() != Material.AIR).count() > 0) {
+                                        if (pl.isOnline()) {
+                                            pl.sendMessage(ChatColor.RED + "There are items waiting in your collection bin.");
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                return;
+            }
             switch (task) {
                 case "CreateAccount":
                     UUID newUUID = UUID.fromString(in.readUTF());

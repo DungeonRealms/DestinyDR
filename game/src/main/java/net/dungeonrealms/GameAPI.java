@@ -71,6 +71,7 @@ import net.dungeonrealms.game.world.item.Item.GeneratedItemType;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -357,6 +358,14 @@ public class GameAPI {
             @Cleanup PreparedStatement statement = ShopMechanics.deleteAllShops(true);
             statement.executeBatch();
             Bukkit.getLogger().info("Saved all shops in " + (System.currentTimeMillis() - start) + "ms");
+
+
+            StringBuilder toSend = new StringBuilder();
+            for(Shop shop : ShopMechanics.ALLSHOPS.values()){
+                toSend.append(shop.getCharacterID()).append(",");
+            }
+            ShopMechanics.ALLSHOPS.clear();
+            GameAPI.sendNetworkMessage("ShopsClosed", DungeonRealms.getShard().getPseudoName(), toSend.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

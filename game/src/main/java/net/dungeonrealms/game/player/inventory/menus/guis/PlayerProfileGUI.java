@@ -100,6 +100,7 @@ public class PlayerProfileGUI extends GUIMenu {
                 lore.add(ChatColor.GOLD + " AXE DMG: " + ChatColor.AQUA + df.format(stats.getAxeDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getAxeDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " POLEARM DMG: " + ChatColor.AQUA + df.format(stats.getPolearmDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getPolearmDMG(true)) + "%]" : ""));
             } else if (stat.equals(Stats.VITALITY)) {
+                lore.add(ChatColor.GOLD + " HP: " + ChatColor.AQUA + df.format(stats.getHPPercent(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getHPPercent(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " SWORD DMG: " + ChatColor.AQUA + df.format(stats.getSwordDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getSwordDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " ELEMENTAL RESIST: " + ChatColor.AQUA + df.format(stats.getElementalResist(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getElementalResist(true)) + "%]" : ""));
             } else if (stat.equals(Stats.DEXTERITY)) {

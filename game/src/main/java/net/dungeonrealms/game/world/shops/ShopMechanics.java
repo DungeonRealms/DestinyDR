@@ -113,7 +113,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
         PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
         for (Shop shop : ALLSHOPS.values())
             shop.deleteShop(shutDown, statement);
-        ALLSHOPS.clear();
+//        ALLSHOPS.clear();
         return statement;
     }
 

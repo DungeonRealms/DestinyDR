@@ -71,7 +71,7 @@ public class CommandCloseShop extends BaseCommand {
                 player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     //Update the collection bin..
-                    BankMechanics.getStorage(player).update(bin -> {
+                    BankMechanics.getStorage(player).update(true, true, bin -> {
                         wrapper.setShopOpened(false);
                         player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely.");
                     });

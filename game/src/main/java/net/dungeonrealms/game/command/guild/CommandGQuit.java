@@ -54,7 +54,7 @@ public class CommandGQuit extends BaseCommand {
         }
 
         player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY + "Please type " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM" + ChatColor.GRAY + " to disband your guild!");
+        player.sendMessage(ChatColor.GRAY + "Please type " + ChatColor.GREEN + ChatColor.BOLD + "CONFIRM" + ChatColor.GRAY + " to leave your guild!");
         player.sendMessage("");
         
         Chat.promptPlayerConfirmation(player, () -> {

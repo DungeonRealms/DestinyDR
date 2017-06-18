@@ -2,7 +2,9 @@ package net.dungeonrealms.game.enchantments;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 
@@ -16,8 +18,12 @@ public class EnchantmentAPI {
         return glowEnchant;
     }
 
-    public static void addGlow(org.bukkit.inventory.ItemStack stack) {
-        stack.addUnsafeEnchantment(getGlowEnchant(), 1);
+    public static ItemStack addGlow(org.bukkit.inventory.ItemStack stack) {
+        stack.addUnsafeEnchantment(Enchantment.DAMAGE_UNDEAD, 1);
+        ItemMeta im = stack.getItemMeta();
+        im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        stack.setItemMeta(im);
+        return stack;
     }
 
     public static void removeGlow(ItemStack stack) {

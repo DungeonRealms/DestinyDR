@@ -13,7 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -258,9 +260,11 @@ public abstract class ItemGeneric extends PersistentItem {
             removeTag("showPrice");
         }
 
-        if (isGlowing())
-            EnchantmentAPI.addGlow(getItem());
-
+        if (isGlowing()) {
+            this.item = EnchantmentAPI.addGlow(getItem());
+            getMeta().addEnchant(Enchantment.ARROW_INFINITE, 1, false);
+            getMeta().addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+        }
         // Ecash Name - Overrides custom names by other items.
         // getCustomName() should ONLY be overridden to modify the EC display name, ie append [+3] to the name.
         if (this.customName != null) {

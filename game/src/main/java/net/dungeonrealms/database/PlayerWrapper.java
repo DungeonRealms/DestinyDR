@@ -943,6 +943,16 @@ public class PlayerWrapper {
         return getPlayerWrapper(get);
     }
 
+    public static PlayerWrapper getWrapperByCharacterID(int id) {
+        for(PlayerWrapper wrapper : getPlayerWrappers().values()){
+            if(wrapper.getCharacterID() == id){
+                //Found em..
+                return wrapper;
+            }
+        }
+        return null;
+    }
+
     public static PlayerWrapper getPlayerWrapper(Player toGet) {
         return getPlayerWrapper(toGet.getUniqueId());
     }
