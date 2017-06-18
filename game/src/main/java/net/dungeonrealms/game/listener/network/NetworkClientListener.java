@@ -138,6 +138,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         PlayerWrapper wrapper = PlayerWrapper.getWrapperByCharacterID(id);
                         if (wrapper != null && wrapper.getPlayer() != null && wrapper.getPlayer().isOnline()) {
                             Bukkit.getLogger().info("Reloading shop for " + wrapper.getUsername());
+                            Player pl = wrapper.getPlayer();
 
                             if (!DungeonRealms.getInstance().isAlmostRestarting())
                                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> pl.closeInventory());
