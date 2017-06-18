@@ -534,6 +534,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 Bukkit.getLogger().info("Unable to load offline guild for " + guildName + "(" + guildID + ")");
                                 return;
                             }
+                            Bukkit.getLogger().info("Adding guid to cache: " + newWrapper.getTag() + " ID: " + guildID);
                             GuildDatabase.getAPI().cached_guilds.put(guildID, newWrapper);
                             online.sendMessage("");
                             online.sendMessage(inviteMessage);

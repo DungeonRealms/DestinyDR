@@ -185,7 +185,7 @@ public class Mining implements GenericMechanic, Listener {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 //Give loot.
-                ItemStack loot = createTreasureFindItem(oreTier);
+                ItemStack loot = createTreasureFindItem(oreTier, pickaxe);
 
                 ArmorStand rise = (ArmorStand) block.getWorld().spawnEntity(block.getLocation().clone().add(0.5, -1.3, 0.5), EntityType.ARMOR_STAND);
                 rise.setVisible(false);
@@ -307,7 +307,7 @@ public class Mining implements GenericMechanic, Listener {
             player.sendMessage(ChatColor.GRAY + "Use " + ChatColor.UNDERLINE + "/hats" + ChatColor.GRAY + " to view all available hats!");
     }
 
-    public ItemStack createTreasureFindItem(MiningTier tier) {
+    public ItemStack createTreasureFindItem(MiningTier tier, ItemPickaxe pick) {
         Random r = ThreadLocalRandom.current();
         //FOOD, ORE, POTIONS, ENCHANT SCROLLS, ORB OF FLIGHT, ORB OF ALT .001%, PROF_EXP LAMP?
         if (r.nextInt(500) == 5) {
@@ -323,7 +323,8 @@ public class Mining implements GenericMechanic, Listener {
         } else if (r.nextInt(75) == 5) {
             return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else if (r.nextInt(750) == 5) {
-            return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).setTier(ItemTier.getByTier(tier.getTier())).generateItem();
+            //return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).setTier(ItemTier.getByTier(tier.getTier())).generateItem();
+            return pick.getEnchant().generateItem();
         } else {
             List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);

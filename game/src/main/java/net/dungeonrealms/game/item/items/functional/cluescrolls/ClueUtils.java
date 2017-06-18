@@ -91,7 +91,7 @@ public class ClueUtils {
         ClueScrollItem clue = new ClueScrollItem(inSlot);
         if(clue.getClue().equals(Clue.SPAWN_GUARDIAN_UNDER_WATER)) {
             boolean isInWater = player.getRemainingAir() != player.getMaximumAir();
-            if(isInWater && pet.equals(EnumPets.GUARDIAN)) {
+            if(isInWater && (pet.equals(EnumPets.GUARDIAN) || pet.equals(EnumPets.ELDER_GAURDIAN))) {
                 clue.handleCompleted();
                 player.getInventory().setItem(slot, clue.generateItem());
                 handleClueCompleted(player, clue);

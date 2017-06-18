@@ -109,7 +109,7 @@ public class PvEListener implements Listener {
 
         //Dont remove more energy when damaging.. we take the energy on shoot/
 
-        if (projectile == null || !(projectile instanceof Arrow)) {
+        if (projectile == null) {
             EnergyHandler.removeEnergyFromPlayerAndUpdate(damager, EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
         }
 

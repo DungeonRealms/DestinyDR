@@ -454,15 +454,16 @@ public class DamageAPI {
                     if (armor == null || armor.getType() == Material.AIR || !ItemArmor.isArmor(armor)) continue;
                     new ItemArmor(armor).damageItem(defender.getPlayer(), 1);
                 }
+        if (defender.getAttributes() == null || attacker.getAttributes() == null) {
+            res.setDamage(1);
+            //How?
+            return;
+        }
 
         int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
 
         //  BLOCK AND DODGE  //
         Random rand = ThreadLocalRandom.current();
-        if (defender.getAttributes() == null) {
-            //How?
-            return;
-        }
 
         int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
         int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
