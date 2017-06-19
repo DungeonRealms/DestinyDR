@@ -33,7 +33,7 @@ public class BaseMobSpawner extends MobSpawner {
     	getSpawnedMonsters().stream().filter(ent -> ent != null && ent.isDead()).forEach(monster ->
 			respawnTimes.put(monster, getRespawnDelay() + (ThreadLocalRandom.current().nextInt(getRespawnDelay() / 2) + 15)));
 
-    	if (isFirstSpawn()) {
+    	if (isFirstSpawn() && getSpawnAmount() > 1) {
 			for (int i = 0; i < (isDungeon() ? getSpawnAmount() - 1 : 2); i++)
 				spawn();
 		}
