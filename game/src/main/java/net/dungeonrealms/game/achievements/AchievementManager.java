@@ -2,6 +2,7 @@ package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.database.PlayerGameStats;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
@@ -10,6 +11,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
 
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -69,6 +71,17 @@ public class AchievementManager implements GenericMechanic, Listener {
 
         if (wrapper.getPetsUnlocked().size() >= 3)
         	Achievements.giveAchievement(player, EnumAchievements.ANIMAL_TAMER);
+
+        if (wrapper.getPlayerGameStats().getStat(PlayerGameStats.StatColumn.PLAYER_KILLS) > 1)
+            Achievements.giveAchievement(player, EnumAchievements.MAN_HUNTER_I);
+        if (wrapper.getPlayerGameStats().getStat(PlayerGameStats.StatColumn.PLAYER_KILLS) > 3)
+            Achievements.giveAchievement(player, EnumAchievements.MAN_HUNTER_II);
+        if (wrapper.getPlayerGameStats().getStat(PlayerGameStats.StatColumn.PLAYER_KILLS) > 5)
+            Achievements.giveAchievement(player, EnumAchievements.MAN_HUNTER_III);
+        if (wrapper.getPlayerGameStats().getStat(PlayerGameStats.StatColumn.PLAYER_KILLS) > 10)
+            Achievements.giveAchievement(player, EnumAchievements.MAN_HUNTER_IV);
+        if (wrapper.getPlayerGameStats().getStat(PlayerGameStats.StatColumn.PLAYER_KILLS) > 20)
+            Achievements.giveAchievement(player, EnumAchievements.MAN_HUNTER_VI);
 
         BankMechanics.checkBankAchievements(player);
 

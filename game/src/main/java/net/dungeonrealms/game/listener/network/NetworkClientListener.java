@@ -131,7 +131,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                 String accountIdString = in.readUTF();
                 Bukkit.getLogger().info("Received ShopsClosed packet from " + shardFrom + " Contents: " + accountIdString);
-                
+
                 if (accountIdString.contains(",")) {
                     for (String intID : accountIdString.split(",")) {
                         if (intID == null || intID.isEmpty()) continue;

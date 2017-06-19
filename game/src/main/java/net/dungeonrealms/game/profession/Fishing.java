@@ -512,10 +512,10 @@ public class Fishing implements GenericMechanic, Listener {
 
                     if (junkType < 70) {
                         junk = new PotionItem(PotionTier.getById(spotTier)).generateItem();
-                        junk.setAmount(1 + random.nextInt(7 - spotTier + 2));
+                        junk.setAmount(1 + random.nextInt(2));
                     } else if (junkType < 98) {
                         junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
-                        junk.setAmount(random.nextInt(3) + 1);
+                        junk.setAmount(1 + random.nextInt(7 - spotTier + 2));
                     } else {
                         int tierRoll = random.nextInt(100);
 //                        int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
