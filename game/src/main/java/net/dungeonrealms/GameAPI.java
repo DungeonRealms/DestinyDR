@@ -366,6 +366,7 @@ public class GameAPI {
             }
             ShopMechanics.ALLSHOPS.clear();
             GameAPI.sendNetworkMessage("ShopsClosed", DungeonRealms.getShard().getPseudoName(), toSend.toString());
+            Bukkit.getLogger().info("Sending " + toSend.toString() + " across shard for ShopsClosed!");
         } catch (Exception e) {
             e.printStackTrace();
         }

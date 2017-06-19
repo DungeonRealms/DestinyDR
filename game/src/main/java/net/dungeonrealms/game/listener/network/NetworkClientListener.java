@@ -151,9 +151,31 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     if (bin != null && Arrays.stream(bin.getContents()).filter(is -> is != null && is.getType() != Material.AIR).count() > 0) {
                                         if (pl.isOnline()) {
                                             pl.sendMessage(ChatColor.RED + "There are items waiting in your collection bin.");
+                if (accountIdString.contains(",")) {
+                    for (String intID : accountIdString.split(",")) {
+                        if (intID == null || intID.isEmpty()) continue;
+                        if (org.apache.commons.lang.StringUtils.isNumeric(intID)) {
+                            int id = Integer.parseInt(intID);
+                            PlayerWrapper wrapper = PlayerWrapper.getWrapperByCharacterID(id);
+                            if (wrapper != null && wrapper.getPlayer() != null && wrapper.getPlayer().isOnline()) {
+                                Bukkit.getLogger().info("Reloading shop for " + wrapper.getUsername());
+                                Player pl = wrapper.getPlayer();
+
+                                if (!DungeonRealms.getInstance().isAlmostRestarting())
+                                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> pl.closeInventory());
+
+                                pl.sendMessage(ChatColor.RED + "Your shop has been closed on " + shardFrom + "!");
+
+                                Storage storage = BankMechanics.getStorage(pl.getUniqueId());
+                                if (storage != null) {
+                                    storage.update(false, false, bin -> {
+                                        if (bin != null && Arrays.stream(bin.getContents()).filter(is -> is != null && is.getType() != Material.AIR).count() > 0) {
+                                            if (pl.isOnline()) {
+                                                pl.sendMessage(ChatColor.RED + "There are items waiting in your collection bin.");
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
                     }
