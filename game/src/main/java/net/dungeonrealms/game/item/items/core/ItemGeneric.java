@@ -9,13 +9,11 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -261,9 +259,11 @@ public abstract class ItemGeneric extends PersistentItem {
         }
 
         if (isGlowing()) {
-            this.item = EnchantmentAPI.addGlow(getItem());
+//            this.item = EnchantmentAPI.addGlow(getItem());
             getMeta().addEnchant(Enchantment.ARROW_INFINITE, 1, false);
             getMeta().addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+        } else if (getMeta().hasEnchant(Enchantment.ARROW_INFINITE)) {
+            getMeta().removeEnchant(Enchantment.ARROW_INFINITE);
         }
         // Ecash Name - Overrides custom names by other items.
         // getCustomName() should ONLY be overridden to modify the EC display name, ie append [+3] to the name.
@@ -358,7 +358,7 @@ public abstract class ItemGeneric extends PersistentItem {
     }
 
     protected void removeLore(String startsWith) {
-        if(this.lore == null || this.lore.isEmpty())return;
+        if (this.lore == null || this.lore.isEmpty()) return;
         for (int i = 0; i < this.lore.size(); i++) {
             if (this.lore.get(i).startsWith(startsWith)) {
                 this.lore.remove(i);

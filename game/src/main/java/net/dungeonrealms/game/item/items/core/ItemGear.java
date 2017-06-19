@@ -19,6 +19,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -139,6 +140,9 @@ public abstract class ItemGear extends ItemGeneric {
 
         if (getEnchantCount() > 3)
             setGlowing(true);
+        else if (getMeta().hasEnchant(Enchantment.ARROW_INFINITE))
+            getMeta().removeEnchant(Enchantment.ARROW_INFINITE);
+
         super.updateItem();
     }
 
