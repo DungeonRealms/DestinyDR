@@ -40,6 +40,7 @@ public class MetadataUtils {
 		// Entity
 		CUSTOM_NAME("Error"),
 		DUNGEON(false),
+		DUNGEON_FROM(null),
 		NAMED_ELITE(EnumNamedElite.class),
 		ELITE(false),
 		BOSS(false),

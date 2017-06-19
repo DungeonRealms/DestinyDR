@@ -394,8 +394,10 @@ public class EntityAPI {
                 if (dungeon) {
                     Metadata.DUNGEON.set(le, true);
                     Dungeon dung = DungeonManager.getDungeon(loc.getWorld());
-                    if (dung != null)
+                    if (dung != null) {
                         dung.getTrackedMonsters().put(le, loc);
+                        Metadata.DUNGEON_FROM.set(le, dung.getType().getName());
+                    }
                 }
             }
 

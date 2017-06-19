@@ -22,6 +22,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.HealTracker;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -630,10 +631,10 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (attacker instanceof Player && !(defender instanceof Player)) {
-            if (defender.getCustomName() != null && defender.getCustomName().contains("Rift Minion") && Trinket.hasActiveTrinket((Player)attacker, Trinket.RIFT_DAMAGE_INCREASE)) {
+            if (defender.getCustomName() != null && defender.getCustomName().contains("Rift Minion") && Trinket.hasActiveTrinket((Player) attacker, Trinket.RIFT_DAMAGE_INCREASE)) {
                 damage += damage * .10;
             }
-       }
+        }
 
         double maxHP = isDPSDummy ? 0 : getMaxHP(defender);
         double currentHP = isDPSDummy ? 0 : getHP(defender);
@@ -745,6 +746,19 @@ public class HealthHandler implements GenericMechanic {
             //  ELITE MODIFIER  //
             if (EntityAPI.isElite(entity))
                 totalHP *= eliteModifier[tier - 1];
+
+
+            if (Metadata.DUNGEON.has(entity) && Metadata.DUNGEON.get(entity).asBoolean()) {
+
+                double mult = 1.5;
+                if (Metadata.DUNGEON_FROM.has(entity)) {
+                    String dungeonFrom = Metadata.DUNGEON_FROM.get(entity).asString();
+                    if(dungeonFrom != null && DungeonType.THE_INFERNAL_ABYSS.getName().equals(dungeonFrom)){
+                        mult = 2.5;
+                    }
+                }
+                totalHP *= mult;
+            }
 
             //  BOSS MULTIPLIER  //
             if (EntityAPI.isBoss(entity))
