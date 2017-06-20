@@ -86,12 +86,14 @@ public class DamageAPI {
                 if (removeDurability) {
                     int durabilityLoss = 1;
 
-                    //  EXTRA DAMAGE FOR TIER GAPS  //
-                    int mobTier = EntityAPI.getTier(defender.getEntity());
+                    if(!defender.isPlayer()) { //ONLY FOR MOBS!
+                        //  EXTRA DAMAGE FOR TIER GAPS  //
+                        int mobTier = EntityAPI.getTier(defender.getEntity());
 
-                    int tierDif = weaponTier - mobTier;
-                    if (tierDif > 1)
-                        durabilityLoss = 2 * (tierDif - 1);
+                        int tierDif = weaponTier - mobTier;
+                        if (tierDif > 1)
+                            durabilityLoss = 2 * (tierDif - 1);
+                    }
 
                     weapon.damageItem(attacker.getPlayer(), durabilityLoss);
                 }
