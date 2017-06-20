@@ -214,7 +214,6 @@ public class Shop {
             if (saveStatement != null) {
                 saveStatement.addBatch(QueryType.SET_HASSHOP.getQuery(0, this.characterID));
             }
-//            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
         } else {
             if (owner != null) {
@@ -224,9 +223,6 @@ public class Shop {
                 }
             }
             SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_HASSHOP, 0, this.characterID);
-//            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true)
-//            });
         }
 
         if (owner != null) {

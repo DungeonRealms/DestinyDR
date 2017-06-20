@@ -114,10 +114,10 @@ public class Storage {
                                 if (p != null)
                                     p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
 
-                                updateBin(callback);
+                                updateBin(inv, callback);
                             });
                         } else {
-                            updateBin(callback);
+                            updateBin(inv, callback);
                         }
                         return;
                     } else {
@@ -132,7 +132,7 @@ public class Storage {
         });
     }
 
-    public void updateBin(Consumer<Inventory> callback) {
+    public void updateBin(Inventory newBin, Consumer<Inventory> callback) {
         //Clear old bin?
         if (this.collection_bin != null) {
             this.collection_bin.clear();
@@ -140,7 +140,7 @@ public class Storage {
             Lists.newArrayList(this.collection_bin.getViewers()).forEach(HumanEntity::closeInventory);
         }
 
-        this.collection_bin = inv;
+        this.collection_bin = newBin;
         SQLDatabaseAPI.getInstance().addQuery(QueryType.UPDATE_COLLECTION_BIN, "", this.characterID);
         if (callback != null)
             callback.accept(this.collection_bin);
