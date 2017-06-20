@@ -146,6 +146,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> pl.closeInventory());
 
                                 pl.sendMessage(ChatColor.RED + "Your shop has been closed on " + shardFrom + "!");
+                                //No longer open?
+                                wrapper.setShopOpened(false);
 
                                 Storage storage = BankMechanics.getStorage(pl.getUniqueId());
                                 if (storage != null) {
@@ -153,6 +155,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                         if (bin != null && Arrays.stream(bin.getContents()).filter(is -> is != null && is.getType() != Material.AIR).count() > 0) {
                                             if (pl.isOnline()) {
                                                 pl.sendMessage(ChatColor.RED + "There are items waiting in your collection bin.");
+
                                             }
                                         }
                                     });
