@@ -57,7 +57,7 @@ public class CharacterTabColumn extends Column {
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                             if (wrapper == null)
                             	return null;
-                            return String.valueOf((HealthHandler.getRegen(player) + wrapper.getPlayerStats().getRegen()));
+                            return String.valueOf(HealthHandler.getRegen(player));
                         }
                     },
                     new Variable("dps") {

@@ -10,7 +10,6 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.quests.Quest;
@@ -123,7 +122,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + "" + ChatColor.BOLD + " HP" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttribute(ArmorAttributeType.DAMAGE) + "% " + ChatColor.BOLD + "DPS" + "\n" + ChatColor.BLACK
-                + "   " + (HealthHandler.getRegen(p) + pw.getPlayerStats().getHPRegen()) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
+                + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString() + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
                 + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD + " GEM FIND" + "\n" + ChatColor.BLACK
