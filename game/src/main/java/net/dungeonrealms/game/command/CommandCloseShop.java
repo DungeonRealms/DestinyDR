@@ -66,12 +66,9 @@ public class CommandCloseShop extends BaseCommand {
                 player.sendMessage(ChatColor.RED + "Close your shop GUI to close your shop");
                 return false;
             } else {
-                GameAPI.sendNetworkMessage("Shop", "close:" + " ," + player.getName());
-//                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
-                player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     //Update the collection bin..
-                    BankMechanics.getStorage(player).update(true, true, bin -> {
+                    BankMechanics.getStorage(player).update(false, true, bin -> {
                         wrapper.setShopOpened(false);
                         player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely.");
                     });
