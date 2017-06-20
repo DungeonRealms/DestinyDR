@@ -1,5 +1,6 @@
 package net.dungeonrealms;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
@@ -355,15 +356,17 @@ public class GameAPI {
         try {
             Bukkit.getLogger().info("Saving all shops sync...");
             long start = System.currentTimeMillis();
+
+            List<Shop> oldShops = Lists.newArrayList(ShopMechanics.ALLSHOPS.values());
             @Cleanup PreparedStatement statement = ShopMechanics.deleteAllShops(true);
             statement.executeBatch();
             Bukkit.getLogger().info("Saved all shops in " + (System.currentTimeMillis() - start) + "ms");
 
-
             StringBuilder toSend = new StringBuilder();
-            for(Shop shop : ShopMechanics.ALLSHOPS.values()){
+            for (Shop shop : oldShops) {
                 toSend.append(shop.getCharacterID()).append(",");
             }
+            oldShops.clear();
             ShopMechanics.ALLSHOPS.clear();
             GameAPI.sendNetworkMessage("ShopsClosed", DungeonRealms.getShard().getPseudoName(), toSend.toString());
             Bukkit.getLogger().info("Sending " + toSend.toString() + " across shard for ShopsClosed!");
