@@ -193,12 +193,12 @@ public class Shop {
     public void deleteShop(boolean shutDown, PreparedStatement saveStatement) {
         // Remove the actual game gui
         ShopMechanics.ALLSHOPS.remove(ownerName);
-        // Remove blocks
-        hologram.delete();
         if (!shutDown) { //Prevents a crash in crashHandler() (Accessing Bukkit API Async)
             block1.setType(Material.AIR);
             block2.setType(Material.AIR);
             block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+            // Remove blocks
+            hologram.delete();
         }
 
         Player owner = Bukkit.getPlayer(ownerUUID);
