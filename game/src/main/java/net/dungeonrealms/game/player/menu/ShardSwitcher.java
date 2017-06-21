@@ -118,7 +118,7 @@ public class ShardSwitcher extends AbstractMenu {
                                 return;
                             }
 
-                            if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
+                            if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player) || CombatLog.inPVP(player)) {
                                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
@@ -211,7 +211,7 @@ public class ShardSwitcher extends AbstractMenu {
             return;
         }
 
-        if (CombatLog.isInCombat(player)) {
+        if (CombatLog.isInCombat(player) || CombatLog.inPVP(player)) {
             player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
             return;
         }
