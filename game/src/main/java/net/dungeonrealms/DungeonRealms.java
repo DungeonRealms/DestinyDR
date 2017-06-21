@@ -614,9 +614,9 @@ public class DungeonRealms extends JavaPlugin {
         	setAcceptPlayers(false);
         	TitleAPI.broadcast("", ChatColor.YELLOW + "" + ChatColor.BOLD + "WARNING: " + ChatColor.RED + "A SCHEDULED  "
         				+ ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE", 1, 60, 1);
-        }, 30 * 20L);
+        }, 60 * 20L * 4);
         
-        Bukkit.getScheduler().runTaskLater(this, GameAPI::stopGame, 60 * 20L);
+        Bukkit.getScheduler().runTaskLater(this, GameAPI::stopGame, 60 * 20L * 5);
     }
 
     public void onDisable() {
