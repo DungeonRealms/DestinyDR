@@ -53,7 +53,7 @@ public class ItemMuleUpgrade extends FunctionalItem implements ItemInventoryList
 		PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
 		MuleTier muleTier = MuleTier.getByTier(pw.getMuleLevel());
 		
-		if (muleTier.getLast() != getTier()) {
+		if (muleTier != null && muleTier != getTier().getLast()) {
 			pl.sendMessage(ChatColor.RED + "This mule upgrade is for a different mule tier.");
 			return;
 		}
