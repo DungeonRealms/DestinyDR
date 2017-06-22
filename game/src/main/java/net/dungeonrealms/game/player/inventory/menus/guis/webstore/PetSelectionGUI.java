@@ -67,7 +67,7 @@ public class PetSelectionGUI extends GUIMenu {
 
                         if (isLocked.get()) {
                             player.sendMessage(ChatColor.RED + "You do " + ChatColor.BOLD + "NOT" + ChatColor.RED + " have access to this pet!");
-                            player.sendMessage(ChatColor.GRAY + "You can unlock access at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
+                            player.sendMessage(ChatColor.GRAY + "You can unlock access at " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.GRAY + "!");
                             return;
                         }
 

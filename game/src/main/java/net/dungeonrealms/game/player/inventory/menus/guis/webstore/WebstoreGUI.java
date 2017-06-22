@@ -13,7 +13,7 @@ public interface WebstoreGUI {
 
     default void sendNotUnlocked(Player player) {
         player.sendMessage(ChatColor.RED + "You do not own this item!");
-        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
     }
 
 }

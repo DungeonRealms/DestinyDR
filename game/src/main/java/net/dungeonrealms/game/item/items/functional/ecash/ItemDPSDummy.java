@@ -73,7 +73,7 @@ public class ItemDPSDummy extends FunctionalItem implements ItemClickEvent.ItemC
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (Purchaseables.DPS_DUMMY.getNumberOwned(wrapper) <= 0) {
             player.sendMessage(ChatColor.RED + "You have not unlocked the DPS Dummy!");
-            player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+            player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
             evt.setResultItem(null);
             return;
         }

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -165,7 +166,7 @@ public class BankListener implements Listener {
                     if (tab == null || !(tab.hasAccess || Rank.isTrialGM(player))) {
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
                         player.sendMessage(ChatColor.RED + "You have not unlocked the Scrap Tab!");
-                        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+                        player.sendMessage(ChatColor.GRAY + "You can unlock it at " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.GRAY + "!");
                         player.closeInventory();
                         return;
                     }
@@ -588,7 +589,7 @@ public class BankListener implements Listener {
                 currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
                 currencyLore.add("");
                 currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
-                currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+                currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.GRAY + "!");
             }
 
             ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))

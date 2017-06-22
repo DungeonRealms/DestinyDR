@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.inventory.menus;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
@@ -120,7 +121,7 @@ public class ShopECashVendor extends GUIMenu {
     private boolean giveLink(Player player) {
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), player::closeInventory);
         final JSONMessage normal4 = new JSONMessage(ChatColor.GOLD + "To Purchase E-Cash from our Shop, Click ", ChatColor.GOLD);
-        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://www.dungeonrealms.net/store");
+        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, Constants.SHOP_URL);
         normal4.sendToPlayer(player);
         return false;
     }
