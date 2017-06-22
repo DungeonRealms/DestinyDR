@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
@@ -76,7 +77,7 @@ public class ShardSwitcher extends AbstractMenu {
                     if (info.getOnlinePlayers() >= info.getMaxPlayers() && !rank.isSUB()) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
-                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store" + ChatColor.RED + " to bypass this."
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.RED + " to bypass this."
                         });
                     }
 
@@ -84,7 +85,7 @@ public class ShardSwitcher extends AbstractMenu {
                         player.sendMessage(ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getType().name() + " ONLY" + ChatColor.RED + " shard!");
 
                         if (shard.getType().getMinRank() == PlayerRank.SUB)
-                            player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/store");
+                            player.sendMessage(ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                         return;
                     }
 

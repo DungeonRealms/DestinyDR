@@ -46,10 +46,10 @@ public class SubscriptionsGUI extends GUIMenu implements WebstoreGUI {
             setItem(webItem.getGuiSlot(), new GUIItem(webItem.getItemType()).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
                 if(isUnlocked) {
                     player.sendMessage(ChatColor.GREEN + "Thank you for purchasing " + webItem.getName());
-                    player.sendMessage(ChatColor.GRAY + "Extend your subscription at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                    player.sendMessage(ChatColor.GRAY + "Extend your subscription at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                 } else {
                     player.sendMessage(ChatColor.RED + "You have not purchased this rank!");
-                    player.sendMessage(ChatColor.GRAY + "Unlock it at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                    player.sendMessage(ChatColor.GRAY + "Unlock it at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                 }
             }));
         }

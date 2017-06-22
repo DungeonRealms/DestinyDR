@@ -71,7 +71,7 @@ public class MountSkinSelectionGUI extends GUIMenu {
                                 }, () -> player.sendMessage(ChatColor.RED + "Mount Skin Purchase - " + ChatColor.BOLD + "CANCELLED"));
                             } else {
                                 player.sendMessage(ChatColor.RED + "This Mount Skin requires " + ChatColor.UNDERLINE + skin.getEcashPrice() + ChatColor.RED + " E-Cash!");
-                                player.sendMessage(ChatColor.GRAY + "You can also unlock this Mount Skin at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
+                                player.sendMessage(ChatColor.GRAY + "You can also unlock this Mount Skin at " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.GRAY + "!");
                             }
                             return;
                         }

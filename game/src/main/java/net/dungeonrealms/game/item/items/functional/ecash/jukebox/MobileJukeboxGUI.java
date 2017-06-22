@@ -73,7 +73,7 @@ public class MobileJukeboxGUI extends GUIMenu {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.closeInventory(), 1);
                 } else {
                     player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " change the song for " + jukebox.getOwner() + "'s Mobile Musicbox.");
-                    player.sendMessage(ChatColor.GRAY + "Unlock your own at " + ChatColor.UNDERLINE + Constants.STORE_URL + ChatColor.GRAY + "!");
+                    player.sendMessage(ChatColor.GRAY + "Unlock your own at " + ChatColor.UNDERLINE + Constants.SHOP_URL + ChatColor.GRAY + "!");
                 }
             }));
         }

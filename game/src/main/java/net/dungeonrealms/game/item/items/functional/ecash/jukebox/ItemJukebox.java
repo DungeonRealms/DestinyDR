@@ -97,7 +97,7 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (Purchaseables.JUKEBOX.getNumberOwned(wrapper) <= 0) {
             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "(!) " + ChatColor.RED + "You do NOT own a Mobile Musicbox!");
-            player.sendMessage(ChatColor.GRAY + "You can unlock one at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+            player.sendMessage(ChatColor.GRAY + "You can unlock one at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
             evt.setResultItem(null);
             return;
         }

@@ -49,7 +49,7 @@ public class GlobalBuffGUI extends GUIMenu implements WebstoreGUI {
                 int numOwned = webItem.getNumberOwned(wrapper);//Could be different now when we are clicking? Dont use the old one from above.
                 if(numOwned <= 0) {
                     player.sendMessage(ChatColor.RED + "You do not have any " + buff.getBuffPower() + "% " + buff.getBuffCategory().getFriendlyName() + "s left!");
-                    player.sendMessage(ChatColor.GRAY + "You can get some more at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                    player.sendMessage(ChatColor.GRAY + "You can get some more at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                     return;
                 }
 

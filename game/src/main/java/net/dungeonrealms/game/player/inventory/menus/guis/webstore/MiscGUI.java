@@ -49,7 +49,7 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                     .setClick(evt -> {
                         boolean unlocked = webItem.isUnlocked(wrapper);
                         if (!webItem.isCanHaveMultiple() && !webItem.isShouldStore()) {
-                            player.sendMessage(ChatColor.GRAY + "You can purchase this item at " + ChatColor.UNDERLINE + Constants.STORE_URL);
+                            player.sendMessage(ChatColor.GRAY + "You can purchase this item at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                             this.setShouldOpenPreviousOnClose(false);
                             player.closeInventory();
                         } else if (webItem.equals(Purchaseables.JUKEBOX)) {

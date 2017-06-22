@@ -335,7 +335,7 @@ public class Shop {
             if (new_tier >= 4) {
                 //Click to view shop!
                 TextComponent bungeeMessage = new TextComponent(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "SHOP");
-                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://www.dungeonrealms.net/store/category/566366"));
+                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, Constants.SHOP_URL));
                 bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
                 TextComponent test = new TextComponent(ChatColor.RED + "Purchase Subscriber @ ");
                 test.addExtra(bungeeMessage);
