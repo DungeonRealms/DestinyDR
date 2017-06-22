@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.party;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandPLeave extends BaseCommand {
     public CommandPLeave() {
-        super("pleave", "/<command>", "Remove player from party", "pquit");
+        super("pleave", "/<command>", "Remove player from party", null, Lists.newArrayList("pquit"));
     }
 
     @Override
