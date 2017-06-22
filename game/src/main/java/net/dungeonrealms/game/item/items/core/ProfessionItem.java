@@ -1,20 +1,24 @@
 package net.dungeonrealms.game.item.items.core;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantFishingRod;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantProfession;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.ProfessionTier;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -26,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -116,11 +121,20 @@ public abstract class ProfessionItem extends ItemGear {
      * Gets an enchant for this item. (Uses special cases, so it needs to be updated for every new profession item.)
      * We can modularize this later.
      */
-    public ItemEnchantProfession getEnchant() {
+    public List<ItemEnchantProfession> getEnchants() {
         if (this instanceof ItemPickaxe) {
-            return new ItemEnchantPickaxe((ItemPickaxe) this);
+            List<ItemEnchantProfession> profession = Lists.newArrayList();
+            for(Item.AttributeType type : getAttributes().getAttributes()){
+                profession.add(new ItemEnchantPickaxe().addEnchant((ProfessionAttribute)type, getAttributes().getAttribute(type).getValue()));
+            }
+            return profession;
         } else if (this instanceof ItemFishingPole) {
-            return new ItemEnchantFishingRod((ItemFishingPole) this);
+            List<ItemEnchantProfession> profession = Lists.newArrayList();
+            for(Item.AttributeType type : getAttributes().getAttributes()){
+                profession.add(new ItemEnchantFishingRod().addEnchant((ProfessionAttribute)type, getAttributes().getAttribute(type).getValue()));
+            }
+            return profession;
+//            return new ItemEnchantFishingRod((ItemFishingPole) this);
         }
         Utils.log.info("Couldn't create enchant for profession item - " + getClass().getName());
         return null;

@@ -84,7 +84,7 @@ public class TradeCalculator {
             //  PROFESSION ITEM  //
             if (ProfessionItem.isProfessionItem(is)) {
                 ProfessionItem pi = (ProfessionItem) PersistentItem.constructItem(is);
-                merchantOffer.add(pi.getEnchant());
+                merchantOffer.addAll(pi.getEnchants());
             }
         }
 
