@@ -155,11 +155,12 @@ public abstract class ProfessionItem extends ItemGear {
             ProfessionAttribute pa = getRandomProfessionAttribute();
             int currentAmount = getAttributes().hasAttribute(pa) ? getAttributes().get(pa).getValue() : 0;
             int newAmount = pa.getRandomValueFromTier(getTier());
-            int maxThisTier = pa.getMaxFromTier(oldTier);
+            int maxThisTier = pa.getMaxFromTier(getTier());
             boolean canAddOne = newAmount < maxThisTier;
             int toUse = currentAmount == newAmount && canAddOne ? currentAmount + 1 : currentAmount > newAmount ? currentAmount : newAmount;
             int maxStat = pa.getMaxFromTier(ItemTier.TIER_5);
             if (toUse > maxStat) toUse = maxStat;
+
             getAttributes().setStat(pa, toUse);
         }
 

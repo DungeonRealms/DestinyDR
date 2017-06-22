@@ -459,9 +459,14 @@ public class PlayerWrapper {
 
 
     public void setGems(int gems) {
-        if (gems < 0 || gems > 10000000) {
+
+        if (gems < 0 || gems > 10_000_000) {
             GameAPI.sendWarning("Tried to set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
             gems = 0;
+        }
+
+        if (gems > 2_000_000) {
+            GameAPI.sendWarning("Set " + getPlayer().getName() + "'s gems to " + gems + " on shard {SERVER}.");
         }
 
         if (gems != getGems())
@@ -944,8 +949,8 @@ public class PlayerWrapper {
     }
 
     public static PlayerWrapper getWrapperByCharacterID(int id) {
-        for(PlayerWrapper wrapper : getPlayerWrappers().values()){
-            if(wrapper.getCharacterID() == id){
+        for (PlayerWrapper wrapper : getPlayerWrappers().values()) {
+            if (wrapper.getCharacterID() == id) {
                 //Found em..
                 return wrapper;
             }
