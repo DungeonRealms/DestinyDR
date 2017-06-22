@@ -33,6 +33,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -88,17 +89,19 @@ public class CraftingMenu implements GenericMechanic, Listener {
         HandlerList.unregisterAll(this);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPLayerCraft(CraftItemEvent event) {
-        if (event.getInventory().getResult() != null) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler(priority = EventPriority.LOWEST)
+//    public void onPLayerCraft(CraftItemEvent event) {
+//        if (event.getInventory().getResult() != null) {
+//            Bukkit.getLogger().info("Name: " + event.getInventory().getName() + " Holder: " + event.getInventory().getHolder());
+//            event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getName().equals("container.crafting") && event.getRawSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+        if (event.getInventory().getName().equals("container.crafting") && event.getRawSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getInventory().getType() != InventoryType.WORKBENCH) {
             event.setCancelled(true);
+//            Bukkit.getLogger().info("Inventory: " + event.getInventory().getName() + " Holder: " + event.getInventory().getHolder() + " Type: " + event.getInventory().getType());
         }
 //        Bukkit.getLogger().info("Click: " + event.getAction() + " Slot: " + event.getRawSlot() + " Inv: " + event.getClickedInventory().getName() + " Inv: " + event.getInventory().getName());
     }

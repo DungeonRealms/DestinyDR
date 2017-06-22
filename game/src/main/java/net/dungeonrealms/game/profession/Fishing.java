@@ -457,7 +457,8 @@ public class Fishing implements GenericMechanic, Listener {
 
                 if (random.nextInt(300_000) == 3) {
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
-                    wrapper.getPurchaseablesUnlocked().put(Purchaseables.FISH_BOWL, 1);
+                    Purchaseables.FISH_BOWL.setNumberOwned(wrapper, 1);
+                    //wrapper.getPurchaseablesUnlocked().put(Purchaseables.FISH_BOWL, 1);
                     wrapper.setActiveHatOverride(CosmeticOverrides.FISH_BOWL);
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .5F);
                     Quest.spawnFirework(pl.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.GREEN).withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());

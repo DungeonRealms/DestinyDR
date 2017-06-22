@@ -1,7 +1,8 @@
 Build <build>
  &8&lRecent Changes&0
  &l
- &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* /reboot countdown,&7* PVP Durability,&7* /closeshop is now fixed,&7* Dungeon Mob HP,&7* Glow on +4 Gear,&7* Guild Creating</h>
+ &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Allow crafting from Workbench,&7* /reboot countdown,&7* PVP Durability,&7* /closeshop is now fixed,&7* Dungeon Mob HP,&7* Glow on +4 Gear,&7* Guild Creating</h>
+ &l* &0Axe Energy<h>&a&lWhat changed?,,&7Axe energy has been nerfed for all,&7tiers to make them more useful vs swords.</h>
  &l* &0Added Treasure Scrolls<h>&a&lWhat are these?,,&7Treasure Scrolls can be obtained,&7through various ways while playing.,,&7You can gain Treasure Scrolls while,&7mining' fishing and killing monsters.,&7Once obtained you can turn,&7them into their respective NPC,&7to obtain an Objective.,&7Upon completion you will be,&7rewarded with a random &aTrinket.</h>
  &l* &0Added Trinkets<h>&a&lWhat are these?,&b&lTrinkets,&7Trinkets can give interesting effects,&7to players when used in their Trinket Slot!,&7You can obtain Trinkets by,&7completing Treasure Scrolls!,,&7There are &a&l4 &7different trinket types.,&7Trinkets can give various types of bonuses!,&7Check out the Forums Announcements,&7for more specific information on Trinkets.</h>
  &l* &0Fish Bowl<h>&a&lWhat is this?,&7You can now very rarely find Fish Bowls when fishing!</h>

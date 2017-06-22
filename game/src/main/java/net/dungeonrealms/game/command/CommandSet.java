@@ -96,7 +96,7 @@ public class CommandSet extends BaseCommand {
             case "portal_keys":
             	PlayerWrapper pw = PlayerWrapper.getPlayerWrapper(player);
             	for (ShardTier tier : ShardTier.values())
-            		pw.setPortalShards(tier, 1500);
+            		pw.setPortalShards(tier, pw.getPortalShards(tier) + 1500);
                 break;
             case "durability":
             	ItemStack i = player.getInventory().getItemInMainHand();

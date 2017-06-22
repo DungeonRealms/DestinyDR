@@ -284,20 +284,25 @@ public class Mining implements GenericMechanic, Listener {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         String name = Utils.getItemName(toGive);
         if (toGive.getType().equals(Material.GOLD_ORE)) {
-            wrapper.getPurchaseablesUnlocked().put(Purchaseables.GOLD_ORE_HAT, 1);
+            //wrapper.getPurchaseablesUnlocked().put(Purchaseables.GOLD_ORE_HAT, 1);
+            Purchaseables.GOLD_ORE_HAT.setNumberOwned(wrapper,1);
             wrapper.setActiveHatOverride(CosmeticOverrides.GOLD_ORE_HAT);
         } else if (toGive.getType().equals(Material.DIAMOND_ORE)) {
-            wrapper.getPurchaseablesUnlocked().put(Purchaseables.DIAMOND_ORE_HAT, 1);
+            //wrapper.getPurchaseablesUnlocked().put(Purchaseables.DIAMOND_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.DIAMOND_ORE_HAT);
+            Purchaseables.DIAMOND_ORE_HAT.setNumberOwned(wrapper,1);
         } else if (toGive.getType().equals(Material.IRON_ORE)) {
-            wrapper.getPurchaseablesUnlocked().put(Purchaseables.IRON_ORE_HAT, 1);
+            //wrapper.getPurchaseablesUnlocked().put(Purchaseables.IRON_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.IRON_ORE_HAT);
+            Purchaseables.IRON_ORE_HAT.setNumberOwned(wrapper,1);
         } else if (toGive.getType().equals(Material.EMERALD_ORE)) {
-            wrapper.getPurchaseablesUnlocked().put(Purchaseables.EMERALD_ORE_HAT, 1);
+            //wrapper.getPurchaseablesUnlocked().put(Purchaseables.EMERALD_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.EMERALD_ORE_HAT);
+            Purchaseables.EMERALD_ORE_HAT.setNumberOwned(wrapper,1);
         } else if (toGive.getType().equals(Material.COAL_ORE)) {
-            wrapper.getPurchaseablesUnlocked().put(Purchaseables.COAL_ORE_HAT, 1);
+            //wrapper.getPurchaseablesUnlocked().put(Purchaseables.COAL_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.COAL_ORE_HAT);
+            Purchaseables.COAL_ORE_HAT.setNumberOwned(wrapper,1);
         } else {
             GameAPI.giveOrDropItem(player, toGive);
         }

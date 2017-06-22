@@ -244,7 +244,9 @@ public class RestrictionListener implements Listener {
                 || result.getType() == Material.MINECART || result.getType() == Material.GOLD_INGOT || result.getType() == Material.GOLD_ORE
                 || result.getType() == Material.GOLDEN_APPLE || result.getType() == Material.STORAGE_MINECART || result.getType() == Material.PISTON_BASE
                 || result.getType() == Material.PISTON_STICKY_BASE || result.getType() == Material.CARROT_STICK || result.getType() == Material.LEASH
-                || result.getType() == Material.NAME_TAG || result.getTypeId() == 417 || result.getTypeId() == 418 || result.getTypeId() == 419 || result.getType().name().startsWith("BOAT")) {
+                || result.getType() == Material.NAME_TAG || result.getTypeId() == 417 || result.getTypeId() == 418 || result.getTypeId() == 419
+                || result.getType() == Material.PRISMARINE || result.getType() == Material.CAULDRON_ITEM
+                || result.getType().name().contains("BOAT")) {
 
             Player p = ((Player) event.getWhoClicked());
             if (p.isOp()) {

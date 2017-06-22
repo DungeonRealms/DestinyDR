@@ -6,7 +6,9 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
+import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -114,6 +116,7 @@ public class Affair implements GenericMechanic {
 
         if (!ItemArmor.isArmor(item) && !ItemWeapon.isWeapon(item)) return;
 
+
         int blocks = 40;
 
         int radius = blocks * blocks;
@@ -134,6 +137,8 @@ public class Affair implements GenericMechanic {
                         return;
                     }
 
+                    if(!ItemManager.isItemSoulboundBypass(item,player)) return;
+
                     event.setCancelled(true);
                     event.getItem().remove();
                     //PLay a noise to indicate what happened.
@@ -151,6 +156,8 @@ public class Affair implements GenericMechanic {
                         return;
 
                     Player random = allMembers.get(ThreadLocalRandom.current().nextInt(allMembers.size()));
+
+                    if(random == null || random.isOnline() || !ItemManager.isItemSoulboundBypass(item,random)) return;
 
                     if (random.isOnline()) {
                         //We won the roll, dont mess with the item

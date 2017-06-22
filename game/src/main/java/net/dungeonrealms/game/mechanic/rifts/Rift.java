@@ -173,9 +173,12 @@ public class Rift {
     /**
      * Called around every 1 second? Seems suffice?
      */
+
+    private int lastSpawned = 0;
     public void onRiftTick() {
         this.aliveTime++;
         Set<Entity> spawned = getSpawnedEntities();
+        this.lastSpawned = spawned.size();
         if (this.spawned >= getMaxMobLimit() && spawned.size() <= 0) {
             //Done?
             onRiftEnd();
@@ -213,7 +216,7 @@ public class Rift {
         if (this.hologram == null) return;
         String line1 = Item.ItemTier.getByTier(getTier()).getColor().toString() + ChatColor.BOLD + "Rift";
         String line2 = ChatColor.RED + "Closing in " + ChatColor.BOLD + TimeUtil.formatDifference(MAX_ALIVE - aliveTime);
-        String line3 = ChatColor.RED.toString() + ChatColor.BOLD + getSpawnedEntities().size() + " Alive";
+        String line3 = ChatColor.RED.toString() + ChatColor.BOLD + lastSpawned + " Alive";
         for (Hologram holo : hologram) {
             if (holo.size() < 3) {
                 holo.appendTextLine(line1);

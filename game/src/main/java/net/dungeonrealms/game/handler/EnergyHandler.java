@@ -336,29 +336,41 @@ public class EnergyHandler implements GenericMechanic {
             case STONE_SWORD:
                 return 0.071F;
             case IRON_SWORD:
-                return 0.0960F;
+                return 0.0980F;
             case DIAMOND_SWORD:
                 return 0.125F;
             case GOLD_SWORD:
                 return 0.135F;
 
             case WOOD_AXE:
-                return 0.09373F;
+                return 0.08473F;
             case STONE_AXE:
-                return 0.09996F;
+                return 0.0909F;
             case IRON_AXE:
-                return 0.13F;
+                return 0.119F;
             case DIAMOND_AXE:
-                return 0.15F;
+                return 0.1395F;
             case GOLD_AXE:
-                return 0.162F;
+                return 0.15F;
 
             /* OLD DR VALUES
-            if(m == Material.WOOD_AXE) { return 0.0721F * 1.1F; } //.07931
-            if(m == Material.STONE_AXE) { return 0.0833F * 1.1F; } //.09163
-            if(m == Material.IRON_AXE) { return 0.10F * 1.1F; } //.11
-            if(m == Material.DIAMOND_AXE) { return 0.125F * 1.1F; } //.1375
-            if(m == Material.GOLD_AXE) { return 0.135F * 1.1F; } //.1485
+          		if(m == Material.WOOD_SWORD) { return 0.06F; }
+		if(m == Material.STONE_SWORD) { return 0.071F; }
+		if(m == Material.IRON_SWORD) { return 0.0833F; }
+		if(m == Material.DIAMOND_SWORD) { return 0.125F; }
+		if(m == Material.GOLD_SWORD) { return 0.135F; }
+
+		if(m == Material.WOOD_AXE) { return 0.0721F * 1.1F; } //.07931
+		if(m == Material.STONE_AXE) { return 0.0833F * 1.1F; } //.09163
+		if(m == Material.IRON_AXE) { return 0.10F * 1.1F; } //.11
+		if(m == Material.DIAMOND_AXE) { return 0.125F * 1.1F; } //.1375
+		if(m == Material.GOLD_AXE) { return 0.135F * 1.1F; } //.1485
+
+		if(m == Material.WOOD_SPADE) { return 0.0721F; }
+		if(m == Material.STONE_SPADE) { return 0.0833F; }
+		if(m == Material.IRON_SPADE) { return 0.10F; }
+		if(m == Material.DIAMOND_SPADE) { return 0.125F; }
+		if(m == Material.GOLD_SPADE) { return 0.135F; }
             */
 
             case WOOD_SPADE:

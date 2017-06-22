@@ -358,6 +358,10 @@ public class ItemManager {
         return get(item).isSoulbound();
     }
 
+    public static boolean isItemSoulboundBypass(ItemStack item, Player player) {
+        return get(item).isSoulboundBypass(player);
+    }
+
     /**
      * Make an item soulbound.
      */
