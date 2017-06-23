@@ -122,7 +122,7 @@ public class EnergyHandler implements GenericMechanic {
                 regenAmount = regenAmount / 18.9F;
                 if (playerWrapper.getPlayerStats() == null) return;
 
-                regenAmount = (float)(regenAmount * (1 + (playerWrapper.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.00015)));
+//                regenAmount = (float)(regenAmount * (1 + (playerWrapper.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.00015)));
                 //regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getEnergyRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }

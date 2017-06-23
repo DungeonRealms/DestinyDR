@@ -123,7 +123,7 @@ public class ItemManager {
                 + " / " + HealthHandler.getMaxHP(p) + "" + ChatColor.BOLD + " HP" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttribute(ArmorAttributeType.DAMAGE) + "% " + ChatColor.BOLD + "DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
-                + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString() + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
+                + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
                 + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD + " GEM FIND" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValue() + ChatColor.BOLD + " ITEM FIND";

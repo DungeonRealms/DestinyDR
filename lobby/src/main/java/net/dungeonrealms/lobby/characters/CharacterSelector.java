@@ -67,6 +67,10 @@ public class CharacterSelector extends AbstractMenu {
                         player.sendMessage(ChatColor.RED + "This character is locked!");
                         return;
                     }
+                    if(player.hasMetadata("savingData")) {
+                        player.sendMessage(ChatColor.RED + "Please wait!");
+                        return;
+                    }
                     player.closeInventory();
                     applySavingMeta(player);
                     if (event.getClickEvent().getClick().equals(ClickType.LEFT)) {
@@ -156,6 +160,10 @@ public class CharacterSelector extends AbstractMenu {
                     public void action(GUIButtonClickEvent event) throws Exception {
                         Player player = event.getWhoClicked();
                         player.closeInventory();
+                        if(player.hasMetadata("savingData")) {
+                            player.sendMessage(ChatColor.RED + "Please wait!");
+                            return;
+                        }
                         applySavingMeta(player);
                         //player.sendMessage(ChatColor.GREEN + "We clicked the un created character slot");
                         CompletableFuture.runAsync(() -> {

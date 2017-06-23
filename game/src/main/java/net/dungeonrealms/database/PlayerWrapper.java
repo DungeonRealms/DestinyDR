@@ -290,20 +290,21 @@ public class PlayerWrapper {
     }
 
     public void loadData(boolean async) {
-        this.loadData(async,null, null);
+        this.loadData(async, null, null);
     }
 
 
-    public void loadData(boolean async,Consumer<PlayerWrapper> callback) {
+    public void loadData(boolean async, Consumer<PlayerWrapper> callback) {
         loadData(async, null, callback);
     }
+
     /**
      * Load the playerWrapper data, Must be thread safe.
      *
      * @param async    async this method
      * @param callback callback to call after its loaded.
      */
-    public void loadData(boolean async, Integer characterID,Consumer<PlayerWrapper> callback) {
+    public void loadData(boolean async, Integer characterID, Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> loadData(false, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
@@ -1005,7 +1006,7 @@ public class PlayerWrapper {
             PlayerWrapper.setWrapper(uuid, wrapper);
         }
         Bukkit.getLogger().info("Loading " + uuid.toString() + "'s offline wrapper.");
-        wrapper.loadData(true,characterID, hadToLoadCallback);
+        wrapper.loadData(true, characterID, hadToLoadCallback);
     }
 
     public boolean isOnline() {
@@ -1143,8 +1144,14 @@ public class PlayerWrapper {
             EnergyBonus bonus = (EnergyBonus) active.getSetBonus();
             getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, bonus.getEnergyAmount());
         }
+
+
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses(this);
+        int intellect = getAttributes().getAttribute(Item.ArmorAttributeType.INTELLECT).getValue();
+        if (intellect > 0) {
+            getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, (int) (intellect * 0.015));
+        }
         HealthHandler.updatePlayerHP(getPlayer());
 
         // so energy regen doesn't start before attributes have been loaded

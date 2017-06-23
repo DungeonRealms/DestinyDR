@@ -161,7 +161,7 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
             for (StatBoost boost : stat.getStatBoosts()) {
 //				if (hasAttribute(boost.getType()))
                 if (boost.getType() == Item.ArmorAttributeType.ENERGY_REGEN) {
-                    addStat(boost.getType(), (int) (boost.getMultiplier() * wrapper.getPlayerStats().getStat(stat) * 100));
+                    continue;
                 } else
                     addStat(boost.getType(), (int) (getAttribute(stat.getType()).getValue() * (boost.getMultiplier() * wrapper.getPlayerStats().getStat(stat))));
             }
