@@ -2,6 +2,9 @@ Build <build>
  &8&lRecent Changes&0
  &l
  &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Enchant Scrolls from Merchants are now seperate,&7* Allow crafting from Workbench,&7* /reboot countdown,&7* PVP Durability,&7* /closeshop is now fixed,&7* Dungeon Mob HP,&7* Glow on +4 Gear,&7* Guild Creating</h>
+ &l* &0New Named Elite Gear<h>&a&lWhat was added?,,&7There have been 7 Named Elites that,&7have had custom gear added to their drop tables.,,&7For more info on all the elites,&7check out the forum announcement!</h>
+ &l* &0Set Bonuses<h>&a&lWhat is this?,,&7New Named Elite Gear comes with new Set,&7Bonuses when all pieces of the set are equipped.</h>
+ &l* &0Character Selector<h>&a&lWhat is this?,,&7Now in the lobby you can select,&7and unlock new character slots!,&7Start fresh on a new character on your account!,,&7You can &aunlock&7 characters slots,&7on the store or with &a&lSUB&7!</h>
  &l* &0Axe Energy<h>&a&lWhat changed?,,&7Axe energy has been nerfed for all,&7tiers to make them more useful vs swords.</h>
  &l* &0Added Treasure Scrolls<h>&a&lWhat are these?,,&7Treasure Scrolls can be obtained,&7through various ways while playing.,,&7You can gain Treasure Scrolls while,&7mining' fishing and killing monsters.,&7Once obtained you can turn,&7them into their respective NPC,&7to obtain an Objective.,&7Upon completion you will be,&7rewarded with a random &aTrinket.</h>
  &l* &0Added Trinkets<h>&a&lWhat are these?,&b&lTrinkets,&7Trinkets can give interesting effects,&7to players when used in their Trinket Slot!,&7You can obtain Trinkets by,&7completing Treasure Scrolls!,,&7There are &a&l4 &7different trinket types.,&7Trinkets can give various types of bonuses!,&7Check out the Forums Announcements,&7for more specific information on Trinkets.</h>

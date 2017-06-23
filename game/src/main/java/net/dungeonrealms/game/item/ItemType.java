@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item;
 
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

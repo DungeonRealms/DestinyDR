@@ -14,7 +14,7 @@ public enum CharacterType {
     DEFAULT("DEFAULT", "Default",1, PlayerRank.DEFAULT),
     SUB("SUB", "Sub",1, PlayerRank.SUB),
     SUB_PLUS("SUB_PLUS", "Sub+",1, PlayerRank.SUB_PLUS),
-    SUB_PLUS_PLUS("SUB_PLUS_PLUS", "Sub++",1, PlayerRank.SUB_PLUS_PLUS),
+    SUB_PLUS_PLUS("SUB_PLUS_PLUS", "Sub++",0, PlayerRank.SUB_PLUS_PLUS),
     GM("GM","Game Master",1, PlayerRank.GM),
     PURCHASED("PURCHASED", "Purchased",0, PlayerRank.DEFAULT);
 

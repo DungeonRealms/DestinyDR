@@ -57,6 +57,7 @@ public class CharacterSelector extends AbstractMenu {
             boolean isSelected = selectedCharacterID.intValue() == characterID;
             short durability = isLocked ? DyeColor.RED.getWoolData() : isSelected ? DyeColor.LIME.getWoolData() : DyeColor.YELLOW.getWoolData();
             ItemStack buttonStack = new ItemStack(Material.STAINED_GLASS_PANE, 1, durability);
+            final String finalTile = characterTitle;
             GUIButton button = new GUIButton(buttonStack) {
 
                 @Override
@@ -82,6 +83,7 @@ public class CharacterSelector extends AbstractMenu {
                             }
                             removeSavingMeta(player);
                             //new ShardSelector(player).open(player);
+                            player.sendMessage(ChatColor.GREEN + "Your active character is now " + ChatColor.YELLOW + ChatColor.BOLD.toString() + finalTile);
                         }, QueryType.UPDATE_SELECTED_CHARACTER.getQuery(characterID, accountID));
                     } else if (event.getClickEvent().getClick().equals(ClickType.RIGHT)) {
                         player.sendMessage(ChatColor.GREEN + "Please type in your new character name!");
@@ -189,7 +191,7 @@ public class CharacterSelector extends AbstractMenu {
 
                 lore.add(" ");
                 lore.add(ChatColor.GOLD + ChatColor.BOLD.toString() + "Character Info");
-                lore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "  Character Type: " + ChatColor.GRAY + type.getDisplayName());
+                lore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "  Type: " + ChatColor.GRAY + type.getDisplayName());
                 lore.add(" ");
                 lore.add(ChatColor.RED + ChatColor.BOLD.toString() + "Left Click: " + ChatColor.GRAY + "Create this character");
 

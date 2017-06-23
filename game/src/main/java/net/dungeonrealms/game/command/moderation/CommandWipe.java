@@ -14,6 +14,7 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.punishment.PunishType;
 
 import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -64,7 +65,7 @@ public class CommandWipe extends BaseCommand {
 
                                 Constants.log.info("Deleted selected_character_id for " + wrapper.getAccountID());
                                 sender.sendMessage(ChatColor.RED + "You have WIPED " + wrapper.getUsername() + "'s user and character data.");
-                            }, "UPDATE users SET selected_character_id = 0, ecash = 0, last_free_ecash = 0, currentShard = null, is_online = 0, currencyTab = " + (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? "'0:0:0:0:0'" : "null") + ", mounts = null WHERE account_id = '" + wrapper.getAccountID() + "';");
+                            }, "UPDATE users SET selected_character_id = 0, ecash = 0, last_free_ecash = 0, currentShard = null, is_online = 0, currencyTab = " + (wrapper.getCurrencyTab() != null && wrapper.getCurrencyTab().hasAccess ? "'0:0:0:0:0'" : "null") + " WHERE account_id = '" + wrapper.getAccountID() + "';");
                             wrapper.loadAllPunishments(true, punishments -> {
                                 GameAPI.sendStaffMessage(PlayerRank.GM, sender.getName() + " has WIPED " + wrapper.getUsername() + "'s character data from the database. A-ID: (" + wrapper.getAccountID() + ") C-ID: (" + wrapper.getCharacterID() + ") " + punishments.getPunishCount(PunishType.MUTE) + " Mutes, " + punishments.getPunishCount(PunishType.BAN) + " Bans");
                             });

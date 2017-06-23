@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.google.common.collect.MapMaker;
+import net.citizensnpcs.npc.entity.EntityHumanNPC;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.minecraft.server.v1_9_R2.Container;
@@ -39,7 +40,7 @@ public abstract class FakeEquipment {
                 final Player observingPlayer = event.getPlayer();
                 if (PacketType.Play.Server.ENTITY_EQUIPMENT.equals(type)) {
                     final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);
-                    if (!observingPlayer.hasMetadata("NPC") && (!visibleEntity.hasMetadata("NPC") || (visibleEntity.getCustomName() != null && visibleEntity.getCustomName().contains("Wizard")))) {
+                    if (!(observingPlayer instanceof EntityHumanNPC.PlayerNPC) && (!(visibleEntity instanceof EntityHumanNPC.PlayerNPC) || (visibleEntity.getCustomName() != null && visibleEntity.getCustomName().contains("Wizard")))) {
                         final EnumWrappers.ItemSlot itemSlot = packet.getItemSlots().getValues().get(0);
                         final ItemStack equipment = packet.getItemModifier().read(0);
                         final EquipmentSendingEvent sendingEvent = new EquipmentSendingEvent(observingPlayer, visibleEntity, itemSlot, equipment);

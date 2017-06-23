@@ -418,6 +418,7 @@ public class PlayerWrapper {
                 this.firstLogin = result.getLong("users.firstLogin");
                 this.lastRealmReset = result.getLong("realm.lastReset");
 
+                this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("characters.mounts"), EnumMounts.class);
                 //Unlockables.
                 this.loadUnlockables(result);
 
@@ -536,7 +537,6 @@ public class PlayerWrapper {
 
     public void loadUnlockables(ResultSet result) throws SQLException {
         loadPurchaseables(result);
-        this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("characters.mounts"), EnumMounts.class);
         this.mountSkins = StringUtils.deserializeEnumListToSet(result.getString("users.mountSkin"), EnumMountSkins.class);
         this.particles = StringUtils.deserializeEnumListToSet(result.getString("users.particles"), ParticleEffect.class);
 //        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
@@ -895,7 +895,7 @@ public class PlayerWrapper {
 
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
                 getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
-                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getMountsUnlocked(), getSerializePetString(), getParticles(), getMountSkins(), getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
+                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getSerializePetString(), getParticles(), getMountSkins(), getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
     }
 
     @SneakyThrows

@@ -1091,12 +1091,6 @@ public class GameAPI {
             }
         }
 
-        if (player.getName().equalsIgnoreCase("logon1027")) { // Unsure if we're ready to give him CM, so I'll keep him hardcoded til he gets the rank.
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-        }
-
         if (playerWrapper.getPendingPurchaseablesUnlocked().size() > 0) {
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "** " + "You have new items in your mailbox! **");
             player.sendMessage(ChatColor.GRAY + "Use /mailbox to respond to these items!");

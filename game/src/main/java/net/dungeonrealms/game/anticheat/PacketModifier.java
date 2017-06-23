@@ -6,6 +6,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.npc.entity.EntityHumanNPC;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
@@ -42,6 +44,10 @@ public class PacketModifier implements GenericMechanic {
                         return;
 
                     final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);
+                    if(visibleEntity instanceof EntityHumanNPC.PlayerNPC){
+                        return;
+                    }
+
                     final Player observingPlayer = event.getPlayer();
                     if (visibleEntity == observingPlayer) return;
                     //Remove all data the client doesn't need to see.

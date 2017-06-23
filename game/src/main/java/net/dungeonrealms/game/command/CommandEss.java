@@ -163,7 +163,7 @@ public class CommandEss extends BaseCommand {
                                 wrapper.executeUpdate(QueryType.SET_MOUNTS, cb -> {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     GameAPI.updatePlayerData(uuid, UpdateType.UNLOCKABLES);
-                                }, wrapper.getMountsUnlocked(), wrapper.getAccountID());
+                                }, wrapper.getMountsUnlocked(), wrapper.getCharacterID());
                             });
                         });
 

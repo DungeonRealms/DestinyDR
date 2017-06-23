@@ -21,7 +21,7 @@ public enum QueryType {
     SET_RANK("UPDATE ranks SET rank = '%s' WHERE account_id = '%s';"),
     SET_GEMS("UPDATE characters SET gems = %s WHERE character_id = '%s';"),
     SET_PETS("UPDATE users SET pets = %s WHERE account_id = %s;"),
-    SET_MOUNTS("UPDATE users SET mounts = %s WHERE account_id = %s;"),
+    SET_MOUNTS("UPDATE characters SET mounts = %s WHERE character_id = %s;"),
 
     GUILD_INVITE("REPLACE INTO guild_members(account_id, guild_id, rank, joined, accepted) VALUES ('%s', '%s', '%s', '%s', '%s');"),
     INCREMENT_GEMS("UPDATE characters SET gems = gems + %s WHERE character_id = '%s';"),
@@ -38,7 +38,7 @@ public enum QueryType {
     DELETE_FRIEND("DELETE FROM friends WHERE account_id = '%s' AND friend_id = '%s';"),
     DELETE_GUILD("DELETE FROM guilds WHERE guild_id = '%s';"),
     SELECT_COLLECTION_BIN("SELECT collection_storage FROM characters WHERE character_id = '%s';"),
-    SELECT_UNLOCKABLES("SELECT mounts, pets, particles, mountSkin, trails, currencyTab FROM users WHERE account_id = '%s';"),
+    SELECT_UNLOCKABLES("SELECT pets, particles, mountSkin, trails, currencyTab FROM users WHERE account_id = '%s';"),
     SELECT_VALID_PUNISHMENTS("SELECT expiration, punisher_id, reason, type, quashed FROM `punishments` LEFT JOIN users ON `punishments`.`account_id` = `users`.`account_id` WHERE `users`.`uuid` = '%s' AND quashed = 0 AND (expiration > UNIX_TIMESTAMP() OR expiration = 0) ORDER BY issued DESC LIMIT 1;"),
     SELECT_ALL_PUNISHMENTS("SELECT expiration, punisher_id, reason, type, issued, quashed FROM `punishments` LEFT JOIN users ON `punishments`.`account_id` = `users`.`account_id` WHERE `users`.`uuid` = '%s' ORDER BY issued DESC;"),
     SELECT_IP_BANS("SELECT expiration FROM punishments LEFT JOIN `ip_addresses` ON `punishments`.`account_id` = `ip_addresses`.`account_id` WHERE `ip_addresses`.`ip_address` = '%s' AND `punishments`.`quashed` <> 1 AND (`punishments`.`expiration` > UNIX_TIMESTAMP() OR `punishments`.`expiration` <= -1) AND `punishments`.`type` = 'ban' LIMIT 1;"),
@@ -50,7 +50,7 @@ public enum QueryType {
             "activeMount = %s, activePet = %s, activeTrail = %s, activeMountSkin = %s, activeHatOverride = %s, questData = %s, collection_storage = %s, " +
             "foodLevel = %s, combatLogged = %s, shopOpened = %s, loggerDied = %s, currentHearthStone = %s, alignmentTime = %s, portalShardsT1 = %s, portalShardsT2 = %s, portalShardsT3 = %s, portalShardsT4 = %s, portalShardsT5 = %s WHERE `character_id` = %s;"),
     USER_UPDATE("UPDATE users SET username = %s, selected_character_id = %s, ecash = %s, joined = %s, last_login = %s, last_logout = %s, last_free_ecash = %s, last_shard_transfer = %s, is_online = %s, currentShard = %s, currencyTab = %s, firstLogin = %s, lastViewedBuild = %s, lastNoteSize = %s, lastVote = %s, " +
-            "mounts = %s, pets = %s, particles = %s, mountSkin = %s, purchaseables = %s, pending_purchaseables = %s WHERE account_id = %s"),
+            "pets = %s, particles = %s, mountSkin = %s, purchaseables = %s, pending_purchaseables = %s WHERE account_id = %s"),
     DELETE_GUILD_MEMBER("DELETE FROM guild_members WHERE account_id = %s"),
     BACKUP_CHARACTER("UPDATE characters SET level = %s, experience = %s, location = %s, inventory_storage = %s, armour_storage = %s, gems = %s, bank_storage = %s, mule_storage = %s, mule_level = %s WHERE character_id = %s;"),
     SELECT_ALTS("SELECT `ip_addresses`.`account_id`, `ip_addresses`.`last_used`,`users`.`username`, users.last_login FROM `ip_addresses` LEFT JOIN users ON `ip_addresses`.`account_id` = `users`.`account_id` WHERE `ip_addresses`.`ip_address` = '%s';"),
