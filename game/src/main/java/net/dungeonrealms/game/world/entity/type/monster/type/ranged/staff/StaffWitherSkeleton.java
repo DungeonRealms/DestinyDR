@@ -20,12 +20,21 @@ public class StaffWitherSkeleton extends DRWitherSkeleton implements IRangedEnti
         this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
+        this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this, false, EntityHuman.class));
         this.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     @Override
     public org.bukkit.inventory.ItemStack getWeapon() {
     	return makeItem(new ItemWeaponStaff());
+    }
+
+    @Override
+    protected void r() {
+    }
+
+    @Override
+    public void o() {
     }
 
     @Override
