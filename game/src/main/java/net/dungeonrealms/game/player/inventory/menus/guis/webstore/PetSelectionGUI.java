@@ -38,7 +38,7 @@ public class PetSelectionGUI extends GUIMenu {
                 .setClick(e -> PetUtils.removePet(player)));
 
         for(Purchaseables purchase : Purchaseables.values()) {
-            if(!purchase.getCategory().equals(WebstoreCategories.PETS)) continue;
+            if(purchase.getCategory() == null || !purchase.getCategory().equals(WebstoreCategories.PETS)) continue;
 
             if(!purchase.isEnabled() && !Rank.isGM(player)) continue;
 

@@ -39,7 +39,12 @@ public class CommandShard extends BaseCommand {
                 player.sendMessage(ChatColor.GRAY + "If you'd like to not have to enter this code every time, simply install our resource pack by using /pack.");
                 return true;
             }
+            if(player.hasMetadata("savingData")) {
+                player.sendMessage(ChatColor.RED + "Your data is still saving! Please try again!");
+                return true;
+            }
             new ShardSelector(player).open(player);
+            //CharacterSelector.openCharacterSelector(player);
             return true;
         }
 

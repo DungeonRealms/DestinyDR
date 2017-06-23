@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.item.itemgenerator;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -8,8 +9,13 @@ import com.google.gson.JsonParser;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
+import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
@@ -18,6 +24,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers
 import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.EntityEquipment;
@@ -70,6 +77,18 @@ public class ItemGenerator {
                 if (template != null)
                     tag.setString("customId", template);
 
+
+
+                SetBonuses bonus = SetBonuses.getFromCustomID(template);
+                if(bonus != null){
+                    ItemType type = ItemType.getByName(tag.getString("type"));
+                    if(type != null && type != ItemType.SWORD && type != ItemType.AXE && type != ItemType.POLEARM && type != ItemType.BOW) {
+                        String lore = tag.getString("ecLore");
+                        if (lore != null) {
+                            tag.set("ecLore", NBTUtils.convertStringsToTagList(Lists.newArrayList(lore, ChatColor.GRAY.toString() + ChatColor.BOLD + "Set Bonus: " + bonus.getBonusName())));
+                        }
+                    }
+                }
                 // Create Item
                 nms.setTag(tag);
                 item = CraftItemStack.asBukkitCopy(nms);

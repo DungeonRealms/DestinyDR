@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,14 +42,23 @@ public class CommandGemsee extends BaseCommand {
                 return;
             }
 
-            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                if(wrapper == null) {
-                    sender.sendMessage(ChatColor.RED + "Something went wrong");
-                    return;
-                }
+            Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+            if(accountID == null) {
+                sender.sendMessage(ChatColor.RED + "This player has never logged in with Dungeon Realms");
+                return;
+            }
 
-                sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + wrapper.getGems());
-            });
+            new CharacterSelectionGUI(sender, accountID, (charID) -> {
+
+                PlayerWrapper.getPlayerWrapper(uuid, charID,false, true, (wrapper) -> {
+                    if (wrapper == null) {
+                        sender.sendMessage(ChatColor.RED + "Something went wrong");
+                        return;
+                    }
+
+                    sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + wrapper.getGems());
+                });
+            }).open(sender,null);
         });
         return false;
     }

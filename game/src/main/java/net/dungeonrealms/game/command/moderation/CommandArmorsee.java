@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -54,25 +55,32 @@ public class CommandArmorsee extends BaseCommand {
             sender.openInventory(inv);
         }
         else {
-
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
                 if(uuid == null) {
                     sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                     return;
                 }
-                PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                    if(wrapper == null) {
-                        return;
-                    }
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
 
-                    if(wrapper.getPendingArmor() == null) {
-                        sender.sendMessage(ChatColor.GREEN + "This player is not wearing any armor!");
-                        return;
-                    }
-                    sender.openInventory(wrapper.getPendingArmor());
-                    offline_armor_watchers.put(sender.getUniqueId(), uuid);
+                if(accountID == null) {
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
+                    return;
+                }
+                new CharacterSelectionGUI(player, accountID, (charID) -> {
+                    PlayerWrapper.getPlayerWrapper(uuid,charID, false, true, (wrapper) -> {
+                        if(wrapper == null) {
+                            return;
+                        }
 
-                });
+                        if(wrapper.getPendingArmor() == null) {
+                            sender.sendMessage(ChatColor.GREEN + "This player is not wearing any armor!");
+                            return;
+                        }
+                        sender.openInventory(wrapper.getPendingArmor());
+                        offline_armor_watchers.put(sender.getUniqueId(), uuid);
+
+                    });
+                }).open(player,null);
             });
 
         }

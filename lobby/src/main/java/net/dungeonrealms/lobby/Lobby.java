@@ -17,6 +17,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.lobby.bungee.NetworkClientListener;
+import net.dungeonrealms.lobby.characters.CharacterSelector;
 import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
@@ -38,6 +39,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -238,6 +240,8 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
 
+            CharacterSelector.removeSavingMeta(player);
+
             PlayerRank rank = Rank.getRank(player);
             String rankColor = rank.getChatColor() + player.getName();
             player.setPlayerListName(rankColor);
@@ -251,6 +255,7 @@ public class Lobby extends JavaPlugin implements Listener {
                 player.getInventory().clear();
 
             player.getInventory().setItem(0, getShardSelector());
+            player.getInventory().setItem(1, getCharacterSelector(player));
 
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !rank.isSUB());
@@ -342,7 +347,6 @@ public class Lobby extends JavaPlugin implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             if (!e.hasItem()) return;
-            if (e.getItem().getType() != Material.COMPASS) return;
 
             e.setCancelled(true);
 
@@ -356,12 +360,24 @@ public class Lobby extends JavaPlugin implements Listener {
                 return;
             }
 
+            if(p.hasMetadata("savingData")) {
+                p.sendMessage(ChatColor.RED + "Your data is still saving! Please try again!");
+                return;
+            }
+
             if (chatCallbacks.containsKey(p.getUniqueId())) {
                 p.sendMessage(ChatColor.RED + "Please finish entering your Pack Bypass code.");
                 p.sendMessage(ChatColor.GRAY + "Since you decided to not use our Custom Resource Pack, you must enter a code before logging in.");
                 return;
             }
-            new ShardSelector(p).open(p);
+
+            if (e.getItem().getType() == Material.COMPASS) {
+                new ShardSelector(p).open(p);
+                return;
+            } else if(e.getItem().getType() == Material.SKULL_ITEM) {
+                CharacterSelector.openCharacterSelector(p);
+            }
+            //CharacterSelector.openCharacterSelector(p);
         } else {
             e.setCancelled(true);
         }
@@ -384,6 +400,15 @@ public class Lobby extends JavaPlugin implements Listener {
         navigatorMeta.setDisplayName(ChatColor.GREEN + "Shard Selector");
         navigator.setItemMeta(navigatorMeta);
 
+        return navigator;
+    }
+
+    private ItemStack getCharacterSelector(Player player) {
+        ItemStack navigator = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+        SkullMeta navigatorMeta = (SkullMeta)navigator.getItemMeta();
+        navigatorMeta.setOwner(player.getName());
+        navigatorMeta.setDisplayName(ChatColor.GREEN + "Character Selector");
+        navigator.setItemMeta(navigatorMeta);
         return navigator;
     }
 

@@ -59,7 +59,7 @@ public class PendingPurchasesGUI extends GUIMenu {
             lore.add(ChatColor.GRAY + ChatColor.BOLD.toString() + "Right Click" + ChatColor.GRAY + " to " + ChatColor.RED + ChatColor.BOLD + "DENY");
             System.out.println(item.getPurchaseables().name() + " has meta " + item.getPurchaseables().getMeta());
             GUIItem pendingItem = new GUIItem(item.getPurchaseables().getItemType()).setDurability((short) item.getPurchaseables().getMeta()).setName(item.getPurchaseables().getName(true)).setLore(lore);
-            if (item.getPurchaseables().getCategory().equals(WebstoreCategories.PETS)) {
+            if (item.getPurchaseables().getCategory() != null && item.getPurchaseables().getCategory().equals(WebstoreCategories.PETS)) {
                 EnumPets pets = (EnumPets) item.getPurchaseables().getSpecialArgs()[0];
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setString("id", pets.getEntityType().getName());
@@ -173,21 +173,26 @@ public class PendingPurchasesGUI extends GUIMenu {
                 tab.hasAccess = true;
                 wrapper.setCurrencyTab(tab);
             }
+        } else if (purchaseable.equals(Purchaseables.CHARACTER_SLOT)) {
+            //handleSpecialCaseClaimRank(wrapper, toClaim, PlayerRank.SUB_PLUS, (System.currentTimeMillis() / 1000) + TimeUnit.DAYS.toSeconds(365));
+            SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
+                if (rows == null || rows <= 0) {
+                    wrapper.getPlayer().sendMessage(ChatColor.RED + "Something went wrong while trying to claim your character slot!");
+                    wrapper.getPlayer().sendMessage(ChatColor.GRAY + "Please try again later or contact a staff member if the problem persists!");
+                    return;
+                }
+                boolean didRemove = wrapper.getPendingPurchaseablesUnlocked().remove(toClaim);
+                if (!didRemove) {
+                    player.sendMessage(ChatColor.RED + "Oops! Something went wrong, sorry! Please try again!");
+                    return;
+                }
+                wrapper.updatePurchaseLog("claimed", toClaim.getTransactionId(), System.currentTimeMillis(), player.getUniqueId().toString());
+                wrapper.executeUpdate(QueryType.UPDATE_PURCHASES, null, wrapper.getPurchaseablesUnlocked(), wrapper.getSerializedPendingPurchaseables(), wrapper.getAccountID());
+                player.sendMessage(ChatColor.GREEN + "Success! You now have an additional " + toClaim.getNumberPurchased() + " extra character slots!");
+            },QueryType.INCREMENT_CHARACTER_SLOTS.getQuery(toClaim.getNumberPurchased(), wrapper.getAccountID()));
         } else {
             throw new IllegalArgumentException("Missing logic for special case purchaseable!");
         }
-
-        /*
-
-                                        CurrencyTab tab = wrapper.getCurrencyTab();
-                                if (tab != null) {
-                                    tab.hasAccess = access;
-                                } else if (access) {
-                                    tab = new CurrencyTab(online.getUniqueId());
-                                    tab.hasAccess = true;
-                                    wrapper.setCurrencyTab(tab);
-                                }
-         */
     }
 
     public void handleSpecialCaseClaimRank(PlayerWrapper wrapper, PendingPurchaseable toClaim, PlayerRank toSet, long expireTime) {

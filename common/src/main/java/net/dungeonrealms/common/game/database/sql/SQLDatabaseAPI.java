@@ -93,6 +93,7 @@ public class SQLDatabaseAPI {
                         long started = System.currentTimeMillis();
                         pendingPlayerCreations.add(uuid);
                         int accountID = rs.getInt("account_id");
+
                         //NO USERRRRR????????
                         Constants.log.info("No SELECTED character_id for " + accountID);
 
@@ -101,8 +102,10 @@ public class SQLDatabaseAPI {
                                 try {
                                     if (results.first()) {
                                         int newCharID = results.getInt("character_id");
+                                        System.out.println("2 The character id: " + newCharID);
                                         SQLDatabaseAPI.getInstance().executeBatch(completed -> {
                                                     pendingPlayerCreations.remove(uuid);
+                                                    System.out.println("3 The character id: " + newCharID);
                                                     Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - started) + "ms");
                                                 },
                                                 String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", newCharID, accountID),
@@ -130,6 +133,8 @@ public class SQLDatabaseAPI {
                                     if (results.first()) {
                                         int accountID = results.getInt("account_id");
 
+                                        SQLDatabaseAPI.getInstance().getAccountIdNames().put(accountID, new UUIDName(uuid, username));
+
                                         //Accept this so we can get that callback going..
                                         createdCallback.accept(accountID);
                                         SQLDatabaseAPI.getInstance().executeUpdate(rowsAffected -> {
@@ -142,6 +147,7 @@ public class SQLDatabaseAPI {
                                                             Bukkit.getLogger().info("Creating Character ID for " + username + " (" + accountID + ") CharID = " + character_id);
                                                             SQLDatabaseAPI.getInstance().executeBatch(completed -> {
                                                                         pendingPlayerCreations.remove(uuid);
+                                                                        System.out.println("4 The character id: " + character_id);
                                                                         Bukkit.getLogger().info("Executed new player create queries in " + format.format(System.currentTimeMillis() - start) + "ms");
                                                                     },
                                                                     String.format("UPDATE users SET selected_character_id = '%s' WHERE account_id = '%s';", character_id, accountID),

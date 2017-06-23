@@ -344,7 +344,7 @@ public class Fishing implements GenericMechanic, Listener {
                     //Just listens for bobber splash.
                     if (tracker != null) {
                         tracker.startWurstTrap();
-                        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_BOBBER_SPLASH, 0.0F, 4F);
+                        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_BOBBER_SPLASH, (float) (0.0 + Math.random() * .01), 4F);
                     }
                 }, maxHookTime - (ThreadLocalRandom.current().nextInt(5) + 5));
             }, 10);

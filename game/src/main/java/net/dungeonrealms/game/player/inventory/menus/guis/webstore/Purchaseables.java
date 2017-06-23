@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
@@ -86,7 +87,9 @@ public enum Purchaseables {
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
     GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, false, ChatColor.GOLD, true),
-    DPS_DUMMY("DPS Dummy", "A squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, false, ChatColor.GREEN);
+    DPS_DUMMY("DPS Dummy", "\nA squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, false, ChatColor.GREEN),
+    LIGHTNING_ROD("Lightning Rod", "\nStrike lightning at will!", Material.BLAZE_ROD, WebstoreCategories.MISCELLANEOUS, 1, false, true, false, ChatColor.AQUA,false),
+    CHARACTER_SLOT("Extra Character Slot", "\nAn extra character for you to play on!", Material.STAINED_GLASS_PANE, null, 1, true, true, true, ChatColor.GREEN, true, DyeColor.LIME.getWoolData());
 
     private String name;
     private String description;

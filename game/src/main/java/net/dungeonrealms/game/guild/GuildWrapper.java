@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -40,7 +41,7 @@ public class GuildWrapper {
     private String motd = "Default MOTD";
 
     @Getter
-    private HashMap<Integer, GuildMember> members = new HashMap<>();
+    private volatile Map<Integer, GuildMember> members = new ConcurrentHashMap<>();
 
     @Getter @Setter
     private ItemStack banner = new ItemStack(Material.BANNER, 1, (byte) 15);

@@ -23,6 +23,7 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.util.CharacterType;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -1080,10 +1081,15 @@ public class GameAPI {
         instance.setBaseValue(1024.0D);
 
         // Load Permissions.
-        for (PlayerRank pr : PlayerRank.values())
-            if (rank.isAtLeast(pr))
+        for (PlayerRank pr : PlayerRank.values()) {
+            if (rank.isAtLeast(pr)) {
+                if(pr.equals(PlayerRank.GM)) {
+                    if(playerWrapper.getCharacterType().equals(CharacterType.GM)) continue;
+                }
                 for (String perm : pr.getPerms())
                     player.addAttachment(DungeonRealms.getInstance()).setPermission(perm, true);
+            }
+        }
 
         if (player.getName().equalsIgnoreCase("logon1027")) { // Unsure if we're ready to give him CM, so I'll keep him hardcoded til he gets the rank.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);

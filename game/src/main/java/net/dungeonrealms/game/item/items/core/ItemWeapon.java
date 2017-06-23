@@ -44,4 +44,5 @@ public class ItemWeapon extends CombatItem {
 	public static boolean isWeapon(ItemStack item) {
 		return ItemWeaponMelee.isMelee(item) || ItemWeaponRanged.isRangedWeapon(item);
 	}
+
 }

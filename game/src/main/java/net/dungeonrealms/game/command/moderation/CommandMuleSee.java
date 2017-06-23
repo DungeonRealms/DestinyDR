@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 
 import org.bukkit.Bukkit;
@@ -60,23 +61,33 @@ public class CommandMuleSee extends BaseCommand {
                     return;
                 }
 
-                PlayerWrapper.getPlayerWrapper(uuid, false, false, (wrapper) -> {
-                    if (wrapper.isPlaying()) {
-                        //Dont let them invsee..
-                        sender.sendMessage(ChatColor.RED + playerName + " is currently on shard " + wrapper.getFormattedShardName() + ", Please /mulesee on that shard to avoid concurrent modification.");
-                        return;
-                    }
 
-                    if (wrapper.getPendingMuleInventory() == null) {
-                        sender.sendMessage(ChatColor.RED + "No mule inventory found for " + playerName + "!");
-                        return;
-                    }
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if(accountID == null) {
+                    sender.sendMessage(ChatColor.RED + "This player has never logged in with Dungeon Realms");
+                    return;
+                }
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        offlineMuleSee.put(sender.getUniqueId(), uuid);
-                        sender.openInventory(wrapper.getPendingMuleInventory());
+                new CharacterSelectionGUI(sender, accountID, (charID) -> {
+
+                    PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
+                        if (wrapper.isPlaying()) {
+                            //Dont let them invsee..
+                            sender.sendMessage(ChatColor.RED + playerName + " is currently on shard " + wrapper.getFormattedShardName() + ", Please /mulesee on that shard to avoid concurrent modification.");
+                            return;
+                        }
+
+                        if (wrapper.getPendingMuleInventory() == null) {
+                            sender.sendMessage(ChatColor.RED + "No mule inventory found for " + playerName + "!");
+                            return;
+                        }
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            offlineMuleSee.put(sender.getUniqueId(), uuid);
+                            sender.openInventory(wrapper.getPendingMuleInventory());
+                        });
                     });
-                });
+                }).open(sender,null);
             });
         }
         return false;

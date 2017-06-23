@@ -58,7 +58,14 @@ public enum QueryType {
     SELECT_LOG("SELECT * FROM `purchase_history` WHERE `uuid` = %s AND `transaction_id` = %s AND `action` = %s;"),
     UPDATE_PURCHASES("UPDATE users SET purchaseables = %s, pending_purchaseables = %s WHERE account_id = %s"),
     INSERT_PURCHASE_LOG("INSERT IGNORE INTO purchase_history (action, transaction_id, date, uuid) VALUES(%s,%s,%s,%s)"),
-    SELECT_PURCHASES("SELECT purchaseables, pending_purchaseables FROM users WHERE account_id = %s");
+    SELECT_PURCHASES("SELECT purchaseables, pending_purchaseables FROM users WHERE account_id = %s"),
+    SELECT_ALL_CHARACTERS("SELECT character_id, selected_character_id, character_slots, characters.isLocked,character_type, display_name, health, level, created, alignment FROM characters LEFT JOIN users ON `users`.`account_id` = `characters`.`account_id` WHERE `characters`.`account_id` = %s"),
+    UPDATE_SELECTED_CHARACTER("UPDATE users SET selected_character_id = %s WHERE account_id = %s"),
+    UPDATE_CHARACTER_DISPLAY("UPDATE characters SET display_name = %s WHERE character_id = %s"),
+    INCREMENT_CHARACTER_SLOTS("UPDATE users SET character_slots = character_slots + %s WHERE account_id = %s")
+
+
+    ;
 
     @Getter private String rawQuery;
 

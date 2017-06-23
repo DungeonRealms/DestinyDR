@@ -12,8 +12,11 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.mechanic.rifts.Rift;
@@ -30,9 +33,9 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -156,8 +159,22 @@ public class PvEListener implements Listener {
 
         res.applyDamage();
 
+
+        boolean banditBonus = false;
+        if (res.getResult() == DamageResultType.NORMAL && res.getAttacker().isPlayer()) {
+            //Try AOE / Extra damaged abilities?
+            if (ThreadLocalRandom.current().nextInt(100) <= 20 && SetBonus.hasSetBonus(res.getAttacker().getPlayer(), SetBonuses.PYRO_BANDIT)) {
+                banditBonus = true;
+
+                Player player = res.getAttacker().getPlayer();
+                player.playSound(receiver.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1.4F);
+                ParticleAPI.spawnParticle(Particle.LAVA, receiver.getLocation().clone(), 20, 1F, .3F);
+                ParticleAPI.spawnParticle(Particle.EXPLOSION_NORMAL, receiver.getLocation().clone(), 3, .5F, .3F);
+            }
+        }
+
         //  EXTRA WEAPON ONLY DAMAGE  //
-        DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, damager);
+        DamageAPI.handlePolearmAOE(event, res.getDamage() / 2, damager, banditBonus);
         checkPowerMove(event, receiver);
     }
 

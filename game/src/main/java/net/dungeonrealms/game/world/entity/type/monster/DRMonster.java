@@ -3,6 +3,8 @@ package net.dungeonrealms.game.world.entity.type.monster;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
@@ -10,6 +12,8 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
 import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
@@ -159,7 +163,7 @@ public interface DRMonster {
     }
 
     default void checkItemDrop(Player killer) {
-        if(killer != null)ClueUtils.handleMobKilled(killer,this);
+        if (killer != null) ClueUtils.handleMobKilled(killer, this);
         LivingEntity ent = getBukkit();
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(killer);
 
@@ -200,13 +204,28 @@ public interface DRMonster {
         if (DonationEffects.getInstance().hasBuff(EnumBuff.LOOT))
             chance += chance * (DonationEffects.getInstance().getBuff(EnumBuff.LOOT).getBonusAmount() / 100f);
 
-            int clueRoll = random.nextInt(10000);
-            boolean isClueDrop = clueRoll <= (tier == 5 ? 10 : tier == 4 ? 8 : tier == 3 ? 5 : tier == 2 ? 3 : 1);
-            if (isClueDrop) {
-                ClueScrollItem clue = new ClueScrollItem(ClueScrollType.COMBAT);
-                killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), clue.generateItem()));
+        int clueRoll = random.nextInt(10000);
+        boolean isClueDrop = clueRoll <= (tier == 5 ? 10 : tier == 4 ? 8 : tier == 3 ? 5 : tier == 2 ? 3 : 1);
+        if (isClueDrop) {
+            ClueScrollItem clue = new ClueScrollItem(ClueScrollType.COMBAT);
+            killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+            ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), clue.generateItem()));
+        }
+
+
+        if (killer != null) {
+            Party party = Affair.getParty(killer);
+            if (party != null) {
+                int nearby = party.getNearbyMembers(killer, 50).size() + 1;
+                if (nearby >= 4 && nearby < 8) {
+                    chance += chance * 0.005;
+                }
+
+                if (nearby >= 8) {
+                    chance += chance * 0.01;
+                }
             }
+        }
 
         if (gemRoll < (gemChance * gemFind)) {
             if (gemRoll >= gemChance)
@@ -264,9 +283,16 @@ public interface DRMonster {
         }
 
         // Drop teleport book.
-        if (dr.getTeleportBookChance() >= random.nextInt(100))
+        int bookChance = SetBonus.hasSetBonus(killer, SetBonuses.LIBRARIAN) ? (int) (dr.getTeleportBookChance() * .5D) : 0;
+        int rand = random.nextInt(100);
+        if (dr.getTeleportBookChance() + bookChance >= rand) {
+            if(rand > dr.getTeleportBookChance()){
+                //Wasnt going to get it.. bonus came in clutch
+                ent.getLocation().getWorld().playSound(ent.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
+            }
             ItemManager.whitelistItemDrop(killer, ent.getLocation(), new ItemTeleportBook(
                     TELEPORT_DROPS[tier - 1][random.nextInt(TELEPORT_DROPS[tier - 1].length)]).generateItem());
+        }
     }
 
     default ItemStack getHeld() {

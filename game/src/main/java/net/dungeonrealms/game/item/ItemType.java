@@ -87,6 +87,7 @@ public enum ItemType {
 	ITEM_NAME_TAG("nameTag", ItemNameTag.class),
 	JUKE_BOX("jukebox", ItemJukebox.class),
 	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),
+	LIGHTNING_ROD("lightningRod", ItemLightningRod.class),
 
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),
@@ -132,7 +133,7 @@ public enum ItemType {
 	
 	public static ItemType getByName(String name) {
 		for (ItemType type : values())
-			if (name.equalsIgnoreCase(name))
+			if (type.name().equalsIgnoreCase(name))
 				return type;
 		return null;
 	}

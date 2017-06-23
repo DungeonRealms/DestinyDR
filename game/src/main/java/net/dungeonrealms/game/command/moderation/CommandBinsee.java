@@ -7,6 +7,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -57,21 +58,31 @@ public class CommandBinsee extends BaseCommand {
                     return;
                 }
 
-                PlayerWrapper.getPlayerWrapper(uuid, false, false, (wrapper) -> {
-                    if (wrapper.isPlaying()) {
-                        sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + wrapper.getFormattedShardName() + ". " +
-                                "Please binsee on that shard to avoid concurrent modification.");
-                        return;
-                    }
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if (accountID == null) {
+                    sender.sendMessage(org.bukkit.ChatColor.RED + "This player has never logged in with Dungeon Realms");
+                    return;
+                }
 
 
-                    if (wrapper.getPendingBankStorage() != null && wrapper.getPendingBankStorage().collection_bin != null) {
-                        sender.openInventory(wrapper.getPendingBankStorage().collection_bin);
-                        offline_bin_watchers.put(sender.getUniqueId(), uuid);
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "That players Collection Bin is empty.");
-                    }
-                });
+                new CharacterSelectionGUI(sender, accountID, (charID) -> {
+
+                    PlayerWrapper.getPlayerWrapper(uuid, false, false, (wrapper) -> {
+                        if (wrapper.isPlaying()) {
+                            sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + wrapper.getFormattedShardName() + ". " +
+                                    "Please binsee on that shard to avoid concurrent modification.");
+                            return;
+                        }
+
+
+                        if (wrapper.getPendingBankStorage() != null && wrapper.getPendingBankStorage().collection_bin != null) {
+                            sender.openInventory(wrapper.getPendingBankStorage().collection_bin);
+                            offline_bin_watchers.put(sender.getUniqueId(), uuid);
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "That players Collection Bin is empty.");
+                        }
+                    });
+                }).open(sender, null);
             });
         }
         return false;

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mastery.Utils;
@@ -102,7 +103,22 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                             } else {
                                 sendNotUnlocked(player);
                             }
-                        } else if (webItem == Purchaseables.ITEM_NAME_TAG) {
+                        } else if (webItem == Purchaseables.LIGHTNING_ROD) {
+                            if (unlocked) {
+                                //Activate / de-activate
+                                if (Utils.hasItem(player, Material.BLAZE_ROD)) {
+                                    // Turn it OFF.
+                                    player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You already have a Lightning Rod!");
+                                    return;
+                                }
+
+                                player.getInventory().addItem(new ItemLightningRod(null).generateItem());
+                                player.sendMessage(ChatColor.GREEN + "A lightning rod has been added to your inventory.");
+                            } else {
+                                sendNotUnlocked(player);
+                            }
+                        }
+                        else if (webItem == Purchaseables.ITEM_NAME_TAG) {
                             if (unlocked) {
                                 if(player.getInventory().firstEmpty() == -1) {
                                     player.sendMessage(ChatColor.RED + "You have no inventory space to claim this!");

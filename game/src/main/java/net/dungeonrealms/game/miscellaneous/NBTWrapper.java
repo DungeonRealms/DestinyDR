@@ -75,6 +75,7 @@ public class NBTWrapper {
     }
 
     private NBTTagCompound getCompound() {
+        if(nmsItem == null)return new NBTTagCompound();
         return nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
     }
 }

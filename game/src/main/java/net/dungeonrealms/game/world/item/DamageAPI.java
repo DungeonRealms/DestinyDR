@@ -13,6 +13,8 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
@@ -65,8 +67,8 @@ public class DamageAPI {
         if (!ItemWeapon.isWeapon(item))
             return;
 
-        if(attacker.getAttributes() == null){
-            if(attacker.isPlayer()){
+        if (attacker.getAttributes() == null) {
+            if (attacker.isPlayer()) {
                 Bukkit.getLogger().info("Null attacker attributes for " + attacker.getPlayer().getName());
             }
             return;
@@ -86,7 +88,7 @@ public class DamageAPI {
                 if (removeDurability) {
                     int durabilityLoss = 1;
 
-                    if(!defender.isPlayer()) { //ONLY FOR MOBS!
+                    if (!defender.isPlayer()) { //ONLY FOR MOBS!
                         //  EXTRA DAMAGE FOR TIER GAPS  //
                         int mobTier = EntityAPI.getTier(defender.getEntity());
 
@@ -193,11 +195,15 @@ public class DamageAPI {
         }
 
         //  LIFESTEAL  //
-        if (attacker.isPlayer() && attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL)) {
-            double lifeToHeal = ((double) attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() / 100) * damage;
-            HealthHandler.heal(attacker.getPlayer(), (int) lifeToHeal + 1, false);
-        }
 
+        if (attacker.isPlayer()) {
+            double hpPercent = -1;
+            int bonusAmount = SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attacker.getPlayer())) <= .2 ? 20 : 0;
+            if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
+                double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
+                HealthHandler.heal(attacker.getPlayer(), (int) lifeToHeal + 1, true);
+            }
+        }
         //  STRENGTH BUFF  //
         damage = applyIncreaseDamagePotion(attacker.getEntity(), damage);
 
@@ -258,6 +264,7 @@ public class DamageAPI {
         return;
     }
 
+
     private static boolean getChance(AttributeList al, AttributeType at) {
         return al.hasAttribute(at) && ThreadLocalRandom.current().nextInt(100) < al.getAttribute(at).getValue();
     }
@@ -308,9 +315,13 @@ public class DamageAPI {
     }
 
     public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, LivingEntity damager) {
+        handlePolearmAOE(event, damage, damager, false);
+    }
+
+    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, LivingEntity damager, boolean forcePole) {
         ItemStack held = damager.getEquipment().getItemInMainHand();
 
-        if (!ItemWeaponPolearm.isPolearm(held))
+        if (!ItemWeaponPolearm.isPolearm(held) && !forcePole)
             return;
 
         boolean damagerIsMob = !(damager instanceof Player);
@@ -322,7 +333,7 @@ public class DamageAPI {
         if (!damagerIsMob)
             attacker = PlayerWrapper.getPlayerWrapper((Player) damager);
 
-        float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(held);
+        float energyCostPerSwing = forcePole ? 0 : EnergyHandler.getWeaponSwingEnergyCost(held);
         for (Entity entity : ents) {
             //  ARE WE AN ALLOWED ENTITY  //
             if (!(entity instanceof LivingEntity) || (damagerIsMob && !GameAPI.isPlayer(entity)) || entity.isInvulnerable())

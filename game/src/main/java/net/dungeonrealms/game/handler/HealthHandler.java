@@ -10,6 +10,8 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
@@ -22,6 +24,9 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.HealTracker;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.dot.DotManager;
+import net.dungeonrealms.game.mechanic.dot.FireDot;
+import net.dungeonrealms.game.mechanic.dot.PoisonDot;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -182,7 +187,6 @@ public class HealthHandler implements GenericMechanic {
     public static double getHPPercent(Entity e) {
         return getMaxHP(e) == 0 ? 0D : getHP(e) / (double) getMaxHP(e);
     }
-
     /**
      * Set player HP/s regen.
      */
@@ -705,6 +709,16 @@ public class HealthHandler implements GenericMechanic {
 
         if (isDPSDummy) return;
 
+        boolean queen = attacker instanceof Player && SetBonus.hasSetBonus((Player) attacker, SetBonuses.QUEEN_OF_THE_NEST);
+        if ((queen || SetBonus.hasSetBonus((Player) attacker, SetBonuses.REDEYE_THE_CRUEL)) && ThreadLocalRandom.current().nextInt(100) <= 1) {
+            defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 1, 1.5F);
+            int defenderTier = EntityAPI.getTier(defender);
+            if (defenderTier > 0) {
+                int dmg = defenderTier * 25 + ThreadLocalRandom.current().nextInt(defenderTier * 10);
+                DotManager.addDamageOverTime(defender, queen ? new PoisonDot(defender, attacker, dmg, dmg / 2) : new FireDot(defender, attacker, dmg, dmg / 2), true);
+            }
+        }
+
         setHP(defender, (int) newHP);
 
         //  TO VANILLA HP  //
@@ -753,7 +767,7 @@ public class HealthHandler implements GenericMechanic {
                 double mult = 1.5;
                 if (Metadata.DUNGEON_FROM.has(entity)) {
                     String dungeonFrom = Metadata.DUNGEON_FROM.get(entity).asString();
-                    if(dungeonFrom != null && DungeonType.THE_INFERNAL_ABYSS.getName().equals(dungeonFrom)){
+                    if (dungeonFrom != null && DungeonType.THE_INFERNAL_ABYSS.getName().equals(dungeonFrom)) {
                         mult = 2.5;
                     }
                 }

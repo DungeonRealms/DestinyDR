@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.md_5.bungee.api.ChatColor;
@@ -53,19 +54,31 @@ public class CommandRealmsee extends BaseCommand {
                 return;
             }
 
-            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
-                if (wrapper.isPlaying()) {
-                    player.sendMessage(ChatColor.RED + "This user is online on another shard. Changes to their realm may not save.");
-                }
-
-                Realm realm = Realms.getInstance().getOrCreateRealm(uuid, wrapper.getCharacterID());
-                if (realm != null && realm.isOpen()) {
-                    sender.sendMessage(ChatColor.RED + "This user is on this shard and their realm is open already.");
+            Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if(accountID == null) {
+                    sender.sendMessage(org.bukkit.ChatColor.RED + "This player has never logged in with Dungeon Realms");
                     return;
                 }
-                if (realm != null)
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> realm.openPortal(player, block.getLocation()));
-            });
+
+
+                new CharacterSelectionGUI(player,accountID, (charID) -> {
+                PlayerWrapper.getPlayerWrapper(uuid, charID,false, true, (wrapper) -> {
+                    if (wrapper.isPlaying()) {
+                        player.sendMessage(ChatColor.RED + "This user is online on another shard. Changes to their realm may not save.");
+                    }
+
+                    Realm realm = Realms.getInstance().getOrCreateRealm(uuid, wrapper.getCharacterID());
+                    if (realm != null && realm.isOpen()) {
+                        sender.sendMessage(ChatColor.RED + "This user is on this shard and their realm is open already.");
+                        return;
+                    }
+                    if (realm != null)
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> realm.openPortal(player, block.getLocation()));
+                });
+            }).open(player,null);
+
+
+
 
         });
         return true;

@@ -119,6 +119,9 @@ public class EntityAPI {
             HealthHandler.setHP(entity, HealthHandler.getMaxHP(entity));
         }
 
+        if (entity != null)
+            entity.setRemoveWhenFarAway(false);
+
         if (entity != null) {
             entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true, Color.AQUA));
             MetadataUtils.Metadata.SPAWN_LOCATION.set(entity, loc);

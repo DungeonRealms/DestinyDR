@@ -8,7 +8,10 @@ import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.minecraft.server.v1_9_R2.NBTBase;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagList;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -69,9 +72,9 @@ public abstract class ItemGeneric extends PersistentItem {
     @Getter // EC - Name
     protected String customName;
 
-    @Getter
     @Setter
-    private String customLore;
+    @Getter
+    private List<String> customLore;
 
     //Tier should share the same name for consistency.
     protected static final String TIER = "itemTier";
@@ -163,6 +166,25 @@ public abstract class ItemGeneric extends PersistentItem {
         return this;
     }
 
+    public void setCustomLore(String string) {
+        this.customLore = Lists.newArrayList(string);
+    }
+
+    public void setCustomLore(NBTBase base) {
+        this.customLore = Lists.newArrayList();
+        if (base instanceof NBTTagList) {
+            NBTTagList list = (NBTTagList) base;
+            for (int i = 0; i < list.size(); i++) {
+                String string = list.getString(i);
+                this.customLore.add(string);
+            }
+        } else if (base instanceof NBTTagString) {
+            NBTTagString string = (NBTTagString)base;
+            this.customLore.add(string.a_());
+        }
+//        this.customLore = Lists.newArrayList(string);
+    }
+
     @Override
     protected void loadItem() {
         this.meta = new ItemStack(Material.DIRT).getItemMeta();
@@ -187,7 +209,7 @@ public abstract class ItemGeneric extends PersistentItem {
             setCustomName(getTagString("ecName"));
 
         if (hasTag("ecLore"))
-            setCustomLore(getTagString("ecLore"));
+            setCustomLore(getTag().get("ecLore"));
     }
 
     /**
@@ -217,8 +239,13 @@ public abstract class ItemGeneric extends PersistentItem {
         // Ecash Lore - Overrides custom names given by other items.
         // getCustomLore() should ONLY be overriden to modify the EC display lore. NOT any other lore.
         if (this.customLore != null) {
-            setTagString("ecLore", this.customLore);
-            addLore(getCustomLore());
+            NBTTagList list = new NBTTagList();
+            this.customLore.forEach(e -> {
+                list.add(new NBTTagString(e));
+                addLore(e);
+            });
+            getTag().set("ecLore", list);
+//            addLore(getCustomLore());
         }
 
         if (this instanceof ItemGear)
@@ -344,7 +371,16 @@ public abstract class ItemGeneric extends PersistentItem {
         if (!s.isEmpty() && this.lore.contains(newLine))
             return;
 
-        this.lore.add(newLine);
+        if (newLine.contains("\n")) {
+            //Add all lines?
+            List<String> lines = Lists.newArrayList(newLine.split("\n"));
+            for (String line : lines) {
+                line = ChatColor.translateAlternateColorCodes('&', line);
+                this.lore.add(startsWithValidColor(line) ? line : ChatColor.GRAY + line);
+            }
+        } else {
+            this.lore.add(newLine);
+        }
     }
 
     public boolean startsWithValidColor(String string) {

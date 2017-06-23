@@ -4,6 +4,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
@@ -159,7 +160,10 @@ public class AttributeList extends HashMap<AttributeType, ModifierRange> {
 //        		continue;
             for (StatBoost boost : stat.getStatBoosts()) {
 //				if (hasAttribute(boost.getType()))
-                addStat(boost.getType(), (int) (getAttribute(stat.getType()).getValue() * (boost.getMultiplier() * wrapper.getPlayerStats().getStat(stat))));
+                if (boost.getType() == Item.ArmorAttributeType.ENERGY_REGEN) {
+                    addStat(boost.getType(), (int) (boost.getMultiplier() * wrapper.getPlayerStats().getStat(stat) * 100));
+                } else
+                    addStat(boost.getType(), (int) (getAttribute(stat.getType()).getValue() * (boost.getMultiplier() * wrapper.getPlayerStats().getStat(stat))));
             }
         }
     }

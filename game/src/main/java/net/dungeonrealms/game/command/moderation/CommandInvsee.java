@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -45,19 +46,29 @@ public class CommandInvsee extends BaseCommand {
         } else {
 
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
-                if(uuid == null) {
-                    sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
-                }
+                        if (uuid == null) {
+                            sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
+                            return;
+                        }
 
-                        PlayerWrapper.getPlayerWrapper(uuid, true, false, (wrapper) -> {
-                            if(wrapper == null || wrapper.getPendingInventory() == null) {
-                                sender.sendMessage(ChatColor.RED + "An error occurred.");
-                                return;
-                            }
-                            sender.openInventory(wrapper.getPendingInventory());
-                            offline_inv_watchers.put(sender.getUniqueId(), uuid);
-                        });
-            }
+                        Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                        if (accountID == null) {
+                            sender.sendMessage(ChatColor.RED + "This player has never logged in with Dungeon Realms");
+                            return;
+                        }
+
+                        new CharacterSelectionGUI(sender, accountID, (charID) -> {
+
+                            PlayerWrapper.getPlayerWrapper(uuid, charID,true, false, (wrapper) -> {
+                                if (wrapper == null || wrapper.getPendingInventory() == null) {
+                                    sender.sendMessage(ChatColor.RED + "An error occurred.");
+                                    return;
+                                }
+                                sender.openInventory(wrapper.getPendingInventory());
+                                offline_inv_watchers.put(sender.getUniqueId(), uuid);
+                            });
+                        }).open(sender,null);
+                    }
             );
         }
         return false;

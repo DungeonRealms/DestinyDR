@@ -2,11 +2,13 @@ package net.dungeonrealms.game.command.moderation;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 
+import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -53,33 +55,40 @@ public class CommandBanksee extends BaseCommand {
                     return;
                 }
 
-                PlayerWrapper.getPlayerWrapper(uuid, false, false, (wrapper) -> {
-                    if(wrapper == null) {
-                        sender.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
-                        return;
-                    }
+                Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
+                if(accountID == null) {
+                    sender.sendMessage(ChatColor.RED + "This player has never logged in with Dungeon Realms");
+                    return;
+                }
 
-                    if(wrapper.isPlaying()) {
-                        String shard = wrapper.getFormattedShardName();
-                        sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
-                                "Please banksee on that shard to avoid concurrent modification.");
-
-                        return;
-                    }
-
-                    Storage storage = BankMechanics.getStorage(uuid);
-                    if(storage == null) {
-                        storage = wrapper.getPendingBankStorage();
-                        if(storage == null) {
-                            sender.sendMessage(ChatColor.RED + "Something went wrong while loading the bank.");
+                new CharacterSelectionGUI(sender, accountID, (charID) -> {
+                    PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
+                        if(wrapper == null) {
+                            sender.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
                             return;
                         }
-                    }
-                    sender.openInventory(storage.inv);
-                    offline_bank_watchers.put(sender.getUniqueId(), uuid);
 
+                        if(wrapper.isPlaying()) {
+                            String shard = wrapper.getFormattedShardName();
+                            sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
+                                    "Please banksee on that shard to avoid concurrent modification.");
 
-                });
+                            return;
+                        }
+
+                        Storage storage = BankMechanics.getStorage(uuid);
+                        if(storage == null) {
+                            storage = wrapper.getPendingBankStorage();
+                            if(storage == null) {
+                                sender.sendMessage(ChatColor.RED + "Something went wrong while loading the bank.");
+                                return;
+                            }
+                        }
+                        sender.openInventory(storage.inv);
+                        offline_bank_watchers.put(sender.getUniqueId(), uuid);
+                    });
+                }).open(sender,null);
+
             });
 
         }

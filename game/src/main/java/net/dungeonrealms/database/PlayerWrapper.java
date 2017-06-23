@@ -15,6 +15,7 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.util.StringUtils;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.util.CharacterType;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
 import net.dungeonrealms.database.punishment.Punishments;
@@ -34,6 +35,9 @@ import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmorShield;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.core.setbonus.EnergyBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.item.items.functional.accessories.EnchantTrinketData;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
@@ -84,6 +88,9 @@ public class PlayerWrapper {
 
     @Getter
     private int accountID, characterID;
+
+    @Getter
+    private CharacterType characterType;
 
     @Getter
     @Setter
@@ -283,16 +290,20 @@ public class PlayerWrapper {
     }
 
     public void loadData(boolean async) {
-        this.loadData(async, null);
+        this.loadData(async,null, null);
     }
 
+
+    public void loadData(boolean async,Consumer<PlayerWrapper> callback) {
+        loadData(async, null, callback);
+    }
     /**
      * Load the playerWrapper data, Must be thread safe.
      *
      * @param async    async this method
      * @param callback callback to call after its loaded.
      */
-    public void loadData(boolean async, Consumer<PlayerWrapper> callback) {
+    public void loadData(boolean async, Integer characterID,Consumer<PlayerWrapper> callback) {
         if (async && Bukkit.isPrimaryThread()) {
             CompletableFuture.runAsync(() -> loadData(false, callback), SQLDatabaseAPI.SERVER_EXECUTOR_SERVICE);
             return;
@@ -306,7 +317,7 @@ public class PlayerWrapper {
                             "LEFT JOIN `ip_addresses` ON `users`.`account_id` = `ip_addresses`.`account_id` " +
                             "LEFT JOIN `guild_members` ON `users`.`account_id` = `guild_members`.`account_id` " +
                             "LEFT JOIN `guilds` ON `guild_members`.`guild_id` = `guilds`.`guild_id` " +
-                            "LEFT JOIN `characters` ON `characters`.`character_id` = `users`.`selected_character_id` " +
+                            "LEFT JOIN `characters` ON `characters`.`character_id` = " + (characterID == null ? "`users`.`selected_character_id` " : characterID.intValue()) +
                             "LEFT JOIN `attributes` ON `characters`.`character_id` = `attributes`.`character_id` " +
                             "LEFT JOIN `realm` ON `characters`.`character_id` = `realm`.`character_id` " +
                             "LEFT JOIN `statistics` ON `characters`.`character_id` = `statistics`.`character_id` " +
@@ -331,6 +342,8 @@ public class PlayerWrapper {
 
                 this.username = result.getString("users.username");
 
+                this.characterType = CharacterType.getCharacterType(result.getString("characters.character_type"));
+
 
                 this.loadBanks(result);
                 this.loadPlayerPendingInventory(result);
@@ -349,7 +362,7 @@ public class PlayerWrapper {
 
                 this.lastVote = result.getLong("users.lastVote");
 
-                this.playerGameStats = new PlayerGameStats(characterID);
+                this.playerGameStats = new PlayerGameStats(this.characterID);
                 this.playerGameStats.extractData(result);
 
                 this.toggles.extractData(result);
@@ -523,7 +536,7 @@ public class PlayerWrapper {
 
     public void loadUnlockables(ResultSet result) throws SQLException {
         loadPurchaseables(result);
-        this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("users.mounts"), EnumMounts.class);
+        this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("characters.mounts"), EnumMounts.class);
         this.mountSkins = StringUtils.deserializeEnumListToSet(result.getString("users.mountSkin"), EnumMountSkins.class);
         this.particles = StringUtils.deserializeEnumListToSet(result.getString("users.particles"), ParticleEffect.class);
 //        this.trails = StringUtils.deserializeEnumListToSet(result.getString("users.trails"), ParticleEffect.class);
@@ -969,6 +982,10 @@ public class PlayerWrapper {
      * @param hadToLoadCallback
      */
     public static void getPlayerWrapper(UUID uuid, boolean storeWrapper, boolean getIfCached, Consumer<PlayerWrapper> hadToLoadCallback) {
+        getPlayerWrapper(uuid, null, storeWrapper, getIfCached, hadToLoadCallback);
+    }
+
+    public static void getPlayerWrapper(UUID uuid, Integer characterID, boolean storeWrapper, boolean getIfCached, Consumer<PlayerWrapper> hadToLoadCallback) {
         PlayerWrapper wrapper;
         if (getIfCached) {
             wrapper = getPlayerWrapper(uuid);
@@ -988,7 +1005,7 @@ public class PlayerWrapper {
             PlayerWrapper.setWrapper(uuid, wrapper);
         }
         Bukkit.getLogger().info("Loading " + uuid.toString() + "'s offline wrapper.");
-        wrapper.loadData(true, hadToLoadCallback);
+        wrapper.loadData(true,characterID, hadToLoadCallback);
     }
 
     public boolean isOnline() {
@@ -1121,6 +1138,11 @@ public class PlayerWrapper {
             }
         }
 
+        SetBonuses active = SetBonus.getSetBonus(getPlayer());
+        if (active != null && active.getSetBonus() instanceof EnergyBonus) {
+            EnergyBonus bonus = (EnergyBonus) active.getSetBonus();
+            getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, bonus.getEnergyAmount());
+        }
         // apply stat bonuses (str, dex, int, and vit)
         getAttributes().applyStatBonuses(this);
         HealthHandler.updatePlayerHP(getPlayer());

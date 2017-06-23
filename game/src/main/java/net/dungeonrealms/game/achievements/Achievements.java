@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -83,14 +84,17 @@ public class Achievements {
         player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");
         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage());
 
-        //Please dont ear rape me thanks.
-        if (!GameAPI.isCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN)) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
-            GameAPI.addCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN, 1);
+        // Only play sound & spawn particles for non-GMs.
+        if (!Rank.isTrialGM(player)) {
+            // Prevent audio spam when receiving multiple rewards.
+            if (!GameAPI.isCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN)) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
+                GameAPI.addCooldown(player, MetadataUtils.Metadata.SOUND_COOLDOWN, 1);
+            }
+
+            ParticleAPI.spawnParticle(Particle.TOWN_AURA, player.getLocation().add(0, 2, 0), 10, 1F);
         }
 
-        ParticleAPI.spawnParticle(Particle.TOWN_AURA, player.getLocation().add(0, 2, 0), 10, 1F);
-        
         if (achievement.getReward() > 0)
             wrapper.addExperience(achievement.getReward(), false, true, true);
 
