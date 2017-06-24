@@ -787,7 +787,7 @@ public class PlayerWrapper {
         array.addAll(Lists.newArrayList(
                 getTimeCreated(), getLevel(), getExperience(), getAlignment(), player == null ? this.pendingInventoryString : player.getInventory(),
                 player == null ? this.pendingArmorString : getEquipmentString(player), getGems(), bankString, getBankLevel(),
-                getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString,
+                getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString, getMountsUnlocked(),
                 getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(), getActiveHatOverride() != null ? getActiveHatOverride().name() : null,
                 getQuestData(), collectionBinString, player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
                 isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime()));
