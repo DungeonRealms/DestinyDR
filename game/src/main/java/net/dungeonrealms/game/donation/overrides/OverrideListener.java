@@ -89,7 +89,15 @@ public class OverrideListener implements GenericMechanic, Listener {
                 if (event.getVisibleEntity() instanceof Player) {
                     Player player = (Player) event.getVisibleEntity();
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                    if (wrapper == null) return false;
+                    if (wrapper == null) {
+                        if(player != null && player.getName().equals("Wizard") && event.getSlot() == EnumWrappers.ItemSlot.HEAD){
+                            final ItemStack clone = event.getEquipment();
+                            clone.setType(CosmeticOverrides.WIZARD_HAT.getItemType());
+                            clone.setDurability(CosmeticOverrides.WIZARD_HAT.getDurability());
+                            event.setEquipment(clone);
+                        }
+                        return false;
+                    }
                     CosmeticOverrides hatOverride = wrapper.getActiveHatOverride();
                     if (hatOverride != null && event.getSlot().equals(EnumWrappers.ItemSlot.HEAD)) {
                         final ItemStack clone = event.getEquipment();

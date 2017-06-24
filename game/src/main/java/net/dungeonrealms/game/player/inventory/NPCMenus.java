@@ -29,8 +29,9 @@ public class NPCMenus {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         int totalResets = wrapper.getPlayerStats().resetAmounts + 1; //Ours start at 0, old DR started at 1.
 
-        int resetCost = (int) ((1000. * Math.pow(1.8, (totalResets + 1))) - ((1000. * Math.pow(1.8, (totalResets + 1))) % 1000));
-        resetCost = (resetCost > 60000 ? 60000 : (int) ((1000. * Math.pow(1.8, (totalResets + 1))) - ((1000. * Math.pow(1.8, (totalResets + 1))) % 1000)));
+        //wut
+        int resetCost = (int) (1000. * Math.pow(1.8, totalResets + 1) - 1000. * Math.pow(1.8, totalResets + 1) % 1000);
+        resetCost = resetCost > 60_000 ? 60_000 : (int) (1000. * Math.pow(1.8, totalResets + 1) - 1000. * Math.pow(1.8, totalResets + 1) % 1000);
         
         player.sendMessage("");
         player.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.GREEN + ChatColor.BOLD + "Stat Reset Confirmation" + ChatColor.DARK_GRAY + " ***");

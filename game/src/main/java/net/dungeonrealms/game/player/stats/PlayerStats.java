@@ -148,6 +148,8 @@ public class PlayerStats implements LoadableData, SaveableData {
      */
     public void unallocateAllPoints() {
         resetTemp();
+        for(Stats stat : Stats.values())
+            setStat(stat, 0);
         PlayerWrapper.getPlayerWrapper(playerUUID).calculateAllAttributes();
     }
 
