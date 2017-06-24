@@ -68,6 +68,7 @@ public class CombatLog implements GenericMechanic {
      */
     public void handleCombatLog(Player player) {
         if (inPVP(player)) {
+            Bukkit.getLogger().info("Handling combat log for " + player.getName());
             KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getAlignment();
             switch (alignments) {
                 case LAWFUL:
@@ -80,7 +81,7 @@ public class CombatLog implements GenericMechanic {
                         this.damageAndReturn(player, storedItem, null);
                     }
                     // Drop all items except for storedItem
-                    for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+                    for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
@@ -88,8 +89,9 @@ public class CombatLog implements GenericMechanic {
                                 if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
                                     // We don't want to drop the storedItem
                                     if (!itemStack.equals(storedItem)) {
-                                        player.getWorld().dropItem(player.getLocation(), itemStack);
                                         player.getInventory().remove(itemStack);
+                                        Bukkit.getLogger().info("Dropping item " + itemStack);
+                                        player.getWorld().dropItem(player.getLocation(), itemStack);
                                     }
                                 }
                             }
@@ -102,9 +104,11 @@ public class CombatLog implements GenericMechanic {
                     for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                if (!ItemManager.isItemSoulbound(itemStack))
-                                    player.getWorld().dropItem(player.getLocation(), itemStack);
                                 player.getInventory().remove(itemStack);
+                                if (!ItemManager.isItemSoulbound(itemStack)) {
+                                    player.getWorld().dropItem(player.getLocation(), itemStack);
+                                    Bukkit.getLogger().info("1 Dropping item " + itemStack);
+                                }
                             }
                         }
                     }

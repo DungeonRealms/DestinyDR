@@ -58,9 +58,7 @@ import org.bukkit.*;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse.Variant;
@@ -203,6 +201,8 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
 
+        player.removeMetadata("kickedIgnore", DungeonRealms.getInstance());
+
         if (Constants.DEVELOPERS.contains(event.getPlayer().getName()))
             player.setOp(true);
 
@@ -286,7 +286,9 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
-        this.kickedIgnore.add(event.getPlayer().getUniqueId());
+        System.out.println("PlayerKickEvent being called!");
+        //this.kickedIgnore.add(event.getPlayer().getUniqueId());
+        event.getPlayer().setMetadata("kickedIgnore", new FixedMetadataValue(DungeonRealms.getInstance(), true));
         onDisconnect(event.getPlayer(), !event.getReason().contains("Appeal at: www.dungeonrealms.net"));
     }
 
@@ -300,7 +302,9 @@ public class MainListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
-        onDisconnect(event.getPlayer(), true);
+
+        if(!event.getPlayer().hasMetadata("kickedIgnore"))
+            onDisconnect(event.getPlayer(), true);
 
         //Send this logout to the lobby / master server..
         if (!DungeonRealms.getInstance().isAlmostRestarting() && !CrashDetector.crashDetected) {
@@ -330,7 +334,8 @@ public class MainListener implements Listener {
         }
 
         if (performChecks) {
-            boolean ignoreCombat = this.kickedIgnore.remove(player.getUniqueId());
+            boolean ignoreCombat = player.hasMetadata("kickedIgnore");
+            //this.kickedIgnore.remove(player.getUniqueId());
             // Handle combat log before data save so we overwrite the logger's inventory data
             if (CombatLog.inPVP(player) && !ignoreCombat) {
                 // Woo oh, he logged out in PVP
@@ -467,7 +472,7 @@ public class MainListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-            if(wrapper == null)return;
+            if (wrapper == null) return;
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
             MaterialData m = new MaterialData(block.getType(), block.getData());
@@ -502,7 +507,6 @@ public class MainListener implements Listener {
 //            });
 //        }
 //    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())) {
