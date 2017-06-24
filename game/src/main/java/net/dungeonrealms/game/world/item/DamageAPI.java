@@ -352,7 +352,7 @@ public class DamageAPI {
                 }
             }
 
-            float totalEnergyCost = (float) (energyCostPerSwing * .25);
+            float totalEnergyCost = (float) (energyCostPerSwing * .15);
             //Cant do anymore damage.
             if (!damagerIsMob && EnergyHandler.getPlayerCurrentEnergy((Player) damager) < totalEnergyCost) break;
 
