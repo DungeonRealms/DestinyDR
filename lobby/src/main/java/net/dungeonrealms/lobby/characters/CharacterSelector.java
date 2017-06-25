@@ -1,6 +1,7 @@
 package net.dungeonrealms.lobby.characters;
 
 
+import com.mysql.jdbc.Statement;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -21,7 +22,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,7 @@ public class CharacterSelector extends AbstractMenu {
 
     //    private Set<UUID> accepted = new HashSet<>();
     public CharacterSelector(Player player, int accountID, Integer selectedCharacterID, List<CharacterData> characters, Integer maxPurchasedCharacterSlots, int invSize) {
-        super(Lobby.getInstance(), "Select your character", AbstractMenu.round(invSize), player.getUniqueId());
+        super(Lobby.getInstance(), "Select your character", AbstractMenu.round(invSize + 1), player.getUniqueId());
         setDestroyOnExit(true);
 
         if (characters.isEmpty() || selectedCharacterID == null || maxPurchasedCharacterSlots == null) {
@@ -168,14 +171,38 @@ public class CharacterSelector extends AbstractMenu {
                         //player.sendMessage(ChatColor.GREEN + "We clicked the un created character slot");
                         CompletableFuture.runAsync(() -> {
 
+                            /*String queryString =
+                                    "START TRANSACTION;"
+                                    + "SET @account_id = " + accountID + ";"
+                                    + String.format("INSERT INTO characters(account_id, created, character_type) VALUES (@account_id, '%s', '%s');", System.currentTimeMillis(), type.getInternalName())
+                                    + "SET @character_id = LAST_INSERT_ID();"
+                                    + "INSERT INTO `statistics`(character_id) VALUES (@character_id);"
+                                    + "INSERT INTO `realm`(character_id) VALUES (@character_id);"
+                                    + "INSERT INTO `attributes`(character_id) VALUES (@character_id);"
+                                    + "COMMIT;";*/
+
+
+                            //System.out.println(queryString);
+
                             String query = String.format("INSERT IGNORE INTO characters(account_id, created, character_type) VALUES ('%s', '%s', '%s');", accountID, System.currentTimeMillis(), type.getInternalName());
                             try {
-                                PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(query);
+                                PreparedStatement statement = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
                                 if (Constants.debug)
                                     Constants.log.info("Updating database with query: " + query);
 
-                                int toReturn = statement.executeUpdate();
+                                statement.executeUpdate();
+
+                                ResultSet keys = statement.getGeneratedKeys();
+                                if(keys.first()) {
+                                    int charID = keys.getInt(1);
+                                    PreparedStatement statement2 = SQLDatabaseAPI.getInstance().getDatabase().getConnection().prepareStatement("");
+                                    statement2.addBatch(String.format("INSERT INTO `statistics`(character_id) VALUES (%s);", charID));
+                                    statement2.addBatch(String.format("INSERT INTO `realm`(character_id) VALUES (%s);", charID));
+                                    statement2.addBatch(String.format("INSERT INTO `attributes`(character_id) VALUES (%s);", charID));
+                                    statement2.executeBatch();
+                                    statement2.close();
+                                }
 
                                 player.closeInventory();
 
@@ -294,10 +321,12 @@ public class CharacterSelector extends AbstractMenu {
                 return;
             }
 
+
             int invSize = CharacterType.getDefaultSlots(player) + maxCharacterSlots;
 
             //Its possible they are no longer GM or sub or something and have more characters than they technically are supposed to have. This makes sure the inventory is large enough.
             if(invSize < createdCharacterIds.size()) invSize = createdCharacterIds.size();
+
 
 
             new CharacterSelector(player, accountID, selectedCharacterID, createdCharacterIds, maxCharacterSlots,invSize).open(player);
