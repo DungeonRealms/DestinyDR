@@ -17,6 +17,14 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 	}
 
 	@Override
+	protected void initAttributes() {
+		super.initAttributes();
+
+		getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(17D);
+		getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(.259F);
+	}
+
+	@Override
 	public void collide(Entity e) {}
 
 	@Override
