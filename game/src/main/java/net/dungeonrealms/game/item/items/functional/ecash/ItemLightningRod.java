@@ -54,12 +54,13 @@ public class ItemLightningRod extends FunctionalItem implements ItemClickListene
     @Override
     protected String[] getLore() {
         return new String[]{
+                " ",
                 ChatColor.GREEN + ChatColor.BOLD.toString() + "Right Click: " + ChatColor.GRAY + "Strike lightning"};
     }
 
     @Override
     protected ItemUsage[] getUsage() {
-        return arr(ItemUsage.RIGHT_CLICK_AIR, ItemUsage.RIGHT_CLICK_BLOCK, ItemUsage.RIGHT_CLICK_ENTITY);
+        return INTERACT;
     }
 
     @Override

@@ -112,7 +112,7 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                     return;
                                 }
 
-                                player.getInventory().addItem(new ItemLightningRod(null).generateItem());
+                                player.getInventory().addItem(new ItemLightningRod().generateItem());
                                 player.sendMessage(ChatColor.GREEN + "A lightning rod has been added to your inventory.");
                             } else {
                                 sendNotUnlocked(player);

@@ -12,6 +12,7 @@ import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.common.util.CharacterData;
 import net.dungeonrealms.common.util.CharacterType;
+import net.dungeonrealms.common.util.ChatUtil;
 import net.dungeonrealms.lobby.Lobby;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -98,7 +99,7 @@ public class CharacterSelector extends AbstractMenu {
                         Lobby.chatCallbacks.put(player.getUniqueId(), chatEvent -> {
                             String msg = chatEvent.getMessage();
                             Lobby.chatCallbacks.remove(player.getUniqueId());
-                            if (msg.length() > 1 && msg.length() <= 16 && StringUtils.isAlphanumericSpace(msg)) {
+                            if (msg.length() > 1 && msg.length() <= 16 && StringUtils.isAlphanumericSpace(msg) && !ChatUtil.containsBannedWords(msg)) {
                                 SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
                                     if (rows == null || rows <= 0) {
                                         player.sendMessage(ChatColor.RED + "Something went wrong! Please try again!");

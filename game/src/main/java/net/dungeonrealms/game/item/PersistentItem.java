@@ -246,8 +246,10 @@ public abstract class PersistentItem {
 
     public static PersistentItem constructItem(ItemStack item) {
         ItemType type = getType(item);
-        if (type == null)
+        if (type == null) {
             return new VanillaItem(item);
+        }
+
 
         try {
             return type.getItemClass().getDeclaredConstructor(ItemStack.class).newInstance(item);

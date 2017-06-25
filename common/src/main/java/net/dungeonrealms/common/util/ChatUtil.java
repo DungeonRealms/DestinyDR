@@ -57,6 +57,23 @@ public class ChatUtil {
         return string.trim();
     }
 
+    public static boolean containsBannedWords(String msg) {
+        String result = msg;
+        result = result.replace("ð", "");
+
+        StringTokenizer st = new StringTokenizer(result);
+
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+
+            for (String word : bannedWords)
+                if (token.toLowerCase().contains(word.toLowerCase())) {
+                    return true;
+                }
+        }
+        return false;
+    }
+
 
     private static String replaceOperation(String source, String search) {
         int length = search.length();
