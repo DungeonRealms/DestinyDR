@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.md_5.bungee.api.ChatColor;
@@ -63,6 +64,8 @@ public class ShopItem extends ItemGeneric {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else if (toGive instanceof ItemPeaceOrb) {
+                toGive = new ItemPeaceOrb(true);
             }
 //            toGive.setAntiDupe(true);
             GameAPI.giveOrDropItem(player, toGive.generateItem());
