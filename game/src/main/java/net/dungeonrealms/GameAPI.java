@@ -1636,7 +1636,7 @@ public class GameAPI {
 //            			.append(" *").bold(false).underlined(false);
                 final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                         "To allocate click ", ChatColor.WHITE);
-                normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats", "");
+                normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/profile", "");
                 normal.addText(ChatColor.GREEN + "*");
                 normal.sendToPlayer(p);
 //            	p.sendMessage(cb.create());
