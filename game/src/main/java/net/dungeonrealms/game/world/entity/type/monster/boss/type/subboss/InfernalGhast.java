@@ -66,12 +66,14 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
     @Override
     public void n() {
         double distance = instance == null ? -1 : instance.distanceSquared(getBukkitEntity().getLocation());
-        if (distance >= 100)
+        if (distance >= 100) {
             getControllerMove().a(instance.getX(), instance.getY(), instance.getZ(), .5F);
+        }
         super.n();
 
-        if (distance >= 100)
+        if (distance >= 100) {
             getControllerMove().a(instance.getX(), instance.getY(), instance.getZ(), .5F);
+        }
     }
 
     public Location getSpawnPoint() {

@@ -95,10 +95,10 @@ public class CharacterSelector extends AbstractMenu {
                         }, QueryType.UPDATE_SELECTED_CHARACTER.getQuery(characterID, accountID));
                     } else if (event.getClickEvent().getClick().equals(ClickType.RIGHT)) {
                         player.sendMessage(ChatColor.GREEN + "Please type in your new character name!");
-                        applySavingMeta(player);
                         Lobby.chatCallbacks.put(player.getUniqueId(), chatEvent -> {
                             String msg = chatEvent.getMessage();
                             Lobby.chatCallbacks.remove(player.getUniqueId());
+                            applySavingMeta(player);
                             if (msg.length() > 1 && msg.length() <= 16 && StringUtils.isAlphanumericSpace(msg) && !ChatUtil.containsBannedWords(msg)) {
                                 SQLDatabaseAPI.getInstance().executeUpdate((rows) -> {
                                     if (rows == null || rows <= 0) {

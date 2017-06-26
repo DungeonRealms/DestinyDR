@@ -66,6 +66,16 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     }
 
     @Override
+    public void n() {
+        super.n();
+
+        if(ghast != null && ghast.isAlive() && getBukkit().getVehicle() == null) {
+            getBukkit().teleport(ghast.getBukkit());
+            ghast.getBukkit().setPassenger(getBukkit());
+        }
+    }
+
+    @Override
     public void onBossDeath(Player player) {
         getDungeon().getPlayers().forEach(p -> pushAwayPlayer(p, 3.5F));
         playSound(Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
@@ -76,6 +86,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     public void a(EntityLiving entity, float f) {
         if (!ItemWeaponStaff.isStaff(getHeld()))
             return;
+        if(ghast != null && ghast.isAlive()) return; //ghast should be firing instead.
         ItemWeaponStaff staff = new ItemWeaponStaff(getHeld());
 
         LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;

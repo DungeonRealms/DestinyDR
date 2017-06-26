@@ -58,7 +58,7 @@ public class CommandLock extends BaseCommand {
                         }
                     });
 
-                });
+                }).open(player,null);
             });
             return true;
         }

@@ -108,6 +108,7 @@ public class CommandSet extends BaseCommand {
                 } else {
                 	ItemGear gear = (ItemGear)PersistentItem.constructItem(i);
                 	gear.damageItem(player, Integer.parseInt(args[1]));
+                	player.getInventory().setItemInMainHand(gear.generateItem());
                 	player.sendMessage(ChatColor.GREEN + "Damaged!");
                 }
                 break;

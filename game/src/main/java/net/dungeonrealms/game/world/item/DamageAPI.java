@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.world.item;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
@@ -33,10 +31,12 @@ import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
+import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
@@ -46,6 +46,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
@@ -57,7 +59,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DamageAPI {
 
-    private static HashMap<Player, HashMap<Hologram, Integer>> DAMAGE_HOLOGRAMS = new HashMap<Player, HashMap<Hologram, Integer>>();
+    public static HashMap<Player, HashMap<ArmorStand, BukkitTask>> DAMAGE_HOLOGRAMS = new HashMap<>();
 
     public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
         CombatEntity attacker = res.getAttacker();
@@ -882,32 +884,55 @@ public class DamageAPI {
         if (createFor != null && !PlayerWrapper.getPlayerWrapper(createFor).getToggles().getState(Toggles.HOLOGRAMS))
             return;
         double xDif = (Utils.randInt(0, 20) - 10) / 10D;
-        double yDif = Utils.randInt(0, 15) / 10D;
+        double yDif = Math.random();
         double zDif = (Utils.randInt(0, 20) - 10) / 10D;
-        Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
-        hologram.appendTextLine(display);
-        hologram.getVisibilityManager().setVisibleByDefault(true);
 
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () ->
-                hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0)), 0, 1l);
+        ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(xDif, yDif, zDif).subtract(0, 1, 0), EntityType.ARMOR_STAND);
+        stand.setVisible(false);
+        stand.setCollidable(false);
+        stand.setCustomName(display);
+        stand.setCustomNameVisible(true);
+        stand.setInvulnerable(true);
+        stand.setGravity(false);
 
-        if (!DAMAGE_HOLOGRAMS.containsKey(createFor))
-            DAMAGE_HOLOGRAMS.put(createFor, new HashMap<Hologram, Integer>());
+//        Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
+//        hologram.appendTextLine(display);
+//        hologram.getVisibilityManager().setVisibleByDefault(true);
 
-        HashMap<Hologram, Integer> holograms = DAMAGE_HOLOGRAMS.get(createFor);
-        holograms.put(hologram, taskId);
+        EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
+        HashMap<ArmorStand, BukkitTask> holograms = DAMAGE_HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
+
+        BukkitTask runnable = new BukkitRunnable() {
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (ticks >= 20 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                    cancel();
+                    removeDamageHologram(createFor, stand);
+                    return;
+                }
+                nmsStand.locY = nmsStand.locY + .1D;
+                ticks++;
+            }
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 1);
+
+        holograms.put(stand, runnable);
         if (holograms.keySet().size() > 4)
-            removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
-
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
-                () -> removeDamageHologram(createFor, hologram), 20L);
+            removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
     }
 
-    private static void removeDamageHologram(Player player, Hologram hologram) {
-        if (hologram.isDeleted())
+    private static void removeDamageHologram(Player player, ArmorStand armorStand) {
+        if (armorStand.isDead())
             return;
-        Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(player).get(hologram));
-        DAMAGE_HOLOGRAMS.get(player).remove(hologram);
-        hologram.delete();
+
+        HashMap<ArmorStand, BukkitTask> map = DAMAGE_HOLOGRAMS.get(player);
+        BukkitTask task = map.remove(armorStand);
+        armorStand.remove();
+        if (task != null)
+            task.cancel();
+
+        if (map.isEmpty())
+            DAMAGE_HOLOGRAMS.remove(player);
     }
 }

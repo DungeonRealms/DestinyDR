@@ -308,11 +308,11 @@ public abstract class ItemGear extends ItemGeneric {
         this.durability -= durability;
 
         if (this.durability <= 1) {
-            setDestroyed(true);
             if (player == null)
                 return;
             // Item has broken!
             player.getInventory().remove(getItem());
+            setDestroyed(true); //We have to do this after so it can remove LOL
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F,
                     1F);
             onItemBreak(player);
