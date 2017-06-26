@@ -14,9 +14,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-/**
- * Created by Nick on 10/20/2015.
- */
 public class CommandInvoke extends BaseCommand {
     public CommandInvoke() {
         super("invoke", "/<command> [args]", "The invoke command.");

@@ -43,7 +43,7 @@ import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.CommandTestDot;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
-import net.dungeonrealms.game.command.test.CommandTestRift;
+import net.dungeonrealms.game.command.test.CommandTestCloud;
 import net.dungeonrealms.game.command.test.CommandTestTranslated;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
@@ -337,7 +337,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandTestDot());
         cm.registerCommand(new CommandTestTranslated());
-        cm.registerCommand(new CommandTestRift());
+        cm.registerCommand(new CommandTestCloud());
         cm.registerCommand(new CommandItemEdit());
         cm.registerCommand(new CommandGraveyard());
         // Commands always registered regardless of server.

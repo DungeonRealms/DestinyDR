@@ -157,6 +157,10 @@ public class Utils {
         return ThreadLocalRandom.current().nextInt(bound) + min;
     }
 
+    public static float randFloat(float min, float max) {
+        return ThreadLocalRandom.current().nextFloat() * (max - min) + min;
+    }
+
 
     public static boolean isInt(String s) {
         try {

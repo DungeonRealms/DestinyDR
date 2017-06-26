@@ -121,7 +121,7 @@ public class MainListener implements Listener {
     public void onVote(VotifierEvent event) {
         // No votes on the event shard.
         if (!DungeonRealms.isEvent())
-            GameAPI.announceVote(Bukkit.getPlayer(event.getVote().getUsername()));
+            GameAPI.announceVote(Bukkit.getPlayerExact(event.getVote().getUsername()));
     }
 
     @EventHandler

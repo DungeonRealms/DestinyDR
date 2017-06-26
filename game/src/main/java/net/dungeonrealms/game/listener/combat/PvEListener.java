@@ -145,7 +145,8 @@ public class PvEListener implements Listener {
 
             float kbResis = boss ? 1F - (float) receiver.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue() : 1;
 
-            DamageAPI.knockbackEntity(damager, receiver, kbResis * kb);
+            if (kbResis != 1.0)
+                DamageAPI.knockbackEntity(damager, receiver, kbResis * kb);
 
             damager.updateInventory();
         }

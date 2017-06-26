@@ -388,7 +388,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             UUID uuid = UUID.fromString(in.readUTF());
                             String playerName = in.readUTF();
                             String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
-                            Player player = Bukkit.getPlayer(playerName);
+                            Player player = Bukkit.getPlayerExact(playerName);
                             if (player == null)
                                 return;
                             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);

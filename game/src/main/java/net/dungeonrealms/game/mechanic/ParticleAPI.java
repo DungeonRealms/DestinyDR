@@ -152,6 +152,7 @@ public class ParticleAPI {
         GameAPI.getNearbyPlayersAsync(loc, 30).forEach(pl -> pl.spawnParticle(p, loc, count, xOff, yOff, zOff, speed));
     }
 
+
     /**
      * Spawns a particle at the given location. Async Safe.
      * @param p
