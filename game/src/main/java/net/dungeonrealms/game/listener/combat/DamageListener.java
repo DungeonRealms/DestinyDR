@@ -40,6 +40,7 @@ import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
+import net.dungeonrealms.game.world.entity.type.monster.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -663,6 +664,17 @@ public class DamageListener implements Listener {
         if (e instanceof Player)
             return;
 
+        /*if (EntityAPI.isBoss(e)) {
+            if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalAbyss) {
+                System.out.println("The infernal damage canceled?  " + event.isCancelled());
+                System.out.println("The infernal damage cause: " + event.getCause().name());
+            } else if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
+                System.out.println("The infernal ghast damage canceled?  " + event.isCancelled());
+                System.out.println("The infernal ghast cause: " + event.getCause().name());
+            }
+            //return;
+        }*/
+
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
 
             event.setCancelled(true);
@@ -675,6 +687,19 @@ public class DamageListener implements Listener {
                     if (pass != null) {
                         pass.teleport(spawn);
                         event.getEntity().setPassenger(pass);
+                    }
+                } else if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalAbyss) {
+                    InfernalAbyss infernal = (InfernalAbyss) EntityAPI.getMonster(event.getEntity());
+                    if(infernal.getGhast() != null && infernal.getGhast().isAlive()) {
+                        //He is (or should be) on the ghast.
+                        Entity pass = event.getEntity();
+                        if (pass != null) pass.eject();
+                        Location spawn = ((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint();
+                        infernal.getGhast().getBukkit().teleport(spawn);
+                        if (pass != null) {
+                            pass.teleport(spawn);
+                            infernal.getGhast().getBukkit().setPassenger(pass);
+                        }
                     }
                 }
                 return;

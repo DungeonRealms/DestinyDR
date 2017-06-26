@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss;
 
+import lombok.Getter;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -32,8 +33,10 @@ import org.bukkit.entity.Projectile;
  */
 public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
-    public InfernalGhast ghast;
-    public boolean finalForm;
+    @Getter
+    private InfernalGhast ghast;
+    @Getter
+    private boolean finalForm;
 
     public InfernalAbyss(World world) {
         super(world);
