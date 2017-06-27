@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -61,7 +61,7 @@ public class BankListener implements Listener {
             return;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(e.getPlayer());
-        if(wrapper != null && wrapper.getAlignment() != null && wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC){
+        if (wrapper != null && wrapper.getAlignment() != null && wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot access the Bank while Chaotic!");
             return;
         }
@@ -79,10 +79,17 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 
-        if (Metadata.WHITELIST.has(event.getItem()) && event.getItem().getTicksLived() < 60 * 20) {
-            if (!event.getPlayer().getName().equals(Metadata.WHITELIST.get(event.getItem()).asString())) {
-                event.setCancelled(true);
-                return;
+        boolean permWhitelist = false;
+        if (Metadata.WHITELIST.has(event.getItem()) || (permWhitelist = Metadata.PERM_WHITELIST.has(event.getItem()))) {
+            Metadata data = permWhitelist ? Metadata.PERM_WHITELIST : Metadata.WHITELIST;
+            if (!event.getPlayer().getName().equals(data.get(event.getItem()).asString())) {
+                if (event.getItem().getTicksLived() < 60 * 20 || permWhitelist) {
+                    event.setCancelled(true);
+                    return;
+                }
+//                if (event.getItem().getItemStack() != null && ItemManager.isItemTradeable(event.getItem().getItemStack())) {
+//                    event.setCancelled(true);
+//                }
             }
         }
 

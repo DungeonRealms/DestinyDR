@@ -313,7 +313,11 @@ public class ItemManager {
             Metadata.WHITELIST.set(item, player.getName());
         return item;
     }
-
+    public static org.bukkit.entity.Item whitelistItemDropPermanently(Player player, org.bukkit.entity.Item item) {
+        if (player != null)
+            Metadata.PERM_WHITELIST.set(item, player.getName());
+        return item;
+    }
     /**
      * Is this item marked as droppable, and tradeable?
      */

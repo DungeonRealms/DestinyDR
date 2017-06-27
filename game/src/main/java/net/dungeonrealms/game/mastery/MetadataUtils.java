@@ -67,6 +67,7 @@ public class MetadataUtils {
 
 		// Items
 		WHITELIST(""),
+		PERM_WHITELIST(""),
 		NO_PICKUP(false),
 		
 		// Mounts
