@@ -77,6 +77,7 @@ public class ItemArmor extends CombatItem {
         if (getItemType() != null && getItemType() == ItemType.SHIELD) {
             ItemMeta meta = item.getItemMeta();
             BlockStateMeta blockMeta = (BlockStateMeta) meta;
+            if(blockMeta == null)return item;
             BlockState state = blockMeta.getBlockState();
             Banner banner = (Banner) state;
             Item.ItemTier tier = getTier();
