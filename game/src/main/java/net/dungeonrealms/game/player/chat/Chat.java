@@ -185,10 +185,11 @@ public class Chat {
                 		+ ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
 
                 if (!ignoringPlayer) {
-                    GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), player.getUniqueId().toString(), recipientName, (ChatColor.GRAY.toString() +
+                    //Filter the merssage here to avoid filtering their names.
+                    GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), player.getUniqueId().toString(), recipientName, ChatColor.GRAY.toString() +
                             ChatColor.BOLD + "FROM " + sendingWrapper.getChatName() + ChatColor.GRAY + " [" + ChatColor
                             .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
-                            finalMessage));
+                            Chat.checkForBannedWords(finalMessage));
 
                     GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
                 } else {

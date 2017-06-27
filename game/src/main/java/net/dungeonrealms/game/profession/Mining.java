@@ -285,24 +285,24 @@ public class Mining implements GenericMechanic, Listener {
         String name = Utils.getItemName(toGive);
         if (toGive.getType().equals(Material.GOLD_ORE)) {
             //wrapper.getPurchaseablesUnlocked().put(Purchaseables.GOLD_ORE_HAT, 1);
-            Purchaseables.GOLD_ORE_HAT.setNumberOwned(wrapper,1);
+            Purchaseables.GOLD_ORE_HAT.setNumberOwned(wrapper, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.GOLD_ORE_HAT);
         } else if (toGive.getType().equals(Material.DIAMOND_ORE)) {
             //wrapper.getPurchaseablesUnlocked().put(Purchaseables.DIAMOND_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.DIAMOND_ORE_HAT);
-            Purchaseables.DIAMOND_ORE_HAT.setNumberOwned(wrapper,1);
+            Purchaseables.DIAMOND_ORE_HAT.setNumberOwned(wrapper, 1);
         } else if (toGive.getType().equals(Material.IRON_ORE)) {
             //wrapper.getPurchaseablesUnlocked().put(Purchaseables.IRON_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.IRON_ORE_HAT);
-            Purchaseables.IRON_ORE_HAT.setNumberOwned(wrapper,1);
+            Purchaseables.IRON_ORE_HAT.setNumberOwned(wrapper, 1);
         } else if (toGive.getType().equals(Material.EMERALD_ORE)) {
             //wrapper.getPurchaseablesUnlocked().put(Purchaseables.EMERALD_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.EMERALD_ORE_HAT);
-            Purchaseables.EMERALD_ORE_HAT.setNumberOwned(wrapper,1);
+            Purchaseables.EMERALD_ORE_HAT.setNumberOwned(wrapper, 1);
         } else if (toGive.getType().equals(Material.COAL_ORE)) {
             //wrapper.getPurchaseablesUnlocked().put(Purchaseables.COAL_ORE_HAT, 1);
             wrapper.setActiveHatOverride(CosmeticOverrides.COAL_ORE_HAT);
-            Purchaseables.COAL_ORE_HAT.setNumberOwned(wrapper,1);
+            Purchaseables.COAL_ORE_HAT.setNumberOwned(wrapper, 1);
         } else {
             GameAPI.giveOrDropItem(player, toGive);
         }
@@ -328,8 +328,10 @@ public class Mining implements GenericMechanic, Listener {
         } else if (r.nextInt(75) == 5) {
             return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else if (r.nextInt(750) == 5) {
-            return new ItemEnchantPickaxe().addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]).setTier(ItemTier.getByTier(tier.getTier())).generateItem();
-            //return pick.getEnchant().generateItem();
+            ItemEnchantPickaxe newPickEnchant = new ItemEnchantPickaxe();
+            newPickEnchant.setTier(ItemTier.getByTier(tier.getTier()));
+            newPickEnchant.addEnchant(PickaxeAttributeType.values()[ThreadLocalRandom.current().nextInt(PickaxeAttributeType.values().length)]);
+            return newPickEnchant.generateItem();
         } else {
             List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
