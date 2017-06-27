@@ -422,15 +422,26 @@ public class GameAPI {
 
         final long terminateTime = ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 1000 + 10000;
 
+        int tick = MinecraftServer.currentTick;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Constants.log.info("Terminating server's process..");
 
-                try {
-                    Runtime.getRuntime().exec("kill -9 " + Utils.getPid());
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                Constants.log.info("Terminating server's process..");
+                if (MinecraftServer.currentTick == tick) {
+                    MechanicManager.stopMechanics();
+                    AsyncUtils.pool.shutdown();
+                    SQLDatabaseAPI.getInstance().shutdown();
+                    try {
+                        Runtime.getRuntime().exec("kill -9 " + Utils.getPid());
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    sendWarning("{SERVER} managed to recover! Ticks now: " + MinecraftServer.currentTick + " Tick: " + tick);
+                    Bukkit.getServer().setWhitelist(false);
+                    DungeonRealms.getInstance().setAcceptPlayers(true);
+                    DungeonRealms.crashed = false;
                 }
             }
         }, terminateTime);
@@ -469,9 +480,9 @@ public class GameAPI {
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        MechanicManager.stopMechanics();
-        AsyncUtils.pool.shutdown();
-        SQLDatabaseAPI.getInstance().shutdown();
+//        MechanicManager.stopMechanics();
+//        AsyncUtils.pool.shutdown();
+//        SQLDatabaseAPI.getInstance().shutdown();
     }
 
     /**
@@ -1084,8 +1095,8 @@ public class GameAPI {
         // Load Permissions.
         for (PlayerRank pr : PlayerRank.values()) {
             if (rank.isAtLeast(pr)) {
-                if(pr.equals(PlayerRank.GM)) {
-                    if(playerWrapper.getCharacterType().equals(CharacterType.GM)) continue;
+                if (pr.equals(PlayerRank.GM)) {
+                    if (playerWrapper.getCharacterType().equals(CharacterType.GM)) continue;
                 }
                 for (String perm : pr.getPerms())
                     player.addAttachment(DungeonRealms.getInstance()).setPermission(perm, true);

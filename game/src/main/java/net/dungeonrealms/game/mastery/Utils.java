@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -256,6 +257,37 @@ public class Utils {
             compensated += spaceLength;
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
+    }
+    public static void sendCenteredDebug(Player player, String message) {
+        if (message == null || message.equals("")) player.sendMessage("");
+
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for (char c : message.toCharArray()) {
+            if (c == '&' || c == '\u00A7') {
+                previousCode = true;
+            } else if (previousCode) {
+                previousCode = false;
+                isBold = c == 'l' || c == 'L';
+            } else {
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while (compensated < toCompensate) {
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        PlayerWrapper.getPlayerWrapper(player).sendDebug(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
     }
 
     public static String capitalize(String s) {

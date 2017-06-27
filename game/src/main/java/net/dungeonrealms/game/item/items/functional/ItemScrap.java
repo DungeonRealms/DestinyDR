@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import net.dungeonrealms.game.mastery.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -71,8 +72,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
             player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleId, 12);
         }
 
-        PlayerWrapper.getWrapper(player).sendDebug(ChatColor.GREEN
-                + "You used an Item Scrap to repair 3% durability to " + (int) Math.ceil(gear.getDurabilityPercent()) + "%");
+        Utils.sendCenteredDebug(player, ChatColor.GREEN + "+3% DURABILITY " + ChatColor.GREEN + ChatColor.BOLD + "-> " + ChatColor.GREEN + (int) Math.floor(gear.getDurabilityPercent()) + "% TOTAL");
 
         evt.setSwappedItem(gear.generateItem());
     }

@@ -37,7 +37,7 @@ public enum EnumMonster {
     Troll(l(CustomEntityType.MELEE_ZOMBIE), "Troll", null, SkullTextures.TROLL, l("Strong", "Smelly"), l("Warrior", "Rebel"), 20, ElementalAttribute.POISON),
     Troll1(l(CustomEntityType.MELEE_ZOMBIE), "Troll", null, SkullTextures.TROLL, l("Strong", "Smelly"), l("Warrior", "Rebel"), 20, ElementalAttribute.POISON),
     Goblin(l(CustomEntityType.MELEE_ZOMBIE), "Goblin", ItemType.AXE, SkullTextures.GOBLIN, l("Short", "Ugly", "Smelly"), 20, ElementalAttribute.FIRE),
-    
+    Goblin1(l(CustomEntityType.BOW_ZOMBIE), "Goblin", null, SkullTextures.GOBLIN, l("Short", "Ugly", "Smelly"), 20, ElementalAttribute.FIRE),
     // Bandits
     Bandit(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
     Bandit1(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_ZOMBIE), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
