@@ -55,10 +55,10 @@ public class CommandTeleport extends BaseCommand {
 
         final JSONMessage message = new JSONMessage("\n" + ChatColor.GREEN + ChatColor.BOLD.toString() + "Please select a location to teleport to:\n", ChatColor.GREEN);
         for (int i = 0; i < tpLocations.length; i++) {
-            message.addRunCommand(ChatColor.GRAY + "[" + ChatColor.GREEN + tpLocations[i][0] + ChatColor.GRAY + "]" + ((i + 1) % 4 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + tpLocations[i][1], "");
+            message.addRunCommand(ChatColor.GRAY + "[" + ChatColor.GREEN + tpLocations[i][0] + ChatColor.GRAY + "]" + ((i + 1) % 4 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + tpLocations[i][1], "Click to teleport");
         }
 
-        message.addText(ChatColor.GREEN + ChatColor.BOLD.toString() + "\nNAMED ELITES\n");
+        message.addText("\n" + ChatColor.GREEN + ChatColor.BOLD.toString() + " -- NAMED ELITES --\n");
 
         int i = 0;
         for (EnumNamedElite elite : EnumNamedElite.values()) {
