@@ -201,7 +201,7 @@ public class Shop {
             hologram.delete();
         }
 
-        Player owner = Bukkit.getPlayer(ownerUUID);
+        Player owner = DungeonRealms.crashed ? null : Bukkit.getPlayer(ownerUUID);
 
         viewCount = 0;
         //Rip concurrency.

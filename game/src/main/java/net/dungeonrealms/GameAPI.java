@@ -412,6 +412,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
+        DungeonRealms.crashed = true;
         Constants.log.info("called handleCrash()...");
 
         //Sometimes the crash detector has to kill bukkit on a normal shutdown, we don't need to announce it if DR's normal shutdown has already run.

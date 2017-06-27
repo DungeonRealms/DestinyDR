@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mechanic.dungeons.*;
 import net.dungeonrealms.game.mechanic.dungeons.rifts.EliteRift;
 import net.dungeonrealms.game.player.cosmetics.particles.impl.CloudParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.impl.HaloParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,8 @@ public class CommandTestCloud extends BaseCommand {
         if(!(sender instanceof Player)) return false;
         if(!Rank.isDev((Player)sender)) return false;
         Player player = (Player)sender;
-        CloudParticleEffect particle = new CloudParticleEffect(player.getLocation());
+        //CloudParticleEffect particle = new CloudParticleEffect(player.getEyeLocation(), 1);
+        HaloParticleEffect particle = new HaloParticleEffect(player.getLocation());
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             particle.tick();
         },1L,1L);
