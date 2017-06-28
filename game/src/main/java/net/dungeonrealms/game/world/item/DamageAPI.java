@@ -900,6 +900,7 @@ public class DamageAPI {
 //        hologram.getVisibilityManager().setVisibleByDefault(true);
 
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
+        nmsStand.noclip = true;
         HashMap<ArmorStand, BukkitTask> holograms = DAMAGE_HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
 
         BukkitTask runnable = new BukkitRunnable() {
