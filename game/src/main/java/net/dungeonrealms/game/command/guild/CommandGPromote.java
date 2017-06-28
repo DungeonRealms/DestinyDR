@@ -6,7 +6,6 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -47,6 +46,12 @@ public class CommandGPromote extends BaseCommand {
             return true;
         }
 
+        GuildMember.GuildRanks rank = wrapper.getRank(player.getUniqueId());
+        if (rank == null || !rank.isThisRankOrHigher(GuildMember.GuildRanks.OWNER)) {
+            player.sendMessage(ChatColor.RED + "You must be the owner to promote someone!");
+            return true;
+        }
+//        if(wrapper.getRank(player.getUniqueId()).)
         SQLDatabaseAPI.getInstance().getUUIDFromName(p_name, false, uuid -> {
             if (uuid == null) {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
