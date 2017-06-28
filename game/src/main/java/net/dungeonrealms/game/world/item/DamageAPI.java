@@ -894,8 +894,8 @@ public class DamageAPI {
         stand.setCustomNameVisible(true);
         stand.setInvulnerable(true);
         stand.setGravity(false);
-
         stand.setMarker(true);
+
 //        Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
 //        hologram.appendTextLine(display);
 //        hologram.getVisibilityManager().setVisibleByDefault(true);

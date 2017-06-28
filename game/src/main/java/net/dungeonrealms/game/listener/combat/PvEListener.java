@@ -116,7 +116,7 @@ public class PvEListener implements Listener {
             EnergyHandler.removeEnergyFromPlayerAndUpdate(damager, EnergyHandler.getWeaponSwingEnergyCost(held), dpsDummy);
         }
 
-        if (!EntityAPI.isBoss(receiver))
+        if (!EntityAPI.isBoss(receiver) && receiver.isOnGround())
             DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         AttackResult res = null;
@@ -145,7 +145,7 @@ public class PvEListener implements Listener {
 
             float kbResis = boss ? 1F - (float) receiver.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue() : 1;
 
-            if (kbResis != 1.0)
+            if (kbResis != 1.0 && receiver.isOnGround())
                 DamageAPI.knockbackEntity(damager, receiver, kbResis * kb);
 
             damager.updateInventory();
