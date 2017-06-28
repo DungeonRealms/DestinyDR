@@ -294,10 +294,10 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
-        System.out.println("PlayerKickEvent being called!");
+        System.out.println("PlayerKickEvent being called: " + event.getReason() + " Message: " + event.getLeaveMessage());
         //this.kickedIgnore.add(event.getPlayer().getUniqueId());
-        event.getPlayer().setMetadata("kickedIgnore", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-        onDisconnect(event.getPlayer(), !event.getReason().contains("Appeal at: www.dungeonrealms.net"));
+//        event.getPlayer().setMetadata("kickedIgnore", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+        onDisconnect(event.getPlayer(), !event.getReason().contains("Appeal at:"));
     }
 
     @EventHandler
@@ -343,10 +343,10 @@ public class MainListener implements Listener {
         }
 
         if (performChecks) {
-            boolean ignoreCombat = player.hasMetadata("kickedIgnore");
+//            boolean ignoreCombat = player.hasMetadata("kickedIgnore");
             //this.kickedIgnore.remove(player.getUniqueId());
             // Handle combat log before data save so we overwrite the logger's inventory data
-            if (CombatLog.inPVP(player) && !ignoreCombat) {
+            if (CombatLog.inPVP(player)) {
                 // Woo oh, he logged out in PVP
                 player.getWorld().strikeLightningEffect(player.getLocation());
                 player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
@@ -356,18 +356,21 @@ public class MainListener implements Listener {
                 // Remove from pvplog
                 CombatLog.removeFromPVP(player);
             }
-
-            // Player leaves while in duel
-            DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-            if (offer != null)
-                offer.handleLogOut(player);
-
-            DPSDummy dummy = ItemDPSDummy.getDPSDummy(player);
-            if (dummy != null) {
-                dummy.destroy();
-            }
+        } else {
+            Bukkit.getLogger().info("Not performing combat checks for " + player.getName());
         }
 
+        player.setMetadata("kickedIgnore", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
+
+        // Player leaves while in duel
+        DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+        if (offer != null)
+            offer.handleLogOut(player);
+
+        DPSDummy dummy = ItemDPSDummy.getDPSDummy(player);
+        if (dummy != null) {
+            dummy.destroy();
+        }
         player.updateInventory();
         // Good to go lads
 
