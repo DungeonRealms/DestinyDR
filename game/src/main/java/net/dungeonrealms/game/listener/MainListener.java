@@ -161,6 +161,8 @@ public class MainListener implements Listener {
     }
 
 
+    Map<UUID, MessageTracker> messageTracker = new HashMap<>();
+
     /**
      * Monitors and checks the players language.
      */
@@ -176,6 +178,12 @@ public class MainListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.RED + "Message contains illegal characters.");
             return;
         }
+
+//        MessageTracker tracker = messageTracker.computeIfAbsent(event.getPlayer().getUniqueId(), e -> new MessageTracker());
+//        if (!event.isCancelled() && !tracker.onChatMessage(event.getPlayer(), event.getMessage())) {
+//            event.setCancelled(true);
+//            return;
+//        }
 
         Chat.getInstance().doMessageChatListener(event);
 
@@ -302,8 +310,9 @@ public class MainListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
+        messageTracker.remove(event.getPlayer().getUniqueId());
 
-        if(!event.getPlayer().hasMetadata("kickedIgnore"))
+        if (!event.getPlayer().hasMetadata("kickedIgnore"))
             onDisconnect(event.getPlayer(), true);
 
         //Send this logout to the lobby / master server..
