@@ -895,12 +895,14 @@ public class DamageAPI {
         stand.setInvulnerable(true);
         stand.setGravity(false);
 
+        stand.setMarker(true);
 //        Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
 //        hologram.appendTextLine(display);
 //        hologram.getVisibilityManager().setVisibleByDefault(true);
 
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
         nmsStand.noclip = true;
+        nmsStand.setSmall(true);
         HashMap<ArmorStand, BukkitTask> holograms = DAMAGE_HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
 
         BukkitTask runnable = new BukkitRunnable() {
