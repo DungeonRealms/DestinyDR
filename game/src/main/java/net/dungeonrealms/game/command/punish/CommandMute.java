@@ -114,7 +114,7 @@ public class CommandMute extends BaseCommand {
             GameAPI.sendStaffMessage(PlayerRank.PMOD, ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
 
             //  BROADCASTS TO DISCORD  //
-            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /" + String.join(" ", args));
+            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /mute " + String.join(" ", args));
         });
 
         return false;

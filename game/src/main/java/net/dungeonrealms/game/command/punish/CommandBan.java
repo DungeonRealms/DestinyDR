@@ -133,7 +133,7 @@ public class CommandBan extends BaseCommand {
                 }
 
                 //  BROADCASTS TO DISCORD  //
-                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /" + String.join(" ", args));
+                GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /ban " + String.join(" ", args));
 
                 Player online = Bukkit.getPlayer(p_uuid);
                 if (online != null) {
