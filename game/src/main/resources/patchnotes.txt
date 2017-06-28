@@ -1,6 +1,7 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Mob Knockback<h>&a&lWhat Changed?,,&7If a mob is in the air when taking damage,&7they will no longer receive any knockback.</h>
  &l* &0T4 Weapons<h>&a&lWhat Changed?,,&dT4 Weapons&7 have been buffed in the,&7amount of damage they can provide,&7for all rarities!,&7All T4 Elites HP with custom,&7gear have been buffed as well!</h>
  &l* &0T4 Reworked<h>&a&lWhat Changed?,,&dT4 Armor&7 has had a buff in the possible HP it can provide.,&7This slightly closes the large gap between &d&lT4,&7and &e&lT5&7 to make &d&lT4&7 more useful.,,&7With this change a few areas have been,&7reworked to have less T5 mobs and,&7more variety of higher tiers in areas.,&7Infernal Abyss &7gear has been buffed as well.,,&7Check out the forums for more,&7specifics on areas that have been changed.</h>
  &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Slightly lowered energy cost for Polearms,&7* Fixed Stat Wizard,&7* Enchant Scrolls from Merchants are now seperate,&7* Allow crafting from Workbench,&7* /reboot countdown,&7* PVP Durability,&7* /closeshop is now fixed,&7* Dungeon Mob HP,&7* Glow on +4 Gear,&7* Guild Creating</h>
