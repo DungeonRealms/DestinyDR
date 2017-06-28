@@ -768,7 +768,7 @@ public class HealthHandler implements GenericMechanic {
                 if (Metadata.DUNGEON_FROM.has(entity)) {
                     String dungeonFrom = Metadata.DUNGEON_FROM.get(entity).asString();
                     if (dungeonFrom != null && DungeonType.THE_INFERNAL_ABYSS.getName().equals(dungeonFrom)) {
-                        mult = 2.5;
+                        mult = 1.8;
                     }
                 }
                 totalHP *= mult;
