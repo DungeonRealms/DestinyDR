@@ -49,6 +49,7 @@ public class MetadataUtils {
 		ELEMENT(ElementalAttribute.class),
 		PASSIVE(false),
 		RIFT_MOB(false),
+		ATTACK_COOLDOWN(-1),
 
 		CURRENT_HP(50),
 		MAX_HP(50),

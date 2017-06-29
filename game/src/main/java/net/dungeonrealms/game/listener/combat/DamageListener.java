@@ -152,12 +152,23 @@ public class DamageListener implements Listener {
 
         event.setDamage(0);
 
+
         Player player = (Player) event.getEntity();
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
         if (event.getDamager() instanceof Projectile) {
             event.setCancelled(true);
+        }
+
+        if (leDamageSource instanceof MagmaCube) {
+            if (GameAPI.isCooldown(leDamageSource, Metadata.ATTACK_COOLDOWN)) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
+            //Check attack speed cause derp?
+            GameAPI.addCooldown(leDamageSource, Metadata.ATTACK_COOLDOWN, 1);
         }
         // Players who are still logging in are invulnerable.
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
@@ -690,7 +701,7 @@ public class DamageListener implements Listener {
                     }
                 } else if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalAbyss) {
                     InfernalAbyss infernal = (InfernalAbyss) EntityAPI.getMonster(event.getEntity());
-                    if(infernal.getGhast() != null && infernal.getGhast().isAlive()) {
+                    if (infernal.getGhast() != null && infernal.getGhast().isAlive()) {
                         //He is (or should be) on the ghast.
                         Entity pass = event.getEntity();
                         if (pass != null) pass.eject();
