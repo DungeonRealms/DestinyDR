@@ -15,6 +15,7 @@ import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
@@ -378,8 +379,13 @@ public class Fishing implements GenericMechanic, Listener {
 
             int duraBuff = pole.getAttributes().getAttribute(FishingAttributeType.DURABILITY).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_DURABILITY);
 
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(pl);
+            if (gamePlayer != null)
+                gamePlayer.setAbleToDrop(false);
+
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+
                 int fishRoll = ThreadLocalRandom.current().nextInt(100);
                 int successRate = pole.getTier().getId() > spotTier ? (pole.getTier().getId() - spotTier) * 20 + 20 : 0;
 
@@ -415,24 +421,35 @@ public class Fishing implements GenericMechanic, Listener {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
                         pole.damageItem(pl, 1);
+
+                    if (gamePlayer != null)
+                        gamePlayer.setAbleToDrop(true);
                     return;
                 }
 
-
+                PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
                 FishingTier fTier = FishingTier.getByTier(spotTier);
                 ItemStack fish = new ItemFish(fTier, EnumFish.getRandomFish(fTier.getTier())).generateItem();
                 int fishDrop = 1;
 
+                int level = pole.getLevel();
                 if (ThreadLocalRandom.current().nextInt(100) > duraBuff)
                     pole.damageItem(pl, 2);
 
-                pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName().trim() + ChatColor.GREEN + "!");
 
                 int exp = fTier.getXP();
-                pole.addExperience(pl, exp);
 
+                //Dont add on this breakage.
+                if (!(level == 100 && pole.getLevel() == 1))
+                    pole.addExperience(pl, exp);
 
-                PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
+                boolean hasPoleStill = pole.updateItem(pl, false);
+
+                if(!hasPoleStill){
+                    pl.sendMessage(ChatColor.RED + "It seems your Fishing Rod has disappeared?");
+                    return;
+                }
+                pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName().trim() + ChatColor.GREEN + "!");
                 pw.addExperience(exp / 8, false, true, true);
                 pw.getPlayerGameStats().addStat(StatColumn.FISH_CAUGHT);
 
@@ -446,9 +463,6 @@ public class Fishing implements GenericMechanic, Listener {
                     pw.sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                 }
 
-
-                //Update the rod.
-                pole.updateItem(pl);
 //                pl.getEquipment().setItemInMainHand(pole.generateItem());
                 fish.setAmount(fishDrop);
 
@@ -559,7 +573,8 @@ public class Fishing implements GenericMechanic, Listener {
                     if (e.getHook() != null && e.getHook().getLocation() != null)
                         shootItemStackFromWater(fish, pl, e.getHook().getLocation());
                 }
-
+                if (gamePlayer != null)
+                    gamePlayer.setAbleToDrop(true);
             }, 10);
         } else if (e.getState() == State.BITE) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

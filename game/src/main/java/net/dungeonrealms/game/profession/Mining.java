@@ -163,11 +163,19 @@ public class Mining implements GenericMechanic, Listener {
 
         //  FAILED  //
         if (oreToAdd == 0) {
-            pickaxe.updateItem(p);
+            pickaxe.updateItem(p, false);
 //            p.getEquipment().setItemInMainHand(pickaxe.generateItem());
             p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
             return;
         }
+
+        pickaxe.addExperience(p, xpGain);
+        boolean hasPickaxe = pickaxe.updateItem(p, false);
+        if (!hasPickaxe) {
+            p.sendMessage(ChatColor.RED + "It seems your Pickaxe has disappeared?");
+            return;
+        }
+        p.updateInventory();
 
         Location l = block.getLocation();
         if (rand.nextInt(100) < pickaxe.getAttributes().getAttribute(PickaxeAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(p, Trinket.MINE_TREASURE_FIND)) {
@@ -217,9 +225,6 @@ public class Mining implements GenericMechanic, Listener {
             }, 20 * 5);
         }
 
-        pickaxe.addExperience(p, xpGain);
-        pickaxe.updateItem(p);
-        p.updateInventory();
 
         //  DOUBLE ORE  //
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DOUBLE_ORE).getValue() + Trinket.getTrinketValue(p, Trinket.MIN_DOUBLE_ORE) >= rand.nextInt(100) + 1) {

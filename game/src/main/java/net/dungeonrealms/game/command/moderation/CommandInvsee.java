@@ -59,7 +59,7 @@ public class CommandInvsee extends BaseCommand {
 
                         new CharacterSelectionGUI(sender, accountID, (charID) -> {
 
-                            PlayerWrapper.getPlayerWrapper(uuid, charID,true, false, (wrapper) -> {
+                            PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
                                 if (wrapper == null || wrapper.getPendingInventory() == null) {
                                     sender.sendMessage(ChatColor.RED + "An error occurred.");
                                     return;

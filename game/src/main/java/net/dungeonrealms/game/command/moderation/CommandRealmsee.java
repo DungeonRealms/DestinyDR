@@ -62,7 +62,7 @@ public class CommandRealmsee extends BaseCommand {
 
 
                 new CharacterSelectionGUI(player,accountID, (charID) -> {
-                PlayerWrapper.getPlayerWrapper(uuid, charID,false, true, (wrapper) -> {
+                PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
                     if (wrapper.isPlaying()) {
                         player.sendMessage(ChatColor.RED + "This user is online on another shard. Changes to their realm may not save.");
                     }

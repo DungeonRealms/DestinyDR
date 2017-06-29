@@ -50,7 +50,7 @@ public class CommandGemsee extends BaseCommand {
 
             new CharacterSelectionGUI(sender, accountID, (charID) -> {
 
-                PlayerWrapper.getPlayerWrapper(uuid, charID,false, true, (wrapper) -> {
+                PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
                     if (wrapper == null) {
                         sender.sendMessage(ChatColor.RED + "Something went wrong");
                         return;

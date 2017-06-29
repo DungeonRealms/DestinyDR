@@ -7,7 +7,6 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantArmor;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantFishingRod;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
 import net.dungeonrealms.game.item.items.functional.ItemEnchantProfession;
@@ -18,12 +17,8 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ProfessionAttribute;
-import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -87,7 +82,7 @@ public abstract class ProfessionItem extends ItemGear {
             setXP(0);
             setDestroyed(false);//TEST
             this.durability = MAX_DURABILITY;
-            updateItem(player);
+            updateItem(player, true);
         } else {
             player.sendMessage(ChatColor.RED + "Your tool bursts in your hands");
         }
@@ -124,14 +119,14 @@ public abstract class ProfessionItem extends ItemGear {
     public List<ItemEnchantProfession> getEnchants() {
         if (this instanceof ItemPickaxe) {
             List<ItemEnchantProfession> profession = Lists.newArrayList();
-            for(Item.AttributeType type : getAttributes().getAttributes()){
-                profession.add(new ItemEnchantPickaxe().addEnchant((ProfessionAttribute)type, getAttributes().getAttribute(type).getValue()));
+            for (Item.AttributeType type : getAttributes().getAttributes()) {
+                profession.add(new ItemEnchantPickaxe().addEnchant((ProfessionAttribute) type, getAttributes().getAttribute(type).getValue()));
             }
             return profession;
         } else if (this instanceof ItemFishingPole) {
             List<ItemEnchantProfession> profession = Lists.newArrayList();
-            for(Item.AttributeType type : getAttributes().getAttributes()){
-                profession.add(new ItemEnchantFishingRod().addEnchant((ProfessionAttribute)type, getAttributes().getAttribute(type).getValue()));
+            for (Item.AttributeType type : getAttributes().getAttributes()) {
+                profession.add(new ItemEnchantFishingRod().addEnchant((ProfessionAttribute) type, getAttributes().getAttribute(type).getValue()));
             }
             return profession;
 //            return new ItemEnchantFishingRod((ItemFishingPole) this);
@@ -244,15 +239,24 @@ public abstract class ProfessionItem extends ItemGear {
 //        p.getEquipment().setItemInMainHand(generateItem());
     }
 
-    public void updateItem(Player player) {
+    public boolean updateItem(Player player, boolean addIfNeeded) {
         for (int i = 0; i < player.getInventory().getSize(); i++) {
             ItemStack item = player.getInventory().getItem(i);
             if (item != null && item.getType() != Material.AIR && item.equals(getItem())) {
                 player.getInventory().setItem(i, generateItem());
                 player.updateInventory();
-                return;
+                return true;
             }
         }
+        Bukkit.getLogger().info("Unable to find rod on " + player.getName() + " Cursor: " + player.getItemOnCursor());
+        if (addIfNeeded) {
+            Bukkit.getLogger().info("Adding rod since unable to find to " + player.getName());
+            //Unable to find at all in their inventory?
+            player.getInventory().addItem(generateItem());
+            player.updateInventory();
+            return true;
+        }
+        return false;
     }
 
     /**

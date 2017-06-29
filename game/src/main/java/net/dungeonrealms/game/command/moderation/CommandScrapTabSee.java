@@ -55,7 +55,7 @@ public class CommandScrapTabSee extends BaseCommand {
 
 
                 new CharacterSelectionGUI(player,accountID, (charID) -> {
-                    PlayerWrapper.getPlayerWrapper(uuid, charID,false, true, (wrapper) -> {
+                    PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
                         if (wrapper == null) {
                             player.sendMessage(ChatColor.RED + "No PlayerWrapper found for " + name + " (" + uuid + ")");
                             return;

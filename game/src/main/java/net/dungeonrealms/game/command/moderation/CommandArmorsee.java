@@ -67,7 +67,7 @@ public class CommandArmorsee extends BaseCommand {
                     return;
                 }
                 new CharacterSelectionGUI(player, accountID, (charID) -> {
-                    PlayerWrapper.getPlayerWrapper(uuid,charID, false, true, (wrapper) -> {
+                    PlayerWrapper.getPlayerWrapper(uuid,charID, false, false, (wrapper) -> {
                         if(wrapper == null) {
                             return;
                         }

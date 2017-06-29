@@ -161,7 +161,7 @@ public class MainListener implements Listener {
     }
 
 
-    Map<UUID, MessageTracker> messageTracker = new HashMap<>();
+//    Map<UUID, MessageTracker> messageTracker = new HashMap<>();
 
     /**
      * Monitors and checks the players language.
@@ -253,7 +253,7 @@ public class MainListener implements Listener {
                     "maintenance" + ChatColor.AQUA + " mode. Only authorized users can join");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDropEvent(PlayerDropItemEvent event) {
         GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
         if (gp != null && !gp.isAbleToDrop())
@@ -310,7 +310,7 @@ public class MainListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         GameAPI.asyncTracker.remove(event.getPlayer());
-        messageTracker.remove(event.getPlayer().getUniqueId());
+        //messageTracker.remove(event.getPlayer().getUniqueId());
 
         if (!event.getPlayer().hasMetadata("kickedIgnore"))
             onDisconnect(event.getPlayer(), true);
