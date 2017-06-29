@@ -72,7 +72,7 @@ public class CommandWipe extends BaseCommand {
                         }
                     });
 
-                });
+                }).open(player, null);
             });
             return true;
         }

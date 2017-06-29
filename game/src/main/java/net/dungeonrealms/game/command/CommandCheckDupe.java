@@ -51,7 +51,6 @@ public class CommandCheckDupe extends BaseCommand {
                 long start = System.currentTimeMillis();
                 //ItemStack, CustomID
                 HashMap<String, CharacterInventory> dupeMap = new HashMap<>();
-                Set<ItemStack> items = new HashSet<>();
                 int scanned = 0;
                 while (rs.next()) {
                     Inventory inv = ItemSerialization.fromString(rs.getString("characters.inventory_storage"), 36);
