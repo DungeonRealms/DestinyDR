@@ -24,7 +24,7 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 		this.fireProof = true;
 		this.b_ = 4;
 	}
-	
+
 	@Override
     public ItemStack getWeapon() {
         return makeItem(new ItemWeapon());

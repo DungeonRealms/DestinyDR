@@ -374,6 +374,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPl());
         cm.registerCommand(new CommandPDecline());
 
+        cm.registerCommand(new CommandCheckDupe());
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
 

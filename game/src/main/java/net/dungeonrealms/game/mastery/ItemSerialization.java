@@ -101,6 +101,7 @@ public class ItemSerialization {
      * @since 1.0
      */
     public static Inventory fromString(String s) {
+        if(s == null || s.isEmpty())return null;
         YamlConfiguration configuration = new YamlConfiguration();
         try {
             configuration.loadFromString(Base64Coder.decodeString(s));
@@ -120,6 +121,7 @@ public class ItemSerialization {
      * @since 1.0
      */
     public static Inventory fromString(String s, int overrideSize) {
+        if(s == null || s.isEmpty())return null;
         YamlConfiguration configuration = new YamlConfiguration();
         try {
             configuration.loadFromString(Base64Coder.decodeString(s));
