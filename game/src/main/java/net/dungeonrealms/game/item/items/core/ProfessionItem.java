@@ -149,6 +149,8 @@ public abstract class ProfessionItem extends ItemGear {
     public void levelUp(Player p) {
         if (getLevel() >= 100)
             return;
+
+        int oldLevel = getLevel();
         int newLevel = getLevel() + 1;
 
         if (newLevel == getNextTierLevel())
@@ -159,7 +161,7 @@ public abstract class ProfessionItem extends ItemGear {
         setXP(0);
 
         //Apply new stat.
-        if (getTier() != oldTier) {
+        if (getTier() != oldTier || oldLevel == 99 && getLevel() == 100) {
 //            ProfessionAttribute[] attributes = (ProfessionAttribute[]) getGeneratedItemType().getAttributeBank().getAttributes();
             ProfessionAttribute pa = getRandomProfessionAttribute();
             int currentAmount = getAttributes().hasAttribute(pa) ? getAttributes().get(pa).getValue() : 0;
