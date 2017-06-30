@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
@@ -77,7 +78,7 @@ public class ItemArmor extends CombatItem {
         if (getItemType() != null && getItemType() == ItemType.SHIELD) {
             ItemMeta meta = item.getItemMeta();
             BlockStateMeta blockMeta = (BlockStateMeta) meta;
-            if(blockMeta == null)return item;
+            if (blockMeta == null) return item;
             BlockState state = blockMeta.getBlockState();
             Banner banner = (Banner) state;
             Item.ItemTier tier = getTier();
@@ -130,5 +131,9 @@ public class ItemArmor extends CombatItem {
     public static boolean isArmor(ItemStack item) {
         return ItemArmorHelmet.isHelmet(item) || ItemArmorChestplate.isChestplate(item)
                 || ItemArmorLeggings.isLeggings(item) || ItemArmorBoots.isBoots(item) || ItemArmorShield.isShield(item);
+    }
+
+    public static boolean isArmorFromMaterial(ItemStack item) {
+        return item.getType().name().endsWith("_CHESTPLATE") || item.getType().name().endsWith("_LEGGINGS") || item.getType().name().endsWith("_HELMET") || item.getType().name().endsWith("_BOOTS") || item.getType() == Material.SHIELD;
     }
 }

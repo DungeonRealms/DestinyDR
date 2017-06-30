@@ -99,7 +99,7 @@ public class RestrictionListener implements Listener {
     }
 
     public static boolean isIllegalItem(ItemStack is) {
-        if(is.getType() == Material.AIR)return false;
+        if (is.getType() == Material.AIR) return false;
         if (is.getType() == Material.SKULL_ITEM) {
             //Dragon skull.
             if (is.getDurability() == (short) 5 && !is.hasItemMeta()) {
@@ -107,7 +107,7 @@ public class RestrictionListener implements Listener {
             }
         }
 
-        if(is.getItemMeta().hasLore()) {
+        if (is.getItemMeta().hasLore()) {
             for (String s : is.getItemMeta().getLore()) {
                 if (s.equals(ChatColor.GRAY + "Display Item")) {
                     return true;
@@ -285,7 +285,7 @@ public class RestrictionListener implements Listener {
         }
 
 
-        if(ItemWeapon.isWeapon(i)) {
+        if (ItemWeapon.isWeapon(i)) {
             // Play the noise.
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
@@ -461,7 +461,7 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
-        if(event.getEntity() instanceof Minecart){
+        if (event.getEntity() instanceof Minecart) {
             event.setCancelled(true);
             return;
         }
@@ -497,13 +497,18 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onItemDurabilityTake(PlayerItemDamageEvent event) {
-        Player player = event.getPlayer();
-        if(!GameAPI.isInSafeRegion(player.getLocation())) return;
-        if(!DuelingMechanics.isDueling(player.getUniqueId())) return;
-        if(ItemArmor.isArmor(event.getItem())) {
-            event.setDamage(0);
+//        Player player = event.getPlayer();
+        if (ItemArmor.isArmorFromMaterial(event.getItem()) || ItemWeapon.isWeaponFromMaterial(event.getItem())) {
             event.setCancelled(true);
+//            return;
         }
+//
+//        if (!GameAPI.isInSafeRegion(player.getLocation())) return;
+//        if (!DuelingMechanics.isDueling(player.getUniqueId())) return;
+//        if (ItemArmor.isArmor(event.getItem())) {
+//            event.setDamage(0);
+//            event.setCancelled(true);
+//        }
     }
 
     /**
