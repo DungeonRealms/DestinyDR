@@ -40,7 +40,7 @@ public enum EnumNamedElite {
 
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.STAFF_SKELETON, -411, 33, -3487, 1800, 1),
-    LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.MELEE_SKELETON, -1590, 63, 1218, 2500, 1);
+    LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1590, 63, 1218, 2500, 1);
     @Getter
     private String displayName;
     @Getter
