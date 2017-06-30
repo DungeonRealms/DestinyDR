@@ -151,7 +151,7 @@ public class DamageAPI {
             knockbackEntity(attacker.getPlayer(), defender.getEntity(), 1.5);
 
         //  BLIND  //
-        if (getChance(attacker.getAttributes(), WeaponAttributeType.BLIND))
+        if (getChance(attacker.getAttributes(), WeaponAttributeType.BLIND) || attacker.getEntity() instanceof Enderman && ThreadLocalRandom.current().nextInt(100) <= 40)
             applyBlind(defender.getEntity(), weaponTier);
 
         //  SLOW  //
