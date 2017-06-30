@@ -12,6 +12,7 @@ import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -492,6 +493,17 @@ public class RestrictionListener implements Listener {
         LivingEntity passenger = (LivingEntity) horse.getPassenger();
         horse.eject();
         if (passenger != null) Bukkit.getServer().getPluginManager().callEvent(new VehicleExitEvent(horse, passenger));
+    }
+
+    @EventHandler
+    public void onItemDurabilityTake(PlayerItemDamageEvent event) {
+        Player player = event.getPlayer();
+        if(!GameAPI.isInSafeRegion(player.getLocation())) return;
+        if(!DuelingMechanics.isDueling(player.getUniqueId())) return;
+        if(ItemArmor.isArmor(event.getItem())) {
+            event.setDamage(0);
+            event.setCancelled(true);
+        }
     }
 
     /**

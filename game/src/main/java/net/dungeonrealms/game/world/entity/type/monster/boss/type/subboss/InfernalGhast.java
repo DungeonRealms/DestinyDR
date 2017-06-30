@@ -11,6 +11,7 @@ import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -201,6 +202,13 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
                                 return;
                             }
                             super.a(movingobjectposition);
+                        }
+
+                        @Override
+                        public boolean damageEntity(DamageSource damagesource, float f) {
+                            if (this.isInvulnerable(damagesource))
+                                return false;
+                            return damagesource.getEntity() != null && !CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f);
                         }
 
                         @Override

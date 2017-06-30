@@ -15,11 +15,7 @@ import net.minecraft.server.v1_9_R2.EntityLiving;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -74,6 +70,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
         if(ghast != null && ghast.isAlive() && getBukkit().getVehicle() == null) {
             getBukkit().teleport(ghast.getBukkit());
+            ghast.getBukkit().eject();
             ghast.getBukkit().setPassenger(getBukkit());
         }
     }
@@ -89,7 +86,9 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     public void a(EntityLiving entity, float f) {
         if (!ItemWeaponStaff.isStaff(getHeld()))
             return;
-        if(ghast != null && ghast.isAlive()) return; //ghast should be firing instead.
+        if(ghast != null && ghast.isAlive()) {
+            return; //ghast should be firing instead.
+        }
         ItemWeaponStaff staff = new ItemWeaponStaff(getHeld());
 
         LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;

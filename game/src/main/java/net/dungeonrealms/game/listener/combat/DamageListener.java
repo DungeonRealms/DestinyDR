@@ -705,7 +705,7 @@ public class DamageListener implements Listener {
                         //He is (or should be) on the ghast.
                         Entity pass = event.getEntity();
                         if (pass != null) pass.eject();
-                        Location spawn = ((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint();
+                        Location spawn = infernal.getGhast().getSpawnPoint();
                         infernal.getGhast().getBukkit().teleport(spawn);
                         if (pass != null) {
                             pass.teleport(spawn);
