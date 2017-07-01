@@ -16,6 +16,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.ChestEffectsGUI;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
@@ -173,6 +174,23 @@ public class ShopListener implements Listener {
                     shop.setDescription(evt.getMessage());
                     clicker.sendMessage(ChatColor.GREEN + "Your shop description is now: " + ChatColor.GRAY + evt.getMessage());
                 });
+                return;
+            }
+
+            if (event.getRawSlot() == shop.getInvSize() - 8) {
+                //Description
+                event.setCancelled(true);
+                /*clicker.sendMessage(ChatColor.GREEN + "Please enter your new shop description!");
+                Chat.listenForMessage(clicker, evt -> {
+                    if (evt.getMessage().equals("cancel")) {
+                        clicker.sendMessage(ChatColor.RED + "Setting Shop Description - " + ChatColor.BOLD + "CANCELLED");
+                        return;
+                    }
+                    shop.setDescription(evt.getMessage());
+                    clicker.sendMessage(ChatColor.GREEN + "Your shop description is now: " + ChatColor.GRAY + evt.getMessage());
+                });*/
+                clicker.closeInventory();
+                new ChestEffectsGUI(clicker).open(clicker,event.getAction());
                 return;
             }
 

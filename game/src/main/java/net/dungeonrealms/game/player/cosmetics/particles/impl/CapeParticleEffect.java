@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.cosmetics.particles.impl;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -44,7 +45,15 @@ public class CapeParticleEffect extends SpecialParticleEffect {
         ParticleAPI.spawnParticle(Particle.CLOUD, toPlay, Utils.randFloat(0, 0.5f),0.0f,Utils.randFloat(0, 0.5f), 10, 0F);
     }
 
+    @Override
+    public boolean tickWhileMoving() {
+        return false;
+    }
 
+    @Override
+    public SpecialParticles getParticleEnum() {
+        return null;
+    }
 
     private static final double[][] leftWing = {
             {0,0,0},

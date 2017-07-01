@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.RealmEffectsGUI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.realms.*;
@@ -136,6 +137,11 @@ public class RealmListener implements Listener {
                             if (GameAPI.isCooldown(player, Metadata.PORTAL_COOLDOWN)) {
                                 event.setCancelled(true);
                                 return;
+                            }
+
+                            if(portal.getOwner().equals(player.getUniqueId())) {
+                                //It's the owner
+                                new RealmEffectsGUI(player).open(player,null);
                             }
 
                             event.setCancelled(true);

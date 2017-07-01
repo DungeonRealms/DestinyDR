@@ -48,7 +48,7 @@ public enum QueryType {
     CHARACTER_UPDATE("UPDATE characters SET created = %s, level = %s, experience = %s, alignment = %s, inventory_storage = %s, armour_storage = %s, gems = %s, bank_storage = %s, bank_level = %s, " +
             "shop_level = %s, mule_storage = %s, mule_level = %s, health = %s, location = %s, mounts = %s," +
             "activeMount = %s, activePet = %s, activeTrail = %s, activeMountSkin = %s, activeHatOverride = %s, questData = %s, collection_storage = %s, " +
-            "foodLevel = %s, combatLogged = %s, shopOpened = %s, loggerDied = %s, currentHearthStone = %s, alignmentTime = %s, portalShardsT1 = %s, portalShardsT2 = %s, portalShardsT3 = %s, portalShardsT4 = %s, portalShardsT5 = %s WHERE `character_id` = %s;"),
+            "foodLevel = %s, combatLogged = %s, shopOpened = %s, loggerDied = %s, currentHearthStone = %s, alignmentTime = %s, portalShardsT1 = %s, portalShardsT2 = %s, portalShardsT3 = %s, portalShardsT4 = %s, portalShardsT5 = %s, activeSpecialEffect = %s, activeChestEffect = %s, activeRealmEffect = %s, activePetEffect = %s WHERE `character_id` = %s;"),
     USER_UPDATE("UPDATE users SET username = %s, selected_character_id = %s, ecash = %s, joined = %s, last_login = %s, last_logout = %s, last_free_ecash = %s, last_shard_transfer = %s, is_online = %s, currentShard = %s, currencyTab = %s, firstLogin = %s, lastViewedBuild = %s, lastNoteSize = %s, lastVote = %s, " +
             "pets = %s, particles = %s, mountSkin = %s, purchaseables = %s, pending_purchaseables = %s WHERE account_id = %s"),
     DELETE_GUILD_MEMBER("DELETE FROM guild_members WHERE account_id = %s"),

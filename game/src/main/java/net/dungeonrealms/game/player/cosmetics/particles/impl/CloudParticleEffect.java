@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.cosmetics.particles.impl;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.PacketPlayOutWorldParticles;
 import org.bukkit.Effect;
@@ -19,22 +20,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CloudParticleEffect extends SpecialParticleEffect {
 
     private static ThreadLocalRandom random = ThreadLocalRandom.current();
-    private double radius;
 
-    public CloudParticleEffect(Location toPlay, double radius) {
+    public CloudParticleEffect(Location toPlay) {
         super(toPlay);
-        this.radius = radius;
     }
 
-    public CloudParticleEffect(LivingEntity toPlay, double radius) {
+    public CloudParticleEffect(LivingEntity toPlay) {
         super(toPlay);
-        this.radius = radius;
     }
 
     @Override
     public void tick() {
         if(!canTick()) return;
-        Location toPlayEffect = getLocation().clone().add(0,1,0);
+        Location toPlayEffect = getLocation().clone().add(0,2.5,0);
         constructCloud(toPlayEffect);
         constructRain(toPlayEffect);
         if(random.nextInt(10) == 5) constructLightningBolt(getRandomBoltLocation(toPlayEffect));
@@ -74,6 +72,16 @@ public class CloudParticleEffect extends SpecialParticleEffect {
                 ParticleAPI.spawnParticle(Particle.REDSTONE, new Location(toStart.getWorld(), x,y,z), 1,0.95,0f, 0, 1F);
             }
         }
+    }
+
+    @Override
+    public boolean tickWhileMoving() {
+        return false;
+    }
+
+    @Override
+    public SpecialParticles getParticleEnum() {
+        return SpecialParticles.CLOUD;
     }
 
     protected void constructRain(Location toPlay) {

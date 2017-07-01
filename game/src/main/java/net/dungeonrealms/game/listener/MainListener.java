@@ -394,7 +394,9 @@ public class MainListener implements Listener {
             return;
 
         //Only check blocks that change to save on cpu checks.
-        if (event.getTo().getBlock() != event.getFrom().getBlock()) {
+        if (!event.getTo().getBlock().getLocation().equals(event.getFrom().getBlock().getLocation())) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
+            if(wrapper != null) wrapper.setLastBlockMovement(System.currentTimeMillis());
             DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
             if (offer != null) {
                 Player player = event.getPlayer();
@@ -451,15 +453,22 @@ public class MainListener implements Listener {
 
         Player player = event.getPlayer();
         ParticleAPI.ParticleEffect effect = DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.get(player);
-        if (effect == null || effect != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
+        if (effect == null || (effect != ParticleAPI.ParticleEffect.GOLD_BLOCK && effect != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) return;
         if (!player.getWorld().equals(Bukkit.getWorlds().get(0)) || player.getLocation().getBlock().getType() != Material.AIR)
             return;
         Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
         MaterialData data = new MaterialData(bl.getType(), bl.getData());
 
         if (DonationEffects.isGoldenCursable(data) && !Mining.isMineable(bl.getLocation())) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO.put(bl.getLocation(), data);
-            bl.setType(Material.GOLD_BLOCK);
+            //bl.setType(Material.GOLD_BLOCK);
+            if(wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
+                bl.setType(Material.WOOL);
+                bl.setData(wrapper.getLastIndependantColor().getWoolData());
+                wrapper.changeIndependentColor();
+            }
+            else bl.setType(Material.GOLD_BLOCK);
             bl.setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
@@ -485,13 +494,18 @@ public class MainListener implements Listener {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
-            if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK) return;
+            if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK && wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK) return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
             MaterialData m = new MaterialData(block.getType(), block.getData());
 
             if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m) && !Mining.isMineable(block.getLocation())) {
 
-                block.setType(Material.GOLD_BLOCK);
+                if(wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
+                    block.setType(Material.WOOL);
+                    block.setData(wrapper.getLastIndependantColor().getWoolData());
+                    wrapper.changeIndependentColor();
+                }
+                else block.setType(Material.GOLD_BLOCK);
                 DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
                         .put(block.getLocation(), m);
                 block.setMetadata("time",

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.cosmetics.particles.impl;
 
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
@@ -7,34 +8,37 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Rar349 on 6/27/2017.
  */
-public class HaloParticleEffect extends SpecialParticleEffect {
+public class FourthOfJulyAuraEffect extends SpecialParticleEffect {
 
-    private int lastDegree = 0;
+    private List<FourthOfJulySpiral> spirals = new ArrayList<>();
 
-    public HaloParticleEffect(Location toPlay) {
+
+
+    public FourthOfJulyAuraEffect(Location toPlay) {
         super(toPlay);
+        for(int k = 0; k < 4; k++) {
+            spirals.add(new FourthOfJulySpiral(toPlay,2, k * 90));
+        }
     }
 
-    public HaloParticleEffect(LivingEntity toPlay) {
+    public FourthOfJulyAuraEffect(LivingEntity toPlay) {
         super(toPlay);
+        for(int k = 0; k < 4; k++) {
+            spirals.add(new FourthOfJulySpiral(toPlay,2, k * 90));
+        }
     }
 
     @Override
     public void tick() {
-        if(!canTick()) return;
-        Location center = getLocation().clone();
-        center.add(0,1,0);
-        double radians = Math.toRadians(lastDegree);
-        double x = Math.cos(radians);
-        double z = Math.sin(radians);
-        center.add(x,0,z);
-        //location.getWorld().playEffect(location, Effect.FLAME, 1);
-        ParticleAPI.spawnParticle(Particle.FLAME, center,0.0,0.0,0.0, 1, 0F);
-        lastDegree += 5;
-        if(lastDegree >= 360) lastDegree = 0;
+        for(FourthOfJulySpiral spiral : spirals) {
+            spiral.tick();
+        }
     }
 
     @Override
@@ -44,7 +48,7 @@ public class HaloParticleEffect extends SpecialParticleEffect {
 
     @Override
     public SpecialParticles getParticleEnum() {
-        return null;
+        return SpecialParticles.FOURTH_AURA;
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.cosmetics.particles.impl;
 
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -33,6 +34,16 @@ public class GroundHaloParticleEffect extends SpecialParticleEffect {
         ParticleAPI.spawnParticle(Particle.FLAME, center,0.0,0.0,0.0, 1, 0F);
         lastDegree += 5;
         if(lastDegree >= 360) lastDegree = 0;
+    }
+
+    @Override
+    public boolean tickWhileMoving() {
+        return false;
+    }
+
+    @Override
+    public SpecialParticles getParticleEnum() {
+        return null;
     }
 
 

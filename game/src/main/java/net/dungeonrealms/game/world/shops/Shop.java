@@ -18,6 +18,8 @@ import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -58,6 +60,9 @@ public class Shop {
     @Getter
     @Setter
     private LinkedList<String> purchaseHistory = new LinkedList<>();
+    @Getter
+    @Setter
+    private SpecialParticleEffect chestEffect;
 
     public static final String HEART = "❤";
 
@@ -67,9 +72,10 @@ public class Shop {
         this.shopLevel = wrapper.getShopLevel();
         this.ownerName = getOwner().getName();
         this.block1 = loc.getWorld().getBlockAt(loc);
-        this.block2 = loc.getWorld().getBlockAt(loc.add(1, 0, 0));
+        this.block2 = loc.getWorld().getBlockAt(loc.clone().add(1, 0, 0));
+        if(wrapper.getActiveChestEffect() != null) applyChestEffect(wrapper.getActiveChestEffect());
         this.shopName = shopName;
-        hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc.add(0, 1.5, .5));
+        hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc.clone().add(1, 1.5, .5));
         hologram.insertTextLine(0, ChatColor.RED + shopName);
         hologram.insertTextLine(1, "0 " + ChatColor.RED + HEART);
         hologram.getVisibilityManager().setVisibleByDefault(true);
@@ -80,6 +86,11 @@ public class Shop {
         this.uniqueViewers = new ArrayList<>();
         this.purchaseHistory.addAll(wrapper.getPurchaseHistory());
         this.description = wrapper.getShopDescription();
+    }
+
+    public void applyChestEffect(SpecialParticles effect) {
+        Location loc = block1.getLocation();
+        chestEffect = SpecialParticles.constrauctEffectFromName(effect.getInternalName(), loc.clone().add(1.0,0,0.5));
     }
 
     private ItemStack getOpenShopButton() {
@@ -126,6 +137,13 @@ public class Shop {
         return stack;
     }
 
+    private ItemStack getChestEffectButton() {
+        ItemStack stack = new NBTWrapper(ItemManager.createItem(Material.FIREWORK,
+                ChatColor.GREEN + ChatColor.BOLD.toString() + "Chest Effects"))
+                .build();
+        return stack;
+    }
+
     private ItemStack getFillerShopItem() {
         return new NBTWrapper(ItemManager.createItem(Material.STAINED_GLASS_PANE, (short) 15, " ")).build();
     }
@@ -143,6 +161,7 @@ public class Shop {
         inv.setItem(invSize - 2, getDeleteShopButton());
 
         inv.setItem(invSize - 5, getDescriptionShopButton());
+        inv.setItem(invSize - 8, getChestEffectButton());
         inv.setItem(invSize - 9, getPurchaseHistoryShopButton());
         for (int slot = invSize - 1; slot >= invSize - 9; slot--) {
             ItemStack current = inv.getItem(slot);
@@ -451,5 +470,11 @@ public class Shop {
                 return true;
         }
         return false;
+    }
+
+    public static final void tickChestEffects() {
+        for(Shop shop : ShopMechanics.ALLSHOPS.values()) {
+            if(shop.getChestEffect() != null) shop.getChestEffect().tick();
+        }
     }
 }

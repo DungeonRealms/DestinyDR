@@ -41,7 +41,8 @@ public class ParticleAPI {
         VILLAGER_HAPPY(Material.SPIDER_EYE, "Poison", ChatColor.DARK_GREEN, 1000),
         SNOW_SHOVEL(Material.SNOW, "Snowfall"),
         HEART(Material.APPLE, "Hearts", 1000),
-        GOLD_BLOCK(Material.GOLD_BLOCK, "Golden Curse", -1);
+        GOLD_BLOCK(Material.GOLD_BLOCK, "Golden Curse", -1),
+        INDEPENDENCE_BLOCK(Material.REDSTONE_BLOCK, "Independence Curse", -1);
 
         private Material material;
         private String displayName;

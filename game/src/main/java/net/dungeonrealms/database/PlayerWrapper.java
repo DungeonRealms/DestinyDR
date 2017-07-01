@@ -49,6 +49,8 @@ import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.PendingPurchaseable;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -97,6 +99,14 @@ public class PlayerWrapper {
     private int guildID;
 
     @Getter
+    @Setter
+    private long lastBlockMovement = 0L;
+
+    @Setter
+    @Getter
+    private DyeColor lastIndependantColor = DyeColor.RED;
+
+    @Getter
     private PlayerGameStats playerGameStats;
 
     @Getter
@@ -119,7 +129,11 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
-    private String pendingInventoryString, pendingArmorString, storedLocationString, storedCollectionBinString;
+    private String pendingInventoryString, pendingArmorString, storedLocationString, storedCollectionBinString, pendingParticleEffectString;
+
+    @Getter
+    @Setter
+    private SpecialParticles activeChestEffect, activeRealmEffect, activePetEffect;
 
     @Getter
     @Setter
@@ -272,6 +286,10 @@ public class PlayerWrapper {
     private Player player;
 
     @Getter
+    @Setter
+    private SpecialParticleEffect activeSpecialEffect = null;
+
+    @Getter
     private AttributeList attributes = new AttributeList();
     private String currentWeapon;
     @Getter
@@ -418,6 +436,8 @@ public class PlayerWrapper {
                 this.realmTier = result.getInt("realm.tier");
                 this.firstLogin = result.getLong("users.firstLogin");
                 this.lastRealmReset = result.getLong("realm.lastReset");
+
+                loadSpecialParticleEffect(result);
 
                 this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("characters.mounts"), EnumMounts.class);
                 //Unlockables.
@@ -795,6 +815,13 @@ public class PlayerWrapper {
         for (ShardTier tier : ShardTier.values())
             array.add(getPortalShards(tier));
 
+        String specialParticle = null;
+        if(this.getActiveSpecialEffect() != null && this.getActiveSpecialEffect().getParticleEnum() != null) specialParticle = this.getActiveSpecialEffect().getParticleEnum().getInternalName();
+        array.add(specialParticle);
+        array.add(activeChestEffect == null ? null : activeChestEffect.getInternalName());
+        array.add(activeRealmEffect == null ? null : activeRealmEffect.getInternalName());
+        array.add(activePetEffect == null ? null : activePetEffect.getInternalName());
+
         array.add(getCharacterID());
         return getQuery(QueryType.CHARACTER_UPDATE, array.toArray(new Object[array.size()]));
     }
@@ -1064,6 +1091,26 @@ public class PlayerWrapper {
     }
 
     @SneakyThrows
+    private void loadSpecialParticleEffect(ResultSet set) {
+        this.pendingParticleEffectString = set.getString("characters.activeSpecialEffect");
+        String pendingChestEffectString = set.getString("characters.activeChestEffect");
+        String pendingRealmEffectString = set.getString("characters.activeRealmEffect");
+        String pendingPetEffectString = set.getString("characters.activePetEffect");
+
+        if (pendingChestEffectString != null && pendingChestEffectString.length() > 0 && !pendingChestEffectString.equalsIgnoreCase("null")) {
+            setActiveChestEffect(SpecialParticles.fromInternal(pendingChestEffectString));
+        }
+
+        if (pendingRealmEffectString != null && pendingRealmEffectString.length() > 0 && !pendingRealmEffectString.equalsIgnoreCase("null")) {
+            setActiveRealmEffect(SpecialParticles.fromInternal(pendingRealmEffectString));
+        }
+
+        if (pendingPetEffectString != null && pendingPetEffectString.length() > 0 && !pendingPetEffectString.equalsIgnoreCase("null")) {
+            setActivePetEffect(SpecialParticles.fromInternal(pendingPetEffectString));
+        }
+    }
+
+    @SneakyThrows
     private void loadPlayerPendingEquipment(ResultSet set) {
         this.pendingArmorString = set.getString("characters.armour_storage");
         if (pendingArmorString != null && pendingArmorString.length() > 0 && !pendingArmorString.equalsIgnoreCase("null")) {
@@ -1196,7 +1243,7 @@ public class PlayerWrapper {
     }
 
     public boolean hasEffectUnlocked(ParticleEffect effect) {
-        return getParticles().contains(effect) || effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB();
+        return getParticles().contains(effect) || (effect != ParticleEffect.INDEPENDENCE_BLOCK && effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB());
     }
 
     /**
@@ -1291,6 +1338,10 @@ public class PlayerWrapper {
         }
         if (this.activeHatOverride != null)
             setActiveHatOverride(this.activeHatOverride);
+
+        if (pendingParticleEffectString != null && pendingParticleEffectString.length() > 0 && !pendingParticleEffectString.equalsIgnoreCase("null")) {
+            setActiveSpecialEffect(SpecialParticles.constrauctEffectFromName(pendingParticleEffectString, player));
+        }
     }
 
     public void loadPlayerInventory(Player player) {
@@ -1570,5 +1621,24 @@ public class PlayerWrapper {
 
     public void updatePurchaseLog(String action, String transaction_id, long date, String uuid) {
         SQLDatabaseAPI.getInstance().executeUpdate(null, getQuery(QueryType.INSERT_PURCHASE_LOG, action, transaction_id, date, uuid), true);
+    }
+
+    public static final void tickSpecialEffects() {
+        for(PlayerWrapper wrapper : playerWrappers.values()) {
+            if(wrapper.getActiveSpecialEffect() == null)continue;
+            if(!wrapper.getActiveSpecialEffect().canTick()) continue;
+            Player player = wrapper.getPlayer();
+            if(player == null || !player.isOnline()) continue;
+            long lastMovement = wrapper.getLastBlockMovement();
+            if(!wrapper.getActiveSpecialEffect().tickWhileMoving() && System.currentTimeMillis() - lastMovement < 1000) continue;
+
+            wrapper.getActiveSpecialEffect().tick();
+        }
+    }
+
+    public void changeIndependentColor() {
+        if(lastIndependantColor.equals(DyeColor.RED)) lastIndependantColor = DyeColor.WHITE;
+        else if(lastIndependantColor.equals(DyeColor.WHITE)) lastIndependantColor = DyeColor.BLUE;
+        else lastIndependantColor = DyeColor.RED;
     }
 }

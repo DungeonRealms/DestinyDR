@@ -31,8 +31,12 @@ public abstract class SpecialParticleEffect {
     public abstract long getTickRate();
 
     public Location getLocation() {
-        if(entityToPlay != null) return entityToPlay.getEyeLocation().clone();
+        if(entityToPlay != null) return entityToPlay.getLocation().clone();
         return stationaryLocation.clone();
     }
+
+    public abstract boolean tickWhileMoving();
+
+    public abstract SpecialParticles getParticleEnum();
 
 }

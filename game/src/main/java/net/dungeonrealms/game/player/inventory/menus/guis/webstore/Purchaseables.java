@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -82,11 +83,15 @@ public enum Purchaseables {
     SNOWMAN_PET("Snowman Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 18, false, true, false, ChatColor.GREEN, true, EntityType.SNOWMAN.getTypeId(), EnumPets.SNOWMAN),
     INDEPENDENCE_CREEPER_PET("Independence Creeper Pet", "", Material.MONSTER_EGG, WebstoreCategories.PETS, 19, false, true, false, ChatColor.GREEN, true, EntityType.CREEPER.getTypeId(), EnumPets.INDEPENDENCE_CREEPER),
 
+    INDEPENDENCE_PLAYER_AURA("Independence Aura", "\nA festive player aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.PLAYER_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
+    INDEPENDENCE_CHEST_AURA("Independence Chest Aura", "\nA festive chest aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.CHEST_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
+    INDEPENDENCE_REALM_AURA("Independence Realm Aura", "\nA festive realm aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.REALM_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, true, true, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
     GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, false, ChatColor.GOLD, true),
+    INDEPENDENCE_CURSE("Independence Curse", "\nEverything you touch shall\nexperience independence day!", Material.REDSTONE_BLOCK, WebstoreCategories.MISCELLANEOUS, 7, false, true, false, ChatColor.DARK_BLUE, true),
     DPS_DUMMY("DPS Dummy", "\nA squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, false, ChatColor.GREEN),
     LIGHTNING_ROD("Lightning Rod", "\nStrike lightning at will!", Material.BLAZE_ROD, WebstoreCategories.MISCELLANEOUS, 1, false, true, false, ChatColor.AQUA,true),
     CHARACTER_SLOT("Extra Character Slot", "\nAn extra character for you to play on!", Material.STAINED_GLASS_PANE, null, 1, true, true, true, ChatColor.GREEN, true, DyeColor.LIME.getWoolData());

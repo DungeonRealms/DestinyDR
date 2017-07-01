@@ -207,6 +207,10 @@ public class CommandEss extends BaseCommand {
                                 if (trail == ParticleEffect.GOLD_BLOCK) {
                                     Purchaseables.GOLDEN_CURSE.setNumberOwned(wrapper, 1);
                                 }
+
+                                if (trail == ParticleEffect.INDEPENDENCE_BLOCK) {
+                                    Purchaseables.INDEPENDENCE_CURSE.setNumberOwned(wrapper, 1);
+                                }
                                 wrapper.getParticles().add(trail);
                                 wrapper.setActiveTrail(trail);
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");

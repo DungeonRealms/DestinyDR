@@ -176,8 +176,9 @@ public class DonationEffects implements GenericMechanic {
             }
 
             ParticleEffect effect = entry.getValue();
-            if (effect != ParticleEffect.GOLD_BLOCK)
+            if (effect != ParticleEffect.GOLD_BLOCK && effect != ParticleEffect.INDEPENDENCE_BLOCK) {
                 ParticleAPI.spawnParticle(effect.getParticle(), entry.getKey().getLocation().add(0, .22, 0), -.5F, 6, effect == ParticleEffect.REDSTONE || effect == ParticleEffect.NOTE ? -1F : 0.02F);
+            }
         }
     }
 

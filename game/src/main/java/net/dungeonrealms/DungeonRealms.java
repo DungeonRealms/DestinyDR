@@ -85,7 +85,9 @@ import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -564,6 +566,11 @@ public class DungeonRealms extends JavaPlugin {
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupPlayers, 0L, 12000L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
+            PlayerWrapper.tickSpecialEffects();
+            Shop.tickChestEffects();
+            Realm.tickRealmEffects();
+        },1L,1L);
 
 //        ItemGenerator.convertOldItemTemplates();
     }

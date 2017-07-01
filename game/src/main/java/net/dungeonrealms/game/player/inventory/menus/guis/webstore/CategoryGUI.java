@@ -26,6 +26,7 @@ public class CategoryGUI extends GUIMenu {
 
 
         for(WebstoreCategories cat : WebstoreCategories.values()) {
+            if(cat.getGuiSlot() < 0) continue; //Not displayed here.
             ItemStack displayStack = new ItemStack(cat.getDisplayItem());
             if(cat.equals(WebstoreCategories.HATS)) displayStack.setDurability((short)4);
             setItem(cat.getGuiSlot(), new GUIItem(displayStack).setName(cat.getDisplayNameColor().toString() + ChatColor.BOLD + cat.getName()).setLore(cat.getDescription()).setClick((evt) -> {

@@ -23,6 +23,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
+import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -83,6 +85,10 @@ public class Realm {
     private double upgradeProgress;
 
     @Getter
+    @Setter
+    private SpecialParticleEffect realmEffect;
+
+    @Getter
     @Setter // The hologram that displays over the portal.
     private Hologram hologram;
 
@@ -139,6 +145,12 @@ public class Realm {
             location.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             location.add(0, 1, 0).getBlock().setType(Material.PORTAL);
 
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            if(wrapper != null && wrapper.getActiveRealmEffect() != null) {
+                //this.realmEffect = SpecialParticles.constrauctEffectFromName(wrapper.getActiveRealmEffect().getInternalName(), location.clone().add(0.5,-.7,0.5));
+                applyRealmEffect(wrapper.getActiveRealmEffect());
+            }
+
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), location.add(0.5, 1.5, 0.5));
             realmHologram.getVisibilityManager().setVisibleByDefault(true);
             setHologram(realmHologram);
@@ -164,6 +176,11 @@ public class Realm {
             Quests.getInstance().triggerObjective(player, ObjectiveOpenRealm.class);
 
         });
+    }
+
+    public void applyRealmEffect(SpecialParticles effect) {
+        Location location = portalLocation.clone();
+        this.realmEffect = SpecialParticles.constrauctEffectFromName(effect.getInternalName(), location.add(0.5,0.3,0.5));
     }
 
     /**
@@ -264,6 +281,8 @@ public class Realm {
 
         if (getHologram() != null)
             getHologram().delete();
+
+        setRealmEffect(null);
 
         setPortalLocation(null);
         setState(RealmState.CLOSED);
@@ -865,5 +884,14 @@ public class Realm {
     public boolean getProperty(String name) {
         RealmProperty<Boolean> property = (RealmProperty<Boolean>) realmProperties.get(name);
         return (boolean) property.getValue() && !property.hasExpired();
+    }
+
+    public static void tickRealmEffects() {
+        for(Realm realm : Realms.getInstance().getRealms()) {
+            if(realm == null) continue;
+            if(realm.getRealmEffect() == null) continue;
+            if(!realm.getState().equals(RealmState.CLOSED) && !realm.getState().equals(RealmState.OPENED)) continue;
+            realm.getRealmEffect().tick();
+        }
     }
 }

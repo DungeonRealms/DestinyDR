@@ -89,7 +89,26 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                             } else {
                                 sendNotUnlocked(player);
                             }
-                        } else if (webItem == Purchaseables.DPS_DUMMY) {
+                        } else if (webItem == Purchaseables.INDEPENDENCE_CURSE) {
+                            if (unlocked) {
+                                //Activate / de-activate
+                                if (wrapper.getActiveTrail() == ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK) {
+                                    // Turn it OFF.
+                                    player.sendMessage(ChatColor.RED + "Independence Curse - " + ChatColor.BOLD + "DISABLED");
+                                    wrapper.setActiveTrail(null);
+                                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 0.5F);
+                                } else {
+                                    // Turn it ON.
+                                    player.sendMessage(ChatColor.GREEN + "Independence Curse - " + ChatColor.BOLD + "ENABLED");
+                                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 3F);
+                                    wrapper.setActiveTrail(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK);
+                                }
+                                setItems();
+                            } else {
+                                sendNotUnlocked(player);
+                            }
+                        }
+                        else if (webItem == Purchaseables.DPS_DUMMY) {
                             if (unlocked) {
                                 //Activate / de-activate
                                 if (Utils.hasItem(player, Material.ARMOR_STAND)) {

@@ -43,11 +43,15 @@ public class ParticleEffectGUI extends GUIMenu {
             if (effect == ParticleAPI.ParticleEffect.GOLD_BLOCK)
                 lore.addAll(Purchaseables.GOLDEN_CURSE.getDescription(true));
 
+            if (effect == ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)
+                lore.addAll(Purchaseables.INDEPENDENCE_CURSE.getDescription(true));
+
             boolean activated = wrapper.getActiveTrail() == effect;
             lore.add("");
 
             AtomicBoolean isUnlocked = new AtomicBoolean(wrapper.hasEffectUnlocked(effect));
             if(effect == ParticleAPI.ParticleEffect.GOLD_BLOCK) isUnlocked.set(Purchaseables.GOLDEN_CURSE.isUnlocked(wrapper));
+            if(effect == ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK) isUnlocked.set(Purchaseables.INDEPENDENCE_CURSE.isUnlocked(wrapper));
 
             if (activated) {
                 lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACTIVATED");
