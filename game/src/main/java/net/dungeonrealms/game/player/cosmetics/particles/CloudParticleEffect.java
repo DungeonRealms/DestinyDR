@@ -33,6 +33,16 @@ public class CloudParticleEffect extends SpecialParticleEffect {
         return 1;
     }
 
+    @Override
+    public boolean tickWhileMoving() {
+        return false;
+    }
+
+    @Override
+    public SpecialParticles getParticleEnum() {
+        return null;
+    }
+
     protected void constructCloud(Location toPlay) {
         ParticleAPI.spawnParticle(Particle.SMOKE_LARGE, toPlay, ThreadLocalRandom.current().nextFloat() * 5f, Utils.randInt(10), .3F);
     }
