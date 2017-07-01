@@ -951,6 +951,12 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityPortal(EntityPortalEvent e) {
+        if(e.getEntity() instanceof Player) return;
+        e.setCancelled(true);
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerInteractMule(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof Horse))
