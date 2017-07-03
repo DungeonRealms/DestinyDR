@@ -497,18 +497,10 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onItemDurabilityTake(PlayerItemDamageEvent event) {
-//        Player player = event.getPlayer();
-        if (ItemArmor.isArmorFromMaterial(event.getItem()) || ItemWeapon.isWeaponFromMaterial(event.getItem())) {
+        //dont damage rods or picks
+        if (ItemArmor.isArmorFromMaterial(event.getItem()) || ItemWeapon.isWeaponFromMaterial(event.getItem()) || event.getItem().getType() == Material.FISHING_ROD || event.getItem().getType().name().endsWith("_PICKAXE")) {
             event.setCancelled(true);
-//            return;
         }
-//
-//        if (!GameAPI.isInSafeRegion(player.getLocation())) return;
-//        if (!DuelingMechanics.isDueling(player.getUniqueId())) return;
-//        if (ItemArmor.isArmor(event.getItem())) {
-//            event.setDamage(0);
-//            event.setCancelled(true);
-//        }
     }
 
     /**
