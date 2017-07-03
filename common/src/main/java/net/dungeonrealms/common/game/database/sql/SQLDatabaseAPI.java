@@ -12,7 +12,6 @@ import net.dungeonrealms.common.game.util.UUIDFetcher;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.ini4j.Ini;
 
@@ -21,7 +20,10 @@ import java.io.FileReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 

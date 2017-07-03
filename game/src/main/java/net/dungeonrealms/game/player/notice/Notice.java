@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -73,7 +74,6 @@ public class Notice {
         final JSONMessage normal = new JSONMessage(ChatColor.GOLD + "  ❢ " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
         normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch", "");
         normal.addText(ChatColor.GOLD + " ❢ ");
-// ❢ â�¢
         p.sendMessage(" ");
         normal.sendToPlayer(p);
         p.sendMessage(" ");
@@ -86,13 +86,12 @@ public class Notice {
     }
 
     private void executeVoteReminder(Player p) {
-        // No vote reminder on the event shard.
-        if (DungeonRealms.isEvent())
+        // No vote reminder on the event shard or for Trial GM+.
+        if (DungeonRealms.isEvent() || Rank.getRank(p).isAtLeast(PlayerRank.TRIALGM))
             return;
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
         if (wrapper == null) return;
-
 
         long vote = wrapper.getLastVote();
 

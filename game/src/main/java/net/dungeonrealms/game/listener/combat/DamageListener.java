@@ -690,7 +690,7 @@ public class DamageListener implements Listener {
 
             event.setCancelled(true);
             if (EntityAPI.isBoss(e)) {
-                if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
+                /*if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
                     Entity pass = event.getEntity().getPassenger();
                     if (pass != null) pass.eject();
                     Location spawn = ((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint();
@@ -712,7 +712,7 @@ public class DamageListener implements Listener {
                             infernal.getGhast().getBukkit().setPassenger(pass);
                         }
                     }
-                }
+                }*/
                 return;
             }
             //Dont even despawn the boss.. or elites
