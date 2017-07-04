@@ -25,12 +25,12 @@ public class CommandPAccept extends BaseCommand {
 
         Player player = (Player) s;
         Party party = Affair.getInvitations().get(player);
-        
+
         if (party == null) {
         	player.sendMessage(ChatColor.RED + "You do not have any pending invitations!");
         	return true;
         }
-        
+
         party.addMember(player);
         return true;
     }

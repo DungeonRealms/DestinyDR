@@ -1,15 +1,18 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import net.minecraft.server.v1_9_R2.EntityLightning;
+import net.minecraft.server.v1_9_R2.PacketPlayOutSpawnEntityWeather;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -51,8 +54,17 @@ public class ItemLightningRod extends FunctionalItem implements ItemClickListene
                     return;
                 }
 
-                player.setMetadata("rodCD", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
-                lightningLoc.getWorld().strikeLightningEffect(lightningLoc);
+                player.setMetadata("rodCD", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+                //lightningLoc.getWorld().strikeLightningEffect(lightningLoc);
+                EntityLightning el = new EntityLightning((World) Bukkit.getWorld(player.getWorld().toString()), lightningLoc.getX(), lightningLoc.getY(), lightningLoc.getZ(), true, true);
+                PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(el);
+
+                player.getWorld().playSound(lightningLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1f, 1f);
+                for(Player playa : GameAPI.getNearbyPlayers(lightningLoc, 50)) {
+                    if(playa == null) continue;
+                    ((CraftPlayer) playa).getHandle().playerConnection.sendPacket(packet);
+                }
+                //((CraftPlayer) ply).getHandle().playerConnection.sendPacket(packet);
             }
         }
     }
