@@ -35,7 +35,7 @@ public class CommandWhois extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) return true;
+        if (sender instanceof Player && !Rank.isPMOD((Player) sender)) return true;
 
         PlayerRank rank;
         if (sender instanceof Player) {
@@ -55,7 +55,7 @@ public class CommandWhois extends BaseCommand {
 
         List<String> argList = Lists.newArrayList(args);
 
-        boolean showAlts = argList.contains("-a") && rank.isAtLeast(PlayerRank.GM);
+        boolean showAlts = argList.contains("-a") && rank.isAtLeast(PlayerRank.PMOD);
         boolean showIPs = argList.contains("-i") && rank.isAtLeast(PlayerRank.HEADGM);
 
         String p_name = args[0];
