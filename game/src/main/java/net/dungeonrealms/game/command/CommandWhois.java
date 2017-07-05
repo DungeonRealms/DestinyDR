@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.command;
 
 import com.google.common.collect.Lists;
-
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.util.TimeUtil;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -13,7 +13,6 @@ import net.dungeonrealms.database.punishment.PunishAPI;
 import net.dungeonrealms.database.punishment.PunishType;
 import net.dungeonrealms.database.punishment.Punishment;
 import net.dungeonrealms.game.player.json.JSONMessage;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -60,7 +59,7 @@ public class CommandWhois extends BaseCommand {
 
         String p_name = args[0];
         Player online = Bukkit.getPlayer(p_name);
-        if (p_name.contains(".")) {
+        if (p_name.contains(".") && rank.isAtLeast(PlayerRank.GM)) {
 
             if (showAlts || rank.isAtLeast(PlayerRank.DEV)) {
                 //its an ip
@@ -147,6 +146,9 @@ public class CommandWhois extends BaseCommand {
                     });
 
                     if (showAlts) {
+                        if (rank == PlayerRank.PMOD)
+                            GameAPI.sendWarning(sender.getName() + " ran /whois on " + p_name);
+
                         SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALTS.getQuery(wrapper.getLastIP()), true, (set) -> {
                             if (set == null) {
                                 sender.sendMessage(ChatColor.RED + "No alts found!");
