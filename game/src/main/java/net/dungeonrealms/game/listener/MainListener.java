@@ -147,6 +147,7 @@ public class MainListener implements Listener {
         }
 
         if (index != 0) {
+//            System.out.println("Handling: '" + e.getChatMessage() + "' from " + e.getPlayer().getName());
             Chat.sendChatMessage(e.getPlayer(), e.getChatMessage(), true);
             e.getPlayer().closeInventory(); // Closes the chat after sending message!
         }

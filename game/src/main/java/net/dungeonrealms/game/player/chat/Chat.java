@@ -243,7 +243,12 @@ public class Chat {
             player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
             return;
         }
-    	
+
+        if (ChatUtil.containsIllegal(message)) {
+            player.sendMessage(ChatColor.RED + "Message contains illegal characters.");
+            return;
+        }
+
     	if (!Rank.isGM(player))
     		message = Chat.checkForBannedWords(message);
     	

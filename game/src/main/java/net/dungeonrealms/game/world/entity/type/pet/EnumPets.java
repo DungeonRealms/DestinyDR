@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * EnumPets - A registry of pets.
@@ -145,7 +146,7 @@ public enum EnumPets {
                 constructor = getClazz().getDeclaredConstructor(World.class, Player.class);
                 pet = constructor.newInstance(world, player);
             } catch (NoSuchMethodException e) {
-                pet = getClazz().getDeclaredConstructor(World.class).newInstance(world);
+                    pet = getClazz().getDeclaredConstructor(World.class).newInstance(world);
             }
 
             if (pet instanceof EntityInsentient) {
