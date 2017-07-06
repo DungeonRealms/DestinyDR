@@ -1,35 +1,28 @@
 package net.dungeonrealms.game.affair.party;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.menu.AbstractMenu;
-import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
-import net.dungeonrealms.common.game.menu.gui.VolatileGUI;
-import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
+import net.dungeonrealms.game.player.inventory.menus.GUIItem;
+import net.dungeonrealms.game.player.inventory.menus.GUIMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class PLootMenu extends AbstractMenu implements VolatileGUI {
+public class PLootMenu extends GUIMenu {
 
     private Party party;
 
     public PLootMenu(Player player, Party party) {
-        super(DungeonRealms.getInstance(), "Party Loot Selection", 9);
-        setDestroyOnExit(true);
-
+        super(player, 9, "Party Loot Selection");
         this.party = party;
-        this.updateInventory();
     }
 
-
-    public void updateInventory() {
+    @Override
+    protected void setItems() {
         int slot = 3;
 
         for (LootMode mode : LootMode.values()) {
@@ -50,36 +43,35 @@ public class PLootMenu extends AbstractMenu implements VolatileGUI {
             if (party.getLootMode() == mode) {
                 item = new NBTWrapper(item).setString("ench", "").build();
             }
+//
+//            GUIButton button = new GUIButton(item) {
+//                @Override
+//                public void action(GUIButtonClickEvent event) throws Exception {
+//                    Player pl = event.getWhoClicked();
+//                    event.setCancelled(true);
+//                    if (party != null && party.getOwner() != null && party.getOwner().getName().equals(pl.getName())) {
+//                        party.setLootMode(mode);
+////                        updateInventory();
+//                        pl.closeInventory();
+//                        pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+//                    } else {
+//                        pl.sendMessage(ChatColor.RED + "Only " + party.getOwner().getName() + " can edit the loot mode.");
+//                        pl.closeInventory();
+//                    }
+//                }
+//            };
 
-            GUIButton button = new GUIButton(item) {
-                @Override
-                public void action(GUIButtonClickEvent event) throws Exception {
-                    Player pl = event.getWhoClicked();
-                    event.setCancelled(true);
-                    if (party != null && party.getOwner() != null && party.getOwner().getName().equals(pl.getName())) {
-                        party.setLootMode(mode);
+            setItem(slot++, new GUIItem(item).setClick(e -> {
+                if (party != null && party.getOwner() != null && party.getOwner().getName().equals(player.getName())) {
+                    party.setLootMode(mode);
 //                        updateInventory();
-                        pl.closeInventory();
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-                    } else {
-                        pl.sendMessage(ChatColor.RED + "Only " + party.getOwner().getName() + " can edit the loot mode.");
-                        pl.closeInventory();
-                    }
+                    player.closeInventory();
+                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Only " + party.getOwner().getName() + " can edit the loot mode.");
+                    player.closeInventory();
                 }
-            };
-
-            set(slot++, button);
+            }));
         }
-    }
-
-    @Override
-    public void onDestroy(Event event) {
-
-    }
-
-    @Override
-    public void open(Player player) throws Exception {
-
-        player.openInventory(inventory);
     }
 }

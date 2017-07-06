@@ -27,7 +27,7 @@ public class CommandPLoot extends BaseCommand {
         }
         
         try {
-        	new PLootMenu(player, Affair.getParty(player)).open(player);
+        	new PLootMenu(player, Affair.getParty(player)).open(player, null);
         } catch (Exception e) {
         	e.printStackTrace();
         	player.sendMessage(ChatColor.RED + "There was an error while running this command.");
