@@ -47,6 +47,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     }
 
     public void doFinalForm(int hp) {
+//        getBukkit().teleport(getDungeon().getBoss().get)
         HealthHandler.initHP(getBukkit(), hp);
 
         getBukkit().setMaximumNoDamageTicks(0);

@@ -27,6 +27,7 @@ import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.dungeons.BossType;
 import net.dungeonrealms.game.mechanic.dungeons.Dungeon;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.miscellaneous.Graveyard;
@@ -690,9 +691,9 @@ public class DamageListener implements Listener {
 
             event.setCancelled(true);
             if (EntityAPI.isBoss(e)) {
-                /*if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
+                if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalGhast) {
                     Entity pass = event.getEntity().getPassenger();
-                    if (pass != null) pass.eject();
+                    if (pass != null) pass.leaveVehicle();
                     Location spawn = ((InfernalGhast) EntityAPI.getMonster(event.getEntity())).getSpawnPoint();
                     event.getEntity().teleport(spawn);
                     if (pass != null) {
@@ -701,18 +702,22 @@ public class DamageListener implements Listener {
                     }
                 } else if (EntityAPI.getMonster(event.getEntity()) instanceof InfernalAbyss) {
                     InfernalAbyss infernal = (InfernalAbyss) EntityAPI.getMonster(event.getEntity());
-                    if (infernal.getGhast() != null && infernal.getGhast().isAlive()) {
+                    Location spawn = BossType.InfernalAbyss.getLocation(infernal.getBukkit().getWorld());
+
+                    //Ghast isnt alive? teleport to spawn to avoid being stuck.
+                    if (infernal.getGhast() == null || !infernal.getGhast().isAlive()) {
                         //He is (or should be) on the ghast.
-                        Entity pass = event.getEntity();
-                        if (pass != null) pass.eject();
-                        Location spawn = infernal.getGhast().getSpawnPoint();
-                        infernal.getGhast().getBukkit().teleport(spawn);
-                        if (pass != null) {
-                            pass.teleport(spawn);
-                            infernal.getGhast().getBukkit().setPassenger(pass);
-                        }
+                        event.getEntity().leaveVehicle();
+                        event.getEntity().teleport(spawn);
+                    } else {
+                        event.setCancelled(true);
                     }
-                }*/
+
+                    if (infernal.getGhast() != null && infernal.getGhast().isAlive()) {
+                        infernal.getGhast().getBukkit().teleport(spawn);
+                        infernal.getGhast().getBukkit().setPassenger(event.getEntity());
+                    }
+                }
                 return;
             }
             //Dont even despawn the boss.. or elites
