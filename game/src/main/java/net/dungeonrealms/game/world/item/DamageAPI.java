@@ -352,6 +352,11 @@ public class DamageAPI {
                 if (!attacker.getToggles().getState(Toggles.PVP)) {
                     if (entity instanceof Player) continue;
                 }
+                if(entity instanceof Player){
+                    Player other = (Player)entity;
+                    //Dont do damage to party members.
+                    if(Affair.areInSameParty(other, attacker.getPlayer()))continue;
+                }
             }
 
             float totalEnergyCost = (float) (energyCostPerSwing * .15);
