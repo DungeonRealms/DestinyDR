@@ -81,7 +81,7 @@ public class AttackResult {
 	 */
 	public void applyDamage() {
 		LivingEntity receiver = getDefender().getEntity();
-		String defenderName = Metadata.CUSTOM_NAME.get(receiver).asString();
+		String defenderName = receiver instanceof Player ? receiver.getName() : Metadata.CUSTOM_NAME.get(receiver).asString();
         
     	Player hologramOwner = getAttacker().isPlayer() ? getAttacker().getPlayer() : (getDefender().isPlayer() ? (Player)receiver : null);
 
@@ -97,6 +97,7 @@ public class AttackResult {
         	//  REFLECT  //
         	if(getResult() == DamageResultType.REFLECT) {
         		AttackResult res = new AttackResult(receiver, getAttacker().getEntity());
+        		res.setResult(DamageResultType.REFLECT);
         		res.setDamage(EntityAPI.isBoss(receiver) || EntityAPI.isElite(receiver) ? getDamage() * 0.4 : getDamage());
         		HealthHandler.damageEntity(res);
         	}
