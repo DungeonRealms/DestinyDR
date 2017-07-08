@@ -95,6 +95,7 @@ public class PvPListener implements Listener {
                     KarmaHandler.update(attacker);
 
             DamageAPI.calculateWeaponDamage(res, !isDuel);
+            DamageAPI.applyArmorReduction(res, !isDuel);
 
             if (!isDuel && res.checkChaoticPrevention())
                 return;

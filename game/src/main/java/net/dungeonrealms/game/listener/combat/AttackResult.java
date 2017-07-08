@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.CustomEntityTippedArrow;
+import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
@@ -147,7 +149,15 @@ public class AttackResult {
 					attributes.setStat(attribute, getProjectile().getMetadata(nbt).get(0).asInt());
 			}
 		}
-		// We don't use the actual attacker attributes when it's a projectile, so 
+
+		for(Item.AttributeType type : getAttacker().getAttributes().keySet()){
+			//Apply the weapon attributes?
+			ModifierRange range = getAttacker().getAttributes().getAttribute(type);
+			if(type instanceof Item.ArmorAttributeType){
+				attributes.addStat(type, range);
+			}
+		}
+		// We don't use the actual attacker attributes when it's a projectile, so
 		// players can't switch their items and use stats from one item when another was used.
 		getAttacker().setAttributes(attributes);
 	}

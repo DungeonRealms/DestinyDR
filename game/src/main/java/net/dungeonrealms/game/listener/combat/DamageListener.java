@@ -39,7 +39,9 @@ import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.base.DRBlaze;
 import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
+import net.dungeonrealms.game.world.entity.type.monster.base.DRMagma;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
 import net.dungeonrealms.game.world.entity.type.monster.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
@@ -936,7 +938,16 @@ public class DamageListener implements Listener {
             }
         } else if (event.getEntity() instanceof SmallFireball && shooter instanceof Blaze && random.nextInt(5) == 0) {
             int tier = EntityAPI.getTier(e);
-            EntityAPI.spawnCustomMonster(e.getLocation(), e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
+            CraftEntity entity = (CraftEntity) event.getEntity();
+            if (entity.getHandle() instanceof DRBlaze) {
+                DRBlaze blaze = (DRBlaze) entity.getHandle();
+                //Dont spawn more then 10..
+                if (blaze.getMagmaCubes().size() >= 5) return;
+
+                blaze.getMagmaCubes().add((DRMagma) ((CraftEntity) EntityAPI.spawnCustomMonster(e.getLocation(), e.getLocation(), EnumMonster.MagmaCube, "low", tier, null)).getHandle());
+            } else //Untracked blaze or something?
+                EntityAPI.spawnCustomMonster(e.getLocation(), e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
+//            EntityAPI.spawnCustomMonster(e.getLocation(), e.getLocation(), EnumMonster.MagmaCube, "low", tier, null);
         }
     }
 }
