@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.functional.ecash;
 import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
@@ -84,7 +85,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
         }
 
         if (name == null) name = mountType.getDisplayName();
-        int max = 5;
+        int max = GameAPI.isInSafeRegion(player.getLocation()) ? 1 : 5;
 
         player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "SUMMONING " + ChatColor.UNDERLINE + name
                 + ChatColor.WHITE + " ... " + max + ChatColor.BOLD + "s");
