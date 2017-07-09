@@ -81,7 +81,7 @@ public class PvPListener implements Listener {
             event.setCancelled(true);
 
             ItemStack held = attacker.getEquipment().getItemInMainHand();
-            AttackResult res = new AttackResult(attacker, defender);
+            AttackResult res = projectile != null ? new AttackResult(attacker, defender, projectile) : new AttackResult(attacker, defender);
 
             if (!isProjectile && (!ItemWeapon.isWeapon(held) || ItemWeaponStaff.isStaff(held))) {
                 res.setDamage(1);
