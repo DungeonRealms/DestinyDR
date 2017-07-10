@@ -60,7 +60,10 @@ public class FriendHandler {
                     //Remove Pending request
                     player.closeInventory();
                     wrapper.getPendingFriends().remove(friend);
-                    player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+                    wrapper.saveFriends(true, done -> {
+                        if (player.isOnline())
+                            player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+                    });
                 } else {
                     player.sendMessage(ChatColor.RED + "That player has not sent you a friend request!");
                 }

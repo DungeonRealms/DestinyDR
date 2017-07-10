@@ -119,6 +119,6 @@ public class TeleportAPI {
      */
     public static String getLocationFromDatabase(UUID uuid) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(uuid);
-        return wrapper != null && wrapper.getHearthstone() != null ? wrapper.getHearthstone().getDisplayName() : "Cyrennica";
+        return wrapper != null && wrapper.getHearthstone() != null ? wrapper.getHearthstone().name() : "Cyrennica";
     }
 }

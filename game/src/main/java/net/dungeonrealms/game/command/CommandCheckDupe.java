@@ -35,6 +35,7 @@ public class CommandCheckDupe extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!Rank.isDev(sender)) return false;
 
+        boolean ignorePotions = args.length == 1 && args[0].equals("-p");
 //        SQLDatabaseAPI.getInstance().executeQuery("SELECT * FROM characters LEFT JOIN users ON characters.account_id = users.account_id WHERE characters.character_id = users.selected_character_id;", rs -> {
         CompletableFuture.runAsync(() -> {
             try {
@@ -64,11 +65,11 @@ public class CommandCheckDupe extends BaseCommand {
                     int id = rs.getInt("characters.character_id");
                     CharacterInventory map = dupeMap.computeIfAbsent(username, e -> new CharacterInventory(id));
 
-                    addIdsToMap(map.getMap(), inv);
-                    addIdsToMap(map.getMap(), armor);
-                    addIdsToMap(map.getMap(), storage);
-                    addIdsToMap(map.getMap(), mule);
-                    addIdsToMap(map.getMap(), collection);
+                    addIdsToMap(map.getMap(), inv, ignorePotions);
+                    addIdsToMap(map.getMap(), armor, ignorePotions);
+                    addIdsToMap(map.getMap(), storage, ignorePotions);
+                    addIdsToMap(map.getMap(), mule, ignorePotions);
+                    addIdsToMap(map.getMap(), collection, ignorePotions);
                     scanned++;
                 }
                 System.out.println("Loaded all items in " + (System.currentTimeMillis() - start) + "ms");
@@ -116,10 +117,12 @@ public class CommandCheckDupe extends BaseCommand {
 //        return (int) map.values().stream().flatMap(items -> items.getMap().values().stream()).filter(id -> id.equals(idToFind)).count();
     }
 
-    public void addIdsToMap(Map<ItemStack, String> map, Inventory inventory) {
+    public void addIdsToMap(Map<ItemStack, String> map, Inventory inventory, boolean ignorePotions) {
         if (inventory == null) return;
         for (ItemStack item : inventory) {
             if (item != null && item.getType() != Material.AIR) {
+                //Dont bother..
+                if(item.getType() == Material.POTION && ignorePotions)continue;
                 CraftItemStack handle = (CraftItemStack) item;
                 net.minecraft.server.v1_9_R2.ItemStack hand = (net.minecraft.server.v1_9_R2.ItemStack) ReflectionAPI.getObjectFromField("handle", CraftItemStack.class, handle);
 
