@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -62,6 +63,18 @@ public class Utils {
         }
 
         return sortedMap;
+    }
+
+    public static List<String> getLoreFromLine(String description, ChatColor color, String split) {
+        List<String> retr = Lists.newArrayList();
+        if (!description.contains(split)) {
+            retr.add(color + Utils.translate(description));
+        } else {
+            for (String string : description.split(split)) {
+                retr.add(color + Utils.translate(string));
+            }
+        }
+        return retr;
     }
 
     public static void addChatColor(List<String> toAdd, ChatColor color) {
@@ -258,6 +271,7 @@ public class Utils {
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
     }
+
     public static void sendCenteredDebug(Player player, String message) {
         if (message == null || message.equals("")) player.sendMessage("");
 
@@ -401,6 +415,16 @@ public class Utils {
             return meta.getDisplayName();
 
         return capitalizeWords(item.getType().name().toLowerCase().replaceAll("_", " "));
+    }
+
+    public static String[] getLore(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR)
+            return new String[]{};
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasLore())
+            return meta.getLore().toArray(new String[meta.getLore().size()]);
+
+        return new String[]{};
     }
 
     public static Location getRandomLocationNearby(Location loc, int radius) {

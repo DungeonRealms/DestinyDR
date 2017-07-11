@@ -60,6 +60,7 @@ public enum ItemType {
 	RIFT_CRYSTAL("riftCrystal", ItemRiftCrystal.class),
 	TRINKET("trinket", TrinketItem.class),
 	CLUE_SCROLL("clueScroll", ClueScrollItem.class),
+	COUPON_VOUCHER("discount", ItemDiscountScroll.class),
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
@@ -86,9 +87,12 @@ public enum ItemType {
 	//  DONATION  //
 	BUFF("buff", ItemBuff.class),
 	ITEM_NAME_TAG("nameTag", ItemNameTag.class),
+	ITEM_LORE_BOOK("loreBook", ItemLoreBook.class),
+
 	JUKE_BOX("jukebox", ItemJukebox.class),
 	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),
 	LIGHTNING_ROD("lightningRod", ItemLightningRod.class),
+	BUFF_AURA("buffAura", ItemLootAura.class),
 
 	//  MENU ITEMS  //
 	PLAYER_JOURNAL("journal", ItemPlayerJournal.class),

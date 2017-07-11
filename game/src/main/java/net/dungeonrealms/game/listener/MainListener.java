@@ -20,7 +20,9 @@ import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.items.core.Aura;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemLootAura;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.mastery.DamageTracker;
@@ -42,6 +44,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
+import net.dungeonrealms.game.player.inventory.menus.guis.AuraGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.SalesManagerGUI;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
@@ -397,7 +400,7 @@ public class MainListener implements Listener {
         //Only check blocks that change to save on cpu checks.
         if (!event.getTo().getBlock().getLocation().equals(event.getFrom().getBlock().getLocation())) {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
-            if(wrapper != null) wrapper.setLastBlockMovement(System.currentTimeMillis());
+            if (wrapper != null) wrapper.setLastBlockMovement(System.currentTimeMillis());
             DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
             if (offer != null) {
                 Player player = event.getPlayer();
@@ -454,7 +457,8 @@ public class MainListener implements Listener {
 
         Player player = event.getPlayer();
         ParticleAPI.ParticleEffect effect = DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.get(player);
-        if (effect == null || (effect != ParticleAPI.ParticleEffect.GOLD_BLOCK && effect != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) return;
+        if (effect == null || (effect != ParticleAPI.ParticleEffect.GOLD_BLOCK && effect != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK))
+            return;
         if (!player.getWorld().equals(Bukkit.getWorlds().get(0)) || player.getLocation().getBlock().getType() != Material.AIR)
             return;
         Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
@@ -464,12 +468,11 @@ public class MainListener implements Listener {
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO.put(bl.getLocation(), data);
             //bl.setType(Material.GOLD_BLOCK);
-            if(wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
+            if (wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
                 bl.setType(Material.WOOL);
                 bl.setData(wrapper.getLastIndependantColor().getWoolData());
                 wrapper.changeIndependentColor();
-            }
-            else bl.setType(Material.GOLD_BLOCK);
+            } else bl.setType(Material.GOLD_BLOCK);
             bl.setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 30));
         }
     }
@@ -495,18 +498,18 @@ public class MainListener implements Listener {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
-            if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK && wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK) return;
+            if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK && wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)
+                return;
             Block top_block = block.getLocation().add(0, 1, 0).getBlock();
             MaterialData m = new MaterialData(block.getType(), block.getData());
 
             if (top_block.getType() == Material.AIR && DonationEffects.isGoldenCursable(m) && !Mining.isMineable(block.getLocation())) {
 
-                if(wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
+                if (wrapper.getActiveTrail().equals(ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)) {
                     block.setType(Material.WOOL);
                     block.setData(wrapper.getLastIndependantColor().getWoolData());
                     wrapper.changeIndependentColor();
-                }
-                else block.setType(Material.GOLD_BLOCK);
+                } else block.setType(Material.GOLD_BLOCK);
                 DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
                         .put(block.getLocation(), m);
                 block.setMetadata("time",
@@ -813,6 +816,16 @@ public class MainListener implements Listener {
                 });
             }
         } else if (event.getRightClicked() instanceof ArmorStand) {
+            if (event.getRightClicked().hasMetadata("stand")) {
+                for (Aura aura : ItemLootAura.activeAuras) {
+                    if (aura.isArmorStand(event.getRightClicked())) {
+                        event.setCancelled(true);
+                        new AuraGUI(event.getPlayer(), aura).open(event.getPlayer(), null);
+                        return;
+                    }
+                }
+            }
+
             if (!((ArmorStand) event.getRightClicked()).isVisible()) event.setCancelled(true);
         }
     }
@@ -954,7 +967,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onEntityPortal(EntityPortalEvent e) {
-        if(e.getEntity() instanceof Player) return;
+        if (e.getEntity() instanceof Player) return;
         e.setCancelled(true);
     }
 

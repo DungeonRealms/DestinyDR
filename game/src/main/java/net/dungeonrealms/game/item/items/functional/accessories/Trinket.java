@@ -43,6 +43,8 @@ public enum Trinket {
     REDUCED_BOOK_COOLDOWN(Item.ItemRarity.UNCOMMON, "Expedited", new AbstractTrinketData("Reduce Teleport Book Delay by 20%"), 10),
     DUNGEON_TELEPORT(Item.ItemRarity.UNCOMMON, "Teleporting", "Forgiveness", new AbstractTrinketData("TP to Party Members in Boss Rooms with /djoin"), 4),
 
+    REDUCED_REPAIR(Item.ItemRarity.UNIQUE, "Forging", new AbstractTrinketData("Repairing items is now 50% cheaper"), 1),
+
     COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 20);
 
     @Getter
@@ -129,5 +131,13 @@ public enum Trinket {
 
     public static Trinket getFromName(String name) {
         return Arrays.stream(values()).filter(t -> t.name().equals(name)).findFirst().orElse(null);
+    }
+
+    public TrinketType getType() {
+        for(TrinketType type : TrinketType.values()) {
+            if(type.getAccessory().contains(this)) return type;
+        }
+
+        return null;
     }
 }

@@ -59,23 +59,20 @@ public class ParticleEffectGUI extends GUIMenu {
             } else if (isUnlocked.get()) {
                     lore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED");
                     lore.add(ChatColor.GRAY + "Click to activate this effect.");
-            } else {
+            }/* else {
                     lore.add(ChatColor.RED.toString() + ChatColor.BOLD + "LOCKED");
                     if (effect.getPrice() > 0) {
                         lore.add("");
                         lore.add(ChatColor.GREEN + "Cost: " + ChatColor.WHITE.toString() + effect.getPrice() + ChatColor.GREEN + " E-Cash");
                     }
-            }
+            }*/
 
 
             setItem(i++, new GUIItem(effect.getSelectionItem()).setName(ChatColor.GREEN + effect.getDisplayName()).setEnchanted(activated).setLore(lore).setClick(e -> {
                 if (!isUnlocked.get()) {
-                    //Unlock?
-                    if (effect.getPrice() <= 0) {
                         player.sendMessage(ChatColor.GREEN + "You do not have this effect unlocked!");
                         return;
-                    }
-                    if (wrapper.getEcash() >= effect.getPrice()) {
+                    /*if (wrapper.getEcash() >= effect.getPrice()) {
                         wrapper.withdrawEcash(effect.getPrice());
                         player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect!");
                         wrapper.getParticles().add(effect);
@@ -84,7 +81,7 @@ public class ParticleEffectGUI extends GUIMenu {
                         player.sendMessage(ChatColor.RED + "You do not have enough E-Cash for this effect!");
                         player.sendMessage(ChatColor.GRAY + "Current E-Cash: " + ChatColor.GREEN + wrapper.getEcash());
                         return;
-                    }
+                    }*/
                 }
                 if (wrapper.getActiveTrail() == effect) {
                     wrapper.setActiveTrail(null);

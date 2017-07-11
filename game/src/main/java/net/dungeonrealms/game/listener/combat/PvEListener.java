@@ -268,7 +268,7 @@ public class PvEListener implements Listener {
                 killer.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
                         .toString() + ChatColor.BOLD + "ELITE BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
                         + "+" + ChatColor.YELLOW + Math.round(eliteBonusXP) + ChatColor.BOLD + " EXP " +
-                        ChatColor.GRAY + "[" + Math.round(eliteBonusXP) + ChatColor.BOLD + "/" +
+                        ChatColor.GRAY + "[" + Math.round(wrapper.getExperience()) + ChatColor.BOLD + "/" +
                         ChatColor.GRAY + Math.round(wrapper.getEXPNeeded(wrapper.getLevel())) + " EXP]");
         }
 

@@ -215,17 +215,34 @@ public class Party {
         if (Affair.isPartyChat(player))
             Affair.getPartyChat().remove(player.getUniqueId());
 
-        if (isOwner(player)) {
-            disband();
-            return;
-        }
-
         getMembers().remove(player);
         getScoreboard().resetScores(player.getName());
 
         player.sendMessage(ChatColor.RED + "You have " + (kick ? "been kicked from" : "left the") + " party.");
         announce(player.getName() + " " + (kick ? "was kicked from" : "left") + " the party.");
         player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
+
+        if (isOwner(player)) {
+            //Get a new owner?
+
+            if (getMembers().size() > 0) {
+                //New owner instead?
+                for (Player pl : getMembers()) {
+                    if (pl.isOnline()) {
+                        this.owner = pl;
+                        break;
+                    }
+                }
+                if (owner != null) {
+                    getMembers().remove(this.owner);
+                    announce(ChatColor.LIGHT_PURPLE.toString() + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + ChatColor.LIGHT_PURPLE.toString() + this.owner.getName() + ChatColor.GRAY.toString() + " has been promoted to " + ChatColor.UNDERLINE + "Party Leader");
+                    updateScoreboard();
+                }
+            } else {
+                disband();
+                return;
+            }
+        }
 
         if (DungeonManager.isDungeon(player))
             player.teleport(TeleportLocation.CYRENNICA.getLocation());

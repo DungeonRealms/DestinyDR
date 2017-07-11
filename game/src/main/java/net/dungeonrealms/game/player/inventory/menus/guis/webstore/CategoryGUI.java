@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class CategoryGUI extends GUIMenu {
 
     public CategoryGUI(Player player) {
-        super(player, fitSize(WebstoreCategories.values().length + 1), "Purchaseable Categories");
+        super(player, fitSize(9), "Purchaseable Categories");
     }
 
     @Override

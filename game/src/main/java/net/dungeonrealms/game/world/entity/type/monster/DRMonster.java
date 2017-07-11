@@ -9,12 +9,14 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.AuraType;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
+import net.dungeonrealms.game.item.items.functional.ItemLootAura;
 import net.dungeonrealms.game.item.items.functional.ItemTeleportBook;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
@@ -194,7 +196,7 @@ public interface DRMonster {
         DropRate dr = DropRate.getRate(tier);
         int gemChance = dr.getMobGemChance();
         boolean elite = Metadata.ELITE.has(ent);
-        int chance = elite ? dr.getEliteDropChance() : dr.getNormalDropChance();
+        double chance = elite ? dr.getEliteDropChance() : dr.getNormalDropChance();
 
 
         // If it's a named elite, bring the drop chances down.
@@ -246,7 +248,7 @@ public interface DRMonster {
             }
         }
 
-        int dropRoll = random.nextInt(1000);
+        double dropRoll = ThreadLocalRandom.current().nextDouble(1000D);
 
         List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents())
@@ -256,9 +258,28 @@ public interface DRMonster {
         if (!elite)
             toDrop.add(new ItemArmor(ItemType.HELMET).setTier(ItemTier.getByTier(getTier())).generateItem());
 
+        double mult = ItemLootAura.getDropMultiplier(ent.getLocation(), AuraType.LOOT);
+        if (mult > 0)
+            chance += chance * mult * .01;
+
+        ItemTier t = ItemTier.getByTier(getTier());
+        Integer dry = pw.getDryLoot().get(t);
+
+        double itemFindIncrease = (chance * killerItemFind / 100);
+
+        if (dry != null && dry > 300 && !elite) {
+            //Garuntee a drop?
+            //1000 dry = 50% increase.
+            int increase = Math.min(((dry - 250) / 20) * 10, 500);
+
+            chance = Math.max(chance, increase + chance);
+
+            System.out.println("Adding " + increase + " to drop for " + pw.getUsername());
+        }
+
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
         Collections.shuffle(toDrop);
-        if (dropRoll < chance + (chance * killerItemFind / 100)) {
+        if (dropRoll < chance + itemFindIncrease) {
             if (dropRoll >= chance)
                 wrapper.sendDebug(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
 
@@ -280,13 +301,17 @@ public interface DRMonster {
                     ItemManager.whitelistItemDrop(killer, loc, gear.generateItem());
                 }
             }
+            pw.getDryLoot().put(t, 0);
+        } else {
+            //No drop..
+            pw.getDryLoot().put(t, dry == null ? 1 : dry + 1);
         }
 
         // Drop teleport book.
         int bookChance = SetBonus.hasSetBonus(killer, SetBonuses.LIBRARIAN) ? (int) (dr.getTeleportBookChance() * .5D) : 0;
         int rand = random.nextInt(100);
         if (dr.getTeleportBookChance() + bookChance >= rand) {
-            if(rand > dr.getTeleportBookChance()){
+            if (rand > dr.getTeleportBookChance()) {
                 //Wasnt going to get it.. bonus came in clutch
                 ent.getLocation().getWorld().playSound(ent.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
             }

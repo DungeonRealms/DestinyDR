@@ -30,7 +30,7 @@ public class CommandEcash extends BaseCommand {
             return false;
         }
 
-        NPCMenu.ECASH_VENDOR.open((Player) sender);
+        //NPCMenu.ECASH_VENDOR.open((Player) sender);
 
         return true;
     }

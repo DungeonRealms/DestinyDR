@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.CrateGUI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -120,6 +121,8 @@ public class ClueListener implements Listener {
             item.setTranslated(true);
             player.getEquipment().setItemInMainHand(item.generateItem());
             npcChatPlayer(player,npc, "There you go warrior! Goodluck on your Treasure Scroll!");
+        } else if(npc.getName().equalsIgnoreCase("e-cash vendor")) {
+            new CrateGUI(player).open(player,null);
         }
     }
 

@@ -11,14 +11,15 @@ import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.UpdateType;
+import net.dungeonrealms.game.item.items.core.AuraType;
+import net.dungeonrealms.game.item.items.functional.ItemLootAura;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemLoreBook;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
-import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -114,11 +115,25 @@ public class CommandEss extends BaseCommand {
                 case "hearthstone":
                     commandSender.sendMessage("Disabled.");
                     break;
+                case "aura":
+                    if (args.length == 4) {
+                        //dr aura <LOOT> <MULT> <DURATION>
+                        AuraType type = AuraType.getFromName(args[1]);
+                        if (type == null) {
+                            commandSender.sendMessage(ChatColor.RED + "Invalid Aura type!");
+                            return true;
+                        }
+
+                        double mult = Double.parseDouble(args[2]);
+                        double dur = Double.parseDouble(args[3]);
+                        ((Player) commandSender).getInventory().addItem(new ItemLootAura(type, mult, (int) dur).generateItem());
+                    }
+                    break;
                 case "namtag":
                 case "storeitems":
                 case "store":
                     GameAPI.giveOrDropItem((Player) commandSender, new ItemNameTag().generateItem());
-                    GameAPI.giveOrDropItem((Player) commandSender, new ItemJukebox().generateItem());
+                    GameAPI.giveOrDropItem((Player) commandSender, new ItemLoreBook().generateItem());
                     return true;
                 case "mount":
                     if (args.length == 3) {

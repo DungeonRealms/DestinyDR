@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.handler;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.player.PlayerRank;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
@@ -10,7 +10,6 @@ import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -28,7 +27,8 @@ import java.util.UUID;
  */
 public class ScoreboardHandler implements GenericMechanic {
 
-	@Getter private static ScoreboardHandler instance = new ScoreboardHandler();
+    @Getter
+    private static ScoreboardHandler instance = new ScoreboardHandler();
 
     public HashMap<UUID, Scoreboard> PLAYER_SCOREBOARDS = new HashMap<>();
     public Scoreboard mainScoreboard;
@@ -49,12 +49,12 @@ public class ScoreboardHandler implements GenericMechanic {
 
     @Override
     public void stopInvocation() {
-    	
+
     }
 
     /**
      * Gets the players scoreboard from hashmap
-     * or creates one if it is not there.
+     * or crates one if it is not there.
      *
      * @param player
      * @return Scoreboard
@@ -85,49 +85,51 @@ public class ScoreboardHandler implements GenericMechanic {
     public void updatePlayerHP(Player player, int hp) {
         for (Player player1 : Bukkit.getOnlinePlayers())
             if (!Affair.isInParty(player1))
-            	 getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
+                getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
 
         for (Party party : Affair.getParties()) {
             Scoreboard scoreboard = party.getScoreboard();
             scoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
         }
+//        ScoreboardTeamBase.EnumTeamPush push = ScoreboardTeamBase.EnumTeamPush.NEVER;
         mainScoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
     }
 
     public void updatePlayerName(Player player) {
-    	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-    	if (pw == null)
-    		return;
-    	
-    	ChatColor color = pw.getRank().isAtLeast(PlayerRank.TRIALGM) ? ChatColor.AQUA : pw.getAlignment().getNameColor();
-    	player.setPlayerListName(color + player.getName());
-    	
-    	String prefix = color + "";
-    	String suffix = ChatColor.AQUA + " [Lvl. " + pw.getLevel() + "]";
-    	
-    	// Append guild tag.
-    	GuildWrapper guild = pw.getGuild();
-    	if (guild != null)
-    		prefix = "[" + guild.getTag() + ChatColor.RESET + "] " + prefix;
+        PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+        if (pw == null)
+            return;
 
-    	//This is not async because the scoreboard should NEVER be modified async.
-    	for (Player update : Bukkit.getOnlinePlayers())
-    		if (!Affair.isInParty(update))
-    			updateTeam(getPlayerTeam(getPlayerScoreboardObject(update), player), player, prefix, suffix);
-    	
-    	// Update the value for everyone in a party.
-    	for (Party party : Affair.getParties())
-    		updateTeam(getPlayerTeam(party.getScoreboard(), player), player, prefix, suffix);
+        ChatColor color = pw.getRank().isAtLeast(PlayerRank.TRIALGM) ? ChatColor.AQUA : pw.getAlignment().getNameColor();
+        player.setPlayerListName(color + player.getName());
 
-    	updateTeam(getPlayerTeam(mainScoreboard, player), player, prefix, suffix);
+        String prefix = color + "";
+        String suffix = ChatColor.AQUA + " [Lvl. " + pw.getLevel() + "]";
+
+        // Append guild tag.
+        GuildWrapper guild = pw.getGuild();
+        if (guild != null)
+            prefix = "[" + guild.getTag() + ChatColor.RESET + "] " + prefix;
+
+        //This is not async because the scoreboard should NEVER be modified async.
+        for (Player update : Bukkit.getOnlinePlayers())
+            if (!Affair.isInParty(update))
+                updateTeam(getPlayerTeam(getPlayerScoreboardObject(update), player), player, prefix, suffix);
+
+        // Update the value for everyone in a party.
+        for (Party party : Affair.getParties())
+            updateTeam(getPlayerTeam(party.getScoreboard(), player), player, prefix, suffix);
+
+        updateTeam(getPlayerTeam(mainScoreboard, player), player, prefix, suffix);
     }
 
-	private void updateTeam(Team team, Player player, String prefix, String suffix) {
-		team.setPrefix(prefix);
-		team.setSuffix(suffix);
-		if (!team.hasEntry(player.getName()))
-			team.addEntry(player.getName());
-	}
+    private void updateTeam(Team team, Player player, String prefix, String suffix) {
+        team.setPrefix(prefix);
+        team.setSuffix(suffix);
+        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        if (!team.hasEntry(player.getName()))
+            team.addEntry(player.getName());
+    }
 
     public void registerHealth(Scoreboard scoreboard) {
         Objective objective = scoreboard.getObjective("playerScoreboard") != null ? scoreboard.getObjective("playerScoreboard") : scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
@@ -147,7 +149,7 @@ public class ScoreboardHandler implements GenericMechanic {
             ChatColor chatColor = wrapper.getAlignment().getNameColor();
             if (Rank.isTrialGM(player1))
                 chatColor = ChatColor.AQUA;
-            
+
             String guild = "";
             GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player1.getUniqueId());
             if (guildWrapper != null) {
@@ -157,6 +159,7 @@ public class ScoreboardHandler implements GenericMechanic {
             }
             team.setPrefix(guild + chatColor);
             team.setSuffix(ChatColor.AQUA + " [Lvl. " + level + "]");
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 
             PlayerRank rank = Rank.getRank(player1);
             player1.setPlayerListName(rank.getChatColor() + player1.getName());
@@ -168,7 +171,7 @@ public class ScoreboardHandler implements GenericMechanic {
 
     /**
      * Gets the team named after the player
-     * or creates one if there is not one.
+     * or crates one if there is not one.
      *
      * @param scoreboard
      * @param player
@@ -186,7 +189,7 @@ public class ScoreboardHandler implements GenericMechanic {
 
     /**
      * Gets the team named after the player
-     * or creates one if there is not one.
+     * or crates one if there is not one.
      *
      * @param scoreboard
      * @param name

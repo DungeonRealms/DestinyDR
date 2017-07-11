@@ -205,12 +205,17 @@ public abstract class ProfessionItem extends ItemGear {
         return ItemTier.getByTier(getProfessionTier().getTier());
     }
 
+
+    public void addExperience(Player p, int xpGain) {
+        addExperience(p, xpGain, true);
+    }
+
     /**
      * Gives XP to this item.
      */
-    public void addExperience(Player p, int xpGain) {
+    public void addExperience(Player p, int xpGain, boolean multiply) {
         int professionBuffBonus = 0;
-        if (DonationEffects.getInstance().hasBuff(EnumBuff.PROFESSION)) {
+        if (DonationEffects.getInstance().hasBuff(EnumBuff.PROFESSION) && multiply) {
             professionBuffBonus = Math.round(xpGain * DonationEffects.getInstance().getBuff(EnumBuff.PROFESSION).getBonusAmount() / 100f);
             xpGain += professionBuffBonus;
         }
@@ -220,8 +225,9 @@ public abstract class ProfessionItem extends ItemGear {
 
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
-        pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(xpGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
-                + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(getXP() - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getNeededXP() + " EXP]");
+        if (multiply)
+            pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(xpGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
+                    + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(getXP() - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getNeededXP() + " EXP]");
 
         if (professionBuffBonus > 0) {
             pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
@@ -237,8 +243,6 @@ public abstract class ProfessionItem extends ItemGear {
             if (extraXP > 0 && getNeededXP() > 0)
                 addExperience(p, extraXP);
         }
-
-//        p.getEquipment().setItemInMainHand(generateItem());
     }
 
     public boolean updateItem(Player player, boolean addIfNeeded) {

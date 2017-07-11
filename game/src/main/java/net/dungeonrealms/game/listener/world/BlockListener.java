@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukebox;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.MobileJukeboxGUI;
@@ -183,6 +184,11 @@ public class BlockListener implements Listener {
         }
 
         int newCost = gear.getRepairCost();
+        boolean hasReducedTrinket = Trinket.hasActiveTrinket(player, Trinket.REDUCED_REPAIR, true);
+        if(hasReducedTrinket) newCost /= 2;
+        if(newCost <= 0) newCost = 1;
+
+        final int newNewCost = newCost;
         if (BankMechanics.getGemsInInventory(player) < newCost) {
             player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
@@ -210,7 +216,7 @@ public class BlockListener implements Listener {
 
         //  CHAT PROMPT  //
         Chat.promptPlayerConfirmation(player, () -> {
-            if (BankMechanics.takeGemsFromInventory(player, newCost)) {
+            if (BankMechanics.takeGemsFromInventory(player, newNewCost)) {
                 gear.repair(); // Repair Item
 
                 // Remove from anvil.
@@ -218,7 +224,7 @@ public class BlockListener implements Listener {
                 ParticleAPI.spawnBlockParticles(middle, Material.IRON_BLOCK);
                 middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
 
-                player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
+                player.sendMessage(ChatColor.RED + "-" + newNewCost + ChatColor.BOLD.toString() + "G");
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
 
                 // Return item.
@@ -230,7 +236,7 @@ public class BlockListener implements Listener {
                 Quests.getInstance().triggerObjective(player, ObjectiveUseAnvil.class);
             } else {
                 player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
-                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
+                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newNewCost + ChatColor.BOLD.toString() + " GEMS(s)");
             }
         }, () -> {
             // Return item.

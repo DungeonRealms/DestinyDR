@@ -298,6 +298,9 @@ public class PlayerWrapper {
     @Getter
     private boolean loadedSuccessfully = false;
 
+    @Getter
+    private Map<Item.ItemTier, Integer> dryLoot = new HashMap<>();
+
     public PlayerWrapper(UUID uuid) {
         this.uuid = uuid;
     }
@@ -439,6 +442,7 @@ public class PlayerWrapper {
 
                 loadSpecialParticleEffect(result);
 
+                this.loadDryLoot(result);
                 this.mountsUnlocked = StringUtils.deserializeEnumListToSet(result.getString("characters.mounts"), EnumMounts.class);
                 //Unlockables.
                 this.loadUnlockables(result);
@@ -492,6 +496,23 @@ public class PlayerWrapper {
         return Bukkit.getPlayer(this.uuid);
     }
 
+
+    public void loadDryLoot(ResultSet rs) throws SQLException {
+        String loot = rs.getString("characters.loot");
+        if (loot != null && loot.contains(":")) {
+
+            for (String dry : loot.split(":")) {
+                if(dry.isEmpty())continue;
+                try {
+                    Item.ItemTier tier = Item.ItemTier.getByTier(Integer.parseInt(dry.split("@")[0]));
+                    int amount = Integer.parseInt(dry.split("@")[1]);
+                    this.dryLoot.put(tier, amount);
+                } catch (Exception e) {
+                    Bukkit.getLogger().info("unable to parse: " + dry + " from " + username);
+                }
+            }
+        }
+    }
 
     public void setGems(int gems) {
 
@@ -770,6 +791,14 @@ public class PlayerWrapper {
         }
     }
 
+    private String getDryLootString() {
+        StringBuilder builder = new StringBuilder();
+
+        dryLoot.forEach((t, val) -> builder.append(t.name()).append("@").append(val).append(":"));
+
+        return builder.toString();
+    }
+
     private String toString(List<Object> objects) {
         StringBuilder builder = new StringBuilder();
         for (Object object : objects)
@@ -810,13 +839,14 @@ public class PlayerWrapper {
                 getShopLevel(), muleString, getMuleLevel(), getHealth(), locationString, getMountsUnlocked(),
                 getActiveMount(), getActivePet(), getActiveTrail(), getActiveMountSkin(), getActiveHatOverride() != null ? getActiveHatOverride().name() : null,
                 getQuestData(), collectionBinString, player == null ? storedFoodLevel : player.getFoodLevel(), isCombatLogged(),
-                isShopOpened(), isLoggerDied(), getHearthstone(), getAlignmentTime()));
+                isShopOpened(), isLoggerDied(), getHearthstone(), getDryLootString(), getAlignmentTime()));
 
         for (ShardTier tier : ShardTier.values())
             array.add(getPortalShards(tier));
 
         String specialParticle = null;
-        if(this.getActiveSpecialEffect() != null && this.getActiveSpecialEffect().getParticleEnum() != null) specialParticle = this.getActiveSpecialEffect().getParticleEnum().getInternalName();
+        if (this.getActiveSpecialEffect() != null && this.getActiveSpecialEffect().getParticleEnum() != null)
+            specialParticle = this.getActiveSpecialEffect().getParticleEnum().getInternalName();
         array.add(specialParticle);
         array.add(activeChestEffect == null ? null : activeChestEffect.getInternalName());
         array.add(activeRealmEffect == null ? null : activeRealmEffect.getInternalName());
@@ -923,7 +953,8 @@ public class PlayerWrapper {
 
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
                 getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
-                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getSerializePetString(), getParticles(), getMountSkins(), getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
+                currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getSerializePetString(), getParticles(), getMountSkins(),
+                getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
     }
 
     @SneakyThrows
@@ -1243,7 +1274,7 @@ public class PlayerWrapper {
     }
 
     public boolean hasEffectUnlocked(ParticleEffect effect) {
-        return getParticles().contains(effect) || (effect != ParticleEffect.INDEPENDENCE_BLOCK && effect != ParticleEffect.GOLD_BLOCK && getRank().isSUB());
+        return getParticles().contains(effect);
     }
 
     /**
@@ -1624,21 +1655,22 @@ public class PlayerWrapper {
     }
 
     public static final void tickSpecialEffects() {
-        for(PlayerWrapper wrapper : playerWrappers.values()) {
-            if(wrapper.getActiveSpecialEffect() == null)continue;
-            if(!wrapper.getActiveSpecialEffect().canTick()) continue;
+        for (PlayerWrapper wrapper : playerWrappers.values()) {
+            if (wrapper.getActiveSpecialEffect() == null) continue;
+            if (!wrapper.getActiveSpecialEffect().canTick()) continue;
             Player player = wrapper.getPlayer();
-            if(player == null || !player.isOnline()) continue;
+            if (player == null || !player.isOnline()) continue;
             long lastMovement = wrapper.getLastBlockMovement();
-            if(!wrapper.getActiveSpecialEffect().tickWhileMoving() && System.currentTimeMillis() - lastMovement < 1000) continue;
+            if (!wrapper.getActiveSpecialEffect().tickWhileMoving() && System.currentTimeMillis() - lastMovement < 1000)
+                continue;
 
             wrapper.getActiveSpecialEffect().tick();
         }
     }
 
     public void changeIndependentColor() {
-        if(lastIndependantColor.equals(DyeColor.RED)) lastIndependantColor = DyeColor.WHITE;
-        else if(lastIndependantColor.equals(DyeColor.WHITE)) lastIndependantColor = DyeColor.BLUE;
+        if (lastIndependantColor.equals(DyeColor.RED)) lastIndependantColor = DyeColor.WHITE;
+        else if (lastIndependantColor.equals(DyeColor.WHITE)) lastIndependantColor = DyeColor.BLUE;
         else lastIndependantColor = DyeColor.RED;
     }
 }

@@ -62,16 +62,14 @@ import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.ModerationListener;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.CrashDetector;
-import net.dungeonrealms.game.mechanic.GraveyardMechanic;
-import net.dungeonrealms.game.mechanic.TrinketMechanics;
-import net.dungeonrealms.game.mechanic.TutorialIsland;
+import net.dungeonrealms.game.mechanic.*;
 import net.dungeonrealms.game.mechanic.dot.DotManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
+import net.dungeonrealms.game.player.cosmetics.particles.TimedSpecialParticleEffect;
 import net.dungeonrealms.game.player.inventory.ShopMenuListener;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
@@ -273,6 +271,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new DotManager());
         MechanicManager.registerMechanic(RiftMechanics.getInstance());
         MechanicManager.registerMechanic(new TrinketMechanics());
+        MechanicManager.registerMechanic(new AuraMechanics());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());
@@ -570,6 +569,7 @@ public class DungeonRealms extends JavaPlugin {
             PlayerWrapper.tickSpecialEffects();
             Shop.tickChestEffects();
             Realm.tickRealmEffects();
+            TimedSpecialParticleEffect.tickTimedEffects();
         },1L,1L);
 
 //        ItemGenerator.convertOldItemTemplates();

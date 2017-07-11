@@ -19,6 +19,7 @@ public enum CosmeticOverrides {
     FISH_BOWL("Fish Bowl", "A bowl that fits on your head!", ChatColor.AQUA, Material.SAPLING, (short) 3, EquipmentSlot.HEAD, Purchaseables.FISH_BOWL),
     PIRATE_HAT("Pirate Hat", "The hat from an old Pirate Captain!", ChatColor.GREEN, Material.SAPLING, (short) 1, EquipmentSlot.HEAD, Purchaseables.PIRATE_HAT),
     INDEPENDENCE_HAT("Independence Day Hat", "A hat to celebrate Independence Day", ChatColor.RED, Material.SAPLING, (short) 5, EquipmentSlot.HEAD, Purchaseables.INDEPENDENCE_HAT),
+    CRATE_HAT("Mystery Crate Hat", "A rare hat from mystery crates!", ChatColor.DARK_BLUE, Material.ENDER_CHEST, (short) 0, EquipmentSlot.HEAD, Purchaseables.CRATE_HAT),
 
     COAL_ORE_HAT("T1 Ore Helmet", "A helmet made of precious ore", ChatColor.BLACK, Material.COAL_ORE, (short) 0, EquipmentSlot.HEAD, Purchaseables.COAL_ORE_HAT),
     EMERALD_ORE_HAT("T2 Ore Helmet", "A helmet made of precious ore", ChatColor.GREEN, Material.EMERALD_ORE, (short) 0, EquipmentSlot.HEAD, Purchaseables.EMERALD_ORE_HAT),

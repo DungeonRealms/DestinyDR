@@ -25,12 +25,15 @@ public enum GlobalBuffs {
 
     //SHOP
     LOOT_BUFF_20(EnumBuff.LOOT, Purchaseables.LOOT_BUFF_20, 3600, 20),
+    LOOT_BUFF_30(EnumBuff.LOOT, Purchaseables.LOOT_BUFF_30, 3600, 30),
     LOOT_BUFF_40(EnumBuff.LOOT, Purchaseables.LOOT_BUFF_40, 3600, 40),
 
     LEVEL_BUFF_20(EnumBuff.LEVEL, Purchaseables.LEVEL_BUFF_20, 3600, 20),
+    LEVEL_BUFF_30(EnumBuff.LEVEL, Purchaseables.LEVEL_BUFF_30, 3600, 30),
     LEVEL_BUFF_40(EnumBuff.LEVEL, Purchaseables.LEVEL_BUFF_40, 3600, 40),
 
     PROF_BUFF_20(EnumBuff.PROFESSION, Purchaseables.PROFESSION_BUFF_20, 3600, 20),
+    PROF_BUFF_30(EnumBuff.PROFESSION, Purchaseables.PROFESSION_BUFF_30, 3600, 30),
     PROF_BUFF_40(EnumBuff.PROFESSION, Purchaseables.PROFESSION_BUFF_40, 3600, 40);
 
     EnumBuff buffCategory;

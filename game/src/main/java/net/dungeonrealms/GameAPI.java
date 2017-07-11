@@ -58,6 +58,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
@@ -121,10 +122,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -1064,12 +1062,18 @@ public class GameAPI {
         int freeEcash = (int) (playerWrapper.getLastFreeEcash() / 1000);
         int currentTime = (int) (System.currentTimeMillis() / 1000);
         if (currentTime - freeEcash >= 86400) {
-            int ecashReward = Utils.randInt(10, 15);
+//            int ecashReward = Utils.randInt(10, 15);
             playerWrapper.setLastFreeEcash(System.currentTimeMillis());
-            playerWrapper.setEcash(playerWrapper.getEcash() + ecashReward);
-            player.sendMessage(ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!");
-            player.sendMessage(ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by voting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://dungeonrealms.net/vote");
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+//            playerWrapper.setEcash(playerWrapper.getEcash() + ecashReward);
+            int crates = playerWrapper.getRank().isLifetimeSUB() ? 3 : playerWrapper.getRank().isSubPlus() ? 2 : playerWrapper.getRank().isSUB() ? 1 : 0;
+            //Fuck pmods getting free stuff..
+            if (crates > 0 && playerWrapper.getRank() != PlayerRank.PMOD) {
+                player.sendMessage(ChatColor.GOLD + "You have gained " + ChatColor.GOLD + ChatColor.BOLD + crates + "x Loot Aura" + ChatColor.GOLD.toString() + " for logging into DungeonRealms today with " + playerWrapper.getRank().getPrefix() + ChatColor.GOLD + "!");
+                player.sendMessage(ChatColor.GRAY + "Use /profile to access your Loot Auras!");
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+
+                Purchaseables.LOOT_AURA.setNumberOwned(playerWrapper, Purchaseables.LOOT_AURA.getNumberOwned(playerWrapper) + crates);
+            }
         }
 
         playerWrapper.setUsername(player.getName());
@@ -1459,11 +1463,11 @@ public class GameAPI {
      * Give the specified user the vote message.
      */
     public static void sendVoteMessage(Player player) {
-        int ecashAmount = Rank.isSUBPlus(player) ? 25 : (Rank.isSUB(player) ? 20 : 15);
+        //int ecashAmount = Rank.isSUBPlus(player) ? 25 : (Rank.isSUB(player) ? 20 : 15);
 //        ComponentBuilder cb = new ComponentBuilder("To vote for " + ecashAmount + " ECASH & 5% EXP, click ").color(ChatColor.GRAY);
 //        cb.append("HERE").color(ChatColor.AQUA).underlined(true).bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
 //        player.sendMessage(cb.create());
-        final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
+        final JSONMessage message = new JSONMessage("To vote for Mystery Crates & 5% EXP, click ", ChatColor.AQUA);
         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         message.sendToPlayer(player);
     }
@@ -1687,13 +1691,20 @@ public class GameAPI {
 
         // Handle reward calculations & achievements.
         Achievements.giveAchievement(player, EnumAchievements.VOTE);
-        int ecashReward = 15;
+        //int ecashReward = 15;
+        int chestsToGive = 1;
         if (Rank.isSUB(player)) {
-            ecashReward = 20;
+            if (ThreadLocalRandom.current().nextInt(10) == 3) {
+                chestsToGive++;
+                player.sendMessage(ChatColor.GREEN + "Since you are a " + ChatColor.GREEN + "Subscriber" + " you got an extra mystery crate!");
+            }
             Achievements.giveAchievement(player, EnumAchievements.VOTE_AS_SUB);
             // Now let's check if we should reward them for being a SUB+/++.
             if (Rank.isSUBPlus(player)) {
-                ecashReward = 25;
+                if (chestsToGive <= 1 && ThreadLocalRandom.current().nextInt(5) == 3) {
+                    chestsToGive++;
+                    player.sendMessage(ChatColor.GREEN + "Since you are a " + ChatColor.GOLD.toString() + ChatColor.BOLD + "Subscriber+" + ChatColor.GREEN + " you got an extra mystery crate!");
+                }
                 Achievements.giveAchievement(player, EnumAchievements.VOTE_AS_SUB_PLUS);
             }
         }
@@ -1703,9 +1714,10 @@ public class GameAPI {
         //TODO: Update last voted. with System.cuttentTimeMiollis
 
         // Reward to player with their EXP increase.
-        pw.setEcash(pw.getEcash() + ecashReward);
+        //pw.setEcash(pw.getEcash() + ecashReward);
+        Purchaseables.VOTE_CRATE.setNumberOwned(pw, Purchaseables.VOTE_CRATE.getNumberOwned(pw) + chestsToGive);
         pw.addExperience(expToGive, false, true, true);
-        final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+        final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + chestsToGive + " Mystery Chests & 5% EXP @ vote ", ChatColor.WHITE);
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
         // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.

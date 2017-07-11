@@ -9,6 +9,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
 import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.AuraType;
 import net.dungeonrealms.game.item.items.core.ItemFishingPole;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
@@ -355,6 +356,7 @@ public class Fishing implements GenericMechanic, Listener {
             EntityFishingHook fishHook = (EntityFishingHook) ((CraftEntity) e.getHook()).getHandle();
             int ticks = (int) ReflectionAPI.getObjectFromField("av", fishHook);
 
+            Location fishLocation = e.getHook().getLocation();
             int maxFishTicks = e.getHook().hasMetadata("maxTicks") ? e.getHook().getMetadata("maxTicks").get(0).asInt() : -1;
 
             if (maxFishTicks == -1) {
@@ -440,8 +442,18 @@ public class Fishing implements GenericMechanic, Listener {
                 int exp = fTier.getXP();
 
                 //Dont add on this breakage.
-                if (!(level == 100 && pole.getLevel() == 1))
+                if (!(level == 100 && pole.getLevel() == 1)) {
                     pole.addExperience(pl, exp);
+
+                    int xpToAdd = (int) ItemLootAura.getDropMultiplier(fishLocation, AuraType.PROFESSION);
+                    if (xpToAdd > 0) {
+                        pole.addExperience(pl, xpToAdd, false);
+                        pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "    " + ChatColor.GOLD
+                                .toString() + ChatColor.BOLD + "PROF. AURA >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                                + "+" + ChatColor.YELLOW + Math.round(xpToAdd) + ChatColor.BOLD + " EXP " +
+                                ChatColor.GRAY + "[" + pole.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pole.getNeededXP() + " EXP]");
+                    }
+                }
 
                 boolean hasPoleStill = pole.updateItem(pl, false);
 

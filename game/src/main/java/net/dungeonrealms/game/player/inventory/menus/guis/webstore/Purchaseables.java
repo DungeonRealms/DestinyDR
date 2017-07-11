@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.crates.Crates;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -25,11 +26,18 @@ import java.util.function.Consumer;
 public enum Purchaseables {
 
     LOOT_BUFF_20("Loot Buff", "\n20% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 0, true, true,false, ChatColor.AQUA),
-    LOOT_BUFF_40("Loot Buff", "\n40% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 9, true, true,false, ChatColor.AQUA),
+    LOOT_BUFF_30("Loot Buff", "\n30% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 9, true, true,false, ChatColor.AQUA),
+    LOOT_BUFF_40("Loot Buff", "\n40% global loot buff across all\nshards for every player!", Material.DIAMOND, WebstoreCategories.GLOBAL_BUFFS, 18, true, true,false, ChatColor.AQUA),
     PROFESSION_BUFF_20("Profession Buff", "\n20% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 4, true, true,false, ChatColor.GOLD),
-    PROFESSION_BUFF_40("Profession Buff", "\n40% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 13, true, true,false, ChatColor.GOLD),
+    PROFESSION_BUFF_30("Profession Buff", "\n30% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 13, true, true,false, ChatColor.GOLD),
+    PROFESSION_BUFF_40("Profession Buff", "\n40% global profession buff across all\nshards for every player!", Material.GOLDEN_CARROT, WebstoreCategories.GLOBAL_BUFFS, 22, true, true,false, ChatColor.GOLD),
     LEVEL_BUFF_20("Level Buff", "\n20% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 8, true, true,false, ChatColor.GREEN),
-    LEVEL_BUFF_40("Level Buff", "\n40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 17, true, true,false, ChatColor.GREEN),
+    LEVEL_BUFF_30("Level Buff", "\n30% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 17, true, true,false, ChatColor.GREEN),
+    LEVEL_BUFF_40("Level Buff", "\n40% global level experience buff across all\nshards for every player!", Material.EXP_BOTTLE, WebstoreCategories.GLOBAL_BUFFS, 26, true, true,false, ChatColor.GREEN),
+
+    LOOT_AURA("Loot Aura", "\nAn Aura that increases Drop Rates nearby.", Material.DIAMOND_BLOCK, WebstoreCategories.GLOBAL_BUFFS, 11, true, true,false, ChatColor.AQUA),
+
+    VOTE_CRATE("Vote Crate", "\nA mystery vote crate", Material.ENDER_CHEST, WebstoreCategories.CRATES, 0, true, true,false, ChatColor.AQUA, true, 0),
 
     SUB("Sub Rank", "\nIn-game Subscriber rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 0, false, false, false,ChatColor.GREEN),
     SUB_PLUS("Sub+ Rank", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 4, false, false,false, ChatColor.GOLD),
@@ -51,11 +59,12 @@ public enum Purchaseables {
     SUB_PLUS_TWELVE_MONTH("Sub+ Rank (1 Year)", "\nIn-game Subscriber+ rank!", Material.EMERALD, WebstoreCategories.SUBSCRIPTIONS, 8, false, true, true, ChatColor.GOLD),
 
     WIZARD_HAT("Wizard Hat", "\nShow off your inner Wizard!", Material.SAPLING, WebstoreCategories.HATS, 0, false, true, false, ChatColor.WHITE, true, 4),
-    CROWN("Gold Crown", "\nA shiny Crown fit for a King.", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, false, ChatColor.GOLD, true, 2),
+    CROWN("Gold Crown", "\nA shiny Crown fit for a King", Material.SAPLING, WebstoreCategories.HATS, 1, false, true, false, ChatColor.GOLD, true, 2),
     DRAGON_MASK("Dragon Mask", "\nAn ancient Dragon Skull", Material.SKULL_ITEM, WebstoreCategories.HATS, 2, false, true, false, ChatColor.LIGHT_PURPLE, true, 5),
-    FISH_BOWL("Fish Bowl", "\nA fishbowl that fits on your head.", Material.SAPLING, WebstoreCategories.HATS, 3, false, true, false, ChatColor.AQUA, true, 3),
+    FISH_BOWL("Fish Bowl", "\nA fishbowl that fits on your head", Material.SAPLING, WebstoreCategories.HATS, 3, false, true, false, ChatColor.AQUA, true, 3),
     PIRATE_HAT("Pirate Hat", "\nThe hat from an old Pirate Captain", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, false, ChatColor.GREEN, true, 1),
     INDEPENDENCE_HAT("Independence Day Hat", "\nA hat to celebrate Independence Day", Material.SAPLING, WebstoreCategories.HATS, 5, false, true, false, ChatColor.DARK_BLUE, true, 5),
+    CRATE_HAT("Mystery Crate Hat", "\nA rare hat from mystery crates", Material.ENDER_CHEST, WebstoreCategories.HATS, 6, false, true, false, ChatColor.DARK_BLUE, true),
 
     COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, false, ChatColor.WHITE, true),
     EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, false, ChatColor.GREEN, true),
@@ -87,6 +96,10 @@ public enum Purchaseables {
     INDEPENDENCE_PLAYER_AURA("Independence Aura", "\nA festive player aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.PLAYER_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
     INDEPENDENCE_CHEST_AURA("Independence Chest Aura", "\nA festive chest aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.CHEST_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
     INDEPENDENCE_REALM_AURA("Independence Realm Aura", "\nA festive realm aura to commemorate\nIndependence day", Material.FIREWORK, WebstoreCategories.REALM_EFFECTS, 0, false, true, false, ChatColor.DARK_GREEN,true,0, SpecialParticles.FOURTH_AURA),
+
+    CLOUD_PLAYER_AURA("Rain Cloud Aura", "\nA rare rain cloud aura", Material.FIREWORK, WebstoreCategories.PLAYER_EFFECTS, 1, false, true, false, ChatColor.DARK_AQUA,true,0, SpecialParticles.CLOUD),
+    CLOUD_CHEST_AURA("Rain Cloud Chest Aura", "\nA rare rain cloud aura", Material.FIREWORK, WebstoreCategories.CHEST_EFFECTS, 1, false, true, false, ChatColor.DARK_AQUA,true,0, SpecialParticles.CLOUD),
+    CLOUD_REALM_AURA("Rain Cloud Realm Aura", "\nA rare rain cloud aura", Material.FIREWORK, WebstoreCategories.REALM_EFFECTS, 1, false, true, false, ChatColor.DARK_AQUA,true,0, SpecialParticles.CLOUD),
 
     SCRAP_TAB("Scrap Tab", "\nIn-game storage for your scrap!", Material.INK_SACK, WebstoreCategories.MISCELLANEOUS, 0, false, true, true, ChatColor.GOLD),
     JUKEBOX("Mobile Music Box", "\nPlay your favorite tunes where ever you want!", Material.JUKEBOX, WebstoreCategories.MISCELLANEOUS, 5, false, true, false, ChatColor.AQUA),

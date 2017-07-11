@@ -433,7 +433,6 @@ public abstract class ItemGear extends ItemGeneric {
             range.generateRandom();
             // Keep the old one if it's not supposed to get rerolled.
             if (keptAttributes.containsKey(im.getCurrentAttribute())) {
-                Bukkit.getLogger().info("Keeping: " + im.getCurrentAttribute());
                 range = keptAttributes.get(im.getCurrentAttribute());
             }
 

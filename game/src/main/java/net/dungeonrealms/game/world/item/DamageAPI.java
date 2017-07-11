@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.world.item;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
@@ -144,8 +146,10 @@ public class DamageAPI {
         if (defender.isPlayer() && EnumEntityType.HOSTILE_MOB.isType(attacker.getEntity()) && EntityAPI.isMonster(attacker.getEntity()))
             EntityAPI.getMonster(attacker.getEntity()).onMonsterAttack(defender.getPlayer());
 
+//        System.out.println("Damage: " + damage);
         //  DPS  //
-        damage += damage * ((double) attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100);
+        damage += damage * (attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100D);
+
         //  KNOCKBACK  //
         if (attacker.isPlayer() && getChance(attacker.getAttributes(), WeaponAttributeType.KNOCKBACK))
             knockbackEntity(attacker.getPlayer(), defender.getEntity(), 1.5);
@@ -232,10 +236,12 @@ public class DamageAPI {
                 defender.getEntity().getWorld().playSound(attacker.getEntity().getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             double critIncrease = 0.0;
+
             if (attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 critIncrease = int_val * 0.0003;
             }
+
             damage *= (2 + critIncrease);
 
         }
@@ -374,8 +380,10 @@ public class DamageAPI {
 
                 if (!damagerIsMob)
                     EnergyHandler.removeEnergyFromPlayerAndUpdate((Player) damager, totalEnergyCost);
+
                 HealthHandler.damageMonster(res);
             } else if (res.getDefender().isPlayer()) {
+
                 if (damagerIsMob || !GameAPI.isNonPvPRegion(entity.getLocation())) {
                     if (GameAPI._hiddenPlayers.contains((Player) entity))
                         continue;

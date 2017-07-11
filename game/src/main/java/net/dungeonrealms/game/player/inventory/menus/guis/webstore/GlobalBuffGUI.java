@@ -5,6 +5,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.item.items.core.AuraType;
+import net.dungeonrealms.game.item.items.functional.ItemLootAura;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.menus.GUIItem;
@@ -23,7 +25,7 @@ public class GlobalBuffGUI extends GUIMenu implements WebstoreGUI {
 
 
     public GlobalBuffGUI(Player player) {
-        super(player, 18, "Global Buffs");
+        super(player, 27, "Global Buffs and Auras");
         setShouldOpenPreviousOnClose(true);
     }
 
@@ -32,22 +34,29 @@ public class GlobalBuffGUI extends GUIMenu implements WebstoreGUI {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if (wrapper == null) return;
 
-        /*setItem(getSize() - 1, new GUIItem(ItemManager.createItem(Material.BARRIER, ChatColor.GREEN + "Back"))
-                .setClick(e -> new CategoryGUI(player).open(player,e.getAction())));*/
-
-        for(Purchaseables webItem : Purchaseables.values()) {
-            if(webItem.getCategory() != getCategory()) continue;
+        for (Purchaseables webItem : Purchaseables.values()) {
+            if (webItem.getCategory() != getCategory()) continue;
             GlobalBuffs buff = GlobalBuffs.getGlobalBuff(webItem);
-            if(buff == null) {
-                Constants.log.info("Null Global Buff Enum Object for " + webItem.getName());
-                continue;
-            }
+
             List<String> lore = webItem.getDescription();
             lore.add("");
             lore.add(webItem.getOwnedDisplayString(wrapper));
             setItem(webItem.getGuiSlot(), new GUIItem(webItem.getItemType()).setName(webItem.getName()).setLore(lore).setClick((evt) -> {
                 int numOwned = webItem.getNumberOwned(wrapper);//Could be different now when we are clicking? Dont use the old one from above.
-                if(numOwned <= 0) {
+                if (buff == null) {
+                    if (webItem == Purchaseables.LOOT_AURA) {
+                        if (numOwned <= 0) {
+                            player.sendMessage(ChatColor.RED + "You do not have any Loot Auras left!");
+                            player.sendMessage(ChatColor.GRAY + "You can receive Daily Loot Aura's with " + ChatColor.GREEN + ChatColor.BOLD + "SUB" + ChatColor.GRAY + " at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
+                            return;
+                        }
+                        webItem.setNumberOwned(wrapper, numOwned - 1);
+                        GameAPI.giveOrDropItem(player, new ItemLootAura(AuraType.LOOT, 10, 600).generateItem());
+                        reconstructGUI(player);
+                        return;
+                    }
+                }
+                if (numOwned <= 0) {
                     player.sendMessage(ChatColor.RED + "You do not have any " + buff.getBuffPower() + "% " + buff.getBuffCategory().getFriendlyName() + "s left!");
                     player.sendMessage(ChatColor.GRAY + "You can get some more at " + ChatColor.UNDERLINE + Constants.SHOP_URL);
                     return;
@@ -72,7 +81,7 @@ public class GlobalBuffGUI extends GUIMenu implements WebstoreGUI {
                 Chat.promptPlayerConfirmation(player, () -> {
                     GameAPI.sendNetworkMessage("buff", buff.getBuffCategory().name(), buff.getDuration() + "", buff.getBuffPower() + "",
                             PlayerWrapper.getWrapper(player).getChatName(), DungeonRealms.getShard().getShardID());
-                    webItem.setNumberOwned(wrapper,numOwned - 1);
+                    webItem.setNumberOwned(wrapper, numOwned - 1);
                 }, () -> {
                     player.sendMessage(ChatColor.RED + buff.getBuffCategory().getFriendlyName().toUpperCase() + " - CANCELLED");
                 });

@@ -58,7 +58,7 @@ public class PlayerProfileGUI extends GUIMenu {
                 "",
                 ChatColor.GRAY + "View all available E-Cash items!",
                 "",
-                ChatColor.GRAY + "Unlock " + ChatColor.GREEN + ChatColor.BOLD + "FREE" + ChatColor.GRAY + " E-Cash with " + ChatColor.GREEN + "/vote"
+                ChatColor.GRAY + "Unlock " + ChatColor.GREEN + ChatColor.BOLD + "FREE" + ChatColor.GRAY + " Mystery Crates with " + ChatColor.GREEN + "/vote"
         )).setEnchanted(true).setClick(e -> {
             player.closeInventory();
             //NPCMenu.ECASH_VENDOR.open(player)

@@ -6,11 +6,9 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
+import net.dungeonrealms.game.item.items.core.AuraType;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
-import net.dungeonrealms.game.item.items.functional.ItemEXPLamp;
-import net.dungeonrealms.game.item.items.functional.ItemEnchantPickaxe;
-import net.dungeonrealms.game.item.items.functional.ItemGem;
-import net.dungeonrealms.game.item.items.functional.ItemOrb;
+import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
@@ -137,6 +135,13 @@ public class Mining implements GenericMechanic, Listener {
 
         //  ADD PLAYER XP  //
         int xpGain = oreTier.getXP();
+
+        double mult = ItemLootAura.getDropMultiplier(p.getLocation(), AuraType.PROFESSION);
+
+        int xpToAdd = 0;
+        if (mult > 0)
+            xpToAdd = (int) (xpGain * mult * .01);
+
         PlayerWrapper pw = PlayerWrapper.getWrapper(p);
         pw.addExperience(xpGain / 12, false, true, true);
 
@@ -170,6 +175,15 @@ public class Mining implements GenericMechanic, Listener {
         }
 
         pickaxe.addExperience(p, xpGain);
+
+        if (xpToAdd > 0) {
+            pickaxe.addExperience(p, xpToAdd, false);
+            pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "    " + ChatColor.GOLD
+                    .toString() + ChatColor.BOLD + "PROF. AURA >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                    + "+" + ChatColor.YELLOW + Math.round(xpToAdd) + ChatColor.BOLD + " EXP " +
+                    ChatColor.GRAY + "[" + pickaxe.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pickaxe.getNeededXP() + " EXP]");
+        }
+
         boolean hasPickaxe = pickaxe.updateItem(p, false);
         if (!hasPickaxe) {
             p.sendMessage(ChatColor.RED + "It seems your Pickaxe has disappeared?");

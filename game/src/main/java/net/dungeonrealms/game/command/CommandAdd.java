@@ -119,8 +119,23 @@ public class CommandAdd extends BaseCommand {
                         }
                     }
                     return true;
+                case "dryloot":
+                    PlayerWrapper wra = PlayerWrapper.getPlayerWrapper(player);
+
+                    ItemTier tr = ItemTier.getByTier(Integer.parseInt(args[1]));
+
+                    int am = Integer.parseInt(args[2]);
+                    Integer current = wra.getDryLoot().get(tr);
+                    wra.getDryLoot().put(tr, current == null ? am : current + am);
+                    player.sendMessage(ChatColor.RED + "Loot added to tier " + tr.name());
+                    return true;
                 case "clue":
                     player.getInventory().addItem(new ClueScrollItem(ClueScrollType.COMBAT).generateItem());
+                    break;
+                case "discount":
+                    ItemDiscountScroll scroll = new ItemDiscountScroll();
+                    scroll.setDiscountPercent(10);
+                    player.getInventory().addItem(scroll.generateItem());
                     break;
                 case "load":
                 case "nameditem":

@@ -18,13 +18,15 @@ import java.util.List;
 public enum WebstoreCategories {
 
     SUBSCRIPTIONS("Subscriptions", "\nUnlock access to all " + ChatColor.GREEN + ChatColor.BOLD + "SUB " + ChatColor.GRAY + "shards\nalong with access to many\nCosmetics and other perks!\n \nClick here to view all subscriptions!", Material.EMERALD,0, ChatColor.GREEN),
-    GLOBAL_BUFFS("Global Buffs", "\nClick here to view all global buffs!", Material.DIAMOND,8, ChatColor.AQUA),
+    GLOBAL_BUFFS("Global Buffs and Auras", "\nClick here to view all global buffs and auras!", Material.DIAMOND,8, ChatColor.AQUA),
     PETS("Pets", "\nClick here to view all pets!", Material.NAME_TAG,3, ChatColor.GREEN),
     HATS("Cosmetics", "\nStand out from the rest with\nwith these Cosmetic Overrides!\n \nClick here to view all cosmetic gear items!", Material.SAPLING,4, ChatColor.AQUA, ChatColor.GRAY),
 
     PLAYER_EFFECTS("Player Effects", "\nStand out from the rest with\nwith these Player Effects!\n \nClick here to view all player effects!", Material.FIREWORK,1, ChatColor.DARK_GREEN, ChatColor.GRAY),
     CHEST_EFFECTS("Chest Effects", "\nStand out from the rest with\nwith these Chest Effects!\n \nClick here to view all chest effects!", Material.FIREWORK,-1, ChatColor.DARK_GREEN, ChatColor.GRAY),
     REALM_EFFECTS("Realm Effects", "\nStand out from the rest with\nwith these Realm Effects!\n \nClick here to view all realm effects!", Material.FIREWORK,-1, ChatColor.DARK_GREEN, ChatColor.GRAY),
+
+    CRATES("Mystery Crates", "\nGet some cool rewards\nout of these crates!", Material.ENDER_CHEST,-1, ChatColor.AQUA, ChatColor.GRAY),
 
     MISCELLANEOUS("Misc Items", "\nClick here to view all miscellaneous items!", Material.BLAZE_ROD,5, ChatColor.GOLD);
 

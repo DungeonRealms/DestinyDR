@@ -140,9 +140,15 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    @EventHandler //TODO: Modularize when command system is redone.
+    @EventHandler(priority = EventPriority.LOWEST) //TODO: Modularize when command system is redone.
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
+
+        if(command.toLowerCase().startsWith("/?") && !event.getPlayer().isOp()){
+            event.setCancelled(true);
+            event.setMessage("/help");
+            return;
+        }
 
         // Servers that can bypass these limits altogether.
         if (DungeonRealms.isMaster() || DungeonRealms.isSupport())

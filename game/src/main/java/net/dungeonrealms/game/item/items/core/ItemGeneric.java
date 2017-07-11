@@ -165,6 +165,9 @@ public abstract class ItemGeneric extends PersistentItem {
         this.glowing = b;
         return this;
     }
+    public void setCustomLore(List<String> string) {
+        this.customLore = string;
+    }
 
     public void setCustomLore(String string) {
         this.customLore = Lists.newArrayList(string);

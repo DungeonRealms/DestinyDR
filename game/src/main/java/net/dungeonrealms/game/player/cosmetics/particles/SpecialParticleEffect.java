@@ -39,4 +39,8 @@ public abstract class SpecialParticleEffect {
 
     public abstract SpecialParticles getParticleEnum();
 
+    protected LivingEntity getEntity() {
+        return this.entityToPlay;
+    }
+
 }

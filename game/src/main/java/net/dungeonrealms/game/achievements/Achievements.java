@@ -250,6 +250,7 @@ public class Achievements {
 
         //Store related
         RENAME_ITEM("Rename an Item", "Rename an item with an Item Name Tag!", 500, AchievementCategory.SOCIAL),
+        RENAME_LORE("Custom Lore", "Add Custom Lore to an item.", 500, AchievementCategory.SOCIAL),
 
         // Combat
         INFECTED("Infected!", "Killed someone who was infected.", 500, AchievementCategory.COMBAT),

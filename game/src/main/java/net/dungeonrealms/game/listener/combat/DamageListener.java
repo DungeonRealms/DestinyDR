@@ -458,7 +458,8 @@ public class DamageListener implements Listener {
             if (p.getGameMode().equals(GameMode.SPECTATOR))
                 p.setGameMode(GameMode.SURVIVAL);
             PlayerWrapper pw = PlayerWrapper.getWrapper(p);
-            pw.calculateAllAttributes();
+            if (pw != null)
+                pw.calculateAllAttributes();
         }, 20L);
     }
 
