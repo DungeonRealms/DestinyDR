@@ -1720,6 +1720,8 @@ public class GameAPI {
         final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + chestsToGive + " Mystery Chests & 5% EXP @ vote ", ChatColor.WHITE);
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
+
+        player.sendMessage(ChatColor.GRAY + "Visit the " + ChatColor.UNDERLINE.toString() + "E-Cash Vendor" + ChatColor.GRAY + " to view your Vote Crates!");
         // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
 //        ComponentBuilder cb = new ComponentBuilder(player.getName()).color(ChatColor.AQUA)
 //        		.append(" voted for " + ecashReward + " ECASH & 5% EXP @ vote ").color(ChatColor.GRAY)
