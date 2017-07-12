@@ -1095,15 +1095,16 @@ public class PlayerWrapper {
     @SneakyThrows
     private void loadBanks(ResultSet set) {
         setBankLevel(set.getInt("characters.bank_level"));
+        int level = getBankLevel();
         String serializedStorage = set.getString("characters.bank_storage");
         if (serializedStorage == null) {
-            this.pendingBankStorage = new Storage(uuid, this.characterID);
+            this.pendingBankStorage = new Storage(uuid, this.characterID, level);
             return;
         }
 
         //Auto set the inventory size based off level? min 9, max 54
         Inventory inv = ItemSerialization.fromString(serializedStorage, Math.max(9, Math.min(54, getBankLevel() * 9)));
-        this.pendingBankStorage = new Storage(uuid, inv, this.characterID);
+        this.pendingBankStorage = new Storage(uuid, inv, this.characterID, level);
         loadCollectionBin(set, this.pendingBankStorage);
     }
 

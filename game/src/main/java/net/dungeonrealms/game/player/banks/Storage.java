@@ -26,11 +26,14 @@ public class Storage {
     public UUID ownerUUID;
     @Getter
     private int characterID;
+
+    private int cachedSize;
     public Inventory inv;
     public Inventory collection_bin = null;
 
-    public Storage(UUID owner, int accountID) {
+    public Storage(UUID owner, int accountID, int cachedSize) {
         ownerUUID = owner;
+        this.cachedSize = cachedSize;
         inv = getNewStorage();
         this.characterID = accountID;
     }
@@ -39,8 +42,9 @@ public class Storage {
      * @param uuid
      * @param inventory
      */
-    public Storage(UUID uuid, Inventory inventory, int characterID) {
+    public Storage(UUID uuid, Inventory inventory, int characterID, int level) {
         ownerUUID = uuid;
+        this.cachedSize = level;
         this.characterID = characterID;
         this.inv = getNewStorage();
 
@@ -82,7 +86,10 @@ public class Storage {
      */
     private int getStorageSize() {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(ownerUUID);
-        if (wrapper == null) return 9;
+        if (wrapper == null) {
+            Bukkit.getLogger().info("Player Wrapper null for " + ownerUUID + " Returning  " + cachedSize + " on Bank Size...");
+            return Math.max(9, cachedSize * 9);
+        }
         return 9 * wrapper.getBankLevel();
     }
 
