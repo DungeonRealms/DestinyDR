@@ -1707,6 +1707,7 @@ public class GameAPI {
                 }
                 Achievements.giveAchievement(player, EnumAchievements.VOTE_AS_SUB_PLUS);
             }
+//            PacketPlayOutSetCooldown out = new PacketPlayOutSetCooldown()
         }
 
         // Update the database with the new E-Cash reward!

@@ -502,9 +502,16 @@ public class PlayerWrapper {
         if (loot != null && loot.contains(":")) {
 
             for (String dry : loot.split(":")) {
-                if(dry.isEmpty())continue;
+                if (dry.isEmpty()) continue;
                 try {
-                    Item.ItemTier tier = Item.ItemTier.getByTier(Integer.parseInt(dry.split("@")[0]));
+                    String numString = dry.split("@")[0];
+                    Item.ItemTier tier;
+                    if (org.apache.commons.lang.StringUtils.isNumeric(numString)) {
+                        Integer t = Integer.parseInt(numString);
+                        tier = Item.ItemTier.getByTier(t);
+                    } else {
+                        tier = Item.ItemTier.valueOf(numString);
+                    }
                     int amount = Integer.parseInt(dry.split("@")[1]);
                     this.dryLoot.put(tier, amount);
                 } catch (Exception e) {
