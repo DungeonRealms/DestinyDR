@@ -1066,10 +1066,13 @@ public class GameAPI {
             playerWrapper.setLastFreeEcash(System.currentTimeMillis());
 //            playerWrapper.setEcash(playerWrapper.getEcash() + ecashReward);
             int crates = playerWrapper.getRank().isLifetimeSUB() ? 3 : playerWrapper.getRank().isSubPlus() ? 2 : playerWrapper.getRank().isSUB() ? 1 : 0;
-            //Fuck pmods getting free stuff..
-            if (crates > 0 && playerWrapper.getRank() != PlayerRank.PMOD) {
+
+            //1..
+            if (playerWrapper.getRank() == PlayerRank.PMOD) crates = 1;
+
+            if (crates > 0) {
                 player.sendMessage(ChatColor.GOLD + "You have gained " + ChatColor.GOLD + ChatColor.BOLD + crates + "x Loot Aura" + ChatColor.GOLD.toString() + " for logging into DungeonRealms today with " + playerWrapper.getRank().getPrefix() + ChatColor.GOLD + "!");
-                player.sendMessage(ChatColor.GRAY + "Use /profile to access your Loot Auras!");
+                player.sendMessage(ChatColor.GRAY + "Use /unlocks to access your Loot Auras!");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
 
                 Purchaseables.LOOT_AURA.setNumberOwned(playerWrapper, Purchaseables.LOOT_AURA.getNumberOwned(playerWrapper) + crates);
