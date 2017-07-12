@@ -151,11 +151,13 @@ public class AttackResult {
 			}
 		}
 
-		for(Item.AttributeType type : getAttacker().getAttributes().keySet()){
-			//Apply the weapon attributes?
-			ModifierRange range = getAttacker().getAttributes().getAttribute(type);
-			if(type instanceof Item.ArmorAttributeType){
-				attributes.addStat(type, range);
+		if(getAttacker().getAttributes() != null) {
+			for (Item.AttributeType type : getAttacker().getAttributes().keySet()) {
+				//Apply the weapon attributes?
+				ModifierRange range = getAttacker().getAttributes().getAttribute(type);
+				if (type instanceof Item.ArmorAttributeType) {
+					attributes.addStat(type, range);
+				}
 			}
 		}
 		// We don't use the actual attacker attributes when it's a projectile, so
