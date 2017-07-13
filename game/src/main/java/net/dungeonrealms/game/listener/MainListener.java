@@ -622,7 +622,7 @@ public class MainListener implements Listener {
 
         // Event NPCs and Restrictions
         if (DungeonRealms.isEvent()) {
-            if ((menu != null && !menu.isAllowedOnEvent()) || npcNameStripped.equalsIgnoreCase("Merchant")) {
+            if (menu != null && !menu.isAllowedOnEvent() || npcNameStripped.equalsIgnoreCase("Merchant")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk to this NPC on this shard.");
                 return;
             }
@@ -637,6 +637,7 @@ public class MainListener implements Listener {
             new SalesManagerGUI(player).open(player, null);
             return;
         }
+
         if (menu != null)
             menu.open(event.getPlayer());
 

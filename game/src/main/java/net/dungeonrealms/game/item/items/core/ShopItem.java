@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
 import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
@@ -66,6 +67,8 @@ public class ShopItem extends ItemGeneric {
                 }
             } else if (toGive instanceof ItemPeaceOrb) {
                 toGive = new ItemPeaceOrb(true);
+            }else if(toGive instanceof ItemFlightOrb){
+                toGive = new ItemFlightOrb(true);
             }
 //            toGive.setAntiDupe(true);
             GameAPI.giveOrDropItem(player, toGive.generateItem());
