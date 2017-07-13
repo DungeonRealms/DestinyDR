@@ -73,8 +73,9 @@ public class CrateGUI extends GUIMenu implements WebstoreGUI {
 
                     Location toPlay = sight.get(sight.size() - 1).getLocation();
                     Crate crateObj = crate.getCrate(player, toPlay);
+                    webItem.setNumberOwned(wrapper, webItem.getNumberOwned(wrapper) - 1);
                     crateObj.setOnComplete(() -> {
-                        webItem.setNumberOwned(wrapper, webItem.getNumberOwned(wrapper) - 1);
+//                        webItem.setNumberOwned(wrapper, webItem.getNumberOwned(wrapper) - 1);
                     });
                     crateObj.open();
                     player.closeInventory();
