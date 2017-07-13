@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.world;
 
+import io.netty.util.internal.ConcurrentSet;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -51,6 +52,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -176,20 +178,21 @@ public class RealmListener implements Listener {
             Realm realm = Realms.getInstance().getRealm(uuid);
 
             int yMin = Realms.GRASS_POSITION - realm.getTier().getDimensions() + 1;
-            CopyOnWriteArrayList<Location> needToPlace = new CopyOnWriteArrayList<>(Realms.getInstance().getProcessingBlocks().get(uuid));
+            Set<Location> needToPlace = Realms.getInstance().getProcessingBlocks().get(uuid);
 
             for (Location loc : needToPlace) {
                 if (blocksPasted >= Realms.SERVER_BLOCK_BUFFER)
                     break;
 
+                Block block = loc.getBlock();
                 //Check that we can replace this block.
-                if (Realms.REPLACEABLE_BLOCKS.contains(loc.getBlock().getType())) {
-                    if (loc.getBlock().getY() == Realms.GRASS_POSITION) {
-                        loc.getBlock().setType(Material.GRASS);
-                    } else if (loc.getBlock().getY() == yMin) {
-                        loc.getBlock().setType(Material.BEDROCK);
+                if (Realms.REPLACEABLE_BLOCKS.contains(block.getType())) {
+                    if (block.getY() == Realms.GRASS_POSITION) {
+                        block.setTypeIdAndData(Material.GRASS.getId(), (byte) 0, false);
+                    } else if (block.getY() == yMin) {
+                        block.setTypeIdAndData(Material.BEDROCK.getId(), (byte) 0, false);
                     } else {
-                        loc.getBlock().setType(Material.DIRT);
+                        block.setTypeIdAndData(Material.DIRT.getId(), (byte) 0, false);
                     }
                 }
 

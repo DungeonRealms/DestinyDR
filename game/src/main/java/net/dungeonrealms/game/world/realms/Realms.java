@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.realms;
 
 
+import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -34,7 +35,7 @@ public class Realms implements GenericMechanic {
     private static Realms instance = new Realms();
 
     //List of blocks that need to be set. (Upgrading Realms)
-    private Map<UUID, List<Location>> processingBlocks = new ConcurrentHashMap<>();
+    private Map<UUID, Set<Location>> processingBlocks = new ConcurrentHashMap<>();
 
     //Realm map.
     private Map<UUID, Realm> realms = new ConcurrentHashMap<>();
@@ -221,7 +222,7 @@ public class Realms implements GenericMechanic {
      */
     public void upgradeRealmBlocks(Realm realm, RealmTier newTier) {
         // Init
-        List<Location> blockList = new ArrayList<>();
+        ConcurrentSet<Location> blockList = new ConcurrentSet<>();
         RealmTier oldTier = RealmTier.getByTier(newTier.getTier() - 1);
         int size = newTier.getDimensions();
         int oldSize = oldTier.getDimensions();
@@ -260,6 +261,7 @@ public class Realms implements GenericMechanic {
             for (z = 16; z < limZ; z++)
                 blockList.add(new Location(w, x, GRASS_POSITION, z));
 
+        System.out.println("Storing " + blockList.size() + " blocks to set for " + realm.getOwner());
         processingBlocks.put(realm.getOwner(), blockList);
     }
 
@@ -280,7 +282,7 @@ public class Realms implements GenericMechanic {
     /**
      * Get a map of all blocks that need to be placed for realm upgrades.
      */
-    public Map<UUID, List<Location>> getProcessingBlocks() {
+    public Map<UUID, Set<Location>> getProcessingBlocks() {
         return this.processingBlocks;
     }
 
