@@ -55,9 +55,10 @@ public class InfernalAbyss extends Dungeon {
 
     @Override
     public void updateMob(Entity e) {
-        if (e.getLocation().getY() < 90)
+        if (e.getLocation().getY() < 90) {
             returnToSpawner(e); //Return any mobs that fall out of the world.
-
+            return;
+        }
         super.updateMob(e);
     }
 

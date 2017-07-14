@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.util.*;
@@ -346,8 +347,9 @@ public abstract class Dungeon {
 
         getTrackedMonsters().remove(e);
 
-        if (!e.hasMetadata("invalid")) {
+        if (!e.hasMetadata("invalid") && !e.hasMetadata("counted")) {
             increaseKillCount();
+            e.setMetadata("counted", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
         }
     }
 
