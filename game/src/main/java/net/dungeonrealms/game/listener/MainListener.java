@@ -175,7 +175,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onSwap(PlayerSwapHandItemsEvent event) {
         if (Metadata.SHARDING.has(event.getPlayer())) {
-            GameAPI.sendWarning(event.getPlayer() + " attempted to swap items while sharding! (Duping?)");
+            GameAPI.sendWarning(event.getPlayer().getName() + " attempted to swap items while sharding! (Duping?)");
             event.setCancelled(true);
         }
     }
