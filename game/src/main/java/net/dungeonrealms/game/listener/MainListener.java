@@ -156,14 +156,29 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHandSwap(PlayerSwapHandItemsEvent event) {
+
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
         if (event.getMainHandItem() != null || event.getOffHandItem() != null) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> wrapper.calculateAllAttributes(), 2);
         }
     }
 
+    @EventHandler
+    public void onItemSwap(PlayerItemHeldEvent event) {
+        if (Metadata.SHARDING.has(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onSwap(PlayerSwapHandItemsEvent event) {
+        if (Metadata.SHARDING.has(event.getPlayer())) {
+            GameAPI.sendWarning(event.getPlayer() + " attempted to swap items while sharding! (Duping?)");
+            event.setCancelled(true);
+        }
+    }
 
 //    Map<UUID, MessageTracker> messageTracker = new HashMap<>();
 
@@ -248,6 +263,13 @@ public class MainListener implements Listener {
         });
 
 
+    }
+
+    @EventHandler
+    public void onItemClick(InventoryClickEvent event) {
+        if (Metadata.SHARDING.has(event.getWhoClicked())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
