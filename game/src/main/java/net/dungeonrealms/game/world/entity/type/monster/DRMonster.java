@@ -270,7 +270,7 @@ public interface DRMonster {
         if (dry != null && dry > 300 && !elite) {
             //Garuntee a drop?
             //1000 dry = 50% increase.
-            int increase = Math.min(((dry - 250) / 20) * 10, 500);
+            int increase = Math.min(((dry - 150) / 20) * 10, 500);
 
             chance = Math.max(chance, increase + chance);
 

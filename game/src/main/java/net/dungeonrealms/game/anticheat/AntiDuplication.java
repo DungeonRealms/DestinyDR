@@ -1,13 +1,12 @@
 package net.dungeonrealms.game.anticheat;
 
 import com.google.common.collect.HashMultimap;
-
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.functional.ItemScrap;
@@ -22,7 +21,6 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -47,7 +45,8 @@ import java.util.stream.Collectors;
 
 public class AntiDuplication implements GenericMechanic, Listener {
 
-	@Getter private static AntiDuplication instance = new AntiDuplication();
+    @Getter
+    private static AntiDuplication instance = new AntiDuplication();
     public static Set<UUID> EXCLUSIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final static long CHECK_TICK_FREQUENCY = 10L;
@@ -60,9 +59,21 @@ public class AntiDuplication implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
-    	Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(),
-                () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
+                () -> Bukkit.getOnlinePlayers().forEach(p -> {
+                    Inventory top = p.getOpenInventory() != null ? p.getOpenInventory().getTopInventory() : null;
+
+                    HashSet<Inventory> invs = new HashSet<>();
+                    invs.add(p.getInventory());
+                    if (top != null && !top.equals(p.getInventory()))
+                        invs.add(top);
+
+                    checkForSuspiciousDupedItems(p, invs);
+
+                }),
+                0,
+                CHECK_TICK_FREQUENCY);
     }
 
     @Override
@@ -93,18 +104,18 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     String name = "";
                     ItemStack item = e.getValue().a();
                     ItemMeta meta = item.getItemMeta();
-                    
+
                     if (meta.hasDisplayName())
-                    	name += meta.getDisplayName();
+                        name += meta.getDisplayName();
                     else {
                         Material material = item.getType();
                         name += material.toString().replace("_", " ");
                     }
-                    
+
                     if (itemDesc.containsKey(name))
-                    	itemDesc.put(name, itemDesc.get(name) + 1);
+                        itemDesc.put(name, itemDesc.get(name) + 1);
                     else
-                    	itemDesc.put(name, 1);
+                        itemDesc.put(name, 1);
 
                     Inventory inv = e.getKey();
                     String uniqueID = e.getValue().b();
@@ -136,7 +147,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
             }
             p.sendMessage(ChatColor.GOLD + "Found a dupe? Don't " + ChatColor.RED + "abuse" + ChatColor.GOLD + " it! Report it and you may be eligible for " + ChatColor.YELLOW + ChatColor.BOLD + "SUB++" + ChatColor.GOLD + "!");
             GameAPI.sendWarning("Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard {SERVER}.");
-            
+
             DebugUtil.debugReport(p);
         }
     }
@@ -153,7 +164,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
         if (EXCLUSIONS.contains(player.getUniqueId())) return;
 
         InventoryView openInventory = player.getOpenInventory();
-        if(openInventory != null && openInventory.getTopInventory() != null && openInventory.getTopInventory().getName().contains("- @")){
+        if (openInventory != null && openInventory.getTopInventory() != null && openInventory.getTopInventory().getName().contains("- @")) {
             inventories.add(openInventory.getTopInventory());
         }
         HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
@@ -161,7 +172,7 @@ public class AntiDuplication implements GenericMechanic, Listener {
         for (Inventory inv : inventories) {
             if (inv == null) continue;
 
-            if(inv.getName().startsWith("Sales Manager"))continue;
+            if (inv.getName().startsWith("Sales Manager")) continue;
             for (ItemStack i : inv.getContents()) {
                 if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
 
@@ -251,13 +262,13 @@ public class AntiDuplication implements GenericMechanic, Listener {
     }
 
     public static String createEpoch(ItemStack item) {
-    	return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + ThreadLocalRandom.current().nextInt(99999) + "R";
+        return System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + ThreadLocalRandom.current().nextInt(99999) + "R";
     }
 
     @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent evt){
-    	if(evt.getPlayer() instanceof Player)
-    		checkForSuspiciousDupedItems((Player)evt.getPlayer(), new HashSet<>(Arrays.asList(evt.getPlayer().getInventory(), evt.getInventory())) );
+    public void onInventoryOpen(InventoryOpenEvent evt) {
+        if (evt.getPlayer() instanceof Player)
+            checkForSuspiciousDupedItems((Player) evt.getPlayer(), new HashSet<>(Arrays.asList(evt.getPlayer().getInventory(), evt.getInventory())));
     }
 
 }
