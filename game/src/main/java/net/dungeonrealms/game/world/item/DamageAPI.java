@@ -148,7 +148,10 @@ public class DamageAPI {
 
 //        System.out.println("Damage: " + damage);
         //  DPS  //
-        damage += damage * (attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange() / 100D);
+        double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
+        totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
+        double dpsMultiplier = totalDPS / 100D;
+        damage += damage * (dpsMultiplier);
 
         //  KNOCKBACK  //
         if (attacker.isPlayer() && getChance(attacker.getAttributes(), WeaponAttributeType.KNOCKBACK))
