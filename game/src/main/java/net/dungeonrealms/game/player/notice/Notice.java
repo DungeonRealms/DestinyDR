@@ -101,7 +101,7 @@ public class Notice {
             else if (Rank.isSUB(p)) ecashAmount = 20;
 
             p.sendMessage(" ");
-            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.GRAY);
+            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for a Mystery Chest & 5% EXP, click ", ChatColor.GRAY);
             message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
             message.sendToPlayer(p);
             p.sendMessage(" ");
