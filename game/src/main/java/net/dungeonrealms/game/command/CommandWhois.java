@@ -55,7 +55,7 @@ public class CommandWhois extends BaseCommand {
         List<String> argList = Lists.newArrayList(args);
 
         boolean showAlts = argList.contains("-a") && rank.isAtLeast(PlayerRank.PMOD);
-        boolean showIPs = argList.contains("-i") && rank.isAtLeast(PlayerRank.HEADGM);
+        boolean showIPs = argList.contains("-i") && rank.isAtLeast(PlayerRank.GM);
 
         String p_name = args[0];
         Player online = Bukkit.getPlayer(p_name);
