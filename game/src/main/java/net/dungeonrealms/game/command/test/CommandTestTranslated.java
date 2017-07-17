@@ -31,6 +31,7 @@ public class CommandTestTranslated extends BaseCommand {
         if(!PersistentItem.isType(stack, ItemType.CLUE_SCROLL)) return true;
         ClueScrollItem item = new ClueScrollItem(stack);
         item.setTranslated(true);
+        item.setProgress(item.getProgress() + 1);
         player.getEquipment().setItemInMainHand(item.generateItem());
         return true;
     }

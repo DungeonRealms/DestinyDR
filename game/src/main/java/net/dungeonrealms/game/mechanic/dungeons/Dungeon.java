@@ -56,7 +56,7 @@ public abstract class Dungeon {
     private int time;
     private int killCount;
     //    private Set<Entity> aliveMonsters = new ConcurrentSet<>();
-    private Map<Entity, Location> trackedMonsters = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Entity, Location> trackedMonsters = new ConcurrentHashMap<>();
     protected Set<MobSpawner> spawns = new ConcurrentSet<>();
     private List<BossType> spawnedBosses = new ArrayList<>();
     protected World world;
@@ -345,7 +345,10 @@ public abstract class Dungeon {
         if (e.isValid())
             return;
 
-        getTrackedMonsters().remove(e);
+
+        if(getTrackedMonsters().containsKey(e)) System.out.println("It's inside the map!");
+
+        Location location = getTrackedMonsters().remove(e);
 
         if (!e.hasMetadata("invalid") && !e.hasMetadata("counted")) {
             increaseKillCount();

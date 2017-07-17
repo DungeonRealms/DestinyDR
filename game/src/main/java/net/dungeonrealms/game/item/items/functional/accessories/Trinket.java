@@ -80,7 +80,7 @@ public enum Trinket {
     }
 
     //Top left
-    private static final int TRINKET_SLOT = 9;
+    public static final int TRINKET_SLOT = 9;
 
     public static boolean hasActiveTrinket(Player player, Trinket trinket) {
         Trinket active = getActiveTrinket(player, false);

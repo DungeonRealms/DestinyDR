@@ -480,11 +480,17 @@ public class DamageAPI {
 
         //  DAMAGE ARMOR  //
         if (defender.isPlayer())
-            if (takeDura)
+            if (takeDura) {
                 for (ItemStack armor : defender.getPlayer().getEquipment().getArmorContents()) {
                     if (armor == null || armor.getType() == Material.AIR || !ItemArmor.isArmor(armor)) continue;
                     new ItemArmor(armor).damageItem(defender.getPlayer(), 1);
                 }
+
+                ItemStack armor = defender.getPlayer().getInventory().getItemInOffHand();
+                if (armor != null && armor.getType() != Material.AIR && ItemArmor.isArmor(armor)) {
+                    new ItemArmor(armor).damageItem(defender.getPlayer(), 1);
+                }
+            }
         if (defender.getAttributes() == null || attacker.getAttributes() == null) {
             res.setDamage(1);
             //How?

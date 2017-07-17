@@ -70,8 +70,23 @@ public class DungeonManager implements GenericMechanic {
             dungeonType.register();
 
         // Update mobs
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () ->
-                getDungeons().forEach(d -> d.getTrackedMonsters().keySet().forEach(d::updateMob)), 200L, 10L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
+            for(Dungeon d : getDungeons()) {
+                for(Entity ent : d.getTrackedMonsters().keySet()) {
+                    if(!d.getTrackedMonsters().containsKey(ent)) {
+                    }
+                    //System.out.println("Does it contain? " + d.getTrackedMonsters().containsKey(ent));
+                    //System.out.println(Arrays.toString(d.getTrackedMonsters().keySet().toArray()));
+                    d.updateMob(ent);
+                }
+            }
+            /*getDungeons().forEach(d -> {
+                d.getTrackedMonsters().keySet().forEach((ent) -> {
+                    System.out.println("Does it contain? " + d.getTrackedMonsters().containsKey(ent));
+                    d.updateMob(ent);
+                });
+            });*/
+        }, 200L, 10L);
 
         // Spawns dungeon mobs every few half a second.
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {

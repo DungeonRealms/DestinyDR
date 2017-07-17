@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.EntityLiving;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -102,6 +103,7 @@ public class InfernalAbyss extends Dungeon {
                 int w = ab.getWither();
                 if (w <= 0) {
                     //Check if they were inflicted by the command block.
+                    if(ab.getWorld() == null) return;
                     for (Player pl : ab.getWorld().getPlayers()) {
                         if (pl.hasPotionEffect(PotionEffectType.WITHER)) {
                             //Activate?
@@ -117,7 +119,7 @@ public class InfernalAbyss extends Dungeon {
                 }
 
                 if (w == 30) {
-                    ab.announce(ChatColor.RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE +
+                    ab.announce(ChatColor.RED.toString() + ChatColor.BOLD + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE +
                             w + "s" + ChatColor.RED + " left until the inferno consumes you.");
                 } else if (w == 1) { //Last second?
                     for (Player p : d.getPlayers()) {

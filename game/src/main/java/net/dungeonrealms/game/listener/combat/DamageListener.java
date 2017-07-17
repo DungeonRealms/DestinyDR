@@ -17,6 +17,8 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -368,6 +370,43 @@ public class DamageListener implements Listener {
                         event.getDrops().add(persis.generateItem());
                         Bukkit.getLogger().info("Dropping " + persis.getItem() + " from " + p.getName());
                         lostPieces++;
+                    }
+                }
+            }
+
+            ItemStack offHand = p.getInventory().getItemInOffHand();
+            if(offHand != null && !offHand.getType().equals(Material.AIR)) {
+                PersistentItem persis = PersistentItem.constructItem(offHand);
+                if (persis instanceof ItemGear) {
+                    ItemGear gear = (ItemGear) persis;
+                    gear.damageItem(p, durabilityLoss);
+
+                    event.getDrops().remove(offHand);
+
+                    //Dont drop if its not 0, 75% of the time.
+                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
+                        gearToSave.add(persis.generateItem());
+                    } else {
+                        //Drop?
+                        //Remove the old item?
+                        event.getDrops().add(persis.generateItem());
+                        Bukkit.getLogger().info("Dropping offhand " + persis.getItem() + " from " + p.getName());
+                        lostPieces++;
+                    }
+                }
+            }
+
+            ItemStack trinket = p.getInventory().getItem(Trinket.TRINKET_SLOT);
+            if (trinket != null && trinket.getType() != Material.AIR) {
+                //Possible trinket?
+                PersistentItem found = PersistentItem.constructItem(trinket);
+                if (found != null && found instanceof TrinketItem) {
+                    if(alignment.equals(KarmaHandler.EnumPlayerAlignments.LAWFUL)) {
+                        event.getDrops().remove(trinket);
+                        gearToSave.add(trinket);
+                    } else if(alignment.equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL) && ThreadLocalRandom.current().nextBoolean()) {
+                        event.getDrops().remove(trinket);
+                        gearToSave.add(trinket);
                     }
                 }
             }
