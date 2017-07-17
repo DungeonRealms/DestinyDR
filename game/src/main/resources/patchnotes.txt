@@ -1,6 +1,8 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Shields<h>&a&lWhat changed?,,&7Shields now take durability in combat,&7Shields are now rolled to drop on neutral death,,&7Chaotic players will always drop their shield</h>
+ &l* &0Trinkets<h>&a&lWhat changed?,,&7Trinkets are now kept on lawful death!,&7On neutral death you have a 50% to drop your trinket,,&7Chaotic players will always drop them</h>
  &l* &0Vote Crates<h>&a&lWhats this?,,&7Vote crates can be obtained everyday through Voting!,&7You can receive some exclusive prizes and buffs!,,&7Talk to the E-Cash Vendor to open them!</h>
  &l* &0Loot Aura<h>&a&lWhats this?,,&7Loot Auras will increase Drop Rates,&7in a radius nearby the center for everyone inside!,,&7You can obtain Daily Loot Auras for,&7being &a&lSUB&7 or randomly through Voting!</h>
  &l* &0Drop Rates<h>&a&lWhat Changed?,,&7The longer you go without a drop the,&7higher the chance to receive a drop will be!,,&7We hope this change help people avoid,&7wasting their time endlessly farming with no reward!</h>
