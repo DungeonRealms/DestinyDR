@@ -21,7 +21,7 @@ public class VoteCrate extends Crate {
     @Override
     public AbstractCrateReward getRandomReward() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        int rand = random.nextInt(25_000);
+        int rand = random.nextInt(10_000);
         //rand = random.nextInt(64);
         //if(getOpeningPlayer().getName().equalsIgnoreCase("ingot")) return getRareReward();
         //1/50k
@@ -31,7 +31,7 @@ public class VoteCrate extends Crate {
         //1/5k
         if(rand <= 13) return getRareReward();
         //1/1k
-        if(rand <= 63) return getUncommonReward();
+        if(rand <= 100) return getUncommonReward();
 
 
 
