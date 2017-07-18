@@ -65,6 +65,7 @@ public enum Purchaseables {
     PIRATE_HAT("Pirate Hat", "\nThe hat from an old Pirate Captain", Material.SAPLING, WebstoreCategories.HATS, 4, false, true, false, ChatColor.GREEN, true, 1),
     INDEPENDENCE_HAT("Independence Day Hat", "\nA hat to celebrate Independence Day", Material.SAPLING, WebstoreCategories.HATS, 5, false, true, false, ChatColor.DARK_BLUE, true, 5),
     CRATE_HAT("Mystery Crate Hat", "\nA rare hat from mystery crates", Material.ENDER_CHEST, WebstoreCategories.HATS, 6, false, true, false, ChatColor.DARK_BLUE, true),
+    TOP_HAT("Top Hat", "\nA very stylish hat!", Material.SHEARS, WebstoreCategories.HATS, 7, false, true, false, ChatColor.RED, true, 238),
 
     COAL_ORE_HAT("Coal Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T1 Mining with Treasure Find!", Material.COAL_ORE, WebstoreCategories.HATS, 9, false, true, false, ChatColor.WHITE, true),
     EMERALD_ORE_HAT("Emerald Ore Hat", "\nA helmet made of precious ore\n&oOnly obtainable through T2 Mining with Treasure Find!", Material.EMERALD_ORE, WebstoreCategories.HATS, 10, false, true, false, ChatColor.GREEN, true),

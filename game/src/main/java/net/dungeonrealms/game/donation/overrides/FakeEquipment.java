@@ -16,6 +16,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -82,6 +83,10 @@ public abstract class FakeEquipment {
                             if (helmet != null && helmet.getType() != Material.AIR) {
                                 helmet.setType(currentHat.getItemType());
                                 helmet.setDurability(currentHat.getDurability());
+                                ItemMeta meta = helmet.getItemMeta();
+                                meta.spigot().setUnbreakable(true);
+                                meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE);
+                                helmet.setItemMeta(meta);
                                 items[5] = helmet;
                                 packet.getItemArrayModifier().write(0, items);
                             }

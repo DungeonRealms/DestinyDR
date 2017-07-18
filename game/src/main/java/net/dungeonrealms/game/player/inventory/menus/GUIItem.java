@@ -54,6 +54,14 @@ public class GUIItem extends ShopItem {
         return this;
     }
 
+    public GUIItem setUnbreakable() {
+        ItemMeta meta = getItem().getItemMeta();
+        meta.spigot().setUnbreakable(true);
+        meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE);
+        getItem().setItemMeta(meta);
+        return this;
+    }
+
     public GUIItem setClick(Consumer<InventoryClickEvent> event) {
         this.clickCallback = event;
         return this;

@@ -34,6 +34,7 @@ public class CrateRewardGUI extends GUIMenu {
             displayItem.setAmount(1);
             ItemMeta meta = displayItem.getItemMeta();
             meta.spigot().setUnbreakable(true);
+            meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE);
             displayItem.setItemMeta(meta);
             List<String> lore = Lists.newArrayList(reward.getDisplayLore());
             lore.add(" ");

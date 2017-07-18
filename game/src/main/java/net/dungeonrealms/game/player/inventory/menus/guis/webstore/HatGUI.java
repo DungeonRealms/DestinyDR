@@ -46,7 +46,7 @@ public class HatGUI extends GUIMenu implements WebstoreGUI {
 
             ItemStack toDisplay = new ItemStack(webItem.getItemType());
             toDisplay.setDurability((short) webItem.getMeta());
-            setItem(webItem.getGuiSlot(), new GUIItem(toDisplay).setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
+            setItem(webItem.getGuiSlot(), new GUIItem(toDisplay).setUnbreakable().setName(ChatColor.GREEN + ChatColor.BOLD.toString() + webItem.getName()).setLore(lore).setClick((evt) -> {
                 if (!unlocked) {
                     sendNotUnlocked(player);
                     return;
