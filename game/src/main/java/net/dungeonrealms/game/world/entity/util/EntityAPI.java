@@ -119,6 +119,11 @@ public class EntityAPI {
             HealthHandler.setHP(entity, HealthHandler.getMaxHP(entity));
         }
 
+        if(entity != null && isDungeon) {
+            Dungeon dungeon = DungeonManager.getDungeon(loc.getWorld());
+            if(dungeon != null)dungeon.getTrackedMonsters().put(entity, loc);
+        }
+
         if (entity != null)
             entity.setRemoveWhenFarAway(false);
 

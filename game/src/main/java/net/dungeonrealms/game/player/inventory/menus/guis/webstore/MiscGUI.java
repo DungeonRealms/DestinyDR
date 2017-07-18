@@ -5,6 +5,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemLoreBook;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemNameTag;
 import net.dungeonrealms.game.item.items.functional.ecash.jukebox.ItemJukebox;
 import net.dungeonrealms.game.mastery.Utils;
@@ -151,6 +152,26 @@ public class MiscGUI extends GUIMenu implements WebstoreGUI {
                                     }
                                     player.getInventory().addItem(new ItemNameTag().generateItem());
                                     player.sendMessage(ChatColor.GREEN + "An item name tag has been added to your inventory.");
+                                    reconstructGUI(player);
+                                });
+                            } else {
+                                sendNotUnlocked(player);
+                            }
+                        }
+                        else if (webItem == Purchaseables.ITEM_LORE_BOOK) {
+                            if (unlocked) {
+                                if(player.getInventory().firstEmpty() == -1) {
+                                    player.sendMessage(ChatColor.RED + "You have no inventory space to claim this!");
+                                    return;
+                                }
+                                webItem.removeNumberUnlocked(wrapper,1,(rows) -> {
+                                    if(rows == null || rows < 1) {
+                                        player.sendMessage(ChatColor.RED + "We are sorry! An error occurred while claiming your lore book!");
+                                        player.sendMessage(ChatColor.GRAY + "Please try again later or contact an administrator if the problem persists!");
+                                        return;
+                                    }
+                                    player.getInventory().addItem(new ItemLoreBook().generateItem());
+                                    player.sendMessage(ChatColor.GREEN + "An item lore book has been added to your inventory.");
                                     reconstructGUI(player);
                                 });
                             } else {
