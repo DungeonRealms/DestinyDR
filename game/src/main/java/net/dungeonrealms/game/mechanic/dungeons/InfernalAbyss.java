@@ -194,6 +194,9 @@ public class InfernalAbyss extends Dungeon {
                 } else if (name.equals("The Annihilator")) {
                     stack = getKey("B");
                 }
+
+                dungeon.setWither(0);
+
                 ParticleAPI.spawnParticle(Particle.PORTAL, entity.getLocation().clone().add(0, 1, 0), .75F, 50, .06F);
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
             } else if (name.equals("Fire Lord Of The Abyss")) {
@@ -220,8 +223,6 @@ public class InfernalAbyss extends Dungeon {
                     }
                 }
             }
-
-            dungeon.setWither(0);
         }
 
         private ItemStack getKey(String k) {

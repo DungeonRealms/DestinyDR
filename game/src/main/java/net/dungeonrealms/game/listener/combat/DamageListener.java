@@ -820,6 +820,10 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if(DungeonManager.isDungeon(event.getEntity().getWorld())) {
+            event.setCancelled(true);
+            return;
+        }
         event.getEntity().setMetadata("lastEnvironmentDamage", new FixedMetadataValue(DungeonRealms.getInstance(),
                 System.currentTimeMillis()));
 
@@ -878,6 +882,7 @@ public class DamageListener implements Listener {
                 case POISON:
                 case CONTACT:
                     dmg = maxHP * type.getOptional();
+                    if(dmg > 500) dmg = 500;
                     break;
                 case SUFFOCATION:
                 case VOID: //Happens when exiting realms.

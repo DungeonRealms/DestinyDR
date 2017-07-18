@@ -1,10 +1,13 @@
 package net.dungeonrealms.game.world.entity;
 
+import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
@@ -38,7 +41,7 @@ public class EntityMechanics implements GenericMechanic {
     private static EntityMechanics instance = new EntityMechanics();
 
     public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
-    public static CopyOnWriteArrayList<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
+    public static ConcurrentSet<LivingEntity> MONSTERS_LEASHED = new ConcurrentSet<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -140,13 +143,14 @@ public class EntityMechanics implements GenericMechanic {
                 Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
                 continue;
             }
-            if (entity.isDead() || Metadata.DUNGEON.get(entity).asBoolean() || Metadata.BOSS.get(entity).asBoolean()) {
+            if (entity.isDead() || (Metadata.DUNGEON.get(entity).asBoolean() && EntityAPI.isElite(entity)) || Metadata.BOSS.get(entity).asBoolean()) {
                 MONSTERS_LEASHED.remove(entity);
                 MONSTER_LAST_ATTACK.remove(entity);
                 if (entity.isDead()) //Remove the entity if it's dead...
                     entity.remove();
                 continue;
             }
+
             if (!MONSTER_LAST_ATTACK.containsKey(entity)) {
                 MONSTER_LAST_ATTACK.put(entity, 15);
                 continue;
@@ -164,7 +168,7 @@ public class EntityMechanics implements GenericMechanic {
                     double distance = target.distanceSquared(entity.getLocation());
 
                     // If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
-                    if (distance >= 4 && distance <= 6 * 6 && target.getBlockY() != entity.getLocation().getBlockY()) {
+                    if ((distance >= (DungeonManager.isDungeon(target.getWorld()) ? 1 : 4)) && distance <= 6 * 6 && (DungeonManager.isDungeon(target.getWorld()) || target.getBlockY() != entity.getLocation().getBlockY())) {
                         entity.teleport(target.clone().add(0, 1, 0));
                         MONSTER_LAST_ATTACK.put(entity, 15);
                         Bukkit.getLogger().info("Teleporting " + entity + " to " + ei.getGoalTarget().getName() + " to prevent leashing!");
