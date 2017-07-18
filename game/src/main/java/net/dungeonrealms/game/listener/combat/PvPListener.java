@@ -66,11 +66,11 @@ public class PvPListener implements Listener {
 
             EntityHuman defend = ((CraftPlayer) defender).getHandle();
             defender.setSprinting(false);
-            int foodLevel = defender.getFoodLevel();
+            /*int foodLevel = defender.getFoodLevel();
             if(foodLevel > 1) {
                 defender.setFoodLevel(1);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> defender.setFoodLevel(foodLevel), 40L);
-            }
+            }*/
 
 
 

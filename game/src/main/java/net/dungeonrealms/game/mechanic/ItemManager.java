@@ -6,6 +6,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.KarmaHandler.EnumPlayerAlignments;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
@@ -16,6 +17,7 @@ import net.dungeonrealms.game.quests.Quest;
 import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import org.bukkit.ChatColor;
@@ -97,6 +99,7 @@ public class ItemManager {
         String page2_string;
         String page3_string;
         String page4_string;
+        String dryStreak_string;
         String stat_page_string;
         String stat_page2_string;
         String new_line = "\n" + ChatColor.BLACK.toString() + " " + "\n";
@@ -209,6 +212,28 @@ public class ItemManager {
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + pw.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "          EXP" + "\n" + ChatColor.BLACK + "       " + pw.getExperience() + "/" + pw.getEXPNeeded();
 
+        for(Item.ItemTier tier : Item.ItemTier.values()) {
+            if(pw.getDryLoot().get(tier) == null) pw.getDryLoot().put(tier, 0);
+        }
+        if(pw.getRank().isSUB()) {
+            dryStreak_string = ChatColor.GOLD.toString() + ChatColor.BOLD + "    DRY STREAKS \n\n"
+                    + ChatColor.BLACK + "The more kills you get without getting a drop the higher your chance to get a drop is!\n"
+                    + ChatColor.GRAY + "T1 Kills Dry: " + ChatColor.BLACK + pw.getDryLoot().get(Item.ItemTier.TIER_1) + "\n"
+                    + ChatColor.GREEN + "T2 Kills Dry: " + ChatColor.BLACK + pw.getDryLoot().get(Item.ItemTier.TIER_2) + "\n"
+                    + ChatColor.DARK_AQUA + "T3 Kills Dry: " + ChatColor.BLACK + pw.getDryLoot().get(Item.ItemTier.TIER_3) + "\n"
+                    + ChatColor.DARK_PURPLE + "T4 Kills Dry: " + ChatColor.BLACK + pw.getDryLoot().get(Item.ItemTier.TIER_4) + "\n"
+                    + ChatColor.GOLD + "T5 Kills Dry: " + ChatColor.BLACK + pw.getDryLoot().get(Item.ItemTier.TIER_5) + "\n";
+        } else {
+            dryStreak_string = ChatColor.GOLD.toString() + ChatColor.BOLD + "    DRY STREAKS \n"
+                    + ChatColor.BLACK + "The more kills you get without getting a drop the higher your chance to get a drop is!\n"
+                    + ChatColor.DARK_RED + "Purchase " + ChatColor.GREEN + "Subscriber " + ChatColor.DARK_RED + "\nto see your dry streaks!\n"
+                    + ChatColor.GRAY + "T1 Kills Dry: " + ChatColor.BLACK + "?" + "\n"
+                    + ChatColor.GREEN + "T2 Kills Dry: " + ChatColor.BLACK + "?" + "\n"
+                    + ChatColor.DARK_AQUA + "T3 Kills Dry: " + ChatColor.BLACK + "?" + "\n"
+                    + ChatColor.DARK_PURPLE + "T4 Kills Dry: " + ChatColor.BLACK + "?" + "\n"
+                    + ChatColor.GOLD + "T5 Kills Dry: " + ChatColor.BLACK + "?" + "\n";
+        }
+
 
         int str_val = pw.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
         int dex_val = pw.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
@@ -290,6 +315,7 @@ public class ItemManager {
         if (quests > 0)
             pages.add(questPage_string);
         pages.add(page2_string);
+        pages.add(dryStreak_string);
         pages.add(stat_page_string);
         pages.add(stat_page2_string);
         pages.add(portalShardPage);
