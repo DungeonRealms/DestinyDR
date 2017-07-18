@@ -12,6 +12,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityHuman;
+import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -65,6 +66,13 @@ public class PvPListener implements Listener {
 
             EntityHuman defend = ((CraftPlayer) defender).getHandle();
             defender.setSprinting(false);
+            int foodLevel = defender.getFoodLevel();
+            if(foodLevel > 1) {
+                defender.setFoodLevel(1);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> defender.setFoodLevel(foodLevel), 40L);
+            }
+
+
 
             GamePlayer damagerGP = GameAPI.getGamePlayer(attacker);
 

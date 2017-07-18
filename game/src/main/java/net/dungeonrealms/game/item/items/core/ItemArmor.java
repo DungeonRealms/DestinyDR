@@ -117,6 +117,12 @@ public class ItemArmor extends CombatItem {
             return getAttributes().getAttribute(ArmorAttributeType.ARMOR).getMiddle();
         } else if (getAttributes().hasAttribute(ArmorAttributeType.DAMAGE)) {
             return getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getMiddle();
+        } else if (getAttributes().hasAttribute(ArmorAttributeType.MELEE_ABSORBTION)) {
+            return getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue() / 2;
+        } else if (getAttributes().hasAttribute(ArmorAttributeType.MAGE_ABSORBTION)) {
+            return getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue() / 2;
+        } else if (getAttributes().hasAttribute(ArmorAttributeType.RANGE_ABSORBTION)) {
+            return getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue() / 2;
         } else {
             Utils.log.info("Armor did not have either stat for repair cost?");
         }
