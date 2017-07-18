@@ -23,6 +23,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -37,6 +38,7 @@ import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
@@ -76,6 +78,13 @@ public class DamageAPI {
                 Bukkit.getLogger().info("Null attacker attributes for " + attacker.getPlayer().getName());
             }
             return;
+        }
+
+        if(attacker != null && attacker.isPlayer()) {
+            if (DungeonManager.isDungeon(attacker.getPlayer().getWorld())) {
+            Block block = attacker.getPlayer().getLocation().getBlock();
+            if(block != null && block.getType().equals(Material.LADDER)) return;
+            }
         }
 
         ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
