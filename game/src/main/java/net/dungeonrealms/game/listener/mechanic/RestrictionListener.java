@@ -28,6 +28,8 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.dungeonrealms.game.world.realms.Realm;
+import net.dungeonrealms.game.world.realms.Realms;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -358,6 +360,13 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onBucket(PlayerBucketEmptyEvent event) {
+        Realm realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
+        if(realm != null) {
+            if (!realm.canBuild(event.getPlayer()) || !realm.isHasRedstoneAccess()) {
+                event.setCancelled(true);
+            }
+            return;
+        }
         if ((event.getBucket() == Material.WATER_BUCKET || event.getBucket() == Material.WATER
                 || event.getBucket() == Material.LAVA || event.getBucket() == Material.LAVA_BUCKET)) {
             event.setCancelled(true);

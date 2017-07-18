@@ -36,10 +36,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -114,6 +111,7 @@ public class RealmListener implements Listener {
         }
         player.setFallDistance(0.0F);
     }
+
 
 
     @EventHandler
@@ -733,7 +731,21 @@ public class RealmListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWaterFlow(BlockFromToEvent event) {
+        Realm realm = Realms.getInstance().getRealm(event.getBlock().getWorld());
+        if(realm != null) {
+            if(!realm.isHasRedstoneAccess()) event.setCancelled(true);
+            return;
+        }
         if (!GameAPI.isMainWorld(event.getBlock().getLocation()))
             event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onRedstone(BlockRedstoneEvent event) {
+        Realm realm = Realms.getInstance().getRealm(event.getBlock().getWorld());
+        if(realm == null) return;
+        if(!realm.isHasRedstoneAccess()) {
+            event.setNewCurrent(0);
+        }
     }
 }

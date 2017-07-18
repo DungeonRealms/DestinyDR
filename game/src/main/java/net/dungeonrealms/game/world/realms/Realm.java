@@ -25,6 +25,7 @@ import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
+import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -100,6 +101,10 @@ public class Realm {
 
     private RealmTier tier;
 
+    @Getter
+    @Setter
+    private boolean hasRedstoneAccess = false;
+
     public Realm(UUID owner, int characterID, String name) {
         this.owner = owner;
         this.characterID = characterID;
@@ -149,6 +154,7 @@ public class Realm {
             if(wrapper != null && wrapper.getActiveRealmEffect() != null) {
                 //this.realmEffect = SpecialParticles.constrauctEffectFromName(wrapper.getActiveRealmEffect().getInternalName(), location.clone().add(0.5,-.7,0.5));
                 applyRealmEffect(wrapper.getActiveRealmEffect());
+                setHasRedstoneAccess(Purchaseables.REALM_UPGRADE.isUnlocked(wrapper));
             }
 
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), location.add(0.5, 1.5, 0.5));

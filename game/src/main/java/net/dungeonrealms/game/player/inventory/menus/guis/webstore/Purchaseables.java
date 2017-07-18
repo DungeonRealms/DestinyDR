@@ -106,6 +106,7 @@ public enum Purchaseables {
     ITEM_LORE_BOOK("Item Lore Book", "\nAdd a line of lore to any item you want!", Material.ENCHANTED_BOOK, WebstoreCategories.MISCELLANEOUS, 2, true, true, false, ChatColor.GREEN),
     ITEM_NAME_TAG("Item Name Tag", "\nRename an item to anything you want!", Material.NAME_TAG, WebstoreCategories.MISCELLANEOUS, 3, true, true, false, ChatColor.GREEN),
     GOLDEN_CURSE("Golden Curse", "\nEverything you touch shall\nturn to gold for all.", Material.GOLD_BLOCK, WebstoreCategories.MISCELLANEOUS, 8, false, true, false, ChatColor.GOLD, true),
+    REALM_UPGRADE("Realm Redstone Expansion", "\nUnlocks the ability to use redstone\nand liquids in your realm!", Material.REDSTONE, WebstoreCategories.MISCELLANEOUS, 6, false, true, false, ChatColor.DARK_RED, true),
     INDEPENDENCE_CURSE("Independence Curse", "\nEverything you touch shall\nexperience independence day!", Material.REDSTONE_BLOCK, WebstoreCategories.MISCELLANEOUS, 7, false, true, false, ChatColor.DARK_BLUE, true),
     DPS_DUMMY("DPS Dummy", "\nA squishy dummy made to take a hit!", Material.ARMOR_STAND, WebstoreCategories.MISCELLANEOUS, 4, false, true, false, ChatColor.GREEN),
     LIGHTNING_ROD("Lightning Rod", "\nStrike lightning at will!", Material.BLAZE_ROD, WebstoreCategories.MISCELLANEOUS, 1, false, true, false, ChatColor.AQUA,true),
