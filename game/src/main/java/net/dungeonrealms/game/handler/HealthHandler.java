@@ -543,7 +543,7 @@ public class HealthHandler implements GenericMechanic {
             if (Achievements.hasAchievement(player.getUniqueId(), EnumAchievements.INFECTED))
                 Achievements.giveAchievement(killer.getPlayer(), EnumAchievements.INFECTED);
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack item = ((Player)leAttacker).getInventory().getItemInMainHand();
             String suffix = item != null ? " with a(n) " + Utils.getItemName(item) : "";
 
             deathMessage += killerName + ChatColor.WHITE + suffix;
