@@ -158,7 +158,9 @@ public class DamageAPI {
 //        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
-        totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
+        double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
+        if(dpsToAdd > 0) totalDPS += dpsToAdd;
+        //totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
         double dpsMultiplier = totalDPS / 100D;
         damage += damage * (dpsMultiplier);
 

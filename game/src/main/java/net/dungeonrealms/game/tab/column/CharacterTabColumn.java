@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -42,7 +43,7 @@ public class CharacterTabColumn extends Column {
                             double exp = (double) wrapper.getExperience() / (double) wrapper.getEXPNeeded();
                             exp *= 100;
 
-                            return wrapper.getLevel() == 100 ? ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "MAX" : (int) exp + "%";
+                            return wrapper.getLevel() == 100 ? ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "MAX" : (int) exp + "%";
                         }
                     },
                     new Variable("energy") {
@@ -63,6 +64,7 @@ public class CharacterTabColumn extends Column {
                     new Variable("dps") {
                         @Override
                         public String getReplacement(Player player) {
+
                             return getAttribute(player, ArmorAttributeType.DAMAGE);
                         }
                     },
@@ -93,6 +95,18 @@ public class CharacterTabColumn extends Column {
     
     private String getAttribute(Player player, AttributeType type) {
     	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
+    	if(pw != null && type.equals(ArmorAttributeType.DAMAGE)) {
+            ModifierRange range = pw.getAttributes().getAttribute(type);
+            if(range == null) return "?";
+            double dpsLow = range.getValLow();
+            double dpsHigh = range.getValHigh();
+            double dpsToAdd = (pw.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
+            if(dpsToAdd > 0) {
+                dpsLow += dpsToAdd;
+                dpsHigh += dpsToAdd;
+            }
+            return dpsLow + " - " + dpsHigh;
+        }
     	return pw != null ? pw.getAttributes().getAttribute(type).toString() : "?";
     }
 }

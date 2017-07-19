@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.inventory.menus.guis.webstore.crates;
 
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.game.player.cosmetics.particles.impl.CrateOpeningEffect;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
@@ -90,6 +91,7 @@ public abstract class Crate {
                 hoveredChat.add(color + reward.getDisplayName());
                 for(String s : reward.getDisplayLore()) hoveredChat.add(ChatColor.GRAY + s);
                 normal.addHoverText(hoveredChat, "SHOW", ChatColor.WHITE, true);
+                GameAPI.sendStaffMessage(PlayerRank.GM, ChatColor.GREEN + openingPlayer.getName() + " has just received a(n) " + rewardString + " reward (" + reward.getDisplayName() + ") on {SERVER}" + ChatColor.GREEN + ".");
                 if(rewardTier >= RARE_REWARD)GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
                 else Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
             }

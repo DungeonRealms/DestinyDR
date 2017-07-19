@@ -20,6 +20,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -121,10 +122,21 @@ public class ItemManager {
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line;
         }
 
-        page1_string += ""
-                + ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
-                + " / " + HealthHandler.getMaxHP(p) + "" + ChatColor.BOLD + " HP" + "\n" + ChatColor.BLACK
-                + "   " + pw.getAttribute(ArmorAttributeType.DAMAGE) + "% " + ChatColor.BOLD + "DPS" + "\n" + ChatColor.BLACK
+        String dps = "";
+        ModifierRange range = pw.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
+        if(range == null) dps =  "?";
+        double dpsLow = range.getValLow();
+        double dpsHigh = range.getValHigh();
+        double dpsToAdd = (pw.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
+        if(dpsToAdd > 0) {
+            dpsLow += dpsToAdd;
+            dpsHigh += dpsToAdd;
+        }
+        dps = dpsLow + " - " + dpsHigh + "% ";
+
+        page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
+                + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK
+                + "   " + dps + ChatColor.BOLD + "DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
                 + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
