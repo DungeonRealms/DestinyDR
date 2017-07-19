@@ -820,14 +820,15 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(DungeonManager.isDungeon(event.getEntity().getWorld())) {
-            event.setCancelled(true);
-            return;
-        }
         event.getEntity().setMetadata("lastEnvironmentDamage", new FixedMetadataValue(DungeonRealms.getInstance(),
                 System.currentTimeMillis()));
 
         boolean isPlayer = GameAPI.isPlayer(event.getEntity());
+
+        if(!isPlayer && DungeonManager.isDungeon(event.getEntity().getWorld())) {
+            event.setCancelled(true);
+            return;
+        }
 
         PlayerWrapper pw = isPlayer ? PlayerWrapper.getWrapper((Player) event.getEntity()) : null;
         LivingEntity ent = (LivingEntity) event.getEntity();
