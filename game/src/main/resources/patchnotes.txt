@@ -1,6 +1,8 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Tier 5 Drops<h>&a&lWhat changed?,,&7Tier 5 drop rates have been significantly increased!</h>
+ &l* &0Vote Crates<h>&a&lWhat changed?,,&7Vote crate rewards have been significantly buffed... again!,,&7Rewards above common will now broadcast for everyone to see!</h>
  &l* &0Vote Crates<h>&a&lWhat changed?,,&7Vote crate rewards have been significantly buffed!</h>
  &l* &0Shields<h>&a&lWhat changed?,,&7Shields now take durability in combat,&7Shields are now rolled to drop on neutral death,,&7Chaotic players will always drop their shield</h>
  &l* &0Trinkets<h>&a&lWhat changed?,,&7Trinkets are now kept on lawful death!,&7On neutral death you have a 50% to drop your trinket,,&7Chaotic players will always drop them</h>
