@@ -592,8 +592,9 @@ public class InventoryListener implements Listener {
                 }
             }
 
-            if (event.getCurrentItem() == null)
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
                 return;
+
 
             VanillaItem vi = new VanillaItem(event.getCurrentItem());
             if (!vi.isSoulboundBypass(trade.getOppositePlayer(player)) && !ItemManager.isItemTradeable(event.getCurrentItem())) {
@@ -609,9 +610,6 @@ public class InventoryListener implements Listener {
             }
 
             if (slot >= 36)
-                return;
-
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
                 return;
 
             ItemStack stackClicked = event.getCurrentItem();

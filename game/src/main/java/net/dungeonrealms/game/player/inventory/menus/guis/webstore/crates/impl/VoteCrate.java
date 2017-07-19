@@ -23,15 +23,27 @@ public class VoteCrate extends Crate {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int rand = random.nextInt(10_000);
         //rand = random.nextInt(64);
-        //if(getOpeningPlayer().getName().equalsIgnoreCase("ingot")) return getRareReward();
+        //if(getOpeningPlayer().getName().equalsIgnoreCase("ingot")) rand = 390;
         //1/50k
-        if(rand == 3) return getInsaneReward();
+        if(rand <= 2)  {
+            rewardTier = INSANE_REWARD;
+            return getInsaneReward();
+        }
         //1/25k
-        if(rand <= 2) return getVeryRareReward();
+        if(rand <= 5) {
+            rewardTier = VERY_RARE_REWARD;
+            return getVeryRareReward();
+        }
         //1/5k
-        if(rand <= 13) return getRareReward();
+        if(rand <= 25) {
+            rewardTier = RARE_REWARD;
+            return getRareReward();
+        }
         //1/1k
-        if(rand <= 100) return getUncommonReward();
+        if(rand <= 400) {
+            rewardTier = UNCOMMON_REWARD;
+            return getUncommonReward();
+        }
 
 
 

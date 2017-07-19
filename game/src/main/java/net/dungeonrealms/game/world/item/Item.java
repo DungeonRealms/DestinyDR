@@ -228,7 +228,7 @@ public class Item {
         }
 
         public String getName() {
-            return this.getColor() + "" + ChatColor.ITALIC + this.name + ChatColor.RESET;
+            return this.getColor().toString() + ChatColor.ITALIC + this.name + ChatColor.RESET;
         }
 
         public static ItemRarity getById(int id) {
