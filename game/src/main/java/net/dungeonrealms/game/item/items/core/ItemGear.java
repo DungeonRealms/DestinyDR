@@ -404,8 +404,9 @@ public abstract class ItemGear extends ItemGeneric {
 
         for (ItemModifier modifier : conditionMap.values())
             for (ModifierCondition mc : conditionMap.keySet())
-                if (!mc.checkCantContain(modifier.getClass()))
+                if (!mc.checkCantContain(modifier.getClass())) {
                     sortedStats.remove(mc);
+                }
 
         // Sort stats by priority
         Collections.sort(sortedStats, (mc1, mc2) -> conditionMap.get(mc1).compareTo(conditionMap.get(mc2)));
@@ -416,7 +417,7 @@ public abstract class ItemGear extends ItemGeneric {
             for (AttributeType attribute : this.attributes.getAttributes())
                 if (attribute.isIncludeOnReroll()) {
                     keptAttributes.put(attribute, this.attributes.get(attribute));
-                    Bukkit.getLogger().info("Attribute kept: " + attribute.getNBTName());
+                    //Bukkit.getLogger().info("Attribute kept: " + attribute.getNBTName());
                 }
         this.attributes.clear();
 
@@ -448,9 +449,13 @@ public abstract class ItemGear extends ItemGeneric {
         boolean isHPRegen = this.attributes != null && this.attributes.hasAttribute(Item.ArmorAttributeType.HEALTH_REGEN);
         // Randomly add bonus.
         boolean hpConflict = isHPRegen && im.getCurrentAttribute() == Item.ArmorAttributeType.ENERGY_REGEN;
-        if (im.getCurrentAttribute().isIncludeOnReroll() && reRoll && !hpConflict)
+
+        boolean isArmor = this.attributes != null && this.attributes.hasAttribute(Item.ArmorAttributeType.ARMOR);
+        boolean armorConflict = isArmor && im.getCurrentAttribute() == Item.ArmorAttributeType.DAMAGE;
+
+        if (im.getCurrentAttribute().isIncludeOnReroll() && reRoll && !hpConflict && !armorConflict)
             conditions.put(mc, im);
-        else if (rand.nextInt(100) < belowChance && !hpConflict)
+        else if (rand.nextInt(100) < belowChance && !hpConflict && !armorConflict)
             conditions.put(mc, im);
 
 
