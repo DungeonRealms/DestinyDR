@@ -490,7 +490,7 @@ public class DamageAPI {
         double totalArmorReduction = 0;
 
         //  DAMAGE ARMOR  //
-        if (defender.isPlayer())
+        if (defender.isPlayer() && !attacker.isPlayer())
             if (takeDura) {
                 for (ItemStack armor : defender.getPlayer().getEquipment().getArmorContents()) {
                     if (armor == null || armor.getType() == Material.AIR || !ItemArmor.isArmor(armor)) continue;
