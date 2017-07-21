@@ -309,7 +309,9 @@ public class DamageAPI {
                 defender.getWorld().playEffect(defender.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
 
                 final int[] POTION_TICKS = new int[]{30, 40, 50, 40, 50};
-                defender.addPotionEffect(new PotionEffect(ea.getAttackPotion(), POTION_TICKS[tier - 1], tier / 4));
+                int amplifier = (ea.equals(ElementalAttribute.ICE)) ? 0 : tier / 4;
+                //System.out.println("The amplifier: " + amplifier);
+                defender.addPotionEffect(new PotionEffect(ea.getAttackPotion(), POTION_TICKS[tier - 1], amplifier));
             }
         }, 1);
     }
@@ -317,7 +319,7 @@ public class DamageAPI {
     public static void applySlow(LivingEntity defender) {
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             int tickLength = EntityAPI.getTier(defender) >= 4 ? 100 : 40;
-            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 1));
+            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 0));
         });
     }
 

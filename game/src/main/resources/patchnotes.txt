@@ -1,6 +1,9 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Durability<h>&a&lWhat changed?,,&7You no longer take durability on your armor in PvP!</h>
+ &l* &0Org of Alteration<h>&a&lWhat changed?,,&7Orbing armor no longer changes Armor to DPS!</h>
+ &l* &0Ice Damage<h>&a&lWhat changed?,,&7Ice Damage now only applies Slow I regardless of tier!</h>
  &l* &0Tier 5 Drops<h>&a&lWhat changed?,,&7Tier 5 drop rates have been significantly increased!</h>
  &l* &0Vote Crates<h>&a&lWhat changed?,,&7Vote crate rewards have been significantly buffed... again!,,&7Rewards above common will now broadcast for everyone to see!</h>
  &l* &0Vote Crates<h>&a&lWhat changed?,,&7Vote crate rewards have been significantly buffed!</h>
