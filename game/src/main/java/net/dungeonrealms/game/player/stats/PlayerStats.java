@@ -118,6 +118,10 @@ public class PlayerStats implements LoadableData, SaveableData {
         return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.05;
     }
 
+    public double getHealthRegen(boolean temp) {
+        return (temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.3;
+    }
+
     public void lvlUp() {
         int lvl = getLevel() + 1;
         if (lvl == 10 || lvl == 50)
