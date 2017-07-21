@@ -16,6 +16,7 @@ import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.EnumTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
@@ -123,7 +124,10 @@ public class PvEListener implements Listener {
         if (ProfessionItem.isProfessionItem(held)) {
             event.setCancelled(true);
             event.setDamage(0.0);
+
         }
+        Utils.stopSprint(damager, true);
+
         //1 damage for melee staffing..
         if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager()) && ItemWeaponStaff.isStaff(held)) {
             res = new AttackResult(damager, receiver);

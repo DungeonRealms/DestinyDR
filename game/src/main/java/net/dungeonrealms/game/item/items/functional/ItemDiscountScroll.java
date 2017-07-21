@@ -7,6 +7,7 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.tool.coupon.CouponCodeGenerator;
 import org.bukkit.ChatColor;
@@ -82,10 +83,11 @@ public class ItemDiscountScroll extends FunctionalItem implements ItemClickEvent
         if(isScratchedOff()) return;
         if(discountPercent <= 0) return;
         if(!evt.isRightClick()) return;
-        evt.getPlayer().sendMessage(ChatColor.GRAY + "====" + ChatColor.GRAY + "WARNING" + ChatColor.RED + "====");
+        Utils.sendCenteredMessage(evt.getPlayer(), ChatColor.RED + "====" + ChatColor.RED + " WARNING " + ChatColor.RED + "====");
         evt.getPlayer().sendMessage(ChatColor.GRAY + "After revealing the coupon code this voucher will become soulbound");
-        evt.getPlayer().sendMessage(ChatColor.GRAY + "and only you will be able to use the code which will expire in 1 week");
-        evt.getPlayer().sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + "Y  " + ChatColor.GRAY + "to confirm!");
+        evt.getPlayer().sendMessage(ChatColor.GRAY + "and only you will be able to use the code which will " + ChatColor.RED + ChatColor.UNDERLINE.toString() + "expire" + ChatColor.GRAY + " in 1 week");
+        evt.getPlayer().sendMessage("");
+        Utils.sendCenteredMessage(evt.getPlayer(),ChatColor.GRAY + "Type " + ChatColor.GREEN + "Y " + ChatColor.GRAY + "to confirm!");
         Chat.promptPlayerConfirmation(evt.getPlayer(), () -> {
             CouponCodeGenerator.generatePercentCouponCode(discountPercent, evt.getPlayer().getUniqueId(),(code) -> {
                 if(code == null) {

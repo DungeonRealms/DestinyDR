@@ -2,6 +2,7 @@ package net.dungeonrealms.common.game.util;
 
 import net.minecraft.server.v1_9_R2.Packet;
 
+import net.minecraft.server.v1_9_R2.PacketPlayInEntityAction;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 

@@ -3,13 +3,16 @@ package net.dungeonrealms.game.mastery;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.minecraft.server.v1_9_R2.PacketPlayInEntityAction;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,6 +51,16 @@ public class Utils {
 
     public static String translate(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
+    }
+
+    public static void stopSprint(Player player, boolean useBukkit) {
+        if (useBukkit)
+            player.setSprinting(false);
+
+        PacketPlayInEntityAction action = new PacketPlayInEntityAction();
+        ReflectionAPI.setField("a", action, player.getEntityId());
+        ReflectionAPI.setField("animation", action, PacketPlayInEntityAction.EnumPlayerAction.STOP_SPRINTING);
+        ((CraftPlayer) player).getHandle().playerConnection.a(action);
     }
 
     public static <T extends Comparable> LinkedHashMap<UUID, T> sortMap(Map<UUID, T> unsortMap) {

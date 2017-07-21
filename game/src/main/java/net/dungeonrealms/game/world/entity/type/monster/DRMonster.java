@@ -267,7 +267,7 @@ public interface DRMonster {
 
         double itemFindIncrease = (chance * killerItemFind / 100);
 
-        if (dry != null && dry > 300 && !elite) {
+        if (dry != null && dry > 300 && !elite && !Metadata.NAMED_ELITE.has(ent)) {
             //Garuntee a drop?
             //1000 dry = 50% increase.
             int increase = Math.min(((dry - 150) / 20) * 10, 500);

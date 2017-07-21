@@ -8,8 +8,10 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityHuman;
 import org.bukkit.Bukkit;
@@ -64,8 +66,8 @@ public class PvPListener implements Listener {
             //decrement the knockback?
             DamageAPI.knockbackPlayerPVP(attacker, defender);
 
-            EntityHuman defend = ((CraftPlayer) defender).getHandle();
-            defender.setSprinting(false);
+//            defender.setSprinting(false);
+//            Utils.stopSprint(attacker, false);
             /*int foodLevel = defender.getFoodLevel();
             if(foodLevel > 1) {
                 defender.setFoodLevel(1);

@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
@@ -187,6 +188,7 @@ public class EnergyHandler implements GenericMechanic {
             removeEnergyFromPlayerAndUpdate(player, 0.15F);
             if (getPlayerCurrentEnergy(player) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
+//                Utils.stopSprint(player);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
                 if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
                     int foodLevel = player.getFoodLevel();

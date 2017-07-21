@@ -592,7 +592,7 @@ public class InventoryListener implements Listener {
                 }
             }
 
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+            if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) && (event.getCursor() == null || event.getCursor().getType() == Material.AIR))
                 return;
 
 
@@ -612,28 +612,31 @@ public class InventoryListener implements Listener {
             if (slot >= 36)
                 return;
 
-            ItemStack stackClicked = event.getCurrentItem();
-            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-            if (nms.hasTag() && nms.getTag().hasKey("status")) {
-                String status = nms.getTag().getString("status");
-                event.setCancelled(true);
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+                ItemStack stackClicked = event.getCurrentItem();
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+                if (nms.hasTag() && nms.getTag().hasKey("status")) {
+                    String status = nms.getTag().getString("status");
+                    event.setCancelled(true);
 
-                boolean ready = status.equalsIgnoreCase("ready");
-                trade.updateReady(event.getWhoClicked().getUniqueId());
-                ItemStack item = new ItemStack(Material.INK_SACK);
-                item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.LIME.getDyeData());
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
-                item.setItemMeta(meta);
-                nms = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("status", ready ? "notready" : "ready");
-                nms.setTag(nbt);
-                nms.c(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
-                event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                trade.checkReady();
-                return;
+                    boolean ready = status.equalsIgnoreCase("ready");
+                    trade.updateReady(event.getWhoClicked().getUniqueId());
+                    ItemStack item = new ItemStack(Material.INK_SACK);
+                    item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.LIME.getDyeData());
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                    item.setItemMeta(meta);
+                    nms = CraftItemStack.asNMSCopy(item);
+                    NBTTagCompound nbt = new NBTTagCompound();
+                    nbt.setString("status", ready ? "notready" : "ready");
+                    nms.setTag(nbt);
+                    nms.c(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                    trade.checkReady();
+                    return;
+                }
             }
+
             Player clicker = (Player) event.getWhoClicked();
             if (trade.p1Ready || trade.p2Ready) {
                 trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
