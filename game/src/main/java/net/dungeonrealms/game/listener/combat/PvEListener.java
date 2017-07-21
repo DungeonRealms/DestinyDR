@@ -126,7 +126,9 @@ public class PvEListener implements Listener {
             event.setDamage(0.0);
 
         }
-        Utils.stopSprint(damager, true);
+
+//        if (damager.isSprinting())
+//            Utils.stopSprint(damager, true);
 
         //1 damage for melee staffing..
         if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager()) && ItemWeaponStaff.isStaff(held)) {
