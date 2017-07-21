@@ -662,8 +662,8 @@ public class RealmListener implements Listener {
         if ((event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP) && event.getRawSlot() < event.getInventory().getSize())
             cursor = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
-        if (event.getRawSlot() < event.getInventory().getSize() && (event.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getAction() != InventoryAction.HOTBAR_SWAP && event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.PLACE_ONE && event.getAction() != InventoryAction.PLACE_SOME && event.getAction() != InventoryAction.PLACE_ALL) && event.getRawSlot() != -999)
-            return;
+//        if (event.getRawSlot() < event.getInventory().getSize() && (event.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getAction() != InventoryAction.HOTBAR_SWAP && event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.PLACE_ONE && event.getAction() != InventoryAction.PLACE_SOME && event.getAction() != InventoryAction.PLACE_ALL) && event.getRawSlot() != -999)
+//            return;
 
         if (cursor != null) {
             if (isItemBanned(cursor)) {
