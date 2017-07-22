@@ -1,7 +1,10 @@
 package net.dungeonrealms.game.mechanic.dungeons;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.util.ChatColor;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -54,9 +57,33 @@ public class DungeonListener implements Listener {
         if (!GameAPI.isMainWorld(event.getPlayer()) || !event.getNewRegion().toLowerCase().startsWith("instance_"))
             return;
         Player player = event.getPlayer();
-        List<Player> players = Affair.isInParty(player) ? Affair.getParty(player).getAllMembers().stream().filter(p -> p.getWorld().equals(player.getLocation().getWorld()) && p.getLocation().distanceSquared(player.getLocation()) <= 200).collect(Collectors.toList())
-                : Arrays.asList(player);
-        DungeonManager.createDungeon(DungeonType.getInternal(event.getNewRegion().split("_")[1]), players);
+        PlayerWrapper hisWrapper = PlayerWrapper.getPlayerWrapper(player);
+        List<Player> players = Lists.newArrayList();
+        DungeonType type = DungeonType.getInternal(event.getNewRegion().split("_")[1]);
+        if(type == null) return;
+        if(type.isOnCooldown(hisWrapper)) {
+            player.sendMessage(ChatColor.RED + "You can not join this dungeon because you have already recently completed it!");
+            player.sendMessage(ChatColor.GRAY + "You must wait until " + type.getCooldownString(hisWrapper) + " before joining the dungeon again!");
+            return;
+        }
+        if(Affair.isInParty(player)) {
+            for(Player member : Affair.getParty(player).getAllMembers()) {
+                if(!member.getWorld().equals(player.getLocation().getWorld())) continue;
+                if(member.getLocation().distanceSquared(player.getLocation()) > 200) continue;
+                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(member);
+                if(type.isOnCooldown(wrapper)) {
+                    member.sendMessage(ChatColor.RED + "You can not join this dungeon because you have already recently completed it!");
+                    member.sendMessage(ChatColor.GRAY + "You must wait until " + type.getCooldownString(wrapper) + " before joining the dungeon again!");
+                    player.sendMessage(ChatColor.RED + player.getName() + " has already done this dungeon recently!");
+                    return;
+                }
+                players.add(member);
+            }
+        } else {
+            players.add(player);
+        }
+
+        DungeonManager.createDungeon(type, players);
     }
 
     /**

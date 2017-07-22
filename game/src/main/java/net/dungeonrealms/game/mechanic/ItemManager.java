@@ -132,7 +132,7 @@ public class ItemManager {
             dpsLow += dpsToAdd;
             dpsHigh += dpsToAdd;
         }
-        dps = dpsLow + " - " + dpsHigh + "% ";
+        dps = ((int)dpsLow) + " - " + ((int)dpsHigh) + "% ";
 
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK

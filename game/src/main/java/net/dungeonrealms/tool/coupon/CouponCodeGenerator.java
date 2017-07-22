@@ -53,7 +53,7 @@ public class CouponCodeGenerator {
                 for (int itemId : itemIdsThatApply) array.add(new JsonPrimitive(itemId));
                 params.add("effective_on", array);
             }
-            params.addProperty("start_date", System.currentTimeMillis());
+            params.addProperty("start_date", System.currentTimeMillis() / 1000);
             params.addProperty("expiry_value", numberOfUses);
             params.addProperty("redeem_limit_per_user", numberOfUsesPerPerson);
             if (uuidsWhoCanClaim != null) {

@@ -220,13 +220,13 @@ public class ShardSwitcher extends AbstractMenu {
         long lastShardTransfer = PlayerWrapper.getPlayerWrapper(player).getLastShardTransfer();
 
         if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
-            if (GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
+            if (/*GameAPI.isInSafeRegion(player.getLocation()) && */(System.currentTimeMillis() - lastShardTransfer) < 30000) {
                 player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
                 return;
-            } else if (!GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 300000) {
+            } /*else if (!GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
                 player.sendMessage(ChatColor.RED + "You must wait 5 minutes before you can transfer between shards.");
                 return;
-            }
+            }*/
         }
 
 

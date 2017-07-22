@@ -41,12 +41,18 @@ public class Utils {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, YY hh:mm aa");
 
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("dd hh:mm aa");
+
     public static String getDateString() {
         return getDateString(System.currentTimeMillis());
     }
 
     public static String getDateString(long time) {
         return dateFormat.format(new Date(time));
+    }
+
+    public static String getTimeString(long time) {
+        return timeFormat.format(new Date(time));
     }
 
     public static String translate(String string) {

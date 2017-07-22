@@ -362,7 +362,7 @@ public class DamageListener implements Listener {
                     event.getDrops().remove(item);
 
                     //Dont drop if its not 0, 75% of the time.
-                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
+                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 1 || lostPieces >= 1) {
                         gearToSave.add(persis.generateItem());
                     } else {
                         //Drop?
@@ -384,7 +384,7 @@ public class DamageListener implements Listener {
                     event.getDrops().remove(offHand);
 
                     //Dont drop if its not 0, 75% of the time.
-                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 2) {
+                    if (alignment == KarmaHandler.EnumPlayerAlignments.LAWFUL || ThreadLocalRandom.current().nextInt(4) != 0 || lostPieces >= 1) {
                         gearToSave.add(persis.generateItem());
                     } else {
                         //Drop?

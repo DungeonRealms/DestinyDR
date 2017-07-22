@@ -2,6 +2,7 @@ package net.dungeonrealms.game.item.items.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.ItemType;
@@ -320,8 +321,18 @@ public abstract class ItemGear extends ItemGeneric {
             return;
         }
 
-        if (player == null)
+        if (player == null) {
             return;
+        }
+
+
+
+        //This is a bandaid to fix all current dungeon gear in the game. We should remove this after some time.
+        String customId = GameAPI.getCustomID(getItem());
+        if(isSoulbound() && customId != null && (customId.equals("infernalabyss") || customId.equalsIgnoreCase("burick") || customId.equalsIgnoreCase( "mayel"))) {
+            setSoulbound(false);
+            updateItem();
+        }
 
         // Update the item in the player's inventory.
         ItemStack[] items = player.getInventory().getContents();

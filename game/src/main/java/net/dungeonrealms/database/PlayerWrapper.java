@@ -115,6 +115,10 @@ public class PlayerWrapper {
 
     @Getter
     @Setter
+    private Map<String, Long> lastDungeonRuns = new HashMap<>();
+
+    @Getter
+    @Setter
     private int health, level, experience;
 
     @Getter
@@ -372,6 +376,8 @@ public class PlayerWrapper {
                 this.loadPlayerPendingEquipment(result);
                 this.loadMuleInventory(result);
                 this.loadLocation(result);
+
+                loadLastDungeonRuns(result.getString("users.dungeon_cooldown"));
 
                 this.guildID = result.getInt("guilds.guild_id");
 
@@ -961,7 +967,7 @@ public class PlayerWrapper {
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
                 getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
                 currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getSerializePetString(), getParticles(), getMountSkins(),
-                getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getAccountID());
+                getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getSerializedDungeonCooldownString(),getAccountID());
     }
 
     @SneakyThrows
@@ -1681,4 +1687,27 @@ public class PlayerWrapper {
         else if (lastIndependantColor.equals(DyeColor.WHITE)) lastIndependantColor = DyeColor.BLUE;
         else lastIndependantColor = DyeColor.RED;
     }
+
+    private String getSerializedDungeonCooldownString() {
+        if(getLastDungeonRuns().isEmpty()) return null;
+        String toReturn = "";
+        for(Map.Entry<String, Long> entry : getLastDungeonRuns().entrySet()) {
+            if(!toReturn.isEmpty()) toReturn = toReturn + "%";
+            toReturn = toReturn + entry.getKey() + ";" + entry.getValue().longValue();
+        }
+
+
+        return toReturn;
+    }
+
+    private void loadLastDungeonRuns(String raw) {
+        if(raw == null || raw.isEmpty()) return;
+        String[] entries = raw.split("%");
+        for(String entry : entries) {
+            String[] parts = entry.split(";");
+            getLastDungeonRuns().put(parts[0], Long.valueOf(parts[1]));
+        }
+    }
+
+
 }

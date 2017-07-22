@@ -164,7 +164,11 @@ public abstract class Dungeon {
         giveShards();
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), this::giveDrops, 5L);
         // Add stats.
-        getPlayers().forEach(p -> PlayerWrapper.getWrapper(p).getPlayerGameStats().addStat(getType().getStat()));
+        getPlayers().forEach(p -> {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(p);
+            type.putOnCooldown(wrapper);
+            wrapper.getPlayerGameStats().addStat(getType().getStat());
+        });
     }
 
     /**
@@ -175,7 +179,7 @@ public abstract class Dungeon {
         LivingEntity livingEntity = getBoss().getBukkit();
         Random random = ThreadLocalRandom.current();
 
-        if (random.nextInt(100) < 80) { // 80% chance!
+        //if (random.nextInt(100) < 80) { // 80% chance!
             List<ItemStack> possibleDrops = Arrays.stream(livingEntity.getEquipment().getArmorContents()).filter(is -> is != null && is.getType() != Material.AIR && is.getTypeId() != 144 && is.getTypeId() != 397).collect(Collectors.toList());
 
             // Get a list of posssible drops
@@ -193,9 +197,9 @@ public abstract class Dungeon {
 
             // Add soulbound.
             VanillaItem item = new VanillaItem(drop);
-            item.setSoulbound(true);
+            /*item.setSoulbound(true);
             for (Player p : getPlayers())
-                item.addSoulboundBypass(p, 60 * 5);
+                item.addSoulboundBypass(p, 60 * 5);*/
 
             // Drop the item.
             ItemStack reward = item.generateItem();
@@ -210,7 +214,7 @@ public abstract class Dungeon {
             final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
-        }
+        //}
 
         int gemDrop = getType().getGems();
         int groupSize = (int) getPlayers().size();
@@ -345,8 +349,6 @@ public abstract class Dungeon {
         if (e.isValid())
             return;
 
-
-        if(getTrackedMonsters().containsKey(e)) System.out.println("It's inside the map!");
 
         Location location = getTrackedMonsters().remove(e);
 

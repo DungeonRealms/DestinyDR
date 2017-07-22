@@ -105,7 +105,7 @@ public class CharacterTabColumn extends Column {
                 dpsLow += dpsToAdd;
                 dpsHigh += dpsToAdd;
             }
-            return dpsLow + " - " + dpsHigh;
+            return ((int)dpsLow) + " - " + ((int)dpsHigh);
         }
     	return pw != null ? pw.getAttributes().getAttribute(type).toString() : "?";
     }

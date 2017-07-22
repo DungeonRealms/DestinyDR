@@ -246,7 +246,7 @@ public class DamageAPI {
         //  CRITICAL HIT  //
         if (isHitCrit) {
             if (attacker.isPlayer()) {
-                attacker.getWrapper().sendDebug(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
+                attacker.getWrapper().sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "                        *CRIT*");
                 defender.getEntity().getWorld().playSound(attacker.getEntity().getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             double critIncrease = 0.0;
