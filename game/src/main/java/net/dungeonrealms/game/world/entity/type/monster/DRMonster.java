@@ -174,7 +174,7 @@ public interface DRMonster {
             return;
 
         //Boss will handle this.
-        if (Metadata.BOSS.has(ent) || Metadata.RIFT_MOB.has(ent))
+        if (Metadata.BOSS.has(ent) || (Metadata.RIFT_MOB.has(ent) && Metadata.ELITE.has(ent)))
             return;
 
         //combat log npcs have special drop mechanics

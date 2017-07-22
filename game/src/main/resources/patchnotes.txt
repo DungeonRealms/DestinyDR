@@ -1,6 +1,11 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Named Elite Changes<h>&a&lWhat changed?,,&7Lord Taylor's sword has been nerfed,,&7Queen of the nest's sword is now rare,,&7The energy values on Burick's chest and legs has been rebalanced,,&7The damage on Burick's axe has been rebalanced,,&7Pyro Bandit's axe has been rebalanced,,&7Redeye the Cruel's sword has been rebalanced,,&7Blayshan's axe now has a range on it's ice damage,,&7Mother of Doom's sword has been slightly rebalanced,,&7Infernal Abyss gear has been heavily rebelanced to fit tier 4</h>
+ &l* &0Blazes<h>&a&lWhat changed?,,&7Blazes now spawn lower tier magma cubes!</h>
+ &l* &0Rifts<h>&a&lWhat changed?,,&7Rift Monsters can now drop gear!</h>
+ &l* &0Gem Drops<h>&a&lWhat changed?,,&7Tier 4 gem drop amounts have been buffed!</h>
+ &l* &0Repairing<h>&a&lWhat changed?,,&7Tier 4 and 5 item repair costs have been reduced!</h>
  &l* &0Dungeons<h>&a&lWhat changed?,,&7Dungeons now have a cooldown between runs,,&7Dungeon gear is no longer soulbound</h>
  &l* &0Shard Hop<h>&a&lWhat changed?,,&7Shard hopping in non safe zones is only a 30 second cooldown</h>
  &l* &0Neutral Drops<h>&a&lWhat changed?,,&7You now have a 50% chance to drop your weapon!,,&7and a 25% chance to drop 1 piece of armor</h>

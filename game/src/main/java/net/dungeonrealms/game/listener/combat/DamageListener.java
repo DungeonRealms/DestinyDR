@@ -983,7 +983,8 @@ public class DamageListener implements Listener {
                         EntityAPI.spawnCustomMonster(e.getLocation().clone().add(random.nextInt(3), 0, random.nextInt(3)), e.getLocation(), EnumMonster.MagmaCube, Utils.getRandomFromTier(2, "low"), 2, null, "Lesser Spawn of Inferno");
             }
         } else if (event.getEntity() instanceof SmallFireball && shooter instanceof Blaze && random.nextInt(5) == 0) {
-            int tier = EntityAPI.getTier(e);
+            int tier = EntityAPI.getTier(e) - 2;
+            if(tier < 1) tier  = 1;
             CraftEntity entity = (CraftEntity) event.getEntity();
             if (entity.getHandle() instanceof DRBlaze) {
                 DRBlaze blaze = (DRBlaze) entity.getHandle();
