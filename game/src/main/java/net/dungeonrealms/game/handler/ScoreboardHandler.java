@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.guild.GuildMember;
 import net.dungeonrealms.game.guild.GuildWrapper;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -108,8 +109,9 @@ public class ScoreboardHandler implements GenericMechanic {
 
         // Append guild tag.
         GuildWrapper guild = pw.getGuild();
-        if (guild != null)
+        if (guild != null && guild.isAnAcceptedPlayer(player)) {
             prefix = "[" + guild.getTag() + ChatColor.RESET + "] " + prefix;
+        }
 
         //This is not async because the scoreboard should NEVER be modified async.
         for (Player update : Bukkit.getOnlinePlayers())
@@ -152,7 +154,7 @@ public class ScoreboardHandler implements GenericMechanic {
 
             String guild = "";
             GuildWrapper guildWrapper = GuildDatabase.getAPI().getPlayersGuildWrapper(player1.getUniqueId());
-            if (guildWrapper != null) {
+            if (guildWrapper != null && guildWrapper.isAnAcceptedPlayer(player1)) {
                 String clanTag = guildWrapper.getTag();
 //                GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
                 guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");

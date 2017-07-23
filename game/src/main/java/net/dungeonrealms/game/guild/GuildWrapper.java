@@ -312,4 +312,14 @@ public class GuildWrapper {
     public String getChatPrefix() {
     	return ChatColor.WHITE + "[" + getTag() + "] ";
     }
+
+    public boolean isAnAcceptedPlayer(Player player) {
+        return isAnAcceptedPlayer(player.getUniqueId());
+    }
+
+    public boolean isAnAcceptedPlayer(UUID id) {
+        GuildMember member = getMember(id);
+        if(member == null) return false;
+        return member.isAccepted();
+    }
 }

@@ -1313,7 +1313,7 @@ public class PlayerWrapper {
      */
     public String getChatName() {
         String name = getDisplayName();
-        if (isInGuild())
+        if (isInGuild() && getGuild() != null && getGuild().isAnAcceptedPlayer(getUuid()))
             name = getGuild().getChatPrefix() + name;
 
         return name;
