@@ -50,7 +50,7 @@ public enum DungeonType {
 
     THE_INFERNAL_ABYSS("Infernal Abyss", "infernalAbyss", "fireydungeon",TimeUnit.DAYS.toMillis(1), StatColumn.BOSS_KILLS_INFERNALABYSS,
             InfernalAbyss.class, InfernalListener.class, EnumMounts.SPIDER,
-            4, 150, 250, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
+            4, 250, 350, 10000, 12000, 50000, EnumAchievements.INFERNAL_ABYSS,
             l(BossType.InfernalAbyss, BossType.InfernalGhast, BossType.InfernalGuard)),
 
     ELITE_RIFT("Elite Rift", "eliteRift", "riftdungeon", -1L,StatColumn.T1_MOB_KILLS, EliteRift.class, EliteRiftListener.class, null,1,0,0,0,0,1000,null,l(BossType.RiftEliteBoss));

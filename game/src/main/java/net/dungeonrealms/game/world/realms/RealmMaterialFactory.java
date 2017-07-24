@@ -211,6 +211,11 @@ public class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.getMaterial(3), 8, (short) 2)));
         items.add(new RealmMaterialItem(new ItemStack(Material.PISTON_BASE, 64, (short) 80)));
         items.add(new RealmMaterialItem(new ItemStack(Material.PISTON_STICKY_BASE, 64, (short) 120)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.HOPPER, 64, (short) 0)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.REDSTONE_COMPARATOR, 64, (short) 0)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.DIODE, 64, (short) 0)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.LAVA_BUCKET, 64, (short) 0)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.WATER_BUCKET, 64, (short) 0)));
 
 
         // FILLS UP STORES //

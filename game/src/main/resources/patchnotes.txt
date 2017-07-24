@@ -1,6 +1,9 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Infernal Abyss<h>&a&lWhat changed?,,&7You now get more portal key shards upon completion</h>
+ &l* &0Stat Wizard<h>&a&lWhat changed?,,&7The stat wizard now calculates price correctly</h>
+ &l* &0Realm Block Shop<h>&a&lWhat changed?,,&7Redstone expansion items have been added,&7to the shop!</h>
  &l* &0Link Account<h>&a&lWhat is this?,,&7You can now link your in-game,&7Minecraft account with your Enjin,&7profile. This will allow you - in the,&7future - to perform website tasks,&7in-game and vice versa.,&7You will also receive a free loot,&7aura for linking your account!,&7Type /link to get started.</h>
  &l* &0Repair Costs<h>&a&lWhat changed?,,&7Tier 4 and 5 repair costs were nerfed... again</h>
  &l* &0Rift Rings<h>&a&lWhat changed?,,&7Rift ring drop rates were increased</h>

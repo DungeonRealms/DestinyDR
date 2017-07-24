@@ -123,9 +123,9 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public void lvlUp() {
-        int lvl = getLevel() + 1;
-        if (lvl == 10 || lvl == 50)
-            addReset();
+        //int lvl = getLevel() + 1;
+        /*if (lvl == 10 || lvl == 50)
+            addReset();*/
 //        setPlayerLevel(lvl);
     }
 
