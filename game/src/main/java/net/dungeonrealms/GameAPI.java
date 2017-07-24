@@ -53,6 +53,7 @@ import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
+import net.dungeonrealms.game.miscellaneous.PlayerShardEvent;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -1161,6 +1162,8 @@ public class GameAPI {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         wrapper.setLastShardTransfer(System.currentTimeMillis());
+
+        Bukkit.getPluginManager().callEvent(new PlayerShardEvent(player));
         GameAPI.handleLogout(player, true, doAfter -> BungeeUtils.sendToServer(player.getName(), serverBungeeName), false);
     }
 

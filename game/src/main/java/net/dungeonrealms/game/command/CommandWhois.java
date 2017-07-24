@@ -61,7 +61,7 @@ public class CommandWhois extends BaseCommand {
         Player online = Bukkit.getPlayer(p_name);
         if (p_name.contains(".") && rank.isAtLeast(PlayerRank.GM)) {
 
-            if (showAlts || rank.isAtLeast(PlayerRank.DEV)) {
+            if (showAlts || rank.isAtLeast(PlayerRank.HEADGM)) {
                 //its an ip
                 SQLDatabaseAPI.getInstance().executeQuery(QueryType.SELECT_ALTS.getQuery(p_name), true, (set) -> {
                     if (set == null) {
