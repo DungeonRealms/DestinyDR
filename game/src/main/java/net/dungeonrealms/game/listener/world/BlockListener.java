@@ -237,6 +237,11 @@ public class BlockListener implements Listener {
             } else {
                 player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
                 player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newNewCost + ChatColor.BOLD.toString() + " GEMS(s)");
+                itemEntity.remove();
+                repairMap.remove(block.getLocation());
+                player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+                GameAPI.giveOrDropItem(player, item);
+                player.setCanPickupItems(true);
             }
         }, () -> {
             // Return item.
