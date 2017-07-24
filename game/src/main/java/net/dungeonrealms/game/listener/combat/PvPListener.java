@@ -8,16 +8,11 @@ import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.minecraft.server.v1_9_R2.EntityHuman;
-import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -43,10 +38,20 @@ public class PvPListener implements Listener {
         if (isProjectile && !(projectile.getShooter() instanceof Player)) return; //Shooter is not a player
 
         Player attacker = isProjectile ? (Player) projectile.getShooter() : (Player) event.getDamager();
+        if (attacker != null && MetadataUtils.Metadata.SHARDING.has(attacker)) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
+
         if (event.getEntity() instanceof Player) {
 
-            if(MetadataUtils.Metadata.SHARDING.has(attacker)) return;
             Player defender = (Player) event.getEntity();
+
+            if (MetadataUtils.Metadata.SHARDING.has(event.getEntity())) {
+                event.setCancelled(true);
+                return;
+            }
 
             // Projectiles can be knocked back into the player.
             if (attacker.equals(event.getEntity()) || defender.hasMetadata("NPC")) {
@@ -73,7 +78,6 @@ public class PvPListener implements Listener {
                 defender.setFoodLevel(1);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> defender.setFoodLevel(foodLevel), 40L);
             }*/
-
 
 
             GamePlayer damagerGP = GameAPI.getGamePlayer(attacker);

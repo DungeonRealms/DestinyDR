@@ -304,6 +304,12 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
         }
 
+        //NO damage while sharding.
+        if(player && Metadata.SHARDING.has(event.getEntity())){
+            event.setCancelled(true);
+            return;
+        }
+
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
             //Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)

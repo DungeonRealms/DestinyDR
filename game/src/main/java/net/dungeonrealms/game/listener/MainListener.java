@@ -407,6 +407,17 @@ public class MainListener implements Listener {
         }, false);
     }
 
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (e.getTo() == null) return;
+        if (e.getTo().getX() != e.getFrom().getX() || e.getFrom().getY() != e.getTo().getY() || e.getFrom().getZ() != e.getTo().getZ()) {
+            if (Metadata.SHARDING.has(e.getPlayer())) {
+                e.setCancelled(true);
+                e.getPlayer().sendMessage(ChatColor.RED + "Please wait while your data syncs...");
+            }
+        }
+    }
+
     /**
      * Checks player movement, adds a trail of gold blocks if they have the perk
      * and the situation is correct.
