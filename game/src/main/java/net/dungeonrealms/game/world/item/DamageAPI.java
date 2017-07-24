@@ -120,7 +120,7 @@ public class DamageAPI {
 
 
                 if (type == ItemType.AXE) {
-                    critHit += 3;
+                    critHit += 10;
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0001));
                 } else if (type == ItemType.SWORD) {

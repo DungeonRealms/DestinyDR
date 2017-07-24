@@ -1694,7 +1694,6 @@ public class GameAPI {
 
         // Handle reward calculations & achievements.
         Achievements.giveAchievement(player, EnumAchievements.VOTE);
-        //int ecashReward = 15;
         int chestsToGive = 1;
         if (Rank.isSUB(player)) {
             if (ThreadLocalRandom.current().nextInt(10) == 3) {
@@ -1713,14 +1712,10 @@ public class GameAPI {
 //            PacketPlayOutSetCooldown out = new PacketPlayOutSetCooldown()
         }
 
-        // Update the database with the new E-Cash reward!
-        //TODO: Add Ecash
-        //TODO: Update last voted. with System.cuttentTimeMiollis
-
         // Reward to player with their EXP increase.
-        //pw.setEcash(pw.getEcash() + ecashReward);
         Purchaseables.VOTE_CRATE.setNumberOwned(pw, Purchaseables.VOTE_CRATE.getNumberOwned(pw) + chestsToGive);
         pw.addExperience(expToGive, false, true, true);
+        pw.setLastVote(System.currentTimeMillis());
         final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + chestsToGive + " Mystery Chests & 5% EXP @ vote ", ChatColor.WHITE);
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());

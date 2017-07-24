@@ -35,7 +35,7 @@ public class FishDamageBuff extends FishBuff {
 
 	@Override
 	protected int[] getDurations() {
-		return new int[] {20, 25, 30, Utils.randInt(40, 50), Utils.randInt(50, 60)};
+		return new int[] {20, 25, 30, 45, 60};
 	}
 
 	@Override //TODO: Make this better
@@ -44,13 +44,13 @@ public class FishDamageBuff extends FishBuff {
 		if (t == 1) {
 			setValue(Utils.randInt(1, 2));
 		} else if (t == 2) {
-			setValue(Utils.randInt(1, 4));
+			setValue(Utils.randInt(3, 4));
 		} else if (t == 3) {
-			setValue(Utils.randInt(3, 6));
+			setValue(Utils.randInt(4, 6));
 		} else if (t == 4) {
-			setValue(Utils.randInt(5, 11));
+			setValue(Utils.randInt(7, 9));
 		} else if (t == 5) {
-			setValue(Utils.randInt(11, 16));
+			setValue(Utils.randInt(12, 14));
 		}
 	}
 }

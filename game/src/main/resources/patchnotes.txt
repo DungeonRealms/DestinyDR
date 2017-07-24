@@ -1,6 +1,11 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Link Account<h>&a&lWhat is this?,,&7You can now link your in-game,&7Minecraft account with your Enjin,&7profile. This will allow you - in the,&7future - to perform website tasks,&7in-game and vice versa.,&7You will also receive a free loot,&7aura for linking your account!,&7Type /link to get started.</h>
+ &l* &0Repair Costs<h>&a&lWhat changed?,,&7Tier 4 and 5 repair costs were nerfed... again</h>
+ &l* &0Rift Rings<h>&a&lWhat changed?,,&7Rift ring drop rates were increased</h>
+ &l* &0Fish<h>&a&lWhat changed?,,&7The spread on buff fish was lowered so fish stack more</h>
+ &l* &0Axes<h>&a&lWhat changed?,,&7Axes now have 10% passive crit chance instead of 3%</h>
  &l* &0Elite Changes<h>&a&lWhat changed?,,&7Lord Taylors sword has been nerfed,&7Queen of the nests sword is now rare,&7The energy values on Buricks chest and legs has been rebalanced,&7The damage on Buricks axe has been rebalanced,&7Pyro Bandits axe has been rebalanced,&7Redeye the Cruels sword has been rebalanced,&7Blayshans axe now has a range on it's ice damage,&7Mother of Dooms sword has been slightly rebalanced,&7Infernal Abyss gear has been heavily rebelanced to fit tier 4</h>
  &l* &0Blazes<h>&a&lWhat changed?,,&7Blazes now spawn lower tier magma cubes!</h>
  &l* &0Rifts<h>&a&lWhat changed?,,&7Rift Monsters can now drop gear!</h>

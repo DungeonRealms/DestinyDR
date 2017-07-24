@@ -89,6 +89,10 @@ public class PlayerWrapper {
     private UUID uuid;
 
     @Getter
+    @Setter
+    private int enjinId = -1;
+
+    @Getter
     private int accountID, characterID;
 
     @Getter
@@ -353,6 +357,7 @@ public class PlayerWrapper {
             ResultSet result = statement.executeQuery();
             if (result.first()) {
                 this.accountID = result.getInt("users.account_id");
+                this.enjinId = result.getInt("users.enjin_id");
                 this.toggles = new PlayerToggles(this);
                 this.username = result.getString("users.username");
                 this.isPlaying = result.getBoolean("users.is_online");
@@ -967,7 +972,7 @@ public class PlayerWrapper {
         return getQuery(QueryType.USER_UPDATE, getUsername(), getCharacterID(), getEcash(), getTimeCreated(), getLastLogin(),
                 getLastLogout(), getLastFreeEcash(), getLastShardTransfer(), isOnline, isPlaying ? DungeonRealms.getShard().getPseudoName() : "null",
                 currencyTab, getFirstLogin(), getLastViewedBuild(), getLastNoteSize(), getLastVote(), getSerializePetString(), getParticles(), getMountSkins(),
-                getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getSerializedDungeonCooldownString(),getAccountID());
+                getPurchaseablesUnlocked(), getSerializedPendingPurchaseables(), getSerializedDungeonCooldownString(), getEnjinId() > 0 ? getEnjinId() : null, getAccountID());
     }
 
     @SneakyThrows

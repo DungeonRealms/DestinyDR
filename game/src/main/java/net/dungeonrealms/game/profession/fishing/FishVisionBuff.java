@@ -36,7 +36,7 @@ public class FishVisionBuff extends FishBuff {
 
 	@Override
 	protected int[] getDurations() {
-		return new int[] {30, 45, 60, Utils.randInt(40, 49), Utils.randInt(100, 110)};
+		return new int[] {30, 45, 60, 75, 100};
 	}
 	
 	@Override

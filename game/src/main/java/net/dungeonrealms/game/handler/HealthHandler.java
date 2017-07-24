@@ -201,7 +201,12 @@ public class HealthHandler implements GenericMechanic {
     public static int getRegen(Player player) {
         PlayerWrapper pw = PlayerWrapper.getWrapper(player);
         int hpRegen = pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 10;
+
+        
         hpRegen += pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.3;
+
+//        double toMultiply = 1 + ((pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.003));
+//        hpRegen *= toMultiply;
         if (!Metadata.HP_REGEN.has(player))
             Metadata.HP_REGEN.set(player, hpRegen);
         return Metadata.HP_REGEN.get(player).asInt();

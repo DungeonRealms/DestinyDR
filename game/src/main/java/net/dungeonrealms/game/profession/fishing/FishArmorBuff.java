@@ -35,7 +35,7 @@ public class FishArmorBuff extends FishBuff {
 
 	@Override
 	protected int[] getDurations() {
-		return new int[] {20, 25, 30, Utils.randInt(40, 49), Utils.randInt(50, 60)};
+		return new int[] {20, 25, 30, 45, 60};
 	}
 	
 	@Override
@@ -51,16 +51,17 @@ public class FishArmorBuff extends FishBuff {
 		if (t == 1) {
 			max = 2;
 		} else if (t == 2) {
+			min = 2;
 			max = 3;
 		} else if (t == 3) {
-			min = 3;
+			min = 4;
 			max = 6;
 		} else if (t == 4) {
-			min = 5;
+			min = 7;
 			max = 9;
 		} else if (t == 5) {
-			min = 5;
-			max = 11;
+			min = 8;
+			max = 10;
 		}
 		setValue(Utils.randInt(min, max));
 	}

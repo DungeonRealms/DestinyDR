@@ -35,13 +35,21 @@ public class FishBlockBuff extends FishBuff {
 
 	@Override
 	protected int[] getDurations() {
-		return new int[] {25, 25, 30, Utils.randInt(40, 49), Utils.randInt(50, 60)};
+		return new int[] {25, 25, 30, 45, 60};
 	}
 
 	@Override
 	protected void generateVal() {
-		if (getTier().getTier() <= 2) {
-			setValue(Utils.randInt(1, 5));
+		if (getTier().getTier() == 1) {
+			setValue(Utils.randInt(1, 3));
+		} else if (getTier().getTier() == 2) {
+			setValue(Utils.randInt(2, 3));
+		} else if (getTier().getTier() == 3) {
+			setValue(Utils.randInt(3, 4));
+		} else if (getTier().getTier() == 4) {
+			setValue(Utils.randInt(5, 6));
+		} else if (getTier().getTier() == 5) {
+			setValue(Utils.randInt(7, 8));
 		} else {
 			setValue(Utils.randInt(4, 9));
 		}

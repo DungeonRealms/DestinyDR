@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandPatchNotes extends BaseCommand {
 
     public CommandPatchNotes() {
-        super("patchnotes", "/<command>", "Shows patch for current build", null, Lists.newArrayList("patch"));
+        super("patchnotes", "/<command>", "Shows patch for current build", null, Lists.newArrayList("patch", "changes"));
     }
 
     @Override

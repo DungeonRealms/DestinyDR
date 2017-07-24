@@ -95,14 +95,18 @@ public class Notice {
 
         long vote = wrapper.getLastVote();
 
-        if ((System.currentTimeMillis() - vote) >= 86_400_000) {
-            int ecashAmount = 15;
-            if (Rank.isSUBPlus(p)) ecashAmount = 25;
-            else if (Rank.isSUB(p)) ecashAmount = 20;
+        if(wrapper.getEnjinId() <= 0) {
+            p.sendMessage(" ");
+            final JSONMessage message = new JSONMessage("Hey there! Link your Minecraft account to the website for a free Loot Aura, click ", ChatColor.GRAY);
+            message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://www.dungeonrealms.net/link");
+            message.sendToPlayer(p);
+            p.sendMessage(" ");
+        }
 
+        if ((System.currentTimeMillis() - vote) >= 86_400_000) {
             p.sendMessage(" ");
             final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for a Mystery Chest & 5% EXP, click ", ChatColor.GRAY);
-            message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
+            message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://www.dungeonrealms.net/vote");
             message.sendToPlayer(p);
             p.sendMessage(" ");
         }

@@ -501,7 +501,7 @@ public class EliteRift extends Dungeon {
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
 
-        double chance = ourTier == 1 ? 1 : ourTier == 2 ? 3 : ourTier == 3 ? 5 : ourTier == 4 ? 10 : ourTier == 5 ? 20 : 0;
+        double chance = ourTier == 1 ? 3 : ourTier == 2 ? 5 : ourTier == 3 ? 10 : ourTier == 4 ? 20 : ourTier == 5 ? 30 : 0;
         if (ThreadLocalRandom.current().nextDouble(100) <= chance) {
             livingEntity.getWorld().dropItem(livingEntity.getLocation(), new TrinketItem(TrinketType.RIFT_RING).generateItem());
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 3, 1);
