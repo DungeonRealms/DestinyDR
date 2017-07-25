@@ -285,6 +285,7 @@ public interface DRMonster {
 
             int divisor = t.equals(ItemTier.TIER_1) ? 5 : t.equals(ItemTier.TIER_2) ? 500 : t.equals(ItemTier.TIER_3) ? 2000 : t.equals(ItemTier.TIER_4) ? 14000 : 17000;
             double increase = Math.pow(dry, 2) / (divisor * mobScore);
+            increase *= 10;
             //int increase = Math.min(((dry - 150) / 20) * 10, 500);
 
             chance = Math.max(chance, increase + chance);

@@ -69,36 +69,59 @@ public class CombatLog implements GenericMechanic {
     public void handleCombatLog(Player player) {
         if (inPVP(player)) {
             Bukkit.getLogger().info("Handling combat log for " + player.getName());
-            KarmaHandler.EnumPlayerAlignments alignments = PlayerWrapper.getPlayerWrapper(player).getAlignment();
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+            KarmaHandler.EnumPlayerAlignments alignments = wrapper.getAlignment();
             switch (alignments) {
                 case LAWFUL:
-                    ItemStack storedItem = null;
-                    // Keep the item a player has in his offhand & damage it
-
-                    ItemStack firstItem = player.getInventory().getItem(0);
-                    if (firstItem != null && firstItem.getType() != Material.AIR) {
-                        storedItem = firstItem;
-                        this.damageAndReturn(player, storedItem, null);
-                    }
-                    // Drop all items except for storedItem
-                    for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+                    for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
+                        ItemStack itemStack = player.getInventory().getStorageContents()[k];
+                        if(k == 0) continue; // weapon
                         if (itemStack != null) {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
                                 if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
                                     // We don't want to drop the storedItem
-                                    if (!itemStack.equals(storedItem)) {
                                         player.getInventory().removeItem(itemStack);
                                         Bukkit.getLogger().info("Dropping item " + itemStack);
                                         player.getWorld().dropItem(player.getLocation(), itemStack);
-                                    }
                                 }
                             }
                         }
                     }
                     break;
                 case NEUTRAL:
+                    for(int k = 0; k < 4; k++) {
+                        if (ThreadLocalRandom.current().nextInt(4) == 2) {
+                            //25% to drop 1 item
+                            int slotToDrop = ThreadLocalRandom.current().nextInt(4);
+                            ItemStack[] contents = player.getInventory().getArmorContents();
+                            ItemStack toDrop = contents[slotToDrop];
+                            contents[slotToDrop] = null;
+                            player.getInventory().setArmorContents(contents);
+                            player.getWorld().dropItem(player.getLocation(), toDrop);
+                            break;
+                        }
+                    }
+
+                    for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
+                        ItemStack itemStack = player.getInventory().getStorageContents()[k];
+                        if(k == 0 && ThreadLocalRandom.current().nextBoolean()) continue; // 50% for weapon
+                        if (itemStack != null) {
+                            // Don't drop the journal/realm star
+                            if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
+                                // We don't want to drop a pickaxe/fishing rod
+                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
+                                    // We don't want to drop the storedItem
+                                    player.getInventory().removeItem(itemStack);
+                                    Bukkit.getLogger().info("Dropping item " + itemStack);
+                                    player.getWorld().dropItem(player.getLocation(), itemStack);
+                                }
+                            }
+                        }
+                    }
+                    player.updateInventory();
+                    break;
                 case CHAOTIC:
                     // Just drop all that shit
                     for (ItemStack itemStack : player.getInventory().getContents()) {
@@ -118,8 +141,10 @@ public class CombatLog implements GenericMechanic {
                 default:
                     break;
             }
+
+            GameAPI.teleport(player, TeleportLocation.CYRENNICA.getLocation());
+            wrapper.setStoredLocation(TeleportLocation.CYRENNICA.getLocation());
         }
-        GameAPI.teleport(player, TeleportLocation.CYRENNICA.getLocation());
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {
