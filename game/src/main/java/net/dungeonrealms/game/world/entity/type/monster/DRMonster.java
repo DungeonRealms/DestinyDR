@@ -9,10 +9,8 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.items.core.AuraType;
+import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
-import net.dungeonrealms.game.item.items.core.ItemGear;
-import net.dungeonrealms.game.item.items.core.ItemWeaponMelee;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.item.items.functional.ItemGem;
@@ -31,6 +29,8 @@ import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.*;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -267,14 +267,29 @@ public interface DRMonster {
 
         double itemFindIncrease = (chance * killerItemFind / 100);
 
-        if (dry != null && dry > 300 && !elite && !Metadata.NAMED_ELITE.has(ent)) {
+        if (dry != null && dry > 1 && !elite && !Metadata.NAMED_ELITE.has(ent)) {
+            double mobScore = 1;
+            for(ItemStack drop : toDrop) {
+                ItemGear gear = null;
+                if(ItemArmor.isArmor(drop)) gear = new ItemArmor(drop);
+                else if(ItemWeapon.isWeapon(drop)) gear = new ItemWeapon(drop);
+
+                if(gear == null) continue;
+
+                if(gear.getRarity().equals(Item.ItemRarity.UNIQUE)) mobScore += 250;
+                else if(gear.getRarity().equals(Item.ItemRarity.RARE)) mobScore += 50;
+                else if(gear.getRarity().equals(Item.ItemRarity.UNCOMMON)) mobScore += 5;
+            }
             //Garuntee a drop?
             //1000 dry = 50% increase.
-            int increase = Math.min(((dry - 150) / 20) * 10, 500);
+
+            int divisor = t.equals(ItemTier.TIER_1) ? 5 : t.equals(ItemTier.TIER_2) ? 500 : t.equals(ItemTier.TIER_3) ? 2000 : t.equals(ItemTier.TIER_4) ? 14000 : 17000;
+            double increase = Math.pow(dry, 2) / (divisor * mobScore);
+            //int increase = Math.min(((dry - 150) / 20) * 10, 500);
 
             chance = Math.max(chance, increase + chance);
 
-            System.out.println("Adding " + increase + " to drop for " + pw.getUsername());
+            System.out.println("Adding " + increase + " to drop for " + pw.getUsername() + " with a mobscore of " + mobScore);
         }
 
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
