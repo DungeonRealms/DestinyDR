@@ -15,10 +15,10 @@ import java.util.List;
 @Getter
 public enum HorseTier {
 
-    TIER_1(EnumMounts.TIER1_HORSE, Material.IRON_BARDING, "Old Horse", "An old brown starter horse.", 3_000, 120, 0.2F, 100),
-    TIER_2(EnumMounts.TIER2_HORSE, Material.IRON_BARDING, "Traveler's Horse", "A standard healthy horse.", 7_000, 140, 0.218F, 110),
-    TIER_3(EnumMounts.TIER3_HORSE, Material.DIAMOND_BARDING, "Knight's Horse", "A fast well-bred horse.", 15_000, 170, .25F, 115),
-    TIER_4(EnumMounts.TIER4_HORSE, Material.GOLD_BARDING, "War Stallion", "A trusty powerful steed.", 30_000, 200, .245F, 125),
+    TIER_1(EnumMounts.TIER1_HORSE, Material.IRON_BARDING, "Old Horse", "An old brown starter horse.", 3_000, 120, 0.3F, 0.5),
+    TIER_2(EnumMounts.TIER2_HORSE, Material.IRON_BARDING, "Traveler's Horse", "A standard healthy horse.", 7_000, 140, 0.35F, .75),
+    TIER_3(EnumMounts.TIER3_HORSE, Material.DIAMOND_BARDING, "Knight's Horse", "A fast well-bred horse.", 15_000, 170, .40F, 1.0),
+    TIER_4(EnumMounts.TIER4_HORSE, Material.GOLD_BARDING, "War Stallion", "A trusty powerful steed.", 30_000, 200, 0.5F, 1.25),
     MULE(EnumMounts.MULE, Material.LEASH, "Old Storage Mule", "&cStorage Size: %s Items\nAn old worn-out storage mule.", 5000, 0, .2F, 0);
 
     private EnumMounts mount;
@@ -29,7 +29,7 @@ public enum HorseTier {
     @Getter
     private int speed;
     private float rawSpeed;
-    private int jump;
+    private double jump;
 
     public int getTier() {
         return getId();

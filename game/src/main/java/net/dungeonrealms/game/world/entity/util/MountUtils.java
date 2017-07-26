@@ -120,8 +120,9 @@ public class MountUtils {
             horse.setColor(color);
             HorseInventory horseInventory = horse.getInventory();
             HorseTier tier = HorseTier.getByMount(mount);
-            if (tier.getTier() > 1)
-                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, tier.getTier() - 1));
+            //horse.setJumpStrength(tier.getJump());
+//            if (tier.getTier() > 1)
+//                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, tier.getTier() - 1));
             horseInventory.setSaddle(new ItemStack(Material.SADDLE));
             horseInventory.setArmor(new ItemStack(tier.getArmor()));
             player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);

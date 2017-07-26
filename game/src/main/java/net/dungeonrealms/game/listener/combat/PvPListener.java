@@ -117,7 +117,8 @@ public class PvPListener implements Listener {
             res.applyDamage();
 
             if (!isProjectile) {
-                float energyToRemove = EnergyHandler.handleAirSwingItem(held);
+                //float energyToRemove = EnergyHandler.handleAirSwingItem(held);
+                float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(held);
                 EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker, energyToRemove, isDuel);
             }
 

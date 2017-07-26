@@ -8,8 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.items.core.CombatItem;
-import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -24,6 +23,7 @@ import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 
+import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -80,7 +80,7 @@ public class CombatLog implements GenericMechanic {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
-                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack) && !ItemManager.isItemPermanentlyUntradeable(itemStack)) {
                                     // We don't want to drop the storedItem
                                         player.getInventory().removeItem(itemStack);
                                         Bukkit.getLogger().info("Dropping item " + itemStack);
@@ -104,14 +104,32 @@ public class CombatLog implements GenericMechanic {
                         }
                     }
 
+                    for(int slot = 0; slot < 4; slot++) {
+                        ItemStack[] contents = player.getInventory().getArmorContents();
+                        ItemStack toDamage = contents[slot];
+                        if(toDamage == null || toDamage.getType().equals(Material.AIR)) continue;
+                        if(!ItemArmor.isArmor(toDamage)) continue;
+                        ItemArmor armor = new ItemArmor(toDamage);
+                        armor.damageItem(player, (int)(ItemGear.MAX_DURABILITY * .3));
+                        contents[slot] = armor.generateItem();
+                        player.getInventory().setArmorContents(contents);
+                    }
+
                     for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
                         ItemStack itemStack = player.getInventory().getStorageContents()[k];
-                        if(k == 0 && ThreadLocalRandom.current().nextBoolean()) continue; // 50% for weapon
+                        if(k == 0 && ThreadLocalRandom.current().nextBoolean()) {
+                            if(ItemWeapon.isWeapon(itemStack)) {
+                                ItemWeapon weapon = new ItemWeapon(itemStack);
+                                weapon.damageItem(player, (int)(ItemGear.MAX_DURABILITY * .3));
+                                player.getInventory().getStorageContents()[k] = weapon.generateItem();
+                            }
+                            continue; // 50% for weapon
+                        }
                         if (itemStack != null) {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
-                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack) && !ItemManager.isItemPermanentlyUntradeable(itemStack)) {
                                     // We don't want to drop the storedItem
                                     player.getInventory().removeItem(itemStack);
                                     Bukkit.getLogger().info("Dropping item " + itemStack);

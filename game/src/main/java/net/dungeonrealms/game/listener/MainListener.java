@@ -310,7 +310,8 @@ public class MainListener implements Listener {
         if (MountUtils.hasActiveMount(p)) {
             event.getVehicle().remove();
             MountUtils.removeMount(p);
-            event.getExited().sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "For its own safety, your mount has returned to the stable.");
+            System.out.println("The DR vehicle exit event");
+            event.getExited().sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "For its own safety, your mount has returned to the stable.");
         }
     }
 
@@ -1027,7 +1028,7 @@ public class MainListener implements Listener {
         Horse horse = (Horse) event.getEntity();
         if (horse.getVariant() != Variant.MULE) return;
 
-        if (horse.getOwner() == null) {
+        if (horse.getOwner() == null || !(horse.getOwner() instanceof Player)) {
             horse.remove();
             return;
         }

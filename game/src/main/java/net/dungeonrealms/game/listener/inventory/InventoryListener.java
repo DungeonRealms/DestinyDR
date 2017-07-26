@@ -21,6 +21,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -470,10 +471,13 @@ public class InventoryListener implements Listener {
                 ModifierRange armorVal = armorChanges.getAttribute(t);
                 ModifierRange newVal = wp.getAttributes().getAttribute(t);
 
+                int total = t.equals(Item.ArmorAttributeType.HEALTH_POINTS) ? wp.getHealth() : newVal.getValue();
+
+
                 p.sendMessage((armorVal.getValue() > 0 ? ChatColor.GREEN + "+" : ChatColor.RED.toString())
                         + armorVal.getValue() + t.getSuffix()
                         + " " + ChatColor.stripColor(t.getPrefix().split(":")[0]) + " ["
-                        + newVal.getValue() + t.getSuffix() + "]");
+                        + (total) + t.getSuffix() + "]");
             }
         });
     }
