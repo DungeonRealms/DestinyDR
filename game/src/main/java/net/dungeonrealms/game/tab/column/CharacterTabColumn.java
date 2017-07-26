@@ -95,7 +95,7 @@ public class CharacterTabColumn extends Column {
     
     private String getAttribute(Player player, AttributeType type) {
     	PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-    	if(pw != null && type.equals(ArmorAttributeType.DAMAGE)) {
+    	/*if(pw != null && type.equals(ArmorAttributeType.DAMAGE)) {
             ModifierRange range = pw.getAttributes().getAttribute(type);
             if(range == null) return "?";
             double dpsLow = range.getValLow();
@@ -106,7 +106,7 @@ public class CharacterTabColumn extends Column {
                 dpsHigh += dpsToAdd;
             }
             return ((int)dpsLow) + " - " + ((int)dpsHigh);
-        }
+        }*/
     	return pw != null ? pw.getAttributes().getAttribute(type).toString() : "?";
     }
 }

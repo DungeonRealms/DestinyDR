@@ -1,6 +1,7 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Vitality<h>&a&lWhat changed?,,&7Vitality now gives % HP regen instead of flat HP regen</h>
  &l* &0Combat Logging<h>&a&lWhat changed?,,&7Your armor now takes durability when combat logging</h>
  &l* &0Combat Logging<h>&a&lWhat changed?,,&7Combat logging is now treated the same as a death</h>
  &l* &0Dry Streaks<h>&a&lWhat changed?,,&7Dry streaks were completely redesigned to prevent,&7selective farming</h>

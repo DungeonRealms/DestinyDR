@@ -125,14 +125,14 @@ public class ItemManager {
         String dps = "";
         ModifierRange range = pw.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
         if(range == null) dps =  "?";
-        double dpsLow = range.getValLow();
+        /*double dpsLow = range.getValLow();
         double dpsHigh = range.getValHigh();
         double dpsToAdd = (pw.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
         if(dpsToAdd > 0) {
             dpsLow += dpsToAdd;
             dpsHigh += dpsToAdd;
         }
-        dps = ((int)dpsLow) + " - " + ((int)dpsHigh) + "% ";
+        dps = ((int)dpsLow) + " - " + ((int)dpsHigh) + "% ";*/
 
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK

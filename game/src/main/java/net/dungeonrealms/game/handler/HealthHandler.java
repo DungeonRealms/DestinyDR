@@ -203,10 +203,10 @@ public class HealthHandler implements GenericMechanic {
         int hpRegen = pw.getAttributes().getAttribute(ArmorAttributeType.HEALTH_REGEN).getValue() + 10;
 
 
-        hpRegen += pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.3;
+        //hpRegen += pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.3;
 
-//        double toMultiply ((pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.003));
-//        hpRegen += hpRegen * toMultiply;
+        //double toMultiply = ((pw.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.003));
+        //hpRegen += hpRegen * toMultiply;
         if (!Metadata.HP_REGEN.has(player))
             Metadata.HP_REGEN.set(player, hpRegen);
         return Metadata.HP_REGEN.get(player).asInt();
@@ -745,11 +745,11 @@ public class HealthHandler implements GenericMechanic {
      * Calculates an entities max HP from their gear.
      */
     public static void calculateHP(LivingEntity entity) {
-        int totalHP = 50; // base hp
+        int totalHP = 0; // base hp
 
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
-        totalHP = (int) (totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
+        if(!(entity instanceof Player))totalHP = (int) (totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
 
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[]{1.5, 1.9, 2, 3, 4};

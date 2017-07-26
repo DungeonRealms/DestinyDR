@@ -158,8 +158,8 @@ public class DamageAPI {
 //        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
-        double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
-        if(dpsToAdd > 0) totalDPS += dpsToAdd;
+        /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
+        if(dpsToAdd > 0) totalDPS += dpsToAdd;*/
         //totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
         double dpsMultiplier = totalDPS / 100D;
         damage += damage * (dpsMultiplier);
@@ -189,12 +189,12 @@ public class DamageAPI {
                     //Ele Resist for Vit
                     double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
 
-                    int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+                    //int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
 
-                    damageBoost = damageBoost * (1 + (attackerIntValue * 0.0005));
-                    int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                    double damageBoostReduction = damageBoost * (defenderVitValue * 0.0004);
-                    damageBoost -= damageBoostReduction;
+                    //damageBoost = damageBoost * (1 + (attackerIntValue * 0.0005));
+                    //int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                    //double damageBoostReduction = damageBoost * (defenderVitValue * 0.0004);
+                    //damageBoost -= damageBoostReduction;
 
                     damage += damageBoost;
 
@@ -584,12 +584,12 @@ public class DamageAPI {
                 }
                 //double damageBoost = attacker.getAttributes().getAttribute(ea.getAttack()).getValue();
 
-                int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
+                //int attackerIntValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
 
-                eDamage = eDamage * (1 + (attackerIntValue * 0.0005));
-                int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                double damageBoostReduction = eDamage * (defenderVitValue * 0.0004);
-                eDamage -= damageBoostReduction;
+                //eDamage = eDamage * (1 + (attackerIntValue * 0.0005));
+                //int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
+                //double damageBoostReduction = eDamage * (defenderVitValue * 0.0004);
+                //eDamage -= damageBoostReduction;
                 elementalDamage += eDamage;
 
                 //  ADD RESISTANCE  //
