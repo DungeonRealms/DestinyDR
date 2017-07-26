@@ -9,6 +9,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -73,9 +74,11 @@ public class CombatLog implements GenericMechanic {
             KarmaHandler.EnumPlayerAlignments alignments = wrapper.getAlignment();
             switch (alignments) {
                 case LAWFUL:
+
                     for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
                         ItemStack itemStack = player.getInventory().getStorageContents()[k];
                         if(k == 0) continue; // weapon
+                        if(k == 9 && itemStack != null && Trinket.getActiveTrinketItem(player) != null) continue;
                         if (itemStack != null) {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
