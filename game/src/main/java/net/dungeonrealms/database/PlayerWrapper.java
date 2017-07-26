@@ -1253,17 +1253,21 @@ public class PlayerWrapper {
         int vitality = getAttributes().getAttribute(Item.ArmorAttributeType.VITALITY).getValue();
 
         if(strength > 0) {
-            int armor = getAttributes().getAttribute(Item.ArmorAttributeType.ARMOR).getValue();
-            int armorToAdd = (int)(armor * (strength * .0003));
-            if(armorToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.ARMOR, armorToAdd);
+            /*int armor = getAttributes().getAttribute(Item.ArmorAttributeType.ARMOR).getValue();
+            int armorToAdd = (int)(armor * (strength * .03));
+            if(armorToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.ARMOR, armorToAdd);*/
 
-            int block = getAttributes().getAttribute(Item.ArmorAttributeType.BLOCK).getValue();
+
+            /*int block = getAttributes().getAttribute(Item.ArmorAttributeType.BLOCK).getValue();
             int blockToAdd = (int)(block * (strength * .0002));
-            if(blockToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.BLOCK, blockToAdd);
+            if(blockToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.BLOCK, blockToAdd);*/
+
+            getAttributes().addStat(Item.ArmorAttributeType.ARMOR, (int)(strength * .03));
+            getAttributes().addStat(Item.ArmorAttributeType.BLOCK, (int)(strength * .017));
         }
 
         if(dexterity > 0) {
-            int dodge = getAttributes().getAttribute(Item.ArmorAttributeType.DODGE).getValue();
+            /*int dodge = getAttributes().getAttribute(Item.ArmorAttributeType.DODGE).getValue();
             int dodgeToAdd = (int)(dodge * (dexterity * .0002));
             if(dodgeToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.DODGE, dodgeToAdd);
 
@@ -1273,7 +1277,12 @@ public class PlayerWrapper {
 
             int armorPen = getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION).getValue();
             int penToAdd = (int)(armorPen * (dexterity * .0002));
-            if(penToAdd > 0)getAttributes().addStat(WeaponAttributeType.ARMOR_PENETRATION, penToAdd);
+            if(penToAdd > 0)getAttributes().addStat(WeaponAttributeType.ARMOR_PENETRATION, penToAdd);*/
+
+            getAttributes().addStat(Item.ArmorAttributeType.DODGE, (int)(dexterity * .03));
+            getAttributes().addStat(WeaponAttributeType.ARMOR_PENETRATION, (int)(dexterity * .009));
+
+
         }
 
         if(vitality > 0) {
@@ -1285,7 +1294,7 @@ public class PlayerWrapper {
             int regenToAdd = (int)(regen * (vitality * .003));
             if(regenToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.HEALTH_REGEN, regenToAdd);
 
-            int fireResist = getAttributes().getAttribute(Item.ArmorAttributeType.FIRE_RESISTANCE).getValue();
+            /*int fireResist = getAttributes().getAttribute(Item.ArmorAttributeType.FIRE_RESISTANCE).getValue();
             int fireResistToAdd = (int)(fireResist * (vitality * .0004));
             if(fireResistToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.FIRE_RESISTANCE, fireResistToAdd);
 
@@ -1295,15 +1304,20 @@ public class PlayerWrapper {
 
             int poisonResist = getAttributes().getAttribute(Item.ArmorAttributeType.POISON_RESISTANCE).getValue();
             int poisonResistToAdd = (int)(poisonResist * (vitality * .0004));
-            if(poisonResistToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.POISON_RESISTANCE, poisonResistToAdd);
+            if(poisonResistToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.POISON_RESISTANCE, poisonResistToAdd);*/
+
+            getAttributes().addStat(Item.ArmorAttributeType.FIRE_RESISTANCE, (int)(vitality * .04));
+            getAttributes().addStat(Item.ArmorAttributeType.ICE_RESISTANCE, (int)(vitality * .04));
+            getAttributes().addStat(Item.ArmorAttributeType.POISON_RESISTANCE, (int)(vitality * .04));
         }
 
         if(intellect > 0) {
-            int energy = getAttributes().getAttribute(Item.ArmorAttributeType.ENERGY_REGEN).getValue();
+            /*int energy = getAttributes().getAttribute(Item.ArmorAttributeType.ENERGY_REGEN).getValue();
             int energyToAdd = (int)(energy * (intellect * .00015));
-            if(energyToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, energyToAdd);
+            if(energyToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, energyToAdd);*/
+            getAttributes().addStat(Item.ArmorAttributeType.ENERGY_REGEN, (int)(intellect * 0.015));
 
-            int fireDamage = getAttributes().getAttribute(WeaponAttributeType.FIRE_DAMAGE).getValue();
+            /*int fireDamage = getAttributes().getAttribute(WeaponAttributeType.FIRE_DAMAGE).getValue();
             int fireDamageToAdd = (int)(fireDamage * (intellect * .0005));
             if(fireDamageToAdd > 0)getAttributes().addStat(WeaponAttributeType.FIRE_DAMAGE, fireDamageToAdd);
 
@@ -1313,7 +1327,11 @@ public class PlayerWrapper {
 
             int poisonDamage = getAttributes().getAttribute(WeaponAttributeType.POISON_DAMAGE).getValue();
             int poisonDamageToAdd = (int)(poisonDamage * (intellect * .0005));
-            if(poisonDamageToAdd > 0)getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, poisonDamageToAdd);
+            if(poisonDamageToAdd > 0)getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, poisonDamageToAdd);*/
+
+            getAttributes().addStat(WeaponAttributeType.FIRE_DAMAGE, (int)(intellect * .05));
+            getAttributes().addStat(WeaponAttributeType.ICE_DAMAGE, (int)(intellect * .05));
+            getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, (int)(intellect * .05));
         }
         HealthHandler.updatePlayerHP(getPlayer());
 
