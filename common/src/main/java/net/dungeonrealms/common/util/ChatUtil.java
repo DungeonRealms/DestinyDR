@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class ChatUtil {
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore",
-            "slut", "wank", "asshole", "cock",
+            "slut", "wank", "asshole", "cock","<MOON>",
             "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "n1gger", "n1gg3r", "nigga", "dike", "dyke", "retard", " " +
                     "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
