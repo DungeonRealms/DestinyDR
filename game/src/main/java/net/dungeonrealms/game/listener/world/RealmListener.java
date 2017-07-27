@@ -76,7 +76,7 @@ public class RealmListener implements Listener {
 
             //Toggle flight.
             if (realm.canBuild(player) && realm.getProperty("flight")) {
-                player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "FLYING ENABLED");
                 player.setAllowFlight(true);
             }
 
@@ -84,7 +84,7 @@ public class RealmListener implements Listener {
             if (realm.getTitle() != null)
                 player.sendMessage(realm.getTitle());
 
-            player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "INVINCIBILITY (15s)");
+            player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "INVINCIBILITY (15s)");
             player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
                     + " be flagged as 'combat logged' while invincible.");
 
@@ -95,7 +95,7 @@ public class RealmListener implements Listener {
                     player.setFireTicks(0);
                     player.setInvulnerable(false);
                 }
-            }, 15 * 20L);
+            }, 7 * 20L);
 
             RestrictionListener.checkForIllegalItems(player);
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {

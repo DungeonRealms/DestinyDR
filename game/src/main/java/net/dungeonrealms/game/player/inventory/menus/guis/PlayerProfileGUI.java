@@ -97,6 +97,8 @@ public class PlayerProfileGUI extends GUIMenu {
 
             int tempStats = stats.getTempStat(stat);
             if (stat.equals(Stats.STRENGTH)) {
+                lore.add(ChatColor.GOLD + " AXE DMG: " + ChatColor.AQUA + df.format(stats.getArmor(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getArmor(true)) + "%]" : ""));
+                lore.add(ChatColor.GOLD + " BLOCK: " + ChatColor.AQUA + df.format(stats.getBlock(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getBlock(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " AXE DMG: " + ChatColor.AQUA + df.format(stats.getAxeDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getAxeDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " POLEARM DMG: " + ChatColor.AQUA + df.format(stats.getPolearmDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getPolearmDMG(true)) + "%]" : ""));
             } else if (stat.equals(Stats.VITALITY)) {
@@ -105,9 +107,12 @@ public class PlayerProfileGUI extends GUIMenu {
                 lore.add(ChatColor.GOLD + " SWORD DMG: " + ChatColor.AQUA + df.format(stats.getSwordDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getSwordDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " ELEMENTAL RESIST: " + ChatColor.AQUA + df.format(stats.getElementalResist(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getElementalResist(true)) + "%]" : ""));
             } else if (stat.equals(Stats.DEXTERITY)) {
+                lore.add(ChatColor.GOLD + " ARMOR PEN: " + ChatColor.AQUA + df.format(stats.getArmorPen(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getArmorPen(true)) + "%]" : ""));
+                lore.add(ChatColor.GOLD + " DODGE: " + ChatColor.AQUA + df.format(stats.getDodge(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getDodge(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " DPS: " + ChatColor.AQUA + df.format(stats.getDPS(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getDPS(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " BOW DMG: " + ChatColor.AQUA + df.format(stats.getBowDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getBowDMG(true)) + "%]" : ""));
             } else if (stat.equals(Stats.INTELLECT)) {
+                lore.add(ChatColor.GOLD + " ENERGY: " + ChatColor.AQUA + df.format(stats.getEnergyRegen(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getEnergyRegen(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " STAFF DMG: " + ChatColor.AQUA + df.format(stats.getStaffDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getStaffDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " CRITICAL DMG: " + ChatColor.AQUA + df.format(stats.getCriticalDamage(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getCriticalDamage(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " ELEMENTAL DMG: " + ChatColor.AQUA + df.format(stats.getElementalDamage(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getElementalDamage(true)) + "%]" : ""));

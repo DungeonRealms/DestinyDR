@@ -268,17 +268,21 @@ public class DamageAPI {
         boolean isBlocking = attacker.isPlayer() && attacker.getPlayer().isBlocking();
         Integer reductionPercent = null;
         if (type.equals(ItemType.AXE) || type.equals(ItemType.SWORD) || type.equals(ItemType.POLEARM)) {
-            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
+            reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
         } else if (type.equals(ItemType.BOW)) {
-            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
+            reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
         } else if (type.equals(ItemType.STAFF)) {
-            reductionPercent = attacker.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
+            reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
         }
 
         if (reductionPercent != null) {
             if (!isBlocking) reductionPercent /= 2;
+            System.out.println("The reduction percent: " + reductionPercent);
             double damageReduction = reductionPercent / 100;
+            System.out.println("The damage reduction: " + damageReduction);
+            System.out.println("The old damage: " + damage);
             damage = damage * (1 - damageReduction);
+            System.out.println("The new damage: " + damage);
         }
 
 

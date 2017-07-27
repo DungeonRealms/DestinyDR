@@ -107,6 +107,23 @@ public class PlayerStats implements LoadableData, SaveableData {
         return ((temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.02);
     }
 
+    public double getEnergyRegen(boolean temp) {
+        return ((temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.015);
+    }
+
+    public double getArmor(boolean temp) {
+        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.03);
+    }
+
+    public double getArmorPen(boolean temp) {
+        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.009);
+    }
+
+    public double getDodge(boolean temp) {
+        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.017);
+    }
+
+
     public double getCriticalDamage(boolean temp) {
         return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.0025;
     }

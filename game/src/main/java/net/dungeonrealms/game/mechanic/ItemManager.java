@@ -265,7 +265,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.017f) + "% Dodge" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.015) + "% Bow DMG" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.03) + "% DPS" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.02) + "% Armor Pen.";
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.009) + "% Armor Pen.";
 
         stat_page2_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + vit_val + " Vitality"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'\n"
