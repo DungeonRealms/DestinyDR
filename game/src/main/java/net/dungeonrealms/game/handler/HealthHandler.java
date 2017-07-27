@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.handler;
 
+import com.sk89q.worldguard.internal.flywaydb.core.internal.metadatatable.MetaDataTable;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -20,6 +21,7 @@ import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.listener.combat.DamageType;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.HealTracker;
@@ -385,6 +387,8 @@ public class HealthHandler implements GenericMechanic {
 
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
+
+        if(Metadata.SHARDING.has(player)) return;
 
         boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT || res.getCause() == DamageCause.THORNS;
 
