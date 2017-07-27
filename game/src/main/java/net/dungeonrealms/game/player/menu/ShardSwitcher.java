@@ -90,7 +90,7 @@ public class ShardSwitcher extends AbstractMenu {
                     }
 
                     GameAPI.getGamePlayer(player).setSharding(true);
-                    Metadata.SHARDING.set(player, true);
+                    //Metadata.SHARDING.set(player, true);
 
                     TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shard.getShardID() + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
@@ -144,7 +144,7 @@ public class ShardSwitcher extends AbstractMenu {
             List<String> lore = new ArrayList<>();
 
             if (shard.getType().getDescription().length() > 0)
-                lore.add(ChatColor.RED + "" + ChatColor.ITALIC + shard.getType().getDescription());
+                lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + shard.getType().getDescription());
 
 
             //final int slot = getServerType(shardID).equals("") ? getSize() : Math.min(getInventorySize(), getInventorySize() - 1) - (getSize() - getNormalServers());
