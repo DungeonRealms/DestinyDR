@@ -1329,9 +1329,9 @@ public class PlayerWrapper {
             int poisonDamageToAdd = (int)(poisonDamage * (intellect * .0005));
             if(poisonDamageToAdd > 0)getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, poisonDamageToAdd);*/
 
-            getAttributes().addStat(WeaponAttributeType.FIRE_DAMAGE, (int)(intellect * .05));
-            getAttributes().addStat(WeaponAttributeType.ICE_DAMAGE, (int)(intellect * .05));
-            getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, (int)(intellect * .05));
+            if(getAttributes().hasAttribute(WeaponAttributeType.FIRE_DAMAGE))getAttributes().addStat(WeaponAttributeType.FIRE_DAMAGE, (int)(intellect * .05));
+            else if(getAttributes().hasAttribute(WeaponAttributeType.ICE_DAMAGE))getAttributes().addStat(WeaponAttributeType.ICE_DAMAGE, (int)(intellect * .05));
+            else if(getAttributes().hasAttribute(WeaponAttributeType.POISON_DAMAGE))getAttributes().addStat(WeaponAttributeType.POISON_DAMAGE, (int)(intellect * .05));
         }
         HealthHandler.updatePlayerHP(getPlayer());
 
