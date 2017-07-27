@@ -993,6 +993,7 @@ public class GameAPI {
 
         PlayerRank rank = Rank.getRank(player);
         Metadata.SHARDING.remove(player); // This player just logged in, they aren't sharding.
+        Metadata.SHARD_TP.remove(player); // This player just logged in, they aren't sharding.
 
         GamePlayer gp = new GamePlayer(player);
 
