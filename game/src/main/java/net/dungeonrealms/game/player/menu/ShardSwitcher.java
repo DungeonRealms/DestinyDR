@@ -69,7 +69,7 @@ public class ShardSwitcher extends AbstractMenu {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
-                    if(Metadata.SHARDING.has(player)) {
+                    if(Metadata.SHARDING.has(player) || Metadata.SHARD_TP.has(player)) {
                         player.sendMessage(ChatColor.RED + "You are already sharding! Please be patient while we transfer you!");
                         return;
                     }
@@ -107,6 +107,7 @@ public class ShardSwitcher extends AbstractMenu {
                     }
                     final int[] taskTimer = {5};
 
+                    Metadata.SHARD_TP.set(player, true);
                     new Updater(DungeonRealms.getInstance(), 20L, null) {
                         @Override
                         public void run() {
@@ -124,6 +125,7 @@ public class ShardSwitcher extends AbstractMenu {
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
                                 Metadata.SHARDING.remove(player);
+                                Metadata.SHARD_TP.remove(player);
                                 GameAPI.getGamePlayer(player).setSharding(false);
                                 cancel();
                                 return;

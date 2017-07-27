@@ -60,6 +60,7 @@ public class MetadataUtils {
 
 		// Players
 		SHARDING(false),
+		SHARD_TP(false),
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
 		SUMMONING(-1),
 		AUTO_FISHING(-1),

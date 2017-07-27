@@ -266,6 +266,7 @@ public class DamageAPI {
         //Armor Reduction.
         ItemType type = weapon.getItemType();
         boolean isBlocking = attacker.isPlayer() && attacker.getPlayer().isBlocking();
+
         Integer reductionPercent = null;
         if (type.equals(ItemType.AXE) || type.equals(ItemType.SWORD) || type.equals(ItemType.POLEARM)) {
             reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
@@ -277,12 +278,8 @@ public class DamageAPI {
 
         if (reductionPercent != null) {
             if (!isBlocking) reductionPercent /= 2;
-            System.out.println("The reduction percent: " + reductionPercent);
-            double damageReduction = reductionPercent / 100;
-            System.out.println("The damage reduction: " + damageReduction);
-            System.out.println("The old damage: " + damage);
+            double damageReduction = reductionPercent / 100.0;
             damage = damage * (1 - damageReduction);
-            System.out.println("The new damage: " + damage);
         }
 
 
@@ -576,7 +573,7 @@ public class DamageAPI {
 
         //  ELEMENTAL DAMAGE  //
         double elementalDamage = 0;
-        double elementalResistance = 0;
+        //double elementalResistance = 0;
 
         if (attacker.isPlayer()) {
             for (ElementalAttribute ea : ElementalAttribute.values()) {
@@ -594,13 +591,19 @@ public class DamageAPI {
                 //int defenderVitValue = defender.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
                 //double damageBoostReduction = eDamage * (defenderVitValue * 0.0004);
                 //eDamage -= damageBoostReduction;
-                elementalDamage += eDamage;
+                double resist = 0.0;
+                if(ea.getResist() != null) {
+                    resist = defender.getAttributes().getAttribute(ea.getResist()).getValue();
+                    resist /= 100;
+                }
+                elementalDamage += (eDamage) * (1 - (resist));
 
                 //  ADD RESISTANCE  //
+                /*
                 if (ea.getResist() != null) {
                     elementalResistance += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
 
-                }
+                }*/
             }
         } else if (EntityAPI.isElemental(attacker.getEntity())) {
             ElementalAttribute ea = EntityAPI.getElement(attacker.getEntity());
@@ -618,7 +621,8 @@ public class DamageAPI {
         damage *= (100 - Math.min(75, totalArmor)) / 100D;
         // elemental damage ignores 80% but add on resistance
         if (elementalDamage != 0) {
-            damage += (0.8 * elementalDamage) * ((double) (100 - elementalResistance)) / 100d;
+            //damage += (0.8 * elementalDamage) * ((double) (100 - elementalResistance)) / 100d;
+            damage += 0.8 * elementalDamage;
         }
         //  ARMOR BONUS  //
         if (defender.getEntity().hasMetadata("armorBonus"))
