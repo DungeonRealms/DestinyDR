@@ -4,7 +4,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-
+import net.dungeonrealms.game.command.AccountInfo;
 import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +26,7 @@ public class CommandInvsee extends BaseCommand {
         super("invsee", "/<command> <player>", "View a player's inventory.", Collections.singletonList("mis"));
     }
 
-    public static Map<UUID, UUID> offline_inv_watchers = new HashMap<>();
+    public static Map<UUID, AccountInfo> offline_inv_watchers = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
@@ -45,7 +45,7 @@ public class CommandInvsee extends BaseCommand {
             sender.openInventory(Bukkit.getPlayer(playerName).getInventory());
         } else {
 
-            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
+            SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, uuid -> {
                         if (uuid == null) {
                             sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
                             return;
@@ -59,15 +59,15 @@ public class CommandInvsee extends BaseCommand {
 
                         new CharacterSelectionGUI(sender, accountID, (charID) -> {
 
-                            PlayerWrapper.getPlayerWrapper(uuid, charID,false, false, (wrapper) -> {
+                            PlayerWrapper.getPlayerWrapper(uuid, charID, false, false, (wrapper) -> {
                                 if (wrapper == null || wrapper.getPendingInventory() == null) {
                                     sender.sendMessage(ChatColor.RED + "An error occurred.");
                                     return;
                                 }
                                 sender.openInventory(wrapper.getPendingInventory());
-                                offline_inv_watchers.put(sender.getUniqueId(), uuid);
+                                offline_inv_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID));
                             });
-                        }).open(sender,null);
+                        }).open(sender, null);
                     }
             );
         }

@@ -28,6 +28,7 @@ public enum QueryType {
     INCREMENT_GEMS_EARNED("UPDATE statistics SET gems_earned = gems_earned + '%s' WHERE character_id = '%s';"),
     UNBAN_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'ban';"),
     UPDATE_ARMOR("UPDATE characters SET armour_storage = %s WHERE character_id = %s;"),
+    UPDATE_INVENTORY("UPDATE characters SET inventory_storage = %s WHERE character_id = %s;"),
     UNMUTE_PLAYER("UPDATE punishments SET quashed = 1 WHERE account_id = '%s' AND type = 'mute';"),
     UPDATE_COLLECTION_BIN("UPDATE characters SET collection_storage = '%s' WHERE character_id = '%s';"),
     UPDATE_HEARTH_STONE("UPDATE characters SET currentHearthStone = %s WHERE characters.character_id = '%s';"),

@@ -1163,7 +1163,6 @@ public class PlayerWrapper {
     @SneakyThrows
     private void loadPlayerPendingEquipment(ResultSet set) {
         this.pendingArmorString = set.getString("characters.armour_storage");
-        System.out.println("loading " + this.pendingArmorString + " from " + getCharacterID());
         if (pendingArmorString != null && pendingArmorString.length() > 0 && !pendingArmorString.equalsIgnoreCase("null")) {
             pendingArmor = ItemSerialization.fromString(pendingArmorString, 9);
         }

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
-public class ArmorSee {
+public class AccountInfo {
 
     private UUID uuid;
     private int characterID;

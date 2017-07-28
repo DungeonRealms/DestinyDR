@@ -5,7 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.command.ArmorSee;
+import net.dungeonrealms.game.command.AccountInfo;
 import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +29,7 @@ public class CommandArmorsee extends BaseCommand {
         super("armorsee", "/<command> <player>", "View a player's armor inventory.", Collections.singletonList("mas"));
     }
 
-    public static Map<UUID, ArmorSee> offline_armor_watchers = new HashMap<>();
+    public static Map<UUID, AccountInfo> offline_armor_watchers = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
@@ -79,7 +79,7 @@ public class CommandArmorsee extends BaseCommand {
 
                         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             sender.openInventory(wrapper.getPendingArmor());
-                            offline_armor_watchers.put(sender.getUniqueId(), new ArmorSee(uuid, charID));
+                            offline_armor_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID));
                         });
                     });
                 }).open(sender, null);

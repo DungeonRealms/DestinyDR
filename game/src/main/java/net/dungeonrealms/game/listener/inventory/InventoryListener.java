@@ -6,7 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-import net.dungeonrealms.game.command.ArmorSee;
+import net.dungeonrealms.game.command.AccountInfo;
 import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
@@ -178,46 +178,41 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
-        if (!CommandInvsee.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
-        if (event.getInventory().getName().contains("'s Offline Inventory View")) {
-            UUID target = CommandInvsee.offline_inv_watchers.get(event.getPlayer().getUniqueId());
+//        if (event.getInventory().getName().contains("'s Offline Inventory View")) {
+        AccountInfo target = CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
+        if (target == null) return;
+        Player viewer = (Player) event.getPlayer();
+        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(),false, true, (wrapper) -> {
+            if (wrapper == null) {
+                viewer.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
+                return;
+            }
 
-            Player viewer = (Player) event.getPlayer();
-            String inventory = ItemSerialization.toString(event.getInventory());
-            PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
-                if (wrapper == null) {
-                    viewer.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
-                    return;
+            if (wrapper.isPlaying()) {
+                viewer.sendMessage(ChatColor.RED + "This player is currently logged in! Your change has not been made!");
+                return;
+            }
+
+            wrapper.executeUpdate(QueryType.UPDATE_INVENTORY, e -> {
+                if (e != null && e == 1) {
+                    viewer.sendMessage(ChatColor.GREEN + "Sucessfully saved " + ChatColor.YELLOW + wrapper.getUsername() + "'s " + ChatColor.GREEN + " Offline inventory!");
+                } else {
+                    viewer.sendMessage(ChatColor.RED + "Could not save your changes! An error occurred");
                 }
+            }, wrapper.getPendingInventory());
 
-                if (wrapper.isPlaying()) {
-                    viewer.sendMessage(ChatColor.RED + "This player is currently logged in! Your change has not been made!");
-                    return;
-                }
-
-                wrapper.setPendingInventoryString(inventory);
-                wrapper.saveData(true, null, (wrappa) -> {
-                    if (wrappa != null) {
-                        viewer.sendMessage(ChatColor.GREEN + "Sucessfully saved " + ChatColor.YELLOW + wrappa.getUsername() + "'s " + ChatColor.GREEN + " inventory!");
-                    } else {
-                        viewer.sendMessage(ChatColor.RED + "Could not save your changes! An error occurred");
-                    }
-                });
-            });
-        }
-
-        CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onArmorSeeClose(InventoryCloseEvent event) {
 
-        ArmorSee target = CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
+        AccountInfo target = CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
         if (target == null) return;
         if (!(event.getPlayer() instanceof Player)) return;
         Player viewer = (Player) event.getPlayer();
-        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(),false, true, (wrapper) -> {
+        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(), false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {
                 viewer.sendMessage(ChatColor.RED + "This player is currently logged in! We could not save your changes!");
                 return;
