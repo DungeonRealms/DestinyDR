@@ -25,12 +25,12 @@ public class VoteCrate extends Crate {
         //rand = random.nextInt(64);
         //if(getOpeningPlayer().getName().equalsIgnoreCase("ingot")) rand = 390;
         //1/50k
-        if(rand <= 2)  {
+        if(rand == 2)  {
             rewardTier = INSANE_REWARD;
             return getInsaneReward();
         }
         //1/25k
-        if(rand <= 5) {
+        if(rand <= 3) {
             rewardTier = VERY_RARE_REWARD;
             return getVeryRareReward();
         }
@@ -40,7 +40,7 @@ public class VoteCrate extends Crate {
             return getRareReward();
         }
         //1/1k
-        if(rand <= 400) {
+        if(rand <= 300) {
             rewardTier = UNCOMMON_REWARD;
             return getUncommonReward();
         }
