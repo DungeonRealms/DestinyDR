@@ -25,6 +25,9 @@ public enum Trinket {
     FISH_SCALER(Item.ItemRarity.UNCOMMON, null, new AbstractTrinketData("Cleans fish of any effects"), 10),
     FISH_DAY_SUCCESS(Item.ItemRarity.UNCOMMON, null, "the Sun", new AbstractTrinketData("Better Fishing during Daylight"), 10),
     FISH_NIGHT_SUCCESS(Item.ItemRarity.COMMON, null, "the Moon", new AbstractTrinketData("Better Fishing during the Night"), 20),
+    FISH_HP_FISH(Item.ItemRarity.RARE, null, "Healing", new AbstractTrinketData("Increase HP fish caught by 10%"), 3),
+    FISH_SPEED_FISH(Item.ItemRarity.RARE, null, "Haste", new AbstractTrinketData("Increase speed fish caught by 10%"), 3),
+    FISH_ONE_TYPE(Item.ItemRarity.RARE, null, "Scrupulous", new AbstractTrinketData("Only fish one type of fish"), 3),
 
 
     NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 1),

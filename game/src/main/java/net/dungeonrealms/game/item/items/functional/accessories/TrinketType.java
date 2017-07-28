@@ -26,7 +26,10 @@ public enum TrinketType {
                     Trinket.FISH_TREASURE_FIND,
                     Trinket.FISH_SCALER,
                     Trinket.FISH_DAY_SUCCESS,
-                    Trinket.FISH_NIGHT_SUCCESS)),
+                    Trinket.FISH_NIGHT_SUCCESS,
+                    Trinket.FISH_HP_FISH,
+                    Trinket.FISH_SPEED_FISH,
+                    Trinket.FISH_ONE_TYPE)),
     MINING_GLOVE("Mining Glove",
             new MaterialData(Material.COAL, (byte) 5), ChatColor.GREEN,
             Lists.newArrayList(
