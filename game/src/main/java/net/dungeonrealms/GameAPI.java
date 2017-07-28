@@ -35,6 +35,7 @@ import net.dungeonrealms.game.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.achievements.Achievements.EnumRankAchievement;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.donation.Buff;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.EnergyHandler;
@@ -90,6 +91,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -1122,6 +1124,14 @@ public class GameAPI {
             HealthHandler.handleLogin(player);
             PlayerManager.checkInventory(player);
         }, 5);
+
+        Buff buff = DonationEffects.getInstance().getWeekendBuff();
+        if (buff != null) {
+            player.sendMessage("");
+            Utils.sendCenteredMessage(player, ChatColor.GOLD.toString() + ChatColor.BOLD + "+50% " + StringUtils.capitaliseAllWords(buff.getType().name()) + " XP Weekend " + ChatColor.GOLD + "is currently active!");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 4, .8F);
+            player.sendMessage("");
+        }
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> sendStatNotification(player), 100);
 

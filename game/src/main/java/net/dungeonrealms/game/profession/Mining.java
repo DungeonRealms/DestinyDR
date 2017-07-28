@@ -5,6 +5,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.donation.Buff;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
 import net.dungeonrealms.game.item.items.core.AuraType;
 import net.dungeonrealms.game.item.items.core.ItemPickaxe;
@@ -17,6 +19,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -182,6 +185,20 @@ public class Mining implements GenericMechanic, Listener {
                     .toString() + ChatColor.BOLD + "PROF. AURA >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
                     + "+" + ChatColor.YELLOW + Math.round(xpToAdd) + ChatColor.BOLD + " EXP " +
                     ChatColor.GRAY + "[" + pickaxe.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pickaxe.getNeededXP() + " EXP]");
+        }
+
+        if (xpGain > 0) {
+            Buff active = DonationEffects.getInstance().getWeekendBuff();
+            if (active != null && active.getType() == EnumBuff.PROFESSION) {
+                double toGive = xpGain * (active.getBonusAmount() * 0.01);
+                if (toGive > 0) {
+                    pickaxe.addExperience(p, (int) toGive, false);
+                    pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + "    " + ChatColor.GOLD
+                            .toString() + ChatColor.BOLD + (int) active.getBonusAmount() + "% XP WEEKEND >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                            + "+" + ChatColor.YELLOW + Math.round(toGive) + ChatColor.BOLD + " EXP " +
+                            ChatColor.GRAY + "[" + pickaxe.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pickaxe.getNeededXP() + " EXP]");
+                }
+            }
         }
 
         boolean hasPickaxe = pickaxe.updateItem(p, false);

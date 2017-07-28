@@ -32,6 +32,9 @@ public class DonationEffects implements GenericMechanic {
     private Map<EnumBuff, LinkedList<Buff>> buffMap = new HashMap<>();
     private static String buffDelimeter = "@#$%";
 
+    @Getter
+    private Buff weekendBuff = new Buff(EnumBuff.PROFESSION, 60 * 60 * 24 * 3, 50, "Double XP Weekend", "US-1");
+
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.CATHOLICS;

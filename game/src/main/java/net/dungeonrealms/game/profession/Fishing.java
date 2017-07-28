@@ -7,6 +7,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.command.moderation.CommandFishing;
+import net.dungeonrealms.game.donation.Buff;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.CosmeticOverrides;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.AuraType;
@@ -22,6 +24,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
@@ -441,8 +444,10 @@ public class Fishing implements GenericMechanic, Listener {
                 FishingTier fTier = FishingTier.getByTier(spotTier);
                 boolean hasOneTypeTrinket = Trinket.hasActiveTrinket(pl, Trinket.FISH_ONE_TYPE);
                 ItemFish fishItem = new ItemFish(fTier, hasOneTypeTrinket ? EnumFish.getFishType(fTier.getTier()) : EnumFish.getRandomFish(fTier.getTier()));
-                if(Trinket.hasActiveTrinket(pl, Trinket.FISH_HP_FISH) && ThreadLocalRandom.current().nextInt(10) == 5) fishItem.setFishBuff(new FishHealBuff(fTier));
-                else if(Trinket.hasActiveTrinket(pl, Trinket.FISH_SPEED_FISH) && ThreadLocalRandom.current().nextInt(10) == 5) fishItem.setFishBuff(new FishSpeedBuff(fTier));
+                if (Trinket.hasActiveTrinket(pl, Trinket.FISH_HP_FISH) && ThreadLocalRandom.current().nextInt(10) == 5)
+                    fishItem.setFishBuff(new FishHealBuff(fTier));
+                else if (Trinket.hasActiveTrinket(pl, Trinket.FISH_SPEED_FISH) && ThreadLocalRandom.current().nextInt(10) == 5)
+                    fishItem.setFishBuff(new FishSpeedBuff(fTier));
                 ItemStack fish = fishItem.generateItem();
                 int fishDrop = 1;
 
@@ -465,11 +470,25 @@ public class Fishing implements GenericMechanic, Listener {
                                 + "+" + ChatColor.YELLOW + Math.round(xpToAdd) + ChatColor.BOLD + " EXP " +
                                 ChatColor.GRAY + "[" + pole.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pole.getNeededXP() + " EXP]");
                     }
+
+                    if (exp > 0) {
+                        Buff active = DonationEffects.getInstance().getWeekendBuff();
+                        if (active != null && active.getType() == EnumBuff.PROFESSION) {
+                            double toGive = exp * (active.getBonusAmount() * 0.01);
+                            if (toGive > 0) {
+                                pole.addExperience(pl, (int) toGive, false);
+                                pw.sendDebug(ChatColor.YELLOW.toString() + ChatColor.BOLD + " " + ChatColor.GOLD
+                                        .toString() + ChatColor.BOLD + (int) active.getBonusAmount() + "% XP WEEKEND >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                                        + "+" + ChatColor.YELLOW + Math.round(toGive) + ChatColor.BOLD + " EXP " +
+                                        ChatColor.GRAY + "[" + pole.getXP() + ChatColor.BOLD + "/" + ChatColor.GRAY + pole.getNeededXP() + " EXP]");
+                            }
+                        }
+                    }
                 }
 
                 boolean hasPoleStill = pole.updateItem(pl, false);
 
-                if(!hasPoleStill){
+                if (!hasPoleStill) {
                     pl.sendMessage(ChatColor.RED + "It seems your Fishing Rod has disappeared?");
                     return;
                 }

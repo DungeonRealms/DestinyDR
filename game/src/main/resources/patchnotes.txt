@@ -1,11 +1,10 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0+50% PROF. EXP<h>&a&lWhats this?,,&7Enjoy &a&l+50% Profession EXP &7this weekend!</h>
  &l* &0Fishing<h>&a&lWhat changed?,,&73 new fishing trinkets have been added!,,&7Lure of Healing - Increase HP fish caught by 10%,&7Lure of Haste - Increase speed fish caught by 10%,&7Lure of Scrupulous - Only fish one type of fish</h>
- &l* &0Combat Logging<h>&a&lWhat changed?,,&7Combat logging lawful no longer drops your trinket</h>
+ &l* &0Combat Logging<h>&a&lWhat changed?,,&7Combat logging lawful no longer drops your trinket,&7Your armor now takes durability when combat logging,&7Combat logging is now treated the same as a death</h>
  &l* &0Vitality<h>&a&lWhat changed?,,&7Vitality now gives % HP regen instead of flat HP regen</h>
- &l* &0Combat Logging<h>&a&lWhat changed?,,&7Your armor now takes durability when combat logging</h>
- &l* &0Combat Logging<h>&a&lWhat changed?,,&7Combat logging is now treated the same as a death</h>
  &l* &0Dry Streaks<h>&a&lWhat changed?,,&7Dry streaks were completely redesigned to prevent,&7selective farming</h>
  &l* &0Infernal Abyss<h>&a&lWhat changed?,,&7You now get more portal key shards upon completion</h>
  &l* &0Realm Block Shop<h>&a&lWhat changed?,,&7Redstone expansion items have been added,&7to the shop!</h>
