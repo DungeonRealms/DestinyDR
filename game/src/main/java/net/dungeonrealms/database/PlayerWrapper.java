@@ -1163,6 +1163,7 @@ public class PlayerWrapper {
     @SneakyThrows
     private void loadPlayerPendingEquipment(ResultSet set) {
         this.pendingArmorString = set.getString("characters.armour_storage");
+        System.out.println("loading " + this.pendingArmorString + " from " + getCharacterID());
         if (pendingArmorString != null && pendingArmorString.length() > 0 && !pendingArmorString.equalsIgnoreCase("null")) {
             pendingArmor = ItemSerialization.fromString(pendingArmorString, 9);
         }
@@ -1447,7 +1448,8 @@ public class PlayerWrapper {
         Inventory toSave = Bukkit.createInventory(null, 9);
         for (int index = 0; index < 5; index++) {
             ItemStack equipment = inv.getContents()[index];
-            toSave.getContents()[index] = equipment;
+            toSave.setItem(index, equipment);
+//            toSave.getContents()[index] = equipment;
             if (equipment != null && equipment.getType() != Material.AIR) {
                 itemsSaved++;
             }

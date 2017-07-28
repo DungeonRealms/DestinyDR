@@ -1,10 +1,11 @@
 package net.dungeonrealms.game.command.moderation;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
-
+import net.dungeonrealms.game.command.ArmorSee;
 import net.dungeonrealms.game.player.inventory.menus.guis.support.CharacterSelectionGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,7 +29,7 @@ public class CommandArmorsee extends BaseCommand {
         super("armorsee", "/<command> <player>", "View a player's armor inventory.", Collections.singletonList("mas"));
     }
 
-    public static Map<UUID, UUID> offline_armor_watchers = new HashMap<>();
+    public static Map<UUID, ArmorSee> offline_armor_watchers = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
@@ -53,34 +54,35 @@ public class CommandArmorsee extends BaseCommand {
             }
             inv.setItem(8, player.getEquipment().getItemInMainHand());
             sender.openInventory(inv);
-        }
-        else {
+        } else {
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, (uuid) -> {
-                if(uuid == null) {
+                if (uuid == null) {
                     sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                     return;
                 }
                 Integer accountID = SQLDatabaseAPI.getInstance().getAccountIdFromUUID(uuid);
 
-                if(accountID == null) {
+                if (accountID == null) {
                     sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                     return;
                 }
                 new CharacterSelectionGUI(player, accountID, (charID) -> {
-                    PlayerWrapper.getPlayerWrapper(uuid,charID, false, false, (wrapper) -> {
-                        if(wrapper == null) {
+                    PlayerWrapper.getPlayerWrapper(uuid, charID, false, false, (wrapper) -> {
+                        if (wrapper == null) {
                             return;
                         }
 
-                        if(wrapper.getPendingArmor() == null) {
+                        if (wrapper.getPendingArmor() == null) {
                             sender.sendMessage(ChatColor.GREEN + "This player is not wearing any armor!");
                             return;
                         }
-                        sender.openInventory(wrapper.getPendingArmor());
-                        offline_armor_watchers.put(sender.getUniqueId(), uuid);
 
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                            sender.openInventory(wrapper.getPendingArmor());
+                            offline_armor_watchers.put(sender.getUniqueId(), new ArmorSee(uuid, charID));
+                        });
                     });
-                }).open(player,null);
+                }).open(sender, null);
             });
 
         }

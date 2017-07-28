@@ -3,8 +3,10 @@ package net.dungeonrealms.game.listener.inventory;
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.command.ArmorSee;
 import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
@@ -210,23 +212,23 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onArmorSeeClose(InventoryCloseEvent event) {
-        if (!CommandArmorsee.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
-        UUID target = CommandArmorsee.offline_armor_watchers.get(event.getPlayer().getUniqueId());
+        ArmorSee target = CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
+        if (target == null) return;
         if (!(event.getPlayer() instanceof Player)) return;
         Player viewer = (Player) event.getPlayer();
-        PlayerWrapper.getPlayerWrapper(target, false, true, (wrapper) -> {
+        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(),false, true, (wrapper) -> {
             if (wrapper.isPlaying()) {
                 viewer.sendMessage(ChatColor.RED + "This player is currently logged in! We could not save your changes!");
                 return;
             }
-
             String toSave = wrapper.getEquipmentString(event.getInventory());
             wrapper.setPendingArmorString(toSave);
-            wrapper.saveData(true, null, null);
-        });
+            wrapper.executeUpdate(QueryType.UPDATE_ARMOR, cb -> {
+                event.getPlayer().sendMessage(ChatColor.RED + "Armor saved for Char: " + target.getCharacterID());
+            }, toSave, target.getCharacterID());
 
-        CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
