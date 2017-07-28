@@ -183,7 +183,7 @@ public class InventoryListener implements Listener {
         AccountInfo target = CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
         if (target == null) return;
         Player viewer = (Player) event.getPlayer();
-        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(),false, true, (wrapper) -> {
+        PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(), false, true, (wrapper) -> {
             if (wrapper == null) {
                 viewer.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
                 return;
@@ -200,7 +200,7 @@ public class InventoryListener implements Listener {
                 } else {
                     viewer.sendMessage(ChatColor.RED + "Could not save your changes! An error occurred");
                 }
-            }, wrapper.getPendingInventory());
+            }, ItemSerialization.toString(wrapper.getPendingInventory()), target.getCharacterID());
 
         });
     }
