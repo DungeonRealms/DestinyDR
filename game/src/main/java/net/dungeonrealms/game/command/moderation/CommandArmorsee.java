@@ -79,7 +79,7 @@ public class CommandArmorsee extends BaseCommand {
 
                         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             sender.openInventory(wrapper.getPendingArmor());
-                            offline_armor_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID));
+                            offline_armor_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID, true));
                         });
                     });
                 }).open(sender, null);

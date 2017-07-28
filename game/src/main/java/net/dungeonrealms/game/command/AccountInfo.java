@@ -11,5 +11,7 @@ public class AccountInfo {
 
     private UUID uuid;
     private int characterID;
+
+    private boolean editMode;
 }
 

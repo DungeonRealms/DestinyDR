@@ -183,9 +183,16 @@ public class InventoryListener implements Listener {
         AccountInfo target = CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
         if (target == null) return;
         Player viewer = (Player) event.getPlayer();
+
+        String cached = ItemSerialization.toString(event.getInventory());
         PlayerWrapper.getPlayerWrapper(target.getUuid(), target.getCharacterID(), false, true, (wrapper) -> {
             if (wrapper == null) {
                 viewer.sendMessage(ChatColor.RED + "Something went wrong while loading the data!");
+                return;
+            }
+
+            if (!target.isEditMode()) {
+                viewer.sendMessage(ChatColor.RED + "Edit (-e) mode not enabled, no changes have been saved.");
                 return;
             }
 
@@ -196,11 +203,11 @@ public class InventoryListener implements Listener {
 
             wrapper.executeUpdate(QueryType.UPDATE_INVENTORY, e -> {
                 if (e != null && e == 1) {
-                    viewer.sendMessage(ChatColor.GREEN + "Sucessfully saved " + ChatColor.YELLOW + wrapper.getUsername() + "'s " + ChatColor.GREEN + " Offline inventory!");
+                    viewer.sendMessage(ChatColor.GREEN + "Sucessfully saved " + ChatColor.YELLOW + wrapper.getUsername() + "'s" + ChatColor.GREEN + " Offline inventory!");
                 } else {
                     viewer.sendMessage(ChatColor.RED + "Could not save your changes! An error occurred");
                 }
-            }, ItemSerialization.toString(wrapper.getPendingInventory()), target.getCharacterID());
+            }, cached, target.getCharacterID());
 
         });
     }

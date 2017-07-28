@@ -45,6 +45,7 @@ public class CommandInvsee extends BaseCommand {
             sender.openInventory(Bukkit.getPlayer(playerName).getInventory());
         } else {
 
+            boolean editMode = args.length == 2 && (args[1].equalsIgnoreCase("edit") || args[1].equalsIgnoreCase("-e"));
             SQLDatabaseAPI.getInstance().getUUIDFromName(playerName, false, uuid -> {
                         if (uuid == null) {
                             sender.sendMessage(ChatColor.RED + "This player has never logged into Dungeon Realms");
@@ -65,7 +66,7 @@ public class CommandInvsee extends BaseCommand {
                                     return;
                                 }
                                 sender.openInventory(wrapper.getPendingInventory());
-                                offline_inv_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID));
+                                offline_inv_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID, editMode));
                             });
                         }).open(sender, null);
                     }
