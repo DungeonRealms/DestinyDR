@@ -224,6 +224,12 @@ public class InventoryListener implements Listener {
                 viewer.sendMessage(ChatColor.RED + "This player is currently logged in! We could not save your changes!");
                 return;
             }
+
+            if (!target.isEditMode()) {
+                viewer.sendMessage(ChatColor.RED + "Armor not saved due to (-edit) not being provided.");
+                return;
+            }
+
             String toSave = wrapper.getEquipmentString(event.getInventory());
             wrapper.setPendingArmorString(toSave);
             wrapper.executeUpdate(QueryType.UPDATE_ARMOR, cb -> {

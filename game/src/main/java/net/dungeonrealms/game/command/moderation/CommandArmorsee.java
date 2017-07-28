@@ -43,6 +43,7 @@ public class CommandArmorsee extends BaseCommand {
             return true;
         }
 
+        boolean edit = args.length == 2 && (args[1].equalsIgnoreCase("-edit") || args[1].equalsIgnoreCase("-e"));
         String playerName = args[0];
         Player player = Bukkit.getPlayer(playerName);
         if (player != null) {
@@ -79,7 +80,7 @@ public class CommandArmorsee extends BaseCommand {
 
                         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             sender.openInventory(wrapper.getPendingArmor());
-                            offline_armor_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID, true));
+                            offline_armor_watchers.put(sender.getUniqueId(), new AccountInfo(uuid, charID, edit));
                         });
                     });
                 }).open(sender, null);
