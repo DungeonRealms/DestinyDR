@@ -1,6 +1,7 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Sales Manager will now spawn in Cyrennica Bank.,&7* Fixed Trade Bug,&7* Party Leader will now be reselected when the Leader leaves,&7* Hearthstone always taking you to Cyren,&7* Fixed Staff bug in PVP,&7* Armor attributes are now calculated properly in PvP.</h>
  &l* &0+50% PROF. EXP<h>&a&lWhats this?,,&7Enjoy &a&l+50% Profession EXP &7this weekend!</h>
  &l* &0Fishing<h>&a&lWhat changed?,,&73 new fishing trinkets have been added!,,&7Lure of Healing - Increase HP fish caught by 10%,&7Lure of Haste - Increase speed fish caught by 10%,&7Lure of Scrupulous - Only fish one type of fish</h>
  &l* &0Combat Logging<h>&a&lWhat changed?,,&7Combat logging lawful no longer drops your trinket,&7Your armor now takes durability when combat logging,&7Combat logging is now treated the same as a death</h>
@@ -21,7 +22,6 @@ Build <build>
  &l* &0Dungeons<h>&a&lWhat changed?,,&7Dungeons now have a cooldown between runs,&7Dungeon gear is no longer soulbound</h>
  &l* &0Shard Hop<h>&a&lWhat changed?,,&7Shard hopping in non safe zones is only a 30 second cooldown</h>
  &l* &0Neutral Drops<h>&a&lWhat changed?,,&7You now have a 50% chance to drop your weapon!,,&7and a 25% chance to drop 1 piece of armor</h>
- &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Fixed Trade Bug,&7* Party Leader will now be reselected when the Leader leaves,&7* Hearthstone always taking you to Cyren,&7* Fixed Staff bug in PVP,&7* Armor attributes are now calculated properly in PvP.</h>
  &l* &0Durability<h>&a&lWhat changed?,,&7You no longer take durability on your armor in PvP!</h>
  &l* &0Org of Alteration<h>&a&lWhat changed?,,&7Orbing armor no longer changes Armor to DPS!</h>
  &l* &0Ice Damage<h>&a&lWhat changed?,,&7Ice Damage now only applies Slow I regardless of tier!</h>

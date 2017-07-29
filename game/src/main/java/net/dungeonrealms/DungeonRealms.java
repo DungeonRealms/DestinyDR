@@ -240,6 +240,7 @@ public class DungeonRealms extends JavaPlugin {
 
         Utils.log.info("DungeonRealms - Loading Mechanics");
 
+        MechanicManager.registerMechanic(new CustomNPCManager());
         MechanicManager.registerMechanic(NetworkClientListener.getInstance());
         MechanicManager.registerMechanic(DungeonManager.getInstance());
         MechanicManager.registerMechanic(AntiDuplication.getInstance());
