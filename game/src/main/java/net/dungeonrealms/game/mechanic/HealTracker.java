@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mechanic;
 
 import lombok.Getter;
 import net.dungeonrealms.common.game.util.ChatColor;
+import net.dungeonrealms.game.mastery.RomanNumeralUtils;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
@@ -38,7 +39,7 @@ public class HealTracker {
             if (secondsLeft < .1) secondsLeft = .1;
             String time = format.format(secondsLeft) + "s";
 
-            return ChatColor.RED + "Potion Sickness " + getRomanNumeral(sicknessLevel) + " (" + time + ") " + ChatColor.BOLD + "-" + (int) ((1 - getHealMultiplier()) * 100) + "% Healing";
+            return ChatColor.RED + "Healing Sickness " + getRomanNumeral(sicknessLevel) + " (" + time + ") " + ChatColor.BOLD + "-" + (int) ((1 - getHealMultiplier()) * 100) + "% Healing";
         }
 
         return null;
@@ -46,11 +47,12 @@ public class HealTracker {
 
 
     public double getHealMultiplier() {
-        return sicknessLevel == 1 ? .75D : sicknessLevel == 2 ? .6D : sicknessLevel == 3 ? .5D : .3D;
+        return sicknessLevel == 1 ? .75D : sicknessLevel == 2 ? .6D : sicknessLevel == 3 ? .5D : sicknessLevel == 4 ? .25 : sicknessLevel >= 10 ? .2 : .25D;
     }
 
     private String getRomanNumeral(int num) {
-        return num == 1 ? "I" : num == 2 ? "II" : num == 3 ? "III" : num == 4 ? "IV" : String.valueOf(num);
+        return RomanNumeralUtils.numeralOf(num);
+//        return num == 1 ? "I" : num == 2 ? "II" : num == 3 ? "III" : num == 4 ? "IV" : String.valueOf(num);
     }
 
     public boolean isOnCooldown() {

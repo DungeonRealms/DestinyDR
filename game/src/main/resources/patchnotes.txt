@@ -1,6 +1,7 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0HP Fish<h>&a&lWhat changed?,,&7HP Fish will now trigger Healing Sickness,&7when consumed while atleast neutral.</h>
  &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Sales Manager will now spawn in Cyrennica Bank.,&7* Fixed Trade Bug,&7* Party Leader will now be reselected when the Leader leaves,&7* Hearthstone always taking you to Cyren,&7* Fixed Staff bug in PVP,&7* Armor attributes are now calculated properly in PvP.</h>
  &l* &0+50% PROF. EXP<h>&a&lWhats this?,,&7Enjoy &a&l+50% Profession EXP &7this weekend!</h>
  &l* &0Fishing<h>&a&lWhat changed?,,&73 new fishing trinkets have been added!,,&7Lure of Healing - Increase HP fish caught by 10%,&7Lure of Haste - Increase speed fish caught by 10%,&7Lure of Scrupulous - Only fish one type of fish</h>
