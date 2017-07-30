@@ -72,7 +72,7 @@ public class ItemGlobalMessager extends FunctionalItem implements ItemClickListe
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Alert");
-            out.writeUTF(" \n" + ChatColor.GOLD + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + pw.getChatName() + ChatColor.GOLD + fixedMessage + "\n ");
+            out.writeUTF(" \n" + ChatColor.GOLD + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + pw.getChatName() + ChatColor.GOLD + " " + fixedMessage + "\n ");
 
             player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
         }, p -> {
