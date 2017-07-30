@@ -31,6 +31,12 @@ public class IceLord extends DRGolem implements DRMonster {
     }
 
     @Override
+    protected void initAttributes() {
+        super.initAttributes();
+        getAttributeInstance(GenericAttributes.c).setValue(1);
+    }
+
+    @Override
     protected void r() {
         this.goalSelector.a(1, new PathfinderGoalMeleeAttackWell(this, 1.1D, false));
         this.goalSelector.a(2, new PathfinderGoalMoveTowardsTarget(this, 1.2D, 32.0F));

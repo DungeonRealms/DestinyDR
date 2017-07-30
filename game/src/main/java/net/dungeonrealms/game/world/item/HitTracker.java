@@ -10,19 +10,25 @@ import java.util.UUID;
 public class HitTracker extends HashMap<UUID, HitTracker.TargetHitTracker> {
 
     public int trackHit(Player damaged) {
-        TargetHitTracker tracker = computeIfAbsent(damaged.getUniqueId(), m -> new TargetHitTracker());
+        TargetHitTracker tracker = computeIfAbsent(damaged.getUniqueId(), m -> new TargetHitTracker(120));
         return tracker.trackHit();
     }
 
     @Getter
-    class TargetHitTracker {
+    public static class TargetHitTracker {
+
+        int delay;
+
+        public TargetHitTracker(int delay) {
+            this.delay = delay;
+        }
 
         private long lastHit;
         private int hitCounter = 0;
 
         public int trackHit() {
             //Withing 5 ticks?
-            if (System.currentTimeMillis() - this.lastHit <= 120)
+            if (System.currentTimeMillis() - this.lastHit <= delay)
                 this.hitCounter++;
             else
                 this.hitCounter = 1;

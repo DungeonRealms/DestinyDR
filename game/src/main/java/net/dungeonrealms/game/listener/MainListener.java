@@ -55,6 +55,8 @@ import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.shops.SoldShopItem;
+import net.dungeonrealms.game.world.spawning.MobSpawner;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
@@ -111,6 +113,7 @@ public class MainListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
         }
     }
+
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
@@ -968,6 +971,11 @@ public class MainListener implements Listener {
                     hadRiftMob = true;
                     continue;
                 }
+                MobSpawner spawner = SpawningMechanics.getMobSpawners().remove(ent.getUniqueId());
+                if (spawner != null && ent.isValid()) {
+                    spawner.setToRespawn(spawner.getToRespawn() + 1);
+                }
+                //Get spawner and set it to respawn?
                 ent.remove();
             }
         }

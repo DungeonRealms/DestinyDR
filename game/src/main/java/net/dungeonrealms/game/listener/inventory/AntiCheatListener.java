@@ -1,12 +1,95 @@
 package net.dungeonrealms.game.listener.inventory;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.checks.access.IViolationInfo;
+import fr.neatmonster.nocheatplus.hooks.NCPHook;
+import fr.neatmonster.nocheatplus.hooks.NCPHookManager;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.item.HitTracker;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-/**
- * Created by Alan Lu (dartaran) on 06-Jul-16.
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class AntiCheatListener implements Listener {
 
+    private Map<UUID, HitTracker.TargetHitTracker> tracker = new HashMap<>();
+
+    public AntiCheatListener() {
+        NCPHookManager.addHook(CheckType.MOVING_SURVIVALFLY, new NCPHook() {
+            @Override
+            public String getHookName() {
+                return "Survival Fly";
+            }
+
+            @Override
+            public String getHookVersion() {
+                return "1.9";
+            }
+
+            @Override
+            public boolean onCheckFailure(CheckType checkType, Player player, IViolationInfo iViolationInfo) {
+                if (checkType == CheckType.MOVING_SURVIVALFLY) {
+                    if (MetadataUtils.Metadata.LAST_KNOCKBACK.has(player)) {
+                        long kb = MetadataUtils.Metadata.LAST_KNOCKBACK.get(player).asLong();
+
+                        long timePassed = System.currentTimeMillis() - kb;
+                        //So its like 1s later?
+                        if (kb != -1 && timePassed <= 120) {
+                            Block bl = player.getLocation().getBlock();
+                            if (iViolationInfo.getAddedVl() <= 15 && bl.getType() == Material.AIR) {
+                                System.out.println("Cancelling TP back for " + player.getName() + " due to taking KB " + timePassed + "ms ago.");
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        NCPHookManager.addHook(CheckType.MOVING_VEHICLE_ENVELOPE, new NCPHook() {
+            @Override
+            public String getHookName() {
+                return "Horse Envelope";
+            }
+
+            @Override
+            public String getHookVersion() {
+                return "1.9";
+            }
+
+            @Override
+            public boolean onCheckFailure(CheckType checkType, Player player, IViolationInfo iViolationInfo) {
+                if (checkType == CheckType.MOVING_VEHICLE_ENVELOPE) {
+                    if (iViolationInfo.willCancel() && iViolationInfo.getAddedVl() <= 1.0 && player.getVehicle() != null && (player.getVehicle() instanceof Horse || player.getVehicle() instanceof Slime)) {
+                        HitTracker.TargetHitTracker trackers = tracker.computeIfAbsent(player.getUniqueId(), e -> new HitTracker.TargetHitTracker(2500));
+                        trackers.trackHit();
+                        if (trackers.getHitCounter() >= 5) {
+                            System.out.println("Counter for " + player.getName() + trackers.getHitCounter() + " Delay: " + trackers.getDelay());
+                            return false;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        MetadataUtils.Metadata.LAST_KNOCKBACK.remove(event.getPlayer());
+    }
     //THIS IS DISABLED WHILE I FIGURE OUT HOW TO BEST REMOVE ALL THE GLITCHED "method" ITEMS. PLEASE DON'T ENABLE AGAIN.
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {

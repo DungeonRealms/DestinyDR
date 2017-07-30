@@ -176,8 +176,9 @@ public class DungeonManager implements GenericMechanic {
             MobSpawner spawner = sp.clone();
             spawner.getSpawnedMonsters().clear();
             spawner.setFirstSpawn(true);
+            spawner.setDungeon(true);
             spawner.setCounter(0);
-            spawner.spawnArmorStand();
+//            spawner.spawnArmorStand();
 
             spawns.add(spawner);
 

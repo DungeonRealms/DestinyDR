@@ -63,6 +63,7 @@ public class MetadataUtils {
 		SHARD_TP(false),
 		PRICING(false), // Is a player already in a chat prompt to buy an item?
 		SUMMONING(-1),
+		LAST_KNOCKBACK(-1),
 		AUTO_FISHING(-1),
 		ACTIVE_HAT(""),
 		WORLD_CHANGE(-1),
@@ -84,6 +85,9 @@ public class MetadataUtils {
 		
 		// General
 		TIER(-1),
+
+		MIN_MOB_SCORE(-1),
+		MAX_MOB_SCORE(-1),
 
 		//Cooldowns
 		REALM_COOLDOWN(-1),

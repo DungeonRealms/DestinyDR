@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.world.item;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
@@ -80,10 +78,10 @@ public class DamageAPI {
             return;
         }
 
-        if(attacker != null && attacker.isPlayer()) {
+        if (attacker != null && attacker.isPlayer()) {
             if (DungeonManager.isDungeon(attacker.getPlayer().getWorld())) {
-            Block block = attacker.getPlayer().getLocation().getBlock();
-            if(block != null && block.getType().equals(Material.LADDER)) return;
+                Block block = attacker.getPlayer().getLocation().getBlock();
+                if (block != null && block.getType().equals(Material.LADDER)) return;
             }
         }
 
@@ -375,10 +373,10 @@ public class DamageAPI {
                 if (!attacker.getToggles().getState(Toggles.PVP)) {
                     if (entity instanceof Player) continue;
                 }
-                if(entity instanceof Player){
-                    Player other = (Player)entity;
+                if (entity instanceof Player) {
+                    Player other = (Player) entity;
                     //Dont do damage to party members.
-                    if(Affair.areInSameParty(other, attacker.getPlayer()))continue;
+                    if (Affair.areInSameParty(other, attacker.getPlayer())) continue;
                 }
             }
 
@@ -592,7 +590,7 @@ public class DamageAPI {
                 //double damageBoostReduction = eDamage * (defenderVitValue * 0.0004);
                 //eDamage -= damageBoostReduction;
                 double resist = 0.0;
-                if(ea.getResist() != null) {
+                if (ea.getResist() != null) {
                     resist = defender.getAttributes().getAttribute(ea.getResist()).getValue();
                     resist /= 100;
                 }
@@ -772,19 +770,20 @@ public class DamageAPI {
         // Get velocity unit vector:
         org.bukkit.util.Vector unitVector = damaged.getLocation().toVector().subtract(attacker.getLocation().toVector());
 
+        unitVector.setY(.15F);
+
         if (unitVector.length() > 0) unitVector.normalize();
 
 //        Bukkit.getLogger().info("Damaged Velocity: " + damaged.getVelocity().toString());
 //        Bukkit.getLogger().info("UnitVector Velocity: " + unitVector.toString());
 
-        HitTracker tracker = hitTrackerMap.computeIfAbsent(attacker.getUniqueId(), t -> new HitTracker());
-
-        int hitCounter = tracker.trackHit(damaged);
-        unitVector.setY(damaged.getVelocity().getY() + (hitCounter <= 1 ? .25 : hitCounter == 2 ? .15 : 0.05));
+//        HitTracker tracker = hitTrackerMap.computeIfAbsent(attacker.getUniqueId(), t -> new HitTracker());
+//
+//        int hitCounter = tracker.trackHit(damaged);
 
 //        Bukkit.getLogger().info("New Y: " + unitVector.getY() + " from " + hitCounter + " hits.");
-
-        EntityMechanics.setVelocity(damaged, unitVector.multiply(hitCounter >= 2 ? .35 : .45));
+        Metadata.LAST_KNOCKBACK.set(damaged, System.currentTimeMillis());
+        EntityMechanics.setVelocity(damaged, unitVector.multiply(.35));
     }
 
     public static void knockbackEntity(Entity p, Entity ent, double speed) {

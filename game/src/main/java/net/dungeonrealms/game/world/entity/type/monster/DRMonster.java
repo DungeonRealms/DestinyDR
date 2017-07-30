@@ -75,7 +75,13 @@ public interface DRMonster {
     }
 
     default void setupMonster(int tier) {
+        setupMonster(tier,-1,-1);
+    }
+
+    default void setupMonster(int tier, int minMobScore, int maxMobScore) {
         setTier(tier);
+        setMinMobScore(minMobScore);
+        setMaxMobScore(maxMobScore);
         setGear();
         setSkullTexture();
 
@@ -98,22 +104,40 @@ public interface DRMonster {
     }
 
     default void setGear() {
-        ItemStack[] armor = GameAPI.getTierArmor(getTier());
-        Random random = ThreadLocalRandom.current();
-        boolean forcePlace = false;
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         EntityEquipment e = getBukkit().getEquipment();
 
-        int chance = 6 + getTier();
+        int minMobScore = getMinMobScore();
+        int maxMobScore = getMaxMobScore();
+
 
         ItemStack[] entityArmor = e.getArmorContents();
-        for (int i = 0; i <= 2; i++) { //Chestplate, boots, leggings. No helmet.
-            if (forcePlace || getTier() >= 3 || random.nextInt(10) <= chance) {
+        if(minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
+            int piecesFromLower = 0;
+            for(int i = 0; i <= 2; i++) {
+                int tier = random.nextInt(minMobScore, maxMobScore + 1);
+                if(piecesFromLower >= 2) tier = maxMobScore;
+                if(tier <= 0) {
+                    piecesFromLower++;
+                    continue;
+                }
+                if(tier > 5) tier = 5;
+                ItemStack[] armor = GameAPI.getTierArmor(tier);
                 entityArmor[i] = armor[i];
+            }
+        } else {
+            ItemStack[] armor = GameAPI.getTierArmor(getTier());
+            int chance = 6 + getTier();
+            boolean forcePlace = false;
+            for (int i = 0; i <= 2; i++) { //Chestplate, boots, leggings. No helmet.
+                if (forcePlace || getTier() >= 3 || random.nextInt(10) <= chance) {
+                    entityArmor[i] = armor[i];
 
-                if (i == 1) //Reset force place for low tiers at leggings.
-                    forcePlace = false;
-            } else {
-                forcePlace = true;
+                    if (i == 1) //Reset force place for low tiers at leggings.
+                        forcePlace = false;
+                } else {
+                    forcePlace = true;
+                }
             }
         }
         e.setArmorContents(entityArmor);
@@ -142,6 +166,14 @@ public interface DRMonster {
     }
 
     default ItemStack makeItem(ItemGear gear) {
+        int minMobScore = getMinMobScore();
+        int maxMobScore = getMaxMobScore();
+        if(minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
+            int tier = ThreadLocalRandom.current().nextInt(minMobScore, maxMobScore + 1);
+            if (tier <= 0) tier = 1;
+            if (tier > 5) tier = 5;
+            return gear.setTier(ItemTier.getByTier(tier)).generateItem();
+        }
         return gear.setTier(ItemTier.getByTier(getTier())).generateItem();
     }
 
@@ -155,6 +187,23 @@ public interface DRMonster {
             getNMS().setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(helmet));
         }
     }
+
+    default void setMinMobScore(int tier) {
+        Metadata.MIN_MOB_SCORE.set(getBukkit(), tier);
+    }
+
+    default int getMinMobScore() {
+        return Metadata.MIN_MOB_SCORE.get(getBukkit()).asInt();
+    }
+
+    default void setMaxMobScore(int tier) {
+        Metadata.MAX_MOB_SCORE.set(getBukkit(), tier);
+    }
+
+    default int getMaxMobScore() {
+        return Metadata.MAX_MOB_SCORE.get(getBukkit()).asInt();
+    }
+
 
     default void setTier(int tier) {
         Metadata.TIER.set(getBukkit(), tier);

@@ -29,6 +29,12 @@ public class FireLord extends DRBlaze implements DRMonster {
     }
 
     @Override
+    protected void initAttributes() {
+        super.initAttributes();
+        getAttributeInstance(GenericAttributes.c).setValue(1);
+    }
+
+    @Override
     public ItemStack getWeapon() {
         return makeItem(new ItemWeapon(ItemType.SWORD));
     }

@@ -1,9 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles;
 
-import net.minecraft.server.v1_9_R2.DamageSource;
-import net.minecraft.server.v1_9_R2.EntitySmallFireball;
-import net.minecraft.server.v1_9_R2.MovingObjectPosition;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 
 public class CustomSmallFireball extends EntitySmallFireball implements CustomProjectileFireball {
@@ -19,6 +16,12 @@ public class CustomSmallFireball extends EntitySmallFireball implements CustomPr
         this.shooter = shooter.getHandle();
         this.projectileSource = shooter;
         setDirection(x, y, z);
+    }
+
+
+    public CustomSmallFireball(World world, EntityLiving entityliving, double d0, double d1, double d2) {
+        super(world, entityliving, d0, d1, d2);
+        this.setSize(0.3125F, 0.3125F);
     }
 
     @Override

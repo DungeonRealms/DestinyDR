@@ -5,12 +5,12 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.command.CommandSpawner;
 import net.dungeonrealms.game.command.moderation.CommandLootChest;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -18,7 +18,6 @@ import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 //TODO: Modularize this.
 public class ModerationListener implements Listener {
-	
+
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent event) {
         if (event.hasBlock() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -67,25 +66,25 @@ public class ModerationListener implements Listener {
                 promptSpawnerEdit(player, bk, true, false);
             }
         } else if (bk.getType().name().endsWith("_ORE") && player.hasMetadata("oreeedit")) {
-                Material mat = bk.getType();
-                if (!Mining.isPossibleOre(mat)) {
-                    player.sendMessage(ChatColor.RED + "This is not a valid minable ore type.");
-                    event.setCancelled(true);
-                    return;
-                }
-                
-                Location l = bk.getLocation();
-                Mining.addOre(l, mat);
-                player.sendMessage(ChatColor.GREEN + mat.name() + " ore registered at " + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
-                
+            Material mat = bk.getType();
+            if (!Mining.isPossibleOre(mat)) {
+                player.sendMessage(ChatColor.RED + "This is not a valid minable ore type.");
+                event.setCancelled(true);
+                return;
+            }
+
+            Location l = bk.getLocation();
+            Mining.addOre(l, mat);
+            player.sendMessage(ChatColor.GREEN + mat.name() + " ore registered at " + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
+
         } else if (event.getItemInHand() != null && event.getItemInHand().getType() == Material.WATER_LILY) {
             if (player.hasMetadata("fishEdit")) {
                 //Create a new fishing spot after prompting?
                 player.sendMessage(ChatColor.GREEN + "Please enter the tier of this fishing spot (1-5).");
-                
+
                 Chat.listenForNumber(player, 1, 5, tier -> {
-                	player.sendMessage(ChatColor.GREEN + "Created T" + tier + " fishing spot.");
-                	Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Fishing.addLocation(bk.getLocation(), tier));
+                    player.sendMessage(ChatColor.GREEN + "Created T" + tier + " fishing spot.");
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Fishing.addLocation(bk.getLocation(), tier));
                 }, cancel);
             }
         } else if (event.getBlockPlaced().getType() == Material.CHEST && player.hasMetadata("lootchestedit")) {
@@ -96,27 +95,27 @@ public class ModerationListener implements Listener {
             for (String table : LootManager.getLoot().keySet())
                 lootMessage.addHoverText(LootManager.getLoot().get(table).getFriendlyList(), ChatColor.YELLOW + table + ", ");
             lootMessage.sendToPlayer(player);
-            
+
             Chat.listenForMessage(player, e -> {
-            	String type = e.getMessage();
-            	if (type.contains("."))
-            		type = type.split("\\.")[0];
-            	
-            	if (!LootManager.getLoot().containsKey(type)) {
-            		player.sendMessage(ChatColor.RED + "Unknown loot table '" + type + "'.");
-            		cancel.run();
-            		return;
-            	}
-            	
-            	final String finalType = type;
-            	player.sendMessage(ChatColor.YELLOW + "Please enter the delay in seconds of how long it takes to respawn this chest.");
-            	Chat.listenForNumber(player, 0, 100000, n -> {
-            		LootSpawner s = new LootSpawner(bk.getLocation().add(0, 1, 0), n, finalType);
-            		LootManager.addSpawner(s);
+                String type = e.getMessage();
+                if (type.contains("."))
+                    type = type.split("\\.")[0];
+
+                if (!LootManager.getLoot().containsKey(type)) {
+                    player.sendMessage(ChatColor.RED + "Unknown loot table '" + type + "'.");
+                    cancel.run();
+                    return;
+                }
+
+                final String finalType = type;
+                player.sendMessage(ChatColor.YELLOW + "Please enter the delay in seconds of how long it takes to respawn this chest.");
+                Chat.listenForNumber(player, 0, 100000, n -> {
+                    LootSpawner s = new LootSpawner(bk.getLocation().add(0, 1, 0), n, finalType);
+                    LootManager.addSpawner(s);
                     CommandLootChest.createHologram(s);
                     player.sendMessage(ChatColor.RED + "Loot Chest created!");
-            	}, cancel);
-            	
+                }, cancel);
+
             }, cancel);
         }
     }
@@ -130,32 +129,32 @@ public class ModerationListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void spawnerBreakEvent(BlockBreakEvent e) {
         if (!GameAPI.isMainWorld(e.getBlock().getLocation()))
-        		return;
-        
+            return;
+
         Block block = e.getBlock();
         if (block.getType() == Material.MOB_SPAWNER) {
-        	new ArrayList<>(SpawningMechanics.getSpawners()).stream().filter(s -> isEqual(s.getLocation(), block.getLocation())).forEach(s -> {
-        		SpawningMechanics.remove(s);
+            new ArrayList<>(SpawningMechanics.getSpawners()).stream().filter(s -> isEqual(s.getLocation(), block.getLocation())).forEach(s -> {
+                SpawningMechanics.remove(s);
                 e.getPlayer().sendMessage(ChatColor.RED + "Spawner removed.");
                 Bukkit.getLogger().info("Removing spawner at " + s.getLocation().toString());
-        	});
+            });
         } else if (block.getType().name().endsWith("_ORE") && e.getPlayer().hasMetadata("oreedit")) {
-        	if (!Mining.isMineable(block))
-        		return;
-        	
-        	Mining.removeOre(block);
-        	e.getPlayer().sendMessage(ChatColor.RED + "Ore removed.");
+            if (!Mining.isMineable(block))
+                return;
+
+            Mining.removeOre(block);
+            e.getPlayer().sendMessage(ChatColor.RED + "Ore removed.");
         } else if (block.getType() == Material.WATER_LILY && e.getPlayer().hasMetadata("fishEdit")) {
-        	if (Fishing.getExactTier(block) == -1)
-        		return;
-        	
-        	Fishing.removeLocation(block);
-        	e.getPlayer().sendMessage(ChatColor.GREEN + "Fishing location removed.");
+            if (Fishing.getExactTier(block) == -1)
+                return;
+
+            Fishing.removeLocation(block);
+            e.getPlayer().sendMessage(ChatColor.GREEN + "Fishing location removed.");
         } else if (block.getType() == Material.CHEST && e.getPlayer().hasMetadata("lootchestedit")) {
             LootSpawner spawner = LootManager.getSpawner(block.getLocation());
             if (spawner == null)
-            	return;
-            
+                return;
+
             LootManager.removeSpawner(spawner);
             e.getPlayer().sendMessage(ChatColor.RED + "Loot Chest removed.");
         }
@@ -164,7 +163,7 @@ public class ModerationListener implements Listener {
     public static void promptSpawnerEdit(Player player, Block block, boolean deleteBlock, boolean checkIfExists) {
         player.sendMessage("");
         player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "SPAWNER SETUP STEP 1 / 2");
-        player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
+        player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the tier range min (-1 for none), the tier range max (-1 for none), the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
         player.sendMessage(ChatColor.GREEN + "EX: daemon false 4 high 120 1 1-4");
         if (checkIfExists)
             player.sendMessage(ChatColor.GREEN + "If you want to skip this step and go to step 2 instead type '2'");
@@ -186,7 +185,7 @@ public class ModerationListener implements Listener {
 
                     AtomicBoolean elite = new AtomicBoolean(false);
                     AtomicInteger tier = new AtomicInteger(0), min = new AtomicInteger(0), max = new AtomicInteger(0),
-                            delay = new AtomicInteger(0), spawnAmount = new AtomicInteger(0);
+                            delay = new AtomicInteger(0), spawnAmount = new AtomicInteger(0), minMobScore = new AtomicInteger(-1), maxMobScore = new AtomicInteger(-1);
                     String levelRange;
                     MobSpawner foundSpawner = null;
                     if (!forceStage2) {
@@ -196,9 +195,11 @@ public class ModerationListener implements Listener {
                         }
                         elite.set(Boolean.parseBoolean(args[1]));
                         tier.set(Integer.parseInt(args[2]));
-                        levelRange = args[3];
-                        delay.set(StringUtils.isNumeric(args[4]) ? Integer.parseInt(args[4]) : -1);
-                        spawnAmount.set(StringUtils.isNumeric(args[5]) ? Integer.parseInt(args[5]) : -1);
+                        minMobScore.set(Integer.parseInt(args[3]));
+                        maxMobScore.set(Integer.parseInt(args[4]));
+                        levelRange = args[5];
+                        delay.set(StringUtils.isNumeric(args[6]) ? Integer.parseInt(args[6]) : -1);
+                        spawnAmount.set(StringUtils.isNumeric(args[7]) ? Integer.parseInt(args[7]) : -1);
                         if (delay.get() == -1 || spawnAmount.get() == -1) {
                             if (delay.get() == -1)
                                 player.sendMessage(ChatColor.RED + "Invalid spawn delay given");
@@ -210,7 +211,7 @@ public class ModerationListener implements Listener {
                             return;
                         }
 
-                        String range = args[6];
+                        String range = args[8];
 
                         min.set(Integer.parseInt(range.split("-")[0]));
                         max.set(Integer.parseInt(range.split("-")[1]));
@@ -259,7 +260,7 @@ public class ModerationListener implements Listener {
                                 if (elite.get())
                                     mobSpawner = new EliteMobSpawner(block.getLocation(), "", monsterType, tier.get(), delay.get(), max.get());
                                 else
-                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get());
+                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get(), 0, 0);
                             }
 
                             boolean noName = false;
@@ -279,14 +280,15 @@ public class ModerationListener implements Listener {
 
                             mobSpawner.setSpawnAmount(spawnAmount.get());
                             mobSpawner.setTier(tier.get());
+
                             if (mobSpawner.getInitialRespawnDelay() != delay.get())
                                 mobSpawner.setRespawnDelay(delay.get());
-                            
+
                             if (data != null && data.length >= 2) {
                                 String weapon = data[1];
                                 if (!weapon.equalsIgnoreCase("none")) {
 
-                                	ItemType type = ItemType.getByName(weapon);
+                                    ItemType type = ItemType.getByName(weapon);
                                     if (type != null)
                                         mobSpawner.setWeaponType(type);
                                     else
@@ -317,15 +319,15 @@ public class ModerationListener implements Listener {
 
                             }
 
-                            
+
                             if (!checkIfExists)
-                            	SpawningMechanics.getSpawners().add(mobSpawner);
+                                SpawningMechanics.getSpawners().add(mobSpawner);
 
                             if (checkIfExists && monsterType != null)
-                            	mobSpawner.setMonsterType(monsterType);
-                            
+                                mobSpawner.setMonsterType(monsterType);
+
                             SpawningMechanics.saveConfig();
-                            
+
                             mobSpawner.kill();
                             //Init mobspawner.
                             mobSpawner.init();

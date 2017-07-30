@@ -144,10 +144,14 @@ public class EntityAPI {
         return spawnCustomMonster(loc, spawnedLocation, monster, level, tier, weaponType, null);
     }
 
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
+        return spawnCustomMonster(loc,spawnedLocation,monster,level,tier,weaponType,customName,-1,-1);
+    }
+
     /**
      * Spawns a custom monster.
      */
-    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName, int minMobScore, int maxMobScore) {
         LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName);
 
         // Register mob element.
@@ -156,6 +160,9 @@ public class EntityAPI {
 
         if (monster.isPassive())
             Metadata.PASSIVE.set(e, true);
+
+        if (e != null)
+            e.setRemoveWhenFarAway(false);
 
         MetadataUtils.Metadata.SPAWN_LOCATION.set(e, loc);
         if (spawnedLocation != null)
@@ -368,6 +375,10 @@ public class EntityAPI {
     }
 
     public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName) {
+        return spawnEntity(loc,mType, type, tier, level, displayName, -1, -1);
+    }
+
+    public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName, int minMobScore, int maxMobScore) {
         DRMonster monster = null;
 
         try {

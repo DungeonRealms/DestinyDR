@@ -69,7 +69,8 @@ public class PvPListener implements Listener {
             defender.playEffect(EntityEffect.HURT);
 //            attacker.playEffect(EntityEffect.HURT);
             //decrement the knockback?
-            DamageAPI.knockbackPlayerPVP(attacker, defender);
+            if (defender.isOnGround())
+                DamageAPI.knockbackPlayerPVP(attacker, defender);
 
 //            defender.setSprinting(false);
 //            Utils.stopSprint(attacker, false);

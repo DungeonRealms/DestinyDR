@@ -1,6 +1,10 @@
 Build <build>
  &8&lRecent Changes&0
  &l
+ &l* &0PVP Knockback<h>&a&lHow is it Different?,,&7Knockback applied in PVP will now,&7closely resemble that of OB!</h>
+ &l* &0Mob Despawning<h>&a&lWhat changed?,,&7Mobs will NO longer despawn,&7when you leave the area!,,&7Realm Travel no longer resets spawn timers.</h>
+ &l* &0Farming Spots<h>&a&lWhat changed?,,&7Many more T5 have been added to Throne Room.,&7Blazes have been tweaked on Bridge</h>
+ &l* &0Horses<h>&a&lWhat changed?,,&7Horses will no longer rubber band you back when going down stairs!</h>
  &l* &0HP Fish<h>&a&lWhat changed?,,&7HP Fish will now trigger Healing Sickness,&7when consumed while atleast neutral.</h>
  &l* &0Bug Fixes<h>&a&lSome of the Most Recent,,&7* Sales Manager will now spawn in Cyrennica Bank.,&7* Fixed Trade Bug,&7* Party Leader will now be reselected when the Leader leaves,&7* Hearthstone always taking you to Cyren,&7* Fixed Staff bug in PVP,&7* Armor attributes are now calculated properly in PvP.</h>
  &l* &0+50% PROF. EXP<h>&a&lWhats this?,,&7Enjoy &a&l+50% Profession EXP &7this weekend!</h>
@@ -60,7 +64,6 @@ Build <build>
  &l* &0Potions in PVP<h>&a&lWhat's changed?,,&7Potion Sickness is now briefly applied when healing,&7with potions while chaotic and neutral,&7Each potion used while Sickened will cause,&7it to be less effective. Each potion used will,&7increase your Sickness level.</h>
  &l* &0Fixed Elite HP Mult.<h>&7Previously all elites had their HP multiplied,&7by a value depending on their tier. This,&7multiplier was not functioning in the,&7newest code and has been fixed.</h>
  &l* &0Fishing Mechanics<h>&a&lWhats Changed?,,&7We felt fishing in its previous state was dull and boring., &aFish now arrive MUCH faster then before,&ato compensate all buff chances for fish are lowered.</h>
- &l* &0PVP Knockback<h>&a&lHow is it Different?,,&7To combat being sent flying into the,&7air after a few consecutive hits,&7in a short period knockback will be lessened.</h>
  &l* &0T5 Staffs<h>&a&lWhat's changed?,,&7T5 Staff projectiles will NO longer,&7collide with other projectiles.&7</h>
  &l* &0Mob Staffs<h>&a&lWhat's changed?,,&7Staff projectiles from Tier 4+,&7now pass through other non player mobs.</h>
  &l* &0Profile Menu<h>&a&lWhat's changed?,,&7We have combined the /stats menu with,&7the /profile menu for a cleaner experience.</h>

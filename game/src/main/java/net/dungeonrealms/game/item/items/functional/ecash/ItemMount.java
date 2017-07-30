@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.item.items.functional.ecash;
 
 import com.google.common.collect.Lists;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
@@ -16,12 +15,8 @@ import net.dungeonrealms.game.mechanic.data.HorseTier;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -101,7 +96,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
                     return;
                 }
                 //cancel summon once in combat.
-                if(CombatLog.isInCombat(player)){
+                if (CombatLog.isInCombat(player)) {
                     player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
                     cancel();
                     return;
@@ -129,6 +124,10 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
             return false;
         }
 
+        if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+            player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
+            return false;
+        }
         if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
             return false;

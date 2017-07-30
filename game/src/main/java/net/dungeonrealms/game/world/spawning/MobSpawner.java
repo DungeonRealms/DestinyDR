@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
@@ -19,11 +18,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Base for a DR Mob Spawner.
@@ -49,6 +48,8 @@ public abstract class MobSpawner implements Cloneable {
     @Setter
     @Getter //The timer that attempts to spawn in entities.
     private int timerID = -1;
+    @Getter
+    protected BukkitTask spawnerTask;
 
     @Getter //"high" or "low". How powerful this entity is.
     private String lvlRange;
@@ -73,7 +74,7 @@ public abstract class MobSpawner implements Cloneable {
 
     @Setter
     @Getter
-    private int counter;
+    private int counter = -1;
 
     @Setter
     @Getter
@@ -98,14 +99,25 @@ public abstract class MobSpawner implements Cloneable {
     @Setter
     private double elementChance;
 
-    @Getter
-    private ArmorStand armorStand;
+//    @Getter
+//    private ArmorStand armorStand;
 
     @Getter
     @Setter
     private boolean dungeon;
 
-    public MobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
+    @Getter
+    @Setter
+    private int minMobScore = -1, maxMobScore = -1;
+
+    @Getter
+    @Setter
+    protected int toRespawn = 0;
+
+    @Getter
+    private UUID uuid = UUID.randomUUID();
+
+    public MobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ, int minMobScore, int maxMobscore) {
         setCustomName(name);
         setMonsterType(type);
         setSpawnAmount(Math.min(spawnAmount, 8));
@@ -121,24 +133,24 @@ public abstract class MobSpawner implements Cloneable {
         this.counter = 0;
         setMinimumXZ(mininmumXZ);
         setMaximumXZ(maximumXZ);
-        spawnArmorStand();
+//        spawnArmorStand();
     }
-
-    public void spawnArmorStand() {
-        ArmorStand as = getLocation().getWorld().spawn(getLocation(), ArmorStand.class);
-
-        // Remove old stands. (Shouldn't happen.)
-        List<org.bukkit.entity.Entity> list = as.getNearbyEntities(1, 1, 1);
-        list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
-            entity.remove();
-            if (as.getWorld().getBlockAt(getLocation()).getType() == Material.ARMOR_STAND)
-                as.getWorld().getBlockAt(getLocation()).setType(Material.AIR);
-        });
-
-        as.setVisible(false);
-        as.setGravity(false);
-        as.setInvulnerable(true);
-    }
+//
+//    public void spawnArmorStand() {
+//        ArmorStand as = getLocation().getWorld().spawn(getLocation(), ArmorStand.class);
+//
+//        // Remove old stands. (Shouldn't happen.)
+//        List<org.bukkit.entity.Entity> list = as.getNearbyEntities(1, 1, 1);
+//        list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
+//            entity.remove();
+//            if (as.getWorld().getBlockAt(getLocation()).getType() == Material.ARMOR_STAND)
+//                as.getWorld().getBlockAt(getLocation()).setType(Material.AIR);
+//        });
+//
+//        as.setVisible(false);
+//        as.setGravity(false);
+//        as.setInvulnerable(true);
+//    }
 
     @Override
     @SneakyThrows
@@ -186,7 +198,11 @@ public abstract class MobSpawner implements Cloneable {
         int delay = respawnDelay;
         if (delay < 25)
             delay = getDelays()[getTier() - 1];
-        delay += delay / 10;
+
+        //Dont really need to apply this?
+        if (this instanceof EliteMobSpawner)
+            delay += delay / 10;
+
         return delay;
     }
 
@@ -201,6 +217,12 @@ public abstract class MobSpawner implements Cloneable {
     public String getSerializedString() {
         StringBuilder builder = new StringBuilder();
         Location loc = getLocation();
+
+        builder.append("@#@");
+        builder.append(minMobScore);
+        builder.append("!");
+        builder.append(maxMobScore);
+        builder.append("@#@");
 
         builder.append(loc.getX()).append(",")
                 .append(loc.getY()).append(",")
@@ -240,15 +262,51 @@ public abstract class MobSpawner implements Cloneable {
         return builder.toString();
     }
 
-    public void spawnIn() {
-        getSpawnedMonsters().stream().filter(ent -> ent != null && (ent.isDead() || !ent.isValid())).forEach(getSpawnedMonsters()::remove);
+    public boolean checkSpawnTimer() {
+        int spawned = getSpawnedMonsters().size();
 
-        if (getSpawnedMonsters().size() >= getSpawnAmount() || !canSpawnMobs())
+        getSpawnedMonsters().forEach(ent -> {
+            if (ent != null && (ent.isDead() || !ent.isValid())) {
+                getSpawnedMonsters().remove(ent);
+                SpawningMechanics.getMobSpawners().remove(ent.getUniqueId());
+            }
+        });
+
+        if (getSpawnedMonsters().size() != spawned && getSpawnedMonsters().size() <= 0 && getCounter() == -1) {
+            //All dead?
+            setCounter(0);
+            return true;
+        }
+
+        if (getCounter() >= 0) {
+            setCounter(getCounter() + 1);
+            //Its time to spawn them now?
+            if (getCounter() >= getRespawnDelay()) {
+                setCounter(-1);
+                setFirstSpawn(true);
+            }
+        }
+        return false;
+    }
+
+    public void spawnIn() {
+
+        if (!isDungeon() && checkSpawnTimer()) return;
+
+        if (getSpawnedMonsters().size() >= getSpawnAmount()) {
             return;
+        }
+
+        if (!canSpawnMobs()) {
+//            System.out.println("Cannot spawn mobs!");
+//            if (nowReady)
+//                setCounter(-1);
+            return;
+        }
 
         createMobs();
         setFirstSpawn(false);
-        setCounter(0);
+        setCounter(-1);
     }
 
     protected void createMobs() {
@@ -256,18 +314,21 @@ public abstract class MobSpawner implements Cloneable {
     }
 
     protected boolean canSpawnMobs() {
-        setCounter(getCounter() + 1);
-        return isFirstSpawn() || getCounter() >= getRespawnDelay() || isDungeon();
+//        setCounter(getCounter() + 1);
+        return isFirstSpawn() || getCounter() >= getRespawnDelay() || isDungeon() || toRespawn > 0;
     }
 
     public abstract void init();
 
     public void kill() {
-        getSpawnedMonsters().stream().filter(e -> e != null).forEach(Entity::remove);
+        getSpawnedMonsters().stream().filter(e -> e != null).forEach(e -> {
+            e.remove();
+            SpawningMechanics.getMobSpawners().remove(e.getUniqueId());
+        });
         getSpawnedMonsters().clear();
 
-        if (getArmorStand() != null)
-            getArmorStand().remove();
+//        if (getArmorStand() != null)
+//            getArmorStand().remove();
     }
 
     public void remove() {
@@ -279,7 +340,15 @@ public abstract class MobSpawner implements Cloneable {
     }
 
     protected Entity spawn() {
+        if (toRespawn > 0) {
+            toRespawn--;
+        }
+
         Location spawn = spray();
+
+        if (isDungeon() && this instanceof EliteMobSpawner) {
+            Bukkit.getLogger().info("Creating elite at " + spawn.getBlockX() + "x " + spawn.getBlockY() + "y " + spawn.getBlockZ() + "z: " + getMonsterType());
+        }
 
         if (GameAPI.isInSafeRegion(spawn))
             return null;
@@ -304,14 +373,20 @@ public abstract class MobSpawner implements Cloneable {
         }
 
         getSpawnedMonsters().add(entity);
+        SpawningMechanics.getMobSpawners().put(entity.getUniqueId(), this);
+
         return entity;
     }
 
     protected void setTimer(Runnable r, int delay) {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
-            if (getTimerID() == -1)
-                setTimerID(Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), r, 0L, (long) delay).getTaskId());
-        }, 0L, 40L);
+        if (getSpawnerTask() != null && Bukkit.getScheduler().isCurrentlyRunning(getSpawnerTask().getTaskId()))
+            getSpawnerTask().cancel();
+
+        spawnerTask = Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> {
+            r.run();
+//            if (getTimerID() == -1)
+//                setTimerID(Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), r, 0L, (long) delay).getTaskId());
+        }, 0L, delay);
     }
 
     public boolean doesLineMatchLocation(String line) {
