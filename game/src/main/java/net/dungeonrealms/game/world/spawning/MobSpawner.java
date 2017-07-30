@@ -201,7 +201,7 @@ public abstract class MobSpawner implements Cloneable {
 
         //Dont really need to apply this?
 //        if (this instanceof EliteMobSpawner)
-        delay += delay / 10;
+        delay += delay / 12;
 
         return delay;
     }
