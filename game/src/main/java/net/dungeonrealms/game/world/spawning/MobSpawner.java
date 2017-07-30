@@ -200,8 +200,8 @@ public abstract class MobSpawner implements Cloneable {
             delay = getDelays()[getTier() - 1];
 
         //Dont really need to apply this?
-        if (this instanceof EliteMobSpawner)
-            delay += delay / 10;
+//        if (this instanceof EliteMobSpawner)
+        delay += delay / 10;
 
         return delay;
     }

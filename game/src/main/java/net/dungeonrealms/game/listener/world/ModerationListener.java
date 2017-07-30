@@ -176,7 +176,7 @@ public class ModerationListener implements Listener {
                 return;
             }
             String[] args = chat.getMessage().split(" ");
-            if ((chat.getMessage().equals("2") && checkIfExists) || args.length == 7) {
+            if ((chat.getMessage().equals("2") && checkIfExists) || (args.length == 7 || args.length == 8 || args.length == 9)) {
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     EnumMonster monsterType = EnumMonster.getMonsterByString(args[0]);
