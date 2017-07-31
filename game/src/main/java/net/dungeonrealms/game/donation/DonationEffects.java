@@ -33,7 +33,8 @@ public class DonationEffects implements GenericMechanic {
     private static String buffDelimeter = "@#$%";
 
     @Getter
-    private Buff weekendBuff = new Buff(EnumBuff.PROFESSION, 60 * 60 * 24 * 3, 50, "Double XP Weekend", "US-1");
+    private Buff weekendBuff = null;
+//            new Buff(EnumBuff.PROFESSION, 60 * 60 * 24 * 3, 50, "Double XP Weekend", "US-1");
 
     @Override
     public EnumPriority startPriority() {
