@@ -164,7 +164,8 @@ public class MainListener implements Listener {
 
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(event.getPlayer());
         if (event.getMainHandItem() != null || event.getOffHandItem() != null) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> wrapper.calculateAllAttributes(), 2);
+            ItemStack newItem = event.getMainHandItem();
+            wrapper.calculateAllAttributes(newItem);
         }
     }
 

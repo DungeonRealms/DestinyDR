@@ -297,7 +297,7 @@ public class RestrictionListener implements Listener {
             // Play the noise.
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerWrapper.getPlayerWrapper(p).updateWeapon(), 1);
+        PlayerWrapper.getPlayerWrapper(p).updateWeapon(i);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
