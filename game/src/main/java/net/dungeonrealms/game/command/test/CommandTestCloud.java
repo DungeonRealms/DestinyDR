@@ -11,6 +11,8 @@ import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
 import net.dungeonrealms.game.player.cosmetics.particles.impl.CrateOpeningEffect;
 import net.dungeonrealms.game.player.cosmetics.particles.impl.FourthOfJulyAuraEffect;
 import net.dungeonrealms.game.player.cosmetics.particles.impl.FourthOfJulySpiral;
+import net.dungeonrealms.game.player.inventory.menus.guis.polls.PollManager;
+import net.dungeonrealms.game.player.inventory.menus.guis.polls.PollSelectionGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.CrateGUI;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.crates.Crates;
 import net.dungeonrealms.tool.coupon.CouponCodeGenerator;
@@ -36,27 +38,8 @@ public class CommandTestCloud extends BaseCommand {
         if (!Rank.isDev((Player) sender)) return false;
         Player player = (Player) sender;
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        //SpecialParticleEffect effect = SpecialParticles.constrauctEffectFromName(SpecialParticles.FOURTH_AURA.getInternalName(), player);
-        //wrapper.setActiveSpecialEffect(effect);
-        //wrapper.setActiveChestEffect(SpecialParticles.FOURTH_AURA);
-        //wrapper.setActiveRealmEffect(SpecialParticles.FOURTH_AURA);
 
-        /*CrateOpeningEffect effect = new CrateOpeningEffect(player.getLocation(), Material.GOLDEN_APPLE, () -> {
-            player.sendMessage("It ended!");
-        });*/
-
-        //Crates.VOTE_CRATE.getCrate(player, player.getLocation()).open();
-
-        /*CouponCodeGenerator.generatePercentCouponCode(11, (code) -> {
-            if(code == null) {
-                player.sendMessage("The code is null: " + code);
-                return;
-            }
-            System.out.println("The code: " + code);
-        });*/
-
-
-        //new CrateGUI(player).open(player,null);
+        PollManager.openPollBooth(player);
         return true;
     }
 }

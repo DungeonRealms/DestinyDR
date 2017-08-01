@@ -71,6 +71,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
 import net.dungeonrealms.game.player.cosmetics.particles.TimedSpecialParticleEffect;
 import net.dungeonrealms.game.player.inventory.ShopMenuListener;
+import net.dungeonrealms.game.player.inventory.menus.guis.polls.PollManager;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -573,6 +574,10 @@ public class DungeonRealms extends JavaPlugin {
             Realm.tickRealmEffects();
             TimedSpecialParticleEffect.tickTimedEffects();
         },1L,1L);
+
+        PollManager.loadAllPolls((unused) -> {
+            System.out.println("Successfully loaded all polls!");
+        });
 
 //        ItemGenerator.convertOldItemTemplates();
     }

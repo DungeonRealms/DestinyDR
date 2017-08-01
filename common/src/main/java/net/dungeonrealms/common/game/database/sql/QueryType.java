@@ -67,7 +67,10 @@ public enum QueryType {
     INCREMENT_CHARACTER_SLOTS("UPDATE users SET character_slots = character_slots + %s WHERE account_id = %s"),
     SELECT_ENJIN_ID_FROM_LINK("SELECT enjin_id FROM enjin_link_keys WHERE link_key = '%s'"),
     UPDATE_ENJIN_ID("UPDATE users SET enjin_id = %s WHERE account_id = %s"),
-    DELETE_LINK_ID("DELETE FROM `enjin_link_keys` WHERE `link_key` = '%s'")
+    DELETE_LINK_ID("DELETE FROM `enjin_link_keys` WHERE `link_key` = '%s'"),
+    SELECT_ALL_POLLS("SELECT * FROM polls;"),
+    SELECT_ALL_POLL_QUESTIONS("SELECT * FROM poll_options WHERE poll_id = %s"),
+    SELECT_ALL_POLL_ANSWERS("SELECT * FROM poll_answers WHERE poll_id = %s")
 
 
     ;
