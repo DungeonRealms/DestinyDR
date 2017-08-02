@@ -207,6 +207,7 @@ public class CommandWhois extends BaseCommand {
                                 boolean odd = false;
                                 while (set.next()) {
                                     String ip = set.getString("ip_addresses.ip_address");
+                                    if(ip != null && (ip.startsWith("185.199.92") || ip.startsWith("185.199.94")))continue;
                                     long lastUsed = set.getLong("ip_addresses.last_used");
 
                                     ChatColor color = odd ? ChatColor.WHITE : ChatColor.GRAY;
