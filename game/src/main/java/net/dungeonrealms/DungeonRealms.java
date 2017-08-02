@@ -575,9 +575,9 @@ public class DungeonRealms extends JavaPlugin {
             TimedSpecialParticleEffect.tickTimedEffects();
         },1L,1L);
 
-        PollManager.loadAllPolls((unused) -> {
-            System.out.println("Successfully loaded all polls!");
-        });
+//        PollManager.loadAllPolls((unused) -> {
+//            System.out.println("Successfully loaded all polls!");
+//        });
 
 //        ItemGenerator.convertOldItemTemplates();
     }
