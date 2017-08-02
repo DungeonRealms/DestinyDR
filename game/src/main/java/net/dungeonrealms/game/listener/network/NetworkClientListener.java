@@ -34,6 +34,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.inventory.menus.guis.polls.PollManager;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
@@ -173,6 +174,15 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     Integer accountID = Integer.parseInt(in.readUTF());
                     SQLDatabaseAPI.getInstance().getAccountIdNames().put(accountID, new UUIDName(newUUID, username));
                     System.out.println("Registered user " + username + " with accountID: " + accountID);
+                    break;
+                case "poll":
+                    String message = in.readUTF();
+                    if(message.equalsIgnoreCase("answer")) {
+                        int accID = Integer.parseInt(in.readUTF());
+                        int pollID = Integer.parseInt(in.readUTF());
+                        int optionID = Integer.parseInt(in.readUTF());
+                        PollManager.handleVote(accID, pollID, optionID);
+                    }
                     break;
                 case "WipePlayer":
                     int idToWipe = Integer.parseInt(in.readUTF());

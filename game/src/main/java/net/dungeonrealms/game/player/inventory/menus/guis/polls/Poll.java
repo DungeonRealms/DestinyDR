@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.inventory.menus.guis.polls;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 
@@ -30,15 +31,17 @@ public class Poll {
     public void addAnswer(int accountID, int optionID) {
         if(!options.containsKey(optionID)) return;
         votes.put(accountID, optionID);
+        SQLDatabaseAPI.getInstance().executeUpdate((set) -> {
+            if(set == null) return;
+            GameAPI.sendNetworkMessage("poll", "answer", String.valueOf(accountID), String.valueOf(pollID), String.valueOf(optionID));
+        },QueryType.INSERT_POLL_ANSWER.getQuery(accountID, pollID, optionID, System.currentTimeMillis()));
+
     }
 
     public int getNumberOfOptions() {
         return options.size();
     }
 
-    public boolean hasVotes(int accountID) {
-        return votes.containsKey(accountID);
-    }
 
     public boolean hasVoted(int accountID) {
         return getVotedOption(accountID) != null;

@@ -47,4 +47,9 @@ public class PollManager {
         }
         new PollSelectionGUI(player).open(player,null);
     }
+
+    public static void handleVote(int accountID, int pollID, int optionID) {
+        Poll poll = polls.get(pollID);
+        if(poll != null) poll.addAnswer(accountID, optionID);
+    }
 }

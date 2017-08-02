@@ -70,7 +70,8 @@ public enum QueryType {
     DELETE_LINK_ID("DELETE FROM `enjin_link_keys` WHERE `link_key` = '%s'"),
     SELECT_ALL_POLLS("SELECT * FROM polls;"),
     SELECT_ALL_POLL_QUESTIONS("SELECT * FROM poll_options WHERE poll_id = %s"),
-    SELECT_ALL_POLL_ANSWERS("SELECT * FROM poll_answers WHERE poll_id = %s")
+    SELECT_ALL_POLL_ANSWERS("SELECT * FROM poll_answers WHERE poll_id = %s"),
+    INSERT_POLL_ANSWER("INSERT IGNORE INTO poll_answers(account_id, poll_id, option_id, vote_time) VALUES(%s,%s,%s,%s);")
 
 
     ;
