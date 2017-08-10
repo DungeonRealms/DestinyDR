@@ -8,5 +8,4 @@ Authors:
 Bradez1571, iFamasssxD, Kneesnap, Ingot
 
 
-© DungeonRealms LLC
-DungeonRealms is a trademark of Dream Team LLC
+© DungeonRealms 2017
