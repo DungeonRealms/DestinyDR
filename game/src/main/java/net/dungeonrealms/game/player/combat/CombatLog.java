@@ -100,6 +100,8 @@ public class CombatLog implements GenericMechanic {
                             int slotToDrop = ThreadLocalRandom.current().nextInt(4);
                             ItemStack[] contents = player.getInventory().getArmorContents();
                             ItemStack toDrop = contents[slotToDrop];
+                            //Dont drop air..
+                            if(toDrop == null || toDrop.getType() == Material.AIR)continue;
                             contents[slotToDrop] = null;
                             player.getInventory().setArmorContents(contents);
                             player.getWorld().dropItem(player.getLocation(), toDrop);
