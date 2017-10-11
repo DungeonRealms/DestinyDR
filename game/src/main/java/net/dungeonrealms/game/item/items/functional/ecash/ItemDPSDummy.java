@@ -10,6 +10,7 @@ import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -91,7 +92,7 @@ public class ItemDPSDummy extends FunctionalItem implements ItemClickEvent.ItemC
                 return;
             }
 
-            DPSDummy nearby = dpsDummies.values().stream().filter(d -> d.getLocation().distanceSquared(player.getLocation()) <= 15).findFirst().orElse(null);
+            DPSDummy nearby = dpsDummies.values().stream().filter(d -> LocationUtils.distanceSquared(d.getLocation(), player.getLocation()) <= 15).findFirst().orElse(null);
 
             if (nearby != null) {
                 //Dont let them..

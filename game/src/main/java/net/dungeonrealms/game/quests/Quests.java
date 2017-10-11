@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.quests;
 
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.dungeonrealms.DungeonRealms;
@@ -24,11 +25,14 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Quests implements GenericMechanic {
     public StoreBase<QuestNPC> npcStore = new StoreBase<QuestNPC>(QuestNPC.class, "npcs");
@@ -37,6 +41,7 @@ public class Quests implements GenericMechanic {
     public HashMap<Player, QuestPlayerData> playerDataMap = new HashMap<Player, QuestPlayerData>();
     private static Quests INSTANCE = new Quests();
 
+    private volatile Map<Player, CompassData> compassMap = new ConcurrentHashMap<>();
     @Override
     public void startInitialization() {
         Bukkit.getPluginManager().registerEvents(new NPCListener(), DungeonRealms.getInstance());
@@ -48,6 +53,7 @@ public class Quests implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkQuestZones(), 0, 40);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> sendActionBar(), 0, 30);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> updateAllGlow(), 0, 30);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> updateCompass(), 0, 1);
     }
 
 
@@ -90,6 +96,9 @@ public class Quests implements GenericMechanic {
         Bukkit.getOnlinePlayers().forEach(this::updateActionBar);
     }
 
+    private void updateCompass(){
+
+    }
     public void updateActionBar(Player player) {
         QuestPlayerData data = this.playerDataMap.get(player);
         if (data == null)
@@ -131,16 +140,30 @@ public class Quests implements GenericMechanic {
         return null;
     }
 
+    private static Map<String, ItemStack> cachedSkulls = new HashMap<>();
+
     public static ItemStack createSkull(String username, String displayName, String[] lore) {
-        ItemStack skullItem = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) skullItem.getItemMeta();
-        meta.setOwner(username);
-        meta.setDisplayName(displayName);
-        List<String> list = new ArrayList<String>();
+        ItemStack skullItem = cachedSkulls.get(username);
+
+        ItemMeta im;
+        if (skullItem == null) {
+            skullItem = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+            SkullMeta meta = (SkullMeta) skullItem.getItemMeta();
+            meta.setOwner(username);
+            skullItem.setItemMeta(meta);
+            im = skullItem.getItemMeta();
+            cachedSkulls.put(username, skullItem.clone());
+        } else {
+            skullItem = skullItem.clone();
+            im = skullItem.getItemMeta();
+        }
+
+        List<String> list = Lists.newArrayList();
         for (String s : lore)
             list.add(ChatColor.GRAY + s);
-        meta.setLore(list);
-        skullItem.setItemMeta(meta);
+        im.setDisplayName(displayName);
+        im.setLore(list);
+        skullItem.setItemMeta(im);
         return skullItem;
     }
 
@@ -217,12 +240,12 @@ public class Quests implements GenericMechanic {
         if (data == null) return false;
         Quest quest = data.getCurrentQuests().stream().filter(q -> q.getQuestName().equalsIgnoreCase(questName)).findFirst().orElse(null);
 
-        if(quest == null) return false;
+        if (quest == null) return false;
         QuestProgress progress = data.getQuestProgress(quest);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         QuestStage stage = progress.getCurrentStage().getPrevious();
-        if(stage == null) return false;
+        if (stage == null) return false;
         return quest != null && data.isDoingQuest(quest) && stage != null && stage.getObjective().getClass().equals(objective);
     }
 }

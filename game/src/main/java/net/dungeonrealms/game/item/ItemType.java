@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.item;
 
+import net.dungeonrealms.game.item.healing.HealingWand;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
+import net.dungeonrealms.game.player.altars.items.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -61,6 +63,7 @@ public enum ItemType {
 	TRINKET("trinket", TrinketItem.class),
 	CLUE_SCROLL("clueScroll", ClueScrollItem.class),
 	COUPON_VOUCHER("discount", ItemDiscountScroll.class),
+	HEALING_WAND("healingWand", HealingWand.class),
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
@@ -88,6 +91,14 @@ public enum ItemType {
 	BUFF("buff", ItemBuff.class),
 	ITEM_NAME_TAG("nameTag", ItemNameTag.class),
 	ITEM_LORE_BOOK("loreBook", ItemLoreBook.class),
+
+	//ALTARS
+	ITEM_STRENGTH_POTION("strengthPotion", ItemStrengthPotion.class),
+	ITEM_FIRE_RESIST_POTION("fireResistPotion", ItemFireResistPotion.class),
+	ITEM_HASTE_POTION("hastePotion", ItemHastePotion.class),
+	ITEM_SPEED_POTION("speedPotion", ItemSpeedPotion.class),
+	ITEM_WATER_BREATHING_POTION("waterBreathing", ItemWaterBreathingPotion.class),
+	ITEM_NIGHT_VISION_POTION("nightVision", ItemNightVisionPotion.class),
 
 	JUKE_BOX("jukebox", ItemJukebox.class),
 	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),

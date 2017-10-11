@@ -42,7 +42,7 @@ public class ItemArmor extends CombatItem {
     /**
      * Generates an entire armor set with the parameters of this item.
      */
-    public ItemStack[] generateArmorSet(boolean withShield) {
+    public ItemStack[] generateArmorSet(boolean withShield, double commonIncrease, double uncommonIncrease, double rareIncrease, double uniqueIncease) {
         int desiredMin = Math.max(getMinRarityItems(), 1);
         Item.ItemRarity mRare = getMaxRarity();
         int genned = 0;
@@ -56,6 +56,10 @@ public class ItemArmor extends CombatItem {
             ret[i] = armor.generateItem();
         }
         return ret;
+    }
+
+    public ItemStack[] generateArmorSet(boolean withShield) {
+        return generateArmorSet(withShield, 0,0,0,0);
     }
 
     public ItemStack[] generateArmorSet() {

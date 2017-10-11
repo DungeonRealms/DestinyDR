@@ -12,6 +12,7 @@ import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.data.HorseTier;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -90,7 +91,7 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
             int count = 0;
 
             public void run() {
-                if (!player.isOnline() || player.isDead() || player.getLocation().distanceSquared(startingLocation) > 4) {
+                if (!player.isOnline() || player.isDead() || LocationUtils.distanceSquared(player.getLocation(), startingLocation) > 4) {
                     player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
                     cancel();
                     return;

@@ -27,6 +27,7 @@ public abstract class PowerMove {
         powermoves.add(new WhirlWind());
         powermoves.add(new PowerStrike());
 
+
         World world = Bukkit.getWorlds().get(0);
         Random rand = ThreadLocalRandom.current();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {

@@ -416,8 +416,14 @@ public class Mining implements GenericMechanic, Listener {
             if (line.contains("=")) {
                 try {
                     String[] cords = line.split("=")[0].split(",");
-                    Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
-                            Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+                    Location loc;
+                    if(cords.length >= 4) {
+                        loc = new Location(Bukkit.getWorld(cords[0]), Double.parseDouble(cords[1]),
+                                Double.parseDouble(cords[2]), Double.parseDouble(cords[3]));
+                    } else {
+                        loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
+                                Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+                    }
 
                     int tier = Integer.parseInt(line.split("=")[1]);
                     oreLocations.put(loc, MiningTier.values()[tier - 1]);
@@ -454,7 +460,7 @@ public class Mining implements GenericMechanic, Listener {
     private static void updateConfig() {
         List<String> save = new ArrayList<>();
         for (Location l : oreLocations.keySet())
-            save.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + oreLocations.get(l).getTier());
+            save.add(l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + oreLocations.get(l).getTier());
         DungeonRealms.getInstance().getConfig().set("orespawns", save);
         DungeonRealms.getInstance().saveConfig();
     }

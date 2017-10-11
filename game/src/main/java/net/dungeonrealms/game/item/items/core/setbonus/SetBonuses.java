@@ -15,7 +15,8 @@ public enum SetBonuses {
     REDEYE_THE_CRUEL("redeye_the_cruel", "Redeye The Cruel", ChatColor.RED + "Bloodshed", new AbstractSetBonus("Randomly apply bleed to Monsters")),
     PYRO_BANDIT("pyro_bandit", "Pyro Bandit", ChatColor.RED + "Massacre", new AbstractEnergyBonus("5% Energy + Chance to apply AOE on hit", 5)),
     BLOOD_BUTCHER("blood_butcher", "Blood Butcher", ChatColor.RED + "Blood Frenzy", new AbstractEnergyBonus("4% Energy + When less then 20% HP, gain 20% Lifesteal", 4)),
-    LIBRARIAN("librarian", "Librarian", ChatColor.YELLOW + "Book Finder", new AbstractSetBonus("Increased TP Book Drop Chance"));
+    LIBRARIAN("librarian", "Librarian", ChatColor.YELLOW + "Book Finder", new AbstractSetBonus("Increased TP Book Drop Chance")),
+    HEALER("healer", "Healer", ChatColor.YELLOW + "Healer", new AbstractSetBonus("Gain the ability to use a Healing Wand."));
 
     @Getter
     String customID;

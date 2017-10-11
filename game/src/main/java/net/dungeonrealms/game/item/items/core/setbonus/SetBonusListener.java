@@ -4,8 +4,14 @@ import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.PacketPlayOutEntityEquipment;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,17 +30,46 @@ public class SetBonusListener implements Listener {
         SetBonuses active = getBonus(e.getPlayer());
         SetBonuses bonusNow = calculateSetBonus(e.getPlayer(), e.getOldArmorPiece(), e.getNewArmorPiece());
 
+        boolean updateArmor = false;
         if (bonusNow != null) {
             if (active != null) {
                 active.getSetBonus().onSetBonusDeactivate(e.getPlayer());
             }
             bonusNow.getSetBonus().onSetBonusActivate(e.getPlayer());
             SetBonus.activeSetBonuses.put(e.getPlayer(), bonusNow);
+            if (bonusNow == SetBonuses.HEALER)
+                updateArmor = true;
         } else if (active != null) {
             active.getSetBonus().onSetBonusDeactivate(e.getPlayer());
             SetBonus.activeSetBonuses.remove(e.getPlayer());
+            if (active == SetBonuses.HEALER)
+                updateArmor = true;
+        }
+
+        if (updateArmor) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+                List<PacketPlayOutEntityEquipment> toSend =
+                        Lists.newArrayList(
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getHelmet())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getChestplate())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getLeggings())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getBoots())));
+                for (Entity near : e.getPlayer().getNearbyEntities(32, 32, 32)) {
+                    if (!(near instanceof Player)) continue;
+                    Player nearPlayer = (Player) near;
+
+                    toSend.forEach((pack) -> ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(pack));
+//                ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
+                }
+
+                if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
+                    toSend.forEach((pack) -> ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(pack));
+
+            }, 1);
         }
     }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -66,6 +101,7 @@ public class SetBonusListener implements Listener {
         if (newItem != null && !armors.contains(newItem))
             armors.add(newItem);
 
+        String setBonusFound = null;
         for (ItemStack armor : armors) {
             if (armor != null && armor.getType() != Material.AIR) {
                 NBTWrapper wrapper = new NBTWrapper(armor);
@@ -78,12 +114,20 @@ public class SetBonusListener implements Listener {
                     } else {
                         idCount = 1;
                     }
+
+                    if (wrapper.hasTag("setBonus"))
+                        setBonusFound = wrapper.getString("setBonus");
+
                     customID = id;
                 }
             }
         }
 
         if (idCount == 4 && customID != null) {
+
+            //use this instead.
+            if(setBonusFound != null)customID = setBonusFound;
+
             return SetBonuses.getFromCustomID(customID);
         }
         return null;

@@ -186,7 +186,6 @@ public abstract class ProfessionItem extends ItemGear {
                     + ", but it will retain all its custom stats.");
             p.sendMessage("");
         }
-
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
         Firework fw = (Firework) p.getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
         FireworkMeta fwm = fw.getFireworkMeta();

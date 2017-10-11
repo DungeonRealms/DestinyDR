@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -103,6 +104,9 @@ public class EnergyHandler implements GenericMechanic {
             if (playerWrapper == null || !playerWrapper.isAttributesLoaded() || playerWrapper.getAttributes() == null) {
                 continue; // player data not yet loaded
             }
+
+//            if(GameAPI.isCooldown(player, MetadataUtils.Metadata.REGEN_ABILITY))continue;
+
             if (getPlayerCurrentEnergy(player) == 1.0F) {
                 continue;
             }
@@ -123,6 +127,9 @@ public class EnergyHandler implements GenericMechanic {
                 regenAmount = regenAmount / 18.9F;
                 if (playerWrapper.getPlayerStats() == null) return;
 
+                if(GameAPI.isCooldown(player, MetadataUtils.Metadata.REGEN_ABILITY)){
+                    regenAmount = (float) (regenAmount * .25D);
+                }
 //                regenAmount = (float)(regenAmount * (1 + (playerWrapper.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue() * 0.00015)));
                 //regenAmount += (int) (regenAmount * playerWrapper.getPlayerStats().getEnergyRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
@@ -149,7 +156,7 @@ public class EnergyHandler implements GenericMechanic {
      * @param player
      * @since 1.0
      */
-    private static void updatePlayerEnergyBar(Player player) {
+    public static void updatePlayerEnergyBar(Player player) {
         float currExp = getPlayerCurrentEnergy(player);
         double percent = currExp * 100.00D;
         if (percent > 100) {
@@ -226,7 +233,9 @@ public class EnergyHandler implements GenericMechanic {
 //            GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
         }
 
-        if (getPlayerCurrentEnergy(player) <= 0) return;
+        if (getPlayerCurrentEnergy(player) <= 0) {
+            return;
+        }
         if (getPlayerCurrentEnergy(player) - amountToRemove <= 0) {
             player.setExp(0.0F);
             updatePlayerEnergyBar(player);

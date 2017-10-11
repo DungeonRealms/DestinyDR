@@ -145,14 +145,14 @@ public class EntityAPI {
     }
 
     public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName) {
-        return spawnCustomMonster(loc,spawnedLocation,monster,level,tier,weaponType,customName,-1,-1);
+        return spawnCustomMonster(loc,spawnedLocation,monster,level,tier,weaponType,customName,-1,-1,0,0);
     }
 
     /**
      * Spawns a custom monster.
      */
-    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName, int minMobScore, int maxMobScore) {
-        LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName);
+    public static Entity spawnCustomMonster(Location loc, Location spawnedLocation, EnumMonster monster, int level, int tier, ItemType weaponType, String customName, int minMobScore, int maxMobScore, double minRarityScore, double maxRarityScore) {
+        LivingEntity e = spawnEntity(loc, monster, monster.getCustomEntity(), tier, level, customName,minMobScore,maxMobScore,minRarityScore,maxRarityScore);
 
         // Register mob element.
         if (!monster.isFriendly() && ThreadLocalRandom.current().nextInt(100) < monster.getElementalChance())
@@ -375,10 +375,10 @@ public class EntityAPI {
     }
 
     public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName) {
-        return spawnEntity(loc,mType, type, tier, level, displayName, -1, -1);
+        return spawnEntity(loc,mType, type, tier, level, displayName, -1, -1,0,0);
     }
 
-    public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName, int minMobScore, int maxMobScore) {
+    public static LivingEntity spawnEntity(Location loc, EnumMonster mType, CustomEntityType type, int tier, int level, String displayName, int minMobScore, int maxMobScore, double minRarityScore, double maxRarityScore) {
         DRMonster monster = null;
 
         try {
@@ -389,7 +389,7 @@ public class EntityAPI {
                 monster = (DRMonster) entity;
                 getEntityAttributes().put(monster, new AttributeList());
                 monster.setMonster(mType);
-                monster.setupMonster(tier);
+                monster.setupMonster(tier,minMobScore,maxMobScore, minRarityScore, maxRarityScore);
                 // Add to world.
                 monster.getNMS().setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
             }
@@ -446,8 +446,38 @@ public class EntityAPI {
         // if we have a skull we need to generate a helmet so mob stats are calculated correctly
         // TODO: Verify 3 is the correct slot.
         if (armorSet[3].getType() == Material.SKULL_ITEM && (tier >= 3 || ThreadLocalRandom.current().nextInt(10) <= (6 + tier))) {
-            armorSet[3] = new ItemArmor().setTier(tier).setType(ItemType.HELMET).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElemental(m.getBukkit()))).generateItem();
-            lastUsedHelmetItem.put(m.getBukkit(), armorSet[3]);
+            ItemStack helmet = lastUsedHelmetItem.get(m.getBukkit());
+            if(helmet == null) {
+                int minMobScore = m.getMinMobScore();
+                int maxMobScore = m.getMaxMobScore();
+
+                double minRarityScore = m.getMinRarityScore();
+                double maxRarityScore = m.getMaxRarityScore();
+                if (minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
+                    double mobRarityScore = minMobScore;
+                    if (tier == minMobScore) mobRarityScore = minRarityScore;
+                    else if(tier == maxMobScore) mobRarityScore = maxRarityScore;
+                    else mobRarityScore = ThreadLocalRandom.current().nextDouble(minRarityScore, maxRarityScore);
+
+//                    System.out.println("The rarity score we picked: " + mobRarityScore + " for the tier: " + tier);
+                    double commonIncrease = m.getPercentIncreaseFromScore(Item.ItemRarity.COMMON, mobRarityScore);
+                    double unCommonIncrease = m.getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
+                    double rareIncrease = m.getPercentIncreaseFromScore(Item.ItemRarity.RARE, mobRarityScore);
+                    double uniqueIncrease = m.getPercentIncreaseFromScore(Item.ItemRarity.UNIQUE, mobRarityScore);
+//                    System.out.println("The common increase: " + commonIncrease);
+//                    System.out.println("The uncommon increase: " + unCommonIncrease);
+//                    System.out.println("The rare increase: " + rareIncrease);
+//                    System.out.println("The unique increase: " + uniqueIncrease);
+
+                    helmet = new ItemArmor().setTier(tier).setType(ItemType.HELMET).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElite(m.getBukkit()),commonIncrease,unCommonIncrease,rareIncrease,uniqueIncrease)).generateItem();
+                    lastUsedHelmetItem.put(m.getBukkit(), helmet);
+                    //return gear.setTier(Item.ItemTier.getByTier(tier)).generateItem();
+                } else {
+                    helmet = new ItemArmor().setTier(tier).setType(ItemType.HELMET).setRarity(ItemRarity.getRandomRarity(EntityAPI.isElite(m.getBukkit()))).generateItem();
+                    lastUsedHelmetItem.put(m.getBukkit(), helmet);
+                }
+            }
+            armorSet[3] = helmet;
         } else if (lastUsedHelmetItem.containsKey(m.getBukkit())) {
             lastUsedHelmetItem.remove(m.getBukkit());
         }

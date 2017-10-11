@@ -79,4 +79,9 @@ public interface QuestObjective {
 	default void onEnd(Player player){
 		
 	}
+
+
+	default int getTimeRequired(){
+		return -1;
+	}
 }

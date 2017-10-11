@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -18,11 +19,15 @@ import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.item.*;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
+import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.*;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -106,7 +111,7 @@ public class ItemGenerator {
      * Applies RNG, so don't use this on anything a user can control.
      */
     public static NBTTagCompound loadNBT(String data) throws MojangsonParseException {
-    	
+
         //Format: <x,y> Generates a random value between <x,y>
         Matcher rangeMatch = Pattern.compile("<\\d+,\\d+>").matcher(data);
         while (rangeMatch.find()) {
@@ -117,7 +122,7 @@ public class ItemGenerator {
 
         return MojangsonParser.parse(data);
     }
-    
+
     /**
      * Load the elite gear for a given entity type.
      * @param type
@@ -125,7 +130,7 @@ public class ItemGenerator {
     public static Map<EquipmentSlot, ItemStack> getEliteGear(EnumNamedElite type) {
     	return getEliteGear(type.name().toLowerCase());
     }
-    
+
     /**
      * Load the elite gear from a file name.
      * @param eliteName
@@ -141,7 +146,7 @@ public class ItemGenerator {
     	}
     	return map;
     }
-    
+
     /**
      * Save elite gear to disk.
      * @param e
@@ -186,7 +191,7 @@ public class ItemGenerator {
         toSave.removeTag("customId"); // Gets overriden.
         if (toSave.hasTag("u"))
         	toSave.setTagBool("u", true); // Takes up extra space, and will get regened anyways.
-        
+
         // Save Data.
         fullObj.addProperty("count", item.getAmount());
         fullObj.addProperty("damage", item.getDurability());
@@ -204,7 +209,7 @@ public class ItemGenerator {
         if (DungeonRealms.isMaster())
             saveJSON(itemName, "item", toJson(item));
     }
-    
+
     private static JsonObject readJSON(String fileName, String ext) {
     	try {
             BufferedReader br = new BufferedReader(new FileReader(getFile(fileName, ext))); //Read from file
@@ -215,7 +220,7 @@ public class ItemGenerator {
             return null;
         }
     }
-    
+
     private static void saveJSON(String fileName, String ext, JsonObject object) {
     	try {
             FileWriter file = new FileWriter(getFile(fileName, ext));
@@ -227,7 +232,7 @@ public class ItemGenerator {
             Bukkit.getLogger().warning("Failed to save " + fileName + "." + ext);
         }
     }
-    
+
     public static void loadModifiers() {
         WeaponModifiers wm = new WeaponModifiers();
         wm.new Accuracy();
@@ -273,5 +278,44 @@ public class ItemGenerator {
         am.new Thorns();
         am.new ShieldHP();
         am.new ShieldAbsorb();
+        am.new Potency();
+        am.new Luck();
+        am.new LastStand();
+
+        //outprintValues();
+    }
+
+    @SneakyThrows
+    private static void outprintValues() {
+        List<String> toWrite = new ArrayList<>();
+        File file = new File("values.txt");
+        if(!file.exists()) file.createNewFile();
+        else return;
+        for(ItemModifier mod : ItemGenerator.modifierObjects) {
+            toWrite.add(" ");
+            toWrite.add(" ");
+            toWrite.add(" ");
+            toWrite.add(" ");
+            toWrite.add(ChatColor.stripColor(mod.getCurrentAttribute().getPrefix()));
+            toWrite.add("-------------------------------------------");
+            toWrite.add(" ");
+            toWrite.add(" ");
+            toWrite.add("Applies to: ");
+            mod.getPossibleApplicants().forEach((type) -> toWrite.add(type.name().toLowerCase().replace("_", " ")));
+
+            toWrite.add(" ");
+            for(ModifierCondition condition : mod.getConditions()) {
+                Item.ItemTier tier = condition.getTier();
+                String product = "";
+                product += "Item Tier: " + tier.getId();
+                String rarityString = condition.getRarity() == null ? "none" : ChatColor.stripColor(condition.getRarity().getName().toLowerCase().replace("_", " "));
+                product += "    Item Rarity: " + rarityString;
+                product += "    (" + condition.getRange().getLow() + " - " + condition.getRange().getHigh() + ")";
+                toWrite.add(product);
+            }
+        }
+        toWrite.add("-------------------------------------------");
+
+        FileUtils.writeLines(file, toWrite);
     }
 }

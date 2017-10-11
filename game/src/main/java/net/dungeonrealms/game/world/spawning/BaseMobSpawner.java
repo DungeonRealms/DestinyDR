@@ -19,8 +19,8 @@ public class BaseMobSpawner extends MobSpawner {
 
     private Map<Entity, Integer> respawnTimes = new ConcurrentHashMap<>();
 
-    public BaseMobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String power, int respawnDelay, int mininmumXZ, int maximumXZ, int minMobScore, int maxMobScore) {
-        super(location, type, name, tier, spawnAmount, power, respawnDelay, mininmumXZ, maximumXZ, minMobScore, maxMobScore);
+    public BaseMobSpawner(Location location, String world,EnumMonster type, String name, int tier, int spawnAmount, String power, int respawnDelay, int mininmumXZ, int maximumXZ, int minMobScore, int maxMobScore, double minRarityScore, double maxRarityScore) {
+        super(location, world,type, name, tier, spawnAmount, power, respawnDelay, mininmumXZ, maximumXZ, minMobScore, maxMobScore, minRarityScore, maxRarityScore);
     }
 
     @Override
@@ -45,8 +45,8 @@ public class BaseMobSpawner extends MobSpawner {
 
     @Override
     public MobSpawner clone() {
-        BaseMobSpawner spawner =  new BaseMobSpawner(getLocation(), getMonsterType(), getCustomName(), getTier(), getSpawnAmount(), getLvlRange(),
-                getInitialRespawnDelay(), getMinimumXZ(), getMaximumXZ(), getMinMobScore(), getMaxMobScore());
+        BaseMobSpawner spawner =  new BaseMobSpawner(getLocation(), getWorld(), getMonsterType(), getCustomName(), getTier(), getSpawnAmount(), getLvlRange(),
+                getInitialRespawnDelay(), getMinimumXZ(), getMaximumXZ(), getMinMobScore(), getMaxMobScore(), getMinRarityScore(), getMaxRarityScore());
         if(isDungeon())
             spawner.setDungeon(isDungeon());
         return spawner;

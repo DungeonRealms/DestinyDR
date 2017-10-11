@@ -37,7 +37,10 @@ public class GuiBase implements Listener {
 		evt.setCancelled(false);
 		evt.setResult(Result.ALLOW);
 	};
-	
+
+	public void clearCallbacks(){
+		this.callbacks.clear();
+	}
 	protected static ItemStack GO_BACK = createItem(Material.WATCH, 1, (short)0, ChatColor.YELLOW + "Go Back", new String[] {"Click here to return to the previous screen."});
 	
 	public GuiBase(Player player, String inventoryName, List<?> list, int extra){
@@ -102,7 +105,9 @@ public class GuiBase implements Listener {
 	protected ItemStack setSlot(int slot, Material mat, String displayName, String[] lore, Consumer<InventoryClickEvent> callback){
 		return setSlot(slot, mat, 1, displayName, lore, callback);
 	}
-	
+	protected ItemStack setSlot(int slot, Material mat, String displayName, Consumer<InventoryClickEvent> callback, String... lore){
+		return setSlot(slot, mat, 1, displayName, lore, callback);
+	}
 	protected ItemStack setSlot(int slot, Material mat, short meta, String displayName, String[] lore, Consumer<InventoryClickEvent> callback){
 		return setSlot(slot, mat, 1, meta, displayName, lore, callback);
 	}
@@ -114,7 +119,9 @@ public class GuiBase implements Listener {
 	protected ItemStack setSlot(int slot, Material material, int amount, short meta, String displayName, String[] lore, Consumer<InventoryClickEvent> callback){
 		return setSlot(slot, createItem(material, amount, meta, displayName, lore), callback);
 	}
-	
+	protected ItemStack setSlot(int slot, Material material, int amount, short meta, String displayName, Consumer<InventoryClickEvent> callback, String... lore){
+		return setSlot(slot, createItem(material, amount, meta, displayName, lore), callback);
+	}
 	protected ItemStack setSlot(int slot, ItemStack item){
 		this.inventory.setItem(slot,  item);
 		return item;

@@ -61,9 +61,6 @@ public class LootType {
 	}
 	
 	public static String getName(LootGenerator g) {
-		for (String name : generators.keySet())
-			if (generators.get(name) == g)
-				return name;
-		return "Unknown Generator";
+		return generators.keySet().stream().filter(name -> generators.get(name).equals(g)).findFirst().orElse("Unknown Generator");
 	}
 }

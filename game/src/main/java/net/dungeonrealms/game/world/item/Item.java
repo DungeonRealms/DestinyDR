@@ -185,7 +185,7 @@ public class Item {
             for (ItemTier it : values())
                 if (it.getTierId() == tier)
                     return it;
-            return null;
+            return ItemTier.TIER_1;
         }
 
         public static ItemTier getRandomTier() {
@@ -249,17 +249,32 @@ public class Item {
             return getRandomRarity(false);
         }
 
+        public static ItemRarity getRandomRarity(boolean isElite) {
+            return getRandomRarity(isElite, 0,0,0,0);
+        }
+
         /**
          * Returns a random rarity, taking into effect droprates.
          */
-        public static ItemRarity getRandomRarity(boolean isElite) {
+        public static ItemRarity getRandomRarity(boolean isElite, double commonIncrease, double unCommonIncrease, double rareIncrease, double uniqueIncrease) {
             int chance = RandomHelper.getRandomNumberBetween(1, ItemRarity.COMMON.getDropChance());
             if (isElite)
                 chance *= 0.9;
 
-            for (int i = ItemRarity.values().length - 1; i > 0; i--)
-                if (chance <= ItemRarity.values()[i].getDropChance())
+            for (int i = ItemRarity.values().length - 1; i > 0; i--) {
+                ItemRarity rarity = ItemRarity.values()[i];
+                int dropChance = rarity.getDropChance();
+                int increase = 0;
+                if(rarity.equals(ItemRarity.COMMON)) increase = (int)((commonIncrease / 100) * ItemRarity.COMMON.getDropChance());
+                else if(rarity.equals(ItemRarity.UNCOMMON)) increase = (int)((unCommonIncrease / 100) * ItemRarity.UNCOMMON.getDropChance());
+                else if(rarity.equals(ItemRarity.RARE)) increase = (int)((rareIncrease / 100) * ItemRarity.RARE.getDropChance());
+                else if(rarity.equals(ItemRarity.UNIQUE)) increase = (int)((uniqueIncrease / 100) * ItemRarity.UNIQUE.getDropChance());
+
+                dropChance += increase;
+//                System.out.println("The rarity: " + rarity.name + " has an increase of " + increase + " out of " + ItemRarity.COMMON.getDropChance());
+                if (chance <= dropChance)
                     return ItemRarity.values()[i];
+            }
             return ItemRarity.COMMON;
         }
     }
@@ -622,7 +637,10 @@ public class Item {
         ITEM_FIND("ITEM FIND: +", "%", "itemFind", "", "Treasure", 9),
         MELEE_ABSORBTION("MELEE ABSORB: +", "%", "meleeAbsorb", 100, true, "", "Melee Absorption", "", 11),
         MAGE_ABSORBTION("MAGIC ABSORB: +", "%", "mageAbsorb", 100, true, "", "Magic Absorption", "", 11),
-        RANGE_ABSORBTION("RANGE ABSORB: +", "%", "rangeAbsorb", 100, true, "", "Range Absorption", "", 11);
+        RANGE_ABSORBTION("RANGE ABSORB: +", "%", "rangeAbsorb", 100, true, "", "Range Absorption", "", 11),
+        POTENCY("Potency: +", "%", "potency", 0, false, false, false, "", "Potent", "", 1),
+        LUCK("Luck: +", "%", "luck", 0, false, false, false, "", "Lucky", "", 1),
+        LAST_STAND("Last Stand: +", "%", "lastStand", 0, false, false, false, "", "Hardy", "", 1);
 
         @Getter
         private String prefix;
@@ -641,7 +659,7 @@ public class Item {
         @Getter
         private boolean includeOnReroll;
         @Getter
-        private boolean percentage;
+        private boolean percentage, includeOnGen;
         @Getter
         private boolean range;
 
@@ -666,16 +684,20 @@ public class Item {
         }
 
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {
-            this(prefix, suffix, NBTName, chance, rerollInclude, false, displayPrefix, displaySuffix, secondaryDisplaySuffix, displayPriority);
+            this(prefix, suffix, NBTName, chance, rerollInclude, false, true, displayPrefix, displaySuffix, secondaryDisplaySuffix, displayPriority);
         }
 
         ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, String displayPrefix, String displaySuffix, int displayPriority) {
-            this(prefix, suffix, NBTName, chance, rerollInclude, range, displayPrefix, displaySuffix, displaySuffix, displayPriority);
+            this(prefix, suffix, NBTName, chance, rerollInclude, range, true, displayPrefix, displaySuffix, displaySuffix, displayPriority);
+        }
+        ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, boolean includeOnGen, String displayPrefix, String displaySuffix, int displayPriority) {
+            this(prefix, suffix, NBTName, chance, rerollInclude, range, includeOnGen, displayPrefix, displaySuffix, displaySuffix, displayPriority);
         }
 
-        ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {
+        ArmorAttributeType(String prefix, String suffix, String NBTName, int chance, boolean rerollInclude, boolean range, boolean includeOnGen, String displayPrefix, String displaySuffix, String secondaryDisplaySuffix, int displayPriority) {
             this.prefix = ChatColor.RED + prefix;
             this.suffix = suffix;
+            this.includeOnGen = includeOnGen;
             this.NBTName = NBTName;
             this.chance = chance;
             this.includeOnReroll = rerollInclude;

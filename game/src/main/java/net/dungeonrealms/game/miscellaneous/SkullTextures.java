@@ -44,6 +44,8 @@ public enum SkullTextures {
     SKELETON("5cd713c5f5e46da436a8f54b523d43af29f7ae8fb184792cca73b1717feaa61"),
     FROZEN_SKELETON("041646c03f8b4cdbbf81f7164dd63a29c963a6c6cebfe1caf19a2ee92c"),
     RIFT("f3f9bc52bed6e8dce5bd3b16457dee975241f898da3a29f857ef047b544a98"),
+    ORC("4b7cf8a26494357c97b66c81c735fa63e7a2d9fc7fba379bbdf1931cbac9020"),
+    NYMPH("9f97d4072a02d87cfdc19912449c24f516c0c15aa0bb7ba8d927810415e7f"),
     UNDEAD("36aae86da0cd317a47fa6668fd4785b5a7a7e4ed9e7bc68652bae27984b84c", "5cd713c5f5e46da436a8f54b523d43af29f7ae8fb184792cca73b1717feaa61");
 
     private String[] b64String;

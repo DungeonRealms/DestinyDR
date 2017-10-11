@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseHearthStone;
@@ -72,7 +73,6 @@ public class Teleportation implements GenericMechanic {
      *
      * @param uuid
      * @param teleportType
-     * @param nbt
      * @since 1.0
      */
     public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, TeleportLocation location) {
@@ -107,8 +107,8 @@ public class Teleportation implements GenericMechanic {
         final TeleportLocation teleportTo = location;
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId()) && !hasCancelled[0]) {
-                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
+                if (GameAPI.isMainWorld(player.getWorld())) {
+                    if (LocationUtils.distanceSquared(player.getLocation(), startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
                         ParticleAPI.spawnParticle(teleportType.getParticleA(), player.getLocation(), 250, 1F);
                         ParticleAPI.spawnParticle(teleportType.getParticleB(), player.getLocation(), 400, 4F);

@@ -35,6 +35,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.menus.DPSDummy;
+import net.dungeonrealms.game.quests.compass.CompassManager;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -187,6 +188,7 @@ public class HealthHandler implements GenericMechanic {
     public static double getHPPercent(Entity e) {
         return getMaxHP(e) == 0 ? 0D : getHP(e) / (double) getMaxHP(e);
     }
+
     /**
      * Set player HP/s regen.
      */
@@ -259,6 +261,12 @@ public class HealthHandler implements GenericMechanic {
         BossBarAPI.removeAllBars(player);
         BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), BossBarAPI.Color.valueOf(hpColor.name()), getStyle(maxHP), healthPercent);
 
+        CompassManager manager = CompassManager.getManager(player);
+        if(manager != null && manager.shouldShowBar()) {
+            BossBarAPI.addBar(player, new TextComponent(manager.getCompassString(player)), BossBarAPI.Color.BLUE, Style.PROGRESS, 100);
+            manager.setLastUpdate(System.currentTimeMillis());
+        }
+
         //  UPDATE HP FOR OTHER PLAYERS  //
         int finalHp = currentHP;
         DungeonRealms.getInstance().getServer().getScheduler().runTask(DungeonRealms.getInstance(), () -> ScoreboardHandler.getInstance().updatePlayerHP(player, finalHp));
@@ -294,8 +302,14 @@ public class HealthHandler implements GenericMechanic {
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             //10 seconds of taking damage in a duel
+
+            boolean cooldown = false;
             if (CombatLog.isInCombat(player) || CombatLog.inPVP(player) || player.hasMetadata("lastDamageTaken") && (System.currentTimeMillis() - player.getMetadata("lastDamageTaken").get(0).asLong()) < 10_000L)
-                continue;
+                if (!(cooldown = GameAPI.isCooldown(player, Metadata.REGEN_ABILITY)))
+                    continue;
+
+            if (cooldown)
+                ParticleAPI.spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 5, .4F, .01F);
 
             if (getHP(player) <= 0 && player.getHealth() <= 0)
                 continue;
@@ -321,7 +335,7 @@ public class HealthHandler implements GenericMechanic {
         }
     }
 
-    public static boolean heal(Entity e, int amount, boolean showDebug) {
+    public static boolean heal(Entity e, int amount, boolean showDebug, String healingSrc) {
         int currentHP = getHP(e);
         int maxHP = getMaxHP(e);
         if (currentHP >= maxHP || amount <= 0)
@@ -342,11 +356,20 @@ public class HealthHandler implements GenericMechanic {
             return true;
 
         int newHP = getHP(e);
-        if (showDebug)
-            PlayerWrapper.getWrapper((Player) e).sendDebug(ChatColor.GREEN + "        +" + (newHP - currentHP)
-                    + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]");
+        if (showDebug) {
+            String msg = ChatColor.GREEN + " " + (healingSrc == null ? "       " : "") + "+ " + (newHP - currentHP)
+                    + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + newHP + "/" + maxHP + "HP]";
 
+            if (healingSrc != null)
+                msg += ChatColor.GREEN + " (" + healingSrc + ")";
+
+            PlayerWrapper.getWrapper((Player) e).sendDebug(msg);
+        }
         return true;
+    }
+
+    public static boolean heal(Entity e, int amount, boolean showDebug) {
+        return heal(e, amount, showDebug, null);
     }
 
     /**
@@ -363,6 +386,16 @@ public class HealthHandler implements GenericMechanic {
      * Damages an entity.
      */
     public static void damageEntity(AttackResult res) {
+        if (res.getAttacker() != null && res.getAttacker().isPlayer()) {
+            Player player = res.getAttacker().getPlayer();
+            if (SetBonus.hasSetBonus(player, SetBonuses.HEALER)) {
+                if (!GameAPI.isCooldown(player, Metadata.HEAL_CD_MESSAGE)) {
+                    player.sendMessage(ChatColor.RED + "You cannot deal damage while wearing a Healer Set!");
+                    GameAPI.addCooldown(player, Metadata.HEAL_CD_MESSAGE, 5);
+                }
+                return;
+            }
+        }
         if (res.getDefender().isPlayer()) {
             damagePlayer(res);
         } else {
@@ -386,7 +419,7 @@ public class HealthHandler implements GenericMechanic {
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
 
-        if(Metadata.SHARDING.has(player)) return;
+        if (Metadata.SHARDING.has(player)) return;
 
         boolean isReflectedDamage = res.getResult() == DamageResultType.REFLECT || res.getCause() == DamageCause.THORNS;
 
@@ -453,7 +486,7 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
             }
 
-            pw.sendDebug(ChatColor.RED + "     " + (int) Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP]");
+            pw.sendDebug(ChatColor.RED + "     " + (int) Math.ceil(damage) + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) (newHP <= 0 ? 0 : newHP) + ChatColor.BOLD + "HP]");
 
         }
 
@@ -484,6 +517,17 @@ public class HealthHandler implements GenericMechanic {
             }
 
             DamageAPI.knockbackEntityVanilla(res.getDefender().getPlayer(), .25F, res.getAttacker().getEntity().getLocation());
+        }
+
+        if (newHP <= 0) {
+            //Going to die? Check Last Stand
+            int lastStand = defender.getAttributes().getAttribute(ArmorAttributeType.LAST_STAND).getValue();
+            if (lastStand >= ThreadLocalRandom.current().nextInt(100)) {
+                newHP = getMaxHP(player) / 2;
+                System.out.println("Procing Last Man Stand for " + player.getName());
+                ParticleAPI.spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 30, .4F, .1F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2, .9F);
+            }
         }
 
         Random r = ThreadLocalRandom.current();
@@ -550,7 +594,7 @@ public class HealthHandler implements GenericMechanic {
             if (Achievements.hasAchievement(player.getUniqueId(), EnumAchievements.INFECTED))
                 Achievements.giveAchievement(killer.getPlayer(), EnumAchievements.INFECTED);
 
-            ItemStack item = ((Player)leAttacker).getInventory().getItemInMainHand();
+            ItemStack item = ((Player) leAttacker).getInventory().getItemInMainHand();
             String suffix = item != null ? " with a(n) " + Utils.getItemName(item) : "";
 
             deathMessage += killerName + ChatColor.WHITE + suffix;
@@ -751,7 +795,8 @@ public class HealthHandler implements GenericMechanic {
 
         // Apply armor boost.
         totalHP += EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.HEALTH_POINTS).getValue();
-        if(!(entity instanceof Player))totalHP = (int) (totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
+        if (!(entity instanceof Player))
+            totalHP = (int) (totalHP + (totalHP * (EntityAPI.getAttributes(entity).getAttribute(ArmorAttributeType.VITALITY).getValue() * 0.0003)));
 
         double[] hostileModifier = new double[]{.9, 1.1, 1.3, 1.6, 2};
         double[] eliteModifier = new double[]{1.5, 1.9, 2, 3, 4};

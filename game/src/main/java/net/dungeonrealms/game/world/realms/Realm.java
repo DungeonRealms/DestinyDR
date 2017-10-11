@@ -22,6 +22,7 @@ import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.rifts.RiftPortal;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticleEffect;
 import net.dungeonrealms.game.player.cosmetics.particles.SpecialParticles;
@@ -208,7 +209,7 @@ public class Realm {
             return false;
         }
 
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+        if (!GameAPI.isMainWorld(player)) {
             player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
             return false;
         }
@@ -251,7 +252,7 @@ public class Realm {
             return false;
         }
 
-        for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
+        for (Player p : player.getWorld().getPlayers()) {
             if (p.getName().equals(player.getName())) continue;
             if (!p.getWorld().equals(player.getWorld())) continue;
             if (p.getLocation().distance(location.clone()) <= 2) {
@@ -266,7 +267,7 @@ public class Realm {
     private boolean isPortalNearby(Location location, int radius) {
         double rad = Math.pow(radius, 2);
         for (Realm realm : Realms.getInstance().getRealms())
-            if (realm.isOpen() && realm.getPortalLocation().distanceSquared(location) <= rad)
+            if (realm.isOpen() && LocationUtils.distanceSquared(realm.getPortalLocation(), location) <= rad)
                 return true;
         return false;
     }

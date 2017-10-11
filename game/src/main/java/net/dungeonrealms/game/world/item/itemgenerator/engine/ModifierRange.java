@@ -13,6 +13,7 @@ import lombok.Getter;
 public class ModifierRange implements Cloneable {
 
 	@Getter private ModifierType modifierType;
+	@Getter
 	private int low, lowHigh, high;
 	@Getter private int valLow, valHigh;
 	private boolean halve;

@@ -134,7 +134,7 @@ public class PotionItem extends FunctionalItem implements ItemClickListener {
 
     @Override
     protected String[] getLore() {
-        return new String[]{"An Elixir that heals for " + ChatColor.RED + "" + ChatColor.BOLD + getHealAmount() + ChatColor.GRAY + "HP" + (isSplash() ? " in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " area." : ".")};
+        return new String[]{"An Elixir that heals for " + ChatColor.RED.toString() + ChatColor.BOLD + getHealAmount() + ChatColor.GRAY + "HP" + (isSplash() ? " in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " area." : ".")};
     }
 
     @Override

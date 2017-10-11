@@ -497,7 +497,8 @@ public class MainListener implements Listener {
         ParticleAPI.ParticleEffect effect = DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.get(player);
         if (effect == null || (effect != ParticleAPI.ParticleEffect.GOLD_BLOCK && effect != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK))
             return;
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0)) || player.getLocation().getBlock().getType() != Material.AIR)
+
+        if (!GameAPI.isMainWorld(player) || player.getLocation().getBlock().getType() != Material.AIR)
             return;
         Block bl = player.getLocation().subtract(0, 1, 0).getBlock();
         MaterialData data = new MaterialData(bl.getType(), bl.getData());
@@ -533,7 +534,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) return; //Only main world!
+            if (!GameAPI.isMainWorld(player)) return; //Only main world!
             PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
             if (wrapper == null) return;
             if (wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.GOLD_BLOCK && wrapper.getActiveTrail() != ParticleAPI.ParticleEffect.INDEPENDENCE_BLOCK)
@@ -608,7 +609,7 @@ public class MainListener implements Listener {
 
         //if (DuelingMechanics.isDueling(player.getUniqueId())) return;
 
-        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
+        if (!GameAPI.isMainWorld(player)) {
             return;
         }
         if (GameAPI.isInSafeRegion(event.getFrom()) || GameAPI.isNonPvPRegion(event.getFrom())) {
@@ -716,7 +717,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onCraft(CraftItemEvent event) {
-        if (event.getWhoClicked().getLocation().getWorld().equals(Bukkit.getWorlds().get(0)))
+        if (GameAPI.isMainWorld(event.getWhoClicked()))
             event.setCancelled(true);
     }
 

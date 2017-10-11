@@ -156,6 +156,13 @@ public class DamageAPI {
 //        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
+        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
+        if(otherArmor > 0) {
+            totalDPS -= otherArmor;
+            totalDPS = Math.max(0, totalDPS);
+        }
+
+        totalDPS = Math.min(80, totalDPS);
         /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
         if(dpsToAdd > 0) totalDPS += dpsToAdd;*/
         //totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
@@ -212,16 +219,6 @@ public class DamageAPI {
             isHitCrit = true;
         }
 
-        //  LIFESTEAL  //
-
-        if (attacker.isPlayer()) {
-            double hpPercent = -1;
-            int bonusAmount = SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attacker.getPlayer())) <= .2 ? 20 : 0;
-            if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
-                double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
-                HealthHandler.heal(attacker.getPlayer(), (int) lifeToHeal + 1, true);
-            }
-        }
         //  STRENGTH BUFF  //
         damage = applyIncreaseDamagePotion(attacker.getEntity(), damage);
 
@@ -255,11 +252,24 @@ public class DamageAPI {
             }
 
             damage *= (2 + critIncrease);
-
         }
+
         //  DAMAGE CAP  //
         if (!attacker.isPlayer())
             damage = Math.min(damage, weaponTier * 600);
+
+        //  LIFESTEAL  //
+
+        if (attacker.isPlayer() || res.getProjectile() != null && res.getProjectile().getShooter() instanceof Player) {
+            Player attack = attacker.isPlayer() ? attacker.getPlayer() : (Player) res.getProjectile().getShooter();
+
+            double hpPercent = -1;
+            int bonusAmount = SetBonus.hasSetBonus(attack, SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attack)) <= .2 ? 20 : 0;
+            if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
+                double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
+                HealthHandler.heal(attack, (int) lifeToHeal + 1, true);
+            }
+        }
 
         //Armor Reduction.
         ItemType type = weapon.getItemType();
@@ -547,12 +557,19 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(75, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(80, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
         if (!res.hasProjectile() && range.getValue() > 0) {
             totalArmor -= range.getValue();
+            totalArmor = Math.max(0, totalArmor);
+        }
+
+        ModifierRange range2 = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
+        double otherDPS = range2.getValueInRange();
+        if (otherDPS > 0) {
+            totalArmor -= otherDPS;
             totalArmor = Math.max(0, totalArmor);
         }
 
@@ -610,13 +627,13 @@ public class DamageAPI {
                 totalArmor = 0;
             } else {
                 totalArmor *= 0.2;
-                totalArmor += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
+                totalArmor += Math.min(80, defender.getAttributes().getAttribute(ea.getResist()).getValue());
             }
         }
 
         //  APPLY ELEMENTAL  //
         damage -= elementalDamage;
-        damage *= (100 - Math.min(75, totalArmor)) / 100D;
+        damage *= (100 - Math.min(80, totalArmor)) / 100D;
         // elemental damage ignores 80% but add on resistance
         if (elementalDamage != 0) {
             //damage += (0.8 * elementalDamage) * ((double) (100 - elementalResistance)) / 100d;

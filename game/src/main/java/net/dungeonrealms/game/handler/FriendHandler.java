@@ -47,6 +47,21 @@ public class FriendHandler {
                 ":" + player.getName() + ":" + uuid.toString());
     }
 
+    public void removePending(Player player, PlayerWrapper wrapper, UUID uuid, int accountID) {
+        //Remove Pending request
+        wrapper.getPendingFriends().remove(uuid);
+        PlayerWrapper friendWrap = PlayerWrapper.getPlayerWrapper(uuid);
+        if (friendWrap != null)
+            friendWrap.getPendingFriends().remove(player.getUniqueId());
+
+        SQLDatabaseAPI.getInstance().executeBatch(updated -> {
+                },
+                QueryType.DELETE_FRIEND.getQuery(wrapper.getAccountID(), accountID),
+                QueryType.DELETE_FRIEND.getQuery(uuid, wrapper.getAccountID()));
+        GameAPI.sendNetworkMessage("Friends", "removeFriend:" + player.getUniqueId().toString() +
+                ":" + player.getName() + ":" + uuid.toString());
+    }
+
     /**
      * for "Friend Management" Gui.
      *

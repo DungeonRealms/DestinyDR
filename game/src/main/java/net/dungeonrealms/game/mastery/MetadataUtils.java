@@ -89,14 +89,19 @@ public class MetadataUtils {
 		MIN_MOB_SCORE(-1),
 		MAX_MOB_SCORE(-1),
 
+		MIN_RARITY_SCORE(-1),
+		MAX_RARITY_SCORE(-1),
+
 		//Cooldowns
 		REALM_COOLDOWN(-1),
+		HEAL_CD_MESSAGE(-1),
 		PORTAL_COOLDOWN(-1),
 		DPS_DUMMY(-1),
 		DUMMY_INFO(-1),
 		SOUND_COOLDOWN(-1),
 		STAFF_ENERGY_COOLDOWN(-1),
 		RIFT_COOLDOWN(-1),
+		REGEN_ABILITY(-1),
 		DEATH_COOLDOWN(-1);
 		
 		private Object defaultValue;

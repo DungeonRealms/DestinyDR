@@ -326,10 +326,9 @@ public abstract class ItemGear extends ItemGeneric {
         }
 
 
-
         //This is a bandaid to fix all current dungeon gear in the game. We should remove this after some time.
         String customId = GameAPI.getCustomID(getItem());
-        if(isSoulbound() && customId != null && (customId.equals("infernalabyss") || customId.equalsIgnoreCase("burick") || customId.equalsIgnoreCase( "mayel"))) {
+        if (isSoulbound() && customId != null && (customId.equals("infernalabyss") || customId.equalsIgnoreCase("burick") || customId.equalsIgnoreCase("mayel"))) {
             setSoulbound(false);
             updateItem();
         }
@@ -405,6 +404,9 @@ public abstract class ItemGear extends ItemGeneric {
             if (im.canApply(getItemType())) {
                 ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 
+                //Cant apply this?
+                if(im.getCurrentAttribute() instanceof Item.ArmorAttributeType && !((Item.ArmorAttributeType)im.getCurrentAttribute()).isIncludeOnGen())continue;
+
                 if (mc != null) {
                     attemptAddModifier(conditionMap, mc, im, rand, isReroll);
                 }
@@ -464,6 +466,10 @@ public abstract class ItemGear extends ItemGeneric {
         boolean isArmor = this.attributes != null && this.attributes.hasAttribute(Item.ArmorAttributeType.ARMOR);
         boolean armorConflict = isArmor && im.getCurrentAttribute() == Item.ArmorAttributeType.DAMAGE;
 
+        if (im.getCurrentAttribute() instanceof Item.ArmorAttributeType) {
+            Item.ArmorAttributeType type = (Item.ArmorAttributeType) im.getCurrentAttribute();
+            if(!type.isIncludeOnGen())return;
+        }
         if (im.getCurrentAttribute().isIncludeOnReroll() && reRoll && !hpConflict && !armorConflict)
             conditions.put(mc, im);
         else if (rand.nextInt(100) < belowChance && !hpConflict && !armorConflict)

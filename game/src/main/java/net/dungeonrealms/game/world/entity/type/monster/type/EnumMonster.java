@@ -80,6 +80,10 @@ public enum EnumMonster {
 	// Misc
 	Monk(l(CustomEntityType.MELEE_ZOMBIE), "Crimson Crusader", ItemType.POLEARM, SkullTextures.MONK, 15, ElementalAttribute.POISON),
 	Lizardman(l(CustomEntityType.MELEE_ZOMBIE), "Lizardman", ItemType.POLEARM, SkullTextures.LIZARD, new String[] {"Giant", "Tough"}, 10, ElementalAttribute.FIRE),
+    Orc(l(CustomEntityType.MELEE_ZOMBIE), "Orc", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
+    Orc1(l(CustomEntityType.STAFF_ZOMBIE), "Orc Shaman", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
+    Nymph(l(CustomEntityType.MELEE_ZOMBIE), "Nymph", null, SkullTextures.NYMPH, new String[] {"Fairy", "Pretty", "Little"}, 10, ElementalAttribute.POISON),
+    Nymph1(l(CustomEntityType.BOW_ZOMBIE), "Nymph", ItemType.BOW, SkullTextures.NYMPH, new String[] {"Fairy", "Pretty", "Little"}, 10, ElementalAttribute.POISON),
 
     Wolf(l(CustomEntityType.DR_WOLF), "Fierce Wolf", null, 10, ElementalAttribute.ICE),
     Giant(l(CustomEntityType.DR_GIANT), "Undead Giant", null, 10, ElementalAttribute.PURE),

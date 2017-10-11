@@ -16,8 +16,10 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class ItemModifier implements Comparable<ItemModifier> {
-	
+
+	@Getter
 	private List<ModifierCondition> conditions = new ArrayList<>();
+	@Getter
 	private List<ItemType> possibleApplicants;
 	
 	@Getter

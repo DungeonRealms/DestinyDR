@@ -1,13 +1,16 @@
 package net.dungeonrealms.game.player.duel;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
+import net.dungeonrealms.database.punishment.PunishAPI;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -53,6 +56,16 @@ public class DuelingMechanics {
         }
         if (isDueling(requested.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "That player is already dueling!");
+            return;
+        }
+
+        if (!GameAPI.isInSafeRegion(sender.getLocation())) {
+            sender.sendMessage(ChatColor.RED + "You can only duel in safe zones!");
+            return;
+        }
+
+        if (!GameAPI.isInSafeRegion(requested.getLocation())) {
+            sender.sendMessage(ChatColor.RED + "This player can only duel in safe zones!");
             return;
         }
 

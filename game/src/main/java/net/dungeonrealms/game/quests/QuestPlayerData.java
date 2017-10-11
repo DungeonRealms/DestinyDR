@@ -197,6 +197,8 @@ public class QuestPlayerData {
         }
 
         public QuestStage getCurrentStage() {
+            if(this.getQuest() == null)return null;
+            if(this.getQuest().getStageList() == null)return null;
             return this.getQuest().getStageList().get(this.currentStage);
         }
 

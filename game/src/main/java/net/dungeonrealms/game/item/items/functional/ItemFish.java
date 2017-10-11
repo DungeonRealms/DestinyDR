@@ -166,4 +166,8 @@ public class ItemFish extends FunctionalItem implements ItemClickListener {
             fish.setDurability((short) getFishBuff().getBuffType().getFishMeta());
         return fish;
     }
+
+    public static boolean isFish(ItemStack item) {
+        return isType(item, ItemType.FISH);
+    }
 }

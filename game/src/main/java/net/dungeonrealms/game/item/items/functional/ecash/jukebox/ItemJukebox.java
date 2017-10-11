@@ -10,6 +10,7 @@ import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -54,7 +55,7 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
     }
 
     public static MobileJukebox getNearbyJukebox(Location location) {
-        return mobileJukeboxes.entrySet().stream().filter(juke -> juke.getKey().getLocation().distanceSquared(location) <= SPACE_REQUIRED).findFirst().map(Map.Entry::getValue).orElse(null);
+        return mobileJukeboxes.entrySet().stream().filter(juke -> LocationUtils.distanceSquared(juke.getKey().getLocation(), location) <= SPACE_REQUIRED).findFirst().map(Map.Entry::getValue).orElse(null);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class ItemJukebox extends FunctionalItem implements ItemClickEvent.ItemCl
                     return;
                 }
 
-                if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                if (!GameAPI.isMainWorld(player)) {
                     player.sendMessage(ChatColor.RED + "You can only use this in Andalucia!");
                     return;
                 }

@@ -2,8 +2,10 @@ package net.dungeonrealms.game.command.friend;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,17 +51,17 @@ public class RemoveCommand extends BaseCommand implements CooldownCommand {
 
             PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
                 //DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
-                hisWrapper.getFriendsList().remove(uuid);
+                FriendHandler.getInstance().remove(player, wrapper, uuid, wrapper.getAccountID());
                 player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
 
-                if (wrapper.isPlaying() && wrapper.getShardPlayingOn() != null) {
+                /*if (wrapper.isPlaying() && wrapper.getShardPlayingOn() != null) {
                     //send bungee message instead..
                     GameAPI.sendNetworkMessage("Friends", "removeFriend:" + player.getUniqueId().toString() +
                             ":" + player.getName() + ":" + uuid.toString());
                 } else {
                     wrapper.getFriendsList().remove(player.getUniqueId());
                     wrapper.saveFriends(false, null);
-                }
+                }*/
             });
         });
 

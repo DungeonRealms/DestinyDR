@@ -128,6 +128,6 @@ public class LootSpawner {
 	@Override
 	public String toString() {
 		Location l = getLocation();
-		return l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + this.table + "@" + this.tickDelay + "#";
+		return l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + this.table + "@" + this.tickDelay + "#";
 	}
 }

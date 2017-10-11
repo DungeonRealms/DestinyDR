@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mechanic.data.FishingTier;
 import net.dungeonrealms.game.profession.Fishing.EnumFish;
@@ -13,7 +14,10 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import static net.dungeonrealms.game.item.PersistentItem.isType;
 
 /**
  * Buffs that get put on fish.
@@ -148,4 +152,5 @@ public abstract class FishBuff {
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + getValue() + getBuffSuffix() + " " + ChatColor.RED + "FROM FISH " + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
         }, getDuration() * 20);
     }
+
 }

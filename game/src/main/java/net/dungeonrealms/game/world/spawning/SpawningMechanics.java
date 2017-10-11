@@ -94,6 +94,9 @@ public class SpawningMechanics implements GenericMechanic {
         //Load the mobscore range
         int minMobscore = -1;
         int maxMobscore = -1;
+        String world = "world";
+        double minRarityScore = 0;
+        double maxRarityScore = 0;
 
         if (line.contains("@#@")) {
             String[] parts = line.split("@#@");
@@ -101,6 +104,11 @@ public class SpawningMechanics implements GenericMechanic {
             String[] nums = inner.split("!");
             minMobscore = Integer.parseInt(nums[0]);
             maxMobscore = Integer.parseInt(nums[1]);
+            if (nums.length >= 3) {
+                minRarityScore = Double.parseDouble(nums[2]);
+                maxRarityScore = Double.parseDouble(nums[3]);
+                world = nums[4];
+            }
             line = parts[parts.length - 1];
         }
         String[] coords = line.split("=")[0].split(",");
@@ -108,7 +116,7 @@ public class SpawningMechanics implements GenericMechanic {
         double y = Double.parseDouble(coords[1]);
         double z = Double.parseDouble(coords[2]);
 
-        Location location = new Location(GameAPI.getMainWorld(), x, y, z);
+        Location location = new Location(Bukkit.getWorld(world), x, y, z);
 
         // Load general info.
         boolean elite = line.contains("*");
@@ -145,9 +153,9 @@ public class SpawningMechanics implements GenericMechanic {
         // Create spawner.
         MobSpawner spawner;
         if (elite) {
-            spawner = new EliteMobSpawner(location, name, monster, tier, spawnDelay, minXZ);
+            spawner = new EliteMobSpawner(location, world, name, monster, tier, spawnDelay, minXZ);
         } else {
-            spawner = new BaseMobSpawner(location, monster, name, tier, amount, mobPower, spawnDelay, minXZ, maxXZ, minMobscore, maxMobscore);
+            spawner = new BaseMobSpawner(location, world, monster, name, tier, amount, mobPower, spawnDelay, minXZ, maxXZ, minMobscore, maxMobscore, minRarityScore, maxRarityScore);
         }
 
         if (line.endsWith("$"))

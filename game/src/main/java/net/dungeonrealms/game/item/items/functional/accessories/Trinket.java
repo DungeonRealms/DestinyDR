@@ -47,7 +47,6 @@ public enum Trinket {
     DUNGEON_TELEPORT(Item.ItemRarity.UNCOMMON, "Teleporting", "Forgiveness", new AbstractTrinketData("TP to Party Members in Boss Rooms with /djoin"), 4),
 
     REDUCED_REPAIR(Item.ItemRarity.UNIQUE, "Forging", new AbstractTrinketData("Repairing items is now 50% cheaper"), 1),
-
     COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 20);
 
     @Getter

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.command.friend;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.handler.FriendHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -48,8 +49,11 @@ public class DenyCommand extends BaseCommand implements CooldownCommand {
             }
 
 
-            hisWrapper.getPendingFriends().remove(uuid);
-            player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + "'s friend request!");
+            PlayerWrapper.getPlayerWrapper(uuid, false, true, (wrapper) -> {
+                FriendHandler.getInstance().removePending(player, wrapper, uuid, wrapper.getAccountID());
+                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
+
+            });
         });
         return false;
     }

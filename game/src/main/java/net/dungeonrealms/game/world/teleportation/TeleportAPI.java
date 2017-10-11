@@ -36,7 +36,7 @@ public class TeleportAPI {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
             return false;
         }
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+        if (!GameAPI.isMainWorld(player)) {
             player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are not in the main world.");
             return false;
         }

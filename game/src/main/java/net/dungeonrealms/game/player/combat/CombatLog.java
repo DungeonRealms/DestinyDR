@@ -94,6 +94,7 @@ public class CombatLog implements GenericMechanic {
                     }
                     break;
                 case NEUTRAL:
+                    boolean droppedGear = false;
                     for(int k = 0; k < 4; k++) {
                         if (ThreadLocalRandom.current().nextInt(4) == 2) {
                             //25% to drop 1 item
@@ -105,7 +106,18 @@ public class CombatLog implements GenericMechanic {
                             contents[slotToDrop] = null;
                             player.getInventory().setArmorContents(contents);
                             player.getWorld().dropItem(player.getLocation(), toDrop);
+                            droppedGear = true;
                             break;
+                        }
+                    }
+
+                    boolean hasShield = player.getEquipment().getItemInOffHand() != null && ItemArmorShield.isShield(player.getEquipment().getItemInOffHand());
+                    boolean shouldDropShield = ( player.getEquipment().getItemInOffHand() != null && !hasShield);
+                    if(!shouldDropShield && !droppedGear && hasShield && ThreadLocalRandom.current().nextInt(4) == 2) {
+                        ItemStack toDrop = player.getEquipment().getItemInOffHand();
+                        if (toDrop != null) {
+                            player.getInventory().setItemInOffHand(null);
+                            player.getWorld().dropItem(player.getLocation(), toDrop);
                         }
                     }
 

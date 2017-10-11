@@ -56,6 +56,7 @@ public class Utils {
     }
 
     public static String translate(String string) {
+        if(string == null)return "";
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 

@@ -55,6 +55,7 @@ import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.miscellaneous.PlayerShardEvent;
+import net.dungeonrealms.game.player.altars.AltarManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -99,6 +100,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -268,6 +270,17 @@ public class GameAPI {
         return "";
     }
 
+    public static void playLightningEffect(World world, Location toStrike, int radius) {
+        EntityLightning el = new EntityLightning(((CraftWorld)world).getHandle(), toStrike.getX(), toStrike.getY(), toStrike.getZ(), true, true);
+        PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(el);
+
+        world.playSound(toStrike, Sound.ENTITY_LIGHTNING_THUNDER, 1f, 1f);
+        for(Player playa : GameAPI.getNearbyPlayers(toStrike, radius)) {
+            if(playa == null) continue;
+            ((CraftPlayer) playa).getHandle().playerConnection.sendPacket(packet);
+        }
+    }
+
     public static int getItemSlot(PlayerInventory inv, String type) {
         for (int i = 0; i < inv.getContents().length; i++) {
             ItemStack item = inv.getContents()[i];
@@ -330,10 +343,14 @@ public class GameAPI {
     //639 Realm instance
 
     public static ItemStack[] getTierArmor(int tier) {
+        return getTierArmor(tier,2,0,0,0,0);
+    }
+
+    public static ItemStack[] getTierArmor(int tier, int minRequired,double commonIncrease, double uncommonIncrease, double rareIncrease, double uniqueIncrease) {
         ItemArmor armor = new ItemArmor();
         armor.setTier(ItemTier.getByTier(tier));
         //Atleast 2 pieces of whatever gear we select?
-        armor.setMaxRarity(ItemRarity.getRandomRarity(), 2);
+        armor.setMaxRarity(ItemRarity.getRandomRarity(false,commonIncrease, uncommonIncrease, rareIncrease, uniqueIncrease), minRequired);
         return armor.generateArmorSet();
     }
 
@@ -821,6 +838,7 @@ public class GameAPI {
             return;
         }
 
+        AltarManager.handleLogout(player);
         GuildMechanics.getInstance().doLogout(player);
         wrapper.setHealth(HealthHandler.getHP(player));
         wrapper.setStoredFoodLevel(player.getFoodLevel());
@@ -1490,9 +1508,12 @@ public class GameAPI {
     }
 
     public static boolean isMainWorld(World world) {
-        return world.equals(getMainWorld());
+        return world.equals(getMainWorld()) || isExtraMap(world);
     }
 
+    public static boolean isExtraMap(World world){
+        return false;
+    }
     public static boolean isMainWorld(Block block) {
         return isMainWorld(block.getWorld());
     }

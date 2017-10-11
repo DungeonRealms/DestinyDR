@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 
 import org.bukkit.ChatColor;
@@ -83,9 +84,10 @@ public class DialogueLine implements ISaveable {
 			return;
 		}
 		
-		for(QuestItem qi : this.giveItems)
-			player.getInventory().addItem(qi.createItem(player));
-		
+		for(QuestItem qi : this.giveItems) {
+			GameAPI.giveOrDropItem(player, qi.createItem(player));
+//			player.getInventory().addItem(qi.createItem(player));
+		}
 		if(!this.giveItems.isEmpty())
 			player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
 		
@@ -110,7 +112,7 @@ public class DialogueLine implements ISaveable {
 		
 		if(this.potionEffects != null && this.potionEffects.size() > 0)
 			for(PotionEffect pe : this.potionEffects)
-				player.addPotionEffect(pe);
+				player.addPotionEffect(pe, true);
 		
 		if(this.teleportLocation != null){
 			player.teleport(this.teleportLocation);

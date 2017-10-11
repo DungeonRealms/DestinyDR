@@ -66,7 +66,8 @@ public class RiftMechanics implements GenericMechanic, Listener {
     private WorldRift activeRift = null; //Currently active rift, 1 in a world at a time.
 
     private File file;
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    @Getter
+    public Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public EnumPriority startPriority() {

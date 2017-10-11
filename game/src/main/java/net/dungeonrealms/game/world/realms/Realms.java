@@ -11,6 +11,7 @@ import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -208,7 +209,7 @@ public class Realms implements GenericMechanic {
 
         for (Realm realm : getRealms())
             if (realm.isOpen() && GameAPI.isMainWorld(realm.getPortalLocation()))
-                if (realm.getPortalLocation().distanceSquared(location) <= 2)
+                if (LocationUtils.distanceSquared(realm.getPortalLocation(), location) <= 2)
                     return realm;
         return null;
 

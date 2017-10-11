@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.world;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.Rank;
@@ -11,6 +12,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -110,10 +112,12 @@ public class ModerationListener implements Listener {
                 final String finalType = type;
                 player.sendMessage(ChatColor.YELLOW + "Please enter the delay in seconds of how long it takes to respawn this chest.");
                 Chat.listenForNumber(player, 0, 100000, n -> {
-                    LootSpawner s = new LootSpawner(bk.getLocation().add(0, 1, 0), n, finalType);
-                    LootManager.addSpawner(s);
-                    CommandLootChest.createHologram(s);
-                    player.sendMessage(ChatColor.RED + "Loot Chest created!");
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                        LootSpawner s = new LootSpawner(bk.getLocation().add(0, 1, 0), n, finalType);
+                        LootManager.addSpawner(s);
+                        CommandLootChest.createHologram(s);
+                        player.sendMessage(ChatColor.RED + "Loot Chest created!");
+                    });
                 }, cancel);
 
             }, cancel);
@@ -163,8 +167,8 @@ public class ModerationListener implements Listener {
     public static void promptSpawnerEdit(Player player, Block block, boolean deleteBlock, boolean checkIfExists) {
         player.sendMessage("");
         player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "SPAWNER SETUP STEP 1 / 2");
-        player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the tier range min (-1 for none), the tier range max (-1 for none), the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
-        player.sendMessage(ChatColor.GREEN + "EX: daemon false 4 high 120 1 1-4");
+        player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable),is an elite or not (true or false), the TIER of the mob, the tier range min (-1 for none), the tier range max (-1 for none),the rarity score min (0 for none), the rarity score max (0 for none), the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
+        player.sendMessage(ChatColor.GREEN + "EX: daemon false 4 -1 -1 0 0 high 120 1 1-4");
         if (checkIfExists)
             player.sendMessage(ChatColor.GREEN + "If you want to skip this step and go to step 2 instead type '2'");
         player.sendMessage("");
@@ -176,16 +180,19 @@ public class ModerationListener implements Listener {
                 return;
             }
             String[] args = chat.getMessage().split(" ");
-            if ((chat.getMessage().equals("2") && checkIfExists) || (args.length == 7 || args.length == 8 || args.length == 9)) {
+            if ((chat.getMessage().equals("2") && checkIfExists) || (args.length == 9 || args.length == 10 || args.length == 11)) {
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     EnumMonster monsterType = EnumMonster.getMonsterByString(args[0]);
 
+//                    EnumNamedElite namedElite =
                     boolean forceStage2 = chat.getMessage().equals("2") && checkIfExists;
 
                     AtomicBoolean elite = new AtomicBoolean(false);
                     AtomicInteger tier = new AtomicInteger(0), min = new AtomicInteger(0), max = new AtomicInteger(0),
                             delay = new AtomicInteger(0), spawnAmount = new AtomicInteger(0), minMobScore = new AtomicInteger(-1), maxMobScore = new AtomicInteger(-1);
+
+                    AtomicDouble minRarityScore = new AtomicDouble(0.0), maxRarityScore = new AtomicDouble(0.0);
                     String levelRange;
                     MobSpawner foundSpawner = null;
                     if (!forceStage2) {
@@ -197,9 +204,11 @@ public class ModerationListener implements Listener {
                         tier.set(Integer.parseInt(args[2]));
                         minMobScore.set(Integer.parseInt(args[3]));
                         maxMobScore.set(Integer.parseInt(args[4]));
-                        levelRange = args[5];
-                        delay.set(StringUtils.isNumeric(args[6]) ? Integer.parseInt(args[6]) : -1);
-                        spawnAmount.set(StringUtils.isNumeric(args[7]) ? Integer.parseInt(args[7]) : -1);
+                        minRarityScore.set(Double.parseDouble(args[5]));
+                        maxRarityScore.set(Double.parseDouble(args[6]));
+                        levelRange = args[7];
+                        delay.set(StringUtils.isNumeric(args[8]) ? Integer.parseInt(args[8]) : -1);
+                        spawnAmount.set(StringUtils.isNumeric(args[9]) ? Integer.parseInt(args[9]) : -1);
                         if (delay.get() == -1 || spawnAmount.get() == -1) {
                             if (delay.get() == -1)
                                 player.sendMessage(ChatColor.RED + "Invalid spawn delay given");
@@ -211,7 +220,7 @@ public class ModerationListener implements Listener {
                             return;
                         }
 
-                        String range = args[8];
+                        String range = args[10];
 
                         min.set(Integer.parseInt(range.split("-")[0]));
                         max.set(Integer.parseInt(range.split("-")[1]));
@@ -258,9 +267,9 @@ public class ModerationListener implements Listener {
 
                             if (mobSpawner == null) {
                                 if (elite.get())
-                                    mobSpawner = new EliteMobSpawner(block.getLocation(), "", monsterType, tier.get(), delay.get(), max.get());
+                                    mobSpawner = new EliteMobSpawner(block.getLocation(), player.getWorld().getName(), "", monsterType, tier.get(), delay.get(), max.get());
                                 else
-                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get(), 0, 0);
+                                    mobSpawner = new BaseMobSpawner(block.getLocation(), player.getWorld().getName(), monsterType, "", tier.get(), spawnAmount.get(), levelRange, delay.get(), min.get(), max.get(), minMobScore.get(), maxMobScore.get(), minRarityScore.get(), maxRarityScore.get());
                             }
 
                             boolean noName = false;
@@ -373,7 +382,7 @@ public class ModerationListener implements Listener {
 
 
     private boolean isEqual(Location location, Location loc2) {
-        return location.getBlockX() == loc2.getBlockX() && loc2.getBlockY() == loc2.getBlockY() && loc2.getBlockZ() == location.getBlockZ() && loc2.getWorld().getName().equals(location.getWorld().getName());
+        return location.getBlockX() == loc2.getBlockX() && loc2.getBlockY() == loc2.getBlockY() && loc2.getBlockZ() == location.getBlockZ() && (loc2.getWorld() == null && location.getWorld() == null || loc2.getWorld() != null && location.getWorld() != null && loc2.getWorld().getName().equals(location.getWorld().getName()));
     }
 
 }

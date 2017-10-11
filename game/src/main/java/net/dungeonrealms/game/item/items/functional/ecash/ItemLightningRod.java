@@ -55,16 +55,15 @@ public class ItemLightningRod extends FunctionalItem implements ItemClickListene
                 }
 
                 player.setMetadata("rodCD", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
-                //lightningLoc.getWorld().strikeLightningEffect(lightningLoc);
-                EntityLightning el = new EntityLightning((World) Bukkit.getWorld(player.getWorld().toString()), lightningLoc.getX(), lightningLoc.getY(), lightningLoc.getZ(), true, true);
+                /*EntityLightning el = new EntityLightning((World) Bukkit.getWorld(player.getWorld().toString()), lightningLoc.getX(), lightningLoc.getY(), lightningLoc.getZ(), true, true);
                 PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(el);
 
                 player.getWorld().playSound(lightningLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1f, 1f);
                 for(Player playa : GameAPI.getNearbyPlayers(lightningLoc, 50)) {
                     if(playa == null) continue;
                     ((CraftPlayer) playa).getHandle().playerConnection.sendPacket(packet);
-                }
-                //((CraftPlayer) ply).getHandle().playerConnection.sendPacket(packet);
+                }*/
+                GameAPI.playLightningEffect(player.getWorld(), lightningLoc, 50);
             }
         }
     }

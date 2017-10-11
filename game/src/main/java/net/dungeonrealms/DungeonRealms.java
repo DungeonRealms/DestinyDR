@@ -1,24 +1,24 @@
 package net.dungeonrealms;
 
 import com.esotericsoftware.minlog.Log;
-
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
+import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.Rank;
-import net.dungeonrealms.common.game.database.player.PlayerRank;
 import net.dungeonrealms.common.game.database.sql.QueryType;
 import net.dungeonrealms.common.game.database.sql.SQLDatabaseAPI;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ShardInfo.ShardType;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.common.util.VoidChunkGenerator;
 import net.dungeonrealms.database.PlayerGameStats.StatColumn;
 import net.dungeonrealms.database.PlayerToggles.Toggles;
+import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.database.listener.DataListener;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
@@ -26,7 +26,9 @@ import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.anticheat.PacketModifier;
 import net.dungeonrealms.game.command.*;
-import net.dungeonrealms.game.command.content.*;
+import net.dungeonrealms.game.command.content.CommandGraveyard;
+import net.dungeonrealms.game.command.content.CommandItemEdit;
+import net.dungeonrealms.game.command.content.CommandQuestEditor;
 import net.dungeonrealms.game.command.donation.CommandDonation;
 import net.dungeonrealms.game.command.donation.CommandMailbox;
 import net.dungeonrealms.game.command.donation.CommandUnlocks;
@@ -41,9 +43,9 @@ import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
+import net.dungeonrealms.game.command.test.CommandTestCloud;
 import net.dungeonrealms.game.command.test.CommandTestDot;
 import net.dungeonrealms.game.command.test.CommandTestDupe;
-import net.dungeonrealms.game.command.test.CommandTestCloud;
 import net.dungeonrealms.game.command.test.CommandTestTranslated;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
@@ -56,7 +58,9 @@ import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
 import net.dungeonrealms.game.listener.inventory.*;
-import net.dungeonrealms.game.listener.mechanic.*;
+import net.dungeonrealms.game.listener.mechanic.BankListener;
+import net.dungeonrealms.game.listener.mechanic.EnergyListener;
+import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.listener.network.BungeeChannelListener;
 import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
@@ -67,16 +71,18 @@ import net.dungeonrealms.game.mechanic.dot.DotManager;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
+import net.dungeonrealms.game.player.altars.AltarListener;
+import net.dungeonrealms.game.player.altars.AltarManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
 import net.dungeonrealms.game.player.cosmetics.particles.TimedSpecialParticleEffect;
 import net.dungeonrealms.game.player.inventory.ShopMenuListener;
-import net.dungeonrealms.game.player.inventory.menus.guis.polls.PollManager;
 import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.compass.CompassListener;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -94,12 +100,13 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -274,6 +281,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(RiftMechanics.getInstance());
         MechanicManager.registerMechanic(new TrinketMechanics());
         MechanicManager.registerMechanic(new AuraMechanics());
+        MechanicManager.registerMechanic(CutSceneMechanic.get());
 
         if (!isInstanceServer) {
             MechanicManager.registerMechanic(Teleportation.getInstance());
@@ -293,6 +301,8 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms - Registering Events");
 
+        pm.registerEvents(new CompassListener(), this);
+        pm.registerEvents(new AltarListener(), this);
         pm.registerEvents(new ShopMenuListener(), this);
         pm.registerEvents(new FunctionalItemListener(), this);
         pm.registerEvents(new DamageListener(), this);
@@ -324,6 +334,9 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
+        cm.registerCommand(new CommandQObjective());
+        cm.registerCommand(new CommandCutscene());
+        cm.registerCommand(new CommandQStop());
         cm.registerCommand(new CommandTestDot());
         cm.registerCommand(new CommandTestTranslated());
         cm.registerCommand(new CommandTestCloud());
@@ -528,6 +541,7 @@ public class DungeonRealms extends JavaPlugin {
             e.printStackTrace();
         }
 
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             Constants.log.info("DungeonRealms - Now Accepting Players.");
 
@@ -574,6 +588,8 @@ public class DungeonRealms extends JavaPlugin {
             Realm.tickRealmEffects();
             TimedSpecialParticleEffect.tickTimedEffects();
         },1L,1L);
+
+        AltarManager.initAltarManager();
 
 //        PollManager.loadAllPolls((unused) -> {
 //            System.out.println("Successfully loaded all polls!");

@@ -5,11 +5,14 @@ import com.codingforcookies.armorequip.ArmorType;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.PacketPlayOutEntityEquipment;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -90,7 +93,7 @@ public class OverrideListener implements GenericMechanic, Listener {
                     Player player = (Player) event.getVisibleEntity();
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
                     if (wrapper == null) {
-                        if(player != null && player.getName().equals("Wizard") && event.getSlot() == EnumWrappers.ItemSlot.HEAD){
+                        if (player != null && player.getName().equals("Wizard") && event.getSlot() == EnumWrappers.ItemSlot.HEAD) {
                             final ItemStack clone = event.getEquipment();
                             clone.setType(CosmeticOverrides.WIZARD_HAT.getItemType());
                             clone.setDurability(CosmeticOverrides.WIZARD_HAT.getDurability());
@@ -98,13 +101,22 @@ public class OverrideListener implements GenericMechanic, Listener {
                         }
                         return false;
                     }
+                    EnumWrappers.ItemSlot slot = event.getSlot();
                     CosmeticOverrides hatOverride = wrapper.getActiveHatOverride();
-                    if (hatOverride != null && event.getSlot().equals(EnumWrappers.ItemSlot.HEAD)) {
+                    if (hatOverride != null && slot.equals(EnumWrappers.ItemSlot.HEAD)) {
                         final ItemStack clone = event.getEquipment();
                         if (clone == null) return false;
                         clone.setType(hatOverride.getItemType());
                         clone.setDurability(hatOverride.getDurability());
                         event.setEquipment(clone);
+                    } else {
+                        if (slot == EnumWrappers.ItemSlot.LEGS || slot == EnumWrappers.ItemSlot.CHEST || slot == EnumWrappers.ItemSlot.FEET || slot == EnumWrappers.ItemSlot.HEAD) {
+                            if (SetBonus.hasSetBonus(player, SetBonuses.HEALER) && event.getEquipment() != null) {
+                                Color color = getHealerColor(event.getEquipment());
+                                ItemStack newEq = createLeatherArmor(event.getEquipment(), color);
+                                event.setEquipment(newEq);
+                            }
+                        }
                     }
                 }
                 return true;
@@ -168,5 +180,6 @@ public class OverrideListener implements GenericMechanic, Listener {
         if (toUpdate.getGameMode() != GameMode.CREATIVE)
             ((CraftPlayer) toUpdate).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
     }
+
 }
 

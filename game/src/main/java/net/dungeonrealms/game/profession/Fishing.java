@@ -127,7 +127,7 @@ public class Fishing implements GenericMechanic, Listener {
     private static void updateConfig() {
         List<String> locations = new ArrayList<>();
         for (Location l : FISHING_LOCATIONS.keySet())
-            locations.add(l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + FISHING_LOCATIONS.get(l));
+            locations.add(l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ() + "=" + FISHING_LOCATIONS.get(l));
         DungeonRealms.getInstance().getConfig().set("fishingspawns", locations);
         DungeonRealms.getInstance().saveConfig();
     }
@@ -295,8 +295,14 @@ public class Fishing implements GenericMechanic, Listener {
         for (String line : CONFIG) {
             if (line.contains("=")) {
                 String[] cords = line.split("=")[0].split(",");
-                Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
-                        Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+                Location loc;
+                if(cords.length >= 4) {
+                    loc = new Location(Bukkit.getWorld(cords[0]), Double.parseDouble(cords[1]),
+                            Double.parseDouble(cords[2]), Double.parseDouble(cords[3]));
+                } else {
+                    loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
+                            Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+                }
 
                 int tier = Integer.parseInt(line.split("=")[1]);
                 FISHING_LOCATIONS.put(loc, tier);

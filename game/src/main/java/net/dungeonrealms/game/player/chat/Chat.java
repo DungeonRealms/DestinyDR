@@ -224,6 +224,10 @@ public class Chat {
     	
         return search.filter(pl -> {
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
+
+                    //Ignore global messages from this person since they are blocked.
+                    if(wrapper != null && channel != ChatChannel.LOCAL && wrapper.getIgnoredFriends().containsKey(sender.getUniqueId()))return false;
+
                     return wrapper != null && (channel != ChatChannel.TRADE || wrapper.getToggles().getState(Toggles.TRADE_CHAT));
         		}).collect(Collectors.toList());
     }

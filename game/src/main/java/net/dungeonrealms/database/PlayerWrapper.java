@@ -709,13 +709,20 @@ public class PlayerWrapper {
         if (!firstTimePlaying) {
             try {
                 String[] locArray = storedLocationString.split(",");
-                double x = Double.parseDouble(locArray[0]);
-                double y = Double.parseDouble(locArray[1]);
-                double z = Double.parseDouble(locArray[2]);
-                float yaw = Float.parseFloat(locArray[3]);
-                float pitch = Float.parseFloat(locArray[4]);
+
+                String world = Bukkit.getWorlds().get(0).getName();
+                int start = 0;
+                if (locArray.length == 6) {
+                    start = 1;
+                    world = locArray[0];
+                }
+                double x = Double.parseDouble(locArray[start++]);
+                double y = Double.parseDouble(locArray[start++]);
+                double z = Double.parseDouble(locArray[start++]);
+                float yaw = Float.parseFloat(locArray[start++]);
+                float pitch = Float.parseFloat(locArray[start++]);
                 //Success.
-                this.storedLocation = new Location(Bukkit.getWorlds().get(0), x, y, z, yaw, pitch);
+                this.storedLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
                 return;
             } catch (Exception e) {
                 Bukkit.getLogger().info("Unable to load location for " + storedLocationString);
@@ -740,7 +747,7 @@ public class PlayerWrapper {
         if (!GameAPI.isMainWorld(location.getWorld())) {
             return storedLocationString;
         }
-        return new StringBuilder().append(location.getX()).append(',').append(location.getY() + 0.3).append(',').append(location.getZ()).append(',').append(location.getYaw()).append(',').append(location.getPitch()).toString();
+        return new StringBuilder().append(location.getWorld().getName()).append(",").append(location.getX()).append(',').append(location.getY() + 0.3).append(',').append(location.getZ()).append(',').append(location.getYaw()).append(',').append(location.getPitch()).toString();
     }
 
     public String getFormattedShardName() {

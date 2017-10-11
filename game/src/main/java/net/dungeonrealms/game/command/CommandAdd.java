@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import net.citizensnpcs.api.persistence.Persistable;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
@@ -7,6 +8,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
@@ -71,6 +73,24 @@ public class CommandAdd extends BaseCommand {
             int tier;
             LivingEntity target;
             ItemStack held = player.getEquipment().getItemInMainHand();
+
+            if (args[0].equalsIgnoreCase("itemtype")) {
+
+                ItemType type = ItemType.getByName(args[1]);
+                if(type == null){
+                    player.sendMessage(ChatColor.RED + "Invalid Item Type!");
+                    return true;
+                }
+
+                try {
+                    PersistentItem item = type.getItemClass().newInstance();
+                    player.getInventory().addItem(item.generateItem());
+                    player.sendMessage(ChatColor.RED + "Generated!");
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
             switch (args[0]) {
                 case "save":
                     if (held == null || held.getType() == Material.AIR) {

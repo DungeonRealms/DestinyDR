@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.dungeonrealms.DungeonRealms;
@@ -25,7 +26,7 @@ import com.google.gson.JsonParser;
 
 public class StoreBase<T extends ISaveable> {
 
-	private List<T> list = new ArrayList<T>();
+	private LinkedList<T> list = new LinkedList<T>();
 	private Class<T> createClass;
 	private String directory;
 	
@@ -48,6 +49,8 @@ public class StoreBase<T extends ISaveable> {
 				T loading = (T) this.createClass.newInstance();
 				loading.fromFile(new JsonParser().parse(br).getAsJsonObject());
 				list.add(loading);
+				System.out.println("Loaded from file: " + load.getName());
+				br.close();
 			}catch(Exception e){
 				e.printStackTrace();
 				Bukkit.getLogger().warning("Failed to load " + load.getName());
@@ -74,7 +77,7 @@ public class StoreBase<T extends ISaveable> {
 		});
 	}
 	
-	public List<T> getList(){
+	public LinkedList<T> getList(){
 		return this.list;
 	}
 	

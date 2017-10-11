@@ -134,9 +134,11 @@ public class ItemManager {
         }
         dps = ((int)dpsLow) + " - " + ((int)dpsHigh) + "% ";*/
 
+        dps = range.getValLow() + " - " + range.getValHigh();
+
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK
-                + "   " + dps + ChatColor.BOLD + "DPS" + "\n" + ChatColor.BLACK
+                + "   " + dps + ChatColor.BOLD + "% DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
                 + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK

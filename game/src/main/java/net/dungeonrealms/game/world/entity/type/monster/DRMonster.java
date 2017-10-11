@@ -29,7 +29,6 @@ import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.item.*;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -75,13 +74,15 @@ public interface DRMonster {
     }
 
     default void setupMonster(int tier) {
-        setupMonster(tier,-1,-1);
+        setupMonster(tier, -1, -1, 0, 0);
     }
 
-    default void setupMonster(int tier, int minMobScore, int maxMobScore) {
+    default void setupMonster(int tier, int minMobScore, int maxMobScore, double minRarityScore, double maxRarityScore) {
         setTier(tier);
         setMinMobScore(minMobScore);
         setMaxMobScore(maxMobScore);
+        setMinRarityScore(minRarityScore);
+        setMaxRarityScore(maxRarityScore);
         setGear();
         setSkullTexture();
 
@@ -103,6 +104,32 @@ public interface DRMonster {
         getNMS().maxNoDamageTicks = 0;
     }
 
+    default double getPercentIncreaseFromScore(Item.ItemRarity rarity, double rarityScore) {
+        if (rarityScore >= 5.0) {
+            if (rarity.equals(Item.ItemRarity.UNIQUE)) return 100.0;
+            return 0.0;
+        }
+
+        if (rarityScore < 1.0) return 0.0;
+
+        Item.ItemRarity rarityIncreased = null;
+
+        if (rarityScore >= 4.0) rarityIncreased = Item.ItemRarity.UNIQUE;
+        else if (rarityScore >= 3.0) rarityIncreased = Item.ItemRarity.RARE;
+        else if (rarityScore >= 2.0) rarityIncreased = Item.ItemRarity.UNCOMMON;
+        else if (rarityScore >= 1.0) rarityIncreased = Item.ItemRarity.COMMON;
+
+        if (rarityIncreased == null) return 0.0;
+
+        double percentIncrease = (rarityScore - ((int) rarityScore)) * 100;
+
+        if (rarityIncreased.equals(rarity)) {
+            return percentIncrease;
+        }
+
+        return 0.0;
+    }
+
     default void setGear() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         EntityEquipment e = getBukkit().getEquipment();
@@ -110,19 +137,42 @@ public interface DRMonster {
         int minMobScore = getMinMobScore();
         int maxMobScore = getMaxMobScore();
 
+        double minRarityScore = getMinRarityScore();
+        double maxRarityScore = getMaxRarityScore();
+
 
         ItemStack[] entityArmor = e.getArmorContents();
-        if(minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
+        if (minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
             int piecesFromLower = 0;
-            for(int i = 0; i <= 2; i++) {
+            for (int i = 0; i <= 2; i++) {
                 int tier = random.nextInt(minMobScore, maxMobScore + 1);
-                if(piecesFromLower >= 2) tier = maxMobScore;
-                if(tier <= 0) {
+                if (piecesFromLower >= 2) tier = maxMobScore;
+
+
+                if (tier <= 0) {
                     piecesFromLower++;
                     continue;
+                } else if(tier != maxMobScore) {
+                    piecesFromLower++;
                 }
-                if(tier > 5) tier = 5;
-                ItemStack[] armor = GameAPI.getTierArmor(tier);
+
+                if (tier > 5) tier = 5;
+
+                double mobRarityScore = minMobScore;
+                if (tier == minMobScore) mobRarityScore = minRarityScore;
+                else if(tier == maxMobScore) mobRarityScore = maxRarityScore;
+                else mobRarityScore = random.nextDouble(minRarityScore, maxRarityScore);
+
+//                System.out.println("The rarity score we picked: " + mobRarityScore + " for the tier: " + tier);
+                double commonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.COMMON, mobRarityScore);
+                double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
+                double rareIncrease = getPercentIncreaseFromScore(Item.ItemRarity.RARE, mobRarityScore);
+                double uniqueIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNIQUE, mobRarityScore);
+//                System.out.println("The common increase: " + commonIncrease);
+//                System.out.println("The uncommon increase: " + unCommonIncrease);
+//                System.out.println("The rare increase: " + rareIncrease);
+//                System.out.println("The unique increase: " + uniqueIncrease);
+                ItemStack[] armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, rareIncrease ,uniqueIncrease);
                 entityArmor[i] = armor[i];
             }
         } else {
@@ -168,10 +218,30 @@ public interface DRMonster {
     default ItemStack makeItem(ItemGear gear) {
         int minMobScore = getMinMobScore();
         int maxMobScore = getMaxMobScore();
-        if(minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
+
+        double minRarityScore = getMinRarityScore();
+        double maxRarityScore = getMaxRarityScore();
+        if (minMobScore > -1 && maxMobScore > -1 && maxMobScore > minMobScore) {
             int tier = ThreadLocalRandom.current().nextInt(minMobScore, maxMobScore + 1);
             if (tier <= 0) tier = 1;
             if (tier > 5) tier = 5;
+
+            double mobRarityScore = minMobScore;
+            if (tier == minMobScore) mobRarityScore = minRarityScore;
+            else if(tier == maxMobScore) mobRarityScore = maxRarityScore;
+            else mobRarityScore = ThreadLocalRandom.current().nextDouble(minRarityScore, maxRarityScore);
+
+//            System.out.println("The rarity score we picked: " + mobRarityScore + " for the tier: " + tier);
+            double commonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.COMMON, mobRarityScore);
+            double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
+            double rareIncrease = getPercentIncreaseFromScore(Item.ItemRarity.RARE, mobRarityScore);
+            double uniqueIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNIQUE, mobRarityScore);
+//            System.out.println("The common increase: " + commonIncrease);
+//            System.out.println("The uncommon increase: " + unCommonIncrease);
+//            System.out.println("The rare increase: " + rareIncrease);
+//            System.out.println("The unique increase: " + uniqueIncrease);
+
+            gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease));
             return gear.setTier(ItemTier.getByTier(tier)).generateItem();
         }
         return gear.setTier(ItemTier.getByTier(getTier())).generateItem();
@@ -202,6 +272,22 @@ public interface DRMonster {
 
     default int getMaxMobScore() {
         return Metadata.MAX_MOB_SCORE.get(getBukkit()).asInt();
+    }
+
+    default void setMinRarityScore(double rarityScore) {
+        Metadata.MIN_RARITY_SCORE.set(getBukkit(), rarityScore);
+    }
+
+    default double getMinRarityScore() {
+        return Metadata.MIN_RARITY_SCORE.get(getBukkit()).asDouble();
+    }
+
+    default void setMaxRarityScore(double rarityScore) {
+        Metadata.MAX_RARITY_SCORE.set(getBukkit(), rarityScore);
+    }
+
+    default double getMaxRarityScore() {
+        return Metadata.MAX_RARITY_SCORE.get(getBukkit()).asDouble();
     }
 
 
@@ -304,8 +390,12 @@ public interface DRMonster {
             if (stack != null && stack.getType() != Material.AIR && stack.getType() != Material.SKULL && stack.getType() != Material.SKULL_ITEM)
                 toDrop.add(stack);
 
-        if (!elite)
-            toDrop.add(new ItemArmor(ItemType.HELMET).setTier(ItemTier.getByTier(getTier())).generateItem());
+        if (!elite) {
+            ItemStack helmet = EntityAPI.lastUsedHelmetItem.get(getBukkit());
+            if(helmet == null) helmet = new ItemArmor(ItemType.HELMET).setTier(ItemTier.getByTier(getTier())).generateItem();
+            toDrop.add(helmet);
+        }
+
 
         double mult = ItemLootAura.getDropMultiplier(ent.getLocation(), AuraType.LOOT);
         if (mult > 0)
@@ -318,16 +408,16 @@ public interface DRMonster {
 
         if (dry != null && dry > 1 && !elite && !Metadata.NAMED_ELITE.has(ent)) {
             double mobScore = 1;
-            for(ItemStack drop : toDrop) {
+            for (ItemStack drop : toDrop) {
                 ItemGear gear = null;
-                if(ItemArmor.isArmor(drop)) gear = new ItemArmor(drop);
-                else if(ItemWeapon.isWeapon(drop)) gear = new ItemWeapon(drop);
+                if (ItemArmor.isArmor(drop)) gear = new ItemArmor(drop);
+                else if (ItemWeapon.isWeapon(drop)) gear = new ItemWeapon(drop);
 
-                if(gear == null) continue;
+                if (gear == null) continue;
 
-                if(gear.getRarity().equals(Item.ItemRarity.UNIQUE)) mobScore += 250;
-                else if(gear.getRarity().equals(Item.ItemRarity.RARE)) mobScore += 50;
-                else if(gear.getRarity().equals(Item.ItemRarity.UNCOMMON)) mobScore += 5;
+                if (gear.getRarity().equals(Item.ItemRarity.UNIQUE)) mobScore += 250;
+                else if (gear.getRarity().equals(Item.ItemRarity.RARE)) mobScore += 50;
+                else if (gear.getRarity().equals(Item.ItemRarity.UNCOMMON)) mobScore += 5;
             }
             //Garuntee a drop?
             //1000 dry = 50% increase.
@@ -353,20 +443,24 @@ public interface DRMonster {
                 ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
                 if (weapon != null && weapon.getType() != Material.AIR)
                     drop = weapon;
+
+
             }
+            ItemTier dropTier = t;
 
             //  DROP ITEM  //
             if (drop != null && drop.getType() != Material.AIR) {
                 PersistentItem persis = PersistentItem.constructItem(drop);
                 if (persis instanceof ItemGear) {
                     ItemGear gear = (ItemGear) PersistentItem.constructItem(drop);
+                    dropTier = gear.getTier();
                     gear.setGlowing(false);
                     gear.damageItem(null, Utils.randInt(0, ItemGear.MAX_DURABILITY - (int) (ItemGear.MAX_DURABILITY / 7.5)));
                     //drop the gear peice.
                     ItemManager.whitelistItemDrop(killer, loc, gear.generateItem());
                 }
             }
-            pw.getDryLoot().put(t, 0);
+            pw.getDryLoot().put(dropTier, 0);
         } else {
             //No drop..
             pw.getDryLoot().put(t, dry == null ? 1 : dry + 1);

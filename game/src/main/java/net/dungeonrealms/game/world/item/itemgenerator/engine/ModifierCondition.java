@@ -11,6 +11,7 @@ public class ModifierCondition {
 
 	@Getter
 	private Item.ItemTier tier;
+	@Getter
 	private Item.ItemRarity rarity;
 	private ModifierRange range;
 	private int chance = -1;

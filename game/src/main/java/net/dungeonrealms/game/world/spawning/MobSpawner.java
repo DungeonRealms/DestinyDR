@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.CC;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,6 +51,10 @@ public abstract class MobSpawner implements Cloneable {
     private int timerID = -1;
     @Getter
     protected BukkitTask spawnerTask;
+
+    @Getter
+    @Setter
+    private String world;
 
     @Getter //"high" or "low". How powerful this entity is.
     private String lvlRange;
@@ -112,17 +117,22 @@ public abstract class MobSpawner implements Cloneable {
 
     @Getter
     @Setter
+    private double minRarityScore = -1, maxRarityScore = -1;
+
+    @Getter
+    @Setter
     protected int toRespawn = 0;
 
     @Getter
     private UUID uuid = UUID.randomUUID();
 
-    public MobSpawner(Location location, EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ, int minMobScore, int maxMobscore) {
+    public MobSpawner(Location location, String world,EnumMonster type, String name, int tier, int spawnAmount, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ, int minMobScore, int maxMobscore, double minRarityScore, double maxRarityScore) {
         setCustomName(name);
         setMonsterType(type);
         setSpawnAmount(Math.min(spawnAmount, 8));
 
         this.lvlRange = lvlRange;
+        this.world = world;
         this.initialRespawnDelay = respawnDelay;
         setRespawnDelay(respawnDelay);
 
@@ -131,6 +141,10 @@ public abstract class MobSpawner implements Cloneable {
         this.tier = tier;
         this.respawnDelay = respawnDelay;
         this.counter = 0;
+        this.minMobScore = minMobScore;
+        this.maxMobScore = maxMobscore;
+        this.minRarityScore = minRarityScore;
+        this.maxRarityScore = maxRarityScore;
         setMinimumXZ(mininmumXZ);
         setMaximumXZ(maximumXZ);
 //        spawnArmorStand();
@@ -184,6 +198,8 @@ public abstract class MobSpawner implements Cloneable {
         holo.appendTextLine(ChatColor.GREEN + "Respawn Delay: " + this.getInitialRespawnDelay());
         holo.appendTextLine(ChatColor.GREEN + "Spawn Amount: " + this.getSpawnAmount());
         holo.appendTextLine(ChatColor.GREEN + "Spawn Range: " + this.getMinimumXZ() + " - " + this.getMaximumXZ());
+        if(getMaxRarityScore() != -1)
+            holo.appendTextLine(CC.Green + "Rarity Range: " + this.getMinRarityScore() + " - " + this.getMaxRarityScore());
 
         if (this.weaponType != null)
             holo.appendTextLine(ChatColor.GREEN + "Weapon Type: " + this.weaponType);
@@ -222,6 +238,12 @@ public abstract class MobSpawner implements Cloneable {
         builder.append(minMobScore);
         builder.append("!");
         builder.append(maxMobScore);
+        builder.append("!");
+        builder.append(minRarityScore);
+        builder.append("!");
+        builder.append(maxRarityScore);
+        builder.append("!");
+        builder.append(getWorld());
         builder.append("@#@");
 
         builder.append(loc.getX()).append(",")
@@ -364,7 +386,7 @@ public abstract class MobSpawner implements Cloneable {
             EliteMobSpawner ms = (EliteMobSpawner) this;
             entity = EntityAPI.spawnElite(spawn, getLocation().clone(), ms.getEliteType(), getMonsterType(), getTier(), level, getCustomName());
         } else {
-            entity = EntityAPI.spawnCustomMonster(spawn, getLocation().clone(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName());
+            entity = EntityAPI.spawnCustomMonster(spawn, getLocation().clone(), getMonsterType(), level, getTier(), getWeaponType(), getCustomName(), getMinMobScore(), getMaxMobScore(), getMinRarityScore(), getMaxRarityScore());
         }
 
         if (entity == null) {

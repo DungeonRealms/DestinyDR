@@ -35,7 +35,7 @@ public class CommandLootChest extends BaseCommand {
         Player pl = (Player) sender;
 
 
-        if (!Rank.isGM(pl)) return true;
+        if (!Rank.isGM(pl) && !(Rank.isPMOD(pl) && DungeonRealms.isMaster())) return true;
 
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("edit")) {
@@ -90,7 +90,7 @@ public class CommandLootChest extends BaseCommand {
     public static void createHologram(LootSpawner spawner) {
         Hologram holo = HologramsAPI.createHologram(DungeonRealms.getInstance(), spawner.getLocation().clone().add(.5, 2.5, 0.5));
         holo.appendTextLine(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Loot Chest");
-        holo.appendTextLine(ChatColor.YELLOW + "Loot Type: " + spawner.getLootTable());
+        holo.appendTextLine(ChatColor.YELLOW + "Loot Type: " + spawner.getTable());
         holo.appendTextLine(ChatColor.YELLOW + "Respawn Timer: " + (spawner.getTickDelay() - 1200) + "s");
         shownLootChests.put(spawner.getLocation(), holo);
     }

@@ -18,7 +18,7 @@ public class CommandOreEdit extends BaseCommand {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!Rank.isGM((Player) sender)) {
+        if (!Rank.isGM((Player) sender) && !(Rank.isPMOD((Player)sender) && DungeonRealms.isMaster())) {
             return true;
         }
 

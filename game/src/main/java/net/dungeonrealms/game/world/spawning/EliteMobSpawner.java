@@ -23,14 +23,14 @@ public class EliteMobSpawner extends MobSpawner {
     private EnumNamedElite eliteType;
 
     public EliteMobSpawner(EnumNamedElite elite) {
-        this(elite.getLocation(), elite.getDisplayName(), elite.getMonster(), elite.getTier(), elite.getRespawnDelay(), elite.getSpread());
+        this(elite.getLocation(), elite.getWorld(),elite.getDisplayName(), elite.getMonster(), elite.getTier(), elite.getRespawnDelay(), elite.getSpread());
         setEliteType(elite);
         if (getEliteType() != null)
             setMonsterType(getEliteType().getMonster());
     }
 
-    public EliteMobSpawner(Location l, String displayName, EnumMonster m, int tier, int respawnDelay, int spread) {
-        super(l, m, displayName, tier, 1, "low", respawnDelay, 1, spread, -1, -1);
+    public EliteMobSpawner(Location l, String world, String displayName, EnumMonster m, int tier, int respawnDelay, int spread) {
+        super(l, world, m, displayName, tier, 1, "low", respawnDelay, 1, spread, -1, -1,0,0);
         if (this.customName != null && !this.customName.isEmpty())
             this.customName = Item.ItemTier.getByTier(tier).getColor() + ChatColor.BOLD.toString() + ChatColor.stripColor(displayName);
     }
@@ -54,7 +54,7 @@ public class EliteMobSpawner extends MobSpawner {
     public MobSpawner clone() {
         if (eliteType != null) return new EliteMobSpawner(eliteType);
 
-        EliteMobSpawner retr = new EliteMobSpawner(getLocation(), getCustomName(), getMonsterType(), getTier(), getInitialRespawnDelay(), getMinimumXZ());
+        EliteMobSpawner retr = new EliteMobSpawner(getLocation(), getWorld(),getCustomName(), getMonsterType(), getTier(), getInitialRespawnDelay(), getMinimumXZ());
         if (isDungeon())
             retr.setDungeon(retr.isDungeon());
         return retr;

@@ -55,6 +55,7 @@ public class Subscription {
             Bukkit.getLogger().info("Null wrapper for " + player);
             return;
         }
+        if(wrapper.getRankExpiration() == null) return;
         int subLength = checkSubscription(player.getUniqueId(), wrapper.getRankExpiration());
         if (subLength > 0) {
             showSubscriptionExpiry(player, subLength);

@@ -33,7 +33,11 @@ public class CommandSpawner extends BaseCommand {
         if (!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
-        if (!Rank.isGM(player)) {
+        /*if (!Rank.isGM(player)) {
+            return true;
+        }*/
+
+        if (!Rank.isBuilder(player.getUniqueId())) {
             return true;
         }
 
@@ -57,7 +61,7 @@ public class CommandSpawner extends BaseCommand {
 
                 int found = 0;
                 for (MobSpawner spawner : SpawningMechanics.getSpawners()) {
-
+                    if(spawner.getLocation() != null && spawner.getLocation().getWorld() !=  player.getWorld()) continue;
                     if (spawner.getLocation() != null && (hideAll || spawner.getLocation().distance(player.getLocation()) <= radius)) {
 
                         if (showing) {

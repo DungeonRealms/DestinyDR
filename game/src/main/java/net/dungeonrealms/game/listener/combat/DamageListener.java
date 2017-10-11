@@ -12,10 +12,7 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
-import net.dungeonrealms.game.item.items.core.ItemGear;
-import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.item.items.core.ItemWeaponRanged;
-import net.dungeonrealms.game.item.items.core.ProfessionItem;
+import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.PotionItem;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
@@ -383,7 +380,7 @@ public class DamageListener implements Listener {
             ItemStack offHand = p.getInventory().getItemInOffHand();
             if(offHand != null && !offHand.getType().equals(Material.AIR)) {
                 PersistentItem persis = PersistentItem.constructItem(offHand);
-                if (persis instanceof ItemGear) {
+                if (persis instanceof ItemArmorShield) {
                     ItemGear gear = (ItemGear) persis;
                     gear.damageItem(p, durabilityLoss);
 

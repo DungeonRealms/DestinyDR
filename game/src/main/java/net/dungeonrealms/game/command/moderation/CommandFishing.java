@@ -6,6 +6,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.profession.Fishing;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,7 @@ public class CommandFishing extends BaseCommand {
                 AtomicInteger shown = new AtomicInteger(0);
                 Fishing.getLocations().forEach((loc, tier) -> {
 
-                    if (loc.distanceSquared(player.getLocation()) <= radius * radius) {
+                    if (LocationUtils.distanceSquared(loc, player.getLocation()) <= radius * radius) {
                         //SHOOWWWW
                         if (shownFishingSpots.containsKey(loc)) return;
 

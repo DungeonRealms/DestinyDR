@@ -368,9 +368,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
                                         if (wrapper != null && wrapper.getFriendsList().containsKey(whoRemoved)) {
                                             //Remove them..
-                                            wrapper.getFriendsList().remove(whoRemoved);
-                                            if (wrapper.getPendingFriends().remove(whoRemoved) == null)
-                                                pl.sendMessage(ChatColor.RED + name + " has removed you from their friends list.");
+                                            if(wrapper.getFriendsList().remove(whoRemoved) != null) pl.sendMessage(ChatColor.RED + name + " has removed you from their friends list.");
+                                            else wrapper.getPendingFriends().remove(whoRemoved);
                                         }
                                     }
                                 }
