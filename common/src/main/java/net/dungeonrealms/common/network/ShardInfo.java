@@ -16,26 +16,20 @@ import java.util.Optional;
  */
 @AllArgsConstructor @Getter
 public enum ShardInfo implements Serializable {
-	
+
     // DEVELOPMENT SHARD //
-    US0("US0", new ServerAddress("158.69.121.40", 40011), ShardType.DEVELOPMENT),
-    TESTUS0("TEST-US0", new ServerAddress("158.69.121.40", 40012), ShardType.DEVELOPMENT),
-    TEST("TEST", new ServerAddress("158.69.121.40", 40013), ShardType.DEVELOPMENT),
+    US0("US-0", "us0", new ServerAddress("127.0.0.1", 40001), ShardType.DEVELOPMENT),
 
-    // US 1 SHARD //
-    US1("US-1", new ServerAddress("158.69.23.118", 42000), ShardType.DEFAULT),
+    // NORMAL US SHARDS //
+    US1("US-1", "us1", new ServerAddress("142.4.215.161", 40001), ShardType.DEFAULT),
+    US2("US-2", "us2", new ServerAddress("142.4.215.119", 40001), ShardType.DEFAULT),
+    US3("US-3", "us3", new ServerAddress("198.27.81.165", 40001), ShardType.DEFAULT),
 
-    // US 2 SHARD //
-    US2("US-2", new ServerAddress("158.69.121.38", 42000), ShardType.DEFAULT),
-
-    // US 3 SHARD //
-    US3("US-3", new ServerAddress("158.69.121.67", 42000), ShardType.DEFAULT),
-
-    // SUB 1 SHARD //
-    SUB1("SUB-1", new ServerAddress("158.69.121.67", 42001), ShardType.SUBSCRIBER),
+    // SUB SHARDS //
+    SUB1("SUB-1", "sub1", new ServerAddress("198.27.81.165", 40002), ShardType.SUBSCRIBER),
 
     // CUSTOMER SUPPORT AND SALES SHARD //
-    CS1("CS-1", "cs1", new ServerAddress("158.69.121.48", 45521), ShardType.SUPPORT);
+    CS1("CS-1", "cs1", new ServerAddress("127.0.0.1", 40002), ShardType.SUPPORT);
 
     private String shardID;
     private String pseudoName;

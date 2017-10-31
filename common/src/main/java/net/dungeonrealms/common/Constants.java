@@ -10,7 +10,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static List<String> DEVELOPERS = Arrays.asList("Bradez1571", "Kneesnap", "iFamasssxD", "Ingot");
+    public static List<String> DEVELOPERS = Arrays.asList("Detoxen", "Kneesnap", "Kihz", "Lana");
 
     public static String MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
 
@@ -24,8 +24,7 @@ public class Constants {
     public static int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static String MASTER_SERVER_IP = "158.69.23.169";
-//    public static String MASTER_SERVER_IP = "158.69.121.40";
+    public static String MASTER_SERVER_IP = "192.99.7.5";
     // BACKEND SERVER SERVER PORT //
     public static int MASTER_SERVER_PORT = 22965;
 

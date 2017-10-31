@@ -673,7 +673,6 @@ public class DungeonRealms extends JavaPlugin {
             ini.load(new FileReader("credentials.ini"));
             ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
             ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
-            ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
         } catch (Exception e) {
             Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");

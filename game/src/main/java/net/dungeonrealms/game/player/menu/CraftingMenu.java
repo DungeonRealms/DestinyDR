@@ -22,7 +22,6 @@ import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R1.PacketPlayOutEntityStatus;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.PacketPlayInBlockDig;
 import net.minecraft.server.v1_9_R2.PacketPlayInBlockPlace;
@@ -99,7 +98,6 @@ public class CraftingMenu implements GenericMechanic, Listener {
                             }
                             player.setMetadata("blocking", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
 
-                            PacketPlayOutEntityStatus status;
                             ((CraftPlayer)event.getPlayer()).getHandle().cA();
 //                            ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(
 //                                    new PacketPlayOutSetCooldown(net.minecraft.server.v1_9_R2.Item.getById(event.getPlayer().getInventory().getItemInOffHand().getTypeId()), 20 * 5));

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  */
 public class CouponCodeGenerator {
 
-    private static final String API_KEY = "7aa8d54acfbfaf011a03365ed59df1c997c6f5a48ca76c46";
+    private static final String API_KEY = "uZ0gr8985RK6SRPttqF863rHCURzM5Pprwb875RjjWYNVbc4";
 
     //public static void generate
 
