@@ -101,6 +101,12 @@ public class ItemMount extends FunctionalItem implements ItemClickListener {
                     player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
                     cancel();
                     return;
+                }        
+                //cancel summon in PVP combat
+                if (CombatLog.inPVP(player)) {
+                    player.sendMessage(ChatColor.RED + "Mount Summon - " + ChatColor.BOLD + "CANCELLED");
+                    cancel();
+                    return;
                 }
 
                 count++;
