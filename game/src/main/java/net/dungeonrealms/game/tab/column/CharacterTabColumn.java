@@ -68,6 +68,13 @@ public class CharacterTabColumn extends Column {
                             return getAttribute(player, ArmorAttributeType.DAMAGE);
                         }
                     },
+                new Variable("armor") {
+                      @Override
+                      public String getReplacement(Player player) {
+
+                          return getAttribute(player, ArmorAttributeType.ARMOR);
+                      }
+                    },
                     new Variable("alignment") {
                         @Override
                         public String getReplacement(Player player) {
