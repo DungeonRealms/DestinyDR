@@ -233,9 +233,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         player.removeMetadata("kickedIgnore", DungeonRealms.getInstance());
-
-        if (Constants.DEVELOPERS.contains(event.getPlayer().getName()))
-            player.setOp(true);
+        player.setOp(Rank.isGM(event.getPlayer()));
 
         player.removeMetadata("saved", DungeonRealms.getInstance());
 

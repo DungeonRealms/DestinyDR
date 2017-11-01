@@ -513,10 +513,8 @@ public class Realm {
 
                 // RUN SYNC AGAIN //
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-
                     if (!result)
                         Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
-
 
                     setupRealm(player, !result, () -> {
                         player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
@@ -589,7 +587,9 @@ public class Realm {
             e.printStackTrace();
         } finally {
             if (fos != null) fos.close();
-            FileUtils.forceDelete(tempLocation);
+
+            if (tempLocation.exists())
+                FileUtils.forceDelete(tempLocation);
 
             if (ftpClient.isConnected()) {
                 ftpClient.logout();

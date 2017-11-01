@@ -153,14 +153,8 @@ public class DamageAPI {
         if (defender.isPlayer() && EnumEntityType.HOSTILE_MOB.isType(attacker.getEntity()) && EntityAPI.isMonster(attacker.getEntity()))
             EntityAPI.getMonster(attacker.getEntity()).onMonsterAttack(defender.getPlayer());
 
-//        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
-        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
-        if(otherArmor > 0) {
-            totalDPS -= otherArmor;
-            totalDPS = Math.max(0, totalDPS);
-        }
 
         totalDPS = Math.min(80, totalDPS);
         /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
