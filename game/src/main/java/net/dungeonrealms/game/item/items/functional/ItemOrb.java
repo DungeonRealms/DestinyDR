@@ -54,6 +54,7 @@ public class ItemOrb extends FunctionalItem implements ItemInventoryListener {
         ItemGear gear = (ItemGear) PersistentItem.constructItem(oldItem);
         int oldOrbSize = gear.getAttributes().getAttributes().size();
         gear.rollStats(true);
+        gear.repair();
         ItemStack newItem = gear.generateItem();
         evt.setSwappedItem(newItem);
 
