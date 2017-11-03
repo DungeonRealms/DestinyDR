@@ -364,7 +364,7 @@ public interface DRMonster {
             }
         }
 
-        if (gemRoll < (gemChance * gemFind)) {
+        if (gemRoll < (gemChance * Math.ceil(gemFind))) {
             if (gemRoll >= gemChance)
                 wrapper.sendDebug(ChatColor.GREEN + "Your " + gemFinder.getValHigh() + "% Gem Find has resulted in a drop.");
 
@@ -386,7 +386,7 @@ public interface DRMonster {
         double dropRoll = ThreadLocalRandom.current().nextDouble(1000D);
 
         List<ItemStack> toDrop = new ArrayList<>();
-        for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents())
+        for (ItemStack stack : ent.getEquipment().getArmorContents())
             if (stack != null && stack.getType() != Material.AIR && stack.getType() != Material.SKULL && stack.getType() != Material.SKULL_ITEM)
                 toDrop.add(stack);
 

@@ -78,6 +78,11 @@ public class BankListener implements Listener {
     //GEM PICKUP CODE.
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
+        if (ItemMoney.isMoney(event.getItem().getItemStack())) {
+            int value = ((ItemMoney) PersistentItem.constructItem(event.getItem().getItemStack())).getGemValue();
+            if (value >= 10000)
+                GameAPI.sendWarning(event.getPlayer().getName() + " picked up a gem note worth " + value + " on {SERVER}!");
+        }
 
         boolean permWhitelist = false;
         if (Metadata.WHITELIST.has(event.getItem()) || (permWhitelist = Metadata.PERM_WHITELIST.has(event.getItem()))) {

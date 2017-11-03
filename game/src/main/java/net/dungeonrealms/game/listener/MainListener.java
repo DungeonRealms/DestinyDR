@@ -20,9 +20,11 @@ import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.Aura;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemLootAura;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemDPSDummy;
 import net.dungeonrealms.game.mastery.DamageTracker;
@@ -58,6 +60,8 @@ import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.network.discord.DiscordAPI;
+import net.dungeonrealms.network.discord.DiscordChannel;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
 import org.bukkit.Chunk;
@@ -283,6 +287,12 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDropEvent(PlayerDropItemEvent event) {
+        if (ItemMoney.isMoney(event.getItemDrop().getItemStack())) {
+            int value = ((ItemMoney) PersistentItem.constructItem(event.getItemDrop().getItemStack())).getGemValue();
+            if (value >= 10000)
+                GameAPI.sendWarning(event.getPlayer().getName() + " dropped a gem note worth " + value + " on {SERVER}!");
+        }
+
         GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
         if (gp != null && !gp.isAbleToDrop())
             event.setCancelled(true);

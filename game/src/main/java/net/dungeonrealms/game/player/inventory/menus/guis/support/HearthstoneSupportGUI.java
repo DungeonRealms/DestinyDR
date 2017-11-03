@@ -22,7 +22,7 @@ public class HearthstoneSupportGUI extends SupportGUI {
             setItem(slot++, new GUIItem(Material.QUARTZ).setName(loc.getDisplayName()).setLore("Click to set their hearthstone location to: " + loc.getDisplayName())
                     .setClick((evt) -> {
                 getWrapper().setHearthstone(loc);
-                getWrapper().runQuery(QueryType.UPDATE_HEARTH_STONE, loc.getDBString(), getWrapper().getCharacterID());
+                getWrapper().runQuery(QueryType.UPDATE_HEARTH_STONE, loc, getWrapper().getCharacterID());
                 player.sendMessage("Success!");
             }));
         }
