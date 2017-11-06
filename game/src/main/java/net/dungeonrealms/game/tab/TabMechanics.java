@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.tab;
 
 import codecrafter47.bungeetablistplus.api.bukkit.BungeeTabListPlusBukkitAPI;
+import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -29,7 +31,7 @@ public class TabMechanics implements GenericMechanic {
         return EnumPriority.BISHOPS;
     }
 
-    @Override
+    @Override @SneakyThrows
     public void startInitialization() {
         Constants.log.info("Registering all tab variables for the BungeeCord tab");
 
@@ -39,8 +41,9 @@ public class TabMechanics implements GenericMechanic {
         COLUMNS.add(new FriendTabColumn().register());
         COLUMNS.add(new StatisticsTabColumn().register());
 
-        COLUMNS.forEach(col ->
-                col.getVariablesToRegister().forEach(var -> BungeeTabListPlusBukkitAPI.registerVariable(DungeonRealms.getInstance(), var)));
+        for (Column c : COLUMNS)
+            for (Variable v : c.getVariablesToRegister())
+                BungeeTabListPlusBukkitAPI.registerVariable(DungeonRealms.getInstance(), v);
     }
 
     @Override

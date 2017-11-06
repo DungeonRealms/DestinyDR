@@ -12,12 +12,14 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Hopper;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -110,13 +112,14 @@ public class DungeonListener implements Listener {
 
     @EventHandler
     public void onPlayerOpen(PlayerInteractEntityEvent event) {
-        if (DungeonManager.isDungeon(event.getRightClicked().getWorld())) {
-            if (event.getRightClicked() instanceof Villager) {
+        if (DungeonManager.isDungeon(event.getRightClicked().getWorld()))
+            if (event.getRightClicked() instanceof Villager || event.getRightClicked() instanceof Minecart)
                 event.setCancelled(true);
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1.4F);
-//                event.getPlayer().closeInventory();
-            }
-        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onMinecartDamage(EntityDamageEvent evt) {
+        evt.setCancelled(DungeonManager.isDungeon(evt.getEntity()) && evt.getEntity() instanceof Minecart);
     }
 
     /**

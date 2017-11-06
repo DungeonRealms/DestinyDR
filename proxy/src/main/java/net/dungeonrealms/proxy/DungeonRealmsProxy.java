@@ -209,7 +209,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                 servers.add(getProxy().getServerInfo(name));
         }
 
-        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size())) - (o2.getPlayers().size()));
+        Collections.sort(servers, Comparator.comparingInt(o -> o.getPlayers().size()));
 
         if (populated)
             Collections.reverse(servers);

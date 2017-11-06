@@ -22,7 +22,7 @@ public class CommandBroadcast extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if ((sender instanceof Player && !Rank.isDev((Player) sender)) || sender instanceof BlockCommandSender)
+        if ((sender instanceof Player && !Rank.isGM((Player) sender)) || sender instanceof BlockCommandSender)
             return true;
 
         String message = "";
