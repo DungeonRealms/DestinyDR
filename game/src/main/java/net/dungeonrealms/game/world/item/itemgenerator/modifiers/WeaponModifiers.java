@@ -14,7 +14,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
 public class WeaponModifiers {
 
 	private static ItemType[] SEMI_MELEE = new ItemType[] {ItemType.AXE, ItemType.POLEARM, ItemType.STAFF, ItemType.SWORD};
-	
+
 	private static WeaponAttributeType[] ELEMENTS = new WeaponAttributeType[] {WeaponAttributeType.FIRE_DAMAGE, WeaponAttributeType.ICE_DAMAGE, WeaponAttributeType.POISON_DAMAGE};
 
 	public class SwordDamage extends ItemModifier {
@@ -47,13 +47,13 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 160, 230, 407)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 190, 250, 450)));
 		}
-		
+
 	}
-	
+
 	public class AxeDamage extends ItemModifier {
 
-        public AxeDamage() {
-            super(WeaponAttributeType.DAMAGE, ItemType.AXE);
+		public AxeDamage() {
+			super(WeaponAttributeType.DAMAGE, ItemType.AXE);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -85,14 +85,14 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 150, 160, 260)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 160, 230, 407)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 200, 300, 550)));
-        }
-        
-    }
-	
+		}
+
+	}
+
 	public class StaffDamage extends ItemModifier {
 
-        public StaffDamage() {
-            super(WeaponAttributeType.DAMAGE, ItemType.STAFF);
+		public StaffDamage() {
+			super(WeaponAttributeType.DAMAGE, ItemType.STAFF);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -119,13 +119,13 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 90, 115, 200)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 100, 140, 270)));
 		}
-        
+
 	}
 
 	public class PolearmDamage extends ItemModifier {
 
-	    public PolearmDamage() {
-	        super(WeaponAttributeType.DAMAGE, ItemType.POLEARM);
+		public PolearmDamage() {
+			super(WeaponAttributeType.DAMAGE, ItemType.POLEARM);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 3)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 5)));
@@ -151,14 +151,14 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 75, 80, 130)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 90, 115, 200)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 100, 140, 270)));
-	    }
+		}
 
 	}
 
 	public class BowDamage extends ItemModifier {
 
-	    public BowDamage() {
-	        super(WeaponAttributeType.DAMAGE, ItemType.BOW);
+		public BowDamage() {
+			super(WeaponAttributeType.DAMAGE, ItemType.BOW);
 
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 3, 5, 8)));
@@ -184,7 +184,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 150, 160, 260)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 160, 230, 407)));
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 190, 250, 450)));
-	    }
+		}
 
 	}
 
@@ -206,9 +206,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 6), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 10), 7));
 		}
-		
+
 	}
-	
+
 	public class LifeSteal extends ItemModifier {
 
 		public LifeSteal() {
@@ -219,9 +219,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 7), 10));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 8), 8));
 		}
-		
+
 	}
-	
+
 	public class Knockback extends ItemModifier {
 
 		public Knockback() {
@@ -232,9 +232,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 15), 16));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 20), 20));
 		}
-		
+
 	}
-	
+
 	public class Blind extends ItemModifier {
 
 		public Blind() {
@@ -245,9 +245,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 9), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 11), 11));
 		}
-		
+
 	}
-	
+
 	public class Slow extends ItemModifier {
 
 		public Slow() {
@@ -258,7 +258,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 7), 16));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 10), 20));
 		}
-		
+
 	}
 
 	public class Elemental extends ItemModifier {
@@ -284,7 +284,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 75), 20));
 		}
 	}
-	
+
 	public class Versus extends ItemModifier {
 
 		public Versus() {
@@ -296,7 +296,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 15), 15));
 		}
 	}
-	
+
 	public class Pure extends ItemModifier {
 
 		public Pure() {
@@ -307,9 +307,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 25), 5));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 45), 10));
 		}
-		
+
 	}
-	
+
 	public class Accuracy extends ItemModifier {
 
 		public Accuracy() {
@@ -320,9 +320,9 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 28), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 35), 15));
 		}
-		
+
 	}
-	
+
 	public class ArmorPenetration extends ItemModifier {
 
 		public ArmorPenetration() {
@@ -333,6 +333,6 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 8), 20));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));
 		}
-		
+
 	}
 }

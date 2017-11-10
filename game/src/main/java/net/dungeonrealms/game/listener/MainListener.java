@@ -60,8 +60,6 @@ import net.dungeonrealms.game.world.shops.SoldShopItem;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.dungeonrealms.network.discord.DiscordAPI;
-import net.dungeonrealms.network.discord.DiscordChannel;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
 import org.bukkit.Chunk;

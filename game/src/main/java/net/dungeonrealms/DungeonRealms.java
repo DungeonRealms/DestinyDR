@@ -81,6 +81,7 @@ import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.profession.Woodcutting;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.compass.CompassListener;
 import net.dungeonrealms.game.tab.TabMechanics;
@@ -265,6 +266,7 @@ public class DungeonRealms extends JavaPlugin {
         MechanicManager.registerMechanic(new EntityMechanics());
         MechanicManager.registerMechanic(new PatchTools());
         MechanicManager.registerMechanic(new Mining());
+        MechanicManager.registerMechanic(new Woodcutting());
         MechanicManager.registerMechanic(Realms.getInstance());
         MechanicManager.registerMechanic(Affair.getInstance());
         MechanicManager.registerMechanic(new AchievementManager());
@@ -424,6 +426,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSpawner());
         cm.registerCommand(new CommandFishing());
         cm.registerCommand(new CommandOreEdit());
+        cm.registerCommand(new CommandLogEdit());
         cm.registerCommand(new CommandLootChest());
         cm.registerCommand(new CommandHats());
         cm.registerCommand(new CommandRifts());

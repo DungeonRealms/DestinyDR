@@ -17,7 +17,7 @@ public class ModifierRange implements Cloneable {
 	private int low, lowHigh, high;
 	@Getter private int valLow, valHigh;
 	private boolean halve;
-	
+
 	public ModifierRange(NBTBase loadFrom) {
 		if (loadFrom instanceof NBTNumber) {
 			valLow = ((NBTNumber)loadFrom).d();
@@ -40,43 +40,43 @@ public class ModifierRange implements Cloneable {
 	public ModifierRange(int val) {
 		this(ModifierType.STATIC, val, val);
 	}
-	
-    public ModifierRange(ModifierType type, int low, int high){
+
+	public ModifierRange(ModifierType type, int low, int high){
 		this(type, low, 0, high);
 		setVal(low, high);
 	}
-	
+
 	public ModifierRange(ModifierType type, int low, int high, boolean halve){
-        this(type, low, high);
-        this.halve = halve;
-    }
-	
+		this(type, low, high);
+		this.halve = halve;
+	}
+
 	public ModifierRange(ModifierType type, int low, int lowHigh, int high){
 		this.modifierType = type;
 		this.low = low;
 		this.lowHigh = lowHigh;
 		this.high = high;
-		
+
 		if (high < low || (lowHigh < low && lowHigh > 0)) {
 //			Utils.printTrace();
 //			Utils.log.info("Received a modifier range with a negative value? Type = " + type.name() + ", Bounds = (" + low + "," + lowHigh + "," + high + ")");
 		}
 	}
-	
+
 	/**
 	 * Generates the random values for this range.
 	 * Should only be called when trying to generate the stat values, not to get a random value in their range.
 	 */
 	public void generateRandom() {
-		
+
 		valLow = Utils.randInt(low, high); //or low if < 0?
 		valHigh = high;
-		
+
 		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
-			
+
 			if (modifierType == ModifierType.TRIPLE)
 				valLow = lowHigh < low ? low : Utils.randInt(low, lowHigh); //Or low if < 0.
-			
+
 			if (high - valLow > 0) {
 				valHigh = Utils.randInt(valLow, high);
 
@@ -92,7 +92,7 @@ public class ModifierRange implements Cloneable {
 				valLow = valLow >= 2 ? valLow / 2 : 1;
 		}
 	}
-	
+
 	/**
 	 * Gets a random value in a range.
 	 */
@@ -100,7 +100,7 @@ public class ModifierRange implements Cloneable {
 		assert modifierType != ModifierType.STATIC;
 		return Utils.randInt(getValLow(), getValHigh());
 	}
-	
+
 	/**
 	 * Gets the middle value between ranged ranges.
 	 */
@@ -108,17 +108,17 @@ public class ModifierRange implements Cloneable {
 		assert modifierType != ModifierType.STATIC;
 		return (double)(getValLow() + getValHigh()) / 2;
 	}
-	
+
 	/**
 	 * Gets a static attribute value.
-	 * 
+	 *
 	 * If it's a ranged value, return the highest possible value. (Not Recommended)
 	 * This functionality is mainly present for easy number displaying, such as for handling armor changes.
 	 */
 	public int getValue() {
 		return modifierType == ModifierType.RANGE ? getValHigh() : getValLow();
 	}
-	
+
 	/**
 	 * Sets the static attribute value.
 	 * @param val
@@ -126,7 +126,7 @@ public class ModifierRange implements Cloneable {
 	public void setVal(int val) {
 		this.valLow = val;
 	}
-	
+
 	/**
 	 * Set the two bounds for a ranged value.
 	 */
@@ -134,14 +134,14 @@ public class ModifierRange implements Cloneable {
 		this.valLow = low;
 		this.valHigh = high;
 	}
-	
+
 	/**
 	 * Return this range as an int[] array.
 	 */
 	public int[] toArr() {
 		return modifierType == ModifierType.STATIC ? new int[] {0, getValue()} : new int[] {getValLow(), getValHigh()};
 	}
-	
+
 	/**
 	 * Get this value as a string.
 	 */
@@ -149,7 +149,7 @@ public class ModifierRange implements Cloneable {
 	public String toString() {
 		return modifierType == ModifierType.STATIC ? String.valueOf(getValue()) : getValLow() + " - " + getValHigh();
 	}
-	
+
 	/**
 	 * Create a clone of this range.
 	 */
@@ -159,7 +159,7 @@ public class ModifierRange implements Cloneable {
 		mr.setVal(valLow, valHigh);
 		return mr;
 	}
-	
+
 	/**
 	 * Save this range to an NBT Tag Compound.
 	 */

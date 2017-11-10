@@ -209,6 +209,11 @@ public class Achievements {
         FISHINGROD_LEVEL_III("Fishing Rod Level III", "Obtained a level 60 Fishing Rod.", 2000, AchievementCategory.CHARACTER),
         FISHINGROD_LEVEL_IV("Fishing Rod Level IV", "Obtained a level 80 Fishing Rod.", 3500, AchievementCategory.CHARACTER),
         FISHINGROD_LEVEL_V("Fishing Rod Level IV", "Obtained a level 100 Fishing Rod.", 5000, AchievementCategory.CHARACTER),
+        WOODCUTTING_LEVEL_I("Axe Level I", "Obtained a level 20 Axe.", 500, AchievementCategory.CHARACTER),
+        WOODCUTTING_LEVEL_II("Axe Level II", "Obtained a level 40 Axe.", 1000, AchievementCategory.CHARACTER),
+        WOODCUTTING_LEVEL_III("Axe Level III", "Obtained a level 60 Axe.", 2000, AchievementCategory.CHARACTER),
+        WOODCUTTING_LEVEL_IV("Axe Level IV", "Obtained a level 80 Axe.", 3500, AchievementCategory.CHARACTER),
+        WOODCUTTING_LEVEL_V("Axe Level V", "Obtained a level 100 Axe.", 5000, AchievementCategory.CHARACTER),
 
         PLAYER_MOD("Player Moderator", "You're the eyes and ears of Dungeon Realms.", 500, true, AchievementCategory.CHARACTER),
         SUPPORT_AGENT("Support Agent", "Thank you for helping the players.", 500, true, AchievementCategory.CHARACTER),
