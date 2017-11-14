@@ -41,7 +41,8 @@ public enum WorldRegion {
 	MURE("Mure", "mure", EnumAchievements.MURE),
 	SEBRATA("Sebrata", "sebrata", EnumAchievements.SEBRATA),
 	PORTAL_EASTER_EGG("Oak's Portal", "achievement_easteregg_portal_cakelie", CAKE_IS_A_LIE),
-	TROLLSBANE("Trollsbane Tavern", "jrtavern", null);
+	TROLLSBANE("Trollsbane Tavern", "jrtavern", null),
+	CRESTWATCH("Crestwatch", "crestguardnordic", null);
 	
 	private final String displayName;
 	private final String regionName;
