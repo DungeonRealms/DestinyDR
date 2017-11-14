@@ -578,6 +578,10 @@ public class DamageAPI {
         if (mr.getValue() != 0 && !res.hasProjectile()) { // Only applies to Melee
             //Just only deal damage, but dont cancel the current event.
             int damageFromThorns = Math.max(1, (int) Math.round(damage * (mr.getValue() / 100f)));
+            //Reduce thorns dmg if defender has armor
+            if (totalArmor != 0) {
+                damageFromThorns *= (1 - (totalArmor / 100));
+            }
             //We need to swap this?
             ParticleAPI.spawnBlockParticles(attacker.getEntity().getLocation(), Material.LEAVES);
             AttackResult result = new AttackResult(defender.getEntity(), attacker.getEntity());
