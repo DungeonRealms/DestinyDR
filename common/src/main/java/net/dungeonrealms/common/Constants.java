@@ -10,7 +10,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static List<String> DEVELOPERS = Arrays.asList("Detoxen", "Kneesnap", "Kihz", "Lana");
+    public static List<String> DEVELOPERS = Arrays.asList("Detoxen", "Kneesnap", "Kihz", "Lana", "Sad");
 
     public static String MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
 
