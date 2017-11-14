@@ -25,6 +25,7 @@ public enum TeleportLocation {
 	GLOOMY_HOLLOWS("Gloomy Hollows", "world",WorldRegion.GLOOMY, 3500, -590, 44, 0, 144F, 1F),
 	TROLLSBANE("Trollsbane Tavern", "world",WorldRegion.TROLLSBANE, 7500, 962, 95, 1069, -153.0F, 1F),
 	TRIPOLI("Tripoli", "world",WorldRegion.TRIPOLI, 7500, -1320, 91, 370, 153F, 1F),
+	CRESTWATCH("Crestwatch", "world",WorldRegion.CRESTWATCH, 15000, -522, 57, -433, -179.9F, 1F),
 	CRESTGUARD("Crestguard Keep", "world",WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
 	DEADPEAKS("Deadpeaks Mountain Camp", "world",WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, true);
 
