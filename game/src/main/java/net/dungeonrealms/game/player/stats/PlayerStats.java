@@ -80,7 +80,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getSwordDMG(boolean temp) {
-        return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.01);
+        return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.02);
     }
 
     public double getBlock(boolean temp) {
@@ -88,11 +88,11 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getAxeDMG(boolean temp) {
-        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.015);
+        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.03);
     }
 
     public double getPolearmDMG(boolean temp) {
-        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.023);
+        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.02);
     }
 
     public double getBowDMG(boolean temp) {
@@ -112,11 +112,15 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getArmor(boolean temp) {
-        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.03);
+        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.045);
     }
 
-    public double getArmorPen(boolean temp) {
-        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.009);
+//     public double getArmorPen(boolean temp) {
+//         return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.009);
+//     }
+    
+    public double getVSMonsters (boolean temp) {
+        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.035);
     }
 
     public double getDodge(boolean temp) {
@@ -125,7 +129,7 @@ public class PlayerStats implements LoadableData, SaveableData {
 
 
     public double getCriticalDamage(boolean temp) {
-        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.0025;
+        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.003;
     }
 
     public double getElementalResist(boolean temp) {

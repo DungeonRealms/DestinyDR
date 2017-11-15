@@ -86,6 +86,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.compass.CompassListener;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -140,10 +141,6 @@ public class DungeonRealms extends JavaPlugin {
     // Shard Config
     public boolean isInstanceServer = false;
     public String bungeeName = "Lobby";
-    public int realmnumber = -1;
-    public int realmport = -1;
-    public int realmmax = 0;
-    public int realmpmax = 0;
     public String shardid = "US-666";
     public boolean isGMExtendedPermissions = false; // Does the GM have extended permissions (events / spawning / etc).
     // End of Shard Config
@@ -203,10 +200,6 @@ public class DungeonRealms extends JavaPlugin {
             // Main
             shardid = ini.get("Main", "shardid", String.class);
             bungeeName = ini.get("Bungee", "name", String.class);
-            realmnumber = ini.get("RealmInstance", "number", int.class);
-            realmport = ini.get("RealmInstance", "port", int.class);
-            realmmax = ini.get("RealmInstance", "maxrealms", int.class);
-            realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
         } catch (InvalidFileFormatException e1) {
             Utils.log.info("InvalidFileFormat in shard config!");
         } catch (FileNotFoundException e1) {
@@ -246,6 +239,7 @@ public class DungeonRealms extends JavaPlugin {
         PowerMove.registerPowerMoves();
         //Init and load ranks.
         Rank.getCachedRanks();
+        WorldType.setupWorlds();
 
         Utils.log.info("DungeonRealms - Loading Mechanics");
 
@@ -510,6 +504,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
             cm.registerCommand(new CommandIgnore());
+            cm.registerCommand(new CommandWorld());
         }
 
         //Good command to have to set peoples gems all together?

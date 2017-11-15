@@ -621,7 +621,7 @@ public class DamageListener implements Listener {
         //  LEVEL RESTRICTIONS  //
         if (!RestrictionListener.canPlayerUseTier(player, weapon.getTier())) {
             player.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
-                    + weapon.getTier().getLevelRequirement() + " to use this weapon.");
+                    + weapon.getTier().getLevelRequirement() + " to use this item.");
             EnergyHandler.removeEnergyFromPlayerAndUpdate(player, 1F);
             return;
         }
@@ -864,10 +864,7 @@ public class DamageListener implements Listener {
                         dmg = maxHP * 0.02D * dmg;
 
                     Player p = (Player) event.getEntity();
-                    int hp = HealthHandler.getHP(p);
-
-                    //  PREVENT DYING  //
-                    dmg = Math.min(dmg, hp - 1);
+                    dmg = Math.min(dmg, maxHP * 0.75); // Cap max damage at 75% of max HP
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);

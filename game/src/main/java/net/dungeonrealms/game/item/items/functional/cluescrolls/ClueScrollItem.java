@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.item.items.functional.cluescrolls;
 
 import lombok.Getter;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.items.functional.FunctionalItem;
@@ -216,8 +217,9 @@ public class ClueScrollItem extends FunctionalItem {
     @Override
     public ItemStack generateItem() {
         ItemStack superItemStack = super.generateItem();
-        MapView view = Bukkit.getServer().createMap(Bukkit.getWorlds().get(0));
-        for(MapRenderer renderer : view.getRenderers()) view.removeRenderer(renderer);
+        MapView view = Bukkit.getServer().createMap(GameAPI.getMainWorld());
+        for(MapRenderer renderer : view.getRenderers())
+            view.removeRenderer(renderer);
         view.addRenderer(this.renderer);
         superItemStack.setDurability(view.getId());
         return superItemStack;

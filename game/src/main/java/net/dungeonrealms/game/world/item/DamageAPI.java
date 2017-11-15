@@ -120,10 +120,10 @@ public class DamageAPI {
                 if (type == ItemType.AXE) {
                     critHit += 10;
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
-                    damage = damage * (1 + (strValue * 0.0001));
+                    damage = damage * (1 + (strValue * 0.0003));
                 } else if (type == ItemType.SWORD) {
                     int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                    damage = damage * (1 + (vitValue * 0.0001));
+                    damage = damage * (1 + (vitValue * 0.0002));
                 } else if (type == ItemType.POLEARM) {
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0002));
@@ -136,7 +136,7 @@ public class DamageAPI {
                 damage = damage * (1 + (intValue * 0.0002));
             } else if (type == ItemType.BOW) {
                 int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
-                damage = damage * (1 + (dexValue * 0.0001));
+                damage = damage * (1 + (dexValue * 0.00015));
             }
         }
 
@@ -248,7 +248,7 @@ public class DamageAPI {
 
             if (attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
-                critIncrease = int_val * 0.0003;
+                critIncrease = int_val * 0.003;
             }
 
             damage *= (2 + critIncrease);
@@ -578,6 +578,10 @@ public class DamageAPI {
         if (mr.getValue() != 0 && !res.hasProjectile()) { // Only applies to Melee
             //Just only deal damage, but dont cancel the current event.
             int damageFromThorns = Math.max(1, (int) Math.round(damage * (mr.getValue() / 100f)));
+            //Reduce thorns dmg if defender has armor
+            if (totalArmor != 0) {
+                damageFromThorns *= (1 - (totalArmor / 100));
+            }
             //We need to swap this?
             ParticleAPI.spawnBlockParticles(attacker.getEntity().getLocation(), Material.LEAVES);
             AttackResult result = new AttackResult(defender.getEntity(), attacker.getEntity());

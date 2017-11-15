@@ -9,6 +9,7 @@ import net.citizensnpcs.api.npc.NPCRegistry;
 import net.citizensnpcs.npc.skin.SkinnableEntity;
 import net.citizensnpcs.trait.LookClose;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -84,7 +85,7 @@ public class CustomNPCManager implements GenericMechanic {
         private Location location;
 
         public Location getLocation() {
-            location.setWorld(Bukkit.getWorlds().get(0));
+            location.setWorld(GameAPI.getMainWorld());
             return location;
         }
     }

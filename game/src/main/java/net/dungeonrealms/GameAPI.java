@@ -66,6 +66,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -1200,14 +1201,6 @@ public class GameAPI {
         return location.getX() + "," + (location.getY() + .3) + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
     }
 
-    public static Location getLocationFromString(String locationString) {
-        String[] locationStringArray = locationString.split(",");
-
-        return new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationStringArray[0]),
-                Double.parseDouble(locationStringArray[1]), Double.parseDouble(locationStringArray[2]),
-                Float.parseFloat(locationStringArray[3]), Float.parseFloat(locationStringArray[4]));
-    }
-
     /**
      * Returns if a player is online. (LOCAL SERVER)
      *
@@ -1667,9 +1660,8 @@ public class GameAPI {
      *
      * @return
      */
-
     public static World getMainWorld() {
-        return Bukkit.getWorlds().get(0);
+        return WorldType.ANDALUCIA.getWorld();
     }
 
     public static void setHandItem(Player player, ItemStack stack, EquipmentSlot slot) {

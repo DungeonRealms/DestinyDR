@@ -56,8 +56,8 @@ public interface DRMonster {
 
     public static final TeleportLocation[][] TELEPORT_DROPS = new TeleportLocation[][]{
             {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD},
-            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI},
-            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD},
+            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI, TeleportLocation.CRESTWATCH},
+            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD, TeleportLocation.CRESTWATCH},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}};
 
@@ -350,16 +350,13 @@ public interface DRMonster {
         }
 
 
-        if (killer != null) {
+       if (killer != null) {
             Party party = Affair.getParty(killer);
             if (party != null) {
                 int nearby = party.getNearbyMembers(killer, 50).size() + 1;
-                if (nearby >= 4 && nearby < 8) {
-                    chance += chance * 0.005;
-                }
-
-                if (nearby >= 8) {
-                    chance += chance * 0.01;
+                if (nearby > 0) {
+                        int chanceIncrease = (nearby / 100) * 5; // Every player 5% loot increase
+                        chance += chance * chanceIncrease;
                 }
             }
         }

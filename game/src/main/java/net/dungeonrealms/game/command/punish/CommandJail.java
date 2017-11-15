@@ -62,7 +62,7 @@ public class CommandJail extends BaseCommand {
 
         sender.sendMessage(ChatColor.GREEN + "You have jailed " + args[0] + ".");
         player.sendMessage(ChatColor.RED + "You have been jailed.");
-        player.teleport(new Location(Bukkit.getWorlds().get(0), -225, 81, 403));
+        player.teleport(new Location(GameAPI.getMainWorld(), -225, 81, 403));
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
 
         PetUtils.removePet(player);
