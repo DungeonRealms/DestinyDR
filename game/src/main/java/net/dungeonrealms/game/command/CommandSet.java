@@ -46,14 +46,6 @@ public class CommandSet extends BaseCommand {
         if (args.length == 0)
             return false;
 
-        // Extended Permission Check
-        String[] ignoreExtendedPermissions = new String[]{"health", "hp"};
-        if (!Rank.isHeadGM(player) && !Arrays.asList(ignoreExtendedPermissions).contains(args[0])
-                && !DungeonRealms.getInstance().isGMExtendedPermissions) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
-            return false;
-        }
-
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         switch (args[0]) {
             case "level":

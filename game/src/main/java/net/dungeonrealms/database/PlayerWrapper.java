@@ -56,6 +56,7 @@ import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
@@ -710,7 +711,7 @@ public class PlayerWrapper {
             try {
                 String[] locArray = storedLocationString.split(",");
 
-                String world = Bukkit.getWorlds().get(0).getName();
+                String world = GameAPI.getMainWorld().getName();
                 int start = 0;
                 if (locArray.length == 6) {
                     start = 1;
@@ -744,9 +745,8 @@ public class PlayerWrapper {
      * @return
      */
     public String getLocationString(Location location) {
-        if (!GameAPI.isMainWorld(location.getWorld())) {
-            return storedLocationString;
-        }
+        if (WorldType.getWorld(location.getWorld()) == null)
+            return storedLocationString; // Don't save if we're in an instanced world.
         return new StringBuilder().append(location.getWorld().getName()).append(",").append(location.getX()).append(',').append(location.getY() + 0.3).append(',').append(location.getZ()).append(',').append(location.getYaw()).append(',').append(location.getPitch()).toString();
     }
 

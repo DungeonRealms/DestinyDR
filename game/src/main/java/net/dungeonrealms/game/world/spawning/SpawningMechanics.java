@@ -8,6 +8,7 @@ import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
@@ -42,15 +43,10 @@ public class SpawningMechanics implements GenericMechanic {
     private static void killAll() {
         getSpawners().forEach(MobSpawner::kill);
 
-        GameAPI.getMainWorld().getEntities().forEach(entity -> {
+        WorldType.getWorlds().forEach(w -> w.getEntities().forEach(entity -> {
             ((CraftWorld) entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
             entity.remove();
-        });
-
-        GameAPI.getMainWorld().getLivingEntities().forEach(entity -> {
-            ((CraftWorld) entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
-            entity.remove();
-        });
+        }));
     }
 
     public static void saveConfig() {

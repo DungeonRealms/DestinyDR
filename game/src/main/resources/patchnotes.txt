@@ -1,4 +1,10 @@
 Build <build>
- - Gear is repaired when Orbed.
- - Fixed 2x droprates.
- - Small miscellaneous bugfixes.
+
+   &lThe Map Expansion
+
+ - Two new areas:
+  - Red Faction is mid to high tier expansion to Andalucia past Dark Oak.
+  - Elora is a completely low to mid tier world that will supplement Andalucia.
+
+
+We will update the online map soon.

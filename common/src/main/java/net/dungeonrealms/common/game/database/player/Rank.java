@@ -125,6 +125,10 @@ public class Rank {
         return rank.isAtLeast(PlayerRank.BUILDER);
     }
 
+    public static boolean isBuilder(OfflinePlayer player) {
+        return isBuilder(player.getUniqueId());
+    }
+
     /**
      * Get a player's rank.
      */

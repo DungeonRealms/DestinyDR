@@ -421,7 +421,7 @@ public class Mining implements GenericMechanic, Listener {
                         loc = new Location(Bukkit.getWorld(cords[0]), Double.parseDouble(cords[1]),
                                 Double.parseDouble(cords[2]), Double.parseDouble(cords[3]));
                     } else {
-                        loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
+                        loc = new Location(GameAPI.getMainWorld(), Double.parseDouble(cords[0]),
                                 Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
                     }
 
