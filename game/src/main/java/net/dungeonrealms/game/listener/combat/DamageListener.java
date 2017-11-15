@@ -867,7 +867,8 @@ public class DamageListener implements Listener {
                     int hp = HealthHandler.getHP(p);
 
                     //  PREVENT DYING  //
-                    dmg = Math.min(dmg, hp - 1);
+                    if (dmg > maxHP)
+                        dmg = maxHP * 0.75;
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);
