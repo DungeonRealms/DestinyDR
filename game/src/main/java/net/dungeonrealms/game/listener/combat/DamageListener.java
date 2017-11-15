@@ -864,11 +864,7 @@ public class DamageListener implements Listener {
                         dmg = maxHP * 0.02D * dmg;
 
                     Player p = (Player) event.getEntity();
-                    int hp = HealthHandler.getHP(p);
-
-                    //  PREVENT DYING  //
-                    if (dmg > maxHP)
-                        dmg = maxHP * 0.75;
+                    dmg = Math.min(dmg, maxHP * 0.75); // Cap max damage at 75% of max HP
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);

@@ -6,5 +6,6 @@ Build <build>
   - Red Faction is mid to high tier expansion to Andalucia past Dark Oak.
   - Elora is a completely low to mid tier world that will supplement Andalucia.
 
+ - Weapon generation has been buffed to make rolls like 60-60 DMG not happen.
 
 We will update the online map soon.
