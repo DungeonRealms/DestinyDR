@@ -267,9 +267,6 @@ public class DamageAPI {
             int bonusAmount = SetBonus.hasSetBonus(attack, SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attack)) <= .2 ? 20 : 0;
             if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
                 double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
-                if(isHitCrit) {
-                    lifeToHeal = (lifeToHeal * 2) / 2;
-                }
                 HealthHandler.heal(attack, (int) lifeToHeal + 1, true);
             }
         }
