@@ -13,8 +13,7 @@ import lombok.Getter;
 public class ModifierRange implements Cloneable {
 
 	@Getter private ModifierType modifierType;
-	@Getter
-	private int low, lowHigh, high;
+	@Getter private int low, lowHigh, highLow, high;
 	@Getter private int valLow, valHigh;
 	private boolean halve;
 	
@@ -42,7 +41,7 @@ public class ModifierRange implements Cloneable {
 	}
 	
     public ModifierRange(ModifierType type, int low, int high){
-		this(type, low, 0, high);
+		this(type, low,0,0, high);
 		setVal(low, high);
 	}
 	
@@ -50,17 +49,25 @@ public class ModifierRange implements Cloneable {
         this(type, low, high);
         this.halve = halve;
     }
-	
-	public ModifierRange(ModifierType type, int low, int lowHigh, int high){
+
+//	public ModifierRange(ModifierType type, int low, int lowHigh, int highLow){
+//		this.modifierType = type;
+//		this.low = low;
+//		this.lowHigh = lowHigh;
+//		this.highLow = highLow;
+//
+//		if (high < low || (lowHigh < low && lowHigh > 0)) {
+////			Utils.printTrace();
+////			Utils.log.info("Received a modifier range with a negative value? Type = " + type.name() + ", Bounds = (" + low + "," + lowHigh + "," + high + ")");
+//		}
+//	}
+
+	public ModifierRange(ModifierType type, int low, int lowHigh, int highLow, int high) {
 		this.modifierType = type;
 		this.low = low;
 		this.lowHigh = lowHigh;
+		this.highLow = highLow;
 		this.high = high;
-		
-		if (high < low || (lowHigh < low && lowHigh > 0)) {
-//			Utils.printTrace();
-//			Utils.log.info("Received a modifier range with a negative value? Type = " + type.name() + ", Bounds = (" + low + "," + lowHigh + "," + high + ")");
-		}
 	}
 	
 	/**
@@ -68,25 +75,32 @@ public class ModifierRange implements Cloneable {
 	 * Should only be called when trying to generate the stat values, not to get a random value in their range.
 	 */
 	public void generateRandom() {
-		
+
+//	 if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
+//			valLow = Utils.randInt(low, high); //or low if < 0?
+//			valHigh = highLow;
+//
+//			if (modifierType == ModifierType.TRIPLE)
+//				valLow = lowHigh < low ? low : Utils.randInt(low, lowHigh); //Or low if < 0.
+//
+//			if (highLow - valLow > 0) {
+//				valHigh = Utils.randInt(valLow, highLow);
+//
+//				if(modifierType == ModifierType.TRIPLE) {
+//					double percent = (valLow / ((double)valHigh)) * 100.0;
+//					if(percent >= 90) {
+//						valHigh *= 1.2;
+//					}
+//				}
+//			}
+//		}
 		valLow = Utils.randInt(low, high); //or low if < 0?
 		valHigh = high;
-		
-		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
-			
-			if (modifierType == ModifierType.TRIPLE)
-				valLow = lowHigh < low ? low : Utils.randInt(low, lowHigh); //Or low if < 0.
-			
-			if (high - valLow > 0) {
-				valHigh = Utils.randInt(valLow, high);
 
-				if(modifierType == ModifierType.TRIPLE) {
-					double percent = (valLow / ((double)valHigh)) * 100.0;
-					if(percent >= 90) {
-						valHigh *= 1.2;
-					}
-				}
-			}
+		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.QUAD) {
+				valLow = Utils.randInt(low, lowHigh);
+				valHigh = Utils.randInt(highLow, high);
+
 		} else {
 			if (halve)
 				valLow = valLow >= 2 ? valLow / 2 : 1;
@@ -116,6 +130,7 @@ public class ModifierRange implements Cloneable {
 	 * This functionality is mainly present for easy number displaying, such as for handling armor changes.
 	 */
 	public int getValue() {
+
 		return modifierType == ModifierType.RANGE ? getValHigh() : getValLow();
 	}
 	
@@ -124,6 +139,7 @@ public class ModifierRange implements Cloneable {
 	 * @param val
 	 */
 	public void setVal(int val) {
+
 		this.valLow = val;
 	}
 	
@@ -155,16 +171,17 @@ public class ModifierRange implements Cloneable {
 	 */
 	@Override
 	public ModifierRange clone() {
-		ModifierRange mr = new ModifierRange(modifierType, low, lowHigh, high);
+		ModifierRange mr = new ModifierRange(modifierType, low, lowHigh, highLow, high);
 		mr.setVal(valLow, valHigh);
 		return mr;
+
 	}
 	
 	/**
 	 * Save this range to an NBT Tag Compound.
 	 */
 	public void save(NBTTagCompound tag, String tagName) {
-		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.TRIPLE) {
+		if (modifierType == ModifierType.RANGE || modifierType == ModifierType.QUAD) {
 			NBTTagList range = new NBTTagList();
 			range.add(new NBTTagInt(getValLow()));
 			range.add(new NBTTagInt(getValHigh()));
