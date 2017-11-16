@@ -273,7 +273,7 @@ public class Fishing implements GenericMechanic, Listener {
 
     public static Location getFishingSpot(Location loc) {
         for (Location fishLoc : FISHING_LOCATIONS.keySet())
-            if (loc.distanceSquared(fishLoc) <= 100)
+            if (loc.getWorld().equals(fishLoc.getWorld()) && loc.distanceSquared(fishLoc) <= 100)
                 return fishLoc;
         return null;
     }
