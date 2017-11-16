@@ -55,15 +55,20 @@ public class ItemProtectionScroll extends ItemEnchantScroll {
 			return;
 		}
             
-		if (gear.getEnchantCount() >= 8) {
-			p.sendMessage(ChatColor.RED + "This item can no longer be protected!");
+		if (gear.getEnchantCount() < 8) {
+			p.sendMessage(ChatColor.RED + "This item cannot be protected until +8!");
+			return;
+		}
+
+		if (gear.getEnchantCount() == 12){
+			p.sendMessage(ChatColor.RED + "You cannot protect this item because it is at it's maximum level!");
 			return;
 		}
             
 		evt.setUsed(true);
 		gear.setProtected(true);
 		evt.setSwappedItem(gear.generateItem());
-		p.sendMessage(ChatColor.GREEN + "Your " + prot.getItemMeta().getDisplayName() + ChatColor.GREEN + " is now protected -- even if an enchant scroll fails, it will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GREEN + " be destroyed up to +8 status.");
+		p.sendMessage(ChatColor.GREEN + "Your " + prot.getItemMeta().getDisplayName() + ChatColor.GREEN + " is now protected -- you may now enchant your item.");
 		
 		//  FIREWORK EFFECT  //
 		p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
@@ -83,9 +88,7 @@ public class ItemProtectionScroll extends ItemEnchantScroll {
 	@Override
 	protected String[] getLore() {
 		return new String[] {
-				ChatColor.ITALIC + "Apply to any T" + getTier().getTierId() + " item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY + "" + ChatColor.ITALIC + " it",
-				ChatColor.ITALIC + "from being destroyed if the next",
-				ChatColor.ITALIC + "enchantment scroll (up to +8) fails."};
+				ChatColor.ITALIC + "Apply to any T" + getTier().getTierId() + " item to " + ChatColor.UNDERLINE + "allow" + ChatColor.GRAY + "" + ChatColor.ITALIC + " enchantments past +8."};
 	}
 
 	@Override

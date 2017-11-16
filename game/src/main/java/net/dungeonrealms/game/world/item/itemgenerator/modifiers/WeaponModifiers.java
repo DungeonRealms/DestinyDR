@@ -316,9 +316,9 @@ public class WeaponModifiers {
 			super(WeaponAttributeType.ACCURACY, ItemType.SWORD);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 8));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 12));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 15));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 28), 20));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 35), 15));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 20), 15));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 25), 20));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 30), 15));
 		}
 
 	}
