@@ -1501,12 +1501,9 @@ public class GameAPI {
     }
 
     public static boolean isMainWorld(World world) {
-        return world.equals(getMainWorld()) || isExtraMap(world);
+        return WorldType.getWorld(world) != null;
     }
 
-    public static boolean isExtraMap(World world){
-        return false;
-    }
     public static boolean isMainWorld(Block block) {
         return isMainWorld(block.getWorld());
     }
