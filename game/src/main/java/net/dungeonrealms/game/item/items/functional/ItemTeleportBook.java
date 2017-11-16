@@ -8,7 +8,9 @@ import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 
@@ -45,10 +47,7 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 	}
 
 	public TeleportLocation getTeleportLocation() {
-		if(teleportLocation == null){
-			return TeleportLocation.getRandomBookTP();
-		}
-		return teleportLocation;
+		return teleportLocation != null ? teleportLocation : TeleportLocation.getRandomBookTP();
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 		
 		evt.setUsed(true);
 		
-		if (!getTeleportLocation().canBeABook()) {
+		if (!getTeleportLocation().isBook()) {
 			player.sendMessage(ChatColor.RED + "This teleport book is invalid, so it has vanished into the wind.");
 			GameAPI.sendWarning("Removed 1x " + getTeleportLocation().getDisplayName() + " teleport books from " + player.getName() + ".");
 			return;
