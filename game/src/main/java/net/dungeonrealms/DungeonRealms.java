@@ -506,10 +506,12 @@ public class DungeonRealms extends JavaPlugin {
         // Commands exclusive to support agents on their special server.
         cm.registerCommand(new CommandQuestEditor());
 
-        try {
-            FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (WorldType type : WorldType.values()) {
+            try {
+                FileUtils.deleteDirectory(new File(type.getWorldName() + File.separator + "playerdata"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         getServer().dispatchCommand(getServer().getConsoleSender(), "save-off");
