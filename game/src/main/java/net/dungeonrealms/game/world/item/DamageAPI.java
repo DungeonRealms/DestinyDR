@@ -120,10 +120,10 @@ public class DamageAPI {
                 if (type == ItemType.AXE) {
                     critHit += 10;
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
-                    damage = damage * (1 + (strValue * 0.0001));
+                    damage = damage * (1 + (strValue * 0.0003));
                 } else if (type == ItemType.SWORD) {
                     int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                    damage = damage * (1 + (vitValue * 0.0001));
+                    damage = damage * (1 + (vitValue * 0.0002));
                 } else if (type == ItemType.POLEARM) {
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0002));
@@ -136,7 +136,7 @@ public class DamageAPI {
                 damage = damage * (1 + (intValue * 0.0002));
             } else if (type == ItemType.BOW) {
                 int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
-                damage = damage * (1 + (dexValue * 0.0001));
+                damage = damage * (1 + (dexValue * 0.00015));
             }
         }
 
@@ -248,7 +248,7 @@ public class DamageAPI {
 
             if (attacker.isPlayer()) {
                 int int_val = attacker.getWrapper().getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
-                critIncrease = int_val * 0.0003;
+                critIncrease = int_val * 0.003;
             }
 
             damage *= (2 + critIncrease);
@@ -267,9 +267,6 @@ public class DamageAPI {
             int bonusAmount = SetBonus.hasSetBonus(attack, SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attack)) <= .2 ? 20 : 0;
             if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
                 double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
-                if(isHitCrit) {
-                    lifeToHeal = (lifeToHeal * 2) / 2;
-                }
                 HealthHandler.heal(attack, (int) lifeToHeal + 1, true);
             }
         }

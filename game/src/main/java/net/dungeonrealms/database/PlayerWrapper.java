@@ -1288,7 +1288,7 @@ public class PlayerWrapper {
             int blockToAdd = (int)(block * (strength * .0002));
             if(blockToAdd > 0)getAttributes().addStat(Item.ArmorAttributeType.BLOCK, blockToAdd);*/
 
-            getAttributes().addStat(Item.ArmorAttributeType.ARMOR, (int) (strength * .03));
+            getAttributes().addStat(Item.ArmorAttributeType.ARMOR, (int) (strength * .045));
             getAttributes().addStat(Item.ArmorAttributeType.BLOCK, (int) (strength * .017));
         }
 
@@ -1307,7 +1307,7 @@ public class PlayerWrapper {
 
             getAttributes().addStat(Item.ArmorAttributeType.DODGE, (int) (dexterity * .03));
             getAttributes().addStat(Item.ArmorAttributeType.DAMAGE, (int) (dexterity * .03));
-            getAttributes().addStat(WeaponAttributeType.ARMOR_PENETRATION, (int) (dexterity * .009));
+            getAttributes().addStat(WeaponAttributeType.VS_MONSTERS, (int) (dexterity * .035));
 
 
         }
