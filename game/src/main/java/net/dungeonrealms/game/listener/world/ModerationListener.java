@@ -11,9 +11,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.profession.Woodcutting;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.Item.ElementalAttribute;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -80,17 +78,6 @@ public class ModerationListener implements Listener {
             Mining.addOre(l, mat);
             player.sendMessage(ChatColor.GREEN + mat.name() + " ore registered at " + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
 
-        } else if(bk.getType().name().contains("log") || bk.getType().name().contains("LOG") && player.hasMetadata("logedit")) {
-            Material mat = bk.getType();
-            if (!Woodcutting.isPossibleLog(mat, bk.getData())) {
-                player.sendMessage(ChatColor.RED + "This is not a valid mineable log type.");
-                event.setCancelled(true);
-                return;
-            }
-
-            Location l = bk.getLocation();
-            Woodcutting.addLogs(l, mat, bk.getData());
-            player.sendMessage(ChatColor.GREEN + mat.name() + " log registered at " + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ());
         } else if (event.getItemInHand() != null && event.getItemInHand().getType() == Material.WATER_LILY) {
             if (player.hasMetadata("fishEdit")) {
                 //Create a new fishing spot after prompting?
@@ -160,12 +147,6 @@ public class ModerationListener implements Listener {
 
             Mining.removeOre(block);
             e.getPlayer().sendMessage(ChatColor.RED + "Ore removed.");
-        } else if(block.getType().name().contains("LOG") && e.getPlayer().hasMetadata("logedit")){
-            if(!Woodcutting.isLogMineable(block))
-                return;
-
-            Woodcutting.removeLog(block);
-            e.getPlayer().sendMessage(ChatColor.RED + "Log removed");
         } else if (block.getType() == Material.WATER_LILY && e.getPlayer().hasMetadata("fishEdit")) {
             if (Fishing.getExactTier(block) == -1)
                 return;

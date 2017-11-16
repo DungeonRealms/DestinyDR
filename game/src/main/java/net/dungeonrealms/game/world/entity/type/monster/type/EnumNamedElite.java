@@ -42,7 +42,10 @@ public enum EnumNamedElite {
 
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.STAFF_SKELETON, -411, 33, -3487, 1800, 1),
-    LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1590, 63, 1218, 2500, 1);
+    LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1590, 63, 1218, 2500, 1),
+    PRISCILLA("Priscilla Queen of Ice", 5, EnumMonster.IceLord, CustomEntityType.MELEE_WITHER, -1273, 45, -673, 2500, 1),
+    FORGOTTEN_LIBRARIAN("The Forgotten Librarian", 5, EnumMonster.Monk, CustomEntityType.MELEE_WITHER, -981, 108, -842, 2500, 1),
+    CYRITH("Cyrith The Spider God", 5, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, 788, 30, 842, 2500, 1);
 
     @Getter private String displayName;
     @Getter private int tier;

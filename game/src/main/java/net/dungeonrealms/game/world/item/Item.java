@@ -46,8 +46,7 @@ public class Item {
 
         // PROFESSION
         PICKAXE(AttributeBank.PICKAXE, new Material[]{Material.WOOD_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.GOLD_PICKAXE}, new String[]{"", "", "", "", ""}, 0),
-        FISHING_ROD(AttributeBank.FISHING_ROD, Material.FISHING_ROD, new String[]{"", "", "", "", ""}, 0),
-        WOODAXE(AttributeBank.WOODAXE, new Material[]{Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[]{"", "", "", "", ""}, 0);
+        FISHING_ROD(AttributeBank.FISHING_ROD, Material.FISHING_ROD, new String[]{"", "", "", "", ""}, 0);
 
         @Getter
         private Material[] materials;
@@ -357,8 +356,7 @@ public class Item {
         ARMOR(ArmorAttributeType.values(), 0.24, new double[]{1, 1.25, 1.5, 2.5, 3.5}),
         SHIELD(new AttributeType[]{ArmorAttributeType.MELEE_ABSORBTION, ArmorAttributeType.MAGE_ABSORBTION, ArmorAttributeType.RANGE_ABSORBTION, ArmorAttributeType.REFLECTION, ArmorAttributeType.FIRE_RESISTANCE, ArmorAttributeType.ICE_RESISTANCE, ArmorAttributeType.POISON_RESISTANCE, ArmorAttributeType.HEALTH_POINTS, ArmorAttributeType.ITEM_FIND, ArmorAttributeType.GEM_FIND}, 0.24, new double[]{1, 1.25, 1.5, 2.75, 3.9}),
         FISHING_ROD(FishingAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3}),
-        PICKAXE(PickaxeAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3}),
-        WOODAXE(WoodAxeAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3});
+        PICKAXE(PickaxeAttributeType.values(), 0.8, new double[]{0.5, 0.75, 1, 2, 3});
 
         @Getter
         private AttributeType[] attributes;
@@ -511,68 +509,6 @@ public class Item {
             return 100;
         }
 
-    }
-
-    @NoArgsConstructor
-    public enum WoodAxeAttributeType implements ProfessionAttribute {
-
-        DOUBLE_LOG("DOUBLE LOG", "doubleLog", 5, 5, 9, 13, 17),
-        GEM_FIND("GEM FIND", "gemFind", 3, 3, 5, 8, 11),
-        MINING_SUCCESS("MINING SUCCESS", "miningSuccess", 2, 2, 3, 4, 5),
-        TRIPLE_LOG("TRIPLE LOG", "tripleLog", 2, 2, 3, 4, 5),
-        DURABILITY("DURABILITY", "durability", 5, 10, 15, 20, 25);
-
-        private String prefix;
-        @Getter
-        private String NBTName;
-        @Getter
-        private int[] percentRange;
-
-        WoodAxeAttributeType(String prefix, String nbt, int... percentRange) {
-            this.prefix = ChatColor.RED + prefix;
-            this.NBTName = nbt;
-            this.percentRange = percentRange;
-        }
-
-        public int getId() {
-            return ordinal();
-        }
-
-        public String getPrefix() {
-            return this.prefix + ": +";
-        }
-
-        public String getSuffix() {
-            return "%";
-        }
-
-        public String getDisplayPrefix() {
-            return prefix;
-        }
-
-        public String getDisplaySuffix(boolean b) {
-            return null;
-        }
-
-        public int getDisplayPriority() {
-            return getId();
-        }
-
-        public boolean isPercentage() {
-            return true;
-        }
-
-        public boolean isRange() {
-            return false;
-        }
-
-        public boolean isIncludeOnReroll() {
-            return false;
-        }
-
-        public int getChance() {
-            return 100;
-        }
     }
 
     public enum WeaponAttributeType implements AttributeType {

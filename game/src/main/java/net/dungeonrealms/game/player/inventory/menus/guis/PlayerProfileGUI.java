@@ -97,7 +97,7 @@ public class PlayerProfileGUI extends GUIMenu {
 
             int tempStats = stats.getTempStat(stat);
             if (stat.equals(Stats.STRENGTH)) {
-                lore.add(ChatColor.GOLD + " AXE DMG: " + ChatColor.AQUA + df.format(stats.getArmor(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getArmor(true)) + "%]" : ""));
+                lore.add(ChatColor.GOLD + " ARMOR: " + ChatColor.AQUA + df.format(stats.getArmor(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getArmor(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " BLOCK: " + ChatColor.AQUA + df.format(stats.getBlock(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getBlock(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " AXE DMG: " + ChatColor.AQUA + df.format(stats.getAxeDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getAxeDMG(true)) + "%]" : ""));
                 lore.add(ChatColor.GOLD + " POLEARM DMG: " + ChatColor.AQUA + df.format(stats.getPolearmDMG(false)) + "% " + (stats.getTempStat(stat) > 0 ? ChatColor.GREEN + "[+" + df.format(stats.getPolearmDMG(true)) + "%]" : ""));

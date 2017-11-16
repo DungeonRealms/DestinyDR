@@ -220,10 +220,6 @@ public class CommandAdd extends BaseCommand {
                     level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
                     player.getInventory().addItem(new ItemFishingPole().setLevel(level).generateItem());
                     break;
-                case "axe":
-                    level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
-                    player.getInventory().addItem(new ItemWoodAxe().setLevel(level).generateItem());
-                    break;
                 case "scrap":
                     for (int i = 1; i <= 5; i++)
                         player.getInventory().addItem(new ItemScrap(ScrapTier.getScrapTier(i)).generateItem());
