@@ -130,7 +130,7 @@ public class PvEListener implements Listener {
 //            Utils.stopSprint(damager, true);
 
         //1 damage for melee staffing..
-        if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager())) {
+        /*if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager())) {
             res = new AttackResult(damager, receiver);
             res.setDamage(1);
             if (dpsDummy) {
@@ -140,7 +140,7 @@ public class PvEListener implements Listener {
                 checkPowerMove(event, receiver);
             }
             return;
-        }
+        }*/
 
         if (!(receiver instanceof Player) && ItemWeaponBow.isBow(held)) {
             //Why cancel the event?
