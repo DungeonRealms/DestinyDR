@@ -35,7 +35,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 22, 29, 40, 50)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 35, 40, 60, 70)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 60, 70, 80, 100)));
-			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 70, 80, 120, 140)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 70, 80, 120, 130)));
 
 			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 60, 70, 80, 100)));
 			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 90, 115, 120, 160)));
@@ -68,7 +68,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 26, 35, 48, 60)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 42, 48, 72, 84)));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 72, 84, 96, 120)));
-			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 84, 96, 138, 156)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 84, 96, 138, 150)));
 
 			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 72, 84, 96, 120)));
 			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 108, 138, 144, 192)));

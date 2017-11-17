@@ -10,7 +10,7 @@ import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityLiving;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
@@ -28,7 +28,7 @@ import org.bukkit.entity.Projectile;
  *
  * @author Kneesnap
  */
-public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
+public class InfernalAbyss extends RangedWitherSkeleton implements DungeonBoss {
 
     @Getter
     private InfernalGhast ghast;
@@ -84,18 +84,18 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         playSound(Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
     }
 
-    @Override
-    public void a(EntityLiving entity, float f) {
-        if(ghast != null && ghast.isAlive())
-            return; //ghast should be firing instead.
-
-        ItemWeapon wep = (ItemWeapon) PersistentItem.constructItem(getHeld());
-
-        LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;
-        Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), wep.getAttributes(), target, wep);
-        if (proj != null)
-            proj.setVelocity(proj.getVelocity().multiply(1.4));
-    }
+//    @Override
+//    public void a(EntityLiving entity, float f) {
+//        if(ghast != null && ghast.isAlive())
+//            return; //ghast should be firing instead.
+//
+//        ItemWeapon wep = (ItemWeapon) PersistentItem.constructItem(getHeld());
+//
+//        LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;
+//        Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), wep.getAttributes(), target, wep);
+//        if (proj != null)
+//            proj.setVelocity(proj.getVelocity().multiply(1.4));
+//    }
 
     private void pushAwayPlayer(Player p, double speed) {
         org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(getBukkit().getLocation().toVector()).normalize();
