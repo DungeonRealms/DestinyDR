@@ -321,7 +321,7 @@ public interface DRMonster {
         PlayerWrapper pw = PlayerWrapper.getWrapper(killer);
 
         ModifierRange gemFinder = pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND);
-        double gemFind = (gemFinder.getValHigh() / 100) + 1;
+        double gemFind = ((double) gemFinder.getValHigh() / 100D) + 1;
         int killerItemFind = pw.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValHigh();
 
         Location loc = ent.getLocation();
@@ -361,7 +361,7 @@ public interface DRMonster {
             }
         }
 
-        if (gemRoll < (gemChance * Math.ceil(gemFind))) {
+        if (gemRoll < (gemChance * gemFind)) {
             if (gemRoll >= gemChance)
                 wrapper.sendDebug(ChatColor.GREEN + "Your " + gemFinder.getValHigh() + "% Gem Find has resulted in a drop.");
 
