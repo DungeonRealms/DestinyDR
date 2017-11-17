@@ -72,7 +72,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
         if (gear.getEnchantCount() >= 8 && gear.isProtected() && gear.getEnchantCount() < 12);
 
         else if(gear.getEnchantCount() >= 8 && gear.getEnchantCount() < 12) {
-            evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further unless you use a white scroll.");
+            evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further unless you use a white scroll!");
             return;
         } else if(gear.getEnchantCount() >= 12) {
             evt.getPlayer().sendMessage(ChatColor.RED + "This item has reached it's maximum level!");

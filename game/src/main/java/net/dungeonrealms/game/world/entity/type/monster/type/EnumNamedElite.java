@@ -17,14 +17,14 @@ import org.bukkit.World;
 public enum EnumNamedElite {
 
     // TIER 1 //
-    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -953, 72, 744, 300, 1),
-    OLD_WHEAT_FARMER("Old Wheat Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -914, 59, 940, 400, 1),
-    OLD_CARROT_FARMER("Old Carrot Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -918, 59, 937, 400, 1),
+    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -406, 137, 28, 300, 1, WorldType.ELORA),
+    OLD_WHEAT_FARMER("Old Wheat Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -612, 74, 249, 400, 1, WorldType.ELORA),
+    OLD_CARROT_FARMER("Old Carrot Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -680, 71, 275, 400, 1, WorldType.ELORA),
 
     // TIER 2 //
     COPJAK("Cop'jak", 2 ,EnumMonster.Troll1, CustomEntityType.MELEE_ZOMBIE, -82, 99, 1270, 1500, 2),
-    LORD_TAYLOR("Lord Taylor", 2, EnumMonster.Zombie, CustomEntityType.MELEE_WITHER, -1034, 118, 1262, 400, 2),
-    QUEEN_OF_THE_NEST("Queen of the Nest", 2, EnumMonster.Spider1, CustomEntityType.LARGE_SPIDER, 289, 38, 823, 500, 1),
+    LORD_TAYLOR("Lord Taylor", 2, EnumMonster.Zombie, CustomEntityType.MELEE_WITHER, 93, 97, -50, 400, 2, WorldType.ELORA),
+    QUEEN_OF_THE_NEST("Queen of the Nest", 2, EnumMonster.Spider1, CustomEntityType.LARGE_SPIDER, 212, 28, 258, 500, 1, WorldType.ELORA),
 
     // TIER 3 //
     IMPA("Impa The Impaler", 3, EnumMonster.Imp, CustomEntityType.MELEE_WITHER, -144, 144, -3533, 1800, 1),

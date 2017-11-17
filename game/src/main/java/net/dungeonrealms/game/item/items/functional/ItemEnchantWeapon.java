@@ -29,7 +29,7 @@ public class ItemEnchantWeapon extends ItemEnchantScroll {
 	protected String[] getLore() {
 		return new String[] {
 				ChatColor.RED + "+5% DMG",
-				ChatColor.ITALIC + "Weapon will VANISH if enchant above +3 FAILS."};
+				ChatColor.ITALIC + "Apply to your weapon for bonus stats."};
 	}
 
 	@Override

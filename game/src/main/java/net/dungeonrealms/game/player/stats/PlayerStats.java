@@ -129,7 +129,7 @@ public class PlayerStats implements LoadableData, SaveableData {
 
 
     public double getCriticalDamage(boolean temp) {
-        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.003;
+        return (temp ? getTempStat(Stats.INTELLECT) : getStat(Stats.INTELLECT)) * 0.001;
     }
 
     public double getElementalResist(boolean temp) {
