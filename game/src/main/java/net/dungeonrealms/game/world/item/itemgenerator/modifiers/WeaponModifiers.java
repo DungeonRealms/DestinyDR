@@ -13,7 +13,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
 
 public class WeaponModifiers {
 
-	private static ItemType[] SEMI_MELEE = new ItemType[] {ItemType.AXE, ItemType.POLEARM, ItemType.STAFF, ItemType.SWORD};
+	private static ItemType[] SEMI_MELEE = new ItemType[] {ItemType.AXE, ItemType.POLEARM, ItemType.SWORD};
 
 	private static WeaponAttributeType[] ELEMENTS = new WeaponAttributeType[] {WeaponAttributeType.FIRE_DAMAGE, WeaponAttributeType.ICE_DAMAGE, WeaponAttributeType.POISON_DAMAGE};
 
@@ -89,7 +89,7 @@ public class WeaponModifiers {
 
 	}
 
-	public class StaffDamage extends ItemModifier {
+	/*public class StaffDamage extends ItemModifier {
 
 		public StaffDamage() {
 			super(WeaponAttributeType.DAMAGE, ItemType.STAFF);
@@ -120,7 +120,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 180, 210, 240, 270)));
 		}
 
-	}
+	}*/
 
 	public class PolearmDamage extends ItemModifier {
 
@@ -188,14 +188,14 @@ public class WeaponModifiers {
 
 	}
 
-	public class Precision extends ItemModifier {
+	/*public class Precision extends ItemModifier {
 		public Precision(){
 			super(WeaponAttributeType.PRECISION, ItemType.STAFF);
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 70), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 5, 80), 30));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 10, 95), 30));
 		}
-	}
+	}*/
 	public class Critical extends ItemModifier {
 
 		public Critical() {

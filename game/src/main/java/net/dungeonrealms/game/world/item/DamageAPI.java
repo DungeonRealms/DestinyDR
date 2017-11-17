@@ -131,13 +131,13 @@ public class DamageAPI {
             }
         } else if (attacker.isPlayer()) {
             ItemType type = weapon.getItemType();
-            if (type == ItemType.STAFF) {
+            /*if (type == ItemType.STAFF) {
                 int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 damage = damage * (1 + (intValue * 0.0002));
-            } else if (type == ItemType.BOW) {
+            } else if (type == ItemType.BOW) {*/
                 int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
                 damage = damage * (1 + (dexValue * 0.00015));
-            }
+            //}
         }
 
         //  CRIT  //
@@ -280,9 +280,9 @@ public class DamageAPI {
             reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.MELEE_ABSORBTION).getValue();
         } else if (type.equals(ItemType.BOW)) {
             reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.RANGE_ABSORBTION).getValue();
-        } else if (type.equals(ItemType.STAFF)) {
+        } /*else if (type.equals(ItemType.STAFF)) {
             reductionPercent = defender.getAttributes().getAttribute(ArmorAttributeType.MAGE_ABSORBTION).getValue();
-        }
+        }*/
 
         if (reductionPercent != null) {
             if (!isBlocking) reductionPercent /= 2;
@@ -678,11 +678,11 @@ public class DamageAPI {
         fireStaffProjectile(player, pw.getAttributes(), null, staff);
     }
 
-    public static Projectile fireStaffProjectile(LivingEntity attacker, @Nullable LivingEntity target, ItemWeaponStaff staff) {
+    public static Projectile fireStaffProjectile(LivingEntity attacker, @Nullable LivingEntity target, ItemWeapon staff) {
         return fireStaffProjectile(attacker, staff.getAttributes(), target, staff);
     }
 
-    public static Projectile fireStaffProjectile(LivingEntity attacker, ItemWeaponStaff staff) {
+    public static Projectile fireStaffProjectile(LivingEntity attacker, ItemWeapon staff) {
         return fireStaffProjectile(attacker, staff.getAttributes(), attacker instanceof Creature ? ((Creature) attacker).getTarget() : null, staff);
     }
 

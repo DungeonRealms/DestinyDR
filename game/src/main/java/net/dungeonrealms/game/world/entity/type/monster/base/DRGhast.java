@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.base;
 
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.*;
@@ -18,7 +18,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
 
     @Override
     public ItemStack getWeapon() {
-    	return makeItem(new ItemWeaponStaff());
+    	return makeItem(new ItemWeaponBow());
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ItemWeapon extends CombatItem {
 
-    public final static ItemType[] WEAPONS = new ItemType[]{ItemType.BOW, ItemType.STAFF, ItemType.SWORD, ItemType.AXE, ItemType.POLEARM};
+    public final static ItemType[] WEAPONS = new ItemType[]{ItemType.BOW, ItemType.SWORD, ItemType.AXE, ItemType.POLEARM};
 
     public ItemWeapon() {
         this(WEAPONS);

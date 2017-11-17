@@ -2,13 +2,12 @@ package net.dungeonrealms.game.world.entity.type.monster.base;
 
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.mechanic.ReflectionAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.pathfinders.PathfinderGoalBlazeFireball;
 import net.minecraft.server.v1_9_R2.*;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -38,7 +37,7 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 
     @Override
     public ItemStack getWeapon() {
-        return makeItem(new ItemWeaponStaff());
+        return makeItem(new ItemWeaponBow());
     }
 
     private long lastChecked;

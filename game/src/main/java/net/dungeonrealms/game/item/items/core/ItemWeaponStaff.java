@@ -12,16 +12,13 @@ import org.bukkit.inventory.ItemStack;
  * @author Kneesnap
  */
 public class ItemWeaponStaff extends ItemWeaponRanged {
-	public ItemWeaponStaff() {
-		super(ItemType.STAFF);
-	}
 	
 	public ItemWeaponStaff(ItemStack item) {
 		super(item);
 	}
 	
 	public static boolean isStaff(ItemStack item) {
-		return isType(item, ItemType.STAFF);
+		return isType(item, null);
 	}
 
 	@Override

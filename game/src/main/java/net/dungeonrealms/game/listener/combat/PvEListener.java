@@ -10,7 +10,6 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
@@ -131,7 +130,7 @@ public class PvEListener implements Listener {
 //            Utils.stopSprint(damager, true);
 
         //1 damage for melee staffing..
-        if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager()) && ItemWeaponStaff.isStaff(held)) {
+        if (!ItemWeapon.isWeapon(held) || !DamageAPI.isStaffProjectile(event.getDamager())) {
             res = new AttackResult(damager, receiver);
             res.setDamage(1);
             if (dpsDummy) {

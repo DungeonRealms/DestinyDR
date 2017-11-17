@@ -2,7 +2,8 @@ package net.dungeonrealms.game.world.entity.type.monster.boss;
 
 import lombok.Getter;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.BossType;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonBoss;
@@ -85,15 +86,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        if (!ItemWeaponStaff.isStaff(getHeld()))
-            return;
-        if(ghast != null && ghast.isAlive()) {
+        if(ghast != null && ghast.isAlive())
             return; //ghast should be firing instead.
-        }
-        ItemWeaponStaff staff = new ItemWeaponStaff(getHeld());
+
+        ItemWeapon wep = (ItemWeapon) PersistentItem.constructItem(getHeld());
 
         LivingEntity target = getGoalTarget() != null ? (LivingEntity) getGoalTarget().getBukkitEntity() : null;
-        Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), staff.getAttributes(), target, staff);
+        Projectile proj = DamageAPI.fireStaffProjectile((LivingEntity) this.getBukkitEntity(), wep.getAttributes(), target, wep);
         if (proj != null)
             proj.setVelocity(proj.getVelocity().multiply(1.4));
     }

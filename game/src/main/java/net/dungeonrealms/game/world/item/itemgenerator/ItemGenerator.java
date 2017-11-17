@@ -239,10 +239,8 @@ public class ItemGenerator {
         wm.new ArmorPenetration();
         wm.new Blind();
         wm.new Critical();
-        wm.new Precision();
         wm.new SwordDamage();
         wm.new AxeDamage();
-        wm.new StaffDamage();
         wm.new PolearmDamage();
         wm.new BowDamage();
         wm.new Elemental();

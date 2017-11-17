@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.player.altars.recipes.impl;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.item.ItemType;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.item.items.functional.ItemFish;
 import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
 import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;

@@ -62,16 +62,16 @@ public enum EnumMonster {
     Golem(l(CustomEntityType.MELEE_GOLEM), "Golem", ItemType.SWORD, l("Enchanted", "Ironclad", "Enchanted"), 30, ElementalAttribute.ICE),
     Spider1(l(CustomEntityType.LARGE_SPIDER), "Spider", ItemType.SWORD, l("Scary", "Spooky", "Hairy", "Giant"), 10, ElementalAttribute.ICE),
     Spider2(l(CustomEntityType.SMALL_SPIDER), "Spider", ItemType.SWORD, l("Scary", "Spooky", "Hairy", "Giant"), 10, ElementalAttribute.ICE),
-    Imp(l(CustomEntityType.STAFF_SKELETON), "Fire Imp", ItemType.STAFF, SkullTextures.IMP, 15, ElementalAttribute.FIRE),
-    Blaze(l(CustomEntityType.STAFF_BLAZE), "Blaze", ItemType.STAFF, 15, ElementalAttribute.FIRE),
-    Mage(l(CustomEntityType.STAFF_SKELETON), "Mage", ItemType.STAFF, SkullTextures.MAGE),
+    Imp(l(CustomEntityType.STAFF_SKELETON), "Fire Imp", ItemType.BOW, SkullTextures.IMP, 15, ElementalAttribute.FIRE),
+    Blaze(l(CustomEntityType.STAFF_BLAZE), "Blaze", ItemType.BOW, 15, ElementalAttribute.FIRE),
+    Mage(l(CustomEntityType.STAFF_SKELETON), "Mage", ItemType.BOW, SkullTextures.MAGE),
 
     // Daemons
     Daemon(l(CustomEntityType.DR_PIGMAN), "Daemon", ItemType.POLEARM, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
-    Daemon2(l(CustomEntityType.STAFF_SKELETON), "Daemon", ItemType.STAFF, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
+    Daemon2(l(CustomEntityType.STAFF_SKELETON), "Daemon", ItemType.BOW, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
     
     // Zombie
-    StaffZombie(l(CustomEntityType.STAFF_ZOMBIE), "Zombie", ItemType.STAFF, SkullTextures.ZOMBIE, l("Deadly", "Piercing"), l("Ranger"), 5, ElementalAttribute.PURE),
+    StaffZombie(l(CustomEntityType.STAFF_ZOMBIE), "Zombie", ItemType.BOW, SkullTextures.ZOMBIE, l("Deadly", "Piercing"), l("Ranger"), 5, ElementalAttribute.PURE),
     Zombie(l(CustomEntityType.MELEE_ZOMBIE), "Greater Zombie", ItemType.SWORD, SkullTextures.ZOMBIE, 10, ElementalAttribute.FIRE),
 
     MagmaCube(l(CustomEntityType.DR_MAGMA), "Magma Cube", null, 40, ElementalAttribute.FIRE),

@@ -5,7 +5,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -98,7 +97,7 @@ public class PvPListener implements Listener {
             ItemStack held = attacker.getEquipment().getItemInMainHand();
             AttackResult res = projectile != null ? new AttackResult(attacker, defender, projectile) : new AttackResult(attacker, defender);
 
-            if (!isProjectile && (!ItemWeapon.isWeapon(held) || ItemWeaponStaff.isStaff(held))) {
+            if (!isProjectile && !ItemWeapon.isWeapon(held)) {
                 res.setDamage(1);
                 res.applyDamage();
                 return;

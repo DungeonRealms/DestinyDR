@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff;
 
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
+import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRGiant;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -29,7 +29,7 @@ public class StaffGiant extends DRGiant implements IRangedEntity{
 
     @Override
     public org.bukkit.inventory.ItemStack getWeapon() {
-        return makeItem(new ItemWeaponStaff());
+        return makeItem(new ItemWeaponBow());
     }
 
     @Override
@@ -46,6 +46,6 @@ public class StaffGiant extends DRGiant implements IRangedEntity{
 
     @Override
     public void a(EntityLiving entityLiving, float v) {
-        DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponStaff(getHeld()));
+        DamageAPI.fireStaffProjectile((LivingEntity)getBukkitEntity(), new ItemWeaponBow(getHeld()));
     }
 }

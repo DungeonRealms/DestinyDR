@@ -7,7 +7,6 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
-import net.dungeonrealms.game.item.items.core.ItemWeaponStaff;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -223,15 +222,8 @@ public class EnergyHandler implements GenericMechanic {
         if (!PlayerWrapper.getWrapper(player).isVulnerable())
             return;
 
-        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) {
+        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel)
             return;
-        }
-        if (ItemWeaponStaff.isStaff(player.getInventory().getItemInMainHand())) {
-            //No..
-//            if (GameAPI.isCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN))
-//                return;
-//            GameAPI.addSmallCooldown(player, Metadata.STAFF_ENERGY_COOLDOWN, 80);
-        }
 
         if (getPlayerCurrentEnergy(player) <= 0) {
             return;

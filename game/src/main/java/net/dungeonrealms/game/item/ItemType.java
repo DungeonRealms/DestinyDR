@@ -29,7 +29,7 @@ public enum ItemType {
 	SWORD("sword", ItemWeaponSword.class, GeneratedItemType.SWORD),
 	AXE("axe", ItemWeaponAxe.class, GeneratedItemType.AXE),
 	POLEARM("polearm", ItemWeaponPolearm.class, GeneratedItemType.POLEARM),
-	STAFF("staff", ItemWeaponStaff.class, GeneratedItemType.STAFF),
+	//STAFF("staff", ItemWeaponStaff.class, GeneratedItemType.STAFF),
 	BOW("bow", ItemWeaponBow.class, GeneratedItemType.BOW),
 	
 	HELMET("helmet", ItemArmorHelmet.class, GeneratedItemType.HELMET),

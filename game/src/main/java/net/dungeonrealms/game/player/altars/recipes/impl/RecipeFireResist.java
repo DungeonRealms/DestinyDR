@@ -37,8 +37,8 @@ public class RecipeFireResist extends AbstractRecipe {
             } else if(index == 4) {
                 if(!onNode.getType().equals(Material.EMERALD_ORE)) return false;
             } else if(index == 6) {
-                if(!ItemWeaponStaff.isStaff(onNode)) return false;
-                ItemWeaponStaff staff = new ItemWeaponStaff(onNode);
+                if(!ItemWeaponBow.isBow(onNode)) return false;
+                ItemWeaponBow staff = new ItemWeaponBow(onNode);
                 if(staff.getTier() != Item.ItemTier.TIER_2) return false;
             }
         }
