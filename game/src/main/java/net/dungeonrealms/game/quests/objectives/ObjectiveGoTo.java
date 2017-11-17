@@ -30,7 +30,7 @@ public class ObjectiveGoTo implements QuestObjective {
 	public boolean isCompleted(Player player, QuestStage stage, QuestNPC currentNPC) {
 		if(player == null)
 			return false;
-		return this.loc != null? this.loc.distance(player.getLocation()) <= radius : true;
+		return this.loc != null && player.getWorld().equals(loc.getWorld()) ? this.loc.distance(player.getLocation()) <= radius : true;
 	}
 
 	@Override
