@@ -81,7 +81,7 @@ public abstract class Dungeon {
     public void startDungeon() {
         for (Player player : this.allowedPlayers) {
             PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-            pw.setStoredLocation(TeleportLocation.CYRENNICA.getLocation());
+            pw.setStoredLocation(pw.getHearthstone().getLocation());
             GameAPI.teleport(player, getWorld().getSpawnLocation());
             player.setFallDistance(0F);
             player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "How dare you enter my domain!");
@@ -300,7 +300,7 @@ public abstract class Dungeon {
         for (Player p : getAllPlayers()) {
             if (success)
                 Achievements.giveAchievement(p, getType().getAchievement());
-            GameAPI.teleport(p, TeleportLocation.CYRENNICA.getLocation());
+            GameAPI.teleport(p, PlayerWrapper.getWrapper(p).getHearthstone().getLocation());
 
             DungeonManager.removeDungeonItems(p);
         }

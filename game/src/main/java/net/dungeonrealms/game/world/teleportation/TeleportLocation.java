@@ -30,7 +30,13 @@ public enum TeleportLocation {
 	TRIPOLI("Tripoli", WorldRegion.TRIPOLI, 7500, -1320, 91, 370, 153F, 1F),
 	CRESTWATCH("Crestwatch", WorldRegion.CRESTWATCH, 15000, -522, 57, -433, -179.9F, 1F),
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
-	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, WorldType.ANDALUCIA);
+	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, WorldType.ANDALUCIA),
+	SETTLERS("Settler's Interlude", null, 10000, -655, 77, 1890),
+	ANDLEHEIM("Andleheim Pier", null, 10000, 789, 31, 1642),
+
+	NELIA("Nelia", null, 5000, -219, 71, 529, 0F, 0F, WorldType.ELORA),
+	NOVIS("Novis", null, 5000, 175, 70, 182, 0F, 0F, WorldType.ELORA),
+	NETYLI("Netyli", null, 5000, -661, 78, 709, 0F, 0F, WorldType.ELORA);
 
 	@Getter private String displayName;
 	private WorldRegion region;
@@ -88,6 +94,6 @@ public enum TeleportLocation {
 	}
 
 	public static TeleportLocation getByName(String name){
-		return Arrays.stream(TeleportLocation.values()).filter(loc -> loc.name().equals(name)).findFirst().orElse(TeleportLocation.CYRENNICA);
+		return Arrays.stream(TeleportLocation.values()).filter(loc -> loc.name().equals(name)).findFirst().orElse(TeleportLocation.NETYLI);
 	}
 }

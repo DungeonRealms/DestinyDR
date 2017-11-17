@@ -46,7 +46,7 @@ public class DungeonListener implements Listener {
             return;
 
         Player player = evt.getPlayer();
-        player.teleport(TeleportLocation.CYRENNICA.getLocation());
+        player.teleport(PlayerWrapper.getWrapper(player).getHearthstone().getLocation());
 
         Affair.getParty(player).announce(player.getName() + " has left the dungeon.");
     }

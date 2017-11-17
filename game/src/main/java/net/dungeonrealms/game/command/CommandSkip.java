@@ -45,7 +45,7 @@ public class CommandSkip extends BaseCommand {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         Quests.getInstance().removeQuest(player, "Tutorial Island");
-                        player.teleport(TeleportLocation.CYRENNICA.getLocation());
+                        player.teleport(TeleportLocation.NETYLI.getLocation());
                         ItemManager.giveStarter(player);
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

@@ -311,7 +311,7 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             //Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                event.getEntity().teleport(TeleportLocation.CYRENNICA.getLocation());
+                event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
                 event.getEntity().setFallDistance(0);
             });
         }
@@ -462,7 +462,7 @@ public class DamageListener implements Listener {
             respawnLocation = TeleportLocation.EVENT_AREA.getLocation();
         } else {
             Graveyard closest = GraveyardMechanic.get().getClosestGraveyard(p.getLocation());
-            respawnLocation = closest != null ? closest.getLocation() : TeleportLocation.CYRENNICA.getLocation();
+            respawnLocation = closest != null ? closest.getLocation() : PlayerWrapper.getWrapper(p).getHearthstone().getLocation();
 
             if (closest != null) {
                 if (!closest.getName().equalsIgnoreCase("cyrennica")) {

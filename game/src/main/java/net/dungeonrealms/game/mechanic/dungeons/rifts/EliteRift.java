@@ -340,7 +340,7 @@ public class EliteRift extends Dungeon {
         Location spawnLoc = map.getSpawnLocation();
         for (Player player : this.allowedPlayers) {
             PlayerWrapper pw = PlayerWrapper.getWrapper(player);
-            pw.setStoredLocation(TeleportLocation.CYRENNICA.getLocation());
+            pw.setStoredLocation(pw.getHearthstone().getLocation());
             GameAPI.teleport(player, new Location(getWorld(), spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ()));
             player.setFallDistance(0F);
             player.sendMessage(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.WHITE + "How dare you enter my domain!");
@@ -458,8 +458,7 @@ public class EliteRift extends Dungeon {
         if (!success)
             announce(ChatColor.RED + getType().getBoss().getName() + "> " + ChatColor.RESET + "You have failed, Adventurers.");
         for (Player p : getAllPlayers()) {
-            GameAPI.teleport(p, TeleportLocation.CYRENNICA.getLocation());
-
+            GameAPI.teleport(p, PlayerWrapper.getWrapper(p).getHearthstone().getLocation());
             DungeonManager.removeDungeonItems(p);
         }
 

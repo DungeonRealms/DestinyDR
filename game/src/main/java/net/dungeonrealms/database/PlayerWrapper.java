@@ -730,7 +730,7 @@ public class PlayerWrapper {
                 e.printStackTrace();
                 //Rip.
             }
-            this.storedLocation = TeleportLocation.CYRENNICA.getLocation();
+            this.storedLocation = TeleportLocation.NETYLI.getLocation();
         }
     }
 
