@@ -1035,6 +1035,7 @@ public class GameAPI {
         PlayerManager.checkInventory(player);
 
         if (playerWrapper.isFirstTimePlaying()) {
+            playerWrapper.setHearthstone(TeleportLocation.NETYLI); // Hacky way. since we're not keeping the current code for much longer this is ok.
             playerWrapper.setFirstLogin(System.currentTimeMillis());
             sendStaffMessage(PlayerRank.PMOD, ChatColor.GREEN + "" + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has joined " + ChatColor.BOLD + "DungeonRealms" + ChatColor.GRAY + " for the first time!", true);
 

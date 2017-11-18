@@ -38,7 +38,7 @@ public enum NPCMenu {
 			return null;
 		}
 		try {
-			return (ShopMenu) shopCls.getDeclaredConstructor(Player.class).newInstance(player);
+			return shopCls.getDeclaredConstructor(Player.class).newInstance(player);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Utils.log.info("Failed to construct shop menu for " + name() + "...");

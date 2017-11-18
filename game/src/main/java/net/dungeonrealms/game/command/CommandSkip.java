@@ -7,7 +7,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.quests.Quests;
-import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+import net.dungeonrealms.game.world.WorldType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -45,7 +45,7 @@ public class CommandSkip extends BaseCommand {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         Quests.getInstance().removeQuest(player, "Tutorial Island");
-                        player.teleport(TeleportLocation.NETYLI.getLocation());
+                        player.teleport(WorldType.ELORA.getWorld().getSpawnLocation());
                         ItemManager.giveStarter(player);
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

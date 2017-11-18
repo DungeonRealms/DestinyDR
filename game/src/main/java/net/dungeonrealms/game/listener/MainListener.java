@@ -696,6 +696,11 @@ public class MainListener implements Listener {
             return;
         }
 
+        if (npcNameStripped.equalsIgnoreCase("Sailor")) {
+            NPCMenus.doSailorPrompt(event.getPlayer());
+            return;
+        }
+
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             GuildMechanics.getInstance().startGuildCreationDialogue(event.getPlayer());
             return;

@@ -73,6 +73,11 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 			player.sendMessage(ChatColor.RED + "You cannot use teleport books whilst chaotic.");
 			return;
 		}
+
+		if (getTeleportLocation().getWorld() == WorldType.ANDALUCIA && !TeleportLocation.CYRENNICA.canSetHearthstone(player)) {
+			player.sendMessage(ChatColor.RED + "You have not visited Andalucia yet. Talk to the Ship Captain at Netyli ");
+			return;
+		}
 		
 		evt.setUsed(true);
 		

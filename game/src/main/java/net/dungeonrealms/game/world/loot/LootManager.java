@@ -164,10 +164,14 @@ public class LootManager implements GenericMechanic, Listener {
                 return;
             }
             // Drop all items.
-            for (ItemStack item : spawner.getInventory().getContents())
-                if (item != null)
-                    block.getLocation().getWorld().dropItemNaturally(block.getLocation(), item);
-            spawner.getInventory().clear();
+
+            if (spawner.getInventory() != null) {
+                for (ItemStack item : spawner.getInventory().getContents())
+                    if (item != null)
+                        block.getLocation().getWorld().dropItemNaturally(block.getLocation(), item);
+                spawner.getInventory().clear();
+            }
+
             spawner.attemptBreak(p);
         }
 

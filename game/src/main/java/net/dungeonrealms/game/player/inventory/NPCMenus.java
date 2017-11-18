@@ -1,12 +1,16 @@
 package net.dungeonrealms.game.player.inventory;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.item.items.functional.ItemMoney;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 
+import net.dungeonrealms.game.world.WorldType;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,6 +28,24 @@ import java.util.List;
  * Created by Kieran on 10/26/2015.
  */
 public class NPCMenus {
+
+    public static void doSailorPrompt(Player player) {
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Ahoy Theyr! Want to travel to the world of Andalucia? They're in big need of strong adventurers.");
+        player.sendMessage(ChatColor.GRAY + "I can take you for a parsley " + ChatColor.GREEN + "500 gems" + ChatColor.GRAY + ".");
+        player.sendMessage(ChatColor.GRAY + "Interested? Reply " + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " to accept, or " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " deny.");
+        player.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + ChatColor.ITALIC + "(This unlocks a new high tiered world, Andalucia.)");
+        player.sendMessage("");
+        Chat.promptPlayerConfirmation(player, () -> {
+            if (BankMechanics.takeGemsFromInventory(player, 500)) {
+                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Off we goo!!!");
+                PlayerWrapper.getWrapper(player).setHearthstone(TeleportLocation.CYRENNICA);
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> player.teleport(WorldType.ANDALUCIA.getWorld().getSpawnLocation()));
+            } else {
+                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Aww, ye don't have enough gems!");
+            }
+        }, () -> player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Okey then, I'll be seeing yew 'round them."));
+    }
 
     public static void openWizardMenu(Player player) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
