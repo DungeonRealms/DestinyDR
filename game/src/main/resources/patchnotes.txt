@@ -1,11 +1,24 @@
 Build <build>
 
-   &lThe Map Expansion
+&lThe Map Expansion
 
  - Two new areas:
   - Red Faction is mid to high tier expansion to Andalucia past Dark Oak.
   - Elora is a completely low to mid tier world that will supplement Andalucia.
 
+ - Netyli (Elora) is now the starting area, Cyrennica can be accessed by buying passage (500 gems) from a Sailor in Netyli.
+
  - Weapon generation has been buffed to make rolls like 60-60 DMG not happen.
 
-We will update the online map soon.
+ - Staves have been removed, a second-bow type will supplement their removal soon.
+
+ - Added /rules
+ - Added /discord
+ - Elites moved, gear updated.
+ - New elites in new areas.
+ - Stat tweaks.
+ - Added Crestwatch and Avalon TP Books.
+ - T5 scrap repairs 5% instead of 3%
+ - We will update the online map soon.
+
+Stay tuned for more information to come.
