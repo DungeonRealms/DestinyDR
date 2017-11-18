@@ -141,7 +141,7 @@ public class ItemManager {
                 + "   " + dps + ChatColor.BOLD + "% DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
-                + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
+//                + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD + " GEM FIND" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValue() + ChatColor.BOLD + " ITEM FIND";
 
@@ -258,29 +258,29 @@ public class ItemManager {
 
         stat_page_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + str_val + " Strength"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.03) + "% Armor" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.045) + "% Armor" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.017) + "% Block" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.015) + "% Axe DMG" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.023) + "% Polearm DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.03) + "% Axe DMG" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(str_val * 0.02) + "% Polearm DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + dex_val + " Dexterity" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.017f) + "% Dodge" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.015) + "% Bow DMG" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.03) + "% DPS" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.009) + "% Armor Pen.";
+                + ChatColor.BLACK.toString() + "+" + df.format(dex_val * 0.035) + "% Vs Monsters.";
 
         stat_page2_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + vit_val + " Vitality"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.034) + "% Health" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.3) + "% HP/s" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.04) + "% Ele Resist" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.01) + "% Sword DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(vit_val * 0.02) + "% Sword DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + int_val + " Intellect" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + new_line
                 + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.015) + "% Energy" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.05) + "% Ele Damage" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.025) + "% Critical DMG" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.02) + "% Staff DMG";
+                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.001) + "% Critical DMG";
+//                + ChatColor.BLACK.toString() + "+" + df.format(int_val * 0.02) + "% Staff DMG";
         //  PORTAL SHARD PAGE  //
         String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
                 + ChatColor.ITALIC.toString() + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment.\n";
