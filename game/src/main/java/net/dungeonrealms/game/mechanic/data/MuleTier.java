@@ -9,8 +9,8 @@ import org.bukkit.ChatColor;
 public enum MuleTier {
 
     OLD(ChatColor.GREEN, "Old Storage Mule", 9, 0),
-    ADVENTURER(ChatColor.AQUA, "Adventurer's Storage Mule", 18, 5000),
-    ROYAL(ChatColor.LIGHT_PURPLE, "Royal Storage Mule", 27, 8000);
+    ADVENTURER(ChatColor.AQUA, "Adventurer's Storage Mule", 18, 500),
+    ROYAL(ChatColor.LIGHT_PURPLE, "Royal Storage Mule", 27, 500);
 
     @Getter private ChatColor color;
     private String name;
