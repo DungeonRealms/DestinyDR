@@ -1500,6 +1500,12 @@ public class GameAPI {
         message.sendToPlayer(player);
     }
 
+    public static void sendRulesMessage(Player player) {
+        final JSONMessage message = new JSONMessage("To see the rules page click ", ChatColor.GREEN);
+        message.addURL(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.GREEN, "http://www.dungeonrealms.net/rules");
+        message.sendToPlayer(player);
+    }
+
     public static boolean isMainWorld(World world) {
         return WorldType.getWorld(world) != null;
     }

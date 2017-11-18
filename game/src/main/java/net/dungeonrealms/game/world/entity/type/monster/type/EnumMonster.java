@@ -56,22 +56,22 @@ public enum EnumMonster {
     Pirate(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Pirate", null, SkullTextures.PIRATE),
     RangedPirate(l(CustomEntityType.BOW_SKELETON), "Ranged Pirate", null, SkullTextures.PIRATE, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), l("")),
     
-    Naga(l(CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_SKELETON, CustomEntityType.MELEE_SKELETON), "Naga", null, SkullTextures.NAGA, l("Weak"), l("Shaman", "Mage"), 25, ElementalAttribute.ICE),
+    Naga(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Naga", null, SkullTextures.NAGA, l("Weak"), l("Shaman", "Mage"), 25, ElementalAttribute.ICE),
     Tripoli(l(CustomEntityType.MELEE_ZOMBIE), "Tripoli", ItemType.AXE, SkullTextures.TRIPOLI_SOLDIER, l(""), l("Soldier", "Commander"), 3, ElementalAttribute.FIRE),
     Tripoli1(l(CustomEntityType.MELEE_ZOMBIE), "Tripoli", ItemType.AXE, SkullTextures.TRIPOLI_SOLDIER, l(""), l("Soldier", "Commander"), 3, ElementalAttribute.FIRE),
     Golem(l(CustomEntityType.MELEE_GOLEM), "Golem", ItemType.SWORD, l("Enchanted", "Ironclad", "Enchanted"), 30, ElementalAttribute.ICE),
     Spider1(l(CustomEntityType.LARGE_SPIDER), "Spider", ItemType.SWORD, l("Scary", "Spooky", "Hairy", "Giant"), 10, ElementalAttribute.ICE),
     Spider2(l(CustomEntityType.SMALL_SPIDER), "Spider", ItemType.SWORD, l("Scary", "Spooky", "Hairy", "Giant"), 10, ElementalAttribute.ICE),
-    Imp(l(CustomEntityType.STAFF_SKELETON), "Fire Imp", ItemType.BOW, SkullTextures.IMP, 15, ElementalAttribute.FIRE),
+    Imp(l(CustomEntityType.BOW_SKELETON), "Fire Imp", ItemType.BOW, SkullTextures.IMP, 15, ElementalAttribute.FIRE),
     Blaze(l(CustomEntityType.STAFF_BLAZE), "Blaze", ItemType.BOW, 15, ElementalAttribute.FIRE),
-    Mage(l(CustomEntityType.STAFF_SKELETON), "Mage", ItemType.BOW, SkullTextures.MAGE),
+    Mage(l(CustomEntityType.BOW_SKELETON), "Mage", ItemType.BOW, SkullTextures.MAGE),
 
     // Daemons
     Daemon(l(CustomEntityType.DR_PIGMAN), "Daemon", ItemType.POLEARM, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
-    Daemon2(l(CustomEntityType.STAFF_SKELETON), "Daemon", ItemType.BOW, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
+    Daemon2(l(CustomEntityType.BOW_SKELETON), "Daemon", ItemType.BOW, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
     
     // Zombie
-    StaffZombie(l(CustomEntityType.STAFF_ZOMBIE), "Zombie", ItemType.BOW, SkullTextures.ZOMBIE, l("Deadly", "Piercing"), l("Ranger"), 5, ElementalAttribute.PURE),
+    StaffZombie(l(CustomEntityType.BOW_ZOMBIE), "Zombie", ItemType.BOW, SkullTextures.ZOMBIE, l("Deadly", "Piercing"), l("Ranger"), 5, ElementalAttribute.PURE),
     Zombie(l(CustomEntityType.MELEE_ZOMBIE), "Greater Zombie", ItemType.SWORD, SkullTextures.ZOMBIE, 10, ElementalAttribute.FIRE),
 
     MagmaCube(l(CustomEntityType.DR_MAGMA), "Magma Cube", null, 40, ElementalAttribute.FIRE),
@@ -81,7 +81,7 @@ public enum EnumMonster {
 	Monk(l(CustomEntityType.MELEE_ZOMBIE), "Crimson Crusader", ItemType.POLEARM, SkullTextures.MONK, 15, ElementalAttribute.POISON),
 	Lizardman(l(CustomEntityType.MELEE_ZOMBIE), "Lizardman", ItemType.POLEARM, SkullTextures.LIZARD, new String[] {"Giant", "Tough"}, 10, ElementalAttribute.FIRE),
     Orc(l(CustomEntityType.MELEE_ZOMBIE), "Orc", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
-    Orc1(l(CustomEntityType.STAFF_ZOMBIE), "Orc Shaman", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
+    Orc1(l(CustomEntityType.BOW_ZOMBIE), "Orc Shaman", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
     Nymph(l(CustomEntityType.MELEE_ZOMBIE), "Nymph", null, SkullTextures.NYMPH, new String[] {"Fairy", "Pretty", "Little"}, 10, ElementalAttribute.POISON),
     Nymph1(l(CustomEntityType.BOW_ZOMBIE), "Nymph", ItemType.BOW, SkullTextures.NYMPH, new String[] {"Fairy", "Pretty", "Little"}, 10, ElementalAttribute.POISON),
 
@@ -90,10 +90,10 @@ public enum EnumMonster {
     Undead(l(CustomEntityType.MELEE_ZOMBIE), "Undead", ItemType.SWORD, SkullTextures.UNDEAD),
     
     Witch(l(CustomEntityType.DR_WITCH), "Old Hag", null, 100, ElementalAttribute.POISON), // witches do poison damage 100% of the time
-    Acolyte(l(CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_SKELETON, CustomEntityType.MELEE_SKELETON), "Acolyte", null, SkullTextures.MONK, 20, ElementalAttribute.FIRE),
+    Acolyte(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Acolyte", null, SkullTextures.MONK, 20, ElementalAttribute.FIRE),
     
     // Dungeon
-    MayelPirate(l(CustomEntityType.STAFF_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Pirate", null, SkullTextures.PIRATE, l("Mayel"), l("")),
+    MayelPirate(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Pirate", null, SkullTextures.PIRATE, l("Mayel"), l("")),
     Enderman(l(CustomEntityType.MELEE_ENDERMAN), "Apparition", ItemType.SWORD, 15, ElementalAttribute.PURE),
     SpawnOfInferno(l(CustomEntityType.DR_MAGMA), "Spawn of Inferno", null, 10, ElementalAttribute.FIRE),
 	Demon(l(CustomEntityType.DR_SILVERFISH), "Greater Abyssal Demon", ItemType.SWORD),
@@ -103,7 +103,7 @@ public enum EnumMonster {
     IceLord(l(CustomEntityType.ICE_LORD), "Ice Lord of the Abyss", null, 70, ElementalAttribute.ICE),
 
     RiftElite(l(CustomEntityType.RIFT_ELITE), "Jumper of Rifts", null, 50, ElementalAttribute.PURE),
-    RiftMinion(l(CustomEntityType.STAFF_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.STAFF_ZOMBIE, CustomEntityType.BOW_ZOMBIE), "Rift Slave", null, SkullTextures.RIFT,5, ElementalAttribute.POISON),
+    RiftMinion(l(CustomEntityType.BOW_SKELETON, CustomEntityType.BOW_ZOMBIE), "Rift Slave", null, SkullTextures.RIFT,5, ElementalAttribute.POISON),
 
 
     // Vanilla NonHostiles
