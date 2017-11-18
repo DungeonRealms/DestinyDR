@@ -56,8 +56,8 @@ public interface DRMonster {
 
     public static final TeleportLocation[][] TELEPORT_DROPS = new TeleportLocation[][]{
             {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.NETYLI},
-            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA},
-            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA},
+            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON},
+            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.NOVIS},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.NELIA}};
 
