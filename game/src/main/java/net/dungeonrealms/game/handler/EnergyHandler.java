@@ -346,15 +346,15 @@ public class EnergyHandler implements GenericMechanic {
                 return 0.137F;
 
             case WOOD_AXE:
-                return 0.08473F;
+                return 0.09373F;
             case STONE_AXE:
-                return 0.0909F;
+                return 0.09996F;
             case IRON_AXE:
-                return 0.119F;
+                return 0.13F;
             case DIAMOND_AXE:
-                return 0.1395F;
-            case GOLD_AXE:
                 return 0.15F;
+            case GOLD_AXE:
+                return 0.162F;
 
             /* OLD DR VALUES
           		if(m == Material.WOOD_SWORD) { return 0.06F; }
