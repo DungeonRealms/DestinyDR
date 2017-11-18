@@ -61,7 +61,7 @@ public abstract class ItemGear extends ItemGeneric {
 
 
     public static final int MAX_DURABILITY = 1500;
-    private static final int[] SUCCESS_CHANCE = {100, 90, 80, 70, 60, 50, 40, 25, 50, 40, 40, 30};
+    private static final int[] SUCCESS_CHANCE = {100, 100, 100, 80, 60, 50, 35, 25, 20, 15, 10, 5};
     private static final int[] DURABILITY_WARNINGS = {2, 5, 10, 30};
 
     public ItemGear(ItemType... types) {
@@ -139,7 +139,7 @@ public abstract class ItemGear extends ItemGeneric {
         double percent = getDurabilityPercent() / 100D;
         getItem().setDurability((short) (getItem().getType().getMaxDurability() - percent * getItem().getType().getMaxDurability()));
 
-        if (getEnchantCount() > 8)
+        if (getEnchantCount() > 3)
             setGlowing(true);
         else if (getMeta().hasEnchant(Enchantment.ARROW_INFINITE))
             getMeta().removeEnchant(Enchantment.ARROW_INFINITE);
@@ -263,18 +263,19 @@ public abstract class ItemGear extends ItemGeneric {
         if (!success) {
             pw.getPlayerGameStats().addStat(StatColumn.FAILED_ENCHANTS);
 
-
-            if (enchantCount >= 8 && enchantCount <= 12 && isProtected() == false);
-
-            if (enchantCount >= 8 && enchantCount <= 12 && isProtected()){
+            if (enchantCount <= 8 && isProtected()) {
                 setProtected(false);
-                this.enchantCount--;
+                p.getWorld().playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2F, 1.25F);
+                ParticleAPI.spawnParticle(Particle.LAVA, p.getLocation().add(0, 2.5, 0), 75, 1F);
+                p.sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED
+                        + " but since you had white scroll protection, your item did not vanish.");
+                return;
             }
 
             p.getWorld().playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2F, 1.25F);
             ParticleAPI.spawnParticle(Particle.LAVA, p.getLocation().add(0, 2.5, 0), 75, 1F);
-            p.sendMessage(ChatColor.RED + "Your enchantment has FAILED. Bonus stats were not applied.");
-            this.enchantCount++;
+            p.sendMessage(ChatColor.RED + "While dealing with magical enchants, your item VANISHED.");
+            setDestroyed(true);
             return;
         }
 

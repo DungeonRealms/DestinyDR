@@ -32,7 +32,7 @@ public class ItemEnchantArmor extends ItemEnchantScroll {
 				ChatColor.RED + "+5% HP REGEN",
 				ChatColor.ITALIC + "    - OR -",
 				ChatColor.RED + "+1% ENERGY REGEN",
-				ChatColor.ITALIC + "Apply to your armor for bonus stats."};
+				ChatColor.ITALIC + "Armor will VANISH if enchant above +3 FAILS."};
 	}
 
 	@Override

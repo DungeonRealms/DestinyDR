@@ -494,7 +494,7 @@ public class ArmorModifiers {
     public class ShieldAbsorb extends ItemModifier {
 
         public ShieldAbsorb() {
-            super(new ArmorAttributeType[]{ArmorAttributeType.MELEE_ABSORBTION, ArmorAttributeType.RANGE_ABSORBTION, ArmorAttributeType.MAGE_ABSORBTION}, ItemType.SHIELD);
+            super(new ArmorAttributeType[]{ArmorAttributeType.MELEE_ABSORBTION, ArmorAttributeType.RANGE_ABSORBTION}, ItemType.SHIELD);
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 1, 2)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 2, 3)));

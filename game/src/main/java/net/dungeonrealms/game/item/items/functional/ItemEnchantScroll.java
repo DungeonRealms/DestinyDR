@@ -69,13 +69,8 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
             return;
         }
 
-        if (gear.getEnchantCount() >= 8 && gear.isProtected() && gear.getEnchantCount() < 12);
-
-        else if(gear.getEnchantCount() >= 8 && gear.getEnchantCount() < 12) {
-            evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further unless you use a white scroll!");
-            return;
-        } else if(gear.getEnchantCount() >= 12) {
-            evt.getPlayer().sendMessage(ChatColor.RED + "This item has reached it's maximum level!");
+        if (gear.getEnchantCount() >= 12) {
+            evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further.");
             return;
         }
 
@@ -94,11 +89,11 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
         }
 
         //  ENCHANT ITEM  //
-            evt.setUsed(true);
-            enchant(evt.getPlayer(), gear);
-            evt.setSwappedItem(gear.generateItem());
+        evt.setUsed(true);
+        enchant(evt.getPlayer(), gear);
+        evt.setSwappedItem(gear.generateItem());
 
-            ClueUtils.handleAddEnchantToItem(evt.getPlayer(), this, evt.getSwappedItem());
+        ClueUtils.handleAddEnchantToItem(evt.getPlayer(), this, evt.getSwappedItem());
     }
 
     public void enchant(Player player, ItemGear gear) {

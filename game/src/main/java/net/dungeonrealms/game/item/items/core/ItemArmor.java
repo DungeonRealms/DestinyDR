@@ -73,11 +73,7 @@ public class ItemArmor extends CombatItem {
         getAttributes().multiplyStat(ArmorAttributeType.HEALTH_REGEN, 1.05);
 
         if (getAttributes().containsKey(ArmorAttributeType.ENERGY_REGEN))
-            if (getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).getValue() == 12) {
-                getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 0);
-            } else {
-                getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 1);
-            }
+            getAttributes().addStat(ArmorAttributeType.ENERGY_REGEN, 1);
     }
 
     @Override
