@@ -67,7 +67,7 @@ public enum TeleportLocation {
 	}
 	
 	public Location getLocation(){
-		return new Location(getWorld().getWorld(), this.x, this.y, this.z, this.yaw, this.pitch);
+		return new Location((getWorld() != null ? getWorld() : WorldType.ANDALUCIA).getWorld(), this.x, this.y, this.z, this.yaw, this.pitch);
 	}
 	
 	public boolean canTeleportTo(Player player){
