@@ -979,6 +979,10 @@ public class MainListener implements Listener {
 
         boolean hadRiftMob = false;
         for (Entity ent : chunk.getEntities()) {
+            if (ent instanceof Item && mainWorld) {
+                ent.remove();
+                continue;
+                }
             if (!(ent instanceof Player || ent instanceof Hanging || (mainWorld && ent instanceof Item) || ent instanceof Minecart)) {
                 if (Metadata.RIFT_MOB.has(ent)) {
                     hadRiftMob = true;
