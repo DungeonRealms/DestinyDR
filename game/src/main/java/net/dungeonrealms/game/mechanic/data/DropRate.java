@@ -10,7 +10,7 @@ public enum DropRate {
 	TIER_2(ItemTier.TIER_2, 2, 12, 40, 50, 360, 2),
 	TIER_3(ItemTier.TIER_3, 10, 30, 30, 30, 81, 2),
 	TIER_4(ItemTier.TIER_4, 40, 90, 30, 15, 27, 1),
-	TIER_5(ItemTier.TIER_5, 75, 200, 35, 5, 9, 1);
+	TIER_5(ItemTier.TIER_5, 75, 200, 35, 5, 10, 1);
 	
 	private ItemTier tier;
 	
