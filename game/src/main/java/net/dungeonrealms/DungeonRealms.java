@@ -460,6 +460,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
             cm.registerCommand(new CommandAsk());
+            cm.registerCommand(new CommandRules());
             cm.registerCommand(new CommandAnswer("answer", "/<command> [args]", "Answer command"));
             cm.registerCommand(new CommandSuicide("suicide", "/<command>", "Kills your player.", Collections.singletonList("drsuicide")));
 

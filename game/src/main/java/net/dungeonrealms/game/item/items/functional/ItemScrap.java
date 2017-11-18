@@ -61,7 +61,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 			return;
 		}
 
-		gear.scrapRepair();
+		gear.scrapRepair(gear);
 		evt.setUsed(true);
 
 		int particleId = gear.getRepairParticle(getTier());
@@ -72,7 +72,13 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
             player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleId, 12);
         }
 
-        Utils.sendCenteredDebug(player, ChatColor.GREEN + "+3% DURABILITY " + ChatColor.GREEN + ChatColor.BOLD + "-> " + ChatColor.GREEN + (int) Math.floor(gear.getDurabilityPercent()) + "% TOTAL");
+		if (gear.getTier().getId() == 5) {
+			Utils.sendCenteredDebug(player, ChatColor.GREEN + "+5% DURABILITY " + ChatColor.GREEN + ChatColor.BOLD + "-> " + ChatColor.GREEN + (int) Math.floor(gear.getDurabilityPercent()) + "% TOTAL");
+		} else {
+			Utils.sendCenteredDebug(player, ChatColor.GREEN + "+3% DURABILITY " + ChatColor.GREEN + ChatColor.BOLD + "-> " + ChatColor.GREEN + (int) Math.floor(gear.getDurabilityPercent()) + "% TOTAL");
+		}
+
+        //Utils.sendCenteredDebug(player, ChatColor.GREEN + "+3% DURABILITY " + ChatColor.GREEN + ChatColor.BOLD + "-> " + ChatColor.GREEN + (int) Math.floor(gear.getDurabilityPercent()) + "% TOTAL");
 
         evt.setSwappedItem(gear.generateItem());
     }
@@ -84,7 +90,8 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 	@Override
 	protected String[] getLore() {
-		return new String[] { "Repairs 3% durability on " + getTier().getName() + ChatColor.GRAY + " equipment." };
+		return new String[] { getTier().getTier() == 5 ? "Repairs 5% durability on " + getTier().getName() + ChatColor.GRAY + " equipment." : "Repairs 3% durability on " + getTier().getName() + ChatColor.GRAY + " equipment." };
+		//return new String[] { "Repairs 3% durability on " + getTier().getName() + ChatColor.GRAY + " equipment." };
 	}
 
 	@Override
