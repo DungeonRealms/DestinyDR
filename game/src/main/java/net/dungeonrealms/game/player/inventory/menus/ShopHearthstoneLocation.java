@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class ShopHearthstoneLocation extends GUIMenu {
 
 	public ShopHearthstoneLocation(Player player) {
-		super(player, 9, "Hearthstone Re-Location");
+		super(player, 18, "Hearthstone Re-Location");
 		open(player, null);
 	}
 

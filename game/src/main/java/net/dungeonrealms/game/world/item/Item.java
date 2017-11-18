@@ -271,9 +271,8 @@ public class Item {
                 else if(rarity.equals(ItemRarity.UNIQUE)) increase = (int)((uniqueIncrease / 100) * ItemRarity.UNIQUE.getDropChance());
 
                 dropChance += increase;
-//                System.out.println("The rarity: " + rarity.name + " has an increase of " + increase + " out of " + ItemRarity.COMMON.getDropChance());
                 if (chance <= dropChance)
-                    return ItemRarity.values()[i];
+                    return ItemRarity.values()[i == ItemRarity.UNIQUE.ordinal() ? i - 1 : i]; // Temporary turn all unique to rare. Remove this.
             }
             return ItemRarity.COMMON;
         }

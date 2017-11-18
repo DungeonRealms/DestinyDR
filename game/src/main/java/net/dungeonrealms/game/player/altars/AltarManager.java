@@ -23,6 +23,9 @@ public class AltarManager {
     public static ConcurrentHashMap<Altars, Altar> currentlyUsingAltars = new ConcurrentHashMap<>();
 
     public static void initAltarManager() {
+        if (!DungeonRealms.isMaster())
+            return; // Don't load on live shards yet.
+
         for(Altars altar : Altars.values()) {
             for(int nodeIndex = 0; nodeIndex < altar.getNodeSize(); nodeIndex++) {
                 Location nodeLoc = altar.getNode(nodeIndex);
