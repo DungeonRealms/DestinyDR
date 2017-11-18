@@ -75,7 +75,7 @@ public class ItemTeleportBook extends FunctionalItem implements ItemClickListene
 		}
 
 		if (getTeleportLocation().getWorld() == WorldType.ANDALUCIA && !TeleportLocation.CYRENNICA.canSetHearthstone(player)) {
-			player.sendMessage(ChatColor.RED + "You have not visited Andalucia yet. Talk to the Ship Captain at Netyli ");
+			player.sendMessage(ChatColor.RED + "You have not visited Andalucia yet. Talk to the Sailor in Netyli.");
 			return;
 		}
 		

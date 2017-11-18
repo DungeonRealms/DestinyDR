@@ -30,6 +30,12 @@ import java.util.List;
 public class NPCMenus {
 
     public static void doSailorPrompt(Player player) {
+        if (PlayerWrapper.getWrapper(player).getLevel() < 10) {
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "I can take you to Andalucia, my friend. However, you look too weak to go. Come back when you are at least level 10.");
+            return;
+        }
+
+
         player.sendMessage("");
         player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Ahoy Theyr! Want to travel to the world of Andalucia? They're in big need of strong adventurers.");
         player.sendMessage(ChatColor.GRAY + "I can take you for a parsley " + ChatColor.GREEN + "500 gems" + ChatColor.GRAY + ".");
