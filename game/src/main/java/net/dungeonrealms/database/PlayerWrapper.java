@@ -484,8 +484,6 @@ public class PlayerWrapper {
 
         if (callback != null)
             callback.accept(null);
-
-        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 1, DungeonRealms.getShard().getPseudoName() != null ? "'" + DungeonRealms.getShard().getPseudoName() + "'" : null, accountID);
     }
 
     public GuildWrapper getGuild() {
@@ -1206,7 +1204,7 @@ public class PlayerWrapper {
             return;
 
         ModifierRange range = ((ItemWeapon) PersistentItem.constructItem(held)).getAttributes().getAttribute(WeaponAttributeType.DAMAGE);
-        if (range.getValHigh() < 1000)
+        if (range.getValHigh() < 1200) // Should always be above the max possible damage of an item.
             return;
 
         player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));

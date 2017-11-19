@@ -371,7 +371,8 @@ public class GameAPI {
         DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        final long restartTime = Bukkit.getOnlinePlayers().size() <= 5 && DungeonRealms.isMaster() ? 10 : (20 * Bukkit.getOnlinePlayers().size()) + 100; // second per player plus 5 seconds
+        int perPlayer = Bukkit.getOnlinePlayers().size() >= 50 ? 30 : 20;
+        final long restartTime = (perPlayer * Bukkit.getOnlinePlayers().size()) + 100; // second per player plus 5 seconds
 
         try {
             Bukkit.getLogger().info("Saving all shops sync...");
@@ -995,6 +996,9 @@ public class GameAPI {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         }
+
+        SQLDatabaseAPI.getInstance().addQuery(QueryType.SET_ONLINE_STATUS, 1, DungeonRealms.getShard().getPseudoName() != null ? "'" + DungeonRealms.getShard().getPseudoName() + "'" : null, playerWrapper.getAccountID());
+
         player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
         ShardType type = DungeonRealms.getShard().getType();
