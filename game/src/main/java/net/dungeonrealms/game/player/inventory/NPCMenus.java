@@ -30,26 +30,15 @@ import java.util.List;
 public class NPCMenus {
 
     public static void doSailorPrompt(Player player) {
-        if (PlayerWrapper.getWrapper(player).getLevel() < 10) {
-            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "I can take you to Andalucia, my friend. However, you look too weak to go. Come back when you are at least level 10.");
-            return;
-        }
-
-
         player.sendMessage("");
-        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Ahoy Theyr! Want to travel to the world of Andalucia? They're in big need of strong adventurers.");
-        player.sendMessage(ChatColor.GRAY + "I can take you for a parsley " + ChatColor.GREEN + "500 gems" + ChatColor.GRAY + ".");
+        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Ahoy Theyr! Want to travel to the world of Andalucia? They're in need of strong adventurers.");
         player.sendMessage(ChatColor.GRAY + "Interested? Reply " + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " to accept, or " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " deny.");
         player.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + ChatColor.ITALIC + "(This unlocks a new high tiered world, Andalucia.)");
         player.sendMessage("");
         Chat.promptPlayerConfirmation(player, () -> {
-            if (BankMechanics.takeGemsFromInventory(player, 500)) {
-                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Off we goo!!!");
-                PlayerWrapper.getWrapper(player).setHearthstone(TeleportLocation.CYRENNICA);
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> player.teleport(WorldType.ANDALUCIA.getWorld().getSpawnLocation()));
-            } else {
-                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Aww, ye don't have enough gems!");
-            }
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Off we goo!!!");
+            PlayerWrapper.getWrapper(player).setHearthstone(TeleportLocation.CYRENNICA);
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> player.teleport(WorldType.ANDALUCIA.getWorld().getSpawnLocation()));
         }, () -> player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Sailor: " + ChatColor.GRAY + "Okey then, I'll be seeing yew 'round them."));
     }
 
