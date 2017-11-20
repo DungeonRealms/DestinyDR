@@ -16,11 +16,11 @@ public class ArmorModifiers {
 
         public HPRegen() {
             super(ArmorAttributeType.HEALTH_REGEN, ItemArmor.ARMOR);
-            addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 5, 15)).setCantContain(ArmorModifiers.EnergyRegen.class));
-            addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 17, 40)).setCantContain(ArmorModifiers.EnergyRegen.class));
-            addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 50, 70)).setCantContain(ArmorModifiers.EnergyRegen.class));
+            addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 5, 20)).setCantContain(ArmorModifiers.EnergyRegen.class));
+            addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 20, 40)).setCantContain(ArmorModifiers.EnergyRegen.class));
+            addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 45, 70)).setCantContain(ArmorModifiers.EnergyRegen.class));
             addCondition(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 70, 130)).setCantContain(ArmorModifiers.EnergyRegen.class));
-            addCondition(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 130, 180)).setCantContain(ArmorModifiers.EnergyRegen.class));
+            addCondition(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 130, 200)).setCantContain(ArmorModifiers.EnergyRegen.class));
         }
 
     }
