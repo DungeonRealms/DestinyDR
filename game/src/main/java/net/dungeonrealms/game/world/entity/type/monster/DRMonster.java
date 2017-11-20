@@ -25,6 +25,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -473,6 +474,16 @@ public interface DRMonster {
             }
             ItemManager.whitelistItemDrop(killer, ent.getLocation(), new ItemTeleportBook(
                     TELEPORT_DROPS[tier - 1][random.nextInt(TELEPORT_DROPS[tier - 1].length)]).generateItem());
+        }
+
+        //Drop Portal Shards for elites only
+        if(elite){
+            int currentPortalShards = wrapper.getPortalShards(ShardTier.getByTier(getTier()));
+            int portalShardsAmount = random.nextInt(5) + 10;
+            ShardTier shardTier = ShardTier.getByTier(getTier());
+            wrapper.setPortalShards(shardTier,currentPortalShards + portalShardsAmount);
+            killer.sendMessage(shardTier.getColor() + "You found " + ChatColor.BOLD + portalShardsAmount + ChatColor.RESET + shardTier.getColor() + " portal shards from this elite!");
+            world.getWorld().playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
         }
     }
 
