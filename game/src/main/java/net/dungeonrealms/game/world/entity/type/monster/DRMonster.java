@@ -479,7 +479,7 @@ public interface DRMonster {
         //Drop Portal Shards for elites only
         if(elite){
             int currentPortalShards = wrapper.getPortalShards(ShardTier.getByTier(getTier()));
-            int portalShardsAmount = random.nextInt(5) + 10;
+            int portalShardsAmount = random.nextInt(6) + 10;
             ShardTier shardTier = ShardTier.getByTier(getTier());
             wrapper.setPortalShards(shardTier,currentPortalShards + portalShardsAmount);
             killer.sendMessage(shardTier.getColor() + "You found " + ChatColor.BOLD + portalShardsAmount + ChatColor.RESET + shardTier.getColor() + " portal shards from this elite!");
