@@ -1,12 +1,20 @@
 Build <build>
 
+&lChanges Since Last Build:
+ - Nerfed bow-mob damage.
+ - Removed 500g cost to get to Andalucia.
+
+
+
+
+
 &lThe Map Expansion
 
  - Two new areas:
   - Red Faction is mid to high tier expansion to Andalucia past Dark Oak.
   - Elora is a completely low to mid tier world that will supplement Andalucia.
 
- - Netyli (Elora) is now the starting area, Cyrennica can be accessed by buying passage (500 gems) from a Sailor in Netyli.
+ - Netyli (Elora) is now the starting area, passage to Cyrennica can be reached by talking to the Sailor in Netyli.
 
  - Weapon generation has been buffed to make rolls like 60-60 DMG not happen.
 

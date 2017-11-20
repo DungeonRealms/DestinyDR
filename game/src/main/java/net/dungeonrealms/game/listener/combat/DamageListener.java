@@ -457,7 +457,15 @@ public class DamageListener implements Listener {
 
         Location respawnLocation;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+            String hLoc = wrapper.getHearthstone().name();
+            //Quick hotfix for Chaotic Respawns
+            //TODO add random chaotic spawn locations to Elora and have an actual arraylist for them.
+            if(hLoc.equalsIgnoreCase("NETYLI") || hLoc.equalsIgnoreCase("NOVIS") || hLoc.equalsIgnoreCase("NELIA")){
+                respawnLocation = new Location(Bukkit.getWorlds().get(1), 495, 30, 322);
+            }
+            else {
+                respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(ThreadLocalRandom.current().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+            }
         } else if (DungeonRealms.isEvent()) {
             respawnLocation = TeleportLocation.EVENT_AREA.getLocation();
         } else {
@@ -864,7 +872,7 @@ public class DamageListener implements Listener {
                         dmg = maxHP * 0.02D * dmg;
 
                     Player p = (Player) event.getEntity();
-                    dmg = Math.min(dmg, maxHP * 0.75); // Cap max damage at 75% of max HP
+                    dmg = Math.min(dmg, HealthHandler.getHP(p) * 0.75); // Cap max damage at 75% of max HP
 
                     if (blocks >= 49)
                         Achievements.giveAchievement(p, EnumAchievements.LEAP_OF_FAITH);

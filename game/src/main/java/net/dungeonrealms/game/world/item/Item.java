@@ -272,7 +272,7 @@ public class Item {
 
                 dropChance += increase;
                 if (chance <= dropChance)
-                    return ItemRarity.values()[i == ItemRarity.UNIQUE.ordinal() ? i - 1 : i]; // Temporary turn all unique to rare. Remove this.
+                    return ItemRarity.values()[i];
             }
             return ItemRarity.COMMON;
         }
