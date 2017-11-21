@@ -4,6 +4,8 @@ Build <build>
  - Nerfed bow-mob damage.
  - Removed 500g cost to get to Andalucia.
  - (NEW) Elite mobs now drop Portal Shards.
+ - Added a /bufftime command
+ - Mobs now drop Red Faction books
 
 
 

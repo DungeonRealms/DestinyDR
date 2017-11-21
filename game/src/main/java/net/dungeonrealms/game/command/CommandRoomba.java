@@ -21,13 +21,13 @@ public class CommandRoomba extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)){ return true;}
-        Player player = (Player) sender;
-        if(!Rank.isHeadGM(player)){return false;}
-
-        GameAPI.roomba(GameAPI.getGamePlayer(player).getPlayer().getWorld().getLoadedChunks());
-        player.sendMessage("Item(s) removed.");
-
+        Player player;
+        if (sender instanceof Player ) {
+            player = (Player) sender;
+            if(!Rank.isHeadGM(player)){return false;}
+            GameAPI.roomba(GameAPI.getGamePlayer(player).getPlayer().getWorld().getLoadedChunks());
+            player.sendMessage("Item(s) removed.");
+        }
         return true;
     }
 
