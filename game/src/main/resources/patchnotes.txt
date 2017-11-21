@@ -1,11 +1,12 @@
 Build <build>
 
 &lChanges Since Last Build:
+ - Netyli and Cyrennica hearthstones are free.
  - Added a /bufftime command
  - Mobs now drop Red Faction books
  - Nerfed bow-mob damage.
  - Removed 500g cost to get to Andalucia.
- - (NEW) Elite mobs now drop Portal Shards.
+ - Elite mobs now drop Portal Shards.
 
 
 
