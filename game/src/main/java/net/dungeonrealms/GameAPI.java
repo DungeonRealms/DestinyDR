@@ -371,7 +371,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        int perPlayer = Bukkit.getOnlinePlayers().size() >= 50 ? 30 : 20;
+        int perPlayer = ((Bukkit.getOnlinePlayers().size() / 50) + 1) * 20; // 1 second per player per 50 players online.
         final long restartTime = (perPlayer * Bukkit.getOnlinePlayers().size()) + 100; // second per player plus 5 seconds
 
         try {

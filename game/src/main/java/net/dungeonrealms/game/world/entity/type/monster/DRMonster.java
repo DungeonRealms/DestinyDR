@@ -168,10 +168,6 @@ public interface DRMonster {
                 double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
                 double rareIncrease = getPercentIncreaseFromScore(Item.ItemRarity.RARE, mobRarityScore);
                 double uniqueIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNIQUE, mobRarityScore);
-//                System.out.println("The common increase: " + commonIncrease);
-//                System.out.println("The uncommon increase: " + unCommonIncrease);
-//                System.out.println("The rare increase: " + rareIncrease);
-//                System.out.println("The unique increase: " + uniqueIncrease);
                 ItemStack[] armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, rareIncrease ,uniqueIncrease);
                 entityArmor[i] = armor[i];
             }
