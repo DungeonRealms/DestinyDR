@@ -173,7 +173,14 @@ public interface DRMonster {
 //                System.out.println("The uncommon increase: " + unCommonIncrease);
 //                System.out.println("The rare increase: " + rareIncrease);
 //                System.out.println("The unique increase: " + uniqueIncrease);
-                ItemStack[] armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, rareIncrease ,uniqueIncrease);
+                ItemStack[] armor;
+                System.out.println("Mob is tier: " + tier + " Mobscore: " + maxMobScore);
+                if(tier == maxMobScore){
+                    armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, -100,-100);
+                }
+                else {
+                    armor = GameAPI.getTierArmor(tier, 4, commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease);
+                }
                 entityArmor[i] = armor[i];
             }
         } else {
@@ -231,7 +238,6 @@ public interface DRMonster {
             if (tier == minMobScore) mobRarityScore = minRarityScore;
             else if(tier == maxMobScore) mobRarityScore = maxRarityScore;
             else mobRarityScore = ThreadLocalRandom.current().nextDouble(minRarityScore, maxRarityScore);
-
 //            System.out.println("The rarity score we picked: " + mobRarityScore + " for the tier: " + tier);
             double commonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.COMMON, mobRarityScore);
             double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
@@ -241,8 +247,12 @@ public interface DRMonster {
 //            System.out.println("The uncommon increase: " + unCommonIncrease);
 //            System.out.println("The rare increase: " + rareIncrease);
 //            System.out.println("The unique increase: " + uniqueIncrease);
-
-            gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease));
+            if(tier == maxMobScore){
+                gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, -100, -100));
+            }
+            else {
+                gear.setRarity(Item.ItemRarity.getRandomRarity(false, commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease));
+            }
             return gear.setTier(ItemTier.getByTier(tier)).generateItem();
         }
         return gear.setTier(ItemTier.getByTier(getTier())).generateItem();
