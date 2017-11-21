@@ -32,7 +32,7 @@ public enum TeleportLocation {
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
 	AVALON("The Lost City of Avalon", WorldRegion.AVALON, 25000, -217, 153, -3488, -90F, 1F),
 	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, WorldType.ANDALUCIA),
-	SETTLERS("Settler's Interlude", null, 10000, -655, 77, 1890),
+	SETTLERS("Settler\'s Interlude", null, 10000, -655, 77, 1890),
 	ANDLEHEIM("Andleheim Pier", null, 10000, 789, 31, 1642),
 
 	NELIA("Nelia", null, 5000, -219, 71, 529, 0F, 0F, WorldType.ELORA),

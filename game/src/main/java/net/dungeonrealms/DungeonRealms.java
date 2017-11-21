@@ -372,6 +372,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSudoChat());
         cm.registerCommand(new CommandLookup());
         cm.registerCommand(new CommandAnnounce());
+        cm.registerCommand(new CommandRoomba());
         //cm.registerCommand(new CommandWatchList());
 
         cm.registerCommand(new CommandPAccept());
@@ -464,6 +465,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandRules());
             cm.registerCommand(new CommandAnswer("answer", "/<command> [args]", "Answer command"));
             cm.registerCommand(new CommandSuicide("suicide", "/<command>", "Kills your player.", Collections.singletonList("drsuicide")));
+            cm.registerCommand(new CommandBuffTime());
 
             cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
