@@ -174,7 +174,7 @@ public interface DRMonster {
 //                System.out.println("The rare increase: " + rareIncrease);
 //                System.out.println("The unique increase: " + uniqueIncrease);
                 ItemStack[] armor;
-                System.out.println("Mob is tier: " + tier + " Mobscore: " + maxMobScore);
+                //Cap Higher Tier at UNCOMMON
                 if(tier == maxMobScore){
                     armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, -100,-100);
                 }
@@ -247,6 +247,7 @@ public interface DRMonster {
 //            System.out.println("The uncommon increase: " + unCommonIncrease);
 //            System.out.println("The rare increase: " + rareIncrease);
 //            System.out.println("The unique increase: " + uniqueIncrease);
+            //Cap Higher Tier at UNCOMMON
             if(tier == maxMobScore){
                 gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, -100, -100));
             }
