@@ -25,6 +25,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
+import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -56,8 +57,8 @@ public interface DRMonster {
 
     public static final TeleportLocation[][] TELEPORT_DROPS = new TeleportLocation[][]{
             {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.NETYLI},
-            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON},
-            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON},
+            {TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON, TeleportLocation.SETTLERS, TeleportLocation.ANDLEHEIM},
+            {TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD, TeleportLocation.CRESTWATCH, TeleportLocation.NOVIS, TeleportLocation.NELIA, TeleportLocation.AVALON, TeleportLocation.SETTLERS, TeleportLocation.ANDLEHEIM},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.NOVIS},
             {TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.NELIA}};
 
@@ -168,7 +169,18 @@ public interface DRMonster {
                 double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
                 double rareIncrease = getPercentIncreaseFromScore(Item.ItemRarity.RARE, mobRarityScore);
                 double uniqueIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNIQUE, mobRarityScore);
-                ItemStack[] armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, rareIncrease ,uniqueIncrease);
+//                System.out.println("The common increase: " + commonIncrease);
+//                System.out.println("The uncommon increase: " + unCommonIncrease);
+//                System.out.println("The rare increase: " + rareIncrease);
+//                System.out.println("The unique increase: " + uniqueIncrease);
+                ItemStack[] armor;
+                //Cap Higher Tier at UNCOMMON
+                if(tier == maxMobScore){
+                    armor = GameAPI.getTierArmor(tier, 4,commonIncrease, unCommonIncrease, -100,-100);
+                }
+                else {
+                    armor = GameAPI.getTierArmor(tier, 4, commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease);
+                }
                 entityArmor[i] = armor[i];
             }
         } else {
@@ -226,7 +238,6 @@ public interface DRMonster {
             if (tier == minMobScore) mobRarityScore = minRarityScore;
             else if(tier == maxMobScore) mobRarityScore = maxRarityScore;
             else mobRarityScore = ThreadLocalRandom.current().nextDouble(minRarityScore, maxRarityScore);
-
 //            System.out.println("The rarity score we picked: " + mobRarityScore + " for the tier: " + tier);
             double commonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.COMMON, mobRarityScore);
             double unCommonIncrease = getPercentIncreaseFromScore(Item.ItemRarity.UNCOMMON, mobRarityScore);
@@ -236,8 +247,13 @@ public interface DRMonster {
 //            System.out.println("The uncommon increase: " + unCommonIncrease);
 //            System.out.println("The rare increase: " + rareIncrease);
 //            System.out.println("The unique increase: " + uniqueIncrease);
-
-            gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease));
+            //Cap Higher Tier at UNCOMMON
+            if(tier == maxMobScore){
+                gear.setRarity(Item.ItemRarity.getRandomRarity(false,commonIncrease, unCommonIncrease, -100, -100));
+            }
+            else {
+                gear.setRarity(Item.ItemRarity.getRandomRarity(false, commonIncrease, unCommonIncrease, rareIncrease, uniqueIncrease));
+            }
             return gear.setTier(ItemTier.getByTier(tier)).generateItem();
         }
         return gear.setTier(ItemTier.getByTier(getTier())).generateItem();
@@ -469,6 +485,16 @@ public interface DRMonster {
             }
             ItemManager.whitelistItemDrop(killer, ent.getLocation(), new ItemTeleportBook(
                     TELEPORT_DROPS[tier - 1][random.nextInt(TELEPORT_DROPS[tier - 1].length)]).generateItem());
+        }
+
+        //Drop Portal Shards for elites only
+        if(elite){
+            int currentPortalShards = wrapper.getPortalShards(ShardTier.getByTier(getTier()));
+            int portalShardsAmount = random.nextInt(6) + 10;
+            ShardTier shardTier = ShardTier.getByTier(getTier());
+            wrapper.setPortalShards(shardTier,currentPortalShards + portalShardsAmount);
+            killer.sendMessage(shardTier.getColor() + "You found " + ChatColor.BOLD + portalShardsAmount + ChatColor.RESET + shardTier.getColor() + " portal shards from this elite!");
+            world.getWorld().playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
         }
     }
 

@@ -1,8 +1,12 @@
 Build <build>
 
 &lChanges Since Last Build:
+ - Added a /bufftime command
+ - Mobs now drop Red Faction books
  - Nerfed bow-mob damage.
  - Removed 500g cost to get to Andalucia.
+ - (NEW) Elite mobs now drop Portal Shards.
+
 
 
 
