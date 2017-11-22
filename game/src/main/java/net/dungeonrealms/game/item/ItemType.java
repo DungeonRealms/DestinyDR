@@ -104,6 +104,11 @@ public enum ItemType {
 
 	//ALTAR RECIPE ITEMS
 	ITEM_HEMITITE("hemitite", ItemHemitite.class),
+	ITEM_WITCH_WART("witchWart", ItemWitchWart.class),
+	ITEM_SPIDER_SILK("spiderSilk", ItemSpiderSilk.class),
+	ITEM_SPIDER_EYE("spiderEye", ItemSpiderEye.class),
+	ITEM_EYE_OF_BEHOLDER("eyeOfBeholder", ItemEyeOfBeholder.class),
+	ITEM_DOG_TONGUE("dogTongue", ItemDogTongue.class),
 	ITEM_LIZARD_SCALE("lizardScale", ItemLizardScale.class),
 	ITEM_IMP_EYE("impsEye", ItemImpEye.class),
 	ITEM_SACRIFICIAL_HEART("sacrificialHeart", ItemSacrificialHeart.class),

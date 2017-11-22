@@ -5,15 +5,16 @@ import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemHemitite extends ItemGeneric {
-    protected String name = CC.GrayB + "Hemitite";
-    protected String lore = CC.Gray + "Metal Ore chipped from a mighty foe.";
+public class ItemSpiderEye extends ItemGeneric {
 
-    public ItemHemitite(){
-        super(new ItemStack(Material.IRON_INGOT));
+    protected String name = CC.LightPurpleB+ "Spider's Eye";
+    protected String lore = CC.Gray + "The eye of a spider oozing green fluid.";
+
+    public ItemSpiderEye(){
+        super(new ItemStack(Material.SPIDER_EYE));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "hemitite");
+        setTagString("recipeItem", "spiderEye");
     }
 
     @Override
