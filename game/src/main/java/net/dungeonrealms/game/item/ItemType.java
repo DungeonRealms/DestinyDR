@@ -64,6 +64,7 @@ public enum ItemType {
 	CLUE_SCROLL("clueScroll", ClueScrollItem.class),
 	COUPON_VOUCHER("discount", ItemDiscountScroll.class),
 	HEALING_WAND("healingWand", HealingWand.class),
+	//TEST
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
