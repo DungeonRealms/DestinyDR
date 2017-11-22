@@ -41,7 +41,7 @@ public enum ItemType {
 	//  PROFESSION TOOLS  //
 	PICKAXE("pick", ItemPickaxe.class, GeneratedItemType.PICKAXE),
 	FISHING_POLE("rod", ItemFishingPole.class, GeneratedItemType.FISHING_ROD),
-	//
+	//ez
 	//  FUNCTIONAL ITEMS  //
 	SCRAP("scrap", ItemScrap.class),
 	TELEPORT_BOOK("teleport", ItemTeleportBook.class),
