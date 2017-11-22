@@ -27,6 +27,7 @@ import net.dungeonrealms.game.mechanic.data.DropRate;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.player.altars.items.recipeitems.*;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -475,7 +476,7 @@ public interface DRMonster {
             pw.getDryLoot().put(t, dry == null ? 1 : dry + 1);
         }
 
-        // Drop teleport book.
+        //Drop teleport book.
         int bookChance = SetBonus.hasSetBonus(killer, SetBonuses.LIBRARIAN) ? (int) (dr.getTeleportBookChance() * .5D) : 0;
         int rand = random.nextInt(100);
         if (dr.getTeleportBookChance() + bookChance >= rand) {
@@ -495,6 +496,72 @@ public interface DRMonster {
             wrapper.setPortalShards(shardTier,currentPortalShards + portalShardsAmount);
             killer.sendMessage(shardTier.getColor() + "You found " + ChatColor.BOLD + portalShardsAmount + ChatColor.RESET + shardTier.getColor() + " portal shards from this elite!");
             world.getWorld().playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
+        }
+
+        //Drop Recipe Item
+        int recipeItemRoll = ThreadLocalRandom.current().nextInt(200);
+        ItemStack drop = new ItemStack(Material.AIR);
+        switch(getEnum()) {
+            case Golem:
+                drop = new ItemHemitite().generateItem();
+                break;
+            case Witch:
+                drop = new ItemWitchWart().generateItem();
+                break;
+            case Spider1:
+                drop = new ItemSpiderEye().generateItem();
+                break;
+            case Spider2:
+                drop = new ItemSpiderSilk().generateItem();
+                break;
+            case Enderman:
+                drop = new ItemEyeOfBeholder().generateItem();
+                break;
+            case Wolf:
+                drop = new ItemDogTongue().generateItem();
+                break;
+            case Silverfish:
+                drop = new ItemRatSkin().generateItem();
+                break;
+            case Blaze:
+                drop = new ItemFireDust().generateItem();
+                break;
+            case Nymph:
+                drop = new ItemFairyDust().generateItem();
+                break;
+            case Nymph1:
+                drop = new ItemFairyDust().generateItem();
+                break;
+            case Mage:
+                drop = new ItemMageCocktail().generateItem();
+                break;
+            case Orc:
+                drop = new ItemOrcTooth().generateItem();
+                break;
+            case Orc1:
+                drop = new ItemOrcTooth().generateItem();
+                break;
+            case WitherSkeleton:
+                drop = new ItemWitherEssence().generateItem();
+                break;
+            case Daemon:
+                drop = new ItemGoldenCharm().generateItem();
+                break;
+            case Daemon2:
+                drop = new ItemGoldenCharm().generateItem();
+                break;
+            case Acolyte:
+                drop = new ItemSacrificialHeart().generateItem();
+                break;
+            case Imp:
+                drop = new ItemImpEye().generateItem();
+                break;
+            case Lizardman:
+                drop = new ItemLizardScale().generateItem();
+                break;
+        }
+        if(recipeItemRoll <= dr.getRecipeItemDropChance()) {
+            ItemManager.whitelistItemDrop(killer, loc, drop);
         }
     }
 

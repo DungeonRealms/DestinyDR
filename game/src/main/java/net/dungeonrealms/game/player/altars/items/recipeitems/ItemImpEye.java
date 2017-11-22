@@ -11,7 +11,7 @@ public class ItemImpEye extends ItemGeneric {
     protected String lore = CC.Gray + "An eye forcefully spooned out of the carcass if an Imp.";
 
     public ItemImpEye() {
-        super(new ItemStack(Material.SPIDER_EYE));
+        super(new ItemStack(Material.FERMENTED_SPIDER_EYE));
         setCustomName(name);
         setCustomLore(lore);
         setTagString("recipeItem", "impEye");

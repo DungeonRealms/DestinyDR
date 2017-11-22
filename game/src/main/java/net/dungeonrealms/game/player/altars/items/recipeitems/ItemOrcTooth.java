@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemOrcTooth extends ItemGeneric {
     protected String name = CC.WhiteB + "Orc Tooth";
-    protected String lore = CC.Gray + "A string durable tooth from a dead Orc.";
+    protected String lore = CC.Gray + "A strong durable tooth from a dead Orc.";
 
     public ItemOrcTooth() {
         super(new ItemStack(Material.GHAST_TEAR));
