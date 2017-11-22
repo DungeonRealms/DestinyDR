@@ -28,7 +28,7 @@ public class PetSupportGUI extends SupportGUI {
         int i = 0;
         Map<EnumPets, String> playerPets = getWrapper().getPetsUnlocked();
         for(Purchaseables purchase : Purchaseables.values()) {
-            if(!purchase.getCategory().equals(WebstoreCategories.PETS)) continue;
+            if(purchase.getCategory() != WebstoreCategories.PETS) continue;
 
             EnumPets pets = (EnumPets) purchase.getSpecialArgs()[0];
 

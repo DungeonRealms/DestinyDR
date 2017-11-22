@@ -95,6 +95,7 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_9_R2.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -106,6 +107,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -371,7 +373,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        int perPlayer = Bukkit.getOnlinePlayers().size() >= 50 ? 30 : 20;
+        int perPlayer = ((Bukkit.getOnlinePlayers().size() / 50) + 1) * 20; // 1 second per player per 50 players online.
         final long restartTime = (perPlayer * Bukkit.getOnlinePlayers().size()) + 100; // second per player plus 5 seconds
 
         try {
@@ -1779,4 +1781,15 @@ public class GameAPI {
     public static boolean isCooldown(Metadatable m, Metadata type) {
         return type.get(m).asLong() > System.currentTimeMillis();
     }
+
+    public static void roomba(Chunk[] chunk) {
+        for (int i = 0; i < chunk.length; i++) {
+           for (Entity item : chunk[i].getEntities()){
+               if (item instanceof Item) {
+                   item.remove();
+               }
+           }
+        }
+    }
+
 }

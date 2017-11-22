@@ -120,7 +120,7 @@ public class Altar {
                 o -= 0.1;
                 e -= 0.1;
                 //TODO: Find a way to simplify this headache
-                if(nodeIndex %2 != 0) {
+                if(nodeIndex % 2 != 0) {
                     for (double i = 5.951; i >= o; i -= 0.1) {
                         if (nodeIndex == 1 || nodeIndex == 5) {
                             if (nodeIndex == 1) {

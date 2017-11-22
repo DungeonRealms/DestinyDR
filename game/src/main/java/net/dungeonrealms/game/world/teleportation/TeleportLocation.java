@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
 public enum TeleportLocation {
 	STARTER("Tutorial", null, -1, 817.5, 47, -101.818, -179.7F, 6.2F, false, null),
 	EVENT_AREA("Event Area", null, -1, -378, 85, 341, 0F, 0F, false, null),
-	CYRENNICA("Cyrennica", WorldRegion.CYRENNICA, 1000, -378, 85, 357),
+	CYRENNICA("Cyrennica", WorldRegion.CYRENNICA, 0, -378, 85, 357),
 	HARRISON_FIELD("Harrison Field", WorldRegion.HARRISON, 1500, -594, 59, 687, 92.0F, 1F),
 	DARK_OAK("Dark Oak Tavern", WorldRegion.DARK_OAK, 3500, 280, 59, 1132, 2.0F, 1F),
 	GLOOMY_HOLLOWS("Gloomy Hollows", WorldRegion.GLOOMY, 3500, -590, 44, 0, 144F, 1F),
@@ -32,12 +32,12 @@ public enum TeleportLocation {
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
 	AVALON("The Lost City of Avalon", WorldRegion.AVALON, 25000, -217, 153, -3488, -90F, 1F),
 	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F, true, WorldType.ANDALUCIA),
-	SETTLERS("Settler's Interlude", null, 10000, -655, 77, 1890),
+	SETTLERS("Settler\'s Interlude", null, 10000, -655, 77, 1890),
 	ANDLEHEIM("Andleheim Pier", null, 10000, 789, 31, 1642),
 
 	NELIA("Nelia", null, 5000, -219, 71, 529, 0F, 0F, WorldType.ELORA),
 	NOVIS("Novis", null, 5000, 175, 70, 182, 0F, 0F, WorldType.ELORA),
-	NETYLI("Netyli", null, 5000, -661, 78, 709, 0F, 0F, WorldType.ELORA);
+	NETYLI("Netyli", null, 0, -661, 78, 709, 0F, 0F, WorldType.ELORA);
 
 	@Getter private String displayName;
 	private WorldRegion region;

@@ -13,9 +13,9 @@ public class CommandRules extends BaseCommand{
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-
-        GameAPI.sendRulesMessage((Player)sender);
+        if (sender instanceof Player) {
+            GameAPI.sendRulesMessage((Player) sender);
+        }
         return true;
     }
 }
