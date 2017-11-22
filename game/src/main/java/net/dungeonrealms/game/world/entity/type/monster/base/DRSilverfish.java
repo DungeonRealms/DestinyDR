@@ -27,7 +27,7 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
 
 	@Override
 	public EnumMonster getEnum() {
-		return null;
+		return EnumMonster.Silverfish;
 	}
 
 	@Override
