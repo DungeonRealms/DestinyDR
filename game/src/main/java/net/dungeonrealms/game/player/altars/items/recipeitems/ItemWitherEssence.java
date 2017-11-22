@@ -5,18 +5,17 @@ import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemLizardScale extends ItemGeneric {
-    protected String name = CC.GreenB + "Lizard Scale";
-    protected String lore = CC.Gray + "The slimy scales of a reptile.";
+public class ItemWitherEssence extends ItemGeneric {
+    protected String name = CC.BlackB + "Wither Essence";
+    protected String lore = CC.Gray + "An eerie item that is the source of the Wither race's power.";
 
-    public ItemLizardScale() {
-        super(new ItemStack(Material.BEETROOT_SEEDS));
+    public ItemWitherEssence() {
+        super(new ItemStack(Material.MELON_SEEDS));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "lizard scale");
+        setTagString("recipeItem", "wither essence");
     }
 
     @Override
     protected ItemStack getStack() { return this.item;}
-
 }

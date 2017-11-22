@@ -5,18 +5,19 @@ import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemLizardScale extends ItemGeneric {
-    protected String name = CC.GreenB + "Lizard Scale";
-    protected String lore = CC.Gray + "The slimy scales of a reptile.";
+public class ItemSacrificialHeart extends ItemGeneric {
+    protected String name = CC.DarkRedB+ "Sacrificial Heart";
+    protected String lore = CC.Gray + "A heart torn out of the body of an Acolyte";
 
-    public ItemLizardScale() {
-        super(new ItemStack(Material.BEETROOT_SEEDS));
+    public ItemSacrificialHeart() {
+        super(new ItemStack(Material.BEETROOT));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "lizard scale");
+        setTagString("recipeItem", "sacrificial heart");
     }
 
     @Override
     protected ItemStack getStack() { return this.item;}
 
 }
+

@@ -5,18 +5,17 @@ import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemLizardScale extends ItemGeneric {
-    protected String name = CC.GreenB + "Lizard Scale";
-    protected String lore = CC.Gray + "The slimy scales of a reptile.";
+public class ItemFireDust extends ItemGeneric {
+    protected String name = CC.RedB + "Fire Dust";
+    protected String lore = CC.Gray + "A very hot dust found on the dead body of a Blaze.";
 
-    public ItemLizardScale() {
-        super(new ItemStack(Material.BEETROOT_SEEDS));
+    public ItemFireDust() {
+        super(new ItemStack(Material.BLAZE_POWDER));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "lizard scale");
+        setTagString("recipeItem", "fire dust");
     }
 
     @Override
     protected ItemStack getStack() { return this.item;}
-
 }

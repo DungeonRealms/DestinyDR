@@ -5,7 +5,7 @@ import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
 import net.dungeonrealms.game.player.altars.items.*;
-import net.dungeonrealms.game.player.altars.items.recipeitems.ItemHemitite;
+import net.dungeonrealms.game.player.altars.items.recipeitems.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -104,6 +104,16 @@ public enum ItemType {
 
 	//ALTAR RECIPE ITEMS
 	ITEM_HEMITITE("hemitite", ItemHemitite.class),
+	ITEM_LIZARD_SCALE("lizardScale", ItemLizardScale.class),
+	ITEM_IMP_EYE("impsEye", ItemImpEye.class),
+	ITEM_SACRIFICIAL_HEART("sacrificialHeart", ItemSacrificialHeart.class),
+	ITEM_GOLDEN_CHARM("goldenCharm", ItemGoldenCharm.class),
+	ITEM_WITHER_ESSENCE("witherEssence", ItemWitherEssence.class),
+	ITEM_ORC_TOOTH("orcTooth", ItemOrcTooth.class),
+	ITEM_MAGE_COCKTAIL("mageCocktail", ItemMageCocktail.class),
+	ITEM_FAIRY_DUST("fairyDust", ItemFairyDust.class),
+	ITEM_FIRE_DUST("fireDust", ItemFireDust.class),
+	ITEM_RAT_SKIN("ratSkin", ItemRatSkin.class),
 
 
 	//PURCHASABLES

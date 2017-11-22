@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemHemitite extends ItemGeneric {
-
     protected String name = CC.GrayB + "Hemitite";
     protected String lore = CC.Gray + "Metal Ore chipped from a mighty foe.";
 
@@ -17,7 +16,6 @@ public class ItemHemitite extends ItemGeneric {
         setCustomName(name);
         setCustomLore(lore);
         setTagString("recipeItem", "hemitite");
-        setGlowing(true);
     }
 
     @Override

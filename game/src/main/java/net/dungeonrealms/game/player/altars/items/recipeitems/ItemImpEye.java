@@ -4,19 +4,21 @@ import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.inventivetalent.glow.GlowAPI;
 
-public class ItemLizardScale extends ItemGeneric {
-    protected String name = CC.GreenB + "Lizard Scale";
-    protected String lore = CC.Gray + "The slimy scales of a reptile.";
+public class ItemImpEye extends ItemGeneric {
+    protected String name = CC.AquaB + "Imp's Eye";
+    protected String lore = CC.Gray + "An eye forcefully spooned out of the carcass if an Imp.";
 
-    public ItemLizardScale() {
-        super(new ItemStack(Material.BEETROOT_SEEDS));
+    public ItemImpEye() {
+        super(new ItemStack(Material.SPIDER_EYE));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "lizard scale");
+        setTagString("recipeItem", "impa eye");
     }
 
     @Override
     protected ItemStack getStack() { return this.item;}
 
 }
+
