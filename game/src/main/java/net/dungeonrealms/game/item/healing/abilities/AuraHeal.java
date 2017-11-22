@@ -17,11 +17,16 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.CC;
+import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.TimeUnit;
+
 public class AuraHeal extends Healing {
+
+    private long time = System.currentTimeMillis();
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
@@ -40,33 +45,37 @@ public class AuraHeal extends Healing {
                 if (GameAPI._hiddenPlayers.contains(other)) continue;
                 if (guild != null && guild.isMember(other.getUniqueId()) || party != null && party.isMember(other)) {
                     //Heal..
-
-                    HealingMap map = healingMap.get(other.getUniqueId());
-                    if (map != null && !map.canHeal(player.getUniqueId())) {
-                        continue;
-                    }
-
-                    double toRegen = HealthHandler.getMaxHP(other) * .15;
-
-                    HealthHandler.heal(other, (int) toRegen, true, player.getName() + "'s " + ability.getName());
-
-                    if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(other);
-                        if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            KarmaHandler.update(player);
+                    if (time <= System.currentTimeMillis()) {
+                        HealingMap map = healingMap.get(other.getUniqueId());
+                        if (map != null && !map.canHeal(player.getUniqueId())) {
+                            continue;
                         }
+
+                        double toRegen = HealthHandler.getMaxHP(other) * .15;
+
+                        HealthHandler.heal(other, (int) toRegen, true, player.getName() + "'s " + ability.getName());
+
+                        if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(other);
+                            if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                                KarmaHandler.update(player);
+                            }
+                        }
+
+                        if (map == null) {
+                            map = new HealingMap();
+                            healingMap.put(other.getUniqueId(), map);
+                        }
+
+                        map.heal(player.getUniqueId());
+
+                        affected = true;
+                        ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
+                        whoWasHealed += other.getName() + ", ";
+                        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(6);
+                    } else {
+                        Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE AURA HEAL FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
                     }
-
-                    if (map == null) {
-                        map = new HealingMap();
-                        healingMap.put(other.getUniqueId(), map);
-                    }
-
-                    map.heal(player.getUniqueId());
-
-                    affected = true;
-                    ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
-                    whoWasHealed += other.getName() + ", ";
                 }
             }
         }

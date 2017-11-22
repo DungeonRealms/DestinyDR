@@ -42,10 +42,7 @@ import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
-import net.dungeonrealms.game.command.test.CommandTestCloud;
-import net.dungeonrealms.game.command.test.CommandTestDot;
-import net.dungeonrealms.game.command.test.CommandTestDupe;
-import net.dungeonrealms.game.command.test.CommandTestTranslated;
+import net.dungeonrealms.game.command.test.*;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.donation.overrides.OverrideListener;
 import net.dungeonrealms.game.handler.*;
@@ -373,6 +370,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLookup());
         cm.registerCommand(new CommandAnnounce());
         cm.registerCommand(new CommandRoomba());
+        cm.registerCommand(new CommandHealerSet());
         //cm.registerCommand(new CommandWatchList());
 
         cm.registerCommand(new CommandPAccept());
