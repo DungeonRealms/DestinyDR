@@ -369,6 +369,9 @@ public abstract class ItemGear extends ItemGeneric {
         double totalCost = (100 - getDurabilityPercent()) * getBaseRepairCost(); // Percentage Broken * Cost of 1 percentage
         totalCost *= getGeneratedItemType().getAttributeBank().getRepairMultiplier(getTier()); // Multiplier for this tier.
         totalCost *= getGeneratedItemType().getAttributeBank().getGlobalRepairMultiplier(); // Multiplier for this item type.
+        if(getTier().getTierId() == 4 || getTier().getTierId() == 5) {
+            totalCost *= 0.8;
+        }
         return Math.max((int) Math.round(totalCost), 10); // Don't allow prices under 10 gems.
     }
 
