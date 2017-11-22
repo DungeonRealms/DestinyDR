@@ -13,7 +13,7 @@ public class ItemWitherEssence extends ItemGeneric {
         super(new ItemStack(Material.MELON_SEEDS));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "wither essence");
+        setTagString("recipeItem", "witherEssence");
     }
 
     @Override

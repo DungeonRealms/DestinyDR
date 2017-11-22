@@ -13,7 +13,7 @@ public class ItemOrcTooth extends ItemGeneric {
         super(new ItemStack(Material.GHAST_TEAR));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "orc tooth");
+        setTagString("recipeItem", "orcTooth");
     }
 
     @Override

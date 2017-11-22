@@ -13,7 +13,7 @@ public class ItemGoldenCharm extends ItemGeneric {
         super(new ItemStack(Material.GOLD_NUGGET));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "golden charm");
+        setTagString("recipeItem", "goldenCharm");
     }
 
     @Override

@@ -13,7 +13,7 @@ public class ItemMageCocktail extends ItemGeneric {
         super(new ItemStack(Material.DRAGONS_BREATH));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "mage cocktail");
+        setTagString("recipeItem", "mageCocktail");
     }
 
     @Override

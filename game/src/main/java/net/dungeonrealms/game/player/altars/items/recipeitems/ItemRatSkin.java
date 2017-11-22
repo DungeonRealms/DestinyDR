@@ -13,7 +13,7 @@ public class ItemRatSkin extends ItemGeneric {
         super(new ItemStack(Material.QUARTZ));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "rat skin");
+        setTagString("recipeItem", "ratSkin");
     }
 
     @Override

@@ -13,7 +13,7 @@ public class ItemFireDust extends ItemGeneric {
         super(new ItemStack(Material.BLAZE_POWDER));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "fire dust");
+        setTagString("recipeItem", "fireDust");
     }
 
     @Override

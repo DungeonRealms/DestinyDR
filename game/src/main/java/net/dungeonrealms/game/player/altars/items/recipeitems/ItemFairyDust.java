@@ -13,7 +13,7 @@ public class ItemFairyDust extends ItemGeneric {
         super(new ItemStack(Material.PRISMARINE_CRYSTALS));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "fairy dust");
+        setTagString("recipeItem", "fairyDust");
     }
 
     @Override

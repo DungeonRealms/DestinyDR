@@ -13,7 +13,7 @@ public class ItemLizardScale extends ItemGeneric {
         super(new ItemStack(Material.BEETROOT_SEEDS));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "lizard scale");
+        setTagString("recipeItem", "lizardScale");
     }
 
     @Override

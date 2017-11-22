@@ -14,7 +14,7 @@ public class ItemImpEye extends ItemGeneric {
         super(new ItemStack(Material.SPIDER_EYE));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "impa eye");
+        setTagString("recipeItem", "impEye");
     }
 
     @Override

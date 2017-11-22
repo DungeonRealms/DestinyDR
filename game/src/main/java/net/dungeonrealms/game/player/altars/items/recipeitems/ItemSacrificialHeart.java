@@ -13,7 +13,7 @@ public class ItemSacrificialHeart extends ItemGeneric {
         super(new ItemStack(Material.BEETROOT));
         setCustomName(name);
         setCustomLore(lore);
-        setTagString("recipeItem", "sacrificial heart");
+        setTagString("recipeItem", "sacrificialHeart");
     }
 
     @Override
