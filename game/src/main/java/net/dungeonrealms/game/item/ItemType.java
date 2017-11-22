@@ -5,7 +5,7 @@ import net.dungeonrealms.game.item.items.functional.accessories.TrinketItem;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollItem;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemLightningRod;
 import net.dungeonrealms.game.player.altars.items.*;
-import net.dungeonrealms.game.player.altars.items.recipeitems.ItemLizardScale;
+import net.dungeonrealms.game.player.altars.items.recipeitems.ItemHemitite;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -65,7 +65,7 @@ public enum ItemType {
 	CLUE_SCROLL("clueScroll", ClueScrollItem.class),
 	COUPON_VOUCHER("discount", ItemDiscountScroll.class),
 	HEALING_WAND("healingWand", HealingWand.class),
-	//TEST
+
 	//  ORBS  //
 	ORB_OF_ALTERATION("orb", ItemOrb.class),
 	ORB_OF_FLIGHT("flightOrb", ItemFlightOrb.class),
@@ -101,8 +101,12 @@ public enum ItemType {
 	ITEM_SPEED_POTION("speedPotion", ItemSpeedPotion.class),
 	ITEM_WATER_BREATHING_POTION("waterBreathing", ItemWaterBreathingPotion.class),
 	ITEM_NIGHT_VISION_POTION("nightVision", ItemNightVisionPotion.class),
-	ITEM_LIZARD_SCALE("lizardScale", ItemLizardScale.class),
 
+	//ALTAR RECIPE ITEMS
+	ITEM_HEMITITE("hemitite", ItemHemitite.class),
+
+
+	//PURCHASABLES
 	JUKE_BOX("jukebox", ItemJukebox.class),
 	DPS_DUMMY("dpsDummy", ItemDPSDummy.class),
 	LIGHTNING_ROD("lightningRod", ItemLightningRod.class),
