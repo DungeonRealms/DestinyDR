@@ -40,7 +40,7 @@ public class RecipeHealerBoots extends AbstractRecipe {
             }
             else if(index == 1) {
                 if (!ItemOrcTooth.isType(onNode, ItemType.ITEM_ORC_TOOTH)) return false;
-                ItemOrcTooth orcTooth = new ItemOrcTooth(onNode);
+                //ItemOrcTooth orcTooth = new ItemOrcTooth(onNode);
             }
             else if(index == 3) {
                 if(!ItemWitchWart.isType(onNode, ItemType.ITEM_WITCH_WART)) return false;
@@ -60,7 +60,8 @@ public class RecipeHealerBoots extends AbstractRecipe {
 
     @Override
     public void giveReward(Player player) {
-        boots.setTagString("customId", "healer");
+        //Custom Leather Color CustomId
+        boots.setTagString("customId", "healert" + boots.getTier().getTierId());
         boots.setTagString("setBonus", "healer");
         boots.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
         GameAPI.giveOrDropItem(player, boots.generateItem());
@@ -68,12 +69,12 @@ public class RecipeHealerBoots extends AbstractRecipe {
 
     @Override
     public String getRewardDisplayName() {
-        return boots.getCustomName();
+        return "Healer Boots";
     }
 
     @Override
     public String getRewardDescription() {
-        return "Healer Boots";
+        return lore;
     }
 
     @Override

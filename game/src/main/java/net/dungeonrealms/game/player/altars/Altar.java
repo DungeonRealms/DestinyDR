@@ -82,8 +82,13 @@ public class Altar {
         if(foundRecipe == null) return;
         if(System.currentTimeMillis() - lastRecipeTick > 5000) {
             GameAPI.playLightningEffect(altarType.getWorld(), altarType.getNode(0), 250);
-            for(int x = 1; x <= 8; x++){
-                playEffect(x);
+            if(!(recipeTicks >= foundRecipe.getRitualTime()-1)) {
+                for (int x = 1; x < altarType.getNodeSize(); x++) {
+                    Altar altar = AltarManager.getAltar(altarType);
+                    if (altar.hasActiveStack(x)) {
+                        playEffect(x);
+                    }
+                }
             }
             recipeTicks++;
             lastRecipeTick = System.currentTimeMillis();
