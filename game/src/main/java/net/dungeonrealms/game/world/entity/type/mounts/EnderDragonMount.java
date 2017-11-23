@@ -41,8 +41,8 @@ public class EnderDragonMount extends EntityBlaze implements JumpingMount {
     	float[] motion = MountUtils.handleDragonMountLogic(this, owner);
 
 		if (motion[0] > 0 && !this.onGround) {
-			if (mountJumpTicks >= 12) {
-				this.motY = -4.0D;
+			if (mountJumpTicks >= 1) {
+				this.motY = -1.0D;
 				mountJumpTicks = 0;
 			} else {
 				mountJumpTicks++;
@@ -51,8 +51,8 @@ public class EnderDragonMount extends EntityBlaze implements JumpingMount {
 
     	if (motion != null) {
 			if (height <= 180 && motion[0] < 0) {
-				if (mountJumpTicks >= 12) {
-					this.motY = 2.0D;
+				if (mountJumpTicks >= 1) {
+					this.motY = 0.5D;
 					mountJumpTicks = 0;
 				} else {
 					mountJumpTicks++;
