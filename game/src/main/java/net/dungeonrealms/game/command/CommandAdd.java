@@ -19,6 +19,7 @@ import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueScrollType;
 import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
+import net.dungeonrealms.game.player.altars.items.recipeitems.*;
 import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemBank;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
@@ -211,6 +212,24 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "item":
                     new GUIItemBank(player);
+                    break;
+                case "altar":
+                    player.getInventory().addItem(new ItemDogTongue().generateItem());
+                    player.getInventory().addItem(new ItemEyeOfBeholder().generateItem());
+                    player.getInventory().addItem(new ItemFairyDust().generateItem());
+                    player.getInventory().addItem(new ItemFireDust().generateItem());
+                    player.getInventory().addItem(new ItemGoldenCharm().generateItem());
+                    player.getInventory().addItem(new ItemHemitite().generateItem());
+                    player.getInventory().addItem(new ItemImpEye().generateItem());
+                    player.getInventory().addItem(new ItemLizardScale().generateItem());
+                    player.getInventory().addItem(new ItemMageCocktail().generateItem());
+                    player.getInventory().addItem(new ItemOrcTooth().generateItem());
+                    player.getInventory().addItem(new ItemRatSkin().generateItem());
+                    player.getInventory().addItem(new ItemSacrificialHeart().generateItem());
+                    player.getInventory().addItem(new ItemSpiderEye().generateItem());
+                    player.getInventory().addItem(new ItemSpiderSilk().generateItem());
+                    player.getInventory().addItem(new ItemWitchWart().generateItem());
+                    player.getInventory().addItem(new ItemWitherEssence().generateItem());
                     break;
                 case "pick":
                     int level = args.length == 2 ? Integer.parseInt(args[1]) : 1;

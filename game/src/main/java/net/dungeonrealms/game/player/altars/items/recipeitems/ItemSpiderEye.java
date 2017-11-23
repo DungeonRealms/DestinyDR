@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemSpiderEye extends ItemGeneric {
 
-    protected String name = CC.LightPurpleB+ "Spider's Eye";
+    protected String name = CC.LightPurpleB+ "Spider\'s Eye";
     protected String lore = CC.Gray + "The eye of a spider oozing green fluid.";
 
     public ItemSpiderEye(){

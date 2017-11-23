@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemDogTongue extends ItemGeneric {
     protected String name = CC.DarkRedB + "Tongue of Dog";
-    protected String lore = CC.Gray + "A tongue gruesomly yanked out of a dogs mouth.";
+    protected String lore = CC.Gray + "A tongue gruesomly yanked out of a dog\'s mouth.";
 
     public ItemDogTongue(){
         super(ItemType.ITEM_DOG_TONGUE);

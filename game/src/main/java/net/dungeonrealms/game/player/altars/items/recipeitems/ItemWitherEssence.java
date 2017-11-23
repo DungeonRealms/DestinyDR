@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemWitherEssence extends ItemGeneric {
     protected String name = CC.BlackB + "Wither Essence";
-    protected String lore = CC.Gray + "An eerie item that is the source of the Wither race's power.";
+    protected String lore = CC.Gray + "An eerie item that is the source of the Wither race\'s power.";
 
     public ItemWitherEssence(){
         super(ItemType.ITEM_WITHER_ESSENCE);

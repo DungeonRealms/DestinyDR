@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.inventivetalent.glow.GlowAPI;
 
 public class ItemImpEye extends ItemGeneric {
-    protected String name = CC.AquaB + "Imp's Eye";
+    protected String name = CC.AquaB + "Imp\'s Eye";
     protected String lore = CC.Gray + "An eye forcefully spooned out of the carcass if an Imp.";
 
     public ItemImpEye(){

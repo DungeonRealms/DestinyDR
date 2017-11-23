@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemMageCocktail extends ItemGeneric {
-    protected String name = CC.DarkPurpleB + "Mage's Cocktail";
+    protected String name = CC.DarkPurpleB + "Mage\'s Cocktail";
     protected String lore = CC.Gray + "The source of Mage magic.";
 
     public ItemMageCocktail(){

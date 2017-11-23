@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemWitchWart extends ItemGeneric {
 
-    protected String name = CC.RedB + "Witch's Wart";
-    protected String lore = CC.Gray + "A wart that was ripped from a Witch's Face.";
+    protected String name = CC.RedB + "Witch\'s Wart";
+    protected String lore = CC.Gray + "A wart that was ripped from a Witch\'s Face.";
 
     public ItemWitchWart(){
         super(ItemType.ITEM_WITCH_WART);
