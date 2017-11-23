@@ -11,7 +11,7 @@ public class ItemFireDust extends ItemGeneric {
     protected String lore = CC.Gray + "A very hot dust found on the dead body of a Blaze.";
 
     public ItemFireDust(){
-        super(ItemType.ITEM_FAIRY_DUST);
+        super(ItemType.ITEM_FIRE_DUST);
     }
 
     public ItemFireDust(ItemStack item) {

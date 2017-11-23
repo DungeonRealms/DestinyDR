@@ -44,7 +44,7 @@ public class RecipeHealerChestplate extends AbstractRecipe {
             }
             else if(index == 3) {
                 if(!ItemSacrificialHeart.isType(onNode, ItemType.ITEM_SACRIFICIAL_HEART)) return false;
-                ItemSacrificialHeart sacrificialHeart = new ItemSacrificialHeart(onNode);
+                //ItemSacrificialHeart sacrificialHeart = new ItemSacrificialHeart(onNode);
             }
             else if(index == 5) {
                 if (!ItemLizardScale.isType(onNode, ItemType.ITEM_LIZARD_SCALE)) return false;

@@ -21,7 +21,7 @@ public class ItemWitchWart extends ItemGeneric {
 
     @Override
     protected ItemStack getStack() {
-        return new ItemStack(Material.NETHER_WARTS);
+        return new ItemStack(Material.NETHER_STALK);
     }
 
     @Override
