@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.altars.recipes.healer;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.*;
+import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
 import net.dungeonrealms.game.player.altars.Altar;
 import net.dungeonrealms.game.player.altars.AltarManager;
 import net.dungeonrealms.game.player.altars.Altars;

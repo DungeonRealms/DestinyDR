@@ -167,11 +167,46 @@ public class MountUtils {
         }
 
 
-        mount.P = 1; // Set step height.
+        //mount.P = 1; // Set step height.
         mount.aR = mount.cl() * 0.1F; //Set jump movement factor to the land movement factor / 10
 
         mount.l((float) mount.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue()); // Set the land movement factor to the movement speed.
         
+        return new float[] {sideMotion, forwardMotion};
+    }
+
+    public static float[] handleDragonMountLogic(EntityLiving mount, Player owner) {
+        if (!mount.isVehicle() || mount.passengers.isEmpty() || !(mount.passengers.get(0) instanceof EntityHuman)) {
+            removeMount(owner);
+            return null;
+        }
+
+        // Sync where the mount is looking with where the player is looking.
+        EntityHuman rider = (EntityHuman) mount.passengers.get(0);
+        mount.lastYaw = mount.yaw = rider.yaw - 180;
+        mount.pitch = rider.pitch * -0.5F;
+        mount.yaw = mount.yaw % -360;
+        mount.pitch = mount.pitch % -360;
+        mount.aP = mount.aN = mount.yaw; // Set head rotation yaw.
+
+        float sideMotion = -rider.be * 0.0001F; // Set the side motion to be the player's strafe motion.
+        float forwardMotion = -rider.bf; // Set forward motion to be the player's move forward motion.
+        //float upMotion = rider.bg * 0.25F; // Set upward motion to be the player's jump motion.
+        if (forwardMotion > 0.0)
+            forwardMotion *= 0.25F;
+        try {
+            if (mount instanceof JumpingMount && mount.onGround && JUMP.getBoolean(mount)) //Is someone jumping and still on the ground?
+                ((JumpingMount)mount).customJump(); //Entity has jumped.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        mount.P = 1; // Set step height.
+        mount.aR = mount.cl() * 0.1F; //Set jump movement factor to the land movement factor / 10
+
+        mount.l((float) mount.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue()); // Set the land movement factor to the movement speed.
+
         return new float[] {sideMotion, forwardMotion};
     }
 

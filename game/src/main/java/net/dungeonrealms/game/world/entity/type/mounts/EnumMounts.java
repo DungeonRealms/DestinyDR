@@ -38,7 +38,10 @@ public enum EnumMounts {
             new MountData("Slime", ChatColor.GREEN, 0.35F, 170, "A quick slime found deep", "in the Varenglade Ruins"), 3, ChatColor.AQUA),
 
     SPIDER(SpiderMount.class, EntityType.SPIDER, new ItemStack(Material.STRING, 1), 0, "Spider Mount",
-            new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.35F, 190), 2, ChatColor.LIGHT_PURPLE);
+            new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.35F, 190,"A hellish spider summoned", "from the Infernal Abyss"), 2, ChatColor.LIGHT_PURPLE),
+
+    DRAGON(EnderDragonMount.class, EntityType.ENDER_DRAGON, new ItemStack(Material.DRAGON_EGG, 1), 0, "Dragon Mount",
+            new MountData("Dragon", ChatColor.GOLD, 2.0F, 300), 2, ChatColor.GOLD);
 
 
     private Class<? extends EntityInsentient> clazz;

@@ -2,19 +2,19 @@ package net.dungeonrealms.game.world.entity.type.mounts;
 
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.minecraft.server.v1_9_R2.EntityEnderDragon;
-import net.minecraft.server.v1_9_R2.EntityHuman;
-import net.minecraft.server.v1_9_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 
 import org.bukkit.entity.Player;
 
 /**
  * Redone by Kneesnap on April 27th, 2017.
  */
-public class EnderDragonMount extends EntityEnderDragon implements JumpingMount {
+public class EnderDragonMount extends EntityBlaze implements JumpingMount {
 
 	private Player owner;
+	private int mountJumpTicks = 0;
+	private double height = 0;
+	private boolean jumped;
 	
 	public EnderDragonMount(World world) {
 		this(world, null);
@@ -27,15 +27,44 @@ public class EnderDragonMount extends EntityEnderDragon implements JumpingMount 
         this.goalSelector.a(3, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 20));
     }
 
+	//Ambient sound.
+	@Override
+	protected SoundEffect G() {
+		return SoundEffects.bK;
+	}
+
     @Override
     public void g(float sideMotion, float forwardMotion) {
-    	float[] motion = MountUtils.handleMountLogic(this, owner);
-    	if (motion != null)
-    		super.g(motion[0], motion[1]);
-    }
+		this.jumped = false;
+		height = owner.getLocation().getY();
+
+    	float[] motion = MountUtils.handleDragonMountLogic(this, owner);
+
+		if (motion[0] > 0 && !this.onGround) {
+			if (mountJumpTicks >= 12) {
+				this.motY = -4.0D;
+				mountJumpTicks = 0;
+			} else {
+				mountJumpTicks++;
+			}
+		}
+
+    	if (motion != null) {
+			if (height <= 180 && motion[0] < 0) {
+				if (mountJumpTicks >= 12) {
+					this.motY = 2.0D;
+					mountJumpTicks = 0;
+				} else {
+					mountJumpTicks++;
+				}
+			}
+			super.g(motion[0], motion[1]);
+		}
+	}
 
 	@Override
 	public void customJump() {
 		this.motY = 0.5D;
+		this.jumped = true;
 	}
 }

@@ -75,8 +75,6 @@ public enum EnumMonster {
     Zombie(l(CustomEntityType.MELEE_ZOMBIE), "Greater Zombie", ItemType.SWORD, SkullTextures.ZOMBIE, 10, ElementalAttribute.FIRE),
 
     MagmaCube(l(CustomEntityType.DR_MAGMA), "Magma Cube", null, 40, ElementalAttribute.FIRE),
-//    Silverfish(l(CustomEntityType.DR_SILVERFISH), "Silverfish", ItemType.SWORD, 15, ElementalAttribute.ICE),
-    //Silverfish(l(CustomEntityType.DR_SILVERFISH), "Rat", null, 40, ElementalAttribute.ICE),
     Silverfish(l(CustomEntityType.DR_SILVERFISH), "Rat", ItemType.SWORD, l("Smelly", "Dirty"), 15, ElementalAttribute.ICE),
 
 	// Misc
