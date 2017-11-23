@@ -60,7 +60,7 @@ public class RecipeHealerLeggings extends AbstractRecipe {
 
     @Override
     public void giveReward(Player player) {
-        leggings.setTagString("customId", "healer");
+        leggings.setTagString("customId", "healert" +  + leggings.getTier().getTierId());
         leggings.setTagString("setBonus", "healer");
         leggings.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
         GameAPI.giveOrDropItem(player, leggings.generateItem());
@@ -68,12 +68,12 @@ public class RecipeHealerLeggings extends AbstractRecipe {
 
     @Override
     public String getRewardDisplayName() {
-        return leggings.getCustomName();
+        return "Healer Leggings";
     }
 
     @Override
     public String getRewardDescription() {
-        return "Healer Leggings";
+        return lore;
     }
 
     @Override

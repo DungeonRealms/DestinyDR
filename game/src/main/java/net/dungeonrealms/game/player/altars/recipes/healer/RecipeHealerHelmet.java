@@ -67,7 +67,7 @@ public class RecipeHealerHelmet extends AbstractRecipe {
     @Override
     public void giveReward(Player player) {
         System.out.println("Giving Healer Reward");
-        helmet.setTagString("customId", "healer");
+        helmet.setTagString("customId", "healert" +  + helmet.getTier().getTierId());
         helmet.setTagString("setBonus", "healer");
         helmet.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
         GameAPI.giveOrDropItem(player, helmet.generateItem());
@@ -75,12 +75,12 @@ public class RecipeHealerHelmet extends AbstractRecipe {
 
     @Override
     public String getRewardDisplayName() {
-        return helmet.getCustomName();
+        return "Healer Helmet";
     }
 
     @Override
     public String getRewardDescription() {
-        return "Healer Helmet";
+        return lore;
     }
 
     @Override

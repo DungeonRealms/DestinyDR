@@ -20,7 +20,7 @@ public class CommandHealerSet extends BaseCommand {
             if(!Rank.isHeadGM((Player) sender)){return false;}
             CombatItem gear = new ItemArmor();
             gear.setTier(5);
-            gear.setTagString("customId", "healer");
+            gear.setTagString("customId", "healert1");
             gear.setTagString("setBonus", "healer");
             ((Player) sender).getInventory().addItem(gear.generateItem());
             return true;

@@ -151,7 +151,6 @@ public abstract class FakeEquipment {
                                             helmet.setDurability(currentHat.getDurability());
                                         }
                                     }
-
                                 }
 //                                final LivingEntity visibleEntity = (LivingEntity) packet.getEntityModifier(event).read(0);
                                 if (!hat && helmet != null && SetBonus.hasSetBonus(observingPlayer, SetBonuses.HEALER)) {
@@ -196,7 +195,7 @@ public abstract class FakeEquipment {
         NBTWrapper wrapper = new NBTWrapper(item);
         String id = wrapper.getString("customId");
         if (id == null) return null;
-        return id.endsWith("t4") ? Color.AQUA : id.endsWith("t5") ? Color.YELLOW : id.endsWith("t3") ? Color.GRAY : null;
+        return id.endsWith("t1") ? Color.BLACK : id.endsWith("t2") ? Color.WHITE : id.endsWith("t3") ? Color.GRAY : id.endsWith("t4") ? Color.AQUA : id.endsWith("t5") ? Color.YELLOW : null;
     }
 
     private static Map<Material, Material> converted = new HashMap<>();

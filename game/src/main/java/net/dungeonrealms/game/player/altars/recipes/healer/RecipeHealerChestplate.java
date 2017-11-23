@@ -61,7 +61,7 @@ public class RecipeHealerChestplate extends AbstractRecipe {
 
     @Override
     public void giveReward(Player player) {
-        chestplate.setTagString("customId", "healer");
+        chestplate.setTagString("customId", "healert" +  + chestplate.getTier().getTierId());
         chestplate.setTagString("setBonus", "healer");
         chestplate.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
         GameAPI.giveOrDropItem(player, chestplate.generateItem());
@@ -69,12 +69,12 @@ public class RecipeHealerChestplate extends AbstractRecipe {
 
     @Override
     public String getRewardDisplayName() {
-        return chestplate.getCustomName();
+        return "Healer Chestplate";
     }
 
     @Override
     public String getRewardDescription() {
-        return "Healer Chestplate";
+        return lore;
     }
 
     @Override

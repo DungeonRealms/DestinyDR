@@ -499,7 +499,7 @@ public interface DRMonster {
         }
 
         //Drop Recipe Item
-        int recipeItemRoll = ThreadLocalRandom.current().nextInt(200);
+        int recipeItemRoll = ThreadLocalRandom.current().nextInt(10000);
         ItemStack drop = new ItemStack(Material.AIR);
         switch(getEnum()) {
             case Golem:
