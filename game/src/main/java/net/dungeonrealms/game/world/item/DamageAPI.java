@@ -13,6 +13,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
@@ -264,9 +265,11 @@ public class DamageAPI {
             Player attack = attacker.isPlayer() ? attacker.getPlayer() : (Player) res.getProjectile().getShooter();
 
             double hpPercent = -1;
+            double trinketHPPercent = -1;
             int bonusAmount = SetBonus.hasSetBonus(attack, SetBonuses.BLOOD_BUTCHER) && (hpPercent = HealthHandler.getHPPercent(attack)) <= .2 ? 20 : 0;
-            if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0) {
-                double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount) / 100 * damage;
+            int trinketBonus = Trinket.hasActiveTrinket(attack, Trinket.COMBAT_LIFESTEAL) && (trinketHPPercent = HealthHandler.getHPPercent(attack)) <= .25 ? 20 : 0;
+            if (attacker.getAttributes().hasAttribute(WeaponAttributeType.LIFE_STEAL) || bonusAmount > 0 || trinketBonus > 0) {
+                double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount + trinketBonus) / 100 * damage;
                 HealthHandler.heal(attack, (int) lifeToHeal + 1, true);
             }
         }
@@ -320,7 +323,14 @@ public class DamageAPI {
                 final int[] POTION_TICKS = new int[]{30, 40, 50, 40, 50};
                 int amplifier = (ea.equals(ElementalAttribute.ICE)) ? 0 : tier / 4;
                 //System.out.println("The amplifier: " + amplifier);
-                defender.addPotionEffect(new PotionEffect(ea.getAttackPotion(), POTION_TICKS[tier - 1], amplifier));
+                Player defense;
+                if(defender instanceof Player) {
+                    defense = ((Player) defender).getPlayer();
+                    if (!Trinket.hasActiveTrinket(defense, Trinket.COMBAT_SLOW_RESIST)) {
+                        defender.addPotionEffect(new PotionEffect(ea.getAttackPotion(), POTION_TICKS[tier - 1], amplifier));
+                    }
+                }
+
             }
         }, 1);
     }
