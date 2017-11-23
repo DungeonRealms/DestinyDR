@@ -13,6 +13,7 @@ import net.dungeonrealms.game.item.items.core.ItemWeaponBow;
 import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonus;
 import net.dungeonrealms.game.item.items.core.setbonus.SetBonuses;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
@@ -45,6 +46,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
@@ -79,6 +82,15 @@ public class PvEListener implements Listener {
             return;
         }
 
+        // Apply speed from speed trinket
+        int speedChance = 0;
+        int rand = Utils.randInt(1, 100);
+        if (Trinket.hasActiveTrinket(damager, Trinket.COMBAT_SPEED)) {
+            speedChance = 10;
+            if (rand <= speedChance) {
+                damager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80, 1));
+            }
+        }
 
         //  THIS ONLY HANDLES PvE  //
         if (event.getEntity() instanceof Player)

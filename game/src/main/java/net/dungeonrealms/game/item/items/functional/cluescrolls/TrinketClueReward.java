@@ -84,6 +84,10 @@ public class TrinketClueReward implements AbstractClueReward {
     }
 
     public int getIncreasedChance(ClueDifficulty difficulty, Trinket trink) {
+        if(trink.getItemRarity().equals(Item.ItemRarity.UNIQUE)) {
+            if(difficulty.equals(ClueDifficulty.HARD)) return 1;
+        }
+
         if(trink.getItemRarity().equals(Item.ItemRarity.RARE)) {
             if(difficulty.equals(ClueDifficulty.HARD)) return 2;
             if(difficulty.equals(ClueDifficulty.MEDIUM)) return 1;

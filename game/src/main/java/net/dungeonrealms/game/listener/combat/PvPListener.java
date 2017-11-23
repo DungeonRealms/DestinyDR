@@ -5,8 +5,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
+import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -20,6 +22,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class PvPListener implements Listener {
 
@@ -50,6 +54,16 @@ public class PvPListener implements Listener {
             if (MetadataUtils.Metadata.SHARDING.has(event.getEntity())) {
                 event.setCancelled(true);
                 return;
+            }
+
+            // Apply speed from speed trinket
+            int speedChance = 0;
+            int rand = Utils.randInt(1, 100);
+            if (Trinket.hasActiveTrinket(attacker, Trinket.COMBAT_SPEED)) {
+                speedChance = 10;
+                if (rand <= speedChance) {
+                    attacker.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80, 1));
+                }
             }
 
             // Projectiles can be knocked back into the player.

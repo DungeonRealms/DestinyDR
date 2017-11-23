@@ -202,7 +202,7 @@ public class MountUtils {
         }
 
 
-        mount.P = 1; // Set step height.
+       // mount.P = 1; // Set step height.
         mount.aR = mount.cl() * 0.1F; //Set jump movement factor to the land movement factor / 10
 
         mount.l((float) mount.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue()); // Set the land movement factor to the movement speed.

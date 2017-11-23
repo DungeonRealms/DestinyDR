@@ -48,26 +48,26 @@ public class SetBonusListener implements Listener {
 
         // Getting rid of this prevents the weird item tag bug
         if (updateArmor) {
-//            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//
-//                List<PacketPlayOutEntityEquipment> toSend =
-//                        Lists.newArrayList(
-//                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getHelmet())),
-//                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getChestplate())),
-//                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getLeggings())),
-//                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getBoots())));
-//                for (Entity near : e.getPlayer().getNearbyEntities(32, 32, 32)) {
-//                    if (!(near instanceof Player)) continue;
-//                    Player nearPlayer = (Player) near;
-//
-//                    toSend.forEach((pack) -> ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(pack));
-////                ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
-//                }
-//
-//                if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
-//                    toSend.forEach((pack) -> ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(pack));
-//
-//            }, 1);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+                List<PacketPlayOutEntityEquipment> toSend =
+                        Lists.newArrayList(
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getHelmet())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getChestplate())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getLeggings())),
+                                new PacketPlayOutEntityEquipment(e.getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(e.getPlayer().getEquipment().getBoots())));
+                for (Entity near : e.getPlayer().getNearbyEntities(32, 32, 32)) {
+                    if (!(near instanceof Player)) continue;
+                    Player nearPlayer = (Player) near;
+
+                    toSend.forEach((pack) -> ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(pack));
+//                ((CraftPlayer) nearPlayer).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityEquipment(toUpdate.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(clone)));
+                }
+
+                if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
+                    toSend.forEach((pack) -> ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(pack));
+
+            }, 1);
         }
     }
 
