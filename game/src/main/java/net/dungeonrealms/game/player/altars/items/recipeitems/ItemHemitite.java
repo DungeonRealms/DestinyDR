@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.altars.items.recipeitems;
 
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
@@ -10,14 +11,22 @@ public class ItemHemitite extends ItemGeneric {
     protected String lore = CC.Gray + "Metal Ore chipped from a mighty foe.";
 
     public ItemHemitite(){
-        super(new ItemStack(Material.IRON_INGOT));
-        setCustomName(name);
-        setCustomLore(lore);
-        setTagString("recipeItem", "hemitite");
+        super(ItemType.ITEM_HEMITITE);
+    }
+
+    public ItemHemitite(ItemStack item) {
+        super(item);
     }
 
     @Override
     protected ItemStack getStack() {
-        return this.item;
+        return new ItemStack(Material.IRON_INGOT);
+    }
+
+    @Override
+    public void updateItem() {
+        setCustomName(name);
+        setCustomLore(lore);
+        super.updateItem();
     }
 }

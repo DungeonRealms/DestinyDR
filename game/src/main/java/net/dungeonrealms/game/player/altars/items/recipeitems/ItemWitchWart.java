@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.altars.items.recipeitems;
 
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
@@ -11,14 +12,22 @@ public class ItemWitchWart extends ItemGeneric {
     protected String lore = CC.Gray + "A wart that was ripped from a Witch's Face.";
 
     public ItemWitchWart(){
-        super(new ItemStack(Material.NETHER_WARTS));
-        setCustomName(name);
-        setCustomLore(lore);
-        setTagString("recipeItem", "witchWart");
+        super(ItemType.ITEM_WITCH_WART);
+    }
+
+    public ItemWitchWart(ItemStack item) {
+        super(item);
     }
 
     @Override
     protected ItemStack getStack() {
-        return this.item;
+        return new ItemStack(Material.NETHER_WARTS);
+    }
+
+    @Override
+    public void updateItem() {
+        setCustomName(name);
+        setCustomLore(lore);
+        super.updateItem();
     }
 }

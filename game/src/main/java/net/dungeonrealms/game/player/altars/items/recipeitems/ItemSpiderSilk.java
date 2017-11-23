@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.altars.items.recipeitems;
 
+import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.ItemGeneric;
 import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.Material;
@@ -11,14 +12,22 @@ public class ItemSpiderSilk extends ItemGeneric {
     protected String lore = CC.Gray + "Silk spun by a spider.";
 
     public ItemSpiderSilk(){
-        super(new ItemStack(Material.STRING));
-        setCustomName(name);
-        setCustomLore(lore);
-        setTagString("recipeItem", "spiderSilk");
+        super(ItemType.ITEM_SPIDER_SILK);
+    }
+
+    public ItemSpiderSilk(ItemStack item) {
+        super(item);
     }
 
     @Override
     protected ItemStack getStack() {
-        return this.item;
+        return new ItemStack(Material.STRING);
+    }
+
+    @Override
+    public void updateItem() {
+        setCustomName(name);
+        setCustomLore(lore);
+        super.updateItem();
     }
 }

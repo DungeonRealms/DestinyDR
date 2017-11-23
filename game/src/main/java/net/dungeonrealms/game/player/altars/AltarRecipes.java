@@ -2,6 +2,10 @@ package net.dungeonrealms.game.player.altars;
 
 import lombok.SneakyThrows;
 import net.dungeonrealms.game.player.altars.recipes.AbstractRecipe;
+import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerBoots;
+import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerChestplate;
+import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerHelmet;
+import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerLeggings;
 import net.dungeonrealms.game.player.altars.recipes.impl.*;
 import org.bukkit.inventory.Recipe;
 
@@ -21,7 +25,13 @@ public enum AltarRecipes {
     SPEED(RecipeSpeed.class),
     HASTE(RecipeHaste.class),
     WATER_BREATHING(RecipeWaterBreathing.class),
-    NIGHT_VISION(RecipeNightVision.class);
+    //NIGHT_VISION(RecipeNightVision.class),
+
+    //Healer Set
+    HEALER_HELMET(RecipeHealerHelmet.class),
+    HEALER_CHESTPLATE(RecipeHealerChestplate.class),
+    HEALER_LEGGINGS(RecipeHealerLeggings.class),
+    HEALER_BOOTS(RecipeHealerBoots.class);
 
     Class clas;
     AltarRecipes(Class<? extends AbstractRecipe> clas) {
