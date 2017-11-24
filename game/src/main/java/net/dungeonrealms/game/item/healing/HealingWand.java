@@ -24,14 +24,17 @@ public class HealingWand extends FunctionalItem implements ItemClickEvent.ItemCl
 
     public HealingWand() {
         super(ItemType.HEALING_WAND);
+        setAntiDupe(true);
     }
 
     public HealingWand(ItemStack item) {
         super(item);
+        setAntiDupe(true);
     }
 
     @Override
     protected ItemStack getStack() {
+        setAntiDupe(true);
         return new ItemStack(Material.FEATHER, 1);
     }
 
