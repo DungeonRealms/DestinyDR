@@ -64,7 +64,7 @@ public class RecipeHealerBoots extends AbstractRecipe {
         //Custom Leather Color CustomId
         boots.setTagString("customId", "healert" + boots.getTier().getTierId());
         boots.setTagString("setBonus", "healer");
-        boots.addLore(lore);
+        boots.setCustomLore(lore);
         GameAPI.giveOrDropItem(player, boots.generateItem());
     }
 

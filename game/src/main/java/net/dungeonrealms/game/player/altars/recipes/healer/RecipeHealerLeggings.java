@@ -62,7 +62,7 @@ public class RecipeHealerLeggings extends AbstractRecipe {
     public void giveReward(Player player) {
         leggings.setTagString("customId", "healert" +  + leggings.getTier().getTierId());
         leggings.setTagString("setBonus", "healer");
-        leggings.addLore(lore);
+        leggings.setCustomLore(lore);
         GameAPI.giveOrDropItem(player, leggings.generateItem());
     }
 

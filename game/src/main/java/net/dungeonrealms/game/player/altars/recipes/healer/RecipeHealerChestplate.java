@@ -63,7 +63,7 @@ public class RecipeHealerChestplate extends AbstractRecipe {
     public void giveReward(Player player) {
         chestplate.setTagString("customId", "healert" +  + chestplate.getTier().getTierId());
         chestplate.setTagString("setBonus", "healer");
-        chestplate.addLore(lore);
+        chestplate.setCustomLore(lore);
         GameAPI.giveOrDropItem(player, chestplate.generateItem());
     }
 

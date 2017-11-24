@@ -69,7 +69,7 @@ public class RecipeHealerHelmet extends AbstractRecipe {
         System.out.println("Giving Healer Reward");
         helmet.setTagString("customId", "healert" +  + helmet.getTier().getTierId());
         helmet.setTagString("setBonus", "healer");
-        helmet.addLore(lore);
+        helmet.setCustomLore(lore);
         GameAPI.giveOrDropItem(player, helmet.generateItem());
     }
 
