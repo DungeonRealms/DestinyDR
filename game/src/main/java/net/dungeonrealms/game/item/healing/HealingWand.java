@@ -18,18 +18,18 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class HealingWand extends FunctionalItem implements ItemClickEvent.ItemClickListener {
 
     public HealingWand() {
         super(ItemType.HEALING_WAND);
-        setAntiDupe(true);
     }
 
     public HealingWand(ItemStack item) {
         super(item);
-        setAntiDupe(true);
     }
 
     @Override
