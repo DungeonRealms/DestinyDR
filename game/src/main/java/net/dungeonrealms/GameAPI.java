@@ -1509,7 +1509,7 @@ public class GameAPI {
 
     public static void sendRulesMessage(Player player) {
         final JSONMessage message = new JSONMessage("To see the rules page click ", ChatColor.GREEN);
-        message.addURL(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.GREEN, "http://www.dungeonrealms.net/rules");
+        message.addURL(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.GREEN, "http://www.dungeonrealms.net/forum/m/20125238/viewthread/31206040-game-rules");
         message.sendToPlayer(player);
     }
 
