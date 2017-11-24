@@ -49,7 +49,8 @@ public enum TrinketType {
             Trinket.DUNGEON_TELEPORT,
             Trinket.REDUCED_BOOK_COOLDOWN)),
     COMBAT("Circlet", new MaterialData(Material.SHEARS, (byte) 4),
-            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT, Trinket.COMBAT_SPEED)),
+            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT, Trinket.COMBAT_SPEED,
+            Trinket.COMBAT_SLOW_RESIST, Trinket.COMBAT_LIFESTEAL)),
 
     VOTE_CRATE("Circlet", new MaterialData(Material.SHEARS, (byte)4), ChatColor.YELLOW, Lists.newArrayList(Trinket.REDUCED_REPAIR));
 
