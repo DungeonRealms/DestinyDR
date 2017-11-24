@@ -32,6 +32,7 @@ public enum EnumNamedElite {
     ZION("Skeleton King Zion", 3, EnumMonster.Skeleton, CustomEntityType.MELEE_SKELETON, 841, 61, 1311, 2000, 2),
     PYRO_BANDIT("Pyro Bandit", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, -331, 67, -407, 1900, 1), //650 - 810 Chest
     REDEYE_THE_CRUEL("Redeye The Cruel", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, 188, 61, -594, 2100, 1), //790-920 HP Chest
+    YAHOVA("Yahova", 3, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1112, 182, -695, 2100, 1),
 
     // TIER 4 //
     BLAYSHAN("Blayshan The Naga", 4, EnumMonster.Naga, CustomEntityType.MELEE_ZOMBIE, -278, 85, -202, 2500, 3),
