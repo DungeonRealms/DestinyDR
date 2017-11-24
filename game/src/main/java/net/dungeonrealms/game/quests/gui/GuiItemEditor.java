@@ -2,6 +2,8 @@ package net.dungeonrealms.game.quests.gui;
 
 import java.util.List;
 
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.healing.HealingWand;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestItem;
 import net.dungeonrealms.game.quests.QuestStage;
@@ -101,7 +103,13 @@ public class GuiItemEditor extends GuiBase {
 			this.setSlot(6, Material.GOLD_BLOCK, ChatColor.YELLOW + "Load DR Item", new String[] {"Click here to load a custom DungeonRealms Item.", "An example of this would be: duranorhelm"}, (evt) -> {
 				player.sendMessage(ChatColor.YELLOW + "Please enter the custom item name you'd like to load.");
 				Chat.listenForMessage(player, (event) -> {
-					ItemStack load = ItemGenerator.getNamedItem(event.getMessage());
+					ItemStack load;
+					if(event.getMessage().equals("healingWand")){
+						load = new HealingWand().generateItem();
+					}
+					else {
+						load = ItemGenerator.getNamedItem(event.getMessage());
+					}
 					if(load == null){
 						player.sendMessage(ChatColor.RED + "Item Not Found.");
 						new GuiItemEditor(player, stage, allItems, questItem);
