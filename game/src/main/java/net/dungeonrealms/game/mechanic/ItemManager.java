@@ -324,6 +324,64 @@ public class ItemManager {
         String page7_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/djoin" + "\n" + ChatColor.BLACK.toString() + "Join your parties Dungeon"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/dleave" + "\n" + ChatColor.BLACK.toString() + "Leave your parties Dungeon");
 
+        String page8_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "    Recipe Book     \n\n"
+        + ChatColor.BLACK + "    You can create \n" +
+                "    special items by \n" +
+                "placing rare materials \n" +
+                "    and gear on the \n" +
+                "Altar. To place an item \n" +
+                "   on the Altar you \n" +
+                "  simply stand on the \n" +
+                "desired pedestal and \n" +
+                " drop the material on \n" +
+                "top of it. To get your \n" +
+                " items back run away \n" +
+                "    from the Altar.");
+
+        String page9_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Healing Boots    \n\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"1. Orc's Tooth" + "\n"
+                + ChatColor.DARK_GRAY  + "2. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"3. Witch's Wart" + "\n"
+                + ChatColor.DARK_GRAY  + "4. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"5. Rat Skin" + "\n"
+                + ChatColor.DARK_GRAY  + "6. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"7. Spider Silk" + "\n"
+                + ChatColor.DARK_GRAY  + "8. Empty" + "\n"
+                + ChatColor.BLACK + " Place any tier boots you want to create on the centre of the Altar.");
+
+        String page10_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Healing Pants    \n\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"1. Wizard's Cocktail" + "\n"
+                + ChatColor.DARK_GRAY  + "2. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"3. Golden Charm" + "\n"
+                + ChatColor.DARK_GRAY  + "4. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"5. Wither Essence" + "\n"
+                + ChatColor.DARK_GRAY  + "6. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"7. Fairy Dust" + "\n"
+                + ChatColor.DARK_GRAY  + "8. Empty" + "\n"
+                + ChatColor.BLACK + " Place any tier pants you want to create on the centre of the Altar.");
+
+        String page11_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Healing Chest    \n\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD + "1. Hematite" + "\n"
+                + ChatColor.DARK_GRAY  + "2. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"3. Sacrificial Heart" + "\n"
+                + ChatColor.DARK_GRAY  + "4. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"5. Lizard Scales" + "\n"
+                + ChatColor.DARK_GRAY  + "6. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"7. Fire Dust" + "\n"
+                + ChatColor.DARK_GRAY  + "8. Empty" + "\n"
+                + ChatColor.BLACK + " Place any tier chestplate you want to create on the centre of the Altar.");
+
+        String page12_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Healing Helmet   \n\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"1. Eye of Beholder" + "\n"
+                + ChatColor.DARK_GRAY  + "2. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"3. Impa Eye" + "\n"
+                + ChatColor.DARK_GRAY + "4. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"5. Tongue of Dog" + "\n"
+                + ChatColor.DARK_GRAY  + "6. Empty" + "\n"
+                + ChatColor.DARK_PURPLE + ChatColor.BOLD +"7. Spider Eye" + "\n"
+                + ChatColor.DARK_GRAY  + "8. Empty" + "\n"
+                + ChatColor.BLACK + " Place any tier helmet you want to create on the centre of the Altar.");
+
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
         if (quests > 0)
@@ -338,6 +396,11 @@ public class ItemManager {
         pages.add(page5_string);
         pages.add(page6_string);
         pages.add(page7_string);
+        pages.add(page8_string);
+        pages.add(page9_string);
+        pages.add(page10_string);
+        pages.add(page11_string);
+        pages.add(page12_string);
 
         bm.setPages(pages);
         stack.setItemMeta(bm);

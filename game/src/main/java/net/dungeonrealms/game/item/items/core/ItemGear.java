@@ -308,10 +308,10 @@ public abstract class ItemGear extends ItemGeneric {
      * a certain level. Supplied player is who should receive the damage
      * warning, if any.
      */
-    public void damageItem(Player player, int durability) {
+    public void damageItem(Player player, double durability) {
         this.durability -= durability;
 
-        if (this.durability <= 1) {
+        if (this.durability <= 1.0) {
             if (player == null)
                 return;
             // Item has broken!

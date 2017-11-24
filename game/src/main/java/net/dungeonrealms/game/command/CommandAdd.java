@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.player.altars.items.recipeitems.*;
+import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerBoots;
 import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemBank;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
@@ -230,6 +231,14 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(new ItemSpiderSilk().generateItem());
                     player.getInventory().addItem(new ItemWitchWart().generateItem());
                     player.getInventory().addItem(new ItemWitherEssence().generateItem());
+                    break;
+                case "healer":
+                    int healerTier = args.length == 2 ? Integer.parseInt(args[1]) : 1;
+                    CombatItem gear = new ItemArmor();
+                    gear.setTier(healerTier);
+                    gear.setTagString("customId", "healer");
+                    gear.setTagString("setBonus", "healer");
+                    player.getInventory().addItem(gear.generateItem());
                     break;
                 case "pick":
                     int level = args.length == 2 ? Integer.parseInt(args[1]) : 1;
