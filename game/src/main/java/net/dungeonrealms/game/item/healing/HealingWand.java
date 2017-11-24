@@ -26,15 +26,18 @@ public class HealingWand extends FunctionalItem implements ItemClickEvent.ItemCl
 
     public HealingWand() {
         super(ItemType.HEALING_WAND);
+        setPermUntradeable(true);
     }
 
     public HealingWand(ItemStack item) {
         super(item);
+        setPermUntradeable(true);
     }
 
     @Override
     protected ItemStack getStack() {
         setAntiDupe(true);
+        setPermUntradeable(true);
         return new ItemStack(Material.FEATHER, 1);
     }
 
