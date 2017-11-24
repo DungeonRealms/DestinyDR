@@ -22,7 +22,7 @@ import java.util.List;
 public class RecipeHealerHelmet extends AbstractRecipe {
 
     ItemArmorHelmet helmet;
-    String lore;
+    String lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer";
 
     @Override
     public boolean checkRecipe(Altars altarType) {
@@ -69,7 +69,7 @@ public class RecipeHealerHelmet extends AbstractRecipe {
         System.out.println("Giving Healer Reward");
         helmet.setTagString("customId", "healert" +  + helmet.getTier().getTierId());
         helmet.setTagString("setBonus", "healer");
-        helmet.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
+        helmet.addLore(lore);
         GameAPI.giveOrDropItem(player, helmet.generateItem());
     }
 

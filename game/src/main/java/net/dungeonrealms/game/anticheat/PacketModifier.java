@@ -20,6 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -29,7 +30,7 @@ import java.util.List;
 public class PacketModifier implements GenericMechanic {
 
     private PacketListener listener;
-    private List<String> ALLOWED_TAGS = Arrays.asList("display", "pages", "generation", "SkullOwner", "AttributeModifiers", "ench", "Unbreakable", "HideFlags", "CanDestroy", "PickupDelay", "CanPlaceOn");
+    private List<String> ALLOWED_TAGS = Arrays.asList("display", "pages", "generation", "SkullOwner", "AttributeModifiers", "ench", "Unbreakable", "HideFlags", "CanDestroy", "PickupDelay", "CanPlaceOn", "customId", "setBonus");
 
     @Override
     public void startInitialization() {
@@ -53,12 +54,22 @@ public class PacketModifier implements GenericMechanic {
                     //Remove all data the client doesn't need to see.
                     ItemStack item = stripNBT(original);
                     ItemMeta meta = item.getItemMeta();
-                    if (meta.hasLore())
-                        meta.setLore(Arrays.asList(ItemRarity.UNIQUE.getName()));
+                    net.minecraft.server.v1_9_R2.ItemStack stripped = CraftItemStack.asNMSCopy(item.clone());
+                    boolean isHealerItem = stripped.getTag().hasKey("setBonus") && stripped.getTag().getString("setBonus").equals("healer");
+                    if (meta.hasLore()) {
+                        if(!isHealerItem) {
+                            meta.setLore(Arrays.asList(ItemRarity.UNIQUE.getName()));
+                        }
+                    }
                     if (meta.hasDisplayName())
-                        meta.setDisplayName(ChatColor.MAGIC + "TRUMP STEAKS");
+                        if(!isHealerItem) {
+                            meta.setDisplayName(ChatColor.MAGIC + "TRUMP STEAKS");
+                        }
                     if (ItemArmor.isArmor(item) || ItemWeapon.isWeapon(item))
-                        item.setDurability((short) 0);
+                        if(!isHealerItem) {
+                            item.setDurability((short) 0);
+                        }
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     item.setItemMeta(meta);
                     packet.getItemModifier().write(0, item);
                 }

@@ -11,6 +11,7 @@ import net.dungeonrealms.game.player.altars.recipes.AbstractRecipe;
 import net.dungeonrealms.game.world.item.CC;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ import java.util.List;
 public class RecipeHealerBoots extends AbstractRecipe {
 
     ItemArmorBoots boots;
-    String lore;
+    String lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer";
 
     @Override
     public boolean checkRecipe(Altars altarType) {
@@ -63,7 +64,7 @@ public class RecipeHealerBoots extends AbstractRecipe {
         //Custom Leather Color CustomId
         boots.setTagString("customId", "healert" + boots.getTier().getTierId());
         boots.setTagString("setBonus", "healer");
-        boots.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
+        boots.addLore(lore);
         GameAPI.giveOrDropItem(player, boots.generateItem());
     }
 

@@ -23,7 +23,7 @@ import java.util.List;
 public class RecipeHealerChestplate extends AbstractRecipe {
 
     ItemArmorChestplate chestplate;
-    String lore;
+    String lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer";
 
     @Override
     public boolean checkRecipe(Altars altarType) {
@@ -63,7 +63,7 @@ public class RecipeHealerChestplate extends AbstractRecipe {
     public void giveReward(Player player) {
         chestplate.setTagString("customId", "healert" +  + chestplate.getTier().getTierId());
         chestplate.setTagString("setBonus", "healer");
-        chestplate.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
+        chestplate.addLore(lore);
         GameAPI.giveOrDropItem(player, chestplate.generateItem());
     }
 

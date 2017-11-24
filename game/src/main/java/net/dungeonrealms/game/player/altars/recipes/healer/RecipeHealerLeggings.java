@@ -22,7 +22,7 @@ import java.util.List;
 public class RecipeHealerLeggings extends AbstractRecipe {
 
     ItemArmorLeggings leggings;
-    String lore;
+    String lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer";
 
     @Override
     public boolean checkRecipe(Altars altarType) {
@@ -62,7 +62,7 @@ public class RecipeHealerLeggings extends AbstractRecipe {
     public void giveReward(Player player) {
         leggings.setTagString("customId", "healert" +  + leggings.getTier().getTierId());
         leggings.setTagString("setBonus", "healer");
-        leggings.addLore(lore = CC.GrayB + "Set Bonus: " + CC.Reset + CC.LightPurple + "Healer");
+        leggings.addLore(lore);
         GameAPI.giveOrDropItem(player, leggings.generateItem());
     }
 
