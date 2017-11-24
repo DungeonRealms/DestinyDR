@@ -495,7 +495,7 @@ public interface DRMonster {
             ShardTier shardTier = ShardTier.getByTier(getTier());
             wrapper.setPortalShards(shardTier,currentPortalShards + portalShardsAmount);
             killer.sendMessage(shardTier.getColor() + "You found " + ChatColor.BOLD + portalShardsAmount + ChatColor.RESET + shardTier.getColor() + " portal shards from this elite!");
-            killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
+            killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
         }
 
         //Drop Recipe Item

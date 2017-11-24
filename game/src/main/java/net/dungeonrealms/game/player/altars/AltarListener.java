@@ -34,7 +34,7 @@ public class AltarListener implements Listener {
                 Item item = event.getItemDrop();
                 current = new Altar(event.getPlayer(), altar);
                 AltarManager.currentlyUsingAltars.put(altar, current);
-                System.out.println("NODE INDEX IS: " + nodeIndex);
+                //System.out.println("NODE INDEX IS: " + nodeIndex);
                 current.setItemStack(nodeIndex, item.getItemStack());
                 item.remove();
                 return;

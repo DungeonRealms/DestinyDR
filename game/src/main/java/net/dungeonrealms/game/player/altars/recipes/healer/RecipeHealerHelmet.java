@@ -26,38 +26,32 @@ public class RecipeHealerHelmet extends AbstractRecipe {
 
     @Override
     public boolean checkRecipe(Altars altarType) {
-        System.out.println("Checking Recipe");
         Altar altar = AltarManager.getAltar(altarType);
         if(altar == null) return false;
-        List<Integer> usedIndices = new ArrayList<>(Arrays.asList(1,3,5,7));
+        List<Integer> usedIndices = new ArrayList<>(Arrays.asList(0,1,3,5,7));
         for(int index = 0; index < altarType.getNodeSize(); index++) {
             ItemStack onNode = altar.getItemStack(index);
             boolean isUsedPlinth = usedIndices.contains(index);
-            if(onNode == null && isUsedPlinth) return false;
+            if((onNode != null && !isUsedPlinth) || (onNode == null && isUsedPlinth)) return false;
             if(onNode == null) continue;
                 if(index == 0){
                     if (!ItemArmorHelmet.isHelmet(onNode)) return false;
-                    System.out.println("Helmet Is THERE");
                     helmet = new ItemArmorHelmet(onNode.clone());
                 }
                 else if(index == 1) {
                     if (!ItemEyeOfBeholder.isType(onNode, ItemType.ITEM_EYE_OF_BEHOLDER)) return false;
-                    System.out.println("EOB IS THERE");
                     //ItemEyeOfBeholder eyeOfBeholder = new ItemEyeOfBeholder(onNode);
                 }
                 else if(index == 3) {
                     if(!ItemImpEye.isType(onNode, ItemType.ITEM_IMP_EYE)) return false;
-                    System.out.println("ImpEye IS THERE");
                     //ItemImpEye impEye = new ItemImpEye(onNode);
                 }
                 else if(index == 5) {
                     if (!ItemDogTongue.isType(onNode, ItemType.ITEM_DOG_TONGUE)) return false;
-                    System.out.println("DogTongue IS THERE");
                     //ItemDogTongue dogTongue = new ItemDogTongue(onNode);
                 }
                 else if(index == 7) {
                     if (!ItemSpiderEye.isType(onNode, ItemType.ITEM_SPIDER_EYE)) return false;
-                    System.out.println("SpiderEye IS THERE");
                     //ItemSpiderEye spiderEye = new ItemSpiderEye(onNode);
                 }
         }

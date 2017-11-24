@@ -29,11 +29,11 @@ public class RecipeHealerBoots extends AbstractRecipe {
     public boolean checkRecipe(Altars altarType) {
         Altar altar = AltarManager.getAltar(altarType);
         if(altar == null) return false;
-        List<Integer> usedIndices = new ArrayList<>(Arrays.asList(1,3,5,7));
+        List<Integer> usedIndices = new ArrayList<>(Arrays.asList(0,1,3,5,7));
         for(int index = 0; index < altarType.getNodeSize(); index++) {
             ItemStack onNode = altar.getItemStack(index);
             boolean isUsedPlinth = usedIndices.contains(index);
-            if(onNode == null && isUsedPlinth) return false;
+            if((onNode != null && !isUsedPlinth) || (onNode == null && isUsedPlinth)) return false;
             if(onNode == null) continue;
             if(index == 0){
                 if (!ItemArmorBoots.isBoots(onNode)) return false;

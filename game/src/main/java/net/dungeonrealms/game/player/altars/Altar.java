@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.altars.recipes.AbstractRecipe;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -96,6 +97,8 @@ public class Altar {
 
         if(recipeTicks >= foundRecipe.getRitualTime()) {
             foundRecipe.giveReward(using);
+            using.playSound(using.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1f, 1f);
+            using.playSound(using.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
             using.sendMessage(ChatColor.GREEN + "You have received a " + foundRecipe.getRewardDisplayName());
             AltarManager.removeAltar(this, false);
         }
@@ -110,7 +113,7 @@ public class Altar {
     }
 
     public void playEffect(int nodeIndex){
-        System.out.println("Playing Effect at Node " + nodeIndex);
+        //System.out.println("Playing Effect at Node " + nodeIndex);
         Location nodeLoc = altarType.getNode(nodeIndex);
         Location centerLoc = new Location(altarType.getWorld(), (Math.abs(altarType.getNode(0).getX()) / altarType.getNode(0).getX()) * (Math.abs(altarType.getNode(0).getX()) - 0.5), altarType.getNode(0).getY(), (Math.abs(altarType.getNode(0).getZ()) / altarType.getNode(0).getZ()) * (Math.abs(altarType.getNode(0).getZ()) + 0.5));
         new BukkitRunnable() {

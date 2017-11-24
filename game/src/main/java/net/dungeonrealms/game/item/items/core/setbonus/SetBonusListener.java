@@ -46,7 +46,6 @@ public class SetBonusListener implements Listener {
                 updateArmor = true;
         }
 
-        // Getting rid of this prevents the weird item tag bug
         if (updateArmor) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
@@ -108,8 +107,9 @@ public class SetBonusListener implements Listener {
                 NBTWrapper wrapper = new NBTWrapper(armor);
 
                 String id = wrapper.getString("customId");
+                String colorStrippedId = id.replaceAll("t\\d", "");
                 if (id != null && !id.isEmpty()) {
-                    if (customID != null && id.equals(customID)) {
+                    if (customID != null && colorStrippedId.equals(customID.replaceAll("t\\d", ""))) {
                         idCount++;
                         continue;
                     } else {

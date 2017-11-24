@@ -7,6 +7,7 @@ import net.dungeonrealms.game.player.cosmetics.particles.impl.GroundHaloParticle
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -94,6 +95,7 @@ public class AltarManager {
     public static void removeAltar(Altar altar, boolean giveBackStuff) {
         Player player = altar.getUsing();
         if(giveBackStuff) {
+            player.playSound(player.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1f, 1f);
             for (ItemStack stack : altar.getNodeStacks()) {
                 if(stack == null) continue;
                 player.getInventory().addItem(stack);
