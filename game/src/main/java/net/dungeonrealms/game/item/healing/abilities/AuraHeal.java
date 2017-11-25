@@ -38,7 +38,6 @@ public class AuraHeal extends Healing {
         boolean affected = false;
 
         Party party = Affair.getParty(player);
-        ArrayList<Player> playersHealed = new ArrayList<>();
         if (time <= System.currentTimeMillis()) {
             for (Entity nearby : player.getNearbyEntities(radius, radius, radius)) {
                 if (nearby instanceof Player) {
@@ -51,6 +50,7 @@ public class AuraHeal extends Healing {
                                 continue;
                             }
 
+                            int current = HealthHandler.getHP(other);
                             int toRegen = (int) (HealthHandler.getMaxHP(other) * .15);
 
                             HealthHandler.heal(other, toRegen, true, player.getName() + "'s " + ability.getName());
@@ -68,7 +68,7 @@ public class AuraHeal extends Healing {
                             }
 
                             map.heal(player.getUniqueId());
-                            playersHealed.add(other);
+                            Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + other.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(toRegen) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(HealthHandler.getHP(other)) + "]");
 
                             affected = true;
                             ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
@@ -85,12 +85,7 @@ public class AuraHeal extends Healing {
             CombatLog.addToPVP(player);
             MountUtils.removeMount(player);
         }
-
-        if (!playersHealed.isEmpty()) {
-            for(Player p : playersHealed){
-                Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + p.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(HealthHandler.getMaxHP(p) * .15) + "HP");
-            }
-        } else {
+        else {
             Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + "None" + CC.YellowB + ")");
         }
         return true;
