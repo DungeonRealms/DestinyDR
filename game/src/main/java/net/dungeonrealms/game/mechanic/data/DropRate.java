@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public enum DropRate {
 
-	TIER_1(ItemTier.TIER_1, 1, 3, 50, 120/*Drop chance*/, 750, 2, 1),
-	TIER_2(ItemTier.TIER_2, 2, 12, 40, 50, 360, 2, 5),
-	TIER_3(ItemTier.TIER_3, 10, 30, 30, 30, 81, 2, 10),
-	TIER_4(ItemTier.TIER_4, 40, 90, 30, 15, 27, 1, 15),
-	TIER_5(ItemTier.TIER_5, 75, 200, 35, 5, 10, 1, 20);
+	TIER_1(ItemTier.TIER_1, 1, 3, 50, 120/*Drop chance*/, 750, 2, 2, 1),
+	TIER_2(ItemTier.TIER_2, 2, 12, 40, 50, 360, 2, 4, 5),
+	TIER_3(ItemTier.TIER_3, 10, 30, 30, 30, 81, 2, 7, 10),
+	TIER_4(ItemTier.TIER_4, 40, 90, 30, 15, 27, 1, 11, 15),
+	TIER_5(ItemTier.TIER_5, 75, 200, 35, 5, 10, 1, 14, 20);
 	
 	private ItemTier tier;
 	
@@ -21,10 +21,11 @@ public enum DropRate {
 	private int normalDropChance;
 	private int eliteDropChance;
 	private int teleportBookChance;
+	private int clueDropChance;
 	private int recipeItemDropChance;
 	
 	
-	DropRate(ItemTier tier, int gemMin, int gemMax, int gemChance, int normalDrop, int eliteDrop, int tpBookChance, int recipeItem) {
+	DropRate(ItemTier tier, int gemMin, int gemMax, int gemChance, int normalDrop, int eliteDrop, int tpBookChance, int clueChance, int recipeItemChance) {
 		this.tier = tier;
 		this.gemDropMin = gemMin;
 		this.gemDropMax = gemMax;
@@ -32,7 +33,8 @@ public enum DropRate {
 		this.normalDropChance = normalDrop;
 		this.eliteDropChance = eliteDrop;
 		this.teleportBookChance = tpBookChance;
-		this.recipeItemDropChance = recipeItem;
+		this.clueDropChance = clueChance;
+		this.recipeItemDropChance = recipeItemChance;
 	}
 	
 	public static DropRate getRate(ItemTier tier) {

@@ -355,7 +355,8 @@ public interface DRMonster {
             chance += chance * (DonationEffects.getInstance().getBuff(EnumBuff.LOOT).getBonusAmount() / 100f);
 
         int clueRoll = random.nextInt(10000);
-        boolean isClueDrop = clueRoll <= (tier == 5 ? 10 : tier == 4 ? 8 : tier == 3 ? 5 : tier == 2 ? 3 : 1);
+        //Fixed this for whoever was the retard that didnt realize there is a DropRate class where we store all drop rates.
+        boolean isClueDrop = clueRoll <= dr.getClueDropChance();
         if (isClueDrop) {
             ClueScrollItem clue = new ClueScrollItem(ClueScrollType.COMBAT);
             killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
