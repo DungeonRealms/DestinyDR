@@ -17,7 +17,7 @@ import org.bukkit.World;
 public enum EnumNamedElite {
 
     // TIER 1 //
-    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -406, 137, 28, 300, 1, WorldType.ELORA),
+    MITSUKI("Mitsuki The Dominator", 1, EnumMonster.Bandit, CustomEntityType.MELEE_ZOMBIE, -384, 70, 55, 300, 1, WorldType.ELORA),
     OLD_WHEAT_FARMER("Old Wheat Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -612, 74, 249, 400, 1, WorldType.ELORA),
     OLD_CARROT_FARMER("Old Carrot Farmer", 1, EnumMonster.Bandit1, CustomEntityType.MELEE_SKELETON, -680, 71, 275, 400, 1, WorldType.ELORA),
 
