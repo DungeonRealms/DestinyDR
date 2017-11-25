@@ -32,13 +32,16 @@ public enum EnumNamedElite {
     ZION("Skeleton King Zion", 3, EnumMonster.Skeleton, CustomEntityType.MELEE_SKELETON, 841, 61, 1311, 2000, 2),
     PYRO_BANDIT("Pyro Bandit", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, -331, 67, -407, 1900, 1), //650 - 810 Chest
     REDEYE_THE_CRUEL("Redeye The Cruel", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, 188, 61, -594, 2100, 1), //790-920 HP Chest
+    YAHOVA("Yahova the Officer", 3, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1112, 183, -695, 2100, 1),
 
     // TIER 4 //
     BLAYSHAN("Blayshan The Naga", 4, EnumMonster.Naga, CustomEntityType.MELEE_ZOMBIE, -278, 85, -202, 2500, 3),
     DURANOR("Duranor the Cruel", 4, EnumMonster.Imp, CustomEntityType.MELEE_SKELETON, -124, 162, -3167, 1300, 1),
     //    MOUNTAIN_KING("Mountain King", 4, EnumMonster.Skeleton2, CustomEntityType.BOW_SKELETON, -1649, 149, 1388, 1300, 1),
     MOTHER_OF_DOOM("Mother of Doom", 4, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, -191, 144, -3621, 1200, 2),
-    BLOOD_BUTCHER("Blood Butcher", 4, EnumMonster.Skeleton1, CustomEntityType.MELEE_WITHER, 230, 34, -3542, 2600, 1), //Better then blayshan pretty much
+    BLOOD_BUTCHER("Blood Butcher", 4, EnumMonster.Skeleton1, CustomEntityType.MELEE_WITHER, 230, 35, -3542, 2600, 1), //Better then blayshan pretty much
+    AZEMAR("Azemar The Great", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -465, 27, 1512, 2600, 1),
+    DARK("The Dark One", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1518, 49, 722, 2600, 1),
 
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.BOW_SKELETON, -411, 33, -3487, 1800, 1),
