@@ -1,13 +1,24 @@
 Build <build>
 
 &lChanges Since Last Build:
- - Netyli and Cyrennica hearthstones are free.
- - Added a /bufftime command
- - Mobs now drop Red Faction books
- - Nerfed bow-mob damage.
- - Removed 500g cost to get to Andalucia.
- - Elite mobs now drop Portal Shards.
-
+ - Added Altar Crafting and Infusing system.
+ - Different types of foes now drop certain altar recipe items.
+ - Multiple stat adjustments.
+ - Moved Mitsuki t1 elite.
+ - Added new combat trinkets and trinkets in general.
+ - Added new rarities to trinkets.
+ - Added new commands /bufftime and /rifttime
+ - Fixed TP Book drops.
+ - Updated and readjusted some elite's damges.
+ - Updated Rules Page.
+ - Added new Crafting Recipe's section to character journal.
+ - Added new Crafting Recipe's to the Altar.
+ - Added new quest for the Healer Wand
+ - Added Healer SetBonus.
+ - Reduced Repair Rates.
+ - Loot tables were rebalanced.
+ - Tattered parchment drop chance increased by about 50%.
+ - Added 3 new elite sets for: Yahova, Azemar, and The Dark One.
 
 
 
