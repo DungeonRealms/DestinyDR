@@ -51,8 +51,27 @@ public enum Trinket {
     COMBAT_SLOW_RESIST(Item.ItemRarity.UNIQUE, "Resistant", new AbstractTrinketData("Resistant to all incoming slows"), 1),
     COMBAT_LIFESTEAL(Item.ItemRarity.UNIQUE, "Vampyric", new AbstractTrinketData("Gain 20% lifesteal when below 25% of your max HP"), 1),
     COMBAT_DURABILITY(Item.ItemRarity.UNIQUE, "Durable", new AbstractTrinketData("Weapons now have double durability."), 1),
-    COMBAT_RARE(Item.ItemRarity.RARE, null, new RandomEnchantTrinketDataRare(), 50),
-    COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 50);
+    COMABT_RARE_ENERGY(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.ENERGY_REGEN, 3, 6), 2),
+    COMABT_RARE_HEALTH(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.HEALTH_POINTS, 100, 500), 2),
+    COMABT_RARE_ARMOR(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.ARMOR, 3, 9), 2),
+    COMABT_RARE_BLOCK(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.BLOCK, 3, 8), 2),
+    COMABT_RARE_DODGE(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.DODGE, 3, 9), 2),
+    COMABT_RARE_DEX(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.DEXTERITY, 100, 250), 2),
+    COMABT_RARE_VIT(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.VITALITY, 100, 250), 2),
+    COMABT_RARE_INT(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.INTELLECT, 100, 250), 2),
+    COMABT_RARE_FIRE_RES(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.FIRE_RESISTANCE, 20, 50), 2),
+    COMABT_RARE_POISON_RES(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.POISON_RESISTANCE, 20, 50), 2),
+    COMABT_RARE_ICE_RES(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.ICE_RESISTANCE, 20, 50), 2),
+    COMABT_RARE_GEM_FIND(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.GEM_FIND, 5, 15), 2),
+    COMABT_RARE_ITEM_FIND(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.ArmorAttributeType.ITEM_FIND, 5, 10), 2),
+    COMABT_RARE_ARMOR_PEN(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.ARMOR_PENETRATION, 5, 15), 2),
+    COMABT_RARE_ACCURACY(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.ACCURACY, 5, 15), 2),
+    COMABT_RARE_BLIND(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.BLIND, 5, 15), 2),
+    COMABT_RARE_CRIT(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.CRITICAL_HIT, 5, 15), 2),
+    COMABT_RARE_LIFE_STEAL(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.LIFE_STEAL, 5, 15), 2),
+    COMABT_RARE_DAMAGE(Item.ItemRarity.RARE, null, new EnchantTrinketData(Item.WeaponAttributeType.DAMAGE, 20, 60), 2),
+    COMBAT_RARE(Item.ItemRarity.RARE, null, new RandomEnchantTrinketDataRare(), 20),
+    COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 20);
 
     @Getter
     private Item.ItemRarity itemRarity;

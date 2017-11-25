@@ -67,7 +67,7 @@ public class MendWounds extends Healing {
             MountUtils.removeMount(player);
 
             double newHP = HealthHandler.getHP(clicked);
-            Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + clicked.getName() + CC.YellowB + ") " + CC.GreenB + "+ " + Math.ceil(hpToHeal) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(newHP) + "]");
+            Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + clicked.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(hpToHeal) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(newHP) + "]");
             ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, clicked.getLocation().add(0, 1.75, 0), 10, .3F, .4F);
             if (map == null) {
                 map = new HealingMap();
