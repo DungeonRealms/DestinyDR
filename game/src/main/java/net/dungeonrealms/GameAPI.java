@@ -1517,9 +1517,9 @@ public class GameAPI {
     public static void sendRiftMessage(Player player) {
         WorldRift active = RiftMechanics.getInstance().getActiveRift();
         if (active != null) {
-            player.sendMessage(ChatColor.BOLD + ChatColor.RED.toString() + "Current Active Rift: " + active.getNearbyCity());
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Current Active Rift: " + active.getNearbyCity());
         } else {
-            player.sendMessage( ChatColor.BOLD + ChatColor.RED.toString() + "No Current Active Rifts.");
+            player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + "No Current Active Rifts.");
         }
     }
 
