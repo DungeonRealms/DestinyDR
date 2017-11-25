@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.altars;
 
 import net.dungeonrealms.common.game.util.ChatColor;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -32,11 +33,13 @@ public class AltarListener implements Listener {
         if(current == null && event.getPlayer().getOpenInventory().getType() != InventoryType.CHEST) {
             if(!event.isCancelled()) {
                 Item item = event.getItemDrop();
-                current = new Altar(event.getPlayer(), altar);
-                AltarManager.currentlyUsingAltars.put(altar, current);
-                //System.out.println("NODE INDEX IS: " + nodeIndex);
-                current.setItemStack(nodeIndex, item.getItemStack());
-                item.remove();
+                if(ItemManager.isItemDroppable(item.getItemStack())) {
+                    current = new Altar(event.getPlayer(), altar);
+                    AltarManager.currentlyUsingAltars.put(altar, current);
+                    //System.out.println("NODE INDEX IS: " + nodeIndex);
+                    current.setItemStack(nodeIndex, item.getItemStack());
+                    item.remove();
+                }
                 return;
             }
         }
