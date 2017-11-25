@@ -35,6 +35,8 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
 
     private EnchantTrinketData storedData;
 
+    Tuple<Item.AttributeType, Integer> valueData;
+
     public TrinketItem(ItemStack item) {
         super(item);
         if (hasTag("value"))
@@ -66,10 +68,14 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
 
         this.trinketType = trinketType;
         this.trinket = trinket;
-        if (this.trinket == Trinket.COMBAT) {
-            Tuple<Item.AttributeType, Integer> value = ((RandomEnchantTrinketData) trinket.getData()).getRandomAttribute();
-            this.storedData = new EnchantTrinketData(value.a(), -1, -1);
-            this.value = value.b();
+        if (this.trinket == Trinket.COMBAT || this.trinket == Trinket.COMBAT_RARE) {
+            if(trinket == Trinket.COMBAT_RARE) {
+               valueData = ((RandomEnchantTrinketDataRare) trinket.getData()).getRandomAttribute();
+            } else {
+                valueData = ((RandomEnchantTrinketData) trinket.getData()).getRandomAttribute();
+            }
+            this.storedData = new EnchantTrinketData(valueData.a(), -1, -1);
+            this.value = valueData.b();
         } else {
             this.value = this.trinket.getValue();
         }
