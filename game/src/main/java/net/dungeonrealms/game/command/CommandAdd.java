@@ -138,7 +138,11 @@ public class CommandAdd extends BaseCommand {
                         if (args[1].equalsIgnoreCase("combat") || args[1].equalsIgnoreCase("jewel")) {
                             player.getInventory().addItem(new TrinketItem(TrinketType.COMBAT, Trinket.COMBAT).generateItem());
                         }
+                        if (args[1].equalsIgnoreCase("combat_rare") || args[1].equalsIgnoreCase("jewel")) {
+                            player.getInventory().addItem(new TrinketItem(TrinketType.COMBAT, Trinket.COMBAT_RARE).generateItem());
+                        }
                     }
+
                     return true;
                 case "dryloot":
                     PlayerWrapper wra = PlayerWrapper.getPlayerWrapper(player);

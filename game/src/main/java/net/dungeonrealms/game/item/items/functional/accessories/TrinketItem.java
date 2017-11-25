@@ -48,7 +48,7 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
         if (hasTag("trinketType"))
             this.trinketType = TrinketType.valueOf(getTagString("trinketType"));
 
-        if (this.trinket == Trinket.COMBAT && hasTag("attribute")) {
+        if (this.trinket == Trinket.COMBAT && hasTag("attribute") || this.trinket == Trinket.COMBAT_RARE && hasTag("attribute")) {
             //Load trinket data?
             this.storedData = new EnchantTrinketData(Item.AttributeType.getByName(getTagString("attribute")), -1, -1);
         }
@@ -121,7 +121,7 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
         if (prefix != null) {
             name = prefix + " " + name;
         }
-        if (getTrinket() == Trinket.COMBAT) {
+        if (getTrinket() == Trinket.COMBAT || getTrinket() == Trinket.COMBAT_RARE) {
             String pre = ((EnchantTrinketData) getTrinketData()).getDisplayPrefix();
             if (pre != null && !pre.isEmpty())
                 name = pre.trim() + " " + name;
@@ -130,7 +130,7 @@ public class TrinketItem extends FunctionalItem implements ItemInventoryEvent.It
         if (trinket.getSuffix() != null)
             name = name + " of " + trinket.getSuffix();
 
-        if (getTrinket() == Trinket.COMBAT) {
+        if (getTrinket() == Trinket.COMBAT || getTrinket() == Trinket.COMBAT_RARE) {
 
             String suff = ((EnchantTrinketData) getTrinketData()).getDisplaySuffix(false);
             if (suff != null && !suff.trim().isEmpty()) {

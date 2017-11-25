@@ -17,26 +17,24 @@ public class RandomEnchantTrinketDataRare extends EnchantTrinketData {
 
     public RandomEnchantTrinketDataRare() {
         super(null, -1, -1);
-        enchantMap.put(Item.ArmorAttributeType.ENERGY_REGEN, new MinMax(1, 3));
-        enchantMap.put(Item.ArmorAttributeType.HEALTH_POINTS, new MinMax(1, 30));
-        enchantMap.put(Item.ArmorAttributeType.ARMOR, new MinMax(1, 3));
-        enchantMap.put(Item.ArmorAttributeType.BLOCK, new MinMax(1, 2));
-        enchantMap.put(Item.ArmorAttributeType.DODGE, new MinMax(1, 2));
-        enchantMap.put(Item.ArmorAttributeType.DEXTERITY, new MinMax(1, 50));
-        enchantMap.put(Item.ArmorAttributeType.VITALITY, new MinMax(1, 50));
-        enchantMap.put(Item.ArmorAttributeType.INTELLECT, new MinMax(1, 50));
-        enchantMap.put(Item.ArmorAttributeType.FIRE_RESISTANCE, new MinMax(1, 20));
-        enchantMap.put(Item.ArmorAttributeType.POISON_RESISTANCE, new MinMax(1, 20));
-        enchantMap.put(Item.ArmorAttributeType.ICE_RESISTANCE, new MinMax(1, 20));
-        enchantMap.put(Item.ArmorAttributeType.GEM_FIND, new MinMax(1, 5));
-        enchantMap.put(Item.ArmorAttributeType.ITEM_FIND, new MinMax(1, 5));
+        enchantMap.put(Item.ArmorAttributeType.ENERGY_REGEN, new MinMax(4, 6));
+        enchantMap.put(Item.ArmorAttributeType.HEALTH_POINTS, new MinMax(500, 800));
+        enchantMap.put(Item.ArmorAttributeType.ARMOR, new MinMax(10, 16));
+        enchantMap.put(Item.ArmorAttributeType.DAMAGE, new MinMax(10, 16));
+        enchantMap.put(Item.ArmorAttributeType.BLOCK, new MinMax(6, 12));
+        enchantMap.put(Item.ArmorAttributeType.DODGE, new MinMax(6, 12));
+        enchantMap.put(Item.ArmorAttributeType.DEXTERITY, new MinMax(150, 250));
+        enchantMap.put(Item.ArmorAttributeType.VITALITY, new MinMax(150, 250));
+        enchantMap.put(Item.ArmorAttributeType.INTELLECT, new MinMax(150, 250));
+        enchantMap.put(Item.ArmorAttributeType.GEM_FIND, new MinMax(8, 20));
+        enchantMap.put(Item.ArmorAttributeType.ITEM_FIND, new MinMax(5, 10));
 
-        enchantMap.put(Item.WeaponAttributeType.ARMOR_PENETRATION, new MinMax(1, 5));
-        enchantMap.put(Item.WeaponAttributeType.ACCURACY, new MinMax(1, 5));
-        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(1, 5));
-        enchantMap.put(Item.WeaponAttributeType.CRITICAL_HIT, new MinMax(1, 5));
-        enchantMap.put(Item.WeaponAttributeType.LIFE_STEAL, new MinMax(1, 3));
-        enchantMap.put(Item.WeaponAttributeType.DAMAGE, new MinMax(1, 5));
+        enchantMap.put(Item.WeaponAttributeType.ARMOR_PENETRATION, new MinMax(5, 15));
+        enchantMap.put(Item.WeaponAttributeType.ACCURACY, new MinMax(10, 20));
+        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(8, 12));
+        enchantMap.put(Item.WeaponAttributeType.CRITICAL_HIT, new MinMax(8, 15));
+        enchantMap.put(Item.WeaponAttributeType.LIFE_STEAL, new MinMax(8, 14));
+        enchantMap.put(Item.WeaponAttributeType.DAMAGE, new MinMax(40, 80));
     }
 
     public RandomEnchantTrinketDataRare(Item.AttributeType type, int min, int max) {
