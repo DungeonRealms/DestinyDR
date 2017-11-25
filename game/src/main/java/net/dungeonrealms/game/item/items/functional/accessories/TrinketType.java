@@ -49,8 +49,11 @@ public enum TrinketType {
             Trinket.DUNGEON_TELEPORT,
             Trinket.REDUCED_BOOK_COOLDOWN)),
     COMBAT("Circlet", new MaterialData(Material.SHEARS, (byte) 4),
-            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT, Trinket.COMBAT_SPEED,
-            Trinket.COMBAT_SLOW_RESIST, Trinket.COMBAT_LIFESTEAL, Trinket.COMABT_DURABILITY)),
+            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT, Trinket.COMABT_RARE_ENERGY, Trinket.COMABT_RARE_HEALTH, Trinket.COMABT_RARE_ARMOR,
+            Trinket.COMABT_RARE_BLOCK, Trinket.COMABT_RARE_DODGE, Trinket.COMABT_RARE_DEX, Trinket.COMABT_RARE_VIT, Trinket.COMABT_RARE_INT,
+            Trinket.COMABT_RARE_FIRE_RES, Trinket.COMABT_RARE_POISON_RES, Trinket.COMABT_RARE_ICE_RES, Trinket.COMABT_RARE_GEM_FIND, Trinket.COMABT_RARE_ITEM_FIND,
+            Trinket.COMABT_RARE_ITEM_FIND, Trinket.COMABT_RARE_ARMOR_PEN, Trinket.COMABT_RARE_ACCURACY, Trinket.COMABT_RARE_BLIND, Trinket.COMABT_RARE_CRIT,
+            Trinket.COMABT_RARE_LIFE_STEAL, Trinket.COMABT_RARE_DAMAGE, Trinket.COMBAT_SLOW_RESIST, Trinket.COMBAT_LIFESTEAL, Trinket.COMBAT_DURABILITY, Trinket.COMBAT_SPEED)),
 
     VOTE_CRATE("Circlet", new MaterialData(Material.SHEARS, (byte)4), ChatColor.YELLOW, Lists.newArrayList(Trinket.REDUCED_REPAIR));
 

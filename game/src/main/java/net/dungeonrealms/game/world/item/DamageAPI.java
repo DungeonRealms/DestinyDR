@@ -100,7 +100,7 @@ public class DamageAPI {
                 if (removeDurability) {
                     double durabilityLoss = 1.0;
 
-                    if(Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMABT_DURABILITY)) //Reduce dura if player has trinket
+                    if(Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY)) //Reduce dura if player has trinket
                         durabilityLoss = 0.5;
 
                     if (!defender.isPlayer()) { //ONLY FOR MOBS!
@@ -108,7 +108,7 @@ public class DamageAPI {
                         int mobTier = EntityAPI.getTier(defender.getEntity());
 
                         int tierDif = weaponTier - mobTier;
-                        if (tierDif > 1 && !Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMABT_DURABILITY)) //Reduce dura if player has trinket
+                        if (tierDif > 1 && !Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY)) //Reduce dura if player has trinket
                             durabilityLoss = 2 * (tierDif - 1);
                     }
                     weapon.damageItem(attacker.getPlayer(), durabilityLoss);
@@ -756,7 +756,7 @@ public class DamageAPI {
     public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {
         double durability = 1.0;
         if (takeDura)
-            if (Trinket.hasActiveTrinket(player, Trinket.COMABT_DURABILITY))
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
             durability = 0.5;
 
             bow.damageItem(player, durability);

@@ -33,7 +33,7 @@ public class RandomEnchantTrinketData extends EnchantTrinketData {
 
         enchantMap.put(Item.WeaponAttributeType.ARMOR_PENETRATION, new MinMax(1, 5));
         enchantMap.put(Item.WeaponAttributeType.ACCURACY, new MinMax(1, 5));
-        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(1, 10));
+        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(1, 5));
         enchantMap.put(Item.WeaponAttributeType.CRITICAL_HIT, new MinMax(1, 5));
         enchantMap.put(Item.WeaponAttributeType.LIFE_STEAL, new MinMax(1, 3));
         enchantMap.put(Item.WeaponAttributeType.DAMAGE, new MinMax(1, 5));
