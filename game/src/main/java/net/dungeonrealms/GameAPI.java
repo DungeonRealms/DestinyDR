@@ -54,6 +54,7 @@ import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
+import net.dungeonrealms.game.mechanic.rifts.WorldRift;
 import net.dungeonrealms.game.miscellaneous.PlayerShardEvent;
 import net.dungeonrealms.game.player.altars.AltarManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -1511,6 +1512,15 @@ public class GameAPI {
         final JSONMessage message = new JSONMessage("To see the rules page click ", ChatColor.GREEN);
         message.addURL(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.GREEN, "http://www.dungeonrealms.net/forum/m/20125238/viewthread/31206040-game-rules");
         message.sendToPlayer(player);
+    }
+
+    public static void sendRiftMessage(Player player) {
+        WorldRift active = RiftMechanics.getInstance().getActiveRift();
+        if (active != null) {
+            player.sendMessage(ChatColor.BOLD + ChatColor.RED.toString() + "Current Active Rift: " + active.getNearbyCity());
+        } else {
+            player.sendMessage( ChatColor.BOLD + ChatColor.RED.toString() + "No Current Active Rifts.");
+        }
     }
 
     public static boolean isMainWorld(World world) {
