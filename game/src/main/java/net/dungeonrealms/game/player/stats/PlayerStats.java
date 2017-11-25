@@ -80,7 +80,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getSwordDMG(boolean temp) {
-        return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.02);
+        return ((temp ? getTempStat(Stats.VITALITY) : getStat(Stats.VITALITY)) * 0.03);
     }
 
     public double getBlock(boolean temp) {
@@ -120,7 +120,7 @@ public class PlayerStats implements LoadableData, SaveableData {
 //     }
     
     public double getVSMonsters (boolean temp) {
-        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.035);
+        return ((temp ? getTempStat(Stats.DEXTERITY) : getStat(Stats.DEXTERITY)) * 0.02);
     }
 
     public double getDodge(boolean temp) {

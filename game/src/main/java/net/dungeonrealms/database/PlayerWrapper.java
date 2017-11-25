@@ -1305,7 +1305,7 @@ public class PlayerWrapper {
 
             getAttributes().addStat(Item.ArmorAttributeType.DODGE, (int) (dexterity * .03));
             getAttributes().addStat(Item.ArmorAttributeType.DAMAGE, (int) (dexterity * .03));
-            getAttributes().addStat(WeaponAttributeType.VS_MONSTERS, (int) (dexterity * .035));
+            getAttributes().addStat(WeaponAttributeType.VS_MONSTERS, (int) (dexterity * .02));
 
 
         }

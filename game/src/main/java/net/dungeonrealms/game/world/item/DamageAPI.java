@@ -126,7 +126,7 @@ public class DamageAPI {
                     damage = damage * (1 + (strValue * 0.0003));
                 } else if (type == ItemType.SWORD) {
                     int vitValue = attacker.getAttributes().getAttribute(ArmorAttributeType.VITALITY).getValue();
-                    damage = damage * (1 + (vitValue * 0.0002));
+                    damage = damage * (1 + (vitValue * 0.0003));
                 } else if (type == ItemType.POLEARM) {
                     int strValue = attacker.getAttributes().getAttribute(ArmorAttributeType.STRENGTH).getValue();
                     damage = damage * (1 + (strValue * 0.0002));
