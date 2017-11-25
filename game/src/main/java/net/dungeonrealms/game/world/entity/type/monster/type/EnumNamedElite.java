@@ -41,6 +41,7 @@ public enum EnumNamedElite {
     MOTHER_OF_DOOM("Mother of Doom", 4, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, -191, 144, -3621, 1200, 2),
     BLOOD_BUTCHER("Blood Butcher", 4, EnumMonster.Skeleton1, CustomEntityType.MELEE_WITHER, 230, 35, -3542, 2600, 1), //Better then blayshan pretty much
     AZEMAR("Azemar The Great", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -465, 27, 1512, 2600, 1),
+    DARK("The Dark One", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1518, 49, 722, 2600, 1),
 
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.BOW_SKELETON, -411, 33, -3487, 1800, 1),
