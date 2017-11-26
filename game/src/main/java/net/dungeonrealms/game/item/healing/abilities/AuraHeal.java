@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.healing.Healing;
 import net.dungeonrealms.game.item.healing.HealingAbility;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -80,9 +81,11 @@ public class AuraHeal extends Healing {
         } else {
         Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE AURA HEAL FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
         }
-
+        GamePlayer playerGP = GameAPI.getGamePlayer(player);
         if (affected) {
             CombatLog.addToPVP(player);
+            KarmaHandler.update(player);
+            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
             MountUtils.removeMount(player);
         }
         else {

@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.healing.Healing;
 import net.dungeonrealms.game.item.healing.HealingAbility;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -62,7 +63,10 @@ public class MendWounds extends Healing {
                     KarmaHandler.update(player);
                 }
             }
+            GamePlayer playerGP = GameAPI.getGamePlayer(player);
 
+            KarmaHandler.update(player);
+            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
             CombatLog.addToPVP(player);
             MountUtils.removeMount(player);
 

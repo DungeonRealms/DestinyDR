@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
 import net.dungeonrealms.game.item.healing.Healing;
 import net.dungeonrealms.game.item.healing.HealingAbility;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -70,9 +71,11 @@ public class WitheringPulse extends Healing {
             }
         }
 
+        GamePlayer playerGP = GameAPI.getGamePlayer(player);
         if (affected) {
             CombatLog.addToPVP(player);
             KarmaHandler.update(player);
+            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
             MountUtils.removeMount(player);
         }
 
