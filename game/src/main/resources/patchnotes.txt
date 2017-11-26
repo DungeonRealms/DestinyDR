@@ -19,7 +19,7 @@ Build <build>
  - Reduced Repair Rates.
  - Loot tables were rebalanced.
  - Tattered parchment drop chance increased by about 50%.
- - Added 3 new elite sets for: Yahova, Azemar, RedBeard, and The Dark One.
+ - Added 4 new elite sets for: Yahova, Azemar, RedBeard, and The Dark One.
 
 
 
