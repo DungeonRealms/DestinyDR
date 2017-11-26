@@ -412,18 +412,10 @@ public abstract class ItemGear extends ItemGeneric {
                 ModifierCondition mc = im.tryModifier(meta, getTier(), getRarity());
 
                 //Cant apply this?
-                if (im.getCurrentAttribute() instanceof Item.ArmorAttributeType && !((Item.ArmorAttributeType) im.getCurrentAttribute()).isIncludeOnGen())
-                    continue;
+                if(im.getCurrentAttribute() instanceof Item.ArmorAttributeType && !((Item.ArmorAttributeType)im.getCurrentAttribute()).isIncludeOnGen())continue;
 
                 if (mc != null) {
-                    net.minecraft.server.v1_9_R2.ItemStack stripped = CraftItemStack.asNMSCopy(getItem().clone());
-                    if(stripped.hasTag()) {
-                        boolean isHealerItem = stripped.getTag().hasKey("setBonus") && stripped.getTag().getString("setBonus").equals("healer");
-                        if ((im.getCurrentAttribute() == AttributeType.getByName("lastStand") || im.getCurrentAttribute() == AttributeType.getByName("luck") || im.getCurrentAttribute() == AttributeType.getByName("potency")) && !isHealerItem) {
-                            continue;
-                        }
-                        attemptAddModifier(conditionMap, mc, im, rand, isReroll);
-                    }
+                    attemptAddModifier(conditionMap, mc, im, rand, isReroll);
                 }
             }
         }

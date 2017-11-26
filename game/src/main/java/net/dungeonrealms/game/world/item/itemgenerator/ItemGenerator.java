@@ -276,9 +276,9 @@ public class ItemGenerator {
         am.new Thorns();
         am.new ShieldHP();
         am.new ShieldAbsorb();
-        am.new Potency();
-        am.new Luck();
-        am.new LastStand();
+        //am.new Potency();
+        //am.new Luck();
+        //am.new LastStand();
 
         //outprintValues();
     }
