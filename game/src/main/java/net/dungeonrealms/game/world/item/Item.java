@@ -634,12 +634,12 @@ public class Item {
         POISON_RESISTANCE("POISON RESISTANCE: ", "%", "poisonResistance", "Poison Resist", "", 7),
         GEM_FIND("GEM FIND: ", "%", "gemFind", "", "Golden", "Pickpocketing", 8),
         ITEM_FIND("ITEM FIND: +", "%", "itemFind", "", "Treasure", 9),
+        POTENCY("POTENCY: +", "%", "potency", "Potent", "", 1),
+        LUCK("LUCK: +", "%", "luck", "Lucky", "luck", 1),
+        LAST_STAND("LAST STAND: +", "%", "lastStand", "Hardy", "", 1),
         MELEE_ABSORBTION("MELEE ABSORB: +", "%", "meleeAbsorb", 100, true, "", "Melee Absorption", "", 11),
         MAGE_ABSORBTION("MAGIC ABSORB: +", "%", "mageAbsorb", 100, true, "", "Magic Absorption", "", 11),
-        RANGE_ABSORBTION("RANGE ABSORB: +", "%", "rangeAbsorb", 100, true, "", "Range Absorption", "", 11),
-        POTENCY("Potency: +", "%", "potency", 0, false, false, false, "", "Potent", "", 1),
-        LUCK("Luck: +", "%", "luck", 0, false, false, false, "", "Lucky", "", 1),
-        LAST_STAND("Last Stand: +", "%", "lastStand", 0, false, false, false, "", "Hardy", "", 1);
+        RANGE_ABSORBTION("RANGE ABSORB: +", "%", "rangeAbsorb", 100, true, "", "Range Absorption", "", 11);
 
         @Getter
         private String prefix;

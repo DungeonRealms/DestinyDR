@@ -15,10 +15,12 @@ Build <build>
  - Added new Crafting Recipes to the Altar.
  - Added new quest for the Healer Wand.
  - Added Healer Set Bonus.
+ - Added new Healer atributes, only obtainable through orbing Healer Items.
  - Reduced Repair Rates.
  - Loot tables were rebalanced.
  - Tattered parchment drop chance increased by about 50%.
- - Added 3 new elite sets for: Yahova, Azemar, and The Dark One.
+ - Added 3 new elite sets for: Yahova, Azemar, RedBeard, and The Dark One.
+
 
 
 &lThe Map Expansion

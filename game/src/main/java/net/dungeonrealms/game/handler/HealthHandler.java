@@ -523,12 +523,14 @@ public class HealthHandler implements GenericMechanic {
 
         if (newHP <= 0) {
             //Going to die? Check Last Stand
-            int lastStand = defender.getAttributes().getAttribute(ArmorAttributeType.LAST_STAND).getValue();
-            if (lastStand >= ThreadLocalRandom.current().nextInt(100)) {
-                newHP = getMaxHP(player) / 2;
-                System.out.println("Procing Last Man Stand for " + player.getName());
-                ParticleAPI.spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 30, .4F, .1F);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2, .9F);
+            if(SetBonus.hasSetBonus(player, SetBonuses.HEALER)) {
+                int lastStand = defender.getAttributes().getAttribute(ArmorAttributeType.LAST_STAND).getValue();
+                if (lastStand >= ThreadLocalRandom.current().nextInt(100)) {
+                    newHP = getMaxHP(player) / 2;
+                    System.out.println("Procing Last Man Stand for " + player.getName());
+                    ParticleAPI.spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 30, .4F, .1F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2, .9F);
+                }
             }
         }
 
