@@ -46,8 +46,7 @@ public enum TrinketType {
             Trinket.RIFT_LAVA_TRAIL,
             Trinket.RIFT_DAMAGE_INCREASE,
             Trinket.UPCOMING_RIFT,
-            Trinket.DUNGEON_TELEPORT,
-            Trinket.REDUCED_BOOK_COOLDOWN)),
+            Trinket.DUNGEON_TELEPORT)),
     COMBAT("Circlet", new MaterialData(Material.SHEARS, (byte) 4),
             ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT_SLOW_RESIST, Trinket.COMBAT_LIFESTEAL, Trinket.COMBAT_DURABILITY, Trinket.COMBAT_SPEED, Trinket.COMBAT_RARE, Trinket.COMBAT)),
 
