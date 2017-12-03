@@ -9,7 +9,7 @@ Build <build>
  - Added new rarities to trinkets.
  - Added new commands /bufftime and /rifttime
  - Fixed TP Book drops.
- - Updated and readjusted some elite's damges.
+ - Updated and readjusted some elite's damages.
  - Updated Rules Page.
  - Added new Crafting Recipes section to character journal.
  - Added new Crafting Recipes to the Altar.
@@ -19,6 +19,7 @@ Build <build>
  - Loot tables were rebalanced.
  - Tattered parchment drop chance increased by about 50%.
  - Added 4 new elite sets for: Yahova, Azemar, RedBeard, and The Dark One.
+ - Updated rift ring drop chance across the board.
 
 
 
