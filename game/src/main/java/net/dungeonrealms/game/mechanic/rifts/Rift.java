@@ -129,7 +129,7 @@ public class Rift {
                 minion.getWorld().dropItem(minion.getLocation().add(0, 1, 0), shield);
             }
 
-            double chance = getTier() == 1 ? .01 : getTier() == 2 ? .5 : getTier() == 3 ? 2 : getTier() == 4 ? 4 : getTier() == 5 ? 8 : 0;
+            double chance = getTier() == 1 ? 1 : getTier() == 2 ? 2 : getTier() == 3 ? 3 : getTier() == 4 ? 8 : getTier() == 5 ? 15 : 0;
             if (ThreadLocalRandom.current().nextDouble(100) <= chance) {
                 minion.getWorld().dropItem(minion.getLocation(), new TrinketItem(TrinketType.RIFT_RING).generateItem());
                 minion.getWorld().playSound(minion.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 3, 1);
