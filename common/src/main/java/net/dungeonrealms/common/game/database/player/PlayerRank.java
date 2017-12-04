@@ -12,9 +12,9 @@ public enum PlayerRank {
     SUB("S", ChatColor.GREEN, "Subscriber"),
     SUB_PLUS("S+", ChatColor.GOLD, "Subscriber+"),
     SUB_PLUS_PLUS("S++",ChatColor.YELLOW, "Subscriber++"),
-    YOUTUBER("YT", ChatColor.RED, "YouTuber"),
+//    YOUTUBER("YT", ChatColor.RED, "YouTuber"),
     BUILDER("BLD", ChatColor.DARK_GREEN, "Builder"),
-    PARTNER("PTNR", ChatColor.DARK_GREEN, "Partner"),
+//    PARTNER("PTNR", ChatColor.DARK_GREEN, "Partner"),
     HIDDEN_MOD("S+", ChatColor.GREEN, "Subscriber"),
     PMOD("PMOD", ChatColor.WHITE, "WHITE", "Player Moderator",
             "nocheatplus.notify", "nocheatplus.command.notify", "nocheatplus.command.info", "nocheatplus.command.inspect"),
@@ -28,7 +28,7 @@ public enum PlayerRank {
             "bukkit.command.kick"),
    // CM("CM", ChatColor.AQUA, "Community Manager"),
     HEADGM("GM", ChatColor.AQUA, "Head Game Master"),
-    SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
+//    SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
     DEV("DEV", ChatColor.DARK_AQUA, "PURPLE", "Developer", "bukkit.command.*");
 
     private String prefix;
