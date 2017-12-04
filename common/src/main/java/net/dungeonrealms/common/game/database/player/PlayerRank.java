@@ -26,7 +26,7 @@ public enum PlayerRank {
             "bukkit.command.gamemode",
             "minecraft.command.gamemode",
             "bukkit.command.kick"),
-    CM("CM", ChatColor.AQUA, "Community Manager"),
+   // CM("CM", ChatColor.AQUA, "Community Manager"),
     HEADGM("GM", ChatColor.AQUA, "Head Game Master"),
     SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
     DEV("DEV", ChatColor.DARK_AQUA, "PURPLE", "Developer", "bukkit.command.*");
