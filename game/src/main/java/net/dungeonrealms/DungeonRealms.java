@@ -607,9 +607,9 @@ public class DungeonRealms extends JavaPlugin {
     	return isShard(ShardType.DEVELOPMENT);
     }
 
-    public static boolean isYoutube() {
-    	return isShard(ShardType.YOUTUBE);
-    }
+//    public static boolean isYoutube() {
+//    	return isShard(ShardType.YOUTUBE);
+//    }
 
     public static boolean isBeta() {
     	return isShard(ShardType.BETA);

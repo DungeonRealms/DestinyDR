@@ -66,7 +66,7 @@ public enum ShardInfo implements Serializable {
     public enum ShardType {
 
     	DEFAULT("", ChatColor.YELLOW, "END_CRYSTAL"),
-    	YOUTUBE("YouTubers Only", ChatColor.RED, PlayerRank.YOUTUBER, "REDSTONE"),
+//    	YOUTUBE("YouTubers Only", ChatColor.RED, PlayerRank.YOUTUBER, "REDSTONE"),
     	SUPPORT("Support Agents Only", ChatColor.BLUE, PlayerRank.SUPPORT,"PRISMARINE_SHARD"),
     	DEVELOPMENT("", ChatColor.AQUA, PlayerRank.BUILDER, "DIAMOND", "Please be aware your data is seperate from the live servers."),
     	BETA("Test new and experimental content early.", ChatColor.DARK_RED, "TNT", "You will be testing a " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " version of Dungeon Realms with " + ChatColor.UNDERLINE + "experimental" + ChatColor.GRAY + " content. The point of this Shard is to find any remaining issues within this massive code overhaul.", "", "Please report bugs to a GM or Developer on DISCORD or through the forums."),

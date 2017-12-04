@@ -28,7 +28,7 @@ public enum PlayerRank {
             "bukkit.command.kick"),
    // CM("CM", ChatColor.AQUA, "Community Manager"),
     HEADGM("GM", ChatColor.AQUA, "Head Game Master"),
-//    SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
+    SUPPORT("SUPPORT", ChatColor.BLUE, "Support Agent"),
     DEV("DEV", ChatColor.DARK_AQUA, "PURPLE", "Developer", "bukkit.command.*");
 
     private String prefix;
