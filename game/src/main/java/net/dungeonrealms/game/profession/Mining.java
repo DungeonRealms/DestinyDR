@@ -349,6 +349,7 @@ public class Mining implements GenericMechanic, Listener {
     }
 
     public ItemStack createTreasureFindItem(MiningTier tier, ItemPickaxe pick) {
+        // TODO : Change this loot.
         Random r = ThreadLocalRandom.current();
         //FOOD, ORE, POTIONS, ENCHANT SCROLLS, ORB OF FLIGHT, ORB OF ALT .001%, PROF_EXP LAMP?
         if (r.nextInt(500) == 5) {
