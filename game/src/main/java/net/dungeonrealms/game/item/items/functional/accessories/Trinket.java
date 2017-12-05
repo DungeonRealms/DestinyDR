@@ -28,7 +28,7 @@ public enum Trinket {
     FISH_HP_FISH(Item.ItemRarity.RARE, null, "Healing", new AbstractTrinketData("Increase HP fish caught by 10%"), 3),
     FISH_SPEED_FISH(Item.ItemRarity.RARE, null, "Haste", new AbstractTrinketData("Increase speed fish caught by 10%"), 3),
     FISH_ONE_TYPE(Item.ItemRarity.RARE, null, "Scrupulous", new AbstractTrinketData("Only fish one type of fish"), 3),
-
+//
 
     NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 1),
     MINE_TREASURE_FIND(Item.ItemRarity.UNCOMMON, "Lucky", new EnchantTrinketData(Item.PickaxeAttributeType.TREASURE_FIND, 1, 1), 20),
