@@ -27,7 +27,7 @@ public enum Trinket {
     FISH_NIGHT_SUCCESS(Item.ItemRarity.COMMON, null, "the Moon", new AbstractTrinketData("Better Fishing during the Night"), 20),
     FISH_HP_FISH(Item.ItemRarity.RARE, null, "Healing", new AbstractTrinketData("Increase HP fish caught by 10%"), 3),
     FISH_SPEED_FISH(Item.ItemRarity.RARE, null, "Haste", new AbstractTrinketData("Increase speed fish caught by 10%"), 3),
-    FISH_ONE_TYPE(Item.ItemRarity.RARE, null, "Scrupulous", new AbstractTrinketData("Only fish one type of fish"), 3),
+    //FISH_ONE_TYPE(Item.ItemRarity.RARE, null, "Scrupulous", new AbstractTrinketData("Only fish one type of fish"), 3),
 
 
     NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 1),
@@ -43,9 +43,9 @@ public enum Trinket {
     INCREASED_RIFT(Item.ItemRarity.RARE, "Lucky", new AbstractTrinketData("2-4 Rift Shards per Rift Walker"), 10),
     UPCOMING_RIFT(Item.ItemRarity.RARE, null, "Clairvoyance", new AbstractTrinketData("Ability to detect upcoming Rift Locations"), 3),
     RIFT_DAMAGE_INCREASE(Item.ItemRarity.UNCOMMON, "Menacing", new AbstractTrinketData("Increased Damage to Rift Enemies"), 10),
-    REDUCED_BOOK_COOLDOWN(Item.ItemRarity.UNCOMMON, "Expedited", new AbstractTrinketData("Reduce Teleport Book Delay by 20%"), 10),
     DUNGEON_TELEPORT(Item.ItemRarity.UNCOMMON, "Teleporting", "Forgiveness", new AbstractTrinketData("TP to Party Members in Boss Rooms with /djoin"), 4),
 
+    //Special
     REDUCED_REPAIR(Item.ItemRarity.UNIQUE, "Forging", new AbstractTrinketData("Repairing items is now 50% cheaper"), 1),
     COMBAT_SPEED(Item.ItemRarity.UNIQUE, "Agile", new AbstractTrinketData("10% chance to get speed 2 on hit"), 1),
     COMBAT_SLOW_RESIST(Item.ItemRarity.UNIQUE, "Resistant", new AbstractTrinketData("Resistant to all incoming slows"), 1),

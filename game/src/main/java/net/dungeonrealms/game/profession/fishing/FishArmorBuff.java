@@ -46,23 +46,16 @@ public class FishArmorBuff extends FishBuff {
 	@Override
 	protected void generateVal() {
 		int t = getTier().getTier();
-		int min = 1;
-		int max = 0;
 		if (t == 1) {
-			max = 2;
+			setValue(2);
 		} else if (t == 2) {
-			min = 2;
-			max = 3;
+			setValue(3);
 		} else if (t == 3) {
-			min = 4;
-			max = 6;
+			setValue(5);
 		} else if (t == 4) {
-			min = 7;
-			max = 9;
+			setValue(8);
 		} else if (t == 5) {
-			min = 8;
-			max = 10;
+			setValue(9);
 		}
-		setValue(Utils.randInt(min, max));
 	}
 }

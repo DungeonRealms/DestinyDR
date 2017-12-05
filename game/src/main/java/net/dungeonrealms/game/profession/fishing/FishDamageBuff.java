@@ -42,15 +42,15 @@ public class FishDamageBuff extends FishBuff {
 	protected void generateVal() {
 		int t = getTier().getTier();
 		if (t == 1) {
-			setValue(Utils.randInt(1, 2));
+			setValue(2);
 		} else if (t == 2) {
-			setValue(Utils.randInt(3, 4));
+			setValue(4);
 		} else if (t == 3) {
-			setValue(Utils.randInt(4, 6));
+			setValue(5);
 		} else if (t == 4) {
-			setValue(Utils.randInt(7, 9));
-		} else if (t == 5) {
-			setValue(Utils.randInt(12, 14));
+			setValue(8);
+		} else {
+			setValue(13);
 		}
 	}
 }
