@@ -527,6 +527,9 @@ public interface DRMonster {
             case Blaze:
                 drop = new ItemFireDust().generateItem();
                 break;
+            case MagmaCube:
+                drop = new ItemFireDust().generateItem();
+                break;
             case Nymph:
                 drop = new ItemFairyDust().generateItem();
                 break;
