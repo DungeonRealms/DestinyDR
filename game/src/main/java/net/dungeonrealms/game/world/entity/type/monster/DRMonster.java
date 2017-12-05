@@ -554,6 +554,9 @@ public interface DRMonster {
             case Acolyte:
                 drop = new ItemSacrificialHeart().generateItem();
                 break;
+            case Monk:
+                drop = new ItemSacrificialHeart().generateItem();
+                break;
             case Imp:
                 drop = new ItemImpEye().generateItem();
                 break;
