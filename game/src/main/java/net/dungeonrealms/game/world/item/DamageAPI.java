@@ -18,6 +18,7 @@ import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.mastery.AttributeList;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
@@ -293,6 +294,14 @@ public class DamageAPI {
             if (!isBlocking) reductionPercent /= 2;
             double damageReduction = reductionPercent / 100.0;
             damage = damage * (1 - damageReduction);
+        }
+
+        // MARKSMAN BOW DAMAGE //
+        GamePlayer defenderGP = GameAPI.getGamePlayer(defender.getPlayer());
+        if(defenderGP.isMarksmanTagged()) {
+            int marksmanBonus = ((int)(attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValue() * damage) / 100);
+
+            damage+= marksmanBonus;
         }
 
 
@@ -675,7 +684,6 @@ public class DamageAPI {
                 totalArmorReduction *= LEVEL_REDUCTION[potionTier];
         }
 
-
         res.setDamage(Math.max(1, damage));
         res.setTotalArmor(totalArmor);
         res.setTotalArmorReduction(totalArmorReduction);
@@ -765,6 +773,19 @@ public class DamageAPI {
         fireBowProjectile(player, bow);
     }
 
+    //Change this later
+    public static void fireMarksmanBowProjectile(Player player, ItemWeaponMarksmanBow bow, boolean takeDura) {
+        double durability = 1.0;
+        if (takeDura)
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
+                durability = 0.5;
+
+        bow.damageItem(player, durability);
+        PlayerWrapper.getWrapper(player).calculateAllAttributes();
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+        fireMarksmanBowProjectile(player, bow);
+    }
+
     public static void fireBowProjectile(LivingEntity ent, ItemWeaponBow bow) {
 
         Projectile projectile = null;
@@ -779,6 +800,22 @@ public class DamageAPI {
                 }
             }
         }
+
+        if (projectile == null)
+            projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, Arrow.class, 100D);
+//        projectile = ent.launchProjectile(Arrow.class);
+
+        projectile.setBounce(false);
+        projectile.setVelocity(projectile.getVelocity().multiply(1.15));
+        projectile.setShooter(ent);
+        ((CraftArrow) projectile).getHandle().fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
+        MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
+    }
+
+    //Change this later
+    public static void fireMarksmanBowProjectile(LivingEntity ent, ItemWeaponMarksmanBow bow) {
+
+        Projectile projectile = null;
 
         if (projectile == null)
             projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, Arrow.class, 100D);
@@ -896,6 +933,11 @@ public class DamageAPI {
     public static boolean isBowProjectile(Entity entity) {
         EntityType type = entity.getType();
         return type == EntityType.ARROW || type == EntityType.TIPPED_ARROW;
+    }
+
+    public static boolean isMarksmanBowProjectile(Entity entity) {
+        EntityType type = entity.getType();
+        return type == EntityType.ARROW;
     }
 
     /**

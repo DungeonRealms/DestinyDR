@@ -20,16 +20,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class PvPListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackPlayer(EntityDamageByEntityEvent event) {
         boolean isProjectile = DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager());
+        boolean isMarksmanProjectile = DamageAPI.isMarksmanBowProjectile(event.getDamager());
         boolean isPlayer = GameAPI.isPlayer(event.getDamager()) && GameAPI.isPlayer(event.getEntity());
 
         Projectile projectile = isProjectile ? (Projectile) event.getDamager() : null;
@@ -138,6 +141,16 @@ public class PvPListener implements Listener {
 
             if (!isProjectile)
                 DamageAPI.handlePolearmAOE(event, Math.max(1, res.getDamage() / 2), attacker);
+
+            GamePlayer defenderGP = GameAPI.getGamePlayer(defender);
+
+            if(isMarksmanProjectile && !defenderGP.isMarksmanTagged()) {
+                defenderGP.setMarksmanTaggedUntil(System.currentTimeMillis() + 1000 * 8L);
+                if(defenderGP.isMarksmanTagged()) {
+                    defender.setGlowing(true);
+                }
+            }
+
         }
     }
 }

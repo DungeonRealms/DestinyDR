@@ -243,6 +243,8 @@ public class ItemGenerator {
         wm.new AxeDamage();
         wm.new PolearmDamage();
         wm.new BowDamage();
+        wm.new MarksmanBowDamage();
+        wm.new marksmanBowGlow();
         wm.new Elemental();
         wm.new ElementalBow();
         wm.new Knockback();
