@@ -21,6 +21,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.mechanic.data.MiningTier;
+import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.inventory.menus.guis.webstore.Purchaseables;
@@ -29,6 +30,7 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.PickaxeAttributeType;
+import net.dungeonrealms.game.mastery.RandomCollection;
 import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import org.bukkit.*;
@@ -55,6 +57,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.TreeMap;
+import java.util.NavigableMap;
 
 /**
  * Mining - Core listeners for the mining profession.
@@ -349,7 +353,7 @@ public class Mining implements GenericMechanic, Listener {
     }
 
     public ItemStack createTreasureFindItem(MiningTier tier, ItemPickaxe pick) {
-        // TODO : Change this loot.
+        /*
         Random r = ThreadLocalRandom.current();
         //FOOD, ORE, POTIONS, ENCHANT SCROLLS, ORB OF FLIGHT, ORB OF ALT .001%, PROF_EXP LAMP?
         if (r.nextInt(500) == 5) {
@@ -373,8 +377,113 @@ public class Mining implements GenericMechanic, Listener {
             List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.BAKED_POTATO, Material.APPLE, Material.BREAD, Material.PUMPKIN_PIE);
             return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
         }
-
+*/
 //        return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, 100 + r.nextInt(1000)).generateItem();
+        Random r = ThreadLocalRandom.current();
+        //GENERAL ROLL
+        int roll = r.nextInt(1000);
+        if (roll >= 980) { // HAT CHECK
+            ItemStack oreHelm = new ItemStack(tier.getOre());
+
+            ItemMeta im = oreHelm.getItemMeta();
+            im.setDisplayName(tier.getColor() + Utils.getItemName(oreHelm) + " Hat");
+            oreHelm.setItemMeta(im);
+            return oreHelm;
+        } else if (roll >= 200) { // FOOD ROLL
+            List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.PUMPKIN_PIE);
+            return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
+        } else { // LOOT ROLL
+            if(tier.getTier() == 1) {
+                RandomCollection<String> rc = new RandomCollection<String>()
+                        .add(27, "enchantArmor").add(27, "enchantWeapon")
+                        .add(26, "scrap").add(20, "prof");
+                String item = rc.next();
+                if (item.equals("enchantArmor")) {
+                    return new ItemEnchantArmor(ItemTier.TIER_1).generateItem();
+                } else if (item.equals("enchantWeapon")) {
+                    return new ItemEnchantWeapon(ItemTier.TIER_1).generateItem();
+                } else if (item.equals("scrap")) {
+                    ItemStack scrap = new ItemScrap(ScrapTier.TIER1).generateItem();
+                    scrap.setAmount(20);
+                    return scrap;
+                } else {
+                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                }
+            }
+            else if(tier.getTier() == 2) {
+                RandomCollection<String> rc = new RandomCollection<String>()
+                        .add(27, "enchantArmor").add(27, "enchantWeapon")
+                        .add(26, "scrap").add(20, "prof");
+                String item = rc.next();
+                if (item.equals("enchantArmor")) {
+                    return new ItemEnchantArmor(ItemTier.TIER_2).generateItem();
+                } else if (item.equals("enchantWeapon")) {
+                    return new ItemEnchantWeapon(ItemTier.TIER_2).generateItem();
+                } else if (item.equals("scrap")) {
+                    ItemStack scrap = new ItemScrap(ScrapTier.TIER2).generateItem();
+                    scrap.setAmount(20);
+                    return scrap;
+                } else {
+                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                }
+            }
+            else if(tier.getTier() == 3) {
+                RandomCollection<String> rc = new RandomCollection<String>()
+                        .add(25, "enchantArmor").add(25, "enchantWeapon")
+                        .add(25, "scrap").add(20, "prof").add(5, "orb");
+                String item = rc.next();
+                if (item.equals("enchantArmor")) {
+                    return new ItemEnchantArmor(ItemTier.TIER_3).generateItem();
+                } else if (item.equals("enchantWeapon")) {
+                    return new ItemEnchantWeapon(ItemTier.TIER_3).generateItem();
+                } else if (item.equals("scrap")) {
+                    ItemStack scrap = new ItemScrap(ScrapTier.TIER3).generateItem();
+                    scrap.setAmount(20);
+                    return scrap;
+                } else if (item.equals("orb")) {
+                    return new ItemOrb().generateItem();
+                } else {
+                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                }
+            }
+            else if(tier.getTier() == 4) {
+                RandomCollection<String> rc = new RandomCollection<String>()
+                        .add(23, "enchantArmor").add(23, "enchantWeapon")
+                        .add(24, "scrap").add(20, "prof").add(10, "orb");
+                String item = rc.next();
+                if (item.equals("enchantArmor")) {
+                    return new ItemEnchantArmor(ItemTier.TIER_4).generateItem();
+                } else if (item.equals("enchantWeapon")) {
+                    return new ItemEnchantWeapon(ItemTier.TIER_4).generateItem();
+                } else if (item.equals("scrap")) {
+                    ItemStack scrap = new ItemScrap(ScrapTier.TIER4).generateItem();
+                    scrap.setAmount(20);
+                    return scrap;
+                } else if (item.equals("orb")) {
+                    return new ItemOrb().generateItem();
+                } else {
+                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                }
+            } else {
+                RandomCollection<String> rc = new RandomCollection<String>()
+                        .add(20, "enchantArmor").add(20, "enchantWeapon")
+                        .add(20, "scrap").add(20, "prof").add(20, "orb");
+                String item = rc.next();
+                if (item.equals("enchantArmor")) {
+                    return new ItemEnchantArmor(ItemTier.TIER_5).generateItem();
+                } else if (item.equals("enchantWeapon")) {
+                    return new ItemEnchantWeapon(ItemTier.TIER_5).generateItem();
+                } else if (item.equals("scrap")) {
+                    ItemStack scrap = new ItemScrap(ScrapTier.TIER5).generateItem();
+                    scrap.setAmount(20);
+                    return scrap;
+                } else if (item.equals("orb")) {
+                    return new ItemOrb().generateItem();
+                } else {
+                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                }
+            }
+        }
     }
 
     @Override
