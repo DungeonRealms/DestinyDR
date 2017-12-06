@@ -49,6 +49,7 @@ public enum Trinket {
     REDUCED_REPAIR(Item.ItemRarity.UNIQUE, "Forging", new AbstractTrinketData("Repairing items is now 50% cheaper"), 1),
     COMBAT_SPEED(Item.ItemRarity.UNIQUE, "Agile", new AbstractTrinketData("10% chance to get speed 2 on hit"), 1),
     COMBAT_SLOW_RESIST(Item.ItemRarity.UNIQUE, "Resistant", new AbstractTrinketData("Resistant to all incoming slows"), 1),
+    COMBAT_DECREASED_BOW_SPEED(Item.ItemRarity.UNIQUE, "Quick Quiver", new AbstractTrinketData("Bows shoot much faster"), 1),
     COMBAT_LIFESTEAL(Item.ItemRarity.UNIQUE, "Vampyric", new AbstractTrinketData("Gain 20% lifesteal when below 25% of your max HP"), 1),
     COMBAT_DURABILITY(Item.ItemRarity.UNIQUE, "Durable", new AbstractTrinketData("Weapons now have double durability."), 1),
     COMBAT_RARE(Item.ItemRarity.RARE, null, new RandomEnchantTrinketDataRare(), 6),
