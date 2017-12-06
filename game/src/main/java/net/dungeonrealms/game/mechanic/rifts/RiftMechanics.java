@@ -74,7 +74,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
         return EnumPriority.CARDINALS;
     }
 
-    private int RESPAWN_TIME = 60 * 60;
+    private int RESPAWN_TIME = 45 * 60;
 
     //1 Hour
 //    private int RESPAWN_TIME = 5 * 60 + 20;
@@ -93,7 +93,7 @@ public class RiftMechanics implements GenericMechanic, Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
             if (spawnTimer <= 0) {
-                this.spawnTimer = RESPAWN_TIME + ThreadLocalRandom.current().nextInt(30) * 60; //1 - 1:30 hours.
+                this.spawnTimer = RESPAWN_TIME + ThreadLocalRandom.current().nextInt(30) * 60; // 45min - 1:15hr
                 this.spawnRift();
             } else {
                 spawnTimer--;
