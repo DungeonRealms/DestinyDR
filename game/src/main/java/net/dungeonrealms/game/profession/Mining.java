@@ -158,7 +158,13 @@ public class Mining implements GenericMechanic, Listener {
         e.getBlock().setType(Material.STONE);
 
         //  REPLACE ORE  //
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> e.getBlock().setType(oreTier.getOre()), oreTier.getOreRespawnTime() * 15);
+        if (Trinket.hasActiveTrinket(p, Trinket.ORE_RESPAWN, true) && rand.nextInt(10) == 0) {
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> e.getBlock().setType(oreTier.getOre()), 0);
+            p.playSound(block.getLocation(), Sound.BLOCK_NOTE_PLING, 1F, 0.75F);
+            pw.sendDebug(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "       The ore magically respawned!");
+        } else {
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> e.getBlock().setType(oreTier.getOre()), oreTier.getOreRespawnTime() * 15);
+        }
         double chance = rand.nextInt(100);
         if (TutorialIsland.onTutorialIsland(p.getLocation()) && Quests.getInstance().hasCurrentQuestObjective(p, "Tutorial Island", ObjectiveMineOre.class)) {
             chance = 1;

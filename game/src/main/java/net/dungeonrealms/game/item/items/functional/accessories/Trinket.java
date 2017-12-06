@@ -29,7 +29,7 @@ public enum Trinket {
     FISH_SPEED_FISH(Item.ItemRarity.RARE, null, "Haste", new AbstractTrinketData("Increase speed fish caught by 10%"), 3),
     //FISH_ONE_TYPE(Item.ItemRarity.RARE, null, "Scrupulous", new AbstractTrinketData("Only fish one type of fish"), 3),
 
-
+    ORE_RESPAWN(Item.ItemRarity.RARE, "Magical", new AbstractTrinketData("Ore comes back 10% of the time"), 1),
     NO_MINING_FATIGUE(Item.ItemRarity.RARE, "Haste", new AbstractTrinketData("No Mining Fatigue"), 1),
     MINE_TREASURE_FIND(Item.ItemRarity.UNCOMMON, "Lucky", new EnchantTrinketData(Item.PickaxeAttributeType.TREASURE_FIND, 1, 1), 20),
     MINE_GEM_FIND(Item.ItemRarity.UNCOMMON, "Opulent", new EnchantTrinketData(Item.PickaxeAttributeType.GEM_FIND, 1, 5), 20),
