@@ -83,6 +83,7 @@ public class PvPListener implements Listener {
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
                     CombatLog.addToMarksmanTag(defender);
                 }
+
             }
 
             if (!isDuel)
