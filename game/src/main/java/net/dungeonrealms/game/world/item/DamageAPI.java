@@ -24,6 +24,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -36,6 +37,7 @@ import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityArrow;
+import net.minecraft.server.v1_9_R2.EntitySpectralArrow;
 import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -43,6 +45,7 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftSpectralArrow;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -88,6 +91,7 @@ public class DamageAPI {
         }
 
         ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
+
         int weaponTier = weapon.getTier().getId();
         //  BASE DAMAGE  //
         double damage = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getValueInRange();
@@ -262,6 +266,10 @@ public class DamageAPI {
         if (!attacker.isPlayer())
             damage = Math.min(damage, weaponTier * 600);
 
+        if(CombatLog.isMarksmanTag(defender.getPlayer())) {
+            damage*=2;
+        }
+
         //  LIFESTEAL  //
 
         if (attacker.isPlayer() || res.getProjectile() != null && res.getProjectile().getShooter() instanceof Player) {
@@ -295,15 +303,6 @@ public class DamageAPI {
             double damageReduction = reductionPercent / 100.0;
             damage = damage * (1 - damageReduction);
         }
-
-        // MARKSMAN BOW DAMAGE //
-        GamePlayer defenderGP = GameAPI.getGamePlayer(defender.getPlayer());
-        if(defenderGP.isMarksmanTagged()) {
-            int marksmanBonus = ((int)(attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValue() * damage) / 100);
-
-            damage+= marksmanBonus;
-        }
-
 
         res.setDamage(damage);
         return;
@@ -818,13 +817,13 @@ public class DamageAPI {
         Projectile projectile = null;
 
         if (projectile == null)
-            projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, Arrow.class, 100D);
+            projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, SpectralArrow.class, 100D);
 //        projectile = ent.launchProjectile(Arrow.class);
 
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.15));
         projectile.setShooter(ent);
-        ((CraftArrow) projectile).getHandle().fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
+        ((CraftSpectralArrow) projectile).getHandle().fromPlayer = EntitySpectralArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
     }
 
@@ -937,7 +936,7 @@ public class DamageAPI {
 
     public static boolean isMarksmanBowProjectile(Entity entity) {
         EntityType type = entity.getType();
-        return type == EntityType.ARROW;
+        return type == EntityType.SPECTRAL_ARROW;
     }
 
     /**

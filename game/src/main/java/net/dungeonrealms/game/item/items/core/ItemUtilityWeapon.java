@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.item.items;
+package net.dungeonrealms.game.item.items.core;
 
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.items.core.CombatItem;
@@ -35,7 +35,7 @@ public class ItemUtilityWeapon extends CombatItem {
 
     @Override
     protected double getBaseRepairCost() {
-        return getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE).getMiddle() /  10;
+        return getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getMiddle() /  10;
     }
 
     @Override

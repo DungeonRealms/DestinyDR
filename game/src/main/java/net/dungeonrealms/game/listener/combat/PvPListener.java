@@ -31,7 +31,7 @@ public class PvPListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackPlayer(EntityDamageByEntityEvent event) {
-        boolean isProjectile = DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager());
+        boolean isProjectile = DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager()) || DamageAPI.isMarksmanBowProjectile(event.getDamager());
         boolean isMarksmanProjectile = DamageAPI.isMarksmanBowProjectile(event.getDamager());
         boolean isPlayer = GameAPI.isPlayer(event.getDamager()) && GameAPI.isPlayer(event.getEntity());
 
@@ -98,10 +98,19 @@ public class PvPListener implements Listener {
 
 
             GamePlayer damagerGP = GameAPI.getGamePlayer(attacker);
+            GamePlayer defenderGP = GameAPI.getGamePlayer(defender);
 
             //Dont tag them if they are in a duel..
             if (!isDuel) {
                 damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+
+                if(isMarksmanProjectile && !CombatLog.isMarksmanTag(defender)) {
+                    CombatLog.addToMarksmanTag(defender);
+                    CombatLog.updateMarksmanTag(defender);
+                    if(CombatLog.isMarksmanTag(defender)) {
+                        defender.setGlowing(true);
+                    }
+                }
             } else {
                 // Marks the player as not able to regen health while in a duel.
                 defender.setMetadata("lastDamageTaken", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -141,15 +150,6 @@ public class PvPListener implements Listener {
 
             if (!isProjectile)
                 DamageAPI.handlePolearmAOE(event, Math.max(1, res.getDamage() / 2), attacker);
-
-            GamePlayer defenderGP = GameAPI.getGamePlayer(defender);
-
-            if(isMarksmanProjectile && !defenderGP.isMarksmanTagged()) {
-                defenderGP.setMarksmanTaggedUntil(System.currentTimeMillis() + 1000 * 8L);
-                if(defenderGP.isMarksmanTagged()) {
-                    defender.setGlowing(true);
-                }
-            }
 
         }
     }

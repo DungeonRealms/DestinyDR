@@ -94,8 +94,6 @@ public class EntityMechanics implements GenericMechanic {
             if (TippedArrow.class.isAssignableFrom(projectile)) {
                 launch = new CustomEntityTippedArrow(world, shooter.getHandle());
                 ((EntityTippedArrow) launch).setType(CraftPotionUtil.fromBukkit(new PotionData(PotionType.WATER, false, false)));
-            } else if (SpectralArrow.class.isAssignableFrom(projectile)) {
-                launch = new EntitySpectralArrow(world, shooter.getHandle());
             } else {
                 launch = new CustomEntityTippedArrow(world, shooter.getHandle());
             }
@@ -104,6 +102,15 @@ public class EntityMechanics implements GenericMechanic {
                 ((EntityArrow) launch).setKnockbackStrength(0);
 
             ((EntityArrow) launch).a(shooter.getHandle(), shooter.getHandle().pitch, shooter.getHandle().yaw, 0.0F, 3.0F, 1.0F);
+        } else if(projectile.isAssignableFrom(SpectralArrow.class)) {
+            if(SpectralArrow.class.isAssignableFrom(projectile)) {
+                launch = new CustomEntitySpectralArrow(world, shooter.getHandle());
+            }
+
+            if (shooter.getHandle() instanceof DRMonster)
+                ((EntitySpectralArrow) launch).setKnockbackStrength(0);
+
+            ((EntitySpectralArrow) launch).a(shooter.getHandle(), shooter.getHandle().pitch, shooter.getHandle().yaw, 0.0F, 3.0F, 1.0F);
         }
 
         if (launch == null)

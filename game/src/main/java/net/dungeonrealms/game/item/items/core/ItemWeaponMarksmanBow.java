@@ -3,6 +3,7 @@ package net.dungeonrealms.game.item.items.core;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import net.minecraft.server.v1_9_R2.DataWatcher;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
@@ -34,7 +35,7 @@ public class ItemWeaponMarksmanBow extends ItemWeaponRanged{
 
     @Override
     public Sound getShootSound() {
-        return Sound.ENTITY_ARROW_SHOOT;
+        return Sound.ENTITY_ENDERDRAGON_SHOOT;
     }
 
     @Override
@@ -52,5 +53,9 @@ public class ItemWeaponMarksmanBow extends ItemWeaponRanged{
     @Override
     public int getRepairParticle(ScrapTier tier) {
         return 5;
+    }
+
+    public static void getDamageBoost(ItemWeaponMarksmanBow bow) {
+        bow.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST);
     }
 }

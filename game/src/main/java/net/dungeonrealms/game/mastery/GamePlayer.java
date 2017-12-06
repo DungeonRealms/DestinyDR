@@ -30,6 +30,8 @@ public class GamePlayer {
     private long pvpTaggedUntil;
     private long marksmanTaggedUntil;
 
+    private double markedPercentage;
+
     public GamePlayer(Player player) {
         this.player = player;
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
@@ -43,11 +45,6 @@ public class GamePlayer {
         this.pvpTaggedUntil = time;
     }
 
-    public void setMarksmanTaggedUntil(long time) {
-        if(!isMarksmanTagged())
-            TitleAPI.sendActionBar(getPlayer(), ChatColor.RED + "Marksman Tagged - " + ChatColor.BOLD + "8s", 4 * 20);
-    }
-
     public boolean isPvPTagged() {
         return pvpTaggedUntil > 0 && pvpTaggedUntil > System.currentTimeMillis();
     }
@@ -56,7 +53,14 @@ public class GamePlayer {
         return isPvPTagged() ? 0 : (int) (pvpTaggedUntil - System.currentTimeMillis()) / 1000;
     }
 
+    public void setMarksmanTaggedUntil(long time) {
+        if(!isMarksmanTagged())
+            TitleAPI.sendActionBar(getPlayer(), ChatColor.RED + "Marksman Tagged - " + ChatColor.BOLD + "10s", 4 * 20);
+        this.marksmanTaggedUntil = time;
+    }
+
     public boolean isMarksmanTagged() {
 	    return marksmanTaggedUntil > 0 && marksmanTaggedUntil > System.currentTimeMillis();
     }
+
 }

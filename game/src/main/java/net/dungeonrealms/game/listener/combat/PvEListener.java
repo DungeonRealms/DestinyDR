@@ -72,7 +72,7 @@ public class PvEListener implements Listener {
 
         if (GameAPI.isPlayer(event.getDamager())) {
             damager = (Player) event.getDamager();
-        } else if (DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager())) {
+        } else if (DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager()) || DamageAPI.isMarksmanBowProjectile(event.getDamager())) {
             ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
             if (!(shooter instanceof Player))
                 return;

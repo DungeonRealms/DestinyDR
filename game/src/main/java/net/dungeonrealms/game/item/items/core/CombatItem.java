@@ -4,7 +4,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import net.dungeonrealms.game.item.ItemType;
 
-import net.dungeonrealms.game.item.items.ItemUtilityWeapon;
 import org.bukkit.inventory.ItemStack;
 
 /**
