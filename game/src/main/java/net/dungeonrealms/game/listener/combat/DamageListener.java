@@ -611,7 +611,11 @@ public class DamageListener implements Listener {
 
         //  CHECK DELAY  //
         String delayMeta = "last" + weapon.getItemType().getNBT() + "Shoot";
-        if (player.hasMetadata(delayMeta) && System.currentTimeMillis() - player.getMetadata(delayMeta).get(0).asLong() < weapon.getShootDelay())
+        double delay =  weapon.getShootDelay();
+        if(Trinket.hasActiveTrinket(player,Trinket.COMBAT_DECREASED_BOW_SPEED)) {
+            delay = weapon.getShootDelay() * 0.80;
+        }
+        if (player.hasMetadata(delayMeta) && System.currentTimeMillis() - player.getMetadata(delayMeta).get(0).asLong() < delay)
             return;
 
         //  PREVENT SHOOTING IN SAFE ZONES  //
