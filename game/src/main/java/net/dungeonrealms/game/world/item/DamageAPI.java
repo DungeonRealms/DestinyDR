@@ -263,11 +263,21 @@ public class DamageAPI {
         }
 
         //  DAMAGE CAP  //
-        if (!attacker.isPlayer())
+        if (!attacker.isPlayer()) {
             damage = Math.min(damage, weaponTier * 600);
+        }
 
-        if(CombatLog.isMarksmanTag(defender.getPlayer())) {
-            damage*=2;
+        // MARKSMAN DAMAGE //
+        boolean isTagged = false;
+
+        if(defender.isPlayer()) {
+            if (CombatLog.isMarksmanTag(defender.getPlayer())) {
+                isTagged = true;
+            }
+            if (isTagged) {
+                damage*=2;
+                attacker.getPlayer().sendMessage("Marksman tagged, 2x extra DMG!");
+            }
         }
 
         //  LIFESTEAL  //

@@ -1788,6 +1788,11 @@ public class GameAPI {
         return val > System.currentTimeMillis() ? TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000) : null;
     }
 
+    public static Long getCooldownAsInt(Metadatable m, Metadata type) {
+        long val = type.get(m).asLong();
+        return val > System.currentTimeMillis() ? ((val - System.currentTimeMillis()) / 1000) : null;
+    }
+
     public static boolean isCooldown(Metadatable m, Metadata type) {
         return type.get(m).asLong() > System.currentTimeMillis();
     }

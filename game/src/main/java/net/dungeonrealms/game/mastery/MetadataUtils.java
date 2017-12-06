@@ -102,6 +102,8 @@ public class MetadataUtils {
 		STAFF_ENERGY_COOLDOWN(-1),
 		RIFT_COOLDOWN(-1),
 		REGEN_ABILITY(-1),
+		MARKSMAN_TAG(-1),
+		MARKSMAN_TAG_COOLDOWN(-1),
 		DEATH_COOLDOWN(-1);
 		
 		private Object defaultValue;

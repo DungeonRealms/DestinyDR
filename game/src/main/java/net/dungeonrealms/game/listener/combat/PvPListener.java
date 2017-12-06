@@ -79,6 +79,12 @@ public class PvPListener implements Listener {
 
             boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
 
+            if(isMarksmanProjectile) {
+                if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
+                    CombatLog.addToMarksmanTag(defender);
+                }
+            }
+
             if (!isDuel)
                 CombatLog.updatePVP(attacker);
 
@@ -98,19 +104,10 @@ public class PvPListener implements Listener {
 
 
             GamePlayer damagerGP = GameAPI.getGamePlayer(attacker);
-            GamePlayer defenderGP = GameAPI.getGamePlayer(defender);
 
             //Dont tag them if they are in a duel..
             if (!isDuel) {
                 damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-
-                if(isMarksmanProjectile && !CombatLog.isMarksmanTag(defender)) {
-                    CombatLog.addToMarksmanTag(defender);
-                    CombatLog.updateMarksmanTag(defender);
-                    if(CombatLog.isMarksmanTag(defender)) {
-                        defender.setGlowing(true);
-                    }
-                }
             } else {
                 // Marks the player as not able to regen health while in a duel.
                 defender.setMetadata("lastDamageTaken", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));

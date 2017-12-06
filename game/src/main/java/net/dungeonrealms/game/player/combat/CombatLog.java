@@ -28,11 +28,13 @@ import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataStore;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -264,10 +266,10 @@ public class CombatLog implements GenericMechanic {
      * @param player The player
      */
     public static void updateMarksmanTag(Player player) {
-        if (inPVP(player)) {
-            MARKSMAN_TAG.put(player, 8);
+        if (isMarksmanTag(player) && GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN) <= 0) {
+           addToMarksmanTag(player);
         } else {
-            addToMarksmanTag(player);
+            player.sendMessage("This nigga is already tagged.");
         }
     }
 
@@ -280,6 +282,12 @@ public class CombatLog implements GenericMechanic {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null || !wrapper.isVulnerable() || isMarksmanTag(player) || DuelingMechanics.isDueling(player.getUniqueId()))
             return;
+
+        GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
+        GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
+        player.setGlowing(true);
+        player.sendMessage("Marksman tag: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG));
+        player.sendMessage("Marksman tag cooldown: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN));
 
         MARKSMAN_TAG.put(player, 8);
         TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "MARKSMAN TAGGED", 4 * 20);
@@ -296,6 +304,8 @@ public class CombatLog implements GenericMechanic {
             return;
         MARKSMAN_TAG.remove(player);
 
+        player.setGlowing(false);
+
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
     }
 
@@ -306,7 +316,7 @@ public class CombatLog implements GenericMechanic {
      * @return Boolean
      */
     public static boolean isMarksmanTag(Player player) {
-        return MARKSMAN_TAG.containsKey(player) && !DungeonRealms.getInstance().isAlmostRestarting();
+        return GameAPI.isCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG);
     }
 
     // END OF MARKSMAN TAG
@@ -322,7 +332,7 @@ public class CombatLog implements GenericMechanic {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null || isInCombat(player) || !wrapper.isVulnerable())
         	return;
-       
+
         COMBAT.put(player, 10);
         TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
         
