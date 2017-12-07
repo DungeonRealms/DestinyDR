@@ -261,20 +261,6 @@ public class CombatLog implements GenericMechanic {
 
     // END PVP COMBAT
 
-
-    /**
-     * Update a player's Marksman timer
-     *
-     * @param player The player
-     */
-    public static void updateMarksmanTag(Player player) {
-        if (isMarksmanTag(player) && GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN) <= 0) {
-           addToMarksmanTag(player);
-        } else {
-            player.sendMessage("This nigga is already tagged.");
-        }
-    }
-
     /**
      * Add a player to MarksmanTag
      *
@@ -310,12 +296,6 @@ public class CombatLog implements GenericMechanic {
         player.setGlowing(false);
 
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
-    }
-
-    public static Float getTagDmg(AttackResult.CombatEntity res) {
-        double boost = res.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-
-        return (float) boost;
     }
 
     /**
