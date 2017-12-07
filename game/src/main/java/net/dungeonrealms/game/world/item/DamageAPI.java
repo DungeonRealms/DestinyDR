@@ -67,6 +67,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DamageAPI {
 
     public static HashMap<Player, HashMap<ArmorStand, BukkitTask>> DAMAGE_HOLOGRAMS = new HashMap<>();
+    public static double marksmanBoost = 0;
 
     public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
         CombatEntity attacker = res.getAttacker();
@@ -269,24 +270,27 @@ public class DamageAPI {
 
         // MARKSMAN DAMAGE //
         boolean isTagged = false;
-        boolean mark = isMarksmanBowProjectile(attacker.getPlayer());
         double boost = 0;
         double realBoost = 0;
 
         if(defender.isPlayer()) {
-            // Why wont this ever return true
-            if(mark) {
-                boost = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-                attacker.getPlayer().sendMessage("In " + boost);
-                realBoost = boost;
+
+            boost = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
+
+            if(boost > 0) {
+                marksmanBoost = boost;
             }
+
+            realBoost = marksmanBoost / 100;
+
             if (CombatLog.isMarksmanTag(defender.getPlayer())) {
                 isTagged = true;
             }
             if (isTagged) {
-                realBoost*=damage / 100;
-                attacker.getPlayer().sendMessage("Out " + boost);
-                damage+=realBoost;
+                damage*=realBoost;
+                attacker.getPlayer().sendMessage("Boost Array: " + marksmanBoost);
+                attacker.getPlayer().sendMessage("Real Boost: " + realBoost);
+                attacker.getPlayer().sendMessage("Marksman tagged! Extra " + damage + " DMG!");
             }
         }
 

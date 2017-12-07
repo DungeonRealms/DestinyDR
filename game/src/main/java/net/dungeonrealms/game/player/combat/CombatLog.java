@@ -32,10 +32,7 @@ import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -291,6 +288,7 @@ public class CombatLog implements GenericMechanic {
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
         player.setGlowing(true);
+        player.sendMessage(ChatColor.YELLOW + "You have been marksman tagged!");
         player.sendMessage("Marksman tag: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG));
         player.sendMessage("Marksman tag cooldown: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN));
 
