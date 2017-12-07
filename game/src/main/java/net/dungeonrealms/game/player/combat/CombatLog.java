@@ -32,6 +32,7 @@ import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -311,10 +312,6 @@ public class CombatLog implements GenericMechanic {
         player.setGlowing(false);
 
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
-    }
-
-    public static void applyTagDmg(AttackResult.CombatEntity atta) {
-        DamageAPI.setDamageBonus(atta.getPlayer(), getTagDmg(atta));
     }
 
     public static Float getTagDmg(AttackResult.CombatEntity res) {

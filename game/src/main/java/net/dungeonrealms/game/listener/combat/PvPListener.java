@@ -81,14 +81,9 @@ public class PvPListener implements Listener {
             boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
 
             if(isMarksmanProjectile) {
-                AttackResult res = new AttackResult(attacker, defender);
-                AttackResult.CombatEntity attackerCB = res.getAttacker();
-                CombatLog.getTagDmg(attackerCB);
-                attacker.sendMessage("" + CombatLog.getTagDmg(attackerCB));
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
                     CombatLog.addToMarksmanTag(defender);
                 }
-
             }
 
             if (!isDuel)
