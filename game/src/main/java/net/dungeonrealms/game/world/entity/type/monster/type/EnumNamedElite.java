@@ -43,8 +43,6 @@ public enum EnumNamedElite {
     AZEMAR("Azemar The Great", 4, EnumMonster.Skeleton, CustomEntityType.MELEE_SKELETON, -465, 27, 1512, 2600, 1),
     DARK("The Dark One", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1518, 49, 722, 2600, 1),
 
-    TEST("TEST", 4, EnumMonster.Zombie, CustomEntityType.MARK_BOW_SKELETON, 10000, 60, 10000, 2600, 1),
-
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.BOW_SKELETON, -411, 33, -3487, 1800, 1),
     LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1590, 63, 1218, 2500, 1),
