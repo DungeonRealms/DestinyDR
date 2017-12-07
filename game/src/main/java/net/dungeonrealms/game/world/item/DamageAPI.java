@@ -268,21 +268,17 @@ public class DamageAPI {
             damage = Math.min(damage, weaponTier * 600);
         }
 
-        // MARKSMAN DAMAGE //
+        //  MARKSMAN DAMAGE  //
         boolean isTagged = false;
         double boost = 0;
         double realBoost = 0;
 
         if(defender.isPlayer()) {
-
             boost = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-
             if(boost > 0) {
                 marksmanBoost = boost;
             }
-
             realBoost = marksmanBoost / 100;
-
             if (CombatLog.isMarksmanTag(defender.getPlayer())) {
                 isTagged = true;
             }
@@ -292,6 +288,12 @@ public class DamageAPI {
                 attacker.getPlayer().sendMessage("Real Boost: " + realBoost);
                 attacker.getPlayer().sendMessage("Marksman tagged! Extra " + damage + " DMG!");
             }
+        }
+
+        //  MARKSMAN GLOW  //
+        int glowChance = attacker.getAttributes().getAttribute(WeaponAttributeType.GLOW).getValue();
+        if(ThreadLocalRandom.current().nextInt(100) < glowChance) {
+            defender.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1, 1, false, false, Color.GREEN));
         }
 
         //  LIFESTEAL  //

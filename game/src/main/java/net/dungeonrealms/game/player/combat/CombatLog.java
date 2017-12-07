@@ -37,6 +37,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataStore;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -273,13 +275,11 @@ public class CombatLog implements GenericMechanic {
 
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
-        player.setGlowing(true);
-        player.sendMessage(ChatColor.YELLOW + "You have been marksman tagged!");
+        player.sendMessage(ChatColor.YELLOW + "You have been marksman tagged for 8 seconds!");
         player.sendMessage("Marksman tag: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG));
         player.sendMessage("Marksman tag cooldown: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN));
 
         MARKSMAN_TAG.put(player, 8);
-        TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "MARKSMAN TAGGED", 4 * 20);
 
     }
 
