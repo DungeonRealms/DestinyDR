@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -80,6 +81,10 @@ public class PvPListener implements Listener {
             boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
 
             if(isMarksmanProjectile) {
+                AttackResult res = new AttackResult(attacker, defender);
+                AttackResult.CombatEntity attackerCB = res.getAttacker();
+                CombatLog.getTagDmg(attackerCB);
+                attacker.sendMessage("" + CombatLog.getTagDmg(attackerCB));
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
                     CombatLog.addToMarksmanTag(defender);
                 }
