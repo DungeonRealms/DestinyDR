@@ -277,7 +277,7 @@ public class DamageAPI {
             if (isTagged) {
                 CombatLog.applyTagDmg(attacker);
                 //damage*=2;
-                attacker.getPlayer().sendMessage("Marksman tagged, 2x extra DMG!");
+                attacker.getPlayer().sendMessage("Marksman tagged, " + CombatLog.getTagDmg(attacker) + " extra DMG!");
             }
         }
 

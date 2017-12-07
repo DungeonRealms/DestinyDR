@@ -11,6 +11,7 @@ import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
 import net.dungeonrealms.game.listener.combat.AttackResult;
+import net.dungeonrealms.game.listener.combat.PvPListener;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -312,13 +313,14 @@ public class CombatLog implements GenericMechanic {
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
     }
 
-    public static void applyTagDmg(AttackResult.CombatEntity res) {
-        double boost = 0;
+    public static void applyTagDmg(AttackResult.CombatEntity atta) {
+        DamageAPI.setDamageBonus(atta.getPlayer(), getTagDmg(atta));
+    }
 
-        if(res.getAttributes().hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
-            boost = res.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-            DamageAPI.setDamageBonus(res.getPlayer(),(float) boost);
-        }
+    public static Float getTagDmg(AttackResult.CombatEntity res) {
+        double boost = res.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
+
+        return (float) boost;
     }
 
     /**
