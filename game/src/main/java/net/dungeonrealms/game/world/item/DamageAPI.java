@@ -283,7 +283,8 @@ public class DamageAPI {
                 isTagged = true;
             }
             if (isTagged) {
-                damage*=realBoost;
+                realBoost*=damage;
+                damage+=realBoost;
                 attacker.getPlayer().sendMessage("Boost Array: " + marksmanBoost);
                 attacker.getPlayer().sendMessage("Real Boost: " + realBoost);
                 attacker.getPlayer().sendMessage("Marksman tagged! Extra " + damage + " DMG!");

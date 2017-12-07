@@ -232,6 +232,11 @@ public enum EnumMonster {
         BOW_SKELETON(RangedSkeleton.class, EntityType.SKELETON),
         BOW_ZOMBIE(RangedZombie.class, EntityType.ZOMBIE),
         BOW_WITHER(RangedWitherSkeleton.class, EntityType.SKELETON),
+
+        //  MARKSMAN BOW  //
+        MARK_BOW_SKELETON(RangedUtilitySkeleton.class, EntityType.SKELETON),
+        MARK_BOW_ZOMBIE(RangedUtilityZombie.class, EntityType.ZOMBIE),
+        MARK_BOW_WITHER(RangedUtilityWitherSkeleton.class, EntityType.SKELETON),
         
         //  PASSIVE  //
         PASSIVE_CHICKEN(PassiveDRChicken.class, EntityType.CHICKEN),
