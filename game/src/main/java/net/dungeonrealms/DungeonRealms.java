@@ -418,6 +418,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandHats());
         cm.registerCommand(new CommandRifts());
         cm.registerCommand(new CommandRiftTime());
+        cm.registerCommand(new CommandDungeonCooldown());
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
