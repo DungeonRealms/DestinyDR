@@ -52,6 +52,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.mechanic.rifts.WorldRift;
@@ -1520,6 +1521,27 @@ public class GameAPI {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Current Active Rift: " + active.getNearbyCity());
         } else {
             player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + "No Current Active Rifts.");
+        }
+    }
+
+    public static void sendDungeonCooldown(Player player) {
+        DungeonType type = DungeonType.getInternal("banditTrove");
+        DungeonType type2 = DungeonType.getInternal("varenglade");
+        DungeonType type3 = DungeonType.getInternal("infernalAbyss");
+        if (type == null && type2 == null && type3 == null) return;
+        PlayerWrapper hisWrapper = PlayerWrapper.getPlayerWrapper(player);
+        String cooldowns = "";
+        if(!type.isOnCooldown(hisWrapper) && !type2.isOnCooldown(hisWrapper) && !type3.isOnCooldown(hisWrapper)) {
+            cooldowns = "No dungeons are on cooldown.";
+            player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + cooldowns);
+        } else {
+            if (type.isOnCooldown(hisWrapper))
+                cooldowns += "Bandit Trove: " + type.getCooldown();
+            if (type2.isOnCooldown(hisWrapper))
+                cooldowns += "Varenglade: " + type.getCooldown();
+            if (type3.isOnCooldown(hisWrapper))
+                cooldowns += "Infernal Abyss: " + type.getCooldown();
+            player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + cooldowns);
         }
     }
 
