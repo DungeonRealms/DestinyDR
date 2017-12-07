@@ -10,6 +10,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -20,6 +21,8 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
@@ -307,6 +310,15 @@ public class CombatLog implements GenericMechanic {
         player.setGlowing(false);
 
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
+    }
+
+    public static void applyTagDmg(AttackResult.CombatEntity res) {
+        double boost = 0;
+
+        if(res.getAttributes().hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
+            boost = res.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
+            DamageAPI.setDamageBonus(res.getPlayer(),(float) boost);
+        }
     }
 
     /**
