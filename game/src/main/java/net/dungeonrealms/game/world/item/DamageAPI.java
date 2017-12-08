@@ -293,8 +293,8 @@ public class DamageAPI {
 
         //  MARKSMAN GLOW  //
         int glowChance = attacker.getAttributes().getAttribute(WeaponAttributeType.GLOW).getValue();
-        if(ThreadLocalRandom.current().nextInt(100) < glowChance) {
-            defender.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1, 1, false, false, Color.GREEN));
+        if(ThreadLocalRandom.current().nextInt(100) < glowChance && defender.isPlayer()) {
+            defender.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, Color.GREEN));
         }
 
         //  LIFESTEAL  //

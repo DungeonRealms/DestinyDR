@@ -275,9 +275,7 @@ public class CombatLog implements GenericMechanic {
 
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
-        player.sendMessage(ChatColor.YELLOW + "You have been marksman tagged for 8 seconds!");
-        player.sendMessage("Marksman tag: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG));
-        player.sendMessage("Marksman tag cooldown: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN));
+        player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds!");
 
         MARKSMAN_TAG.put(player, 8);
 
