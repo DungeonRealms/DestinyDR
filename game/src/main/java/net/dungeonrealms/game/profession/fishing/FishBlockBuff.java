@@ -30,7 +30,7 @@ public class FishBlockBuff extends FishBuff {
 
 	@Override
 	protected String[] getNamePrefixes() {
-		return new String[] {"Lesser", "Lesser", "Greater", "Greater", "Greater"};
+		return new String[] {"Lesser", "Adequate", "Greater", "Superior", "Legendary"};
 	}
 
 	@Override
