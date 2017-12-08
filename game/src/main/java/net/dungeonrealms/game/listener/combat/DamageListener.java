@@ -140,7 +140,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()) && (!DamageAPI.isMarksmanBowProjectile(event.getDamager())))))
             return;
         if (!GameAPI.isPlayer(event.getEntity()))
             return;
@@ -179,6 +179,11 @@ public class DamageListener implements Listener {
 
         AttackResult res = new AttackResult(leDamageSource, (LivingEntity) event.getEntity(),
                 DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager()) ? (Projectile) event.getDamager() : null);
+
+        if(DamageAPI.isMarksmanBowProjectile(event.getDamager())) {
+            if (!GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN))
+                CombatLog.addToMarksmanTag(res.getDefender().getPlayer());
+        }
 
         DamageAPI.calculateWeaponDamage(res, false);
         CombatLog.updateCombat(player);

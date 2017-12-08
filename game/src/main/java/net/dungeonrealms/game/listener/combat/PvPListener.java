@@ -17,6 +17,7 @@ import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -80,15 +81,11 @@ public class PvPListener implements Listener {
 
             boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
 
+            //Add player to marksman tag
             if(isMarksmanProjectile) {
-                AttackResult res = new AttackResult(attacker, defender);
-                AttackResult.CombatEntity attackerCB = res.getAttacker();
-                CombatLog.getTagDmg(attackerCB);
-                attacker.sendMessage("" + CombatLog.getTagDmg(attackerCB));
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
                     CombatLog.addToMarksmanTag(defender);
                 }
-
             }
 
             if (!isDuel)

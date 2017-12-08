@@ -32,13 +32,13 @@ import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataStore;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -263,20 +263,6 @@ public class CombatLog implements GenericMechanic {
 
     // END PVP COMBAT
 
-
-    /**
-     * Update a player's Marksman timer
-     *
-     * @param player The player
-     */
-    public static void updateMarksmanTag(Player player) {
-        if (isMarksmanTag(player) && GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN) <= 0) {
-           addToMarksmanTag(player);
-        } else {
-            player.sendMessage("This nigga is already tagged.");
-        }
-    }
-
     /**
      * Add a player to MarksmanTag
      *
@@ -289,12 +275,11 @@ public class CombatLog implements GenericMechanic {
 
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
         GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
-        player.setGlowing(true);
+        player.sendMessage(ChatColor.YELLOW + "You have been marksman tagged for 8 seconds!");
         player.sendMessage("Marksman tag: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG));
         player.sendMessage("Marksman tag cooldown: " + GameAPI.getCooldownAsInt(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN));
 
         MARKSMAN_TAG.put(player, 8);
-        TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "MARKSMAN TAGGED", 4 * 20);
 
     }
 
@@ -311,16 +296,6 @@ public class CombatLog implements GenericMechanic {
         player.setGlowing(false);
 
         TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
-    }
-
-    public static void applyTagDmg(AttackResult.CombatEntity atta) {
-        DamageAPI.setDamageBonus(atta.getPlayer(), getTagDmg(atta));
-    }
-
-    public static Float getTagDmg(AttackResult.CombatEntity res) {
-        double boost = res.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-
-        return (float) boost;
     }
 
     /**

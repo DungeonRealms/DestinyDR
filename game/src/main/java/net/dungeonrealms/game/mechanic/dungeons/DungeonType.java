@@ -162,7 +162,7 @@ public enum DungeonType {
     public boolean isOnCooldown(PlayerWrapper wrapper) {
         Long lastRun = wrapper.getLastDungeonRuns().get(internalName);
         if(lastRun == null) {
-            System.out.println("Not in the map 1");
+//            System.out.println("Not in the map 1");
             return false;
         }
         System.out.println("The last run: " + lastRun);

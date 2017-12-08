@@ -1524,27 +1524,6 @@ public class GameAPI {
         }
     }
 
-    public static void sendDungeonCooldown(Player player) {
-        DungeonType type = DungeonType.getInternal("banditTrove");
-        DungeonType type2 = DungeonType.getInternal("varenglade");
-        DungeonType type3 = DungeonType.getInternal("infernalAbyss");
-        if (type == null && type2 == null && type3 == null) return;
-        PlayerWrapper hisWrapper = PlayerWrapper.getPlayerWrapper(player);
-        String cooldowns = "";
-        if(!type.isOnCooldown(hisWrapper) && !type2.isOnCooldown(hisWrapper) && !type3.isOnCooldown(hisWrapper)) {
-            cooldowns = "No dungeons are on cooldown.";
-            player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + cooldowns);
-        } else {
-            if (type.isOnCooldown(hisWrapper))
-                cooldowns += "Bandit Trove: " + type.getCooldown();
-            if (type2.isOnCooldown(hisWrapper))
-                cooldowns += "Varenglade: " + type.getCooldown();
-            if (type3.isOnCooldown(hisWrapper))
-                cooldowns += "Infernal Abyss: " + type.getCooldown();
-            player.sendMessage( ChatColor.RED.toString() + ChatColor.BOLD + cooldowns);
-        }
-    }
-
     public static boolean isMainWorld(World world) {
         return WorldType.getWorld(world) != null;
     }
