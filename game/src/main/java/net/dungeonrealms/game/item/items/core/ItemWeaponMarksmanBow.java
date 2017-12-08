@@ -35,7 +35,7 @@ public class ItemWeaponMarksmanBow extends ItemWeaponRanged{
 
     @Override
     public Sound getShootSound() {
-        return Sound.ENTITY_ENDERDRAGON_SHOOT;
+        return Sound.ENTITY_ARROW_SHOOT;
     }
 
     @Override

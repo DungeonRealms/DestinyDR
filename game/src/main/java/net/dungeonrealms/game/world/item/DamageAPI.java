@@ -604,7 +604,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(80, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(120, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
@@ -850,6 +850,7 @@ public class DamageAPI {
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.15));
         projectile.setShooter(ent);
+        ((CraftSpectralArrow) projectile).setGlowingTicks(0);
         ((CraftSpectralArrow) projectile).getHandle().fromPlayer = EntitySpectralArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
     }
