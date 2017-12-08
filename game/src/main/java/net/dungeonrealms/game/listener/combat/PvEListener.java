@@ -116,6 +116,9 @@ public class PvEListener implements Listener {
             }
         }
 //        }
+        if(DamageAPI.isMarksmanBowProjectile(event.getDamager()) && !(receiver instanceof Player) ){
+            receiver.setGlowing(false);
+        }
 
         CombatLog.updateCombat(damager);
 
