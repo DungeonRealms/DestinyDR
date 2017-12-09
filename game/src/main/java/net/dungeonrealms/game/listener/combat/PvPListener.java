@@ -15,6 +15,7 @@ import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.SpectralArrow;
@@ -86,6 +87,11 @@ public class PvPListener implements Listener {
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
                     CombatLog.addToMarksmanTag(defender);
                 }
+            }
+
+            if(isDuel && isProjectile) {
+                Entity proj = event.getDamager();
+                proj.remove();
             }
 
             if (!isDuel)
