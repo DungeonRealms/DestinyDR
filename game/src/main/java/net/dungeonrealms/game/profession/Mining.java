@@ -390,7 +390,6 @@ public class Mining implements GenericMechanic, Listener {
         int roll = r.nextInt(1000);
         if (roll >= 980) { // HAT CHECK
             ItemStack oreHelm = new ItemStack(tier.getOre());
-
             ItemMeta im = oreHelm.getItemMeta();
             im.setDisplayName(tier.getColor() + Utils.getItemName(oreHelm) + " Hat");
             oreHelm.setItemMeta(im);
@@ -410,7 +409,7 @@ public class Mining implements GenericMechanic, Listener {
                     return new ItemEnchantWeapon(ItemTier.TIER_1).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER1).generateItem();
-                    scrap.setAmount(20);
+                    scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
                 } else {
                     return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
@@ -427,7 +426,7 @@ public class Mining implements GenericMechanic, Listener {
                     return new ItemEnchantWeapon(ItemTier.TIER_2).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER2).generateItem();
-                    scrap.setAmount(20);
+                    scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
                 } else {
                     return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
@@ -444,7 +443,7 @@ public class Mining implements GenericMechanic, Listener {
                     return new ItemEnchantWeapon(ItemTier.TIER_3).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER3).generateItem();
-                    scrap.setAmount(20);
+                    scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
                 } else if (item.equals("orb")) {
                     return new ItemOrb().generateItem();
@@ -463,7 +462,7 @@ public class Mining implements GenericMechanic, Listener {
                     return new ItemEnchantWeapon(ItemTier.TIER_4).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER4).generateItem();
-                    scrap.setAmount(20);
+                    scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
                 } else if (item.equals("orb")) {
                     return new ItemOrb().generateItem();
@@ -481,7 +480,7 @@ public class Mining implements GenericMechanic, Listener {
                     return new ItemEnchantWeapon(ItemTier.TIER_5).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER5).generateItem();
-                    scrap.setAmount(20);
+                    scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
                 } else if (item.equals("orb")) {
                     return new ItemOrb().generateItem();
