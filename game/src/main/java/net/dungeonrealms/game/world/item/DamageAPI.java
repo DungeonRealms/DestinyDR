@@ -165,11 +165,11 @@ public class DamageAPI {
 //        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
-        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
-        if(otherArmor > 0) {
-            totalDPS -= otherArmor;
-            totalDPS = Math.max(0, totalDPS);
-        }
+//        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
+//        if(otherArmor > 0) {
+//            totalDPS -= otherArmor;
+//            totalDPS = Math.max(0, totalDPS);
+//        }
 
         totalDPS = Math.min(80, totalDPS);
         /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
@@ -604,7 +604,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(120, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(50, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
@@ -613,12 +613,12 @@ public class DamageAPI {
             totalArmor = Math.max(0, totalArmor);
         }
 
-        ModifierRange range2 = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
-        double otherDPS = range2.getValueInRange();
-        if (otherDPS > 0) {
-            totalArmor -= otherDPS;
-            totalArmor = Math.max(0, totalArmor);
-        }
+//        ModifierRange range2 = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
+//        double otherDPS = range2.getValueInRange();
+//        if (otherDPS > 0) {
+//            totalArmor -= otherDPS;
+//            totalArmor = Math.max(0, totalArmor);
+//        }
 
         //  THORNS  //
         ModifierRange mr = defender.getAttributes().getAttribute(ArmorAttributeType.THORNS);
