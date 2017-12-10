@@ -384,6 +384,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheckDupe());
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
+        cm.registerCommand(new CommandTestParticles("particles", "/particle", "Command test Particles"));
 
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards.", Collections.singletonList("connect")));
