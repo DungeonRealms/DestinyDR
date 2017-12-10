@@ -1,15 +1,22 @@
 package net.dungeonrealms.game.player.trade;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
+import net.dungeonrealms.game.world.item.CC;
+import net.minecraft.server.v1_9_R2.GameProfileSerializer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +29,10 @@ public class Trade {
     public Player p2;
     public boolean p1Ready;
     public boolean p2Ready;
+    private boolean rollDuelSlot = true;
+    private boolean p1RollDuel = false;
+    private boolean p2RollDuel = false;
+    //private String skullTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFlMTJhZDk3NTlhM2QzNjhlNWQ5Njk2ZWQxMjRmNzMzNDA2YzRmNzE2MmJhYzRmYTM4YTk4MjE4YjdkN2M2In19fQ==";
     public Inventory inv;
 
     private List<ItemStack> p1Items;
@@ -62,6 +73,7 @@ public class Trade {
         inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
         setDividerColor(DyeColor.WHITE);
+        if(rollDuelSlot)setRollDuelSlot();
         p1.openInventory(inv);
         p2.openInventory(inv);
     }
@@ -69,10 +81,26 @@ public class Trade {
     public void setDividerColor(DyeColor dye) {
         ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ");
         separator.setDurability(dye.getData());
-        inv.setItem(4, separator);
+        if(!rollDuel)inv.setItem(4, separator);
         inv.setItem(13, separator);
         inv.setItem(22, separator);
         inv.setItem(31, separator);
+    }
+
+    public void setRollDuelSlot(){
+        ItemStack rollHead = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "Roll Duel", (byte) SkullType.PLAYER.ordinal());
+        SkullMeta skullMeta = (SkullMeta) rollHead.getItemMeta();
+        //For setting custom textures (We need a signed Dice texture, but for now this guy's skin is registered on minecraft-heads.com so it wont change)
+
+        //GameProfile gameProfile = new GameProfile(UUID.fromString("a3bfbea1-6a4b-4d71-be1e-4b6cb2a981f2"), "Dice");
+        //byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", skullTexture).getBytes());
+        //gameProfile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        //NBTTagCompound skinNBT = new NBTTagCompound();
+        // GameProfileSerializer.serialize(skinNBT, gameProfile);
+
+        skullMeta.setOwner("ElliotIsShort");
+        rollHead.setItemMeta(skullMeta);
+        inv.setItem(4, rollHead);
     }
 
 
@@ -131,7 +159,7 @@ public class Trade {
             ItemStack item = inv.getItem(i);
             if (item == null)
                 continue;
-            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
+            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
                 continue;
             if (i == 8)
                 continue;
@@ -181,7 +209,7 @@ public class Trade {
                 ItemStack item = inv.getItem(i);
                 if (item == null)
                     continue;
-                if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
+                if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
                     continue;
                 if (i == 8)
                     continue;
@@ -218,7 +246,7 @@ public class Trade {
             ItemStack item = inv.getItem(i);
             if (item == null)
                 continue;
-            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
+            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
                 continue;
             if (i == 8)
                 continue;
@@ -233,6 +261,13 @@ public class Trade {
         p1.sendMessage(ChatColor.GREEN + "Trade successful.");
         p2.sendMessage(ChatColor.GREEN + "Trade successful.");
         remove();
+    }
+
+    //TODO: Create a Roll class for the rolling mechanic (if deemed necessary), Set each player to Ready when they click on the Dice, If both users are ready via the Roll Duel Dice then roll.
+    public void setRollDuel(){
+        p1RollDuel = true;
+        p2RollDuel = true;
+        playSound(Sound.BLOCK_NOTE_PLING, 1.8F);
     }
 
     public void changeReady() {

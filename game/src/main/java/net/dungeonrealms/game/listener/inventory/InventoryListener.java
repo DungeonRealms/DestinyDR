@@ -618,7 +618,7 @@ public class InventoryListener implements Listener {
             }
 
 
-            if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
+            if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.SKULL_ITEM) {
                 event.setCancelled(true);
                 return;
             }
