@@ -47,6 +47,10 @@ public class ItemUtilityWeapon extends CombatItem {
         return ItemWeaponRanged.isRangedWeapon(item);
     }
 
+    public static boolean isUtilityWeaponRanged(ItemStack item) {
+        return ItemWeaponRanged.isRangedUtilityWeapon(item);
+    }
+
     /**
      * Getting the NBT data from EACH item everytime is a bit consuming, just check type since thats all we need.
      * @param item

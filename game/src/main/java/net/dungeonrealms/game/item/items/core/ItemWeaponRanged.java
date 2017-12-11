@@ -24,6 +24,10 @@ public abstract class ItemWeaponRanged extends ItemWeapon {
 		return ItemWeaponBow.isBow(item) || ItemWeaponMarksmanBow.isMarksmanBow(item);
 	}
 
+	public static boolean isRangedUtilityWeapon(ItemStack item) {
+		return ItemWeaponMarksmanBow.isMarksmanBow(item);
+	}
+
 	/**
 	 * Returns the delay in milliseconds between shooting of projectiles.
 	 */

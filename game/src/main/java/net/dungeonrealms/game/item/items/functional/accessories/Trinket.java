@@ -53,7 +53,7 @@ public enum Trinket {
     COMBAT_LIFESTEAL(Item.ItemRarity.UNIQUE, "Vampyric", new AbstractTrinketData("Gain 20% lifesteal when below 25% of your max HP"), 1),
     COMBAT_DURABILITY(Item.ItemRarity.UNIQUE, "Durable", new AbstractTrinketData("Weapons now have double durability."), 1),
     COMBAT_RARE(Item.ItemRarity.RARE, null, new RandomEnchantTrinketDataRare(), 6),
-    COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 260);
+    COMBAT(Item.ItemRarity.COMMON, null, new RandomEnchantTrinketData(), 300);
 
     @Getter
     private Item.ItemRarity itemRarity;

@@ -352,6 +352,7 @@ public class DamageListener implements Listener {
 //                p.getEquipment().getArmorContents()[ThreadLocalRandom.current().nextInt(
 //                        p.getEquipment().getArmorContents().length)] : null;
         boolean skipWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
+        boolean skipUtilWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
 
         System.out.println(p.getName() + " DIED " + alignment.name());
 
@@ -424,7 +425,7 @@ public class DamageListener implements Listener {
             //  KEEP PROFESSION ITEMS AND MAIN WEAPON  //
             new ArrayList<>(event.getDrops()).stream().filter((i) -> i != null).forEach(is -> {
                 if (ProfessionItem.isProfessionItem(is) ||
-                        !skipWeapon && is.equals(p.getInventory().getItem(0))) {
+                        !skipWeapon && is.equals(p.getInventory().getItem(0)) || !skipUtilWeapon && is.equals(p.getInventory().getItem(1)) && ItemUtilityWeapon.isUtilityWeaponRanged(is)) {
                     PersistentItem item = PersistentItem.constructItem(is);
                     if (item instanceof ItemGear) {
                         ItemGear gear = (ItemGear) item;

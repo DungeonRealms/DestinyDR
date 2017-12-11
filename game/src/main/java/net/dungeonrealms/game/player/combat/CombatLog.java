@@ -86,6 +86,7 @@ public class CombatLog implements GenericMechanic {
                     for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
                         ItemStack itemStack = player.getInventory().getStorageContents()[k];
                         if(k == 0) continue; // weapon
+                        if(k == 1 && ItemUtilityWeapon.isUtilityWeapon(itemStack)) continue; //marksman bow
                         if(k == 9 && itemStack != null && Trinket.getActiveTrinketItem(player) != null) continue;
                         if (itemStack != null) {
                             // Don't drop the journal/realm star

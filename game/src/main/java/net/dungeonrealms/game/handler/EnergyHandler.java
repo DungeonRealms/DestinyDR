@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -398,6 +399,9 @@ public class EnergyHandler implements GenericMechanic {
                 return 0.13636364F;
             case BOW:
                 ItemGear gear = (ItemGear) PersistentItem.constructItem(itemStack);
+                if(ItemUtilityWeapon.isUtilityWeaponRanged(itemStack)){
+                    return 1.0F;
+                } else
                 return 0.105F + gear.getTier().getId() * 0.02F;
             default:
                 return 0.10F;

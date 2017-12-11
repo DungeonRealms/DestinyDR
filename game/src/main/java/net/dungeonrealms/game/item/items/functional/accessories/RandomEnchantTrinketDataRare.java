@@ -29,10 +29,10 @@ public class RandomEnchantTrinketDataRare extends EnchantTrinketData {
         enchantMap.put(Item.ArmorAttributeType.GEM_FIND, new MinMax(8, 20));
         enchantMap.put(Item.ArmorAttributeType.ITEM_FIND, new MinMax(5, 10));
 
-        enchantMap.put(Item.WeaponAttributeType.ARMOR_PENETRATION, new MinMax(5, 15));
-        enchantMap.put(Item.WeaponAttributeType.ACCURACY, new MinMax(10, 20));
-        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(8, 12));
-        enchantMap.put(Item.WeaponAttributeType.CRITICAL_HIT, new MinMax(8, 15));
+        enchantMap.put(Item.WeaponAttributeType.ARMOR_PENETRATION, new MinMax(5, 12));
+        enchantMap.put(Item.WeaponAttributeType.ACCURACY, new MinMax(8, 10));
+        enchantMap.put(Item.WeaponAttributeType.BLIND, new MinMax(8, 10));
+        enchantMap.put(Item.WeaponAttributeType.CRITICAL_HIT, new MinMax(8, 10));
         enchantMap.put(Item.WeaponAttributeType.LIFE_STEAL, new MinMax(6, 8));
         enchantMap.put(Item.WeaponAttributeType.DAMAGE, new MinMax(40, 80));
     }
