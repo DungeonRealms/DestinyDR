@@ -4,7 +4,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.WorldType;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
+import net.dungeonrealms.game.world.entity.powermove.type.Stomp;
 import net.dungeonrealms.game.world.entity.powermove.type.WhirlWind;
+import net.royawesome.jlibnoise.module.combiner.Power;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +24,8 @@ public abstract class PowerMove {
     public static CopyOnWriteArrayList<PowerMove> powermoves = new CopyOnWriteArrayList<>();
 
     public static void registerPowerMoves() {
-        powermoves.add(new WhirlWind());
+        //powermoves.add(new WhirlWind());
+        powermoves.add(new Stomp());
         powermoves.add(new PowerStrike());
 
 
@@ -39,7 +42,6 @@ public abstract class PowerMove {
             if (move.id.equalsIgnoreCase(identifier))
                 move.schedulePowerMove(entity, p);
     }
-
 
     public String id;
 

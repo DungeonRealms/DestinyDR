@@ -144,8 +144,8 @@ public class DamageAPI {
                 int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 damage = damage * (1 + (intValue * 0.0002));
             } else if (type == ItemType.BOW) {*/
-                int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
-                damage = damage * (1 + (dexValue * 0.00015));
+            int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
+            damage = damage * (1 + (dexValue * 0.00015));
             //}
         }
 
@@ -604,7 +604,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(50, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(60, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
@@ -668,7 +668,6 @@ public class DamageAPI {
                 /*
                 if (ea.getResist() != null) {
                     elementalResistance += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
-
                 }*/
             }
         } else if (EntityAPI.isElemental(attacker.getEntity())) {
@@ -791,9 +790,9 @@ public class DamageAPI {
         double durability = 1.0;
         if (takeDura)
             if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
-            durability = 0.5;
+                durability = 0.5;
 
-            bow.damageItem(player, durability);
+        bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
         fireBowProjectile(player, bow);

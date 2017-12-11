@@ -9,6 +9,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
@@ -18,32 +20,53 @@ public class Stomp extends PowerMove {
     public Stomp() {super("stomp");}
 
     @Override
-    public void schedulePowerMove(LivingEntity ent, Player player) {
-        chargingMonsters.add(ent.getUniqueId());
+    public void schedulePowerMove(LivingEntity entity, Player player) {
+        chargingMonsters.add(entity.getUniqueId());
         new BukkitRunnable() {
-            public  boolean first = true;
-            List<Entity> damageable = ent.getNearbyEntities(9.0, 9.0, 9.0);
+            public int step = 0;
+            public boolean first = true;
+            List<Entity> damageable = entity.getNearbyEntities(9.0, 9.0, 9.0);
 
             @Override
             public void run() {
                 if (first) {
+                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                     first = false;
-                    for (int i = 0; i < damageable.size(); i++) {
-                        Location location = damageable.get(i).getLocation();
-                        if (damageable instanceof Player) {
-                            ent.getWorld().playSound(ent.getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 4.0F);
-                            FallingBlock lava = ent.getWorld().spawnFallingBlock(location, Material.WOOL, (byte) 0);
-                        }
-
-                    }
                 }
-                if (ent.isDead() || ent.getHealth() <= 0) {
+
+                if (entity.isDead() || entity.getHealth() <= 0) {
+                    chargedMonsters.remove(entity.getUniqueId());
+                    chargingMonsters.remove(entity.getUniqueId());
                     this.cancel();
-                    chargingMonsters.remove(ent.getUniqueId());
                     return;
                 }
+
+                if(step > 3) {
+                    chargedMonsters.remove(entity.getUniqueId());
+                    chargingMonsters.remove(entity.getUniqueId());
+                    this.cancel();
+                    step = 0;
+                    return;
+                }
+
+                entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1F, 4.0F);
+
+                step++;
+                player.sendMessage(""+step);
+                if (step <= 3) {
+                    chargedMonsters.add(entity.getUniqueId());
+
+                    for(int i = 0; i <damageable.size(); i ++) {
+                        if(damageable.get(i) instanceof  Player) {
+                            Location loca = damageable.get(i).getLocation();
+                            loca.setY(loca.getY() + 5.0);
+                            loca.getWorld().spawnFallingBlock(loca, Material.REDSTONE_BLOCK, (byte) 0);
+                        }
+                    }
+                }
+
             }
-        }.runTaskTimer(DungeonRealms.getInstance(),0, 1);
+        }.runTaskTimer(DungeonRealms.getInstance(),0, 20);
     }
 }
 
