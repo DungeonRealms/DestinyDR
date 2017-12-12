@@ -311,6 +311,10 @@ public class DamageAPI {
             }
         }
 
+        //  HEALER DAMAGE  //
+        if(SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.HEALER))
+            damage/=2;
+
         //Armor Reduction.
         ItemType type = weapon.getItemType();
         boolean isBlocking = attacker.isPlayer() && attacker.getPlayer().isBlocking();
