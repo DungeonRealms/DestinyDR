@@ -85,8 +85,14 @@ public class PvPListener implements Listener {
             //Add player to marksman tag
             if(isMarksmanProjectile) {
                 if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
-                    CombatLog.addToMarksmanTag(defender);
+                    AttackResult res = new AttackResult(attacker, defender);
+                    CombatLog.addToMarksmanTag(res.getDefender(), res.getAttacker());
                 }
+            }
+
+            if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG)) {
+                AttackResult res = new AttackResult(attacker, defender);
+                CombatLog.removeFromMarksmanTag(res.getDefender(), res.getAttacker());
             }
 
             if(isDuel && isProjectile) {

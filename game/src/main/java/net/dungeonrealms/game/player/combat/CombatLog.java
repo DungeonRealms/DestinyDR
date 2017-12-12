@@ -56,7 +56,7 @@ public class CombatLog implements GenericMechanic {
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<Player, Integer> PVP_COMBAT = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<Player, Integer> MARKSMAN_TAG = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, Double> MARKS_TAG = new ConcurrentHashMap<>();
 
     public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
         return COMBAT_LOGGERS;
@@ -267,34 +267,31 @@ public class CombatLog implements GenericMechanic {
     /**
      * Add a player to MarksmanTag
      *
-     * @param player The player
+     *
      */
-    public static void addToMarksmanTag(Player player) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-        if(wrapper == null || !wrapper.isVulnerable() || isMarksmanTag(player) || DuelingMechanics.isDueling(player.getUniqueId()))
+    public static void addToMarksmanTag(AttackResult.CombatEntity def, AttackResult.CombatEntity att) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(def.getPlayer());
+        if(wrapper == null || !wrapper.isVulnerable() || isMarksmanTag(def.getPlayer()) || DuelingMechanics.isDueling(def.getPlayer().getUniqueId()))
             return;
 
-        GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG, 8);
-        GameAPI.addCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
-        player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds!");
-
-        MARKSMAN_TAG.put(player, 8);
+        GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG, 8);
+        GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
+        MARKS_TAG.put(def.getPlayer().getUniqueId(), att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
+        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds!");
 
     }
 
     /**
      * Remove a player from being marksman tagged
      *
-     * @param player The player
+     *
      */
-    public static void removeFromMarksmanTag(Player player) {
-        if (!isMarksmanTag(player))
+    public static void removeFromMarksmanTag(AttackResult.CombatEntity def, AttackResult.CombatEntity att) {
+        if (!isMarksmanTag(def.getPlayer()))
             return;
-        MARKSMAN_TAG.remove(player);
 
-        player.setGlowing(false);
-
-        TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "NO LONGER MARKSMAN TAGGED", 4 * 20);
+        MARKS_TAG.remove(def.getPlayer().getUniqueId(), att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
+        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "No longer marksman tagged!");
     }
 
     /**

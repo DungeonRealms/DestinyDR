@@ -67,7 +67,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DamageAPI {
 
     public static HashMap<Player, HashMap<ArmorStand, BukkitTask>> DAMAGE_HOLOGRAMS = new HashMap<>();
-    public static double marksmanBoost = 0;
+    public static HashMap<UUID, WeaponAttributeType> marksTag = new HashMap<UUID, WeaponAttributeType>();
 
     public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
         CombatEntity attacker = res.getAttacker();
@@ -269,25 +269,19 @@ public class DamageAPI {
         }
 
         //  MARKSMAN DAMAGE  //
-        boolean isTagged = false;
+        boolean isTagged = CombatLog.isMarksmanTag(defender.getPlayer());
+        UUID uuid = defender.getPlayer().getUniqueId();
         double boost = 0;
-        double realBoost = 0;
 
-        if(defender.isPlayer()) {
-            boost = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
-            if(boost > 0) {
-                marksmanBoost = boost;
-            }
-            realBoost = marksmanBoost / 100;
-            if (CombatLog.isMarksmanTag(defender.getPlayer())) {
-                isTagged = true;
-            }
-            if (isTagged) {
-                realBoost*=damage;
-                damage+=realBoost;
-                attacker.getPlayer().sendMessage("Boost Array: " + marksmanBoost);
-                attacker.getPlayer().sendMessage("Real Boost: " + realBoost);
-                attacker.getPlayer().sendMessage("Marksman tagged! Extra " + damage + " DMG!");
+        if(defender.isPlayer() && isTagged) {
+            if(CombatLog.MARKS_TAG.containsKey(uuid)) {
+                for(UUID key: CombatLog.MARKS_TAG.keySet()) {
+                    attacker.getPlayer().sendMessage("UUID: " + key + " Key: " + CombatLog.MARKS_TAG.get(key));
+                    if(key == uuid)
+                        boost = CombatLog.MARKS_TAG.get(key);
+                }
+                    damage *= (1 + (boost / 100));
+                    attacker.getPlayer().sendMessage("Tagged! Extra " + damage + " DMG!");
             }
         }
 
@@ -965,6 +959,10 @@ public class DamageAPI {
         EntityType type = entity.getType();
         return type == EntityType.SPECTRAL_ARROW;
     }
+
+//    public static void addToTagMap(CombatEntity player) {
+//        marksTag.put(player.getPlayer().getUniqueId(), player.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
+//    }
 
     /**
      * Sets a blanket damage bonus for a specified entity. When the entity

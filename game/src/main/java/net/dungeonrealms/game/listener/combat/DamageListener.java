@@ -182,7 +182,7 @@ public class DamageListener implements Listener {
 
         if(DamageAPI.isMarksmanBowProjectile(event.getDamager())) {
             if (!GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN))
-                CombatLog.addToMarksmanTag(res.getDefender().getPlayer());
+                CombatLog.addToMarksmanTag(res.getDefender(), res.getAttacker());
         }
 
         DamageAPI.calculateWeaponDamage(res, false);
