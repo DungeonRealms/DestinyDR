@@ -24,8 +24,8 @@ public abstract class PowerMove {
     public static CopyOnWriteArrayList<PowerMove> powermoves = new CopyOnWriteArrayList<>();
 
     public static void registerPowerMoves() {
-        //powermoves.add(new WhirlWind());
-        powermoves.add(new Stomp());
+        powermoves.add(new WhirlWind());
+//        powermoves.add(new Stomp());
         powermoves.add(new PowerStrike());
 
 

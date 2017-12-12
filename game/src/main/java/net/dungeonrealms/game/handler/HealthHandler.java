@@ -415,8 +415,8 @@ public class HealthHandler implements GenericMechanic {
         Player player = res.getDefender().getPlayer();
         LivingEntity attacker = res.getAttacker().getEntity();
         double damage = res.getDamage();
-        if (!(res.getAttacker() instanceof Player) && res.hasProjectile())
-            damage /= 2; // Nerfs bow mobs.
+//        if (!(res.getAttacker() instanceof Player) && res.hasProjectile())
+//            damage /= 2; // Nerfs bow mobs.
 
         if (!res.getDefender().getWrapper().isVulnerable())
             return;

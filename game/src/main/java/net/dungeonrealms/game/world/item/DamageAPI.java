@@ -171,7 +171,7 @@ public class DamageAPI {
 //            totalDPS = Math.max(0, totalDPS);
 //        }
 
-        totalDPS = Math.min(80, totalDPS);
+        totalDPS = Math.min(100, totalDPS);
         /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
         if(dpsToAdd > 0) totalDPS += dpsToAdd;*/
         //totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
@@ -598,7 +598,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(60, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(50, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);

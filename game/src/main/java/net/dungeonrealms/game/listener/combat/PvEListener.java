@@ -314,7 +314,7 @@ public class PvEListener implements Listener {
         if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("stomp", receiver, attacker);
+                PowerMove.doPowerMove("whirlwind", receiver, attacker);
             }
         } else if (EntityAPI.isBoss(receiver)) {
             if (event.getDamager() instanceof Player)

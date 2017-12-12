@@ -400,7 +400,7 @@ public class EnergyHandler implements GenericMechanic {
             case BOW:
                 ItemGear gear = (ItemGear) PersistentItem.constructItem(itemStack);
                 if(ItemUtilityWeapon.isUtilityWeaponRanged(itemStack)){
-                    return 1.0F;
+                    return 0.5F;
                 } else
                 return 0.105F + gear.getTier().getId() * 0.02F;
             default:
