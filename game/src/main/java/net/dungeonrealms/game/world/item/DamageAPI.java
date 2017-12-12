@@ -269,19 +269,24 @@ public class DamageAPI {
         }
 
         //  MARKSMAN DAMAGE  //
-        boolean isTagged = CombatLog.isMarksmanTag(defender.getPlayer());
-        UUID uuid = defender.getPlayer().getUniqueId();
+        boolean isTagged = false;
         double boost = 0;
 
-        if(defender.isPlayer() && isTagged) {
-            if(CombatLog.MARKS_TAG.containsKey(uuid)) {
-                for(UUID key: CombatLog.MARKS_TAG.keySet()) {
-                    attacker.getPlayer().sendMessage("UUID: " + key + " Key: " + CombatLog.MARKS_TAG.get(key));
-                    if(key == uuid)
-                        boost = CombatLog.MARKS_TAG.get(key);
-                }
+        if(defender.isPlayer()) {
+            UUID uuid = defender.getPlayer().getUniqueId();
+            if (CombatLog.isMarksmanTag(defender.getPlayer())) {
+                isTagged = true;
+            }
+            if (isTagged) {
+                if (CombatLog.MARKS_TAG.containsKey(uuid)) {
+                    for (UUID key : CombatLog.MARKS_TAG.keySet()) {
+                        attacker.getPlayer().sendMessage("UUID: " + key + " Key: " + CombatLog.MARKS_TAG.get(key));
+                        if (key == uuid)
+                            boost = CombatLog.MARKS_TAG.get(key);
+                    }
                     damage *= (1 + (boost / 100));
                     attacker.getPlayer().sendMessage("Tagged! Extra " + damage + " DMG!");
+                }
             }
         }
 
