@@ -35,7 +35,7 @@ public class Item {
         AXE(AttributeBank.WEAPON, new Material[]{Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[]{"Hatchet", "Great Axe", "War Axe", "Ancient Axe", "Legendary Axe"}, 2),
         STAFF(AttributeBank.WEAPON, new Material[]{Material.WOOD_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.DIAMOND_HOE, Material.GOLD_HOE}, new String[]{"Staff", "Battlestaff", "Wizard Staff", "Ancient Staff", "Legendary Staff"}, 2),
         BOW(AttributeBank.WEAPON, Material.BOW, new String[]{"Shortbow", "Longbow", "Magic Bow", "Ancient Bow", "Legendary Bow"}, 2),
-        MARKSMAN_BOW(AttributeBank.WEAPON, Material.BOW, new String[]{"Mark 1", "Mark 2", "Mark 3", "Mark 4", "Mark 5"}, 2),
+        MARKSMAN_BOW(AttributeBank.WEAPON, Material.BOW, new String[]{"Marksman Bow", "Great Marksman Bow", "Magic Marksman Bow", "Ancient Marksman Bow", "Legendary Marksman Bow"}, 2),
 
         // ARMOR
         HELMET(AttributeBank.ARMOR, new Material[]{Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.GOLD_HELMET}, new String[]{"Leather Coif", "Medium Helmet", "Full Helmet", "Ancient Full Helmet", "Legendary Full Helmet"}, 1),
@@ -527,8 +527,7 @@ public class Item {
         ICE_DAMAGE("ICE DMG: +", "", "iceDamage", "", "Ice", 12),
         FIRE_DAMAGE("FIRE DMG: +", "", "fireDamage", "", "Fire", 11),
         POISON_DAMAGE("POISON DMG: +", "", "poisonDamage", "", "Poison", 13),
-        PURE_DAMAGE("PURE DMG: +", "", "pureDamage", "Pure", "", 0),
-        GLOW("GLOW: +","%", "glow", "Glowing", "", 0);
+        PURE_DAMAGE("PURE DMG: +", "", "pureDamage", "Pure", "", 0);
 
         @Getter
         private String prefix;

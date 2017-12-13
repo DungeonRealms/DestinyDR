@@ -271,29 +271,42 @@ public class DamageAPI {
         //  MARKSMAN DAMAGE  //
         boolean isTagged = false;
         double boost = 0;
+        double mobBoost = 0;
 
+        //PvP
         if(defender.isPlayer()) {
             UUID uuid = defender.getPlayer().getUniqueId();
-            if (CombatLog.isMarksmanTag(defender.getPlayer())) {
+            if (CombatLog.isMarksmanTag(defender.getPlayer()))
                 isTagged = true;
-            }
+
             if (isTagged) {
                 if (CombatLog.MARKS_TAG.containsKey(uuid)) {
                     for (UUID key : CombatLog.MARKS_TAG.keySet()) {
-                        attacker.getPlayer().sendMessage("UUID: " + key + " Key: " + CombatLog.MARKS_TAG.get(key));
                         if (key == uuid)
                             boost = CombatLog.MARKS_TAG.get(key);
                     }
                     damage *= (1 + (boost / 100));
-                    attacker.getPlayer().sendMessage("Tagged! Extra " + damage + " DMG!");
                 }
             }
         }
+        //Mob vs Player
+        if(!attacker.isPlayer() && defender.isPlayer()) {
+            UUID uuid = defender.getPlayer().getUniqueId();
+            if(CombatLog.isMarksmanTag(defender.getPlayer()))
+                isTagged = true;
 
-        //  MARKSMAN GLOW  //
-        int glowChance = attacker.getAttributes().getAttribute(WeaponAttributeType.GLOW).getValue();
-        if(ThreadLocalRandom.current().nextInt(100) < glowChance && defender.isPlayer()) {
-            defender.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, Color.GREEN));
+            if(isTagged) {
+                if (CombatLog.MARKS_TAG.containsKey(uuid)) {
+                    for (UUID key : CombatLog.MARKS_TAG.keySet()) {
+                        if (key == uuid) {
+                            mobBoost = CombatLog.MARKS_TAG.get(key);
+                            defender.getPlayer().sendMessage("Boost: " + mobBoost);
+                        }
+                    }
+                    damage *= (1 + (mobBoost / 100));
+                    defender.getPlayer().sendMessage("DMG: " + damage);
+                }
+            }
         }
 
         //  LIFESTEAL  //
@@ -312,8 +325,10 @@ public class DamageAPI {
         }
 
         //  HEALER DAMAGE  //
-        if(SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.HEALER))
-            damage/=2;
+        if(attacker.isPlayer()) {
+            if (SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.HEALER))
+                damage /= 2;
+        }
 
         //Armor Reduction.
         ItemType type = weapon.getItemType();
@@ -378,7 +393,7 @@ public class DamageAPI {
     public static void applySlow(LivingEntity defender) {
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             int tickLength = EntityAPI.getTier(defender) >= 4 ? 100 : 40;
-            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 0));
+            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 1));
         });
     }
 

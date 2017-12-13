@@ -271,13 +271,15 @@ public class CombatLog implements GenericMechanic {
      */
     public static void addToMarksmanTag(AttackResult.CombatEntity def, AttackResult.CombatEntity att) {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(def.getPlayer());
+        double boost = att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
         if(wrapper == null || !wrapper.isVulnerable() || isMarksmanTag(def.getPlayer()) || DuelingMechanics.isDueling(def.getPlayer().getUniqueId()))
             return;
 
+        def.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0));
         GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG, 8);
         GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
-        MARKS_TAG.put(def.getPlayer().getUniqueId(), att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
-        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds!");
+        MARKS_TAG.put(def.getPlayer().getUniqueId(), boost);
+        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds! You will be taking an extra " + boost + "% DMG!");
 
     }
 
