@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;

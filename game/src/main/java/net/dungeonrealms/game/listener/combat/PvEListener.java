@@ -28,11 +28,15 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.PowerMove;
+import net.dungeonrealms.game.world.entity.powermove.type.HealerAbility;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -232,6 +236,10 @@ public class PvEListener implements Listener {
             if (active.isRiftMinion(event.getEntity()))
                 active.onRiftMinionDeath(event.getEntity(), event);
         }
+        //Handle elite minion deaths
+        if(PowerMove.isEliteMinion(event.getEntity())) {
+            PowerMove.onMinionDeath(event.getEntity(), event);
+        }
         //Handle Quest Kill Objective
         //This has to be declared a second time as final to be used in .forEach
         final Player questReward = highestDamage;
@@ -310,11 +318,18 @@ public class PvEListener implements Listener {
 
         int mobTier = EntityAPI.getTier(receiver);
         Random rand = ThreadLocalRandom.current();
+        Random rand2 = ThreadLocalRandom.current();
         int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
         if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, attacker);
+                PowerMove.doPowerMove("whirlwind", receiver, null);
+            }
+            if(EntityAPI.isNamedElite(receiver) && EntityAPI.getAttributes(receiver).hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
+                if(rand2.nextInt(100) <= 50) {
+                    receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 4.0F);
+                    PowerMove.doPowerMove("healerAbility", receiver, null);
+                }
             }
         } else if (EntityAPI.isBoss(receiver)) {
             if (event.getDamager() instanceof Player)

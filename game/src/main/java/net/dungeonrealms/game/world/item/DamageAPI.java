@@ -622,7 +622,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(50, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(60, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);

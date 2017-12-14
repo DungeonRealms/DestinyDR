@@ -51,7 +51,7 @@ public enum EnumNamedElite {
     PRISCILLA("Priscilla Queen of Ice", 5, EnumMonster.IceLord, CustomEntityType.MELEE_WITHER, -1273, 45, -673, 2500, 1),
     FORGOTTEN_LIBRARIAN("The Forgotten Librarian", 5, EnumMonster.Monk, CustomEntityType.MELEE_WITHER, -981, 108, -842, 2500, 1),
     CYRITH("Cyrith The Spider God", 5, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, 788, 30, 842, 2500, 1),
-    MARK5("Mark 5", 5, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, 10000, 10000, 10000, 2100, 1);
+    MARK5("Mark 5", 5, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, -140, 211, -4144, 2100, 1);
 
     @Getter private String displayName;
     @Getter private int tier;
@@ -95,6 +95,14 @@ public enum EnumNamedElite {
         for (EnumNamedElite elite : values())
             if (elite.name().equalsIgnoreCase(name))
                 return elite;
+        return null;
+    }
+
+    public static EnumNamedElite getMarksmanElites() {
+        EnumNamedElite[] elites = EnumNamedElite.values();
+        for(int i = 0; i < elites.length; i++)
+            if(elites[i] == EnumNamedElite.MARK3 || elites[i] == EnumNamedElite.MARK4 || elites[i] == EnumNamedElite.MARK5)
+                return elites[i];
         return null;
     }
 }
