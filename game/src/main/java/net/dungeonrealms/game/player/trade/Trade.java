@@ -16,9 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Chase on Nov 16, 2015
@@ -30,8 +32,8 @@ public class Trade {
     public boolean p1Ready;
     public boolean p2Ready;
     private boolean rollDuelSlot = true;
-    private boolean p1RollDuel = false;
-    private boolean p2RollDuel = false;
+    public boolean p1RollDuel = false;
+    public boolean p2RollDuel = false;
     //private String skullTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFlMTJhZDk3NTlhM2QzNjhlNWQ5Njk2ZWQxMjRmNzMzNDA2YzRmNzE2MmJhYzRmYTM4YTk4MjE4YjdkN2M2In19fQ==";
     public Inventory inv;
 
@@ -73,7 +75,7 @@ public class Trade {
         inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
         setDividerColor(DyeColor.WHITE);
-        if(rollDuelSlot)setRollDuelSlot();
+        if(rollDuelSlot)setRollDuelSlots();
         p1.openInventory(inv);
         p2.openInventory(inv);
     }
@@ -81,15 +83,35 @@ public class Trade {
     public void setDividerColor(DyeColor dye) {
         ItemStack separator = ItemManager.createItem(Material.STAINED_GLASS_PANE, " ");
         separator.setDurability(dye.getData());
-        if(!rollDuel)inv.setItem(4, separator);
+        if(!rollDuelSlot)inv.setItem(4, separator);
         inv.setItem(13, separator);
         inv.setItem(22, separator);
         inv.setItem(31, separator);
     }
 
-    public void setRollDuelSlot(){
+    public void setRollDuelSlots(){
         ItemStack rollHead = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "Roll Duel", (byte) SkullType.PLAYER.ordinal());
-        SkullMeta skullMeta = (SkullMeta) rollHead.getItemMeta();
+        ItemStack p1head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
+        ItemStack p2head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
+
+        net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(p1head);
+        NBTTagCompound nbt1 = new NBTTagCompound();
+        nbt1.setBoolean("rollduel", false);
+        nms1.setTag(nbt1);
+        nms1.c(CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO");
+
+        net.minecraft.server.v1_9_R2.ItemStack nms2 = CraftItemStack.asNMSCopy(p2head);
+        NBTTagCompound nbt2 = new NBTTagCompound();
+        nbt2.setBoolean("rollduel", false);
+        nms2.setTag(nbt2);
+        nms2.c(CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO");
+
+        p1head = CraftItemStack.asBukkitCopy(nms1);
+        p2head = CraftItemStack.asBukkitCopy(nms2);
+
+        SkullMeta diceMeta = (SkullMeta) rollHead.getItemMeta();
+        SkullMeta p1headMeta = (SkullMeta) p1head.getItemMeta();
+        SkullMeta p2headMeta = (SkullMeta) p2head.getItemMeta();
         //For setting custom textures (We need a signed Dice texture, but for now this guy's skin is registered on minecraft-heads.com so it wont change)
 
         //GameProfile gameProfile = new GameProfile(UUID.fromString("a3bfbea1-6a4b-4d71-be1e-4b6cb2a981f2"), "Dice");
@@ -98,9 +120,15 @@ public class Trade {
         //NBTTagCompound skinNBT = new NBTTagCompound();
         // GameProfileSerializer.serialize(skinNBT, gameProfile);
 
-        skullMeta.setOwner("ElliotIsShort");
-        rollHead.setItemMeta(skullMeta);
+        diceMeta.setOwner("ElliotIsShort");
+        p1headMeta.setOwner(p1.getName());
+        p2headMeta.setOwner(p2.getName());
+        rollHead.setItemMeta(diceMeta);
+        p1head.setItemMeta(p1headMeta);
+        p2head.setItemMeta(p2headMeta);
+        inv.setItem(3, p1head);
         inv.setItem(4, rollHead);
+        inv.setItem(5, p2head);
     }
 
 
@@ -204,37 +232,87 @@ public class Trade {
      * Checks if both players are readied up and then doTrade
      */
     public void checkReady() {
-        if (p1Ready && p2Ready) {
-            for (int i = 1; i < inv.getSize(); i++) {
-                ItemStack item = inv.getItem(i);
-                if (item == null)
-                    continue;
-                if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
-                    continue;
-                if (i == 8)
-                    continue;
+        if(!(p1RollDuel && p2RollDuel)) {
+            if (p1Ready && p2Ready) {
+                for (int i = 1; i < inv.getSize(); i++) {
+                    ItemStack item = inv.getItem(i);
+                    if (item == null)
+                        continue;
+                    if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
+                        continue;
+                    if (i == 8)
+                        continue;
 
-                if (isLeftSlot(i)) {
-                    if (p2.getInventory().firstEmpty() == -1) {
-                        //CANT TRADE
-                        p1.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
-                        p2.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
-                        changeReady();
-                        return;
-                    }
-                } else if (isRightSlot(i)) {
-                    if (p1.getInventory().firstEmpty() == -1) {
-                        p1.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
-                        p2.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
-                        changeReady();
-                        return;
+                    if (isLeftSlot(i)) {
+                        if (p2.getInventory().firstEmpty() == -1) {
+                            //CANT TRADE
+                            p1.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
+                            p2.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
+                            changeReady();
+                            return;
+                        }
+                    } else if (isRightSlot(i)) {
+                        if (p1.getInventory().firstEmpty() == -1) {
+                            p1.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
+                            p2.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
+                            changeReady();
+                            return;
+                        }
                     }
                 }
-            }
 
-            p1.closeInventory();
-            p2.closeInventory();
-            doTrade();
+                p1.closeInventory();
+                p2.closeInventory();
+                doTrade();
+            }
+        }
+        else{
+            changeReady();
+            changeRollDuel();
+            p1.sendMessage(CC.RedB + "You cannot trade and Roll Duel at the same time!");
+            p2.sendMessage(CC.RedB + "You cannot trade and Roll Duel at the same time!");
+        }
+    }
+
+    public void checkRollDuel(){
+        if(!(p1Ready && p2Ready)) {
+            if (p1RollDuel && p2RollDuel) {
+                for (int i = 1; i < inv.getSize(); i++) {
+                    ItemStack item = inv.getItem(i);
+                    if (item == null)
+                        continue;
+                    if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
+                        continue;
+                    if (i == 8)
+                        continue;
+
+                    if (isLeftSlot(i)) {
+                        if (p2.getInventory().firstEmpty() == -1) {
+                            //CANT DUEL
+                            p1.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the Roll Duel.");
+                            p2.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the Roll Duel.");
+                            changeRollDuel();
+                            return;
+                        }
+                    } else if (isRightSlot(i)) {
+                        if (p1.getInventory().firstEmpty() == -1) {
+                            p1.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the Roll Duel.");
+                            p2.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the Roll Duel.");
+                            changeRollDuel();
+                            return;
+                        }
+                    }
+                }
+                p1.closeInventory();
+                p2.closeInventory();
+                doRollDuel();
+            }
+        }
+        else{
+            changeReady();
+            changeRollDuel();
+            p1.sendMessage(CC.RedB + "You cannot trade and Roll Duel at the same time!");
+            p2.sendMessage(CC.RedB + "You cannot trade and Roll Duel at the same time!");
         }
     }
 
@@ -263,11 +341,38 @@ public class Trade {
         remove();
     }
 
-    //TODO: Create a Roll class for the rolling mechanic (if deemed necessary), Set each player to Ready when they click on the Dice, If both users are ready via the Roll Duel Dice then roll.
-    public void setRollDuel(){
-        p1RollDuel = true;
-        p2RollDuel = true;
-        playSound(Sound.BLOCK_NOTE_PLING, 1.8F);
+    private void doRollDuel(){
+        ArrayList<ItemStack> p1Bet = new ArrayList<>();
+        ArrayList<ItemStack> p2Bet = new ArrayList<>();
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item == null)
+                continue;
+            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE || item.getType() == Material.SKULL_ITEM)
+                continue;
+            if (i == 8)
+                continue;
+            if (isLeftSlot(i)) {
+                p1Bet.add(item);
+            } else if (isRightSlot(i)) {
+                p2Bet.add(item);
+            }
+        }
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int result = random.nextInt(2);
+        Player winner = (result == 0) ? p1 : p2;
+        //playRollDuelAnimation();
+        ArrayList<ItemStack> winnings = new ArrayList<>(p1Bet);
+        winnings.addAll(p2Bet);
+        for(ItemStack i : winnings){
+            winner.getInventory().addItem(i);
+        }
+        p1.setCanPickupItems(true);
+        p2.setCanPickupItems(true);
+        p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
+        p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
+        remove();
     }
 
     public void changeReady() {
@@ -287,6 +392,41 @@ public class Trade {
         inv.setItem(8, item);
         p1Ready = false;
         p2Ready = false;
+        playSound(Sound.BLOCK_ANVIL_FALL, 1.8F);
+    }
+
+    public void changeRollDuel() {
+        ItemStack p1head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
+        ItemStack p2head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
+
+        net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(p1head);
+        NBTTagCompound nbt1 = new NBTTagCompound();
+        nbt1.setBoolean("rollduel", false);
+        nms1.setTag(nbt1);
+        nms1.c(CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO");
+
+        net.minecraft.server.v1_9_R2.ItemStack nms2 = CraftItemStack.asNMSCopy(p2head);
+        NBTTagCompound nbt2 = new NBTTagCompound();
+        nbt2.setBoolean("rollduel", false);
+        nms2.setTag(nbt2);
+        nms2.c(CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO");
+
+        p1head = CraftItemStack.asBukkitCopy(nms1);
+        p2head = CraftItemStack.asBukkitCopy(nms2);
+
+        SkullMeta p1headMeta = (SkullMeta) p1head.getItemMeta();
+        SkullMeta p2headMeta = (SkullMeta) p2head.getItemMeta();
+
+        p1headMeta.setOwner(p1.getName());
+        p2headMeta.setOwner(p2.getName());
+
+        p1head.setItemMeta(p1headMeta);
+        p2head.setItemMeta(p2headMeta);
+        inv.setItem(3, p1head);
+        inv.setItem(5, p2head);
+
+        p1RollDuel = false;
+        p2RollDuel = false;
         playSound(Sound.BLOCK_ANVIL_FALL, 1.8F);
     }
 
@@ -323,8 +463,40 @@ public class Trade {
         }
     }
 
+    public void updateRollDuel(UUID uniqueId){
+        if (uniqueId.toString().equalsIgnoreCase(p1.getUniqueId().toString())) {
+            p1RollDuel = !p1RollDuel;
+            if(p1RollDuel) {
+                p1.sendMessage(CC.Blue + "Roll Duel Accepted, waiting for " + CC.Bold + p2.getName() + CC.Blue + " to accept the duel.");
+                p2.sendMessage(CC.Green + p1.getName() + " has challenged you to a Roll Duel.");
+                p2.sendMessage(CC.Gray + "Click on your Roll Duel head to accept.");
+            }
+            else{
+                p1.sendMessage(CC.Red + "Roll Duel is pending your approval...");
+                p2.sendMessage(CC.RedB + p1.getName() + CC.Red + " has unaccepted the Roll Duel.");
+            }
+        }
+        else{
+            p2RollDuel = !p2RollDuel;
+            if(p2RollDuel) {
+                p2.sendMessage(CC.Blue + "Roll Duel Accepted, waiting for " + CC.Bold + p1.getName() + CC.Blue + " to accept the duel.");
+                p1.sendMessage(CC.Green + p2.getName() + " has challenged you to a Roll Duel.");
+                p1.sendMessage(CC.Gray + "Click on your Roll Duel head to accept.");
+            }
+            else{
+                p2.sendMessage(CC.Red + "Roll Duel is pending your approval...");
+                p1.sendMessage(CC.RedB + p2.getName()+ CC.Red + " has unaccepted the Roll Duel.");
+            }
+        }
+        playSound(Sound.BLOCK_NOTE_PLING, 1.8F);
+    }
+
     public Player getOppositePlayer(Player player) {
         if (p1.equals(player)) return p2;
         return p1;
+    }
+
+    public void playRollDuelAnimation(){
+        //TODO: Finally add the animation
     }
 }
