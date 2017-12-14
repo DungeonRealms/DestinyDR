@@ -89,8 +89,11 @@ public class HealerAbility extends PowerMove {
     @AllArgsConstructor
     private enum MinionType {
         PROTECTOR(EnumMonster.Monk, minionTier, 12),
-        ACOLYTE(EnumMonster.Acolyte, minionTier, 12),
-        SACRIFICE(EnumMonster.Skeleton, minionTier, 12);
+        ACOLYTE(EnumMonster.Acolyte, minionTier, 8),
+        SACRIFICE(EnumMonster.Skeleton, minionTier, 8),
+        ENDERMAN(EnumMonster.Enderman, minionTier, 4),
+        SILVERFISH(EnumMonster.Silverfish, minionTier, 6),
+        WITHERSKELETON(EnumMonster.WitherSkeleton, minionTier, 12);
 
         @Getter
         private EnumMonster monster;

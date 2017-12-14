@@ -27,7 +27,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.concurrent.TimeUnit;
+
 public class WitheringPulse extends Healing {
+
+    private long time = System.currentTimeMillis();
+
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
@@ -48,27 +53,32 @@ public class WitheringPulse extends Healing {
         int radius = 5;
 
         boolean affected = false;
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (entity instanceof Player) {
-                Player other = (Player) entity;
-                if (GameAPI._hiddenPlayers.contains(other)) continue;
+        if(time <= System.currentTimeMillis()) {
+            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                if (entity instanceof Player) {
+                    Player other = (Player) entity;
+                    if (GameAPI._hiddenPlayers.contains(other)) continue;
 
-                if(other instanceof EntityHumanNPC.PlayerNPC)continue;
+                    if (other instanceof EntityHumanNPC.PlayerNPC) continue;
 
-                if (party != null && party.isMember(other) || guild != null && guild.isMember(other.getUniqueId()))
-                    continue;
+                    if (party != null && party.isMember(other) || guild != null && guild.isMember(other.getUniqueId()))
+                        continue;
 
-                if (!GameAPI.isNonPvPRegion(other.getLocation())) {
-                    DamageAPI.knockbackEntity(player, other, 1.5F);
+                    if (!GameAPI.isNonPvPRegion(other.getLocation())) {
+                        DamageAPI.knockbackEntity(player, other, 1.5F);
 
-                    int duration = (int) (20 * 4);
-                    duration += duration * (potency * .01);
-                    other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration, potency >= 100 ? 1 : 0));
+                        int duration = (int) (20 * 4);
+                        duration += duration * (potency * .01);
+                        other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration, potency >= 100 ? 1 : 0));
 
-                    affected = true;
-                    withered += other.getName() + ", ";
+                        affected = true;
+                        withered += other.getName() + ", ";
+                        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(12);
+                    }
                 }
             }
+        } else {
+            Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE WITHERING PULSE FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
         }
 
         GamePlayer playerGP = GameAPI.getGamePlayer(player);

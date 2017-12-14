@@ -321,7 +321,8 @@ public class PvEListener implements Listener {
         Random rand2 = ThreadLocalRandom.current();
         int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
         if(EntityAPI.isNamedElite(receiver) && EntityAPI.getAttributes(receiver).hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
-            if(rand2.nextInt(100) <= 20) {
+            powerChance = 2;
+            if(rand2.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 4.0F);
                 PowerMove.doPowerMove("healerAbility", receiver, null);
             }
