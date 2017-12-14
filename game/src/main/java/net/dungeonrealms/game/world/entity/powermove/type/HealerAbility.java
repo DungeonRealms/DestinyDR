@@ -4,7 +4,11 @@ import io.netty.util.internal.ConcurrentSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -58,17 +62,28 @@ public class HealerAbility extends PowerMove {
                 }
 
                 if (mobCount > 0) {
-                    ent.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, 1));
+                    ent.setVelocity(new Vector(0,-1,0));
+                    ent.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 60));
+                    GameAPI.getNearbyPlayers(ent.getLocation(), 4).forEach(p -> {
+                        Vector unitVector = p.getLocation().toVector().subtract(ent.getLocation().toVector()).normalize().multiply(4);
+                        EntityMechanics.setVelocity(p, unitVector);
+                        AttackResult res = new AttackResult(ent, p);
+                        double mulitplier = minionTier;
+                        res.setDamage(150 * mulitplier);
+                        DamageAPI.applyArmorReduction(res, true);
+                        HealthHandler.damageEntity(res);
+
+                    });
                 }
 
                 if(mobCount <= 0) {
-                    ent.removePotionEffect(PotionEffectType.LEVITATION);
+                    ent.removePotionEffect(PotionEffectType.SLOW);
                     chargedMonsters.remove(ent.getUniqueId());
                     chargingMonsters.remove(ent.getUniqueId());
                     this.cancel();
                 }
             }
-        }.runTaskTimer(DungeonRealms.getInstance(), 0, 20);
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 3);
     }
 
     @AllArgsConstructor

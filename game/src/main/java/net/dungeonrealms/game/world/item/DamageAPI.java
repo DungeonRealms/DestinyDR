@@ -300,11 +300,9 @@ public class DamageAPI {
                     for (UUID key : CombatLog.MARKS_TAG.keySet()) {
                         if (key == uuid) {
                             mobBoost = CombatLog.MARKS_TAG.get(key);
-                            defender.getPlayer().sendMessage("Boost: " + mobBoost);
                         }
                     }
                     damage *= (1 + (mobBoost / 100));
-                    defender.getPlayer().sendMessage("DMG: " + damage);
                 }
             }
         }

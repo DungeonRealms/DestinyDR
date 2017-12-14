@@ -320,17 +320,17 @@ public class PvEListener implements Listener {
         Random rand = ThreadLocalRandom.current();
         Random rand2 = ThreadLocalRandom.current();
         int powerChance = EnumTier.getById(mobTier).getPowerMoveChance();
-        if (EntityAPI.isElite(receiver)) {
+        if(EntityAPI.isNamedElite(receiver) && EntityAPI.getAttributes(receiver).hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
+            if(rand2.nextInt(100) <= 20) {
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 4.0F);
+                PowerMove.doPowerMove("healerAbility", receiver, null);
+            }
+        } else if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                 PowerMove.doPowerMove("whirlwind", receiver, null);
             }
-            if(EntityAPI.isNamedElite(receiver) && EntityAPI.getAttributes(receiver).hasAttribute(Item.WeaponAttributeType.DAMAGE_BOOST)) {
-                if(rand2.nextInt(100) <= 50) {
-                    receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 4.0F);
-                    PowerMove.doPowerMove("healerAbility", receiver, null);
-                }
-            }
+
         } else if (EntityAPI.isBoss(receiver)) {
             if (event.getDamager() instanceof Player)
                 ((DungeonBoss) EntityAPI.getMonster(receiver)).onBossAttacked((Player) event.getDamager());
