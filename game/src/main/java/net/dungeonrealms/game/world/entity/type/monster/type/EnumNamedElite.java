@@ -51,7 +51,7 @@ public enum EnumNamedElite {
     PRISCILLA("Priscilla Queen of Ice", 5, EnumMonster.IceLord, CustomEntityType.MELEE_WITHER, -1273, 45, -673, 2500, 1),
     FORGOTTEN_LIBRARIAN("The Forgotten Librarian", 5, EnumMonster.Monk, CustomEntityType.MELEE_WITHER, -981, 108, -842, 2500, 1),
     CYRITH("Cyrith The Spider God", 5, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, 788, 30, 842, 2500, 1),
-    AURORILE("Lord Aurorile", 5, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, 972, 169, 586, 2500, 1);
+    AURORILE("Lord Aurorile", 5, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, -870, 23, -214, 2500, 1);
 
     @Getter private String displayName;
     @Getter private int tier;
