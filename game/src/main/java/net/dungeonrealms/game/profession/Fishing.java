@@ -172,18 +172,28 @@ public class Fishing implements GenericMechanic, Listener {
     public enum EnumFish {
 
         //  TIER 1  //
+        Shrimp(1, "A pink scaled crustacean."),
         Anchovie(1, "A small blue, oily fish."),
+        Crayfish(1, "A lobster-like and brown crustacean."),
 
         //  TIER 2  //
+        Carp(2, "A Large, silver-scaled fish."),
+        Herring(2, "A colourful and medium-sized fish."),
         Sardine(2, "A small and oily green fish."),
 
         //  TIER 3  //
         Salmon(3, "A beautiful jumping fish."),
+        Trout(3, "A non-migrating Salmon."),
+        Cod(3, "A cold-water, deep sea fish."),
 
         //  TIER 4  //
         Lobster(4, "A large, red crustacean."),
+        Tuna(4, "A large, sapphire blue fish."),
+        Bass(4, "A very large and white fish."),
 
         //  TIER 5  //
+        Shark(5, "A terrifying and massive predator."),
+        Swordfish(5, "An elongated fish with a long bill."),
         Monkfish(5, "A flat, large, and scary looking fish.");
 
 
