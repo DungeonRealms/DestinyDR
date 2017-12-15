@@ -75,7 +75,7 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
             return;
         }
 
-        if(ItemUtilityWeapon.isUtilityWeapon(upgradeItem)) {
+        if(ItemUtilityWeapon.isUtilityWeaponRanged(upgradeItem)) {
             evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted.");
             return;
         }
