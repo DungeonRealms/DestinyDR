@@ -84,13 +84,6 @@ public class DamageAPI {
             return;
         }
 
-        if (attacker != null && attacker.isPlayer()) {
-            if (DungeonManager.isDungeon(attacker.getPlayer().getWorld())) {
-                Block block = attacker.getPlayer().getLocation().getBlock();
-                if (block != null && block.getType().equals(Material.LADDER)) return;
-            }
-        }
-
         ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
 
         int weaponTier = weapon.getTier().getId();
