@@ -1,6 +1,6 @@
 Build <build>
 
-git &lChanges Since Last Build:
+  &lChanges Since Last Build:
  - Added Altar Crafting and Infusing system.
  - Different types of foes now drop certain altar recipe items.
  - Multiple stat adjustments.
