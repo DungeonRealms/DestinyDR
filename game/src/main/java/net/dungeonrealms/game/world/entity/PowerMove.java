@@ -10,7 +10,6 @@ import net.dungeonrealms.game.world.entity.powermove.type.Stomp;
 import net.dungeonrealms.game.world.entity.powermove.type.WhirlWind;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.royawesome.jlibnoise.module.combiner.Power;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
