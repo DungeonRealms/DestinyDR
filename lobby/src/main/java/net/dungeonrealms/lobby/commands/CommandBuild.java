@@ -19,6 +19,11 @@ public class CommandBuild extends BaseCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player) || !Lobby.getInstance().isLoggedIn((Player)sender))
 			return false;
+		
+		if (args.length > 0 && args[0].equalsIgnoreCase("kata")) {
+			BungeeUtils.sendToServer(sender.getName(), "kata");
+			return true;
+		}
 
 		if (args.length == 0 || !args[0].equalsIgnoreCase("creative"))
 			return false;
