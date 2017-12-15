@@ -10,6 +10,8 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.accessories.Trinket;
+import net.dungeonrealms.game.listener.combat.AttackResult;
+import net.dungeonrealms.game.listener.combat.PvPListener;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -20,6 +22,8 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
@@ -28,11 +32,13 @@ import net.minecraft.server.v1_9_R2.ItemShield;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataStore;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +55,8 @@ public class CombatLog implements GenericMechanic {
 
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<Player, Integer> PVP_COMBAT = new ConcurrentHashMap<>();
+
+    public static ConcurrentHashMap<UUID, Double> MARKS_TAG = new ConcurrentHashMap<>();
 
     public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
         return COMBAT_LOGGERS;
@@ -78,6 +86,7 @@ public class CombatLog implements GenericMechanic {
                     for(int k = 0; k < player.getInventory().getStorageContents().length; k++) {
                         ItemStack itemStack = player.getInventory().getStorageContents()[k];
                         if(k == 0) continue; // weapon
+                        if(k == 1 && ItemUtilityWeapon.isUtilityWeapon(itemStack)) continue; //marksman bow
                         if(k == 9 && itemStack != null && Trinket.getActiveTrinketItem(player) != null) continue;
                         if (itemStack != null) {
                             // Don't drop the journal/realm star
@@ -255,6 +264,50 @@ public class CombatLog implements GenericMechanic {
 
     // END PVP COMBAT
 
+    /**
+     * Add a player to MarksmanTag
+     *
+     *
+     */
+    public static void addToMarksmanTag(AttackResult.CombatEntity def, AttackResult.CombatEntity att) {
+        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(def.getPlayer());
+        double boost = att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange();
+        if(wrapper == null || !wrapper.isVulnerable() || isMarksmanTag(def.getPlayer()) || DuelingMechanics.isDueling(def.getPlayer().getUniqueId()))
+            return;
+
+        def.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0));
+        GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG, 8);
+        GameAPI.addCooldown(def.getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN, 20);
+        MARKS_TAG.put(def.getPlayer().getUniqueId(), boost);
+        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You have been marksman tagged for 8 seconds! You will be taking an extra " + boost + "% DMG!");
+
+    }
+
+    /**
+     * Remove a player from being marksman tagged
+     *
+     *
+     */
+    public static void removeFromMarksmanTag(AttackResult.CombatEntity def, AttackResult.CombatEntity att) {
+        if (!isMarksmanTag(def.getPlayer()))
+            return;
+
+        MARKS_TAG.remove(def.getPlayer().getUniqueId(), att.getAttributes().getAttribute(Item.WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
+        def.getPlayer().sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "No longer marksman tagged!");
+    }
+
+    /**
+     * Check if a player is marksman tagged
+     *
+     * @param player The player
+     * @return Boolean
+     */
+    public static boolean isMarksmanTag(Player player) {
+        return GameAPI.isCooldown(player, MetadataUtils.Metadata.MARKSMAN_TAG);
+    }
+
+    // END OF MARKSMAN TAG
+
     public static void updateCombat(Player player) {
         if (isInCombat(player))
             COMBAT.put(player, 10);
@@ -266,7 +319,7 @@ public class CombatLog implements GenericMechanic {
         PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
         if(wrapper == null || isInCombat(player) || !wrapper.isVulnerable())
         	return;
-       
+
         COMBAT.put(player, 10);
         TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
         

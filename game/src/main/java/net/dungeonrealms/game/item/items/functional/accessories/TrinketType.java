@@ -28,8 +28,7 @@ public enum TrinketType {
                     Trinket.FISH_DAY_SUCCESS,
                     Trinket.FISH_NIGHT_SUCCESS,
                     Trinket.FISH_HP_FISH,
-                    Trinket.FISH_SPEED_FISH,
-                    Trinket.FISH_ONE_TYPE)),
+                    Trinket.FISH_SPEED_FISH)),
     MINING_GLOVE("Mining Glove",
             new MaterialData(Material.COAL, (byte) 5), ChatColor.GREEN,
             Lists.newArrayList(
@@ -39,7 +38,8 @@ public enum TrinketType {
                     Trinket.MINE_GEM_FIND,
                     Trinket.MINE_TREASURE_FIND,
                     Trinket.MINE_GEM_TELEPORT,
-                    Trinket.NO_MINING_FATIGUE)),
+                    Trinket.NO_MINING_FATIGUE,
+                    Trinket.ORE_RESPAWN)),
     RIFT_RING("Rift Ring",
             new MaterialData(Material.SHEARS, (byte) 3),
             ChatColor.LIGHT_PURPLE, Lists.newArrayList(Trinket.INCREASED_RIFT,
@@ -48,7 +48,13 @@ public enum TrinketType {
             Trinket.UPCOMING_RIFT,
             Trinket.DUNGEON_TELEPORT)),
     COMBAT("Circlet", new MaterialData(Material.SHEARS, (byte) 4),
-            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT_SLOW_RESIST, Trinket.COMBAT_LIFESTEAL, Trinket.COMBAT_DURABILITY, Trinket.COMBAT_SPEED, Trinket.COMBAT_RARE, Trinket.COMBAT)),
+            ChatColor.YELLOW, Lists.newArrayList(Trinket.COMBAT_SLOW_RESIST,
+            Trinket.COMBAT_LIFESTEAL,
+            Trinket.COMBAT_DURABILITY,
+            Trinket.COMBAT_SPEED,
+            Trinket.COMBAT_RARE,
+            Trinket.COMBAT,
+            Trinket.COMBAT_DECREASED_BOW_SPEED)),
 
     VOTE_CRATE("Circlet", new MaterialData(Material.SHEARS, (byte)4), ChatColor.YELLOW, Lists.newArrayList(Trinket.REDUCED_REPAIR));
 

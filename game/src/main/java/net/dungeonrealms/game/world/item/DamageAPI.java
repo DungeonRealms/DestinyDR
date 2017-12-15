@@ -18,11 +18,13 @@ import net.dungeonrealms.game.listener.combat.AttackResult;
 import net.dungeonrealms.game.listener.combat.AttackResult.CombatEntity;
 import net.dungeonrealms.game.listener.combat.DamageResultType;
 import net.dungeonrealms.game.mastery.AttributeList;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.MetadataUtils.Metadata;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -35,6 +37,7 @@ import net.dungeonrealms.game.world.item.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityArrow;
+import net.minecraft.server.v1_9_R2.EntitySpectralArrow;
 import net.minecraft.server.v1_9_R2.MathHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -42,6 +45,7 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftSpectralArrow;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -63,6 +67,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DamageAPI {
 
     public static HashMap<Player, HashMap<ArmorStand, BukkitTask>> DAMAGE_HOLOGRAMS = new HashMap<>();
+    public static HashMap<UUID, WeaponAttributeType> marksTag = new HashMap<UUID, WeaponAttributeType>();
 
     public static void calculateWeaponDamage(AttackResult res, boolean removeDurability) {
         CombatEntity attacker = res.getAttacker();
@@ -87,6 +92,7 @@ public class DamageAPI {
         }
 
         ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
+
         int weaponTier = weapon.getTier().getId();
         //  BASE DAMAGE  //
         double damage = attacker.getAttributes().getAttribute(WeaponAttributeType.DAMAGE).getValueInRange();
@@ -138,8 +144,8 @@ public class DamageAPI {
                 int intValue = attacker.getAttributes().getAttribute(ArmorAttributeType.INTELLECT).getValue();
                 damage = damage * (1 + (intValue * 0.0002));
             } else if (type == ItemType.BOW) {*/
-                int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
-                damage = damage * (1 + (dexValue * 0.00015));
+            int dexValue = attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue();
+            damage = damage * (1 + (dexValue * 0.00015));
             //}
         }
 
@@ -159,13 +165,13 @@ public class DamageAPI {
 //        System.out.println("Damage: " + damage);
         //  DPS  //
         double totalDPS = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE).getValueInRange();
-        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
-        if(otherArmor > 0) {
-            totalDPS -= otherArmor;
-            totalDPS = Math.max(0, totalDPS);
-        }
+//        double otherArmor = defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange();
+//        if(otherArmor > 0) {
+//            totalDPS -= otherArmor;
+//            totalDPS = Math.max(0, totalDPS);
+//        }
 
-        totalDPS = Math.min(80, totalDPS);
+        totalDPS = Math.min(100, totalDPS);
         /*double dpsToAdd = (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03);
         if(dpsToAdd > 0) totalDPS += dpsToAdd;*/
         //totalDPS = totalDPS +  (1 + (attacker.getAttributes().getAttribute(ArmorAttributeType.DEXTERITY).getValue() * 0.03));
@@ -258,8 +264,48 @@ public class DamageAPI {
         }
 
         //  DAMAGE CAP  //
-        if (!attacker.isPlayer())
+        if (!attacker.isPlayer()) {
             damage = Math.min(damage, weaponTier * 600);
+        }
+
+        //  MARKSMAN DAMAGE  //
+        boolean isTagged = false;
+        double boost = 0;
+        double mobBoost = 0;
+
+        //PvP
+        if(defender.isPlayer()) {
+            UUID uuid = defender.getPlayer().getUniqueId();
+            if (CombatLog.isMarksmanTag(defender.getPlayer()))
+                isTagged = true;
+
+            if (isTagged) {
+                if (CombatLog.MARKS_TAG.containsKey(uuid)) {
+                    for (UUID key : CombatLog.MARKS_TAG.keySet()) {
+                        if (key == uuid)
+                            boost = CombatLog.MARKS_TAG.get(key);
+                    }
+                    damage *= (1 + (boost / 100));
+                }
+            }
+        }
+        //Mob vs Player
+        if(!attacker.isPlayer() && defender.isPlayer()) {
+            UUID uuid = defender.getPlayer().getUniqueId();
+            if(CombatLog.isMarksmanTag(defender.getPlayer()))
+                isTagged = true;
+
+            if(isTagged) {
+                if (CombatLog.MARKS_TAG.containsKey(uuid)) {
+                    for (UUID key : CombatLog.MARKS_TAG.keySet()) {
+                        if (key == uuid) {
+                            mobBoost = CombatLog.MARKS_TAG.get(key);
+                        }
+                    }
+                    damage *= (1 + (mobBoost / 100));
+                }
+            }
+        }
 
         //  LIFESTEAL  //
 
@@ -274,6 +320,12 @@ public class DamageAPI {
                 double lifeToHeal = (double) (attacker.getAttributes().getAttribute(WeaponAttributeType.LIFE_STEAL).getValue() + bonusAmount + trinketBonus) / 100 * damage;
                 HealthHandler.heal(attack, (int) lifeToHeal + 1, true);
             }
+        }
+
+        //  HEALER DAMAGE  //
+        if(attacker.isPlayer()) {
+            if (SetBonus.hasSetBonus(attacker.getPlayer(), SetBonuses.HEALER))
+                damage /= 2;
         }
 
         //Armor Reduction.
@@ -294,7 +346,6 @@ public class DamageAPI {
             double damageReduction = reductionPercent / 100.0;
             damage = damage * (1 - damageReduction);
         }
-
 
         res.setDamage(damage);
         return;
@@ -340,7 +391,7 @@ public class DamageAPI {
     public static void applySlow(LivingEntity defender) {
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             int tickLength = EntityAPI.getTier(defender) >= 4 ? 100 : 40;
-            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 0));
+            defender.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, tickLength, 1));
         });
     }
 
@@ -569,7 +620,7 @@ public class DamageAPI {
         }
 
         //  BASE ARMOR  //
-        totalArmor = Math.min(80, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
+        totalArmor = Math.min(60, defender.getAttributes().getAttribute(ArmorAttributeType.ARMOR).getValueInRange());
 
         //  ARMOR PENETRATION  //
         ModifierRange range = attacker.getAttributes().getAttribute(WeaponAttributeType.ARMOR_PENETRATION);
@@ -578,12 +629,12 @@ public class DamageAPI {
             totalArmor = Math.max(0, totalArmor);
         }
 
-        ModifierRange range2 = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
-        double otherDPS = range2.getValueInRange();
-        if (otherDPS > 0) {
-            totalArmor -= otherDPS;
-            totalArmor = Math.max(0, totalArmor);
-        }
+//        ModifierRange range2 = attacker.getAttributes().getAttribute(ArmorAttributeType.DAMAGE);
+//        double otherDPS = range2.getValueInRange();
+//        if (otherDPS > 0) {
+//            totalArmor -= otherDPS;
+//            totalArmor = Math.max(0, totalArmor);
+//        }
 
         //  THORNS  //
         ModifierRange mr = defender.getAttributes().getAttribute(ArmorAttributeType.THORNS);
@@ -633,7 +684,6 @@ public class DamageAPI {
                 /*
                 if (ea.getResist() != null) {
                     elementalResistance += Math.min(75, defender.getAttributes().getAttribute(ea.getResist()).getValue());
-
                 }*/
             }
         } else if (EntityAPI.isElemental(attacker.getEntity())) {
@@ -674,7 +724,6 @@ public class DamageAPI {
             if (potionTier < LEVEL_REDUCTION.length)
                 totalArmorReduction *= LEVEL_REDUCTION[potionTier];
         }
-
 
         res.setDamage(Math.max(1, damage));
         res.setTotalArmor(totalArmor);
@@ -757,12 +806,25 @@ public class DamageAPI {
         double durability = 1.0;
         if (takeDura)
             if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
-            durability = 0.5;
+                durability = 0.5;
 
-            bow.damageItem(player, durability);
+        bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
         fireBowProjectile(player, bow);
+    }
+
+    //Change this later
+    public static void fireMarksmanBowProjectile(Player player, ItemWeaponMarksmanBow bow, boolean takeDura) {
+        double durability = 1.0;
+        if (takeDura)
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
+                durability = 0.5;
+
+        bow.damageItem(player, durability);
+        PlayerWrapper.getWrapper(player).calculateAllAttributes();
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+        fireMarksmanBowProjectile(player, bow);
     }
 
     public static void fireBowProjectile(LivingEntity ent, ItemWeaponBow bow) {
@@ -788,6 +850,23 @@ public class DamageAPI {
         projectile.setVelocity(projectile.getVelocity().multiply(1.15));
         projectile.setShooter(ent);
         ((CraftArrow) projectile).getHandle().fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
+        MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
+    }
+
+    //Change this later
+    public static void fireMarksmanBowProjectile(LivingEntity ent, ItemWeaponMarksmanBow bow) {
+
+        Projectile projectile = null;
+
+        if (projectile == null)
+            projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) ent.getWorld()).getHandle(), (CraftLivingEntity) ent, null, SpectralArrow.class, 100D);
+//        projectile = ent.launchProjectile(Arrow.class);
+
+        projectile.setBounce(false);
+        projectile.setVelocity(projectile.getVelocity().multiply(1.15));
+        projectile.setShooter(ent);
+        ((CraftSpectralArrow) projectile).setGlowingTicks(0);
+        ((CraftSpectralArrow) projectile).getHandle().fromPlayer = EntitySpectralArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(bow.getAttributes(), bow.getTier().getId(), projectile);
     }
 
@@ -897,6 +976,15 @@ public class DamageAPI {
         EntityType type = entity.getType();
         return type == EntityType.ARROW || type == EntityType.TIPPED_ARROW;
     }
+
+    public static boolean isMarksmanBowProjectile(Entity entity) {
+        EntityType type = entity.getType();
+        return type == EntityType.SPECTRAL_ARROW;
+    }
+
+//    public static void addToTagMap(CombatEntity player) {
+//        marksTag.put(player.getPlayer().getUniqueId(), player.getAttributes().getAttribute(WeaponAttributeType.DAMAGE_BOOST).getValueInRange());
+//    }
 
     /**
      * Sets a blanket damage bonus for a specified entity. When the entity

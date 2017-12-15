@@ -33,6 +33,7 @@ public enum EnumNamedElite {
     PYRO_BANDIT("Pyro Bandit", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, -331, 67, -407, 1900, 1), //650 - 810 Chest
     REDEYE_THE_CRUEL("Redeye The Cruel", 3, EnumMonster.Bandit, CustomEntityType.MELEE_WITHER, 188, 61, -594, 2100, 1), //790-920 HP Chest
     YAHOVA("Yahova the Officer", 3, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1112, 183, -695, 2100, 1),
+    YAKHEL("Yakhel The Fallen Crusader", 3, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, -1631, 63, 647, 2000, 1),
 
     // TIER 4 //
     BLAYSHAN("Blayshan The Naga", 4, EnumMonster.Naga, CustomEntityType.MELEE_ZOMBIE, -278, 85, -202, 2500, 3),
@@ -42,13 +43,15 @@ public enum EnumNamedElite {
     BLOOD_BUTCHER("Blood Butcher", 4, EnumMonster.Skeleton1, CustomEntityType.MELEE_WITHER, 230, 35, -3542, 2600, 1), //Better then blayshan pretty much
     AZEMAR("Azemar The Great", 4, EnumMonster.Skeleton, CustomEntityType.MELEE_SKELETON, -465, 27, 1512, 2600, 1),
     DARK("The Dark One", 4, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1518, 49, 722, 2600, 1),
+    ZANK("Zank The Executioner", 4, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, -860, 92, 1566, 2100, 1),
 
     // TIER 5 //
     KILATAN("Daemon Lord Kilatan", 5, EnumMonster.Imp, CustomEntityType.BOW_SKELETON, -411, 33, -3487, 1800, 1),
     LIBRARIAN("The Librarian", 5, EnumMonster.Skeleton, CustomEntityType.BOW_SKELETON, -1590, 63, 1218, 2500, 1),
     PRISCILLA("Priscilla Queen of Ice", 5, EnumMonster.IceLord, CustomEntityType.MELEE_WITHER, -1273, 45, -673, 2500, 1),
     FORGOTTEN_LIBRARIAN("The Forgotten Librarian", 5, EnumMonster.Monk, CustomEntityType.MELEE_WITHER, -981, 108, -842, 2500, 1),
-    CYRITH("Cyrith The Spider God", 5, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, 788, 30, 842, 2500, 1);
+    CYRITH("Cyrith The Spider God", 5, EnumMonster.Spider2, CustomEntityType.LARGE_SPIDER, 788, 30, 842, 2500, 1),
+    AURORILE("Lord Aurorile", 5, EnumMonster.Skeleton, CustomEntityType.MARK_BOW_SKELETON, 972, 169, 586, 2500, 1);
 
     @Getter private String displayName;
     @Getter private int tier;

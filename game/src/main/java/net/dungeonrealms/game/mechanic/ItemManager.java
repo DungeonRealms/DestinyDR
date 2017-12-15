@@ -136,14 +136,15 @@ public class ItemManager {
 
         dps = range.getValLow() + " - " + range.getValHigh();
 
+        int blogde = pw.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue() + pw.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK
-                + "   " + dps + ChatColor.BOLD + "% DPS" + "\n" + ChatColor.BLACK
+                + "   " + dps + "%" +  ChatColor.BOLD + " DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
 //                + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
-                + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.GEM_FIND).getValue() + ChatColor.BOLD + " GEM FIND" + "\n" + ChatColor.BLACK
-                + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.ITEM_FIND).getValue() + ChatColor.BOLD + " ITEM FIND";
+                + "   " + blogde + "%" + ChatColor.BOLD + " BLODGE" + "\n" + ChatColor.BLACK
+                + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.REFLECTION).getValue() + "%" + ChatColor.BOLD + " REFLECTION";
 
         /*page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "   " + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + align_expire_message + "\n"

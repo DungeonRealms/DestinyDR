@@ -32,6 +32,7 @@ public enum ItemType {
 	POLEARM("polearm", ItemWeaponPolearm.class, GeneratedItemType.POLEARM),
 	//STAFF("staff", ItemWeaponStaff.class, GeneratedItemType.STAFF),
 	BOW("bow", ItemWeaponBow.class, GeneratedItemType.BOW),
+	MARKSMAN_BOW("marksmanBow", ItemWeaponMarksmanBow.class, GeneratedItemType.MARKSMAN_BOW),
 	
 	HELMET("helmet", ItemArmorHelmet.class, GeneratedItemType.HELMET),
 	CHESTPLATE("chestplate", ItemArmorChestplate.class, GeneratedItemType.CHESTPLATE),

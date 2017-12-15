@@ -9,6 +9,7 @@ import net.dungeonrealms.game.item.event.ItemClickEvent.ItemClickListener;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent;
 import net.dungeonrealms.game.item.event.ItemInventoryEvent.ItemInventoryListener;
 import net.dungeonrealms.game.item.items.core.ItemGear;
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import net.dungeonrealms.game.item.items.functional.cluescrolls.ClueUtils;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -71,6 +72,11 @@ public abstract class ItemEnchantScroll extends FunctionalItem implements ItemCl
 
         if (gear.getEnchantCount() >= 12) {
             evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted further.");
+            return;
+        }
+
+        if(ItemUtilityWeapon.isUtilityWeapon(upgradeItem)) {
+            evt.getPlayer().sendMessage(ChatColor.RED + "This item cannot be enchanted.");
             return;
         }
 

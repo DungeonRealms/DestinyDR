@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.item.itemgenerator.modifiers;
 
 import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import net.dungeonrealms.game.item.items.core.ItemWeapon;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -188,6 +189,38 @@ public class WeaponModifiers {
 
 	}
 
+	public class MarksmanBowDamage extends ItemModifier {
+
+		public MarksmanBowDamage() {
+			super(WeaponAttributeType.DAMAGE_BOOST, ItemType.MARKSMAN_BOW);
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 1, 2, 2, 3)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 3, 3, 3, 3)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 4, 4, 4, 4)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 5, 5, 5, 5)));
+
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 5, 5, 5, 6)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 6, 6, 6, 6)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 7, 7, 7, 7)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 8, 8, 8, 8)));
+
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 8, 8, 8, 9)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 9, 9, 9, 9)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 10, 10, 10, 10)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 10, 10, 11, 12)));
+
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 12, 12, 12, 16)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 16, 16, 17, 18)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 18, 18, 19, 20)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 20, 20, 21, 22)));
+
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.COMMON, new ModifierRange(ModifierType.QUAD, 22, 22, 22, 23)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.QUAD, 23, 24, 25, 26)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.QUAD, 26, 27, 28, 29)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.QUAD, 29, 30, 31, 32)));
+
+		}
+	}
+
 	/*public class Precision extends ItemModifier {
 		public Precision(){
 			super(WeaponAttributeType.PRECISION, ItemType.STAFF);
@@ -268,8 +301,8 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 4), 6));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 9), 9));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 10));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 5, 30), 15));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 10, 55), 20));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 15, 30), 15));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 20, 55), 20));
 		}
 	}
 
@@ -318,7 +351,7 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 10), 12));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 15), 15));
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 1, 20), 20));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 25), 15));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 25), 20));
 		}
 
 	}
@@ -334,5 +367,29 @@ public class WeaponModifiers {
 			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 1, 10), 15));
 		}
 
+	}
+
+	public class MarksmanBowBlind extends ItemModifier{
+
+		public MarksmanBowBlind() {
+			super(WeaponAttributeType.BLIND, ItemUtilityWeapon.UTILITY_WEAPONS);
+			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 9), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 10, 14), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 15, 20), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 21, 35), 10));
+		}
+	}
+
+	public class MarksmanBowSlow extends ItemModifier {
+
+		public MarksmanBowSlow() {
+			super(WeaponAttributeType.SLOW, ItemUtilityWeapon.UTILITY_WEAPONS);
+			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 9), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 10, 14), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 15, 20), 10));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 21, 35), 10));
+		}
 	}
 }

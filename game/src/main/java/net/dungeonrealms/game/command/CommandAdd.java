@@ -8,6 +8,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import net.dungeonrealms.game.item.items.core.*;
 import net.dungeonrealms.game.item.items.functional.*;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood.EnumHealingFood;
@@ -20,7 +21,6 @@ import net.dungeonrealms.game.mechanic.data.PotionTier;
 import net.dungeonrealms.game.mechanic.data.PouchTier;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.player.altars.items.recipeitems.*;
-import net.dungeonrealms.game.player.altars.recipes.healer.RecipeHealerBoots;
 import net.dungeonrealms.game.player.inventory.menus.staff.GUIItemBank;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
@@ -210,6 +210,27 @@ public class CommandAdd extends BaseCommand {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
+                    }
+                    break;
+                case "utilityweapon":
+                    //TODO: Attribute editor.
+                    try {
+                        CombatItem gear = new ItemUtilityWeapon();
+
+                        if (args.length >= 2)
+                            gear.setTier(ItemTier.getByTier(Integer.parseInt(args[1])));
+
+                        if (args.length >= 3)
+                            gear.setType(ItemType.valueOf(args[2].toUpperCase()));
+
+                        if (args.length >= 4)
+                            gear.setRarity(ItemRarity.valueOf(args[3].toUpperCase()));
+
+                        player.getInventory().addItem(gear.generateItem());
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        player.sendMessage("Format: /ad utilityweapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "reloadModifiers":

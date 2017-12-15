@@ -35,6 +35,7 @@ public class Item {
         AXE(AttributeBank.WEAPON, new Material[]{Material.WOOD_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.GOLD_AXE}, new String[]{"Hatchet", "Great Axe", "War Axe", "Ancient Axe", "Legendary Axe"}, 2),
         STAFF(AttributeBank.WEAPON, new Material[]{Material.WOOD_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.DIAMOND_HOE, Material.GOLD_HOE}, new String[]{"Staff", "Battlestaff", "Wizard Staff", "Ancient Staff", "Legendary Staff"}, 2),
         BOW(AttributeBank.WEAPON, Material.BOW, new String[]{"Shortbow", "Longbow", "Magic Bow", "Ancient Bow", "Legendary Bow"}, 2),
+        MARKSMAN_BOW(AttributeBank.WEAPON, Material.BOW, new String[]{"Marksman Bow", "Great Marksman Bow", "Magic Marksman Bow", "Ancient Marksman Bow", "Legendary Marksman Bow"}, 2),
 
         // ARMOR
         HELMET(AttributeBank.ARMOR, new Material[]{Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.GOLD_HELMET}, new String[]{"Leather Coif", "Medium Helmet", "Full Helmet", "Ancient Full Helmet", "Legendary Full Helmet"}, 1),
@@ -512,6 +513,7 @@ public class Item {
 
     public enum WeaponAttributeType implements AttributeType {
         DAMAGE("DMG: ", "", "damage", 100, true, true, "", "", -1),
+        DAMAGE_BOOST("DMG BOOST: ", "%", "damageBoost", 100, true, true, "", "", -1),
         VS_MONSTERS("vs. MONSTERS: +", "% DMG", "vsMonsters", "", "Slaying", 9),
         VS_PLAYER("vs. PLAYERS: +", "% DMG", "vsPlayers", "", "Slaughter", 10),
         PRECISION("PRECISION: ", "%", "precision", "Precise", "", 1),

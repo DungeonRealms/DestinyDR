@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.items.core.ItemGear;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -102,6 +103,8 @@ public class MetadataUtils {
 		STAFF_ENERGY_COOLDOWN(-1),
 		RIFT_COOLDOWN(-1),
 		REGEN_ABILITY(-1),
+		MARKSMAN_TAG(-1),
+		MARKSMAN_TAG_COOLDOWN(-1),
 		DEATH_COOLDOWN(-1);
 		
 		private Object defaultValue;

@@ -1,5 +1,24 @@
 Build <build>
 
+&lWhats New?:
+- Various bug fixes.
+- Armor has been buffed.
+- Marksman bows have been added.(See dungeonrealms.net for more info)
+- 3 new marksman elites have been added. (See dungeonrealms.net for more info)
+- A roll dueling system has been implemented in the trade window.
+- Multiple stat adjustments.
+- Healer sets now deal 1/2 damage
+- More enderman and Acolytes have been added to various spots
+around the map
+- rift respawn times have been slightly decreased.
+- new command /dungeoncooldown
+- slightly buffed mining treasure find
+- With the addition of roll dueling GUI, we will no longer be
+enforcing or refunding items on roll duel scams.
+
+
+
+&lChanges Since Last Build:
   &lChanges Since Last Build:
  - Added Altar Crafting and Infusing system.
  - Different types of foes now drop certain altar recipe items.

@@ -43,7 +43,7 @@ public enum EnumMonster {
     Bandit(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
     Bandit1(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_ZOMBIE), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
     PassiveBandit(l(CustomEntityType.MELEE_ZOMBIE, CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Bandit", ItemType.AXE, SkullTextures.BANDIT, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), 15, ElementalAttribute.POISON),
-    
+
     // Skeletons
     FrozenSkeleton(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON, CustomEntityType.BOW_SKELETON), "Mountain Walker", null, SkullTextures.FROZEN_SKELETON, 15, ElementalAttribute.ICE),
     Skeleton(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Skeleton", ItemType.BOW, SkullTextures.SKELETON, l("Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"), 5, ElementalAttribute.PURE),
@@ -55,7 +55,7 @@ public enum EnumMonster {
     // Pirates
     Pirate(l(CustomEntityType.MELEE_SKELETON, CustomEntityType.BOW_SKELETON), "Pirate", null, SkullTextures.PIRATE),
     RangedPirate(l(CustomEntityType.BOW_SKELETON), "Ranged Pirate", null, SkullTextures.PIRATE, l("Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"), l("")),
-    
+
     Naga(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Naga", null, SkullTextures.NAGA, l("Weak"), l("Shaman", "Mage"), 25, ElementalAttribute.ICE),
     Tripoli(l(CustomEntityType.MELEE_ZOMBIE), "Tripoli", ItemType.AXE, SkullTextures.TRIPOLI_SOLDIER, l(""), l("Soldier", "Commander"), 3, ElementalAttribute.FIRE),
     Tripoli1(l(CustomEntityType.MELEE_ZOMBIE), "Tripoli", ItemType.AXE, SkullTextures.TRIPOLI_SOLDIER, l(""), l("Soldier", "Commander"), 3, ElementalAttribute.FIRE),
@@ -69,7 +69,7 @@ public enum EnumMonster {
     // Daemons
     Daemon(l(CustomEntityType.DR_PIGMAN), "Daemon", ItemType.POLEARM, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
     Daemon2(l(CustomEntityType.BOW_SKELETON), "Daemon", ItemType.BOW, SkullTextures.DEVIL, 10, ElementalAttribute.PURE),
-    
+
     // Zombie
     StaffZombie(l(CustomEntityType.BOW_ZOMBIE), "Zombie", ItemType.BOW, SkullTextures.ZOMBIE, l("Deadly", "Piercing"), l("Ranger"), 5, ElementalAttribute.PURE),
     Zombie(l(CustomEntityType.MELEE_ZOMBIE), "Greater Zombie", ItemType.SWORD, SkullTextures.ZOMBIE, 10, ElementalAttribute.FIRE),
@@ -77,9 +77,9 @@ public enum EnumMonster {
     MagmaCube(l(CustomEntityType.DR_MAGMA), "Magma Cube", null, 40, ElementalAttribute.FIRE),
     Silverfish(l(CustomEntityType.DR_SILVERFISH), "Rat", ItemType.SWORD, l("Smelly", "Dirty"), 15, ElementalAttribute.ICE),
 
-	// Misc
-	Monk(l(CustomEntityType.MELEE_ZOMBIE), "Crimson Crusader", ItemType.POLEARM, SkullTextures.MONK, 15, ElementalAttribute.POISON),
-	Lizardman(l(CustomEntityType.MELEE_ZOMBIE), "Lizardman", ItemType.POLEARM, SkullTextures.LIZARD, new String[] {"Giant", "Tough"}, 10, ElementalAttribute.FIRE),
+    // Misc
+    Monk(l(CustomEntityType.MELEE_ZOMBIE), "Crimson Crusader", ItemType.POLEARM, SkullTextures.MONK, 15, ElementalAttribute.POISON),
+    Lizardman(l(CustomEntityType.MELEE_ZOMBIE), "Lizardman", ItemType.POLEARM, SkullTextures.LIZARD, new String[] {"Giant", "Tough"}, 10, ElementalAttribute.FIRE),
     Orc(l(CustomEntityType.MELEE_ZOMBIE), "Orc", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
     Orc1(l(CustomEntityType.BOW_ZOMBIE), "Orc Shaman", null, SkullTextures.ORC, new String[] {"Giant", "Strong", "Stupid"}, 10, ElementalAttribute.POISON),
     Nymph(l(CustomEntityType.MELEE_ZOMBIE), "Nymph", null, SkullTextures.NYMPH, new String[] {"Fairy", "Pretty", "Little"}, 10, ElementalAttribute.POISON),
@@ -88,16 +88,16 @@ public enum EnumMonster {
     Wolf(l(CustomEntityType.DR_WOLF), "Fierce Wolf", null, 10, ElementalAttribute.ICE),
     Giant(l(CustomEntityType.DR_GIANT), "Undead Giant", null, 10, ElementalAttribute.PURE),
     Undead(l(CustomEntityType.MELEE_ZOMBIE), "Undead", ItemType.SWORD, SkullTextures.UNDEAD),
-    
+
     Witch(l(CustomEntityType.DR_WITCH), "Old Hag", null, 100, ElementalAttribute.POISON), // witches do poison damage 100% of the time
     Acolyte(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Acolyte", null, SkullTextures.MONK, 20, ElementalAttribute.FIRE),
-    
+
     // Dungeon
     MayelPirate(l(CustomEntityType.BOW_SKELETON, CustomEntityType.MELEE_SKELETON), "Pirate", null, SkullTextures.PIRATE, l("Mayel"), l("")),
     Enderman(l(CustomEntityType.MELEE_ENDERMAN), "Apparition", ItemType.SWORD, 15, ElementalAttribute.PURE),
     SpawnOfInferno(l(CustomEntityType.DR_MAGMA), "Spawn of Inferno", null, 10, ElementalAttribute.FIRE),
-	Demon(l(CustomEntityType.DR_SILVERFISH), "Greater Abyssal Demon", ItemType.SWORD),
-	InfernalEndermen(l(CustomEntityType.INFERNAL_ENDERMAN), "Endermen", null, 20, ElementalAttribute.FIRE),
+    Demon(l(CustomEntityType.DR_SILVERFISH), "Greater Abyssal Demon", ItemType.SWORD),
+    InfernalEndermen(l(CustomEntityType.INFERNAL_ENDERMAN), "Endermen", null, 20, ElementalAttribute.FIRE),
     InfernalLordsGuard(l(CustomEntityType.INFERNAL_GUARD), "Infernal Lords Guard", null, 30, ElementalAttribute.FIRE),
     FireLord(l(CustomEntityType.FIRE_LORD), "Fire Lord of the Abyss", null, 30, ElementalAttribute.FIRE),
     IceLord(l(CustomEntityType.ICE_LORD), "Ice Lord of the Abyss", null, 70, ElementalAttribute.ICE),
@@ -107,7 +107,7 @@ public enum EnumMonster {
 
 
     // Vanilla NonHostiles
-	PassiveChicken(l(CustomEntityType.PASSIVE_CHICKEN), "Quillen", ItemType.SWORD),
+    PassiveChicken(l(CustomEntityType.PASSIVE_CHICKEN), "Quillen", ItemType.SWORD),
     Pig(l(CustomEntityType.PIG), "Pig"),
     Bat(l(CustomEntityType.BAT), "Bat"),
     Cow(l(CustomEntityType.COW), "Cow"),
@@ -123,38 +123,38 @@ public enum EnumMonster {
     private int elementalChance;
     private ItemType weaponType;
     private boolean friendly = false;
-    
+
     EnumMonster(CustomEntityType[] c, String name) {
-    	this(c, name, null);
-    	this.friendly = true;
+        this(c, name, null);
+        this.friendly = true;
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w) {
-    	this(c, name, w, SkullTextures.PUG);
+        this(c, name, w, SkullTextures.PUG);
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w, SkullTextures skull) {
-    	this(c, name, w, skull, new String[0], new String[0]);
+        this(c, name, w, skull, new String[0], new String[0]);
     }
 
     EnumMonster(CustomEntityType[] c, String name, ItemType w, SkullTextures skull, String[] prefix, String[] suffix) {
-    	this(c, name, w, skull, prefix, suffix, 0);
+        this(c, name, w, skull, prefix, suffix, 0);
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w, int eChance, ElementalAttribute... elements) {
-    	this(c, name, w, SkullTextures.PUG, eChance, elements);
+        this(c, name, w, SkullTextures.PUG, eChance, elements);
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w, SkullTextures skull, int eChance, ElementalAttribute... elements) {
-    	this(c, name, w, skull, new String[0], eChance, elements);
+        this(c, name, w, skull, new String[0], eChance, elements);
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w, String[] prefixes, int eChance, ElementalAttribute... elements) {
-    	this(c, name, w, SkullTextures.PUG, prefixes, new String[0], eChance, elements);
+        this(c, name, w, SkullTextures.PUG, prefixes, new String[0], eChance, elements);
     }
-    
+
     EnumMonster(CustomEntityType[] c, String name, ItemType w, SkullTextures skull, String[] prefixes, int eChance, ElementalAttribute... elements) {
-    	this(c, name, w, skull, prefixes, new String[0], eChance, elements);
+        this(c, name, w, skull, prefixes, new String[0], eChance, elements);
     }
 
     EnumMonster(CustomEntityType[] c, String name, ItemType weaponType, SkullTextures skull, String[] prefix, String[] suffix, int elementalChance, ElementalAttribute... elements) {
@@ -167,75 +167,80 @@ public enum EnumMonster {
         this.elementalChance = elementalChance;
         this.weaponType = weaponType;
     }
-    
+
     public String getIdName() {
-    	return name().toLowerCase();
+        return name().toLowerCase();
     }
 
     public String getPrefix() {
-    	return prefix.length > 0 ? prefix[ThreadLocalRandom.current().nextInt(prefix.length)] + " " : "";
+        return prefix.length > 0 ? prefix[ThreadLocalRandom.current().nextInt(prefix.length)] + " " : "";
     }
 
     public String getSuffix() {
         return suffix.length > 0 ? " " + suffix[ThreadLocalRandom.current().nextInt(suffix.length)] : "";
     }
 
-	public static EnumMonster getMonsterByString(String mob) {
-		for (EnumMonster mons : values())
-			if (mob.equalsIgnoreCase(mons.getIdName()))
+    public static EnumMonster getMonsterByString(String mob) {
+        for (EnumMonster mons : values())
+            if (mob.equalsIgnoreCase(mons.getIdName()))
                 return mons;
-		return null;
-	}
-	
-	public static EnumMonster getByName(String name) {
-		return getMonsterByString(name);
-	}
+        return null;
+    }
+
+    public static EnumMonster getByName(String name) {
+        return getMonsterByString(name);
+    }
 
     public ElementalAttribute getRandomElement() {
         return possibleElementalTypes.get(ThreadLocalRandom.current().nextInt(possibleElementalTypes.size()));
     }
 
-	public ItemStack getSkullItem() {
-		return getSkull().getSkull();
-	}
-	/**
-	 * Selects from the choice of random entity classes.
-	 */
-	public CustomEntityType getCustomEntity() {
-		return clazzes[ThreadLocalRandom.current().nextInt(clazzes.length)];
-	}
-	
-	//This is here to be used as a shortcut. so we can do l(1, 2) instead of new int[] {1, 2};
- 	@SafeVarargs
-	private static <T> T[] l(T... args) {
-		return args;
-	}
- 	
- 	@AllArgsConstructor @Getter
- 	public enum CustomEntityType {
- 		
- 		//  MELEE  //
- 		MELEE_GOLEM(MeleeGolem.class, EntityType.IRON_GOLEM),
- 		MELEE_ZOMBIE(MeleeZombie.class, EntityType.ZOMBIE),
- 		LARGE_SPIDER(LargeSpider.class, EntityType.SPIDER),
- 		SMALL_SPIDER(SmallSpider.class, EntityType.CAVE_SPIDER),
- 		MELEE_WITHER(MeleeWitherSkeleton.class, EntityType.SKELETON),
- 		MELEE_SKELETON(MeleeSkeleton.class, EntityType.SKELETON),
+    public ItemStack getSkullItem() {
+        return getSkull().getSkull();
+    }
+    /**
+     * Selects from the choice of random entity classes.
+     */
+    public CustomEntityType getCustomEntity() {
+        return clazzes[ThreadLocalRandom.current().nextInt(clazzes.length)];
+    }
+
+    //This is here to be used as a shortcut. so we can do l(1, 2) instead of new int[] {1, 2};
+    @SafeVarargs
+    private static <T> T[] l(T... args) {
+        return args;
+    }
+
+    @AllArgsConstructor @Getter
+    public enum CustomEntityType {
+
+        //  MELEE  //
+        MELEE_GOLEM(MeleeGolem.class, EntityType.IRON_GOLEM),
+        MELEE_ZOMBIE(MeleeZombie.class, EntityType.ZOMBIE),
+        LARGE_SPIDER(LargeSpider.class, EntityType.SPIDER),
+        SMALL_SPIDER(SmallSpider.class, EntityType.CAVE_SPIDER),
+        MELEE_WITHER(MeleeWitherSkeleton.class, EntityType.SKELETON),
+        MELEE_SKELETON(MeleeSkeleton.class, EntityType.SKELETON),
         MELEE_ENDERMAN(MeleeEnderman.class, EntityType.ENDERMAN),
-        
+
         //  STAFF  //
         STAFF_BLAZE(BasicEntityBlaze.class, EntityType.BLAZE),
         STAFF_ZOMBIE(StaffZombie.class, EntityType.ZOMBIE),
         STAFF_SKELETON(StaffSkeleton.class, EntityType.SKELETON),
-        
+
         //  BOW  //
         BOW_SKELETON(RangedSkeleton.class, EntityType.SKELETON),
         BOW_ZOMBIE(RangedZombie.class, EntityType.ZOMBIE),
         BOW_WITHER(RangedWitherSkeleton.class, EntityType.SKELETON),
-        
+
+        //  MARKSMAN BOW  //
+        MARK_BOW_SKELETON(RangedUtilitySkeleton.class, EntityType.SKELETON),
+        MARK_BOW_ZOMBIE(RangedUtilityZombie.class, EntityType.ZOMBIE),
+        MARK_BOW_WITHER(RangedUtilityWitherSkeleton.class, EntityType.SKELETON),
+
         //  PASSIVE  //
         PASSIVE_CHICKEN(PassiveDRChicken.class, EntityType.CHICKEN),
-        
+
         PIG(EntityPig.class),
         BAT(EntityBat.class),
         COW(EntityCow.class),
@@ -257,7 +262,7 @@ public enum EnumMonster {
         DR_GOLEM(DRGolem.class, EntityType.IRON_GOLEM),
         DR_ENDERMAN(DREnderman.class, EntityType.ENDERMAN),
         DR_GHAST(DRGhast.class, EntityType.GHAST),
-        
+
         //  DUNGEON  //
         BANDIT_PYRO(MadBanditPyromancer.class, EntityType.SKELETON),
         VARENGLADE_PRIEST(VarengladePriest.class, EntityType.SKELETON),
@@ -276,28 +281,28 @@ public enum EnumMonster {
         // MOUNTS //
         HORSE(HorseMount.class, EntityType.HORSE);
 
- 		private Class<? extends EntityInsentient> clazz;
- 		private int entityId;
- 		
- 		CustomEntityType(Class<? extends EntityInsentient> cls) { // Won't get registered.
- 			this(cls, -1);
- 		}
- 		
- 		@SuppressWarnings("deprecation")
-		CustomEntityType(Class<? extends EntityInsentient> cls, EntityType type) {
- 			this(cls, type.getTypeId());
- 		}
- 		
- 		/**
- 		 * Registers this entity in NMS.
- 		 */
-		public void register() {
-			if (entityId > 0)
-				NMSUtils.registerEntity(getClazz().getSimpleName(), getEntityId(), getClazz());
- 		}
- 	}
+        private Class<? extends EntityInsentient> clazz;
+        private int entityId;
 
- 	public boolean isPassive() {
-		return name().toLowerCase().contains("passive");
-	}
+        CustomEntityType(Class<? extends EntityInsentient> cls) { // Won't get registered.
+            this(cls, -1);
+        }
+
+        @SuppressWarnings("deprecation")
+        CustomEntityType(Class<? extends EntityInsentient> cls, EntityType type) {
+            this(cls, type.getTypeId());
+        }
+
+        /**
+         * Registers this entity in NMS.
+         */
+        public void register() {
+            if (entityId > 0)
+                NMSUtils.registerEntity(getClazz().getSimpleName(), getEntityId(), getClazz());
+        }
+    }
+
+    public boolean isPassive() {
+        return name().toLowerCase().contains("passive");
+    }
 }
