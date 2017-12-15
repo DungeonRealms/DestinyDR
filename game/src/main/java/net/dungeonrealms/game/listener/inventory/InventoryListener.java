@@ -514,7 +514,7 @@ public class InventoryListener implements Listener {
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
             Trade t = TradeManager.getTrade(p.getUniqueId());
             if (t != null)
-                if ((!t.p1Ready || !t.p2Ready) && (!t.p1RollDuel || !t.p2RollDuel)) {
+                if ((!t.p1Ready || !t.p2Ready) && (!t.p1RollDuel || !t.p2RollDuel) && !t.duelInProgress) {
                     t.handleClose();
                 }
         } else if (event.getInventory().getTitle().contains("Stat Points")) {
@@ -674,20 +674,27 @@ public class InventoryListener implements Listener {
             }
 
             Player clicker = (Player) event.getWhoClicked();
-            if (trade.p1Ready || trade.p2Ready) {
-                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.changeReady();
-                trade.setDividerColor(DyeColor.RED);
-                clicker.updateInventory();
-            }
+            if(!trade.duelInProgress) {
+                if (trade.p1Ready || trade.p2Ready) {
+                    trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.changeReady();
+                    trade.setDividerColor(DyeColor.RED);
+                    clicker.updateInventory();
+                    trade.getOppositePlayer(clicker).updateInventory();
+                }
 
-            if (trade.p1RollDuel || trade.p2RollDuel) {
-                trade.p1.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.p2.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.changeRollDuel();
-                trade.setDividerColor(DyeColor.RED);
-                clicker.updateInventory();
+                if (trade.p1RollDuel || trade.p2RollDuel) {
+                    trade.p1.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.p2.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.changeRollDuel();
+                    trade.setDividerColor(DyeColor.RED);
+                    clicker.updateInventory();
+                    trade.getOppositePlayer(clicker).updateInventory();
+                }
+            }
+            else{
+                event.setCancelled(true);
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

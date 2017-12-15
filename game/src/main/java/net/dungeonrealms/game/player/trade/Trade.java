@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.trade;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
@@ -13,7 +14,9 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.util.ArrayList;
@@ -25,6 +28,10 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by Chase on Nov 16, 2015
  */
+
+/**
+ * Roll Dueling Created by SecondAmendment on 12/14/2017
+ */
 public class Trade {
 
     public Player p1;
@@ -34,6 +41,13 @@ public class Trade {
     private boolean rollDuelSlot = true;
     public boolean p1RollDuel = false;
     public boolean p2RollDuel = false;
+    public boolean duelInProgress = false;
+    public ItemStack rollHead = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "Roll Duel", (byte) SkullType.PLAYER.ordinal());
+    public ItemStack p1Skull;
+    public ItemStack p2Skull;
+    public ArrayList<ItemStack> p1Bet = new ArrayList<>();
+    public ArrayList<ItemStack> p2Bet = new ArrayList<>();
+    public Player winner;
     //private String skullTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFlMTJhZDk3NTlhM2QzNjhlNWQ5Njk2ZWQxMjRmNzMzNDA2YzRmNzE2MmJhYzRmYTM4YTk4MjE4YjdkN2M2In19fQ==";
     public Inventory inv;
 
@@ -42,6 +56,14 @@ public class Trade {
     public Trade(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
+        p1Skull = ItemManager.createItem(Material.SKULL_ITEM, CC.GreenB + p1.getName(), (byte) SkullType.PLAYER.ordinal());
+        p2Skull = ItemManager.createItem(Material.SKULL_ITEM, CC.GreenB + p2.getName(), (byte) SkullType.PLAYER.ordinal());
+        SkullMeta p1SkullMeta = (SkullMeta) p1Skull.getItemMeta();
+        p1SkullMeta.setOwner(p1.getName());
+        p1Skull.setItemMeta(p1SkullMeta);
+        SkullMeta p2SkullMeta = (SkullMeta) p2Skull.getItemMeta();
+        p2SkullMeta.setOwner(p2.getName());
+        p2Skull.setItemMeta(p2SkullMeta);
         p1.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p2.getName() + "...");
         p2.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p1.getName() + "...");
         openInventory();
@@ -90,7 +112,6 @@ public class Trade {
     }
 
     public void setRollDuelSlots(){
-        ItemStack rollHead = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "Roll Duel", (byte) SkullType.PLAYER.ordinal());
         ItemStack p1head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
         ItemStack p2head = ItemManager.createItem(Material.SKULL_ITEM, CC.WhiteB + "DUEL: " + CC.DarkRedB  + "NO", (byte) SkullType.PLAYER.ordinal());
 
@@ -129,6 +150,8 @@ public class Trade {
         inv.setItem(3, p1head);
         inv.setItem(4, rollHead);
         inv.setItem(5, p2head);
+        p1.updateInventory();
+        p2.updateInventory();
     }
 
 
@@ -232,7 +255,7 @@ public class Trade {
      * Checks if both players are readied up and then doTrade
      */
     public void checkReady() {
-        if(!(p1RollDuel && p2RollDuel)) {
+        if(!(p1RollDuel && p2RollDuel) && !duelInProgress) {
             if (p1Ready && p2Ready) {
                 for (int i = 1; i < inv.getSize(); i++) {
                     ItemStack item = inv.getItem(i);
@@ -275,7 +298,7 @@ public class Trade {
     }
 
     public void checkRollDuel(){
-        if(!(p1Ready && p2Ready)) {
+        if(!(p1Ready && p2Ready) && !duelInProgress) {
             if (p1RollDuel && p2RollDuel) {
                 for (int i = 1; i < inv.getSize(); i++) {
                     ItemStack item = inv.getItem(i);
@@ -303,8 +326,6 @@ public class Trade {
                         }
                     }
                 }
-                p1.closeInventory();
-                p2.closeInventory();
                 doRollDuel();
             }
         }
@@ -342,8 +363,7 @@ public class Trade {
     }
 
     private void doRollDuel(){
-        ArrayList<ItemStack> p1Bet = new ArrayList<>();
-        ArrayList<ItemStack> p2Bet = new ArrayList<>();
+        duelInProgress = true;
         for (int i = 1; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
             if (item == null)
@@ -361,18 +381,27 @@ public class Trade {
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int result = random.nextInt(2);
-        Player winner = (result == 0) ? p1 : p2;
-        //playRollDuelAnimation();
-        ArrayList<ItemStack> winnings = new ArrayList<>(p1Bet);
-        winnings.addAll(p2Bet);
-        for(ItemStack i : winnings){
-            winner.getInventory().addItem(i);
-        }
-        p1.setCanPickupItems(true);
-        p2.setCanPickupItems(true);
-        p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
-        p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
-        remove();
+        winner = (result == 0) ? p1 : p2;
+        playRollDuelAnimation();
+    }
+
+    public void giveWinnings(){
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+            public void run() {
+                ArrayList<ItemStack> winnings = new ArrayList<>(p1Bet);
+                winnings.addAll(p2Bet);
+                for(ItemStack i : winnings){
+                    winner.getInventory().addItem(i);
+                }
+                p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
+                p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
+                p1.setCanPickupItems(true);
+                p2.setCanPickupItems(true);
+                p1.closeInventory();
+                p2.closeInventory();
+                remove();
+            }
+        }, 20L);
     }
 
     public void changeReady() {
@@ -433,7 +462,6 @@ public class Trade {
     public void playSound(Sound sound, float speed) {
         p1.playSound(p1.getLocation(), sound, .3F, speed);
         p2.playSound(p2.getLocation(), sound, .3F, speed);
-
     }
 
     /**
@@ -442,23 +470,27 @@ public class Trade {
     public void updateReady(UUID uniqueId) {
         if (uniqueId.toString().equalsIgnoreCase(p1.getUniqueId().toString())) {
             p1Ready = !p1Ready;
-            if (p1Ready) {
+            if (p1Ready && !duelInProgress) {
                 p1.sendMessage(ChatColor.YELLOW + "Trade accepted, waiting for " + ChatColor.BOLD + p2.getName() + "...");
                 p2.sendMessage(ChatColor.GREEN + p1.getName() + " has accepted the trade.");
                 p2.sendMessage(ChatColor.GRAY + "Click the gray button (dye) to accept.");
             } else {
-                p1.sendMessage(ChatColor.RED + "Trade is pending your accept..");
-                p2.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + p1.getName() + ChatColor.RED + " has unaccepted the trade");
+                if(!duelInProgress) {
+                    p1.sendMessage(ChatColor.RED + "Trade is pending your accept..");
+                    p2.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + p1.getName() + ChatColor.RED + " has unaccepted the trade");
+                }
             }
         } else {
             p2Ready = !p2Ready;
-            if (p2Ready) {
+            if (p2Ready && !duelInProgress) {
                 p2.sendMessage(ChatColor.YELLOW + "Trade accepted, waiting for " + ChatColor.BOLD + p1.getName() + "...");
                 p1.sendMessage(ChatColor.GREEN + p2.getName() + " has accepted the trade.");
                 p1.sendMessage(ChatColor.GRAY + "Click the gray button (dye) to accept.");
             } else {
-                p2.sendMessage(ChatColor.RED + "Trade is pending your accept..");
-                p1.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + p1.getName() + ChatColor.RED + " has unaccepted the trade");
+                if(!duelInProgress) {
+                    p2.sendMessage(ChatColor.RED + "Trade is pending your accept..");
+                    p1.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + p1.getName() + ChatColor.RED + " has unaccepted the trade");
+                }
             }
         }
     }
@@ -466,26 +498,30 @@ public class Trade {
     public void updateRollDuel(UUID uniqueId){
         if (uniqueId.toString().equalsIgnoreCase(p1.getUniqueId().toString())) {
             p1RollDuel = !p1RollDuel;
-            if(p1RollDuel) {
+            if(p1RollDuel  && !duelInProgress) {
                 p1.sendMessage(CC.Blue + "Roll Duel Accepted, waiting for " + CC.Bold + p2.getName() + CC.Blue + " to accept the duel.");
                 p2.sendMessage(CC.Green + p1.getName() + " has challenged you to a Roll Duel.");
                 p2.sendMessage(CC.Gray + "Click on your Roll Duel head to accept.");
             }
             else{
-                p1.sendMessage(CC.Red + "Roll Duel is pending your approval...");
-                p2.sendMessage(CC.RedB + p1.getName() + CC.Red + " has unaccepted the Roll Duel.");
+                if(!duelInProgress) {
+                    p1.sendMessage(CC.Red + "Roll Duel is pending your approval...");
+                    p2.sendMessage(CC.RedB + p1.getName() + CC.Red + " has unaccepted the Roll Duel.");
+                }
             }
         }
         else{
             p2RollDuel = !p2RollDuel;
-            if(p2RollDuel) {
+            if(p2RollDuel  && !duelInProgress) {
                 p2.sendMessage(CC.Blue + "Roll Duel Accepted, waiting for " + CC.Bold + p1.getName() + CC.Blue + " to accept the duel.");
                 p1.sendMessage(CC.Green + p2.getName() + " has challenged you to a Roll Duel.");
                 p1.sendMessage(CC.Gray + "Click on your Roll Duel head to accept.");
             }
             else{
-                p2.sendMessage(CC.Red + "Roll Duel is pending your approval...");
-                p1.sendMessage(CC.RedB + p2.getName()+ CC.Red + " has unaccepted the Roll Duel.");
+                if(!duelInProgress) {
+                    p2.sendMessage(CC.Red + "Roll Duel is pending your approval...");
+                    p1.sendMessage(CC.RedB + p2.getName() + CC.Red + " has unaccepted the Roll Duel.");
+                }
             }
         }
         playSound(Sound.BLOCK_NOTE_PLING, 1.8F);
@@ -497,6 +533,41 @@ public class Trade {
     }
 
     public void playRollDuelAnimation(){
-        //TODO: Finally add the animation
+        new BukkitRunnable() {
+            long currentTime = System.currentTimeMillis();
+            long futureTime = currentTime;
+            long delay = 10;
+            long increment = 10;
+
+            @Override
+            public void run() {
+                if(currentTime >= futureTime){
+                    if(((SkullMeta)(inv.getItem(4).getItemMeta())).getOwner().equalsIgnoreCase(p2.getName())){
+                        inv.setItem(4, p1Skull);
+                        playSound(Sound.BLOCK_NOTE_PLING, 1);
+                        p1.updateInventory();
+                        p2.updateInventory();
+                    }
+                    else{
+                        inv.setItem(4, p2Skull);
+                        playSound(Sound.BLOCK_NOTE_PLING, 1);
+                        p1.updateInventory();
+                        p2.updateInventory();
+                    }
+                    futureTime = System.currentTimeMillis() + delay;
+                    delay += increment;
+                    increment += 5;
+                }
+                currentTime = System.currentTimeMillis();
+                if(delay >= 1000) {
+                    cancel();
+                    inv.setItem(4, (winner == p1) ? p1Skull : p2Skull);
+                    playSound(Sound.ENTITY_PLAYER_LEVELUP, 1);
+                    p1.updateInventory();
+                    p2.updateInventory();
+                    giveWinnings();
+                }
+            }
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 1);
     }
 }
