@@ -31,8 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 public class WitheringPulse extends Healing {
 
-    private long time = System.currentTimeMillis();
-
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
 
@@ -52,7 +50,7 @@ public class WitheringPulse extends Healing {
         int radius = 5;
 
         boolean affected = false;
-        if(time <= System.currentTimeMillis()) {
+        if(!isOnCooldown()) {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (entity instanceof Player) {
@@ -67,32 +65,30 @@ public class WitheringPulse extends Healing {
                     if (!GameAPI.isNonPvPRegion(other.getLocation())) {
                         DamageAPI.knockbackEntity(player, other, 1.8F);
 
-                        int duration = (int) (20 * 4);
+                        int duration = (20 * 4);
                         duration += duration * (potency * .01);
                         other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration, potency >= 100 ? 1 : 0));
 
                         affected = true;
                         withered += other.getName() + ", ";
-                        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(8);
                     }
                 }
             }
+            GamePlayer playerGP = GameAPI.getGamePlayer(player);
+            if (affected) {
+                KarmaHandler.update(player);
+                playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                MountUtils.removeMount(player);
+            }
+
+            if (withered.isEmpty())
+                withered = "None";
+            else
+                withered = withered.substring(0, withered.length() - 2);
+            Utils.sendCenteredDebug(player, CC.RedB + "WITHERED (" + CC.Red + withered + CC.RedB + ")");
         } else {
             Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE WITHERING PULSE FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
         }
-
-        GamePlayer playerGP = GameAPI.getGamePlayer(player);
-        if (affected) {
-            KarmaHandler.update(player);
-            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            MountUtils.removeMount(player);
-        }
-
-        if (withered.isEmpty())
-            withered = "None";
-        else
-            withered = withered.substring(0, withered.length() - 2);
-        Utils.sendCenteredDebug(player, CC.RedB + "WITHERED (" + CC.Red + withered + CC.RedB + ")");
         return true;
     }
 }

@@ -23,11 +23,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class AuraHeal extends Healing {
-
-    private long time = System.currentTimeMillis();
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
@@ -39,7 +38,7 @@ public class AuraHeal extends Healing {
         boolean affected = false;
 
         Party party = Affair.getParty(player);
-        if (time <= System.currentTimeMillis()) {
+        if (!isOnCooldown()) {
             for (Entity nearby : player.getNearbyEntities(radius, radius, radius)) {
                 if (nearby instanceof Player) {
                     Player other = (Player) nearby;
@@ -72,22 +71,21 @@ public class AuraHeal extends Healing {
                             Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + other.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(toRegen) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(HealthHandler.getHP(other)) + "]");
 
                             ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
-                            time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(6);
                         }
                     }
                 }
             }
+            GamePlayer playerGP = GameAPI.getGamePlayer(player);
+            if(affected) {
+                KarmaHandler.update(player);
+                playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                MountUtils.removeMount(player);
+            }
+            else {
+                Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + "None" + CC.YellowB + ")");
+            }
         } else {
         Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE AURA HEAL FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
-        }
-        GamePlayer playerGP = GameAPI.getGamePlayer(player);
-        if (affected) {
-            KarmaHandler.update(player);
-            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            MountUtils.removeMount(player);
-        }
-        else {
-            Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + "None" + CC.YellowB + ")");
         }
         return true;
     }

@@ -17,5 +17,4 @@ public class Regeneration extends Healing {
         GameAPI.addCooldown(player, MetadataUtils.Metadata.REGEN_ABILITY, 10);
         return true;
     }
-
 }
