@@ -18,6 +18,8 @@ public abstract class Healing {
 
     protected long time = System.currentTimeMillis();
 
+    protected long cooldown = 0;
+
     public abstract boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event);
 
     public boolean isOnCooldown() {

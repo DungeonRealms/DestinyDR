@@ -77,7 +77,7 @@ public class HealingWand extends FunctionalItem implements ItemClickEvent.ItemCl
                         player.setTotalExperience(0);
                         EnergyHandler.updatePlayerEnergyBar(player);
                         MountUtils.removeMount(player);
-                        ability.getHealInstance().setOnCooldown(6);
+                        ability.getHealInstance().setOnCooldown(ability.getHealInstance().cooldown);
                     } else
                         ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1.4, 0), 10, .25F, .1F);
                 } else {

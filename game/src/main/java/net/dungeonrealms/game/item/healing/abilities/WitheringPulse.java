@@ -34,6 +34,8 @@ public class WitheringPulse extends Healing {
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
 
+        cooldown = 8;
+
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
 
         Party party = Affair.getParty(player);

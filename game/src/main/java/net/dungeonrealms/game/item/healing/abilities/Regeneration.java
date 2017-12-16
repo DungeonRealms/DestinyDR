@@ -12,9 +12,11 @@ public class Regeneration extends Healing {
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
-        player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1, .8F);
-        //Should start regenerating now..
-        GameAPI.addCooldown(player, MetadataUtils.Metadata.REGEN_ABILITY, 10);
+        if(!isOnCooldown()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1, .8F);
+            //Should start regenerating now..
+            GameAPI.addCooldown(player, MetadataUtils.Metadata.REGEN_ABILITY, 10);
+        }
         return true;
     }
 }

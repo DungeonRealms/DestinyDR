@@ -30,6 +30,9 @@ public class AuraHeal extends Healing {
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
+
+        cooldown = 6;
+
         int radius = 9;
 
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
