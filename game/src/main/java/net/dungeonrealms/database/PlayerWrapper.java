@@ -1303,7 +1303,7 @@ public class PlayerWrapper {
             int penToAdd = (int)(armorPen * (dexterity * .0002));
             if(penToAdd > 0)getAttributes().addStat(WeaponAttributeType.ARMOR_PENETRATION, penToAdd);*/
 
-            getAttributes().addStat(Item.ArmorAttributeType.DODGE, (int) (dexterity * .03));
+            getAttributes().addStat(Item.ArmorAttributeType.DODGE, (int) (dexterity * .017));
             getAttributes().addStat(Item.ArmorAttributeType.DAMAGE, (int) (dexterity * .03));
             getAttributes().addStat(WeaponAttributeType.VS_MONSTERS, (int) (dexterity * .02));
 
