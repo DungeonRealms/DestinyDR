@@ -59,16 +59,13 @@ public class MendWounds extends Healing {
 
             if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                 PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper((Player) clicked);
-                if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL || wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL && !GameAPI.isNonPvPRegion(player.getLocation()) || wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC && !GameAPI.isNonPvPRegion(player.getLocation())) {
+                    GamePlayer playerGP = GameAPI.getGamePlayer(player);
                     KarmaHandler.update(player);
+                    playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                    MountUtils.removeMount(player);
                 }
             }
-            GamePlayer playerGP = GameAPI.getGamePlayer(player);
-
-            KarmaHandler.update(player);
-            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            CombatLog.addToPVP(player);
-            MountUtils.removeMount(player);
 
             double newHP = HealthHandler.getHP(clicked);
             Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + clicked.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(hpToHeal) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(newHP) + "]");

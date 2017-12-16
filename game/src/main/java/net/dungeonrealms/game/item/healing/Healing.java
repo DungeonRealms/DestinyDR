@@ -45,5 +45,6 @@ public abstract class Healing {
             this.uuid = healer;
             this.time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10);
         }
+
     }
 }

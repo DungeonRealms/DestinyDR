@@ -35,7 +35,6 @@ public class WitheringPulse extends Healing {
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
 
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
 
@@ -54,6 +53,7 @@ public class WitheringPulse extends Healing {
 
         boolean affected = false;
         if(time <= System.currentTimeMillis()) {
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (entity instanceof Player) {
                     Player other = (Player) entity;
@@ -65,7 +65,7 @@ public class WitheringPulse extends Healing {
                         continue;
 
                     if (!GameAPI.isNonPvPRegion(other.getLocation())) {
-                        DamageAPI.knockbackEntity(player, other, 1.5F);
+                        DamageAPI.knockbackEntity(player, other, 1.8F);
 
                         int duration = (int) (20 * 4);
                         duration += duration * (potency * .01);
@@ -73,7 +73,7 @@ public class WitheringPulse extends Healing {
 
                         affected = true;
                         withered += other.getName() + ", ";
-                        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(12);
+                        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(8);
                     }
                 }
             }
@@ -83,7 +83,6 @@ public class WitheringPulse extends Healing {
 
         GamePlayer playerGP = GameAPI.getGamePlayer(player);
         if (affected) {
-            CombatLog.addToPVP(player);
             KarmaHandler.update(player);
             playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
             MountUtils.removeMount(player);

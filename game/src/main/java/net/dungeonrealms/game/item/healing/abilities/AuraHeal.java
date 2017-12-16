@@ -58,8 +58,8 @@ public class AuraHeal extends Healing {
 
                             if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                                 PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(other);
-                                if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                                    KarmaHandler.update(player);
+                                if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL && !GameAPI.isNonPvPRegion(player.getLocation()) || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC && !GameAPI.isNonPvPRegion(player.getLocation())) {
+                                    affected = true;
                                 }
                             }
 
@@ -71,7 +71,6 @@ public class AuraHeal extends Healing {
                             map.heal(player.getUniqueId());
                             Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + other.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(toRegen) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(HealthHandler.getHP(other)) + "]");
 
-                            affected = true;
                             ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
                             time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(6);
                         }
@@ -83,7 +82,6 @@ public class AuraHeal extends Healing {
         }
         GamePlayer playerGP = GameAPI.getGamePlayer(player);
         if (affected) {
-            CombatLog.addToPVP(player);
             KarmaHandler.update(player);
             playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
             MountUtils.removeMount(player);

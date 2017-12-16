@@ -1,6 +1,14 @@
 Build <build>
 
-&lWhats New?:
+&lWhats New:
+- Healer set pvp tag has been fixed
+- Fish fixed
+- New quick quiver combat trinket
+- T5 marksman elite moved
+- Polearm breaking on ladder fixed
+
+
+&lWhats New:
 - Various bug fixes.
 - Armor has been buffed.
 - Marksman bows have been added.(See dungeonrealms.net for more info)
