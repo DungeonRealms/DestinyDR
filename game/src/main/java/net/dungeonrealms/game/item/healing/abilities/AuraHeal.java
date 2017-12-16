@@ -55,31 +55,29 @@ public class AuraHeal extends Healing {
 
                             HealthHandler.heal(other, toRegen, true, player.getName() + "'s " + ability.getName());
 
-                            if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(other);
-                                if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL && !GameAPI.isNonPvPRegion(player.getLocation()) || wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC && !GameAPI.isNonPvPRegion(player.getLocation())) {
-                                    affected = true;
-                                }
-                            }
-
                             if (map == null) {
                                 map = new HealingMap();
                                 healingMap.put(other.getUniqueId(), map);
                             }
 
+                            affected = true;
                             map.heal(player.getUniqueId());
-                            Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + other.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(toRegen) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(HealthHandler.getHP(other)) + "]");
-
+                            Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + other.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(toRegen) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(HealthHandler.getHP(other)) + "]");
                             ParticleAPI.spawnParticle(Particle.HEART, other.getLocation().add(0, 1, 0), 30, 1F, .01F);
+
+                            GamePlayer playerGP = GameAPI.getGamePlayer(player);
+                            if(!GameAPI.isNonPvPRegion(player.getLocation()) && !playerGP.isPvPTagged() && wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                                KarmaHandler.update(player);
+                                playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                            }
                         }
                     }
                 }
             }
-            GamePlayer playerGP = GameAPI.getGamePlayer(player);
             if(affected) {
-                KarmaHandler.update(player);
-                playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-                MountUtils.removeMount(player);
+                //Affected at least one player!
+                //NOT NEEDED?
+                //MountUtils.removeMount(player);
             }
             else {
                 Utils.sendCenteredDebug(player, CC.YellowB + "AURA HEALED (" + CC.Yellow + "None" + CC.YellowB + ")");
