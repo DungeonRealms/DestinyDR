@@ -536,8 +536,8 @@ public class Trade {
 
     public void roll(){
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        p1result = random.nextInt(2) + 1;
-        p2result = random.nextInt(2) + 1;
+        p1result = random.nextInt(100) + 1;
+        p2result = random.nextInt(100) + 1;
         if(p1result != p2result) {
             winner = (p1result > p2result) ? p1 : p2;
         }
