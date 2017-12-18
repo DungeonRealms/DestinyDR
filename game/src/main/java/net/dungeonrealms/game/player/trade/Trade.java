@@ -47,6 +47,9 @@ public class Trade {
     public ItemStack p2Skull;
     public ArrayList<ItemStack> p1Bet = new ArrayList<>();
     public ArrayList<ItemStack> p2Bet = new ArrayList<>();
+    private int p1result;
+    private int p2result;
+
     public Player winner;
     //private String skullTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFlMTJhZDk3NTlhM2QzNjhlNWQ5Njk2ZWQxMjRmNzMzNDA2YzRmNzE2MmJhYzRmYTM4YTk4MjE4YjdkN2M2In19fQ==";
     public Inventory inv;
@@ -378,10 +381,7 @@ public class Trade {
                 p2Bet.add(item);
             }
         }
-
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int result = random.nextInt(2);
-        winner = (result == 0) ? p1 : p2;
+        roll();
         playRollDuelAnimation();
     }
 
@@ -393,6 +393,8 @@ public class Trade {
                 for(ItemStack i : winnings){
                     winner.getInventory().addItem(i);
                 }
+                GameAPI.getNearbyPlayers(p1.getLocation(), 20).forEach(player1 -> player1.sendMessage(p1.getName() + ChatColor.GRAY + " has rolled a " + ChatColor.UNDERLINE + ChatColor.BOLD + p1result + ChatColor.GRAY + " out of " + ChatColor.UNDERLINE + ChatColor.BOLD + 100 + ChatColor.GRAY + "."));
+                GameAPI.getNearbyPlayers(p2.getLocation(), 20).forEach(player2 -> player2.sendMessage(p2.getName() + ChatColor.GRAY + " has rolled a " + ChatColor.UNDERLINE + ChatColor.BOLD + p2result + ChatColor.GRAY + " out of " + ChatColor.UNDERLINE + ChatColor.BOLD + 100 + ChatColor.GRAY + "."));
                 p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p1.setCanPickupItems(true);
@@ -530,6 +532,18 @@ public class Trade {
     public Player getOppositePlayer(Player player) {
         if (p1.equals(player)) return p2;
         return p1;
+    }
+
+    public void roll(){
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        p1result = random.nextInt(2) + 1;
+        p2result = random.nextInt(2) + 1;
+        if(p1result != p2result) {
+            winner = (p1result > p2result) ? p1 : p2;
+        }
+        else{
+            roll();
+        }
     }
 
     public void playRollDuelAnimation(){
