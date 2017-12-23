@@ -100,8 +100,8 @@ public class DamageAPI {
                 if (removeDurability) {
                     double durabilityLoss = 1.0;
 
-                    if(Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY)) //Reduce dura if player has trinket
-                        durabilityLoss = 0.5;
+                    if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) //Reduce dura if player has trinket 50%
+                        durabilityLoss = 0.0;
 
                     if (!defender.isPlayer()) { //ONLY FOR MOBS!
                         //  EXTRA DAMAGE FOR TIER GAPS  //
