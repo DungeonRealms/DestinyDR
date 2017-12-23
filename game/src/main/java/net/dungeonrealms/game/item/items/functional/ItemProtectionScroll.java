@@ -61,7 +61,7 @@ public class ItemProtectionScroll extends ItemEnchantScroll {
 			return;
 		}
 
-		if(ItemUtilityWeapon.isUtilityWeapon(prot)){
+		if(ItemUtilityWeapon.isUtilityWeaponRanged(prot)){
 			p.sendMessage(ChatColor.RED + "You cannot protect this weapon!");
 			return;
 		}
