@@ -43,6 +43,7 @@ public class MetadataUtils {
 		DUNGEON(false),
 		DUNGEON_FROM(null),
 		NAMED_ELITE(EnumNamedElite.class),
+		MARKSMAN_ELITE(EnumNamedElite.class),
 		ELITE(false),
 		BOSS(false),
 		LEVEL(1),

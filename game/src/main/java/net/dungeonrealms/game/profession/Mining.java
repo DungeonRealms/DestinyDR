@@ -394,67 +394,63 @@ public class Mining implements GenericMechanic, Listener {
             im.setDisplayName(tier.getColor() + Utils.getItemName(oreHelm) + " Hat");
             oreHelm.setItemMeta(im);
             return oreHelm;
-        } else if (roll >= 200) { // FOOD ROLL
-            List<Material> junks = Lists.newArrayList(Material.COOKED_BEEF, Material.PUMPKIN_PIE);
-            return new ItemStack(junks.get(r.nextInt(junks.size())), r.nextInt(6) + 3);
+        } else if (roll >= 200) { // PROF ROLL
+            return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
         } else { // LOOT ROLL
-            if(tier.getTier() == 1) {
+            if (tier.getTier() == 1) {
                 RandomCollection<String> rc = new RandomCollection<String>()
                         .add(27, "enchantArmor").add(27, "enchantWeapon")
-                        .add(26, "scrap").add(20, "prof");
+                        .add(26, "scrap").add(1, "parchment");
                 String item = rc.next();
                 if (item.equals("enchantArmor")) {
                     return new ItemEnchantArmor(ItemTier.TIER_1).generateItem();
                 } else if (item.equals("enchantWeapon")) {
                     return new ItemEnchantWeapon(ItemTier.TIER_1).generateItem();
-                } else if (item.equals("scrap")) {
+                } else if (item.equals("parchment")) {
+                    return new ClueScrollItem(ClueScrollType.MINING).generateItem();
+                } else {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER1).generateItem();
                     scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
-                } else {
-                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
                 }
-            }
-            else if(tier.getTier() == 2) {
+            } else if (tier.getTier() == 2) {
                 RandomCollection<String> rc = new RandomCollection<String>()
                         .add(27, "enchantArmor").add(27, "enchantWeapon")
-                        .add(26, "scrap").add(20, "prof");
+                        .add(26, "scrap").add(2, "parchment");
                 String item = rc.next();
                 if (item.equals("enchantArmor")) {
                     return new ItemEnchantArmor(ItemTier.TIER_2).generateItem();
                 } else if (item.equals("enchantWeapon")) {
                     return new ItemEnchantWeapon(ItemTier.TIER_2).generateItem();
-                } else if (item.equals("scrap")) {
+                } else if (item.equals("parchment")) {
+                    return new ClueScrollItem(ClueScrollType.MINING).generateItem();
+                } else {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER2).generateItem();
                     scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
-                } else {
-                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
                 }
-            }
-            else if(tier.getTier() == 3) {
+            } else if (tier.getTier() == 3) {
                 RandomCollection<String> rc = new RandomCollection<String>()
                         .add(25, "enchantArmor").add(25, "enchantWeapon")
-                        .add(25, "scrap").add(20, "prof").add(5, "orb");
+                        .add(25, "scrap").add(5, "orb").add(3, "parchment");
                 String item = rc.next();
                 if (item.equals("enchantArmor")) {
                     return new ItemEnchantArmor(ItemTier.TIER_3).generateItem();
                 } else if (item.equals("enchantWeapon")) {
                     return new ItemEnchantWeapon(ItemTier.TIER_3).generateItem();
+                } else if (item.equals("parchment")) {
+                    return new ClueScrollItem(ClueScrollType.MINING).generateItem();
                 } else if (item.equals("scrap")) {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER3).generateItem();
                     scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
-                } else if (item.equals("orb")) {
-                    return new ItemOrb().generateItem();
                 } else {
-                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                    return new ItemOrb().generateItem();
                 }
-            }
-            else if(tier.getTier() == 4) {
+            } else if (tier.getTier() == 4) {
                 RandomCollection<String> rc = new RandomCollection<String>()
                         .add(23, "enchantArmor").add(23, "enchantWeapon")
-                        .add(24, "scrap").add(20, "prof").add(10, "orb");
+                        .add(24, "scrap").add(10, "orb").add(4, "parchment");
                 String item = rc.next();
                 if (item.equals("enchantArmor")) {
                     return new ItemEnchantArmor(ItemTier.TIER_4).generateItem();
@@ -464,15 +460,15 @@ public class Mining implements GenericMechanic, Listener {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER4).generateItem();
                     scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
-                } else if (item.equals("orb")) {
-                    return new ItemOrb().generateItem();
+                } else if (item.equals("parchment")) {
+                    return new ClueScrollItem(ClueScrollType.MINING).generateItem();
                 } else {
-                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                    return new ItemOrb().generateItem();
                 }
             } else {
                 RandomCollection<String> rc = new RandomCollection<String>()
                         .add(20, "enchantArmor").add(20, "enchantWeapon")
-                        .add(20, "scrap").add(20, "prof").add(20, "orb");
+                        .add(20, "scrap").add(20, "orb").add(5, "parchment");
                 String item = rc.next();
                 if (item.equals("enchantArmor")) {
                     return new ItemEnchantArmor(ItemTier.TIER_5).generateItem();
@@ -482,14 +478,15 @@ public class Mining implements GenericMechanic, Listener {
                     ItemStack scrap = new ItemScrap(ScrapTier.TIER5).generateItem();
                     scrap.setAmount(Utils.randInt(10, 20));
                     return scrap;
-                } else if (item.equals("orb")) {
-                    return new ItemOrb().generateItem();
+                } else if (item.equals("parchment")) {
+                    return new ClueScrollItem(ClueScrollType.MINING).generateItem();
                 } else {
-                    return new ItemEXPLamp(ItemEXPLamp.ExpType.PROFESSION, Utils.randInt(tier.getMinXPBottle(), tier.getMaxXPBottle())).generateItem();
+                    return new ItemOrb().generateItem();
                 }
             }
         }
     }
+
 
     @Override
     public EnumPriority startPriority() {

@@ -307,6 +307,9 @@ public class EntityAPI {
     public static boolean isElite(Entity ent) {
         return Metadata.ELITE.has(ent);
     }
+    public static boolean isMarksmanElite(Entity ent) {
+        return Metadata.ELITE.has(ent);
+    }
 
     public static boolean isNamedElite(Entity ent) { return  Metadata.NAMED_ELITE.has(ent);}
 
