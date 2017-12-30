@@ -67,19 +67,22 @@ public class HealingWand extends FunctionalItem implements ItemClickEvent.ItemCl
             //Costs everything.
             //Do ability.
             if (ability.getHealInstance().onAbilityUse(player, ability, evt)) {
-                TitleAPI.sendActionBar(player, ChatColor.GREEN + "❢ " + ability.getName() + " ❢", 20);
+                if (!ability.getHealInstance().isOnCooldown()) {
+                    TitleAPI.sendActionBar(player, ChatColor.GREEN + "❢ " + ability.getName() + " ❢", 20);
 
-                PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
-                //Dont take energy if they are lucky.
-                if (ThreadLocalRandom.current().nextInt(100) > wrapper.getAttributes().getAttribute(Item.ArmorAttributeType.LUCK).getValue()) {
-                    player.setExp(0.0F);
-                    player.setTotalExperience(0);
-                    EnergyHandler.updatePlayerEnergyBar(player);
-                    MountUtils.removeMount(player);
-                } else
-                    ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1.4, 0), 10, .25F, .1F);
-            } else {
-                Bukkit.getLogger().info("Unable to use " + ability.getName() + " For " + player.getName());
+                    PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+                    //Dont take energy if they are lucky.
+                    if (ThreadLocalRandom.current().nextInt(100) > wrapper.getAttributes().getAttribute(Item.ArmorAttributeType.LUCK).getValue()) {
+                        player.setExp(0.0F);
+                        player.setTotalExperience(0);
+                        EnergyHandler.updatePlayerEnergyBar(player);
+                        MountUtils.removeMount(player);
+                        ability.getHealInstance().setOnCooldown(ability.getHealInstance().cooldown);
+                    } else
+                        ParticleAPI.spawnParticle(Particle.CRIT, player.getLocation().add(0, 1.4, 0), 10, .25F, .1F);
+                } else {
+                    Bukkit.getLogger().info("Unable to use " + ability.getName() + " For " + player.getName());
+                }
             }
         } else {
             player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);

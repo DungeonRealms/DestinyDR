@@ -47,15 +47,15 @@ public class FishHealBuff extends FishBuff {
     protected void generateVal() {
         int t = getTier().getTier();
         if (t == 1) {
-            setValue(Utils.randInt(1, 2));
+            setValue(2);
         } else if (t == 2) {
-            setValue(Utils.randInt(3, 4));
+            setValue(4);
         } else if (t == 3) {
-            setValue(Utils.randInt(5, 6));
+            setValue(6);
         } else if (t == 4) {
-            setValue(Utils.randInt(7, 8));
+            setValue(8);
         } else {
-            setValue(Utils.randInt(9, 10));
+            setValue(10);
         }
     }
 }

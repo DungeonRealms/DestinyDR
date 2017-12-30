@@ -52,6 +52,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.dungeonrealms.game.mechanic.dungeons.DungeonManager;
+import net.dungeonrealms.game.mechanic.dungeons.DungeonType;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.mechanic.rifts.RiftMechanics;
 import net.dungeonrealms.game.mechanic.rifts.WorldRift;
@@ -1786,6 +1787,11 @@ public class GameAPI {
     public static String getFormattedCooldown(Metadatable m, Metadata type) {
         long val = type.get(m).asLong();
         return val > System.currentTimeMillis() ? TimeUtil.formatDifference((val - System.currentTimeMillis()) / 1000) : null;
+    }
+
+    public static Long getCooldownAsInt(Metadatable m, Metadata type) {
+        long val = type.get(m).asLong();
+        return val > System.currentTimeMillis() ? ((val - System.currentTimeMillis()) / 1000) : null;
     }
 
     public static boolean isCooldown(Metadatable m, Metadata type) {

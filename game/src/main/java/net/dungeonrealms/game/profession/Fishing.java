@@ -204,14 +204,6 @@ public class Fishing implements GenericMechanic, Listener {
             return name();
         }
 
-        public static EnumFish getRandomFish(int tier) {
-            List<EnumFish> fishList = new ArrayList<>();
-            for (EnumFish fish : values())
-                if (fish.getTier() == tier)
-                    fishList.add(fish);
-            return fishList.get(ThreadLocalRandom.current().nextInt(fishList.size() - 1));
-        }
-
         public static EnumFish getFishType(int tier) {
             for (EnumFish fish : values())
                 if (fish.getTier() == tier)
@@ -448,8 +440,7 @@ public class Fishing implements GenericMechanic, Listener {
 
                 PlayerWrapper pw = PlayerWrapper.getWrapper(pl);
                 FishingTier fTier = FishingTier.getByTier(spotTier);
-                boolean hasOneTypeTrinket = Trinket.hasActiveTrinket(pl, Trinket.FISH_ONE_TYPE);
-                ItemFish fishItem = new ItemFish(fTier, hasOneTypeTrinket ? EnumFish.getFishType(fTier.getTier()) : EnumFish.getRandomFish(fTier.getTier()));
+                ItemFish fishItem = new ItemFish(fTier, EnumFish.getFishType(fTier.getTier()));
                 if (Trinket.hasActiveTrinket(pl, Trinket.FISH_HP_FISH) && ThreadLocalRandom.current().nextInt(10) == 5)
                     fishItem.setFishBuff(new FishHealBuff(fTier));
                 else if (Trinket.hasActiveTrinket(pl, Trinket.FISH_SPEED_FISH) && ThreadLocalRandom.current().nextInt(10) == 5)

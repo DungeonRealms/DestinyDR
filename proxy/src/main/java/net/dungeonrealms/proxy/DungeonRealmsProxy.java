@@ -251,6 +251,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLobbyConnect(ServerConnectEvent event) {
+        if (event.getTarget() != null && "kata".equalsIgnoreCase(event.getTarget().getName()))
+            return;
+        
         if ((event.getPlayer().getServer() == null) ||
                 // THIS IS CONSIDERED THE LOBBY LOAD BALANCE SERVER //
                 event.getTarget().getName().equals("Lobby")

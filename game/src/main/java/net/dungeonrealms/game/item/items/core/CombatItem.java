@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class CombatItem extends ItemGear {
 	
 	public CombatItem() {
-		this(ThreadLocalRandom.current().nextBoolean() ? ItemArmor.ARMOR : ItemWeapon.WEAPONS);
+		this(ThreadLocalRandom.current().nextBoolean() ? ItemArmor.ARMOR : ThreadLocalRandom.current().nextBoolean() ? ItemUtilityWeapon.UTILITY_WEAPONS : ItemWeapon.WEAPONS);
 	}
 	
 	public CombatItem(ItemType... type) {
@@ -25,6 +25,6 @@ public abstract class CombatItem extends ItemGear {
 	}
 	
 	public static boolean isCombatItem(ItemStack item) {
-		return ItemArmor.isArmor(item) || ItemWeapon.isWeapon(item);
+		return ItemArmor.isArmor(item) || ItemWeapon.isWeapon(item) || ItemUtilityWeapon.isUtilityWeapon(item);
 	}
 }

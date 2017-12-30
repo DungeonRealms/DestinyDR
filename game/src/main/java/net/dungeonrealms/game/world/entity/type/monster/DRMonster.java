@@ -527,6 +527,9 @@ public interface DRMonster {
             case Blaze:
                 drop = new ItemFireDust().generateItem();
                 break;
+            case MagmaCube:
+                drop = new ItemFireDust().generateItem();
+                break;
             case Nymph:
                 drop = new ItemFairyDust().generateItem();
                 break;
@@ -552,6 +555,9 @@ public interface DRMonster {
                 drop = new ItemGoldenCharm().generateItem();
                 break;
             case Acolyte:
+                drop = new ItemSacrificialHeart().generateItem();
+                break;
+            case Monk:
                 drop = new ItemSacrificialHeart().generateItem();
                 break;
             case Imp:

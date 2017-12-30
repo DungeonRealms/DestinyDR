@@ -12,24 +12,30 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class PvPListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerAttackPlayer(EntityDamageByEntityEvent event) {
-        boolean isProjectile = DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager());
+        boolean isProjectile = DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager()) || DamageAPI.isMarksmanBowProjectile(event.getDamager());
+        boolean isMarksmanProjectile = DamageAPI.isMarksmanBowProjectile(event.getDamager());
         boolean isPlayer = GameAPI.isPlayer(event.getDamager()) && GameAPI.isPlayer(event.getEntity());
 
         Projectile projectile = isProjectile ? (Projectile) event.getDamager() : null;
@@ -75,6 +81,19 @@ public class PvPListener implements Listener {
                 return;
 
             boolean isDuel = DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId());
+
+            //Add player to marksman tag
+            if(isMarksmanProjectile) {
+                if(!GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(defender, MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN)) {
+                    AttackResult res = new AttackResult(attacker, defender);
+                    CombatLog.addToMarksmanTag(res.getDefender(), res.getAttacker());
+                }
+            }
+
+            if(isDuel && isProjectile) {
+                Entity proj = event.getDamager();
+                proj.remove();
+            }
 
             if (!isDuel)
                 CombatLog.updatePVP(attacker);
@@ -138,6 +157,7 @@ public class PvPListener implements Listener {
 
             if (!isProjectile)
                 DamageAPI.handlePolearmAOE(event, Math.max(1, res.getDamage() / 2), attacker);
+
         }
     }
 }

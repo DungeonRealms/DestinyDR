@@ -27,59 +27,59 @@ public class MendWounds extends Healing {
 
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
-        PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
+        if (!isOnCooldown()) {
+            PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(player);
 
-        Entity clicked = event.getClickedEntity();
-        if (clicked == null || !(clicked instanceof Player) || clicked instanceof EntityHumanNPC.PlayerNPC) return false;
-
-        if (GameAPI._hiddenPlayers.contains(clicked)) return false;
-
-        GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
-        Party party = Affair.getParty(player);
-
-        if (guild != null && guild.isMember(clicked.getUniqueId()) || party != null && party.isMember((Player) clicked)) {
-
-            double toHealPercent = 30;
-
-            HealingMap map = healingMap.get(clicked.getUniqueId());
-            if (map != null && !map.canHeal(player.getUniqueId())) {
+            Entity clicked = event.getClickedEntity();
+            if (clicked == null || !(clicked instanceof Player) || clicked instanceof EntityHumanNPC.PlayerNPC)
                 return false;
-            }
 
-            double potency = wrapper.getAttributes().getAttribute(Item.ArmorAttributeType.POTENCY).getValue();
+            if (GameAPI._hiddenPlayers.contains(clicked)) return false;
 
-            double toIncrease = (potency * .01) * toHealPercent;
+            GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
+            Party party = Affair.getParty(player);
 
-            toHealPercent += potency + toIncrease;
+            if (guild != null && guild.isMember(clicked.getUniqueId()) || party != null && party.isMember((Player) clicked)) {
 
-            double current = HealthHandler.getHP(clicked);
+                double toHealPercent = 30;
 
-            double hpToHeal = toHealPercent * 0.01 * HealthHandler.getMaxHP(clicked);
-            HealthHandler.heal(clicked, (int) hpToHeal, true, player.getName() + "'s " + ability.getName());
-
-            if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper((Player) clicked);
-                if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL || wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                    KarmaHandler.update(player);
+                HealingMap map = healingMap.get(clicked.getUniqueId());
+                if (map != null && !map.canHeal(player.getUniqueId())) {
+                    return false;
                 }
+
+                double potency = wrapper.getAttributes().getAttribute(Item.ArmorAttributeType.POTENCY).getValue();
+
+                double toIncrease = (potency * .01) * toHealPercent;
+
+                toHealPercent += potency + toIncrease;
+
+                double current = HealthHandler.getHP(clicked);
+
+                double hpToHeal = toHealPercent * 0.01 * HealthHandler.getMaxHP(clicked);
+                HealthHandler.heal(clicked, (int) hpToHeal, true, player.getName() + "'s " + ability.getName());
+
+                if (wrapper.getAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                    PlayerWrapper wrap = PlayerWrapper.getPlayerWrapper((Player) clicked);
+                    if (wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL && !GameAPI.isNonPvPRegion(player.getLocation()) || wrap.getAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC && !GameAPI.isNonPvPRegion(player.getLocation())) {
+                        GamePlayer playerGP = GameAPI.getGamePlayer(player);
+                        KarmaHandler.update(player);
+                        playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                        MountUtils.removeMount(player);
+                    }
+                }
+
+                double newHP = HealthHandler.getHP(clicked);
+                Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + clicked.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(hpToHeal) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(newHP) + "]");
+                ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, clicked.getLocation().add(0, 1.75, 0), 10, .3F, .4F);
+                if (map == null) {
+                    map = new HealingMap();
+                    healingMap.put(clicked.getUniqueId(), map);
+                }
+
+                map.heal(player.getUniqueId());
+                return true;
             }
-            GamePlayer playerGP = GameAPI.getGamePlayer(player);
-
-            KarmaHandler.update(player);
-            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            CombatLog.addToPVP(player);
-            MountUtils.removeMount(player);
-
-            double newHP = HealthHandler.getHP(clicked);
-            Utils.sendCenteredDebug(player, CC.YellowB + "MENDING WOUNDS (" + CC.Yellow + clicked.getName() + CC.YellowB + ")" + CC.GreenB + " + " + Math.ceil(hpToHeal) + "HP" + CC.Gray + " [" + format.format(current) + " -> " + format.format(newHP) + "]");
-            ParticleAPI.spawnParticle(Particle.VILLAGER_HAPPY, clicked.getLocation().add(0, 1.75, 0), 10, .3F, .4F);
-            if (map == null) {
-                map = new HealingMap();
-                healingMap.put(clicked.getUniqueId(), map);
-            }
-
-            map.heal(player.getUniqueId());
-            return true;
         }
         return false;
     }

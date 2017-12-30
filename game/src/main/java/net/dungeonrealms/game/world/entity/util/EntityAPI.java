@@ -308,6 +308,8 @@ public class EntityAPI {
         return Metadata.ELITE.has(ent);
     }
 
+    public static boolean isNamedElite(Entity ent) { return  Metadata.NAMED_ELITE.has(ent);}
+
     /**
      * Is this entity a boss?
      */

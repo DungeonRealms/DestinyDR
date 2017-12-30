@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.CustomEntityTippedArrow;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -29,6 +30,7 @@ public class AttackResult {
 	private CombatEntity attacker;
 	private CombatEntity defender;
 	private ItemWeapon weapon;
+	private ItemUtilityWeapon utilityWeapon;
 	private Projectile projectile;
 	
 	private double damage;
@@ -188,5 +190,6 @@ public class AttackResult {
 			assert isPlayer();
 			return PlayerWrapper.getPlayerWrapper(getPlayer());
 		}
+
 	}
 }

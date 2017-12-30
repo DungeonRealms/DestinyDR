@@ -27,10 +27,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.concurrent.TimeUnit;
+
 public class WitheringPulse extends Healing {
+
     @Override
     public boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
+
+        cooldown = 8;
 
         GuildWrapper guild = GuildDatabase.getAPI().getPlayersGuildWrapper(player.getUniqueId());
 
@@ -48,42 +52,45 @@ public class WitheringPulse extends Healing {
         int radius = 5;
 
         boolean affected = false;
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (entity instanceof Player) {
-                Player other = (Player) entity;
-                if (GameAPI._hiddenPlayers.contains(other)) continue;
+        if(!isOnCooldown()) {
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_BREAK_BLOCK, 1, .9F);
+            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                if (entity instanceof Player) {
+                    Player other = (Player) entity;
+                    if (GameAPI._hiddenPlayers.contains(other)) continue;
 
-                if(other instanceof EntityHumanNPC.PlayerNPC)continue;
+                    if (other instanceof EntityHumanNPC.PlayerNPC) continue;
 
-                if (party != null && party.isMember(other) || guild != null && guild.isMember(other.getUniqueId()))
-                    continue;
+                    if (party != null && party.isMember(other) || guild != null && guild.isMember(other.getUniqueId()))
+                        continue;
 
-                if (!GameAPI.isNonPvPRegion(other.getLocation())) {
-                    DamageAPI.knockbackEntity(player, other, 1.5F);
+                    if (!GameAPI.isNonPvPRegion(other.getLocation())) {
+                        DamageAPI.knockbackEntity(player, other, 1.8F);
 
-                    int duration = (int) (20 * 4);
-                    duration += duration * (potency * .01);
-                    other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration, potency >= 100 ? 1 : 0));
+                        int duration = (20 * 4);
+                        duration += duration * (potency * .01);
+                        other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration, potency >= 100 ? 1 : 0));
 
-                    affected = true;
-                    withered += other.getName() + ", ";
+                        affected = true;
+                        withered += other.getName() + ", ";
+                    }
                 }
             }
-        }
+            GamePlayer playerGP = GameAPI.getGamePlayer(player);
+            if (affected) {
+                KarmaHandler.update(player);
+                playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+                MountUtils.removeMount(player);
+            }
 
-        GamePlayer playerGP = GameAPI.getGamePlayer(player);
-        if (affected) {
-            CombatLog.addToPVP(player);
-            KarmaHandler.update(player);
-            playerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            MountUtils.removeMount(player);
+            if (withered.isEmpty())
+                withered = "None";
+            else
+                withered = withered.substring(0, withered.length() - 2);
+            Utils.sendCenteredDebug(player, CC.RedB + "WITHERED (" + CC.Red + withered + CC.RedB + ")");
+        } else {
+            Utils.sendCenteredDebug(player, CC.DarkRedB + "YOU CANNOT USE WITHERING PULSE FOR ANOTHER " + TimeUnit.MILLISECONDS.toSeconds(time - System.currentTimeMillis()) + "s.");
         }
-
-        if (withered.isEmpty())
-            withered = "None";
-        else
-            withered = withered.substring(0, withered.length() - 2);
-        Utils.sendCenteredDebug(player, CC.RedB + "WITHERED (" + CC.Red + withered + CC.RedB + ")");
         return true;
     }
 }

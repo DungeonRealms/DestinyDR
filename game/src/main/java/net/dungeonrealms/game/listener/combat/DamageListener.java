@@ -140,7 +140,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()) && (!DamageAPI.isMarksmanBowProjectile(event.getDamager())))))
             return;
         if (!GameAPI.isPlayer(event.getEntity()))
             return;
@@ -179,6 +179,11 @@ public class DamageListener implements Listener {
 
         AttackResult res = new AttackResult(leDamageSource, (LivingEntity) event.getEntity(),
                 DamageAPI.isBowProjectile(event.getDamager()) || DamageAPI.isStaffProjectile(event.getDamager()) ? (Projectile) event.getDamager() : null);
+
+        if(DamageAPI.isMarksmanBowProjectile(event.getDamager())) {
+            if (!GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG) && !GameAPI.isCooldown(res.getDefender().getPlayer(), MetadataUtils.Metadata.MARKSMAN_TAG_COOLDOWN))
+                CombatLog.addToMarksmanTag(res.getDefender(), res.getAttacker());
+        }
 
         DamageAPI.calculateWeaponDamage(res, false);
         CombatLog.updateCombat(player);
@@ -347,6 +352,7 @@ public class DamageListener implements Listener {
 //                p.getEquipment().getArmorContents()[ThreadLocalRandom.current().nextInt(
 //                        p.getEquipment().getArmorContents().length)] : null;
         boolean skipWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
+        boolean skipUtilWeapon = ThreadLocalRandom.current().nextInt(100) <= 50 && alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL;
 
         System.out.println(p.getName() + " DIED " + alignment.name());
 
@@ -419,7 +425,7 @@ public class DamageListener implements Listener {
             //  KEEP PROFESSION ITEMS AND MAIN WEAPON  //
             new ArrayList<>(event.getDrops()).stream().filter((i) -> i != null).forEach(is -> {
                 if (ProfessionItem.isProfessionItem(is) ||
-                        !skipWeapon && is.equals(p.getInventory().getItem(0))) {
+                        !skipWeapon && is.equals(p.getInventory().getItem(0)) || !skipUtilWeapon && is.equals(p.getInventory().getItem(1)) && ItemUtilityWeapon.isUtilityWeaponRanged(is)) {
                     PersistentItem item = PersistentItem.constructItem(is);
                     if (item instanceof ItemGear) {
                         ItemGear gear = (ItemGear) item;
@@ -611,7 +617,11 @@ public class DamageListener implements Listener {
 
         //  CHECK DELAY  //
         String delayMeta = "last" + weapon.getItemType().getNBT() + "Shoot";
-        if (player.hasMetadata(delayMeta) && System.currentTimeMillis() - player.getMetadata(delayMeta).get(0).asLong() < weapon.getShootDelay())
+        double delay =  weapon.getShootDelay();
+        if(Trinket.hasActiveTrinket(player,Trinket.COMBAT_DECREASED_BOW_SPEED)) {
+            delay = weapon.getShootDelay() * 0.80;
+        }
+        if (player.hasMetadata(delayMeta) && System.currentTimeMillis() - player.getMetadata(delayMeta).get(0).asLong() < delay)
             return;
 
         //  PREVENT SHOOTING IN SAFE ZONES  //

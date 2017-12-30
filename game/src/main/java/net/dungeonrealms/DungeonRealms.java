@@ -384,6 +384,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheckDupe());
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
+        cm.registerCommand(new CommandTestParticles("particles", "/particle", "Command test Particles"));
 
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards.", Collections.singletonList("connect")));
@@ -418,6 +419,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandHats());
         cm.registerCommand(new CommandRifts());
         cm.registerCommand(new CommandRiftTime());
+        cm.registerCommand(new CommandDungeonCooldown());
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));

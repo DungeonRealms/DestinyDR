@@ -540,7 +540,7 @@ public class RestrictionListener implements Listener {
             isAttackerPlayer = true;
             pDamager = (Player) event.getDamager();
         } else if ((damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player && (DamageAPI.isStaffProjectile(damager) ||
-                DamageAPI.isBowProjectile(damager)))) {
+                DamageAPI.isBowProjectile(damager))) || DamageAPI.isMarksmanBowProjectile(damager)) {
             isAttackerPlayer = true;
             pDamager = (Player) ((Projectile) damager).getShooter();
         }

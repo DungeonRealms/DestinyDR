@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.item.items.functional;
 
+import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -57,6 +58,11 @@ public class ItemProtectionScroll extends ItemEnchantScroll {
 
 		if (gear.getEnchantCount() >= 8) {
 			p.sendMessage(ChatColor.RED + "This item can no longer be protected!");
+			return;
+		}
+
+		if(ItemUtilityWeapon.isUtilityWeaponRanged(prot)){
+			p.sendMessage(ChatColor.RED + "You cannot protect this weapon!");
 			return;
 		}
 

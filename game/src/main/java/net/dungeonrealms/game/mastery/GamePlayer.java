@@ -29,7 +29,7 @@ public class GamePlayer {
     // for forcefield
     private long pvpTaggedUntil;
 
-	public GamePlayer(Player player) {
+    public GamePlayer(Player player) {
         this.player = player;
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.lastMessager = null;
@@ -49,4 +49,5 @@ public class GamePlayer {
     public int secsPvPTaggedLeft() {
         return isPvPTagged() ? 0 : (int) (pvpTaggedUntil - System.currentTimeMillis()) / 1000;
     }
+
 }

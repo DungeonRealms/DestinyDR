@@ -23,6 +23,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
+import net.dungeonrealms.game.world.item.CC;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.AttributeType;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
@@ -513,7 +514,7 @@ public class InventoryListener implements Listener {
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
             Trade t = TradeManager.getTrade(p.getUniqueId());
             if (t != null)
-                if (!t.p1Ready || !t.p2Ready) {
+                if ((!t.p1Ready || !t.p2Ready) && (!t.p1RollDuel || !t.p2RollDuel) && !t.duelInProgress) {
                     t.handleClose();
                 }
         } else if (event.getInventory().getTitle().contains("Stat Points")) {
@@ -629,36 +630,73 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
                 ItemStack stackClicked = event.getCurrentItem();
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-                if (nms.hasTag() && nms.getTag().hasKey("status")) {
-                    String status = nms.getTag().getString("status");
-                    event.setCancelled(true);
+                if(nms.hasTag()) {
+                    //Trade Button
+                    if(nms.getTag().hasKey("status")) {
+                        String status = nms.getTag().getString("status");
+                        event.setCancelled(true);
 
-                    boolean ready = status.equalsIgnoreCase("ready");
-                    trade.updateReady(event.getWhoClicked().getUniqueId());
-                    ItemStack item = new ItemStack(Material.INK_SACK);
-                    item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.LIME.getDyeData());
-                    ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
-                    item.setItemMeta(meta);
-                    nms = CraftItemStack.asNMSCopy(item);
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    nbt.setString("status", ready ? "notready" : "ready");
-                    nms.setTag(nbt);
-                    nms.c(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
-                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                    trade.checkReady();
-                    return;
+                        boolean ready = status.equalsIgnoreCase("ready");
+                        trade.updateReady(event.getWhoClicked().getUniqueId());
+                        ItemStack item = new ItemStack(Material.INK_SACK);
+                        item.setDurability(ready ? DyeColor.GRAY.getDyeData() : DyeColor.LIME.getDyeData());
+                        ItemMeta meta = item.getItemMeta();
+                        meta.setDisplayName(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                        item.setItemMeta(meta);
+                        nms = CraftItemStack.asNMSCopy(item);
+                        NBTTagCompound nbt = new NBTTagCompound();
+                        nbt.setString("status", ready ? "notready" : "ready");
+                        nms.setTag(nbt);
+                        nms.c(ChatColor.YELLOW + (ready ? "NOT READY" : "READY"));
+                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                        trade.checkReady();
+                        return;
+                    }
+                    //Roll Duel Button
+                    if(nms.getTag().hasKey("rollduel")){
+                        boolean status = nms.getTag().getBoolean("rollduel");
+                        event.setCancelled(true);
+
+                        trade.updateRollDuel(event.getWhoClicked().getUniqueId());
+                        ItemStack head = event.getCurrentItem();
+                        ItemMeta headMeta = head.getItemMeta();
+                        headMeta.setDisplayName(CC.WhiteB + "Duel: " + (status ? CC.DarkRedB + "NO" : CC.GreenB + "YES"));
+                        head.setItemMeta(headMeta);
+                        nms = CraftItemStack.asNMSCopy(head);
+                        nms.getTag().setBoolean("rollduel", !status);
+                        nms.c(CC.WhiteB + "Duel: " + (status ? CC.DarkRedB + "NO" : CC.GreenB + "YES"));
+                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                        trade.checkRollDuel();
+                        return;
+                    }
                 }
+                if(event.getCurrentItem().getType() == Material.SKULL_ITEM)event.setCancelled(true);
             }
 
             Player clicker = (Player) event.getWhoClicked();
-            if (trade.p1Ready || trade.p2Ready) {
-                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-                trade.changeReady();
-                trade.setDividerColor(DyeColor.RED);
-                clicker.updateInventory();
+            if(!trade.duelInProgress) {
+                if (trade.p1Ready || trade.p2Ready) {
+                    trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.changeReady();
+                    trade.setDividerColor(DyeColor.RED);
+                    clicker.updateInventory();
+                    trade.getOppositePlayer(clicker).updateInventory();
+                }
+
+                if (trade.p1RollDuel || trade.p2RollDuel) {
+                    trade.p1.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.p2.sendMessage(ChatColor.RED + "Duel wages modified by " + ChatColor.BOLD.toString() + clicker.getName());
+                    trade.changeRollDuel();
+                    trade.setDividerColor(DyeColor.RED);
+                    clicker.updateInventory();
+                    trade.getOppositePlayer(clicker).updateInventory();
+                }
             }
+            else{
+                event.setCancelled(true);
+            }
+
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
                     trade.setDividerColor(DyeColor.WHITE);

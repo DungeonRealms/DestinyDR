@@ -21,7 +21,11 @@ public abstract class ItemWeaponRanged extends ItemWeapon {
 	}
 	
 	public static boolean isRangedWeapon(ItemStack item) {
-		return ItemWeaponBow.isBow(item);
+		return ItemWeaponBow.isBow(item) || ItemWeaponMarksmanBow.isMarksmanBow(item);
+	}
+
+	public static boolean isRangedUtilityWeapon(ItemStack item) {
+		return ItemWeaponMarksmanBow.isMarksmanBow(item);
 	}
 
 	/**

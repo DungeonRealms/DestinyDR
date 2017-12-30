@@ -96,10 +96,6 @@ public class Teleportation implements GenericMechanic {
         player.sendMessage(message);
 
         int delay = teleportType.getTickDelay();
-
-        if (Trinket.hasActiveTrinket(player, Trinket.REDUCED_BOOK_COOLDOWN)) {
-            delay = Math.max(1, (int) (delay * .8D));
-        }
         final int[] taskTimer = {delay};
 
         Location startingLocation = player.getLocation();

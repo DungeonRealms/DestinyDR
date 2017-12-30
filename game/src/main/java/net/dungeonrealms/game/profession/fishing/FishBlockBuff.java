@@ -30,7 +30,7 @@ public class FishBlockBuff extends FishBuff {
 
 	@Override
 	protected String[] getNamePrefixes() {
-		return new String[] {"Lesser", "Lesser", "Greater", "Greater", "Greater"};
+		return new String[] {"Lesser", "Adequate", "Greater", "Superior", "Legendary"};
 	}
 
 	@Override
@@ -41,17 +41,15 @@ public class FishBlockBuff extends FishBuff {
 	@Override
 	protected void generateVal() {
 		if (getTier().getTier() == 1) {
-			setValue(Utils.randInt(1, 3));
+			setValue(3);
 		} else if (getTier().getTier() == 2) {
-			setValue(Utils.randInt(2, 3));
+			setValue(4);
 		} else if (getTier().getTier() == 3) {
-			setValue(Utils.randInt(3, 4));
+			setValue(5);
 		} else if (getTier().getTier() == 4) {
-			setValue(Utils.randInt(5, 6));
-		} else if (getTier().getTier() == 5) {
-			setValue(Utils.randInt(7, 8));
+			setValue(7);
 		} else {
-			setValue(Utils.randInt(4, 9));
+			setValue(9);
 		}
 	}
 }

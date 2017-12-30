@@ -16,7 +16,23 @@ public abstract class Healing {
 
     protected static Map<UUID, HealingMap> healingMap = new HashMap<>();
 
+    protected long time = System.currentTimeMillis();
+
+    protected long cooldown = 0;
+
     public abstract boolean onAbilityUse(Player player, HealingAbility ability, ItemClickEvent event);
+
+    public boolean isOnCooldown() {
+        return time >= System.currentTimeMillis();
+    }
+
+    public void setOnCooldown(long durationInSeconds) {
+        time = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(durationInSeconds);
+    }
+
+    public long getTime(){
+        return time;
+    }
 
     @Getter
     public class HealingMap {

@@ -390,10 +390,9 @@ public class HealthHandler implements GenericMechanic {
             Player player = res.getAttacker().getPlayer();
             if (SetBonus.hasSetBonus(player, SetBonuses.HEALER)) {
                 if (!GameAPI.isCooldown(player, Metadata.HEAL_CD_MESSAGE)) {
-                    player.sendMessage(ChatColor.RED + "You cannot deal damage while wearing a Healer Set!");
-                    GameAPI.addCooldown(player, Metadata.HEAL_CD_MESSAGE, 5);
+                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Your damage has been halved because you are a healer!");
+                    GameAPI.addCooldown(player, Metadata.HEAL_CD_MESSAGE, 35);
                 }
-                return;
             }
         }
         if (res.getDefender().isPlayer()) {
@@ -415,8 +414,8 @@ public class HealthHandler implements GenericMechanic {
         Player player = res.getDefender().getPlayer();
         LivingEntity attacker = res.getAttacker().getEntity();
         double damage = res.getDamage();
-        if (!(res.getAttacker() instanceof Player) && res.hasProjectile())
-            damage /= 2; // Nerfs bow mobs.
+//        if (!(res.getAttacker() instanceof Player) && res.hasProjectile())
+//            damage /= 2; // Nerfs bow mobs.
 
         if (!res.getDefender().getWrapper().isVulnerable())
             return;
