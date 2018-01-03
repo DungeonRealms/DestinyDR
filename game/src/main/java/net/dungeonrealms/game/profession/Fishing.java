@@ -413,11 +413,11 @@ public class Fishing implements GenericMechanic, Listener {
                 }
 
                 if (Trinket.hasActiveTrinket(pl, Trinket.FISH_DAY_SUCCESS) && (pl.getWorld().getFullTime() <= 13_000 || pl.getWorld().getFullTime() >= 23_000)) {
-                    successRate += 3 + ThreadLocalRandom.current().nextInt(3);
+                    successRate += 5 + ThreadLocalRandom.current().nextInt(10);
                     Bukkit.getLogger().info("Adding success: " + successRate);
                 }
                 if (Trinket.hasActiveTrinket(pl, Trinket.FISH_NIGHT_SUCCESS) && (pl.getWorld().getFullTime() >= 13_000 || pl.getWorld().getFullTime() <= 23_000)) {
-                    successRate += 3 + ThreadLocalRandom.current().nextInt(3);
+                    successRate += 5 + ThreadLocalRandom.current().nextInt(10);
                     Bukkit.getLogger().info("Adding success: " + successRate);
                 }
                 if (tracker.isSuspiciousAutoFisher() && successRate > 5) {
@@ -509,7 +509,7 @@ public class Fishing implements GenericMechanic, Listener {
 
                 Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
 
-                if (random.nextInt(300_000) == 3) {
+                if (random.nextInt(30000) == 1) {
                     PlayerWrapper wrapper = PlayerWrapper.getPlayerWrapper(pl);
                     Purchaseables.FISH_BOWL.setNumberOwned(wrapper, 1);
                     //wrapper.getPurchaseablesUnlocked().put(Purchaseables.FISH_BOWL, 1);
@@ -525,7 +525,7 @@ public class Fishing implements GenericMechanic, Listener {
                     //Quest.spawnFirework(pl.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.GREEN).withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
                     //pl.sendMessage(ChatColor.GREEN + "* Your line snags on a fishbowl floating in the water! *");
                     shootItemStackFromWater(new ItemStack(Material.MAP, 1), pl, e.getHook().getLocation());
-                } else if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TREASURE_FIND) >= ThreadLocalRandom.current().nextInt(300) + 1) {
+                } else if (pole.getAttributes().getAttribute(FishingAttributeType.TREASURE_FIND).getValue() + Trinket.getTrinketValue(pl, Trinket.FISH_TREASURE_FIND) >= ThreadLocalRandom.current().nextInt(100) + 1) {
                     // Give em treasure!
                     int treasureType = ThreadLocalRandom.current().nextInt(100); // 0, 1
                     ItemStack treasure = null;
@@ -570,7 +570,7 @@ public class Fishing implements GenericMechanic, Listener {
                         junk.setAmount(1 + random.nextInt(2));
                     } else if (junkType < 98) {
                         junk = new ItemScrap(ScrapTier.getScrapTier(spotTier)).generateItem();
-                        junk.setAmount(1 + random.nextInt(7 - spotTier + 2));
+                        junk.setAmount(1 + random.nextInt(7 - spotTier));
                     } else {
                         int tierRoll = random.nextInt(100);
 //                        int junkTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
