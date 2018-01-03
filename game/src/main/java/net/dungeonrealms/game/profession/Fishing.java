@@ -518,7 +518,7 @@ public class Fishing implements GenericMechanic, Listener {
                     Quest.spawnFirework(pl.getLocation(), FireworkEffect.builder().flicker(true).trail(true).withColor(Color.GREEN).withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
                     pl.sendMessage(ChatColor.GREEN + "* Your line snags on a fishbowl floating in the water! *");
                     shootItemStackFromWater(new ItemStack(Material.SAPLING, 1, (short) 3), pl, e.getHook().getLocation());
-                } else if (random.nextInt(5_000) == 3) {
+                } else if (random.nextInt(2000) == 3) {
                     ClueScrollItem clue = new ClueScrollItem(ClueScrollType.FISHING);
                     GameAPI.giveOrDropItem(pl, clue.generateItem());
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, .5F);
@@ -531,7 +531,7 @@ public class Fishing implements GenericMechanic, Listener {
                     ItemStack treasure = null;
                     if (treasureType <= 25) {
                         treasure = new ItemOrb().generateItem();
-                    } else if (treasureType <= 35) {
+                    } else if (treasureType <= 30) {
                         int tierRoll = random.nextInt(100);
 //                        int treasureTier = tierRoll >= 95 ? 5 : (tierRoll <= 70 ? 3 : spotTier);
                         int treasureTier = spotTier;

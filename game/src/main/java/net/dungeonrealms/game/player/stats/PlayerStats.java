@@ -112,7 +112,7 @@ public class PlayerStats implements LoadableData, SaveableData {
     }
 
     public double getArmor(boolean temp) {
-        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.045);
+        return ((temp ? getTempStat(Stats.STRENGTH) : getStat(Stats.STRENGTH)) * 0.03);
     }
 
 //     public double getArmorPen(boolean temp) {
