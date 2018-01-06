@@ -588,24 +588,26 @@ public class DamageAPI {
         final int dodgeRoll = rand.nextInt(100);
         final int blockRoll = rand.nextInt(100);
 
-        if (dodgeRoll < dodgeChance - accuracy) {
-            if (dodgeRoll >= dodgeChance) {
+        if (dodgeRoll > dodgeChance - accuracy) {
+            if (dodgeRoll <= dodgeChance) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
+            } else {
+                removeElementalEffects(defender.getEntity());
+                ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
+                res.setResult(DamageResultType.DODGE);
+                return;
             }
-            removeElementalEffects(defender.getEntity());
-            ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
-            res.setResult(DamageResultType.DODGE);
-            return;
-        } else if (blockRoll < blockChance - accuracy) {
-            if (blockRoll >= blockChance) {
+        } else if (blockRoll > blockChance - accuracy) {
+            if (blockRoll <= blockChance) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
+            } else {
+                removeElementalEffects(defender.getEntity());
+                ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
+                res.setResult(DamageResultType.BLOCK);
+                return;
             }
-            removeElementalEffects(defender.getEntity());
-            ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
-            res.setResult(DamageResultType.BLOCK);
-            return;
         }
 
         //  REFLECT  //
@@ -801,8 +803,9 @@ public class DamageAPI {
     public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {
         double durability = 1.0;
         if (takeDura)
-            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
-                durability = 0.5;
+            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+                //Reduce dura if player has trinket 50%
+                durability = 0.0;
 
         bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
@@ -814,8 +817,9 @@ public class DamageAPI {
     public static void fireMarksmanBowProjectile(Player player, ItemWeaponMarksmanBow bow, boolean takeDura) {
         double durability = 1.0;
         if (takeDura)
-            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY))
-                durability = 0.5;
+            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+                //Reduce dura if player has trinket 50%
+                durability = 0.0;
 
         bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();

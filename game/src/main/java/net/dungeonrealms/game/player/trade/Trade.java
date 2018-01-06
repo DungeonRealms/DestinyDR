@@ -390,6 +390,10 @@ public class Trade {
             public void run() {
                 ArrayList<ItemStack> winnings = new ArrayList<>(p1Bet);
                 winnings.addAll(p2Bet);
+                inv.clear();
+                p1.closeInventory();
+                p2.closeInventory();
+
                 for(ItemStack i : winnings){
                     winner.getInventory().addItem(i);
                 }
@@ -398,9 +402,7 @@ public class Trade {
                 p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p1.setCanPickupItems(true);
-                p2.setCanPickupItems(true);
-                p1.closeInventory();
-                p2.closeInventory();
+                p2.setCanPickupItems(true)''
                 remove();
             }
         }, 20L);

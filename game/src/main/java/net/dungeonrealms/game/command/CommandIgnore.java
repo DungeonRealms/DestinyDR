@@ -45,7 +45,7 @@ public class CommandIgnore extends BaseCommand implements CooldownCommand {
         String name = args[0];
 
         if (name.equalsIgnoreCase(player.getName())) {
-            player.sendMessage(ChatColor.RED + "You can not add yourself as a friend!");
+            player.sendMessage(ChatColor.RED + "You can't ignore your own thoughts silly!");
             return false;
         }
 
