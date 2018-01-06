@@ -328,8 +328,10 @@ public class PvEListener implements Listener {
             }
         } else if (EntityAPI.isElite(receiver)) {
             if (rand.nextInt(100) <= powerChance) {
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, null);
+                if (receiver.hasPotionEffect(PotionEffectType.SLOW_DIGGING) == false) {
+                    receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+                    PowerMove.doPowerMove("whirlwind", receiver, null);
+                }
             }
 
         } else if (EntityAPI.isBoss(receiver)) {
