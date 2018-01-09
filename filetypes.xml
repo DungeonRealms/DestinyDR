@@ -1,0 +1,8 @@
+<application>
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping pattern="MeleeOcelot" type="CLASS" />
+      <mapping pattern="test" type="JAVA" />
+    </extensionMap>
+  </component>
+</application>
