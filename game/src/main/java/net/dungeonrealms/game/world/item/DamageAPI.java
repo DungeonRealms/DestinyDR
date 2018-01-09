@@ -588,8 +588,8 @@ public class DamageAPI {
         final int dodgeRoll = rand.nextInt(100);
         final int blockRoll = rand.nextInt(100);
 
-        if (dodgeRoll > dodgeChance - accuracy) {
-            if (dodgeRoll <= dodgeChance) {
+        if (dodgeRoll < dodgeChance) {
+            if (dodgeRoll < dodgeChance - accuracy) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
             } else {
@@ -598,8 +598,8 @@ public class DamageAPI {
                 res.setResult(DamageResultType.DODGE);
                 return;
             }
-        } else if (blockRoll > blockChance - accuracy) {
-            if (blockRoll <= blockChance) {
+        } else if (blockRoll < blockChance) {
+            if (blockRoll < blockChance - accuracy) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
                         defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
             } else {
