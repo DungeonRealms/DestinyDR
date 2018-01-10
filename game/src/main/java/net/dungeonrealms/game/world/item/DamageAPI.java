@@ -802,29 +802,33 @@ public class DamageAPI {
 
     public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {
         double durability = 1.0;
-        if (takeDura)
-            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+        if (takeDura) {
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
                 //Reduce dura if player has trinket 50%
                 durability = 0.0;
+            }
 
-        bow.damageItem(player, durability);
-        PlayerWrapper.getWrapper(player).calculateAllAttributes();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
-        fireBowProjectile(player, bow);
+            bow.damageItem(player, durability);
+            PlayerWrapper.getWrapper(player).calculateAllAttributes();
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+            fireBowProjectile(player, bow);
+        }
     }
 
     //Change this later
     public static void fireMarksmanBowProjectile(Player player, ItemWeaponMarksmanBow bow, boolean takeDura) {
         double durability = 1.0;
-        if (takeDura)
-            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+        if (takeDura) {
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
                 //Reduce dura if player has trinket 50%
                 durability = 0.0;
+            }
 
-        bow.damageItem(player, durability);
-        PlayerWrapper.getWrapper(player).calculateAllAttributes();
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
-        fireMarksmanBowProjectile(player, bow);
+            bow.damageItem(player, durability);
+            PlayerWrapper.getWrapper(player).calculateAllAttributes();
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player, EnergyHandler.getWeaponSwingEnergyCost(bow.getItem()), !takeDura);
+            fireMarksmanBowProjectile(player, bow);
+        }
     }
 
     public static void fireBowProjectile(LivingEntity ent, ItemWeaponBow bow) {
