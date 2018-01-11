@@ -80,7 +80,7 @@ public class CommandMonSpawn extends BaseCommand {
             s.sendMessage(ChatColor.RED + "No elite found with that type.");
         }
 
-        int spawnsize = Integer.parseInt(args[6]);
+        int spawnsize = Integer.parseInt(args[5]);
         for(int amt = 0; amt < spawnsize; amt++) {
 
             if (spawnsize > 50) {
