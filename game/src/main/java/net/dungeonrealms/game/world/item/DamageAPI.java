@@ -584,13 +584,17 @@ public class DamageAPI {
         final int dodgeRoll = rand.nextInt(100);
         final int blockRoll = rand.nextInt(100);
 
+        LivingEntity receiver = res.getDefender().getEntity();
+        String defenderName = receiver instanceof Player ? receiver.getName() : Metadata.CUSTOM_NAME.get(receiver).asString();
+
         if (dodgeRoll < dodgeChance) {
-            if (dodgeRoll < dodgeChance - accuracy) {
+            if (dodgeRoll > dodgeChance - accuracy) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
-                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
+                        defenderName + ChatColor.GREEN + " from dodging!");
             }
             else if (res.getCritical()) {
-                defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully dodge a critical blow");
+                attacker.getWrapper().sendDebug(defenderName + ChatColor.GREEN + "could not fully dodge your critical strike!");
+                defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully dodge a critical blow!");
                 ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
                 damage = damage / 2;
             }
@@ -602,11 +606,12 @@ public class DamageAPI {
                 return;
             }
         } else if (blockRoll < blockChance) {
-            if (blockRoll < blockChance - accuracy) {
+            if (blockRoll > blockChance - accuracy) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
-                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
+                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking!");
             }
             else if (res.getCritical()) {
+                attacker.getWrapper().sendDebug(defenderName + ChatColor.GREEN + "could not fully dodge your critical strike!");
                 defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully block a critical blow");
                 ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
                 damage = damage / 2;

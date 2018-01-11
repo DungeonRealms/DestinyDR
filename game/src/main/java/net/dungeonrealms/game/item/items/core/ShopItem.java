@@ -8,6 +8,7 @@ import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
 import net.dungeonrealms.game.item.items.functional.ItemMuleUpgrade;
 import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.mechanic.data.ShardTier;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -70,6 +71,8 @@ public class ShopItem extends ItemGeneric {
                 toGive = new ItemPeaceOrb(true);
             } else if (toGive instanceof ItemFlightOrb) {
                 toGive = new ItemFlightOrb(true);
+            } else if (toGive instanceof ItemOrb) {
+                toGive = new ItemOrb();
             } else if (toGive instanceof ItemMuleUpgrade) {
                 toGive = new ItemMuleUpgrade(((ItemMuleUpgrade) toGive).getTier());
             }

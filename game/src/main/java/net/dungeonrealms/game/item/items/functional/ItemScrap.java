@@ -53,7 +53,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 		evt.setCancelled(true);
 		if (gear instanceof ProfessionItem && ((ProfessionItem)gear).getLevel() >= 100) {
-			player.sendMessage(ChatColor.RED + "This tool has reach it's end and can no longer be repaired.");
+			player.sendMessage(ChatColor.RED + "This tool has reached it's end and can no longer be repaired.");
 			return;
 		}
 
