@@ -402,7 +402,7 @@ public class Trade {
                 p1.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p2.sendMessage(ChatColor.GREEN + winner.getName() + " won the duel.");
                 p1.setCanPickupItems(true);
-                p2.setCanPickupItems(true)''
+                p2.setCanPickupItems(true);
                 remove();
             }
         }, 20L);
