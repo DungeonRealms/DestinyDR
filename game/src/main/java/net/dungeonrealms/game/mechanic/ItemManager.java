@@ -136,14 +136,16 @@ public class ItemManager {
 
         dps = range.getValLow() + " - " + range.getValHigh();
 
-        int blogde = pw.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue() + pw.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
+        int block = pw.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
+        int dodge = pw.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
+        float blodgeChance = (1 - (1 - (block / 100)) * (1 -(dodge / 100))) * 100;
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK
                 + "   " + dps + "%" +  ChatColor.BOLD + " DPS" + "\n" + ChatColor.BLACK
                 + "   " + (HealthHandler.getRegen(p)) + " " + ChatColor.BOLD + "HP/s" + "\n" + ChatColor.BLACK
                 + "   " + (pw.getAttributes().getAttribute(ArmorAttributeType.ENERGY_REGEN).toString()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK
 //                + "   " + pw.getEcash() + ChatColor.BOLD + " E-CASH" + "\n" + ChatColor.BLACK
-                + "   " + blogde + "%" + ChatColor.BOLD + " BLODGE" + "\n" + ChatColor.BLACK
+                + "   " + blodgeChance + "%" + ChatColor.BOLD + " BLODGE" + "\n" + ChatColor.BLACK
                 + "   " + pw.getAttributes().getAttribute(ArmorAttributeType.REFLECTION).getValue() + "%" + ChatColor.BOLD + " REFLECTION";
 
         /*page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "   " + "\n"
