@@ -608,7 +608,7 @@ public class DamageAPI {
         } else if (blockRoll < blockChance) {
             if (blockRoll > blockChance - accuracy) {
                 attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
-                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking!");
+                        defenderName + ChatColor.GREEN + " from blocking!");
             }
             else if (res.getCritical()) {
                 attacker.getWrapper().sendDebug(defenderName + ChatColor.GREEN + "could not fully dodge your critical strike!");
