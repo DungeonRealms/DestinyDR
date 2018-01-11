@@ -136,9 +136,9 @@ public class ItemManager {
 
         dps = range.getValLow() + " - " + range.getValHigh();
 
-        int block = pw.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
-        int dodge = pw.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
-        float blodgeChance = (1 - (1 - (block / 100)) * (1 -(dodge / 100))) * 100;
+        float block = pw.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
+        float dodge = pw.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
+        float blodgeChance = (1 - (1 - (block / 100)) * (1 - (dodge / 100))) * 100;
         page1_string += ChatColor.BLACK.toString() + playerAlignment.getDescription() + new_line + ChatColor.BLACK + "   " + HealthHandler.getHP(p)
                 + " / " + HealthHandler.getMaxHP(p) + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK
                 + "   " + dps + "%" +  ChatColor.BOLD + " DPS" + "\n" + ChatColor.BLACK

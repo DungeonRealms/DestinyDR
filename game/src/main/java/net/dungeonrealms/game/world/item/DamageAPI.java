@@ -611,7 +611,7 @@ public class DamageAPI {
                         defenderName + ChatColor.GREEN + " from blocking!");
             }
             else if (res.getCritical()) {
-                attacker.getWrapper().sendDebug(ChatColor.GREEN + defenderName + ChatColor.GREEN + "could not fully dodge your critical strike!");
+                attacker.getWrapper().sendDebug(ChatColor.GREEN + defenderName + ChatColor.GREEN + "could not fully block your critical strike!");
                 defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully block a critical blow");
                 ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
                 damage = damage / 2;
