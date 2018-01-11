@@ -222,6 +222,7 @@ public class DamageAPI {
             defender.getEntity().getWorld().spawnParticle(Particle.CRIT, defender.getEntity().getLocation(), 10,
                     ThreadLocalRandom.current().nextDouble(), ThreadLocalRandom.current().nextDouble(), ThreadLocalRandom.current().nextDouble(), 0.5F);
             isHitCrit = true;
+            res.setCritical(isHitCrit);
         }
 
         //  STRENGTH BUFF  //
@@ -559,6 +560,75 @@ public class DamageAPI {
         double totalArmor = 0;
         double totalArmorReduction = 0;
 
+        //Bad hotfix to get attacker's weapon for durability change if defender blodges
+        ItemStack item = attacker.getEntity().getEquipment().getItemInMainHand();
+        if (!ItemWeapon.isWeapon(item))
+            return;
+
+        if (attacker.getAttributes() == null) {
+            if (attacker.isPlayer()) {
+                Bukkit.getLogger().info("Null attacker attributes for " + attacker.getPlayer().getName());
+            }
+            return;
+        }
+
+        ItemWeapon weapon = (ItemWeapon) PersistentItem.constructItem(item);
+
+        int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
+
+        //  BLOCK AND DODGE  //
+        Random rand = ThreadLocalRandom.current();
+
+        int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
+        int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
+        final int dodgeRoll = rand.nextInt(100);
+        final int blockRoll = rand.nextInt(100);
+
+        if (dodgeRoll < dodgeChance) {
+            if (dodgeRoll < dodgeChance - accuracy) {
+                attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
+                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
+            }
+            else if (res.getCritical()) {
+                defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully dodge a critical blow");
+                ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
+                damage = damage / 2;
+            }
+            else {
+                removeElementalEffects(defender.getEntity());
+                ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
+                res.setResult(DamageResultType.DODGE);
+                weapon.damageItem(attacker.getPlayer(), -1);
+                return;
+            }
+        } else if (blockRoll < blockChance) {
+            if (blockRoll < blockChance - accuracy) {
+                attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
+                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
+            }
+            else if (res.getCritical()) {
+                defender.getWrapper().sendDebug(ChatColor.RED + "You were unable to fully block a critical blow");
+                ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
+                damage = damage / 2;
+            }
+            else {
+                removeElementalEffects(defender.getEntity());
+                ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
+                res.setResult(DamageResultType.BLOCK);
+                weapon.damageItem(attacker.getPlayer(), -1);
+                return;
+            }
+        }
+
+        //  REFLECT  //
+        int reflectChance = defender.getAttributes().getAttribute(ArmorAttributeType.REFLECTION).getValue();
+        if (rand.nextInt(100) < Math.min(75, reflectChance)) {
+            res.setResult(DamageResultType.REFLECT);
+
+            weapon.damageItem(attacker.getPlayer(), -1);
+            return;
+        }
+
         //  DAMAGE ARMOR  //
         if (defender.isPlayer() && !attacker.isPlayer())
             if (takeDura) {
@@ -575,45 +645,6 @@ public class DamageAPI {
         if (defender.getAttributes() == null || attacker.getAttributes() == null) {
             res.setDamage(1);
             //How?
-            return;
-        }
-
-        int accuracy = res.hasProjectile() ? 0 : attacker.getAttributes().getAttribute(WeaponAttributeType.ACCURACY).getValue();
-
-        //  BLOCK AND DODGE  //
-        Random rand = ThreadLocalRandom.current();
-
-        int dodgeChance = defender.getAttributes().getAttribute(ArmorAttributeType.DODGE).getValue();
-        int blockChance = defender.getAttributes().getAttribute(ArmorAttributeType.BLOCK).getValue();
-        final int dodgeRoll = rand.nextInt(100);
-        final int blockRoll = rand.nextInt(100);
-
-        if (dodgeRoll < dodgeChance) {
-            if (dodgeRoll < dodgeChance - accuracy) {
-                attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
-                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from dodging.");
-            } else {
-                removeElementalEffects(defender.getEntity());
-                ParticleAPI.spawnParticle(Particle.CLOUD, defender.getEntity().getLocation(), 10, .5F);
-                res.setResult(DamageResultType.DODGE);
-                return;
-            }
-        } else if (blockRoll < blockChance) {
-            if (blockRoll < blockChance - accuracy) {
-                attacker.getWrapper().sendDebug(ChatColor.GREEN + "Your " + accuracy + "% accuracy has prevented " +
-                        defender.getEntity().getCustomName() + ChatColor.GREEN + " from blocking.");
-            } else {
-                removeElementalEffects(defender.getEntity());
-                ParticleAPI.spawnParticle(Particle.REDSTONE, defender.getEntity().getLocation(), 10, .5F);
-                res.setResult(DamageResultType.BLOCK);
-                return;
-            }
-        }
-
-        //  REFLECT  //
-        int reflectChance = defender.getAttributes().getAttribute(ArmorAttributeType.REFLECTION).getValue();
-        if (rand.nextInt(100) < Math.min(75, reflectChance)) {
-            res.setResult(DamageResultType.REFLECT);
             return;
         }
 
@@ -802,10 +833,12 @@ public class DamageAPI {
 
     public static void fireBowProjectile(Player player, ItemWeaponBow bow, boolean takeDura) {
         double durability = 1.0;
-        if (takeDura)
-            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+        if (takeDura) {
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
                 //Reduce dura if player has trinket 50%
                 durability = 0.0;
+            }
+        }
 
         bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();
@@ -816,10 +849,12 @@ public class DamageAPI {
     //Change this later
     public static void fireMarksmanBowProjectile(Player player, ItemWeaponMarksmanBow bow, boolean takeDura) {
         double durability = 1.0;
-        if (takeDura)
-            if (Trinket.hasActiveTrinket(attacker.getPlayer(), Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
+        if (takeDura){
+            if (Trinket.hasActiveTrinket(player, Trinket.COMBAT_DURABILITY) && Utils.randInt(1, 100) > 50) {
                 //Reduce dura if player has trinket 50%
                 durability = 0.0;
+            }
+        }
 
         bow.damageItem(player, durability);
         PlayerWrapper.getWrapper(player).calculateAllAttributes();

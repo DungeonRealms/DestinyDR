@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.game.item.items.core.ItemUtilityWeapon;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.customprojectiles.CustomEntityTippedArrow;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
 import org.bukkit.Bukkit;
@@ -32,7 +31,8 @@ public class AttackResult {
 	private ItemWeapon weapon;
 	private ItemUtilityWeapon utilityWeapon;
 	private Projectile projectile;
-	
+
+	private boolean critical;
 	private double damage;
 
 	private double totalArmor;
@@ -52,6 +52,14 @@ public class AttackResult {
 		
 		loadAttributeFromMeta();
 	}
+
+	public void setCritical(boolean critResult){
+	    critical = critResult;
+    }
+
+    public boolean getCritical(){
+	    return critical;
+    }
 	
 	public boolean hasProjectile() {
 		return getProjectile() != null;

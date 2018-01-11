@@ -53,7 +53,7 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 
 		evt.setCancelled(true);
 		if (gear instanceof ProfessionItem && ((ProfessionItem)gear).getLevel() >= 100) {
-			player.sendMessage(ChatColor.RED + "This item is much too worn to be repaired.");
+			player.sendMessage(ChatColor.RED + "This tool has reach it's end and can no longer be repaired.");
 			return;
 		}
 
@@ -67,9 +67,9 @@ public class ItemScrap extends FunctionalItem implements ItemInventoryListener {
 		int particleId = gear.getRepairParticle(getTier());
 
 		for (int i = 0; i < 6; i++) {
-            player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleId, 12);
-            player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleId, 12);
-            player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleId, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleId, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.15, 0), Effect.TILE_BREAK, particleId, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1, 0), Effect.TILE_BREAK, particleId, 12);
         }
 
 		if (gear.getTier().getId() == 5) {

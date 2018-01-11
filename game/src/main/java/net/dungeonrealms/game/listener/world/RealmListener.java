@@ -346,7 +346,7 @@ public class RealmListener implements Listener {
             double x = -(radius * Math.cos(3 * y));
             double z = -(radius * Math.sin(3 * y));
 
-            double y2 = 5 - y;
+            double y2 = 3 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 

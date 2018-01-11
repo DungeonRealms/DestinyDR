@@ -30,7 +30,7 @@ public class CommandMonSpawn extends BaseCommand {
             return false;
 
         if (args.length < 5) {
-        	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <eliteName> <display_name>");
+        	s.sendMessage(ChatColor.RED + "Syntax: /monspawn <monster> <tier> <elite> <eliteName> <display_name> [amount]");
         	return true;
         }
         
@@ -39,6 +39,7 @@ public class CommandMonSpawn extends BaseCommand {
         //args[2] = true || elite -> elite.
         //args[3] = Ignored, kept so old command blocks don't break.
         //args[4] = DisplayName
+        //args[5] = Amount (optional)
         
         Location spawn = s instanceof BlockCommandSender ? ((BlockCommandSender)s).getBlock().getLocation() : null;
         if (s instanceof Player)
@@ -79,12 +80,20 @@ public class CommandMonSpawn extends BaseCommand {
             s.sendMessage(ChatColor.RED + "No elite found with that type.");
         }
 
-        if (elite) {
-        	EntityAPI.spawnElite(spawn, spawn, eliteFound, type, tier, level, customName);
-        } else {
-        	EntityAPI.spawnCustomMonster(spawn, spawn, type, level, tier, null, customName);
+        int spawnsize = Integer.parseInt(args[6]);
+        for(int amt = 0; amt < spawnsize; amt++) {
+
+            if (spawnsize > 50) {
+                s.sendMessage(ChatColor.RED + "You can not spawn more than 50 mobs at a time!");
+                return true;
+            }
+
+            if (elite) {
+                EntityAPI.spawnElite(spawn, spawn, eliteFound, type, tier, level, customName);
+            } else {
+                EntityAPI.spawnCustomMonster(spawn, spawn, type, level, tier, null, customName);
+            }
         }
-        
         return true;
     }
 }

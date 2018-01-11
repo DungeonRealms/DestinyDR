@@ -7,6 +7,7 @@ import net.dungeonrealms.database.PlayerWrapper;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.item.items.functional.ItemFlightOrb;
 import net.dungeonrealms.game.item.items.functional.ItemPeaceOrb;
+import net.dungeonrealms.game.item.items.functional.ItemOrb;
 import net.dungeonrealms.game.player.inventory.ShopMenu;
 
 public class ShopItemVendor extends GUIMenu {
@@ -24,5 +25,6 @@ public class ShopItemVendor extends GUIMenu {
 
 		setItem(0, new ShopItem(new ItemFlightOrb()).setGems(100));
 		setItem(1, new ShopItem(new ItemPeaceOrb()).setGems(100));
+		setItem(2, new ShopItem(new ItemOrb()).setGems(2000));
 	}
 }

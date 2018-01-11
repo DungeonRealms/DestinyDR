@@ -175,7 +175,7 @@ public class EntityMechanics implements GenericMechanic {
                     double distance = target.distanceSquared(entity.getLocation());
 
                     // If they're a certain range away from the player and on a different Y level, they could be safe-spotting.
-                    if ((distance >= (DungeonManager.isDungeon(target.getWorld()) ? 1 : 4)) && distance <= 6 * 6 && (DungeonManager.isDungeon(target.getWorld()) || target.getBlockY() > entity.getLocation().getBlockY() + 1)) {
+                    if ((distance >= (DungeonManager.isDungeon(target.getWorld()) ? 1 : 3)) && distance <= 6 * 6 && (DungeonManager.isDungeon(target.getWorld()) || target.getBlockY() > entity.getLocation().getBlockY() + 1)) {
                         entity.teleport(target.clone().add(0, 1, 0));
                         MONSTER_LAST_ATTACK.put(entity, 15);
                         Bukkit.getLogger().info("Teleporting " + entity + " to " + ei.getGoalTarget().getName() + " to prevent leashing!");
