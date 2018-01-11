@@ -443,6 +443,8 @@ public interface DRMonster {
             System.out.println("Adding " + increase + " to drop for " + pw.getUsername() + " with a mobscore of " + mobScore);
         }
 
+        chance = chance * 3;
+
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
         Collections.shuffle(toDrop);
         if (dropRoll < chance + itemFindIncrease) {

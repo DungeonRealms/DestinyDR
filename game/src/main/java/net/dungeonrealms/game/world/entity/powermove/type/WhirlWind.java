@@ -43,7 +43,7 @@ public class WhirlWind extends PowerMove {
                 if (first) {
                     first = false;
                     entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 60));
-                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 20 * 11, 1));
+                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 20 * 7, 1));
                 }
 
                 if (entity.isDead() || entity.getHealth() <= 0) {
