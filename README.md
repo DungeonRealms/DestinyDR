@@ -12,21 +12,24 @@ Timeframe: September 2015 -> December 2017
 Ownerships: DestinyMC, iFamasssxD & Ingot, Kneesnap & Kihz & Lana & Detoxen  
 Notable Developers: CherryIO, iFamasssxD, Kneesnap
 
-This repository was the official DungeonRealms code repository from 2015 to the end of 2017.
+This repository was the official DungeonRealms code repository from 2015 to the end of 2017.  
+This legacy code is no longer maintained. Use at your own risk.
 
 ### Phase #1 (CherryIO):  
-When Atlas__ purchased DungeonRealms from Minecade, his development team, CherryIO recoded Minecade's code. Unfortunately, it was still very poor quality, not as big of an upgrade as it could have been.
+When Atlas__ purchased DungeonRealms from Minecade, his development team, CherryIO recoded Minecade's code. Unfortunately, it was still highly unstable and poorly built. It took a full year after release to make normal operations stable. However, a new development team replaced the existing one at this point, who decided the only way forward was to recode the game. (Phase 2) 
 
 ### Phase #2 (Failed Recode):
-In Spring 2017, much of this code was simplified. However, this recode quickly fell apart because the database code was poorly implemented, and the owners shifted their focus to releasing the new code as fast as possible, instead of taking the time to do it properly. The code progressively got worse from there, ultimately ending in around as poor quality as where it started.
+NOTE: Not to be confused with the current code. DungeonRealms was recoded once again after this phase, for the final time. This was a failed recode attempt, for the reasons explained below.
 
-While this code is still an improvement on original DungeonRealms code, it is still an absolute nightmare to work in.
-Because of this, we have ditched this code, and have completely recoded the game from scratch. 
+In Spring 2017, much of this code was simplified. However, this recode quickly fell apart because the database code was poorly implemented, and the focus shifted from making the best version of DungeonRealms to releasing the new code as fast as possible. Unsurprisingly, the code quality progressively got worse from there, ultimately ending not much better than it began.
+
+While this code was still an improvement, it was still far from being usable over the long-term.
+Because of this, the game was completely recoded from scratch in early 2018. 
 
 Unfortunately, we will not be providing build instructions to go along with this version.  
 Just compiling it alone was an incredibly messy setup that broke very often.  
+We don't want to have to support such a messy code-base.  
 On top of that, you have to setup a MySQL server, configure it, setup a FTP server, a lobby server is required to properly handle certain tasks, meaning you need a BungeeCord server too. It would be easier to setup the original code.
-
 
 ## This is an official DungeonRealms code release, released for these reasons:
  - We want the players to have an accurate history of DungeonRealms, and how the game used to work.
